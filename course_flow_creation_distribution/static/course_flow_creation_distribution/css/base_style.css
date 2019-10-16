@@ -1,0 +1,32 @@
+html {
+  height: 100%;
+}
+body {
+  background-color: #1976BC;
+  height: 100%;
+
+
+}
+
+.strategy-section{
+  height: 100%;
+}
+#detail-workspace{
+  height: 100%;
+}
+.node-section {
+  width: 20%;
+  background-color: #54C0DB;
+  display: inline-block;
+  height: 15vh;
+  margin: 3%;
+}
+#outside-class-activity-section {
+
+}
+#teacher-class-activity-section {
+
+}
+#student-class-activity-section {
+
+}
