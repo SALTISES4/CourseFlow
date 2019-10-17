@@ -14,6 +14,9 @@ from .models import (
     StrategyActivity,
     ComponentWeek,
     WeekCourse,
+    Component,
+    Week,
+    Discipline,
 )
 
 
@@ -27,7 +30,7 @@ class NodeSerializer(serializers.ModelSerializer):
     author = UserSerializer()
 
     class Meta:
-        model = Strategy
+        model = Node
         fields = [
             "id",
             "title",
@@ -39,11 +42,20 @@ class NodeSerializer(serializers.ModelSerializer):
         ]
 
 
+class NodeStrategySerializer(serializers.ModelSerializer):
+
+    node = NodeSerializer()
+
+    class Meta:
+        model = NodeStrategy
+        fields = ["strategy", "node", "added_on", "rank"]
+
+
 class StrategySerializer(serializers.ModelSerializer):
 
     author = UserSerializer()
 
-    nodes = NodeSerializer(many=True)
+    nodestrategy_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Strategy
@@ -56,8 +68,12 @@ class StrategySerializer(serializers.ModelSerializer):
             "hash",
             "default",
             "author",
-            "nodes",
+            "node_strategy_set",
         ]
+
+    def get_nodestrategy_set(self, instance):
+        links = instance.nodestrategy_set.all().order_by("-rank")
+        return NodeStrategySerializer(links, many=True).data
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -67,7 +83,7 @@ class ActivitySerializer(serializers.ModelSerializer):
     strategies = StrategySerializer(many=True)
 
     class Meta:
-        model = Strategy
+        model = Activity
         fields = [
             "id",
             "title",
@@ -83,7 +99,7 @@ class PreparationSerializer(serializers.ModelSerializer):
     author = UserSerializer()
 
     class Meta:
-        model = Strategy
+        model = Preparation
         fields = [
             "id",
             "title",
@@ -99,7 +115,7 @@ class AssesmentSerializer(serializers.ModelSerializer):
     author = UserSerializer()
 
     class Meta:
-        model = Strategy
+        model = Assesment
         fields = [
             "id",
             "title",
@@ -115,7 +131,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
     author = UserSerializer()
 
     class Meta:
-        model = Strategy
+        model = Artifact
         fields = [
             "id",
             "title",
@@ -128,18 +144,21 @@ class ArtifactSerializer(serializers.ModelSerializer):
 
 class ComponentSerializer(serializers.ModelSerializer):
 
-    if type(instance) == Activity:
-        content_object = ActivitySerializer()
-    elif type(instance) == Preparation:
-        content_object = PreparationSerializer()
-    elif type(instance) == Assesment:
-        content_object = AssesmentSerializer()
-    else:
-        content_object = ArtifactSerializer()
+    content_object = serializers.SerializerMethodField()
 
     class Meta:
         model = Component
         fields = ["content_object"]
+
+    def get_content_object(self, instance):
+        if type(instace.content_object) == Activity:
+            return ActivitySerializer(instace.content_object)
+        elif type(instace.content_object) == Preparation:
+            return PreparationSerializer(instace.content_object)
+        elif type(instace.content_object) == Assesment:
+            return AssesmentSerializer(instace.content_object)
+        else:
+            return ArtifactSerializer(instace.content_object)
 
 
 class WeekSerializer(serializers.ModelSerializer):
@@ -147,7 +166,7 @@ class WeekSerializer(serializers.ModelSerializer):
     components = ComponentSerializer(many=True)
 
     class Meta:
-        model = Strategy
+        model = Week
         fields = [
             "id",
             "title",
@@ -171,7 +190,7 @@ class CourseSerializer(serializers.ModelSerializer):
     discipline = DisciplineSerializer()
 
     class Meta:
-        model = Strategy
+        model = Course
         fields = [
             "id",
             "title",
