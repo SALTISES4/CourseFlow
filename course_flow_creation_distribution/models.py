@@ -7,6 +7,7 @@ from django.contrib.contenttypes.fields import (
     GenericRelation,
 )
 import uuid
+from django.db.models import Q
 
 User = get_user_model()
 
@@ -90,12 +91,44 @@ class NodeStrategy(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["strategy", "rank"], name="ranking"
-            )
-        ]
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            if NodeStrategy.objects.filter(strategy=self.strategy):
+                self.rank = (
+                    NodeStrategy.objects.filter(strategy=self.strategy)
+                    .order_by("rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif NodeStrategy.objects.filter(
+            strategy=self.strategy, rank=self.rank
+        ):
+            previous_rank = NodeStrategy.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(NodeStrategy, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in NodeStrategy.objects.filter(
+                    Q(strategy=self.strategy),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in NodeStrategy.objects.filter(
+                    Q(strategy=self.strategy),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(NodeStrategy, self).save(*args, **kwargs)
 
 
 class Activity(models.Model):
@@ -121,12 +154,44 @@ class StrategyActivity(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["activity", "rank"], name="ranking"
-            )
-        ]
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            if StrategyActivity.objects.filter(activity=self.activity):
+                self.rank = (
+                    StrategyActivity.objects.filter(activity=self.activity)
+                    .order_by("rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif StrategyActivity.objects.filter(
+            activity=self.activity, rank=self.rank
+        ):
+            previous_rank = StrategyActivity.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(StrategyActivity, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in StrategyActivity.objects.filter(
+                    Q(activity=self.activity),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in StrategyActivity.objects.filter(
+                    Q(activity=self.activity),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(StrategyActivity, self).save(*args, **kwargs)
 
 
 class Preparation(models.Model):
@@ -174,6 +239,8 @@ class Week(models.Model):
         "Component", through="ComponentWeek", blank=True
     )
 
+    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
     def __unicode__(self):
         return self.title
 
@@ -193,10 +260,42 @@ class ComponentWeek(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["week", "rank"], name="ranking")
-        ]
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            if ComponentWeek.objects.filter(week=self.week):
+                self.rank = (
+                    ComponentWeek.objects.filter(week=self.week)
+                    .order_by("rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif ComponentWeek.objects.filter(week=self.week, rank=self.rank):
+            previous_rank = ComponentWeek.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(ComponentWeek, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in ComponentWeek.objects.filter(
+                    Q(week=self.week),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in ComponentWeek.objects.filter(
+                    Q(week=self.week),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(ComponentWeek, self).save(*args, **kwargs)
 
 
 class Discipline(models.Model):
@@ -239,7 +338,39 @@ class WeekCourse(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["course", "rank"], name="ranking")
-        ]
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            if WeekCourse.objects.filter(course=self.course):
+                self.rank = (
+                    WeekCourse.objects.filter(course=self.course)
+                    .order_by("rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif WeekCourse.objects.filter(course=self.course, rank=self.rank):
+            previous_rank = WeekCourse.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(WeekCourse, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in WeekCourse.objects.filter(
+                    Q(course=self.course),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in WeekCourse.objects.filter(
+                    Q(course=self.course),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(WeekCourse, self).save(*args, **kwargs)
