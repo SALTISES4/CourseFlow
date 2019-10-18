@@ -17,6 +17,7 @@ from .models import (
     Component,
     Week,
     Discipline,
+    ThumbnailImage,
 )
 
 
@@ -25,9 +26,48 @@ class UserSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=100)
 
 
+class ThumbnailImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ThumbnailImage
+        fields = ["image"]
+
+
+class LeftNodeIconSerializer(serializers.ModelSerializer):
+
+    thumbnail_image = ThumbnailImageSerializer()
+
+    class Meta:
+        model = LeftNodeIcon
+        fields = ["title", "thumbnail_image"]
+
+
+class RightNodeIconSerializer(serializers.ModelSerializer):
+
+    thumbnail_image = ThumbnailImageSerializer()
+
+    class Meta:
+        model = RightNodeIcon
+        fields = ["title", "thumbnail_image"]
+
+
+class NodeClassificationSerializer(serializers.ModelSerializer):
+
+    thumbnail_image = ThumbnailImageSerializer()
+
+    class Meta:
+        model = NodeClassification
+        fields = ["title", "thumbnail_image"]
+
+
 class NodeSerializer(serializers.ModelSerializer):
 
     author = UserSerializer()
+
+    left_node_icon = LeftNodeIconSerializer()
+
+    right_node_icon = RightNodeIconSerializer()
+
+    node_classification = NodeClassificationSerializer()
 
     class Meta:
         model = Node
@@ -39,6 +79,9 @@ class NodeSerializer(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "author",
+            "left_node_icon",
+            "right_node_icon",
+            "node_classification",
         ]
 
 
