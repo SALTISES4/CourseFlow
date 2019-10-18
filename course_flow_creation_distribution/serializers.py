@@ -48,7 +48,7 @@ class NodeStrategySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = NodeStrategy
-        fields = ["strategy", "node", "added_on", "rank"]
+        fields = ["strategy", "node", "added_on", "rank", "id"]
 
 
 class StrategySerializer(serializers.ModelSerializer):
@@ -68,19 +68,28 @@ class StrategySerializer(serializers.ModelSerializer):
             "hash",
             "default",
             "author",
-            "node_strategy_set",
+            "nodestrategy_set",
         ]
 
     def get_nodestrategy_set(self, instance):
-        links = instance.nodestrategy_set.all().order_by("-rank")
+        links = instance.nodestrategy_set.all().order_by("rank")
         return NodeStrategySerializer(links, many=True).data
+
+
+class StrategyActivitySerializer(serializers.ModelSerializer):
+
+    node = StrategySerializer()
+
+    class Meta:
+        model = NodeStrategy
+        fields = ["activity", "strategy", "added_on", "rank", "id"]
 
 
 class ActivitySerializer(serializers.ModelSerializer):
 
     author = UserSerializer()
 
-    strategies = StrategySerializer(many=True)
+    strategyactivity_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Activity
@@ -88,10 +97,16 @@ class ActivitySerializer(serializers.ModelSerializer):
             "id",
             "title",
             "description",
+            "author",
             "created_on",
             "last_modified",
             "hash",
+            "strategyactivity_set",
         ]
+
+    def get_strategyactivity_set(self, instance):
+        links = instance.strategyactivity_set.all().order_by("rank")
+        return StrategyActivitySerializer(links, many=True).data
 
 
 class PreparationSerializer(serializers.ModelSerializer):
@@ -104,6 +119,7 @@ class PreparationSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "description",
+            "author",
             "created_on",
             "last_modified",
             "hash",
@@ -120,6 +136,7 @@ class AssesmentSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "description",
+            "author",
             "created_on",
             "last_modified",
             "hash",
@@ -136,6 +153,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "description",
+            "author",
             "created_on",
             "last_modified",
             "hash",
@@ -161,20 +179,36 @@ class ComponentSerializer(serializers.ModelSerializer):
             return ArtifactSerializer(instace.content_object)
 
 
+class ComponentWeekSerializer(serializers.ModelSerializer):
+
+    component = ComponentSerializer()
+
+    class Meta:
+        model = ComponentWeek
+        fields = ["week", "component", "added_on", "rank", "id"]
+
+
 class WeekSerializer(serializers.ModelSerializer):
 
-    components = ComponentSerializer(many=True)
+    componentweek_set = serializers.SerializerMethodField()
+
+    author = UserSerializer()
 
     class Meta:
         model = Week
         fields = [
             "id",
             "title",
+            "hash",
             "created_on",
             "last_modified",
-            "hash",
-            "components",
+            "author",
+            "componentweek_set",
         ]
+
+    def get_componentweek_set(self, instance):
+        links = instance.componentweek_set.all().order_by("rank")
+        return ComponentWeekSerializer(links, many=True).data
 
 
 class DisciplineSerializer(serializers.ModelSerializer):
@@ -183,9 +217,20 @@ class DisciplineSerializer(serializers.ModelSerializer):
         fields = ["id", "title"]
 
 
+class WeekCourseSerializer(serializers.ModelSerializer):
+
+    week = WeekSerializer()
+
+    class Meta:
+        model = WeekCourse
+        fields = ["course", "week", "added_on", "rank", "id"]
+
+
 class CourseSerializer(serializers.ModelSerializer):
 
-    weeks = WeekSerializer(many=True)
+    weekcourse_set = serializers.SerializerMethodField()
+
+    author = UserSerializer()
 
     discipline = DisciplineSerializer()
 
@@ -195,8 +240,13 @@ class CourseSerializer(serializers.ModelSerializer):
             "id",
             "title",
             "description",
+            "author",
             "created_on",
             "last_modified",
             "hash",
-            "weeks",
+            "weekcourse_set",
         ]
+
+    def get_weekcourse_set(self, instance):
+        links = instance.weekcourse_set.all().order_by("rank")
+        return WeekCourseSerializer(links, many=True).data

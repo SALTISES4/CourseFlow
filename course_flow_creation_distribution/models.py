@@ -92,11 +92,20 @@ class NodeStrategy(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > NodeStrategy.objects.filter(strategy=self.strategy)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
             if NodeStrategy.objects.filter(strategy=self.strategy):
                 self.rank = (
                     NodeStrategy.objects.filter(strategy=self.strategy)
-                    .order_by("rank")
+                    .order_by("-rank")
                     .first()
                     .rank
                     + 1
@@ -115,7 +124,7 @@ class NodeStrategy(models.Model):
                     Q(strategy=self.strategy),
                     Q(rank__gte=target_rank),
                     Q(rank__lt=previous_rank),
-                ).order_by("rank"):
+                ).order_by("-rank"):
                     link.rank += 1
                     link.save()
 
@@ -124,7 +133,7 @@ class NodeStrategy(models.Model):
                     Q(strategy=self.strategy),
                     Q(rank__lte=target_rank),
                     Q(rank__gt=previous_rank),
-                ).order_by("-rank"):
+                ).order_by("rank"):
                     link.rank -= 1
                     link.save()
             self.rank = target_rank
@@ -155,11 +164,20 @@ class StrategyActivity(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > StrategyActivity.objects.filter(activity=self.activity)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
             if StrategyActivity.objects.filter(activity=self.activity):
                 self.rank = (
                     StrategyActivity.objects.filter(activity=self.activity)
-                    .order_by("rank")
+                    .order_by("-rank")
                     .first()
                     .rank
                     + 1
@@ -178,7 +196,7 @@ class StrategyActivity(models.Model):
                     Q(activity=self.activity),
                     Q(rank__gte=target_rank),
                     Q(rank__lt=previous_rank),
-                ).order_by("rank"):
+                ).order_by("-rank"):
                     link.rank += 1
                     link.save()
 
@@ -187,7 +205,7 @@ class StrategyActivity(models.Model):
                     Q(activity=self.activity),
                     Q(rank__lte=target_rank),
                     Q(rank__gt=previous_rank),
-                ).order_by("-rank"):
+                ).order_by("rank"):
                     link.rank -= 1
                     link.save()
             self.rank = target_rank
@@ -235,6 +253,9 @@ class Assesment(models.Model):
 
 class Week(models.Model):
     title = models.CharField(max_length=30)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
     components = models.ManyToManyField(
         "Component", through="ComponentWeek", blank=True
     )
@@ -261,11 +282,20 @@ class ComponentWeek(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > ComponentWeek.objects.filter(week=self.week)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
             if ComponentWeek.objects.filter(week=self.week):
                 self.rank = (
                     ComponentWeek.objects.filter(week=self.week)
-                    .order_by("rank")
+                    .order_by("-rank")
                     .first()
                     .rank
                     + 1
@@ -282,7 +312,7 @@ class ComponentWeek(models.Model):
                     Q(week=self.week),
                     Q(rank__gte=target_rank),
                     Q(rank__lt=previous_rank),
-                ).order_by("rank"):
+                ).order_by("-rank"):
                     link.rank += 1
                     link.save()
 
@@ -291,7 +321,7 @@ class ComponentWeek(models.Model):
                     Q(week=self.week),
                     Q(rank__lte=target_rank),
                     Q(rank__gt=previous_rank),
-                ).order_by("-rank"):
+                ).order_by("rank"):
                     link.rank -= 1
                     link.save()
             self.rank = target_rank
@@ -339,11 +369,20 @@ class WeekCourse(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > WeekCourse.objects.filter(course=self.course)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
             if WeekCourse.objects.filter(course=self.course):
                 self.rank = (
                     WeekCourse.objects.filter(course=self.course)
-                    .order_by("rank")
+                    .order_by("-rank")
                     .first()
                     .rank
                     + 1
@@ -360,7 +399,7 @@ class WeekCourse(models.Model):
                     Q(course=self.course),
                     Q(rank__gte=target_rank),
                     Q(rank__lt=previous_rank),
-                ).order_by("rank"):
+                ).order_by("-rank"):
                     link.rank += 1
                     link.save()
 
@@ -369,7 +408,7 @@ class WeekCourse(models.Model):
                     Q(course=self.course),
                     Q(rank__lte=target_rank),
                     Q(rank__gt=previous_rank),
-                ).order_by("-rank"):
+                ).order_by("rank"):
                     link.rank -= 1
                     link.save()
             self.rank = target_rank
