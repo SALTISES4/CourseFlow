@@ -45,6 +45,18 @@ class NodeClassification(models.Model):
     def __unicode__(self):
         return self.title
 
+class Outcome(models.Model):
+    title = models.CharField(max_length=30)
+    description = models.TextField(max_length=400)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    def __unicode__(self):
+        return self.title
+
 
 class Node(models.Model):
     title = models.CharField(max_length=30)
@@ -65,8 +77,65 @@ class Node(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
+    outcomes = models.ManyToManyField(Outcome, through="OutcomeNode", blank=True)
+
     def __unicode__(self):
         return self.title
+
+class OutcomeNode(models.Model):
+    node = models.ForeignKey(Node, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > OutcomeNode.objects.filter(node=self.node)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
+            if OutcomeNode.objects.filter(node=self.node):
+                self.rank = (
+                    OutcomeNode.objects.filter(node=self.node)
+                    .order_by("-rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif OutcomeNode.objects.filter(
+            node=self.node, rank=self.rank
+        ):
+            previous_rank = OutcomeNode.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(OutcomeNode, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in OutcomeNode.objects.filter(
+                    Q(node=self.node),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in OutcomeNode.objects.filter(
+                    Q(node=self.node),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(OutcomeNode, self).save(*args, **kwargs)
+
 
 
 class Strategy(models.Model):
@@ -81,8 +150,64 @@ class Strategy(models.Model):
 
     nodes = models.ManyToManyField(Node, through="NodeStrategy", blank=True)
 
+    outcomes = models.ManyToManyField(Outcome, through="OutcomeStrategy", blank=True)
+
     def __unicode__(self):
         return self.title
+
+class OutcomeStrategy(models.Model):
+    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > OutcomeStrategy.objects.filter(strategy=self.strategy)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
+            if OutcomeStrategy.objects.filter(strategy=self.strategy):
+                self.rank = (
+                    OutcomeStrategy.objects.filter(strategy=self.strategy)
+                    .order_by("-rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif OutcomeStrategy.objects.filter(
+            strategy=self.strategy, rank=self.rank
+        ):
+            previous_rank = OutcomeStrategy.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(OutcomeStrategy, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in OutcomeStrategy.objects.filter(
+                    Q(strategy=self.strategy),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in OutcomeStrategy.objects.filter(
+                    Q(strategy=self.strategy),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(OutcomeStrategy, self).save(*args, **kwargs)
 
 
 class NodeStrategy(models.Model):
@@ -153,8 +278,64 @@ class Activity(models.Model):
         Strategy, through="StrategyActivity", blank=True
     )
 
+    outcomes = models.ManyToManyField(Outcome, through="OutcomeActivity", blank=True)
+
     def __unicode__(self):
         return self.title
+
+class OutcomeActivity(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > OutcomeActivity.objects.filter(activity=self.activity)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
+            if OutcomeActivity.objects.filter(activity=self.activity):
+                self.rank = (
+                    OutcomeActivity.objects.filter(activity=self.activity)
+                    .order_by("-rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif OutcomeActivity.objects.filter(
+            activity=self.activity, rank=self.rank
+        ):
+            previous_rank = OutcomeActivity.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(OutcomeActivity, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in OutcomeActivity.objects.filter(
+                    Q(activity=self.activity),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in OutcomeActivity.objects.filter(
+                    Q(activity=self.activity),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(OutcomeActivity, self).save(*args, **kwargs)
 
 
 class StrategyActivity(models.Model):
@@ -221,8 +402,64 @@ class Preparation(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
+    outcomes = models.ManyToManyField(Outcome, through="OutcomePreparation", blank=True)
+
     def __unicode__(self):
         return self.title
+
+class OutcomePreparation(models.Model):
+    preparation = models.ForeignKey(Preparation, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > OutcomePreparation.objects.filter(preparation=self.preparation)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
+            if OutcomePreparation.objects.filter(preparation=self.preparation):
+                self.rank = (
+                    OutcomePreparation.objects.filter(preparation=self.preparation)
+                    .order_by("-rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif OutcomePreparation.objects.filter(
+            preparation=self.preparation, rank=self.rank
+        ):
+            previous_rank = OutcomePreparation.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(OutcomePreparation, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in OutcomePreparation.objects.filter(
+                    Q(preparation=self.preparation),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in OutcomePreparation.objects.filter(
+                    Q(preparation=self.preparation),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(OutcomePreparation, self).save(*args, **kwargs)
 
 
 class Artifact(models.Model):
@@ -234,9 +471,64 @@ class Artifact(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
+    outcomes = models.ManyToManyField(Outcome, through="OutcomeArtifact", blank=True)
+
     def __unicode__(self):
         return self.title
 
+class OutcomeArtifact(models.Model):
+    artifact = models.ForeignKey(Artifact, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > OutcomeArtifact.objects.filter(artifact=self.artifact)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
+            if OutcomeArtifact.objects.filter(artifact=self.artifact):
+                self.rank = (
+                    OutcomeArtifact.objects.filter(artifact=self.artifact)
+                    .order_by("-rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif OutcomeArtifact.objects.filter(
+            artifact=self.artifact, rank=self.rank
+        ):
+            previous_rank = OutcomeArtifact.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(OutcomeArtifact, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in OutcomeArtifact.objects.filter(
+                    Q(artifact=self.artifact),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in OutcomeArtifact.objects.filter(
+                    Q(artifact=self.artifact),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(OutcomeArtifact, self).save(*args, **kwargs)
 
 class Assesment(models.Model):
     title = models.CharField(max_length=30)
@@ -247,8 +539,64 @@ class Assesment(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
+    outcomes = models.ManyToManyField(Outcome, through="OutcomeAssesment", blank=True)
+
     def __unicode__(self):
         return self.title
+
+class OutcomeAssesment(models.Model):
+    assesment = models.ForeignKey(Assesment, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > OutcomeAssesment.objects.filter(assesment=self.assesment)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
+            if OutcomeAssesment.objects.filter(assesment=self.assesment):
+                self.rank = (
+                    OutcomeAssesment.objects.filter(assesment=self.assesment)
+                    .order_by("-rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif OutcomeAssesment.objects.filter(
+            assesment=self.assesment, rank=self.rank
+        ):
+            previous_rank = OutcomeAssesment.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(OutcomeAssesment, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in OutcomeAssesment.objects.filter(
+                    Q(assesment=self.assesment),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in OutcomeAssesment.objects.filter(
+                    Q(assesment=self.assesment),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(OutcomeAssesment, self).save(*args, **kwargs)
 
 
 class Week(models.Model):
@@ -260,11 +608,66 @@ class Week(models.Model):
         "Component", through="ComponentWeek", blank=True
     )
 
+    outcomes = models.ManyToManyField(Outcome, through="OutcomeWeek", blank=True)
+
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __unicode__(self):
         return self.title
 
+class OutcomeWeek(models.Model):
+    week = models.ForeignKey(Week, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > OutcomeWeek.objects.filter(week=self.week)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
+            if OutcomeWeek.objects.filter(week=self.week):
+                self.rank = (
+                    OutcomeWeek.objects.filter(week=self.week)
+                    .order_by("-rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif OutcomeWeek.objects.filter(
+            week=self.week, rank=self.rank
+        ):
+            previous_rank = OutcomeWeek.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(OutcomeWeek, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in OutcomeWeek.objects.filter(
+                    Q(week=self.week),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in OutcomeWeek.objects.filter(
+                    Q(week=self.week),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(OutcomeWeek, self).save(*args, **kwargs)
 
 class Component(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -356,10 +759,66 @@ class Course(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
-    weeks = models.ManyToManyField(Week, through="WeekCourse")
+    weeks = models.ManyToManyField(Week, through="WeekCourse", blank=True)
+
+    outcomes = models.ManyToManyField(Outcome, through="OutcomeCourse", blank=True)
 
     def __unicode__(self):
         return self.title
+
+class OutcomeCourse(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    def save(self, *args, **kwargs):
+        if (
+            not self.pk
+            or self.rank == 0
+            or self.rank
+            > OutcomeCourse.objects.filter(course=self.course)
+            .order_by("-rank")
+            .first()
+            .rank
+            + 1
+        ):
+            if OutcomeCourse.objects.filter(course=self.course):
+                self.rank = (
+                    OutcomeCourse.objects.filter(course=self.course)
+                    .order_by("-rank")
+                    .first()
+                    .rank
+                    + 1
+                )
+            else:
+                self.rank = 1
+        elif OutcomeCourse.objects.filter(
+            course=self.course, rank=self.rank
+        ):
+            previous_rank = OutcomeCourse.objects.get(pk=self.pk).rank
+            target_rank = self.rank
+            self.rank = 0
+            super(OutcomeCourse, self).save(*args, **kwargs)
+            if previous_rank - target_rank > 0:
+                for link in OutcomeCourse.objects.filter(
+                    Q(course=self.course),
+                    Q(rank__gte=target_rank),
+                    Q(rank__lt=previous_rank),
+                ).order_by("-rank"):
+                    link.rank += 1
+                    link.save()
+
+            elif previous_rank - target_rank < 0:
+                for link in OutcomeCourse.objects.filter(
+                    Q(course=self.course),
+                    Q(rank__lte=target_rank),
+                    Q(rank__gt=previous_rank),
+                ).order_by("rank"):
+                    link.rank -= 1
+                    link.save()
+            self.rank = target_rank
+        super(OutcomeCourse, self).save(*args, **kwargs)
 
 
 class WeekCourse(models.Model):

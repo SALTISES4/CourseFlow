@@ -18,6 +18,15 @@ from .models import (
     Week,
     Discipline,
     ThumbnailImage,
+    Outcome,
+    OutcomeNode,
+    OutcomeStrategy,
+    OutcomePreparation,
+    OutcomeActivity,
+    OutcomeAssesment,
+    OutcomeArtifact,
+    OutcomeWeek,
+    OutcomeCourse,
 )
 
 
@@ -58,6 +67,30 @@ class NodeClassificationSerializer(serializers.ModelSerializer):
         model = NodeClassification
         fields = ["title", "thumbnail_image"]
 
+class OutcomeSerializer(serializers.ModelSerializer):
+
+    author = UserSerializer()
+
+    class Meta:
+        model = Outcome
+        fields = [
+            "id",
+            "title",
+            "description",
+            "created_on",
+            "last_modified",
+            "hash",
+            "author",
+        ]
+
+class OutcomeNodeSerializer(serializers.ModelSerializer):
+
+    outcome = OutcomeSerializer()
+
+    class Meta:
+        model = OutcomeNode
+        fields = ["node", "outcome", "added_on", "rank", "id"]
+
 
 class NodeSerializer(serializers.ModelSerializer):
 
@@ -68,6 +101,8 @@ class NodeSerializer(serializers.ModelSerializer):
     right_node_icon = RightNodeIconSerializer()
 
     node_classification = NodeClassificationSerializer()
+
+    outcomenode_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Node
@@ -82,8 +117,12 @@ class NodeSerializer(serializers.ModelSerializer):
             "left_node_icon",
             "right_node_icon",
             "node_classification",
+            "outcomenode_set",
         ]
 
+    def get_outcomenode_set(self, instance):
+        links = instance.outcomenode_set.all().order_by("rank")
+        return OutcomeNodeSerializer(links, many=True).data
 
 class NodeStrategySerializer(serializers.ModelSerializer):
 
@@ -93,12 +132,22 @@ class NodeStrategySerializer(serializers.ModelSerializer):
         model = NodeStrategy
         fields = ["strategy", "node", "added_on", "rank", "id"]
 
+class OutcomeStrategySerializer(serializers.ModelSerializer):
+
+    outcome = OutcomeSerializer()
+
+    class Meta:
+        model = OutcomeStrategy
+        fields = ["strategy", "outcome", "added_on", "rank", "id"]
+
 
 class StrategySerializer(serializers.ModelSerializer):
 
     author = UserSerializer()
 
     nodestrategy_set = serializers.SerializerMethodField()
+
+    outcomestrategy_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Strategy
@@ -112,11 +161,17 @@ class StrategySerializer(serializers.ModelSerializer):
             "default",
             "author",
             "nodestrategy_set",
+            "outcomestrategy_set",
         ]
+
 
     def get_nodestrategy_set(self, instance):
         links = instance.nodestrategy_set.all().order_by("rank")
         return NodeStrategySerializer(links, many=True).data
+
+    def get_outcomestrategy_set(self, instance):
+        links = instance.outcomestrategy_set.all().order_by("rank")
+        return OutcomeStrategySerializer(links, many=True).data
 
 
 class StrategyActivitySerializer(serializers.ModelSerializer):
@@ -127,12 +182,22 @@ class StrategyActivitySerializer(serializers.ModelSerializer):
         model = NodeStrategy
         fields = ["activity", "strategy", "added_on", "rank", "id"]
 
+class OutcomeActivitySerializer(serializers.ModelSerializer):
+
+    outcome = OutcomeSerializer()
+
+    class Meta:
+        model = OutcomeActivity
+        fields = ["activity", "outcome", "added_on", "rank", "id"]
+
 
 class ActivitySerializer(serializers.ModelSerializer):
 
     author = UserSerializer()
 
     strategyactivity_set = serializers.SerializerMethodField()
+
+    outcomeactivity_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Activity
@@ -145,16 +210,32 @@ class ActivitySerializer(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "strategyactivity_set",
+            "outcomeactivity_set",
         ]
 
     def get_strategyactivity_set(self, instance):
         links = instance.strategyactivity_set.all().order_by("rank")
         return StrategyActivitySerializer(links, many=True).data
 
+    def get_outcomeactivity_set(self, instance):
+        links = instance.outcomeactivity_set.all().order_by("rank")
+        return OutcomeActivitySerializer(links, many=True).data
+
+
+class OutcomePreparationSerializer(serializers.ModelSerializer):
+
+    outcome = OutcomeSerializer()
+
+    class Meta:
+        model = OutcomeActivity
+        fields = ["preparation", "outcome", "added_on", "rank", "id"]
+
 
 class PreparationSerializer(serializers.ModelSerializer):
 
     author = UserSerializer()
+
+    outcomepreparation_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Preparation
@@ -166,12 +247,27 @@ class PreparationSerializer(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "hash",
+            "outcomepreparation_set",
         ]
+
+    def get_outcomepreparation_set(self, instance):
+        links = instance.outcomepreparation_set.all().order_by("rank")
+        return OutcomePreparationSerializer(links, many=True).data
+
+class OutcomeAssesmentSerializer(serializers.ModelSerializer):
+
+    outcome = OutcomeSerializer()
+
+    class Meta:
+        model = OutcomeAssesment
+        fields = ["assesment", "outcome", "added_on", "rank", "id"]
 
 
 class AssesmentSerializer(serializers.ModelSerializer):
 
     author = UserSerializer()
+
+    outcomeassesment_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Assesment
@@ -183,12 +279,28 @@ class AssesmentSerializer(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "hash",
-        ]
+            "outcomeassesment_set",
+            ]
+
+    def get_outcomeassesment_set(self, instance):
+        links = instance.outcomeassesment_set.all().order_by("rank")
+        return OutcomeAssesmentSerializer(links, many=True).data
+
+
+class OutcomeArtifactSerializer(serializers.ModelSerializer):
+
+    outcome = OutcomeSerializer()
+
+    class Meta:
+        model = OutcomeArtifact
+        fields = ["artifact", "outcome", "added_on", "rank", "id"]
 
 
 class ArtifactSerializer(serializers.ModelSerializer):
 
     author = UserSerializer()
+
+    outcomeartifact_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Artifact
@@ -200,7 +312,12 @@ class ArtifactSerializer(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "hash",
+            "outcomeartifact_set",
         ]
+
+    def get_outcomeartifact_set(self, instance):
+        links = instance.outcomeartifact_set.all().order_by("rank")
+        return OutcomeArtifactSerializer(links, many=True).data
 
 
 class ComponentSerializer(serializers.ModelSerializer):
@@ -230,12 +347,22 @@ class ComponentWeekSerializer(serializers.ModelSerializer):
         model = ComponentWeek
         fields = ["week", "component", "added_on", "rank", "id"]
 
+class OutcomeWeekSerializer(serializers.ModelSerializer):
+
+    outcome = OutcomeSerializer()
+
+    class Meta:
+        model = OutcomeWeek
+        fields = ["week", "outcome", "added_on", "rank", "id"]
+
 
 class WeekSerializer(serializers.ModelSerializer):
 
     componentweek_set = serializers.SerializerMethodField()
 
     author = UserSerializer()
+
+    outcomeweek_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Week
@@ -247,11 +374,16 @@ class WeekSerializer(serializers.ModelSerializer):
             "last_modified",
             "author",
             "componentweek_set",
+            "outcomeweek_set",
         ]
 
     def get_componentweek_set(self, instance):
         links = instance.componentweek_set.all().order_by("rank")
         return ComponentWeekSerializer(links, many=True).data
+
+    def get_outcomeweek_set(self, instance):
+        links = instance.outcomeweek_set.all().order_by("rank")
+        return OutcomeWeekSerializer(links, many=True).data
 
 
 class DisciplineSerializer(serializers.ModelSerializer):
@@ -268,6 +400,14 @@ class WeekCourseSerializer(serializers.ModelSerializer):
         model = WeekCourse
         fields = ["course", "week", "added_on", "rank", "id"]
 
+class OutcomeCourseSerializer(serializers.ModelSerializer):
+
+    outcome = OutcomeSerializer()
+
+    class Meta:
+        model = OutcomeCourse
+        fields = ["course", "outcome", "added_on", "rank", "id"]
+
 
 class CourseSerializer(serializers.ModelSerializer):
 
@@ -276,6 +416,8 @@ class CourseSerializer(serializers.ModelSerializer):
     author = UserSerializer()
 
     discipline = DisciplineSerializer()
+
+    outcomecourse_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
@@ -288,8 +430,13 @@ class CourseSerializer(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "weekcourse_set",
+            "outcomecourse_set",
         ]
 
     def get_weekcourse_set(self, instance):
         links = instance.weekcourse_set.all().order_by("rank")
         return WeekCourseSerializer(links, many=True).data
+
+    def get_outcomecourse_set(self, instance):
+        links = instance.outcomecourse_set.all().order_by("rank")
+        return OutcomeCourseSerializer(links, many=True).data
