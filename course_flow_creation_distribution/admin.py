@@ -10,7 +10,6 @@ from .models import (
     Node,
     LeftNodeIcon,
     RightNodeIcon,
-    NodeClassification,
     NodeStrategy,
     StrategyActivity,
     ComponentWeek,
@@ -36,4 +35,3 @@ admin.site.register(NodeStrategy)
 admin.site.register(Node)
 admin.site.register(LeftNodeIcon)
 admin.site.register(RightNodeIcon)
-admin.site.register(NodeClassification)

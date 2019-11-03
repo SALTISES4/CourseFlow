@@ -8,15 +8,20 @@ from .models import (
     Node,
     LeftNodeIcon,
     RightNodeIcon,
-    NodeClassification,
     NodeStrategy,
     StrategyActivity,
     ComponentWeek,
     WeekCourse,
 )
+from .serializers import (
+    ActivitySerializer,
+    CourseSerializer,
+    StrategySerializer,
+)
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 from django.db.models import Q
+from rest_framework.renderers import JSONRenderer
 
 
 class CourseDetailView(DetailView):
@@ -65,17 +70,12 @@ class CourseDeleteView(DeleteView):
 
 
 class ActivityDetailView(DetailView):
-    model = Activity
+    model = Strategy
     template_name = "course_flow_creation_distribution/activity_detail.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        context["strategy_activity_links"] = StrategyActivity.objects.filter(
-            activity=self.get_object()
-        ).order_by("-rank")
-        context["node_strategy_links"] = NodeStrategy.objects.filter(
-            strategy__in=self.get_object().strategies.all()
-        ).order_by("-rank")
+        context["activity_json"] = JSONRenderer().render(StrategySerializer(self.object).data).decode("utf-8")
         return context
 
 
@@ -95,7 +95,6 @@ class ActivityUpdateView(UpdateView):
         """
         context["left_node_icons"] = LeftNodeIcon.objects.all()
         context["right_node_icons"] = RightNodeIcon.objects.all()
-        context["node_classifications"] = NodeClassification.objects.all()
         context["strategy_activity_links"] = StrategyActivity.objects.filter(
             activity=self.get_object()
         ).order_by("-rank")

@@ -36,15 +36,6 @@ class RightNodeIcon(models.Model):
         return self.title
 
 
-class NodeClassification(models.Model):
-    title = models.CharField(max_length=30, unique=True)
-    thumbnail_image = models.ForeignKey(
-        ThumbnailImage, on_delete=models.SET_NULL, null=True
-    )
-
-    def __unicode__(self):
-        return self.title
-
 class Outcome(models.Model):
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
@@ -71,9 +62,15 @@ class Node(models.Model):
     right_node_icon = models.ForeignKey(
         RightNodeIcon, on_delete=models.SET_NULL, null=True
     )
-    node_classification = models.ForeignKey(
-        NodeClassification, on_delete=models.SET_NULL, null=True
+    OUT_CLASS = 0
+    IN_CLASS_INSTRUCTOR = 1
+    IN_CLASS_STUDENTS = 2
+    NODE_TYPES = (
+        (OUT_CLASS, "Out of Class"),
+        (IN_CLASS_INSTRUCTOR, "In Class (Instructor)"),
+        (IN_CLASS_STUDENTS, "In Class (Students)"),
     )
+    classification = models.PositiveIntegerField(choices=NODE_TYPES, default=1)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 

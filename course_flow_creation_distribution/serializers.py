@@ -9,7 +9,6 @@ from .models import (
     Node,
     LeftNodeIcon,
     RightNodeIcon,
-    NodeClassification,
     NodeStrategy,
     StrategyActivity,
     ComponentWeek,
@@ -59,14 +58,6 @@ class RightNodeIconSerializer(serializers.ModelSerializer):
         fields = ["title", "thumbnail_image"]
 
 
-class NodeClassificationSerializer(serializers.ModelSerializer):
-
-    thumbnail_image = ThumbnailImageSerializer()
-
-    class Meta:
-        model = NodeClassification
-        fields = ["title", "thumbnail_image"]
-
 class OutcomeSerializer(serializers.ModelSerializer):
 
     author = UserSerializer()
@@ -100,8 +91,6 @@ class NodeSerializer(serializers.ModelSerializer):
 
     right_node_icon = RightNodeIconSerializer()
 
-    node_classification = NodeClassificationSerializer()
-
     outcomenode_set = serializers.SerializerMethodField()
 
     class Meta:
@@ -116,7 +105,7 @@ class NodeSerializer(serializers.ModelSerializer):
             "author",
             "left_node_icon",
             "right_node_icon",
-            "node_classification",
+            "classification",
             "outcomenode_set",
         ]
 
