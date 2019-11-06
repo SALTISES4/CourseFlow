@@ -22,6 +22,9 @@ from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 from django.db.models import Q
 from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+import io
+from django.http import JsonResponse
 
 
 class CourseDetailView(DetailView):
@@ -110,3 +113,13 @@ class ActivityUpdateView(UpdateView):
 class ActivityDeleteView(DeleteView):
     model = Activity
     template_name = "course_flow_creation_distribution/activity_delete.html"
+
+def update_strategy_json(request):
+    json = request.POST.get("json")
+    strategy_object = Strategy.objects.get(id=1)
+    byte_data = io.BytesIO(json.encode())
+    data = JSONParser().parse(byte_data)
+    serializer = StrategySerializer(strategy_object, data=data)
+    serializer.is_valid()
+    serializer.save()
+    return JsonResponse({"action": "updated"})

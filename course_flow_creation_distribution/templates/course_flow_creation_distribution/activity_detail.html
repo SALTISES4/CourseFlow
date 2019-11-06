@@ -53,6 +53,7 @@
     <svg id="dragdrop" width="1400" height="900"></svg>
     <footer></footer>
   </body>
+  {% csrf_token %}
   <script>
               window.addEventListener("load", function() {
 
@@ -62,30 +63,35 @@
 
 
                 const objectNodeStrategySet = objectJson.nodestrategy_set;
-          /*
-                    for (let i = 0; i < objectJson.nodestrategy_set.length; i++) {
 
-                        let rect = svg.append("rect").attr("width", "120").attr("height", "45").attr("x", "6").attr("y", `${80*i}`).attr("rx", "6").attr("ry", "6").attr("class","node");
-
-                    }
-                */
 
                   const scC = d3.scaleOrdinal( d3.schemePastel1 );
 
+                  const nodeHeight = 80.0;
+                  const nodeWidth = 300.0;
+                  const nodeSpacingVertial = 30.0;
+                  const nodeSpacingHorizontal = 30.0;
+
+                  const nodeTotalSpacingVertial = nodeHeight + nodeSpacingVertial;
+                  const nodeTotalSpacingHorizontal = nodeWidth + nodeSpacingHorizontal;
+
+                  const nodeMidpointVertial = nodeHeight/2.0;
+                  const nodeMidpointHorizontal = nodeWidth/2.0;
+
                   const nodes = svg.selectAll('.node').data(objectNodeStrategySet).enter()
                                     .append("svg").attr("class","node")
-                                    .attr("x", (d,i) => `${150*d.node.classification}`)
-                                    .attr("y", (d,i) => `${80*d.rank}`);
+                                    .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification}`)
+                                    .attr("y", (d,i) => `${nodeTotalSpacingVertial*d.rank}`);
 
                   nodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
-                      .attr("width", "120").attr("height", "45").attr("fill", (d,i) => scC(i));
+                      .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("fill", (d,i) => scC(i));
 
                   nodes
                     .append('text')
                     .style('font-family', 'Quicksand, sans-serif')
                     .attr('class', 'node-label')
-                    .attr('x', 60)
-                    .attr('y', 22.5)
+                    .attr('x', `${nodeMidpointHorizontal}`)
+                    .attr('y', `${nodeMidpointVertial}`)
                     .attr('dy', 6)
                     .style('font-size', 14)
                     .attr('text-anchor', 'middle')
@@ -96,7 +102,7 @@
                     function reorderByRank(previousRank, newRank){
                         nodes.each(function(d,i) { if(d.rank == newRank){
                           d.rank=previousRank;
-                          d3.select(this).attr("y",`${d.rank*80}`);
+                          d3.select(this).attr("y",`${d.rank*nodeTotalSpacingVertial}`);
                         }});
                     }
 
@@ -113,16 +119,6 @@
 
                     linkNodes();
 
-           svg.selectAll("rect").data(objectNodeStrategySet).enter()
-                      .append("rect").attr("width", "120").attr("height", "45")
-                      .attr("rx", "6").attr("class","node").attr("ry", "6")
-                      .attr("x", "6").attr("y", (d,i) => 80*i).attr("fill", (d,i) => scC(i));
-
-
-                  svg.selectAll("text").data(objectNodeStrategySet).enter()
-                      .append("text").attr("class","node").attr("x", 66)
-                      .attr("y", (d,i) => 80*i+23).attr("text-anchor","middle")
-                      .attr("font-size", 10).attr("fill", "black").text(d => d.node.title);
       */
 
                 function swapDiv(elem, referenceNode){
@@ -149,9 +145,9 @@
                       initClassification = widgetData.node.classification
                     })
                     .on("drag", function() {
-                      widget.attr("x", d3.event.x-60).attr("y", d3.event.y-22);
-                      currentRank = Math.round(widget.attr("y")/80);
-                      currentClassification = Math.round(widget.attr("x")/150);
+                      widget.attr("x", d3.event.x-nodeMidpointHorizontal).attr("y", d3.event.y-nodeMidpointVertial);
+                      currentRank = Math.round(widget.attr("y")/nodeTotalSpacingVertial);
+                      currentClassification = Math.round(widget.attr("x")/nodeTotalSpacingHorizontal);
                       if(currentRank != initRank){
                           reorderByRank(initRank, currentRank);
                           widgetData.rank = currentRank;
@@ -166,18 +162,42 @@
                       if (widgetData.node.classification < 0) widgetData.node.classification = 0;
                       if (widgetData.node.classification > 2) widgetData.node.classification = 2;
                       if (widgetData.rank < 0) widgetData.rank = 0;
-                      if (widgetData.rank > 6) widgetData.rank = 6;
+                      if (widgetData.rank > objectNodeStrategySet.length-1) widgetData.rank = objectNodeStrategySet.length-1;
                       widget.select("rect").attr("fill", color);
-                      widget.attr("y",(d,i)=>`${d.rank*80}`)
-                          .attr("x", (d,i) => `${150*d.node.classification}`);
-                      console.log(objectNodeStrategySet);
+                      widget.attr("y",(d,i)=>`${d.rank*nodeTotalSpacingVertial}`)
+                          .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification}`);
+                      updateJson();
                       widget = undefined;
                     });
 
                   drags(nodes);
                 }
+                $.ajaxSetup({
+                    beforeSend: function(xhr, settings) {
+                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                        }
+                    }
+                });
+
+                function csrfSafeMethod(method) {
+
+                    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+                }
+                function getCsrfToken() {
+                    return document
+                      .getElementsByName("csrfmiddlewaretoken")[0]
+                      .getAttribute("value");
+                  }
 
                 makeDragDrop();
+                function updateJson(){
+                  let posting = $.post("{% url 'update-strategy-json' %}", {json: `${JSON.stringify(objectJson)}`});
+                  posting.done(function(data) {
+                    console.info(data);
+                });
+              }
+
               });
   </script>
 </html>

@@ -36,6 +36,11 @@ def flow_patterns():
             views.ActivityDeleteView.as_view(),
             name="activity-delete",
         ),
+        url(
+            r"^activity/update-json",
+            views.update_strategy_json,
+            name="update-strategy-json",
+        ),
     ]
 
 
