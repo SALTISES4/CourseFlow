@@ -116,10 +116,9 @@ class ActivityDeleteView(DeleteView):
 
 def update_strategy_json(request):
     json = request.POST.get("json")
-    strategy_object = Strategy.objects.get(id=1)
     byte_data = io.BytesIO(json.encode())
     data = JSONParser().parse(byte_data)
-    serializer = StrategySerializer(strategy_object, data=data)
+    serializer = StrategySerializer(Strategy.objects.get(id=data['id']), data=data)
     serializer.is_valid()
     serializer.save()
     return JsonResponse({"action": "updated"})

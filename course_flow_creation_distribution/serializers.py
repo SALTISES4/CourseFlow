@@ -77,6 +77,12 @@ class OutcomeSerializer(serializers.ModelSerializer):
             "author",
         ]
 
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+        instance.save()
+        return instance
+
 class OutcomeNodeSerializer(serializers.ModelSerializer):
 
     outcome = OutcomeSerializer()
@@ -84,6 +90,15 @@ class OutcomeNodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = OutcomeNode
         fields = ["node", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get('rank', instance.title)
+        outcome_data = self.initial_data.pop('outcome')
+        outcome_serializer = OutcomeSerializer(Outcome.objects.get(id=outcome_data['id']), outcome_data)
+        outcome_serializer.is_valid()
+        outcome_serializer.save()
+        instance.save()
+        return instance
 
 
 class NodeSerializer(serializers.ModelSerializer):
@@ -120,6 +135,10 @@ class NodeSerializer(serializers.ModelSerializer):
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
         instance.classification = validated_data.get('classification', instance.classification)
+        for outcomenode_data in self.initial_data.pop('outcomenode_set'):
+            outcomenode_serializer = OutcomeNodeSerializer(OutcomeNode.objects.get(id=outcomenode_data['id']), data=outcomenode_data)
+            outcomenode_serializer.is_valid()
+            outcomenode_serializer.save()
         instance.save()
         return instance
 
@@ -151,6 +170,14 @@ class OutcomeStrategySerializer(serializers.ModelSerializer):
         model = OutcomeStrategy
         fields = ["strategy", "outcome", "added_on", "rank", "id"]
 
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get('rank', instance.title)
+        outcome_data = self.initial_data.pop('outcome')
+        outcome_serializer = OutcomeSerializer(Outcome.objects.get(id=outcome_data['id']), outcome_data)
+        outcome_serializer.is_valid()
+        outcome_serializer.save()
+        instance.save()
+        return instance
 
 class StrategySerializer(serializers.ModelSerializer):
 
@@ -195,6 +222,10 @@ class StrategySerializer(serializers.ModelSerializer):
                 nodestrategy_serializer = NodeStrategySerializer(data=nodestrategy_data)
                 nodestrategy_serializer.is_valid()
                 nodestrategy_serializer.save()
+        for outcomestrategy_data in self.initial_data.pop('outcomestrategy_set'):
+            outcomestrategy_serializer = OutcomeStrategySerializer(OutcomeStrategy.objects.get(id=outcomestrategy_data['id']), data=outcomestrategy_data)
+            outcomestrategy_serializer.is_valid()
+            outcomestrategy_serializer.save()
         instance.save()
         return instance
 
@@ -223,6 +254,15 @@ class OutcomeActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = OutcomeActivity
         fields = ["activity", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get('rank', instance.title)
+        outcome_data = self.initial_data.pop('outcome')
+        outcome_serializer = OutcomeSerializer(Outcome.objects.get(id=outcome_data['id']), outcome_data)
+        outcome_serializer.is_valid()
+        outcome_serializer.save()
+        instance.save()
+        return instance
 
 
 class ActivitySerializer(serializers.ModelSerializer):
@@ -262,6 +302,10 @@ class ActivitySerializer(serializers.ModelSerializer):
             strategyactivity_serializer = StrategyActivitySerializer(StrategyActivity.objects.get(id=strategyactivity_data['id']), data=strategyactivity_data)
             strategyactivity_serializer.is_valid()
             strategyactivity_serializer.save()
+        for outcomeactivity_data in self.initial_data.pop('outcomeactivity_set'):
+            outcomeactivity_serializer = OutcomeActivitySerializer(OutcomeActivity.objects.get(id=outcomeactivity_data['id']), data=outcomeactivity_data)
+            outcomeactivity_serializer.is_valid()
+            outcomeactivity_serializer.save()
         instance.save()
         return instance
 
@@ -273,6 +317,15 @@ class OutcomePreparationSerializer(serializers.ModelSerializer):
     class Meta:
         model = OutcomeActivity
         fields = ["preparation", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get('rank', instance.title)
+        outcome_data = self.initial_data.pop('outcome')
+        outcome_serializer = OutcomeSerializer(Outcome.objects.get(id=outcome_data['id']), outcome_data)
+        outcome_serializer.is_valid()
+        outcome_serializer.save()
+        instance.save()
+        return instance
 
 
 class PreparationSerializer(serializers.ModelSerializer):
@@ -304,6 +357,10 @@ class PreparationSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
+        for outcomepreparation_data in self.initial_data.pop('outcomepreparation_set'):
+            outcomepreparation_serializer = OutcomePreparationSerializer(OutcomePreparation.objects.get(id=outcomepreparation_data['id']), data=outcomepreparation_data)
+            outcomepreparation_serializer.is_valid()
+            outcomepreparation_serializer.save()
         instance.save()
         return instance
 
@@ -314,6 +371,15 @@ class OutcomeAssesmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = OutcomeAssesment
         fields = ["assesment", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get('rank', instance.title)
+        outcome_data = self.initial_data.pop('outcome')
+        outcome_serializer = OutcomeSerializer(Outcome.objects.get(id=outcome_data['id']), outcome_data)
+        outcome_serializer.is_valid()
+        outcome_serializer.save()
+        instance.save()
+        return instance
 
 
 class AssesmentSerializer(serializers.ModelSerializer):
@@ -345,6 +411,10 @@ class AssesmentSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
+        for outcomeassesment_data in self.initial_data.pop('outcomeassesment_set'):
+            outcomeassesment_serializer = OutcomeAssesmentSerializer(OutcomeAssesment.objects.get(id=outcomeassesment_data['id']), data=outcomeassesment_data)
+            outcomeassesment_serializer.is_valid()
+            outcomeassesment_serializer.save()
         instance.save()
         return instance
 
@@ -356,6 +426,15 @@ class OutcomeArtifactSerializer(serializers.ModelSerializer):
     class Meta:
         model = OutcomeArtifact
         fields = ["artifact", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get('rank', instance.title)
+        outcome_data = self.initial_data.pop('outcome')
+        outcome_serializer = OutcomeSerializer(Outcome.objects.get(id=outcome_data['id']), outcome_data)
+        outcome_serializer.is_valid()
+        outcome_serializer.save()
+        instance.save()
+        return instance
 
 
 class ArtifactSerializer(serializers.ModelSerializer):
@@ -387,6 +466,10 @@ class ArtifactSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
+        for outcomeartifact_data in self.initial_data.pop('outcomeartifact_set'):
+            outcomeartifact_serializer = OutcomeArtifactSerializer(OutcomeArtifact.objects.get(id=outcomeartifact_data['id']), data=outcomeartifact_data)
+            outcomeartifact_serializer.is_valid()
+            outcomeartifact_serializer.save()
         instance.save()
         return instance
 
@@ -453,6 +536,15 @@ class OutcomeWeekSerializer(serializers.ModelSerializer):
         model = OutcomeWeek
         fields = ["week", "outcome", "added_on", "rank", "id"]
 
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get('rank', instance.title)
+        outcome_data = self.initial_data.pop('outcome')
+        outcome_serializer = OutcomeSerializer(Outcome.objects.get(id=outcome_data['id']), outcome_data)
+        outcome_serializer.is_valid()
+        outcome_serializer.save()
+        instance.save()
+        return instance
+
 
 class WeekSerializer(serializers.ModelSerializer):
 
@@ -493,6 +585,10 @@ class WeekSerializer(serializers.ModelSerializer):
             componentweek_serializer = ComponentWeekSerializer(ComponentWeek.objects.get(id=componentweek_data['id']), data=component_data)
             componentweek_serializer.is_valid()
             componentweek_serializer.save()
+        for outcomeweek_data in self.initial_data.pop('outcomeweek_set'):
+            outcomeweek_serializer = OutcomeWeekSerializer(OutcomeWeek.objects.get(id=outcomeweek_data['id']), data=outcomeweek_data)
+            outcomeweek_serializer.is_valid()
+            outcomeweek_serializer.save()
         instance.save()
         return instance
 
@@ -530,6 +626,15 @@ class OutcomeCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = OutcomeCourse
         fields = ["course", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get('rank', instance.title)
+        outcome_data = self.initial_data.pop('outcome')
+        outcome_serializer = OutcomeSerializer(Outcome.objects.get(id=outcome_data['id']), outcome_data)
+        outcome_serializer.is_valid()
+        outcome_serializer.save()
+        instance.save()
+        return instance
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -574,5 +679,9 @@ class CourseSerializer(serializers.ModelSerializer):
             weekcourse_serializer = WeekCourseSerializer(WeekCourse.objects.get(id=weekcourse_data['id']), data=weekcourse_data)
             weekcourse_serializer.is_valid()
             weekcourse_serializer.save()
+        for outcomecourse_data in self.initial_data.pop('outcomecourse_set'):
+            outcomecourse_serializer = OutcomeCourseSerializer(OutcomeCourse.objects.get(id=outcomecourse_data['id']), data=outcomecourse_data)
+            outcomecourse_serializer.is_valid()
+            outcomecourse_serializer.save()
         instance.save()
         return instance
