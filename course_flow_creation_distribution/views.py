@@ -6,8 +6,6 @@ from .models import (
     Artifact,
     Strategy,
     Node,
-    LeftNodeIcon,
-    RightNodeIcon,
     NodeStrategy,
     StrategyActivity,
     ComponentWeek,

@@ -11,31 +11,6 @@ from django.db.models import Q
 
 User = get_user_model()
 
-
-class ThumbnailImage(models.Model):
-    image = models.ImageField()
-
-
-class LeftNodeIcon(models.Model):
-    title = models.CharField(max_length=30, unique=True)
-    thumbnail_image = models.ForeignKey(
-        ThumbnailImage, on_delete=models.SET_NULL, null=True
-    )
-
-    def __unicode__(self):
-        return self.title
-
-
-class RightNodeIcon(models.Model):
-    title = models.CharField(max_length=30, unique=True)
-    thumbnail_image = models.ForeignKey(
-        ThumbnailImage, on_delete=models.SET_NULL, null=True
-    )
-
-    def __unicode__(self):
-        return self.title
-
-
 class Outcome(models.Model):
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
@@ -56,12 +31,51 @@ class Node(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    left_node_icon = models.ForeignKey(
-        LeftNodeIcon, on_delete=models.SET_NULL, null=True
+    parent_node = models.ForeignKey("Node", on_delete=models.SET_NULL, null=True)
+    INDIVIDUAL = 0
+    GROUPS = 1
+    WHOLE_CLASS = 2
+    WORK_TYPES = (
+        (INDIVIDUAL, "Individual Work"),
+        (GROUPS, "Work in Groups"),
+        (WHOLE_CLASS, "Whole Class"),
     )
-    right_node_icon = models.ForeignKey(
-        RightNodeIcon, on_delete=models.SET_NULL, null=True
+    work_classification = models.PositiveIntegerField(choices=WORK_TYPES, default=2)
+    GATHER_INFO = 0
+    DISCUSS = 1
+    SOLVE = 2
+    ANALYZE = 3
+    EVAL_PAPERS = 4
+    EVAL_PEERS = 5
+    DEBATE = 6
+    GAME_ROLEPLAY = 7
+    CREATE_DESIGN = 8
+    REVISE = 9
+    READ = 10
+    WRITE = 11
+    PRESENT = 12
+    EXPERIMENT = 13
+    QUIZ_TEST = 14
+    OTHER = 15
+    ACTIVITY_TYPES = (
+        (GATHER_INFO, "Gather Information"),
+        (DISCUSS, "Discuss"),
+        (SOLVE, "Solve"),
+        (ANALYZE, "Analyze"),
+        (EVAL_PAPERS, "Assess/Review Papers"),
+        (EVAL_PEERS, "Evaluate Peers"),
+        (DEBATE, "Debate"),
+        (GAME_ROLEPLAY, "Game/Roleplay"),
+        (CREATE_DESIGN, "Create/Design"),
+        (REVISE, "Revise/Improve"),
+        (READ, "Read"),
+        (WRITE, "Write"),
+        (PRESENT, "Present"),
+        (EXPERIMENT, "Experiment/Inquiry"),
+        (QUIZ_TEST, "Quiz/Test"),
+        (OTHER, "Other"),
     )
+    activity_classification = models.PositiveIntegerField(choices=ACTIVITY_TYPES, default=0)
     OUT_CLASS = 0
     IN_CLASS_INSTRUCTOR = 1
     IN_CLASS_STUDENTS = 2

@@ -55,149 +55,177 @@
   </body>
   {% csrf_token %}
   <script>
-              window.addEventListener("load", function() {
+      window.addEventListener("load", function() {
 
-                const svg = d3.select("svg").append("svg");
+        const svg = d3.select("svg").append("svg");
 
-                const objectJson = {{ activity_json|safe }};
+        const objectJson = {{ activity_json|safe }};
 
+        const nodeStrategySet = objectJson.nodestrategy_set;
 
-                const objectNodeStrategySet = objectJson.nodestrategy_set;
+        const nodeHeight = 80.0;
+        const nodeWidth = 300.0;
+        const nodeSpacingVertial = 30.0;
+        const nodeSpacingHorizontal = 30.0;
 
+        renderStrategy(nodeStrategySet);
 
-                  const scC = d3.scaleOrdinal( d3.schemePastel1 );
+        function renderNodeLinks(svg, nodeMidpointHorizontal){
 
-                  const nodeHeight = 80.0;
-                  const nodeWidth = 300.0;
-                  const nodeSpacingVertial = 30.0;
-                  const nodeSpacingHorizontal = 30.0;
+            svg.selectAll('line').remove();
 
-                  const nodeTotalSpacingVertial = nodeHeight + nodeSpacingVertial;
-                  const nodeTotalSpacingHorizontal = nodeWidth + nodeSpacingHorizontal;
+            let rects = svg.selectAll('.node')['_groups'][0];
 
-                  const nodeMidpointVertial = nodeHeight/2.0;
-                  const nodeMidpointHorizontal = nodeWidth/2.0;
+            sortedRects = [rects.length];
 
-                  const nodes = svg.selectAll('.node').data(objectNodeStrategySet).enter()
-                                    .append("svg").attr("class","node")
-                                    .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification}`)
-                                    .attr("y", (d,i) => `${nodeTotalSpacingVertial*d.rank}`);
-
-                  nodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
-                      .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("fill", (d,i) => scC(i));
-
-                  nodes
-                    .append('text')
-                    .style('font-family', 'Quicksand, sans-serif')
-                    .attr('class', 'node-label')
-                    .attr('x', `${nodeMidpointHorizontal}`)
-                    .attr('y', `${nodeMidpointVertial}`)
-                    .attr('dy', 6)
-                    .style('font-size', 14)
-                    .attr('text-anchor', 'middle')
-                    .style('fill', 'black')
-                    .style('pointer-events', 'none')
-                    .text(d => d.node.title);
-
-                    function reorderByRank(previousRank, newRank){
-                        nodes.each(function(d,i) { if(d.rank == newRank){
-                          d.rank=previousRank;
-                          d3.select(this).attr("y",`${d.rank*nodeTotalSpacingVertial}`);
-                        }});
-                    }
-
-    /*
-
-                    function linkNodes(){
-                        for(let i = 0; i<nodes.length-1; i++) {
-                          nodes.each(function(d,i) { if(d.rank == i){
-                            svg.append()
-                            d3.select(this).attr("y",`${d.rank*80}`);
-                          }});
-                        }
-                    }
-
-                    linkNodes();
-
-      */
-
-                function swapDiv(elem, referenceNode){
-                    referenceNode.parentNode.insertBefore(el, referenceNode.nextSibling);
+            for(let i=0; i<rects.length; i++){
+                for(let j=0; j<rects.length; j++){
+                if(i==rects[j].__data__.rank){
+                    sortedRects[i]=rects[j];
                 }
-
-                function makeDragDrop() {
-                  let widget = undefined;
-                  let color = undefined;
-                  let initRank = undefined;
-                  let currentRank = undefined;
-                  let initClassification = undefined;
-                  let currentClassification = undefined;
-                  let widgetData = undefined;
-
-                  let drags = d3
-                    .drag()
-                    .on("start", function() {
-                      widget = d3.select(this);
-                      color = widget.select("rect").attr("fill");
-                      widget.select("rect").attr("fill", "lime");
-                      widgetData = widget.node().__data__;
-                      initRank = widgetData.rank;
-                      initClassification = widgetData.node.classification
-                    })
-                    .on("drag", function() {
-                      widget.attr("x", d3.event.x-nodeMidpointHorizontal).attr("y", d3.event.y-nodeMidpointVertial);
-                      currentRank = Math.round(widget.attr("y")/nodeTotalSpacingVertial);
-                      currentClassification = Math.round(widget.attr("x")/nodeTotalSpacingHorizontal);
-                      if(currentRank != initRank){
-                          reorderByRank(initRank, currentRank);
-                          widgetData.rank = currentRank;
-                          initRank = currentRank;
-                      }
-                      if(currentClassification != initClassification){
-                          widgetData.node.classification = currentClassification;
-                          initClassification = currentClassification;
-                      }
-                    })
-                    .on("end", function() {
-                      if (widgetData.node.classification < 0) widgetData.node.classification = 0;
-                      if (widgetData.node.classification > 2) widgetData.node.classification = 2;
-                      if (widgetData.rank < 0) widgetData.rank = 0;
-                      if (widgetData.rank > objectNodeStrategySet.length-1) widgetData.rank = objectNodeStrategySet.length-1;
-                      widget.select("rect").attr("fill", color);
-                      widget.attr("y",(d,i)=>`${d.rank*nodeTotalSpacingVertial}`)
-                          .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification}`);
-                      updateJson();
-                      widget = undefined;
-                    });
-
-                  drags(nodes);
-                }
-                $.ajaxSetup({
-                    beforeSend: function(xhr, settings) {
-                        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                            xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
-                        }
-                    }
-                });
-
-                function csrfSafeMethod(method) {
-
-                    return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
-                }
-                function getCsrfToken() {
-                    return document
-                      .getElementsByName("csrfmiddlewaretoken")[0]
-                      .getAttribute("value");
-                  }
-
-                makeDragDrop();
-                function updateJson(){
-                  let posting = $.post("{% url 'update-strategy-json' %}", {json: `${JSON.stringify(objectJson)}`});
-                  posting.done(function(data) {
-                    console.info(data);
-                });
+                else if(rects[j].__data__.rank<0) sortedRects[0]=rects[j];
+                else if(rects[j].__data__.rank>rects.length-1) sortedRects[rects.length-1]=rects[j];
               }
+            }
 
-              });
+
+            for(let i = 0; i<rects.length-1; i++){
+                svg.append("line")
+                    .style("stroke", "black")
+                    .attr("x1", nodeMidpointHorizontal + sortedRects[i].x.animVal.value)
+                    .attr("y1", nodeHeight + sortedRects[i].y.animVal.value)
+                    .attr("x2", nodeMidpointHorizontal + sortedRects[i+1].x.animVal.value)
+                    .attr("y2", sortedRects[i+1].y.animVal.value);
+
+            }
+
+
+        }
+
+
+        function renderStrategy(nodeStrategySet){
+
+
+          const scC = d3.scaleOrdinal( d3.schemePastel1 );
+
+          const nodeTotalSpacingVertial = nodeHeight + nodeSpacingVertial;
+          const nodeTotalSpacingHorizontal = nodeWidth + nodeSpacingHorizontal;
+
+          const nodeMidpointVertial = nodeHeight/2.0;
+          const nodeMidpointHorizontal = nodeWidth/2.0;
+
+          const nodes = svg.selectAll('.node').data(nodeStrategySet).enter()
+                            .append("svg").attr("class","node")
+                            .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification}`)
+                            .attr("y", (d,i) => `${nodeTotalSpacingVertial*d.rank}`);
+
+          nodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
+              .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`)
+              .attr("fill", (d,i) => scC(i)).attr("stroke", "black");
+
+          nodes
+            .append('text')
+            .style('font-family', 'Quicksand, sans-serif')
+            .attr('class', 'node-label')
+            .attr('x', `${nodeMidpointHorizontal}`)
+            .attr('y', `${nodeMidpointVertial}`)
+            .attr('dy', 6)
+            .style('font-size', 14)
+            .attr('text-anchor', 'middle')
+            .style('fill', 'black')
+            .style('pointer-events', 'none')
+            .text(d => d.node.title);
+
+          renderNodeLinks(svg, nodeMidpointHorizontal);
+
+            function reorderByRank(previousRank, newRank){
+                nodes.each(function(d,i) { if(d.rank == newRank){
+                  d.rank=previousRank;
+                  d3.select(this).attr("y",`${d.rank*nodeTotalSpacingVertial}`);
+                }});
+            }
+
+
+        function swapDiv(elem, referenceNode){
+            referenceNode.parentNode.insertBefore(el, referenceNode.nextSibling);
+        }
+
+        function makeDragDrop() {
+          let widget = undefined;
+          let color = undefined;
+          let initRank = undefined;
+          let currentRank = undefined;
+          let initClassification = undefined;
+          let currentClassification = undefined;
+          let widgetData = undefined;
+
+          let drags = d3
+            .drag()
+            .on("start", function() {
+              widget = d3.select(this);
+              color = widget.select("rect").attr("fill");
+              widget.select("rect").attr("fill", "lime");
+              widgetData = widget.node().__data__;
+              initRank = widgetData.rank;
+              initClassification = widgetData.node.classification
+            })
+            .on("drag", function() {
+              widget.attr("x", d3.event.x-nodeMidpointHorizontal).attr("y", d3.event.y-nodeMidpointVertial);
+              currentRank = Math.round(widget.attr("y")/nodeTotalSpacingVertial);
+              currentClassification = Math.round(widget.attr("x")/nodeTotalSpacingHorizontal);
+              if(currentRank != initRank){
+                  reorderByRank(initRank, currentRank);
+                  widgetData.rank = currentRank;
+                  initRank = currentRank;
+              }
+              if(currentClassification != initClassification){
+                  widgetData.node.classification = currentClassification;
+                  initClassification = currentClassification;
+              }
+              renderNodeLinks(svg, nodeMidpointHorizontal);
+            })
+            .on("end", function() {
+              if (widgetData.node.classification < 0) widgetData.node.classification = 0;
+              if (widgetData.node.classification > 2) widgetData.node.classification = 2;
+              if (widgetData.rank < 0) widgetData.rank = 0;
+              if (widgetData.rank > nodeStrategySet.length-1) widgetData.rank = nodeStrategySet.length-1;
+              widget.select("rect").attr("fill", color);
+              widget.attr("y",(d,i)=>`${d.rank*nodeTotalSpacingVertial}`)
+                  .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification}`);
+              updateJson();
+              renderNodeLinks(svg, nodeMidpointHorizontal);
+              widget = undefined;
+            });
+
+          drags(nodes);
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+                }
+            }
+        });
+
+        function csrfSafeMethod(method) {
+
+            return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+        }
+        function getCsrfToken() {
+            return document
+              .getElementsByName("csrfmiddlewaretoken")[0]
+              .getAttribute("value");
+          }
+
+        makeDragDrop();
+        function updateJson(){
+          let posting = $.post("{% url 'update-strategy-json' %}", {json: `${JSON.stringify(objectJson)}`});
+          posting.done(function(data) {
+            console.info(data);
+        });
+      }
+    }
+
+      });
   </script>
 </html>

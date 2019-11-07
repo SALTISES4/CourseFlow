@@ -8,8 +8,6 @@ from .models import (
     Artifact,
     Strategy,
     Node,
-    LeftNodeIcon,
-    RightNodeIcon,
     NodeStrategy,
     StrategyActivity,
     ComponentWeek,
@@ -33,5 +31,3 @@ admin.site.register(StrategyActivity)
 admin.site.register(Strategy)
 admin.site.register(NodeStrategy)
 admin.site.register(Node)
-admin.site.register(LeftNodeIcon)
-admin.site.register(RightNodeIcon)

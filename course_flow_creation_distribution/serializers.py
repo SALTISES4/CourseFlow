@@ -7,8 +7,6 @@ from .models import (
     Artifact,
     Strategy,
     Node,
-    LeftNodeIcon,
-    RightNodeIcon,
     NodeStrategy,
     StrategyActivity,
     ComponentWeek,
@@ -16,7 +14,6 @@ from .models import (
     Component,
     Week,
     Discipline,
-    ThumbnailImage,
     Outcome,
     OutcomeNode,
     OutcomeStrategy,
@@ -34,31 +31,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "username"]
-
-
-
-class ThumbnailImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ThumbnailImage
-        fields = ["image"]
-
-
-class LeftNodeIconSerializer(serializers.ModelSerializer):
-
-    thumbnail_image = ThumbnailImageSerializer()
-
-    class Meta:
-        model = LeftNodeIcon
-        fields = ["title", "thumbnail_image"]
-
-
-class RightNodeIconSerializer(serializers.ModelSerializer):
-
-    thumbnail_image = ThumbnailImageSerializer()
-
-    class Meta:
-        model = RightNodeIcon
-        fields = ["title", "thumbnail_image"]
 
 
 class OutcomeSerializer(serializers.ModelSerializer):
@@ -105,10 +77,6 @@ class NodeSerializer(serializers.ModelSerializer):
 
     author = UserSerializer(allow_null=True)
 
-    left_node_icon = LeftNodeIconSerializer(allow_null=True)
-
-    right_node_icon = RightNodeIconSerializer(allow_null=True)
-
     outcomenode_set = serializers.SerializerMethodField()
 
     class Meta:
@@ -121,8 +89,8 @@ class NodeSerializer(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "author",
-            "left_node_icon",
-            "right_node_icon",
+            "work_classification",
+            "activity_classification",
             "classification",
             "outcomenode_set",
         ]
@@ -135,6 +103,8 @@ class NodeSerializer(serializers.ModelSerializer):
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
         instance.classification = validated_data.get('classification', instance.classification)
+        instance.work_classification = validated_data.get('work_classification', instance.work_classification)
+        instance.activity_classification = validated_data.get('activity_classification', instance.activity_classification)
         for outcomenode_data in self.initial_data.pop('outcomenode_set'):
             outcomenode_serializer = OutcomeNodeSerializer(OutcomeNode.objects.get(id=outcomenode_data['id']), data=outcomenode_data)
             outcomenode_serializer.is_valid()
@@ -426,6 +396,9 @@ class OutcomeArtifactSerializer(serializers.ModelSerializer):
     class Meta:
         model = OutcomeArtifact
         fields = ["artifact", "outcome", "added_on", "rank", "id"]
+
+    def create(self, validated_data):
+        return OutcomeArtifact.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get('rank', instance.title)
