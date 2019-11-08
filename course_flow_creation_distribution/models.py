@@ -32,6 +32,8 @@ class Node(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     parent_node = models.ForeignKey("Node", on_delete=models.SET_NULL, null=True)
+    is_original = models.BooleanField(default=True)
+
     INDIVIDUAL = 0
     GROUPS = 1
     WHOLE_CLASS = 2

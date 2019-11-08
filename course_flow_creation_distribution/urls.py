@@ -38,8 +38,8 @@ def flow_patterns():
         ),
         url(
             r"^activity/update-json",
-            views.update_strategy_json,
-            name="update-strategy-json",
+            views.update_activity_json,
+            name="update-activity-json",
         ),
     ]
 

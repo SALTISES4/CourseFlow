@@ -71,12 +71,12 @@ class CourseDeleteView(DeleteView):
 
 
 class ActivityDetailView(DetailView):
-    model = Strategy
+    model = Activity
     template_name = "course_flow_creation_distribution/activity_detail.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        context["activity_json"] = JSONRenderer().render(StrategySerializer(self.object).data).decode("utf-8")
+        context["activity_json"] = JSONRenderer().render(ActivitySerializer(self.object).data).decode("utf-8")
         return context
 
 
@@ -112,11 +112,11 @@ class ActivityDeleteView(DeleteView):
     model = Activity
     template_name = "course_flow_creation_distribution/activity_delete.html"
 
-def update_strategy_json(request):
+def update_activity_json(request):
     json = request.POST.get("json")
     byte_data = io.BytesIO(json.encode())
     data = JSONParser().parse(byte_data)
-    serializer = StrategySerializer(Strategy.objects.get(id=data['id']), data=data)
+    serializer = ActivitySerializer(Activity.objects.get(id=data['id']), data=data)
     serializer.is_valid()
     serializer.save()
     return JsonResponse({"action": "updated"})
