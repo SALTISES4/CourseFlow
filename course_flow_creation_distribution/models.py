@@ -111,6 +111,8 @@ class Strategy(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     default = models.BooleanField(default=False)
+    parent_strategy = models.ForeignKey("Strategy", on_delete=models.SET_NULL, null=True)
+    is_original = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 

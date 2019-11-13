@@ -90,6 +90,21 @@ class ParentNodeSerializer(serializers.ModelSerializer):
             "classification",
         ]
 
+class ParentStrategySerializer(serializers.ModelSerializer):
+
+    author = UserSerializer(allow_null=True)
+
+    class Meta:
+        model = Strategy
+        fields = [
+            "id",
+            "title",
+            "description",
+            "last_modified",
+            "hash",
+            "author",
+        ]
+
 
 class NodeSerializer(serializers.ModelSerializer):
 
@@ -177,6 +192,8 @@ class StrategySerializer(serializers.ModelSerializer):
 
     outcomestrategy_set = serializers.SerializerMethodField()
 
+    parent_strategy = ParentStrategySerializer(allow_null=True)
+
     class Meta:
         model = Strategy
         fields = [
@@ -190,6 +207,8 @@ class StrategySerializer(serializers.ModelSerializer):
             "author",
             "nodestrategy_set",
             "outcomestrategy_set",
+            "is_original",
+            "parent_strategy",
         ]
 
     def get_nodestrategy_set(self, instance):

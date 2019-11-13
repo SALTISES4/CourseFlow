@@ -1,1 +1,641 @@
-{% for strategy in strategies %} {{ strategy.title }} {% endfor %}
+{% load static i18n %} {% get_current_language as LANGUAGE_CODE %}
+
+<!DOCTYPE html>
+<html lang="{{LANGUAGE_CODE}}">
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="{% block metadescription %}{% endblock %}"
+    />
+    <meta name="theme-color" content="#1976BC" />
+
+    <!-- External resources -->
+    <!-- * Fonts and icons -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Material+Icons|Roboto|Fanwood+Text:400i|Quicksand:300,400|Rubik:200,300,300i,400"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- * Scripts -->
+    <!-- ** Preloads -->
+    <link
+      rel="preload"
+      href="https://cdn.polyfill.io/v2/polyfill.min.js"
+      as="script"
+    />
+    <link rel="preload" href="https://d3js.org/d3.v5.min.js" as="script" />
+    <!-- ** jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- ** Polyfills for non-awesome browsers-->
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <!-- ** d3 -->
+    <script
+      src="https://d3js.org/d3.v5.min.js"
+      defer="true"
+      charset="utf-8"
+    ></script>
+
+    <!-- Internal resources -->
+    <!-- * CSS -->
+    <link
+      rel="stylesheet"
+      href="{% static 'course_flow_creation_distribution/css/base_style.css' %}"
+    />
+    <script src=""></script>
+  </head>
+
+  <body id="site">
+    <div class="topnav">
+      <div class="titlebar">
+        <div class="title">
+          <font size="6"><b>CourseFlow</b></font>
+        </div>
+      </div>
+      <div class="menubar">
+        <div class="topnavimage">
+          <a href="www.saltise.ca"
+            ><img
+              src="{% static 'course_flow_creation_distribution/img/saltise_logo.svg'%}"
+              href="www.saltise.ca"
+          /></a>
+        </div>
+        <div class="topdropwrapper">
+          <button class="topdropbutton">File</button>
+          <div class="topdropdiv">
+            <a id="new">New Project</a>
+            <a id="save"
+              ><div>Save Project</div>
+              <div class="shortcut">Ctrl+S</div></a
+            >
+            <a id="open"
+              ><div>Open Project</div>
+              <div class="shortcut">Ctrl+O</div></a
+            >
+            <a id="export">Export Current Workflow</a>
+            <a id="import">Import a Workflow</a>
+          </div>
+        </div>
+        <div class="topdropwrapper">
+          <button class="topdropbutton">Edit</button>
+          <div class="topdropdiv">
+            <a id="undo"
+              ><div>Undo</div>
+              <div class="shortcut">Ctrl+Z</div></a
+            >
+            <a id="redo"
+              ><div>Redo</div>
+              <div class="shortcut">Ctrl+Shift+Z</div></a
+            >
+            <a id="duplicatewf"><div>Duplicate Current Workflow</div></a>
+          </div>
+        </div>
+        <div class="topdropwrapper">
+          <button class="topdropbutton">View</button>
+          <div class="topdropdiv">
+            <a id="expand">Expand All Nodes</a>
+            <a id="collapse">Collapse All Nodes</a>
+            <a id="print">Printer Friendly Version</a>
+          </div>
+        </div>
+        <div class="topdropwrapper">
+          <button class="topdropbutton">Help</button>
+          <div class="topdropdiv">
+            <a id="genhelp">General Help</a>
+            <a id="layouthelp">About the Layout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-popup" id="strategy-form">
+      <form class="form-container">
+        <h1>Create a Node</h1>
+        <form method="post">
+          {% csrf_token %} {{ node_form.as_ul }}
+          <input type="submit" value="Submit" />
+        </form>
+      </form>
+    </div>
+    <div class="form-popup" id="strategy-form">
+      <form class="form-container">
+        <h1>Create a Strategy</h1>
+        <form method="post">
+          {% csrf_token %} {{ strategy_form.as_ul }}
+          <input type="submit" value="Submit" />
+        </form>
+      </form>
+    </div>
+    <svg width="1450" height="10000">
+      <defs>
+        <filter id="selection-shadow">
+          <feDropShadow dx="1" dy="1" stdDeviation="2" />
+        </filter>
+      </defs>
+    </svg>
+    <footer></footer>
+  </body>
+  {% csrf_token %}
+  <script>
+        window.addEventListener("load", function() {
+
+
+
+        function openForm() {
+            document.getElementById("myForm").style.display = "block";
+        }
+
+        function closeForm() {
+          document.getElementById("myForm").style.display = "none";
+        }
+
+          const svgParent = d3.select("svg").style("margin-top", "100px");
+
+          let activityJson = {{ activity_json|safe }};
+
+          const popularNodeJson = {{ popoular_node_json|safe }};
+
+          const defaultStrategyJson = {{ default_strategy_json|safe }};
+
+          const totalHeight = 900;
+
+          const sideBoardWidth = 450;
+
+          console.log(activityJson, popularNodeJson, defaultStrategyJson);
+
+
+
+          function renderNodeBoard(parent, jsonData){
+
+          const boardNodes = parent.selectAll('.board-node').data(jsonData).enter()
+                            .append("svg").attr("class",'board-node')
+                            .attr("x", "1050")
+                            .attr("y", (d,i) => `${nodeTotalSpacingVertial*i+50}`)
+                            .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`);
+
+          boardNodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
+              .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`)
+              .attr("fill", (d,i) => scC(i)).attr("stroke", "black");
+
+          boardNodes
+            .append('text')
+            .style('font-family', 'Quicksand, sans-serif')
+            .attr('class', 'node-label')
+            .attr('x', `${nodeMidpointHorizontal}`)
+            .attr('y', `${nodeMidpointVertial}`)
+            .attr('dy', 6)
+            .style('font-size', 14)
+            .attr('text-anchor', 'middle')
+            .style('fill', 'black')
+            .style('pointer-events', 'none')
+            .text(d => d.title);
+
+
+            function makeDragDropBoardNode() {
+              let widget = undefined;
+              let color = undefined;
+              let initX = undefined;
+              let initY = undefined;
+
+              let drags = d3
+                .drag()
+                .on("start", function() {
+                  widget = d3.select(this);
+                  initX = +widget.attr("x");
+                  initY = +widget.attr("y");
+                  color = widget.select("rect").attr("fill");
+                  strategies = d3.selectAll(".strategy");
+                  widget.select("rect").attr("filter","url(#selection-shadow)")
+                        .attr('x', 5).attr('y', 4)
+                        .attr("width", `${nodeWidth-10}`).attr("height", `${nodeHeight-8}`);
+                  swapDiv(this);
+                })
+                .on("drag", function() {
+                  widget.attr("x", d3.event.x-nodeMidpointHorizontal).attr("y", d3.event.y-nodeMidpointVertial);
+
+                  let flag = true;
+
+                  strategies.each(function(i,j){
+                      strategy = d3.select(this);
+                      if(flag&&(+strategy.attr("y")+(+strategy.attr("height")))>(+widget.attr("y")+(+widget.attr("height")))
+                          &&(+strategy.attr("x")+(+strategy.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
+                          &&+strategy.attr("y")<+widget.attr("y")&&+strategy.attr("x")<+widget.attr("x")){
+
+                          widget.select("rect").attr("fill", "red");
+                          flag = false;
+                      }
+                  });
+
+                  if(flag) widget.select("rect").attr("fill", color);
+
+
+                })
+                .on("end", function() {
+
+                  strategies.each(function(i,j){
+                      strategy = d3.select(this);
+                      if(+strategy.attr("y")+(+strategy.attr("height"))>(+widget.attr("y")+(+widget.attr("height")))
+                          &&(+strategy.attr("x")+(+strategy.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
+                          &&+strategy.attr("y")<+widget.attr("y")&&+strategy.attr("x")<+widget.attr("x")){
+
+                            addNode(widget.node().__data__.id, strategy.node().__data__.strategy.id);
+
+                      }
+                  });
+
+
+                  widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
+                  .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("filter", "");
+                  widget.attr("x", initX).attr("y", initY);
+
+                  widget = undefined;
+                });
+
+              drags(boardNodes);
+            }
+            makeDragDropBoardNode();
+
+        }
+
+
+        let repositionBoard = function(){
+          let displacement = $(window).scrollTop();
+          d3.selectAll('.board-node').attr("y", (d,i) => `${nodeTotalSpacingVertial*i+50+displacement}`);
+          d3.selectAll('.default-strategy').attr("y", (d,i) => `${nodeTotalSpacingVertial*i+totalHeight/2+displacement}`);
+        }
+
+
+
+
+
+          function renderStrategyBoard(parent, jsonData){
+
+          const defaultStrategies = parent.selectAll('.default-strategy').data(jsonData).enter()
+                            .append("svg").attr("class","default-strategy")
+                            .attr("x", "1050")
+                            .attr("y", (d,i) => `${nodeTotalSpacingVertial*i+totalHeight/2}`);
+
+          defaultStrategies.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
+              .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`)
+              .attr("fill", (d,i) => scC(i)).attr("stroke", "black");
+
+          defaultStrategies
+            .append('text')
+            .style('font-family', 'Quicksand, sans-serif')
+            .attr('class', 'node-label')
+            .attr('x', `${nodeMidpointHorizontal}`)
+            .attr('y', `${nodeMidpointVertial}`)
+            .attr('dy', 6)
+            .style('font-size', 14)
+            .attr('text-anchor', 'middle')
+            .style('fill', 'black')
+            .style('pointer-events', 'none')
+            .text(d => d.node.title);
+
+            function makeDragDropBoardStrategy() {
+              let widget = undefined;
+              let color = undefined;
+              let initX = undefined;
+              let initY = undefined;
+
+              let drags = d3
+                .drag()
+                .on("start", function() {
+                  widget = d3.select(this);
+                  initX = +widget.attr("x");
+                  initY = +widget.attr("y");
+                  color = widget.select("rect").attr("fill");
+                  activity = d3.select(".activity");
+                  widget.select("rect").attr("filter","url(#selection-shadow)")
+                        .attr('x', 5).attr('y', 4)
+                        .attr("width", `${nodeWidth-10}`).attr("height", `${nodeHeight-8}`);
+                  swapDiv(this);
+                })
+                .on("drag", function() {
+                  widget.attr("x", d3.event.x-nodeMidpointHorizontal).attr("y", d3.event.y-nodeMidpointVertial);
+
+
+                      if((+activity.attr("y")+runningActivityHeight)>(+widget.attr("y")+(+widget.attr("height")))
+                          &&(+activity.attr("x")+(+activity.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
+                          &&+activity.attr("y")<+widget.attr("y")&&+activity.attr("x")<+widget.attr("x")){
+
+                          widget.select("rect").attr("fill", "red");
+                          flag = false;
+                      }else{
+                          widget.select("rect").attr("fill", color);
+                        }
+
+                })
+                .on("end", function() {
+
+                      if((+activity.attr("y")+runningActivityHeight)>(+widget.attr("y")+(+widget.attr("height")))
+                          &&(+activity.attr("x")+(+activity.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
+                          &&+activity.attr("y")<+widget.attr("y")&&+activity.attr("x")<+widget.attr("x")){
+
+                            addStrategy(widget.node().__data__.id);
+
+                      }
+
+
+                  widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
+                    .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("filter", "");
+                  widget.attr("x", initX).attr("y", initY);
+
+                  widget = undefined;
+                });
+
+              drags(defaultStrategies);
+            }
+            makeDragDropBoardStrategy();
+
+
+          }
+
+
+
+
+          let strategyActivitySet = activityJson.strategyactivity_set;
+
+          const nodeHeight = 80.0;
+          const nodeWidth = 300.0;
+          const nodeSpacingVertial = 30.0;
+          const nodeSpacingHorizontal = 30.0;
+          const nodeTotalSpacingVertial = nodeHeight + nodeSpacingVertial;
+          const nodeTotalSpacingHorizontal = nodeWidth + nodeSpacingHorizontal;
+
+          const nodeMidpointVertial = nodeHeight/2.0;
+          const nodeMidpointHorizontal = nodeWidth/2.0;
+
+          const scC = d3.scaleOrdinal( d3.schemePastel1 );
+
+          let runningActivityHeight = 0;
+
+          function swapDiv(referenceNode){
+              referenceNode.parentNode.insertBefore(referenceNode, referenceNode.parentNode.lastChild.nextSibling);
+          }
+
+          renderActivity(strategyActivitySet, svgParent);
+
+          renderNodeBoard(svgParent, popularNodeJson);
+          renderStrategyBoard(svgParent, defaultStrategyJson);
+
+          window.addEventListener("scroll", repositionBoard);
+
+          function renderActivity(strategyActivitySet, parent){
+
+              const svgActivity = parent.append("svg").attr("x","0").attr("y","0")
+                                  .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
+                                  .attr("class","activity");
+
+              var runningActivityHeight = 0;
+
+              svgActivity.selectAll('.strategy').remove();
+
+
+
+
+              const strategies = svgActivity.selectAll('.strategy').data(strategyActivitySet).enter()
+                                .append("svg").attr("class","strategy")
+                                .attr("x", "0")
+                                .attr("height", (d,i)=>`${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertial)-nodeSpacingVertial}`)
+                                .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
+                                .each(function(d,i){
+
+                                  d3.select(this).append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
+                                      .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
+                                      .attr("height", `${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertial)-nodeSpacingVertial}`)
+                                      .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
+                                      .attr("fill", scC(i)).attr("stroke", "black");
+                                  renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
+                                  d3.select(this).attr("y", `${runningActivityHeight}`)
+                                  runningActivityHeight += +d3.select(this).attr("height");
+
+                                });
+
+              function makeDragDropStrategy() {
+                let widget = undefined;
+                let color = undefined;
+                let widgetData = undefined;
+                let initYAxis = undefined;
+
+                let drags = d3
+                  .drag()
+                  .on("start", function() {
+                    widget = d3.select(this);
+                    widgetData = widget.node().__data__;
+                    initYAxis = d3.event.y;
+                    swapDiv(this);
+
+                  })
+                  .on("drag", function() {
+                    widget.attr("y", `${d3.event.y}`).attr("x", `${d3.event.x-(+widget.attr("width"))}`);
+                    if(d3.event.y<initYAxis){
+                        strategies.each(function(d,i) { if((d.rank == widgetData.rank-1)&&((+d3.select(this).attr("y")+(+d3.select(this).attr("height"))/2)>=+widget.attr("y"))){
+                          [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
+                          d3.select(this).attr("y",`${+d3.select(this).attr("y")+(+widget.attr("height"))}`);
+                        }});
+                    }
+                    else{
+                      strategies.each(function(d,i) { if((d.rank == widgetData.rank+1)&&((+d3.select(this).attr("y")+(+d3.select(this).attr("height"))/2)<=(+widget.attr("y")+(+widget.attr("height"))))){
+                        [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
+                        d3.select(this).attr("y",`${+d3.select(this).attr("y")-(+widget.attr("height"))}`);
+                      }});
+                    }
+                    initYAxis = d3.event.y;
+                  })
+                  .on("end", function() {
+                    let yRealignPos = 0;
+                    strategies.each(function(d,i) {
+                        if(d3.select(this).node().__data__.rank<widgetData.rank){
+                           yRealignPos += +d3.select(this).attr("height");
+                        }
+                    });
+                    widget.attr("y", `${yRealignPos}`).attr("x", "0");
+                    updateJson();
+                    widget = undefined;
+                  });
+
+                drags(strategies);
+              }
+
+              makeDragDropStrategy();
+
+          }
+
+
+
+
+
+          function renderNodeLinks(svg, nodeMidpointHorizontal){
+
+              svg.selectAll('line').remove();
+
+              let rects = svg.selectAll('.node')['_groups'][0];
+
+              sortedRects = [rects.length];
+
+              for(let i=0; i<rects.length; i++){
+                  for(let j=0; j<rects.length; j++){
+                  if(i==rects[j].__data__.rank){
+                      sortedRects[i]=rects[j];
+                  }
+                  else if(rects[j].__data__.rank<0) sortedRects[0]=rects[j];
+                  else if(rects[j].__data__.rank>rects.length-1) sortedRects[rects.length-1]=rects[j];
+                }
+              }
+
+
+              for(let i=0; i<rects.length-1; i++){
+                  svg.append("line")
+                      .style("stroke", "black")
+                      .attr("x1", nodeMidpointHorizontal + sortedRects[i].x.animVal.value)
+                      .attr("y1", nodeHeight + sortedRects[i].y.animVal.value)
+                      .attr("x2", nodeMidpointHorizontal + sortedRects[i+1].x.animVal.value)
+                      .attr("y2", sortedRects[i+1].y.animVal.value);
+
+
+              }
+
+
+          }
+
+
+          function renderStrategy(nodeStrategySet, svg){
+
+
+            const nodes = svg.selectAll('.node').data(nodeStrategySet).enter()
+                              .append("svg").attr("class","node")
+                              .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification}`)
+                              .attr("y", (d,i) => `${nodeTotalSpacingVertial*d.rank}`);
+
+            nodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
+                .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`)
+                .attr("fill", (d,i) => scC(i)).attr("stroke", "black");
+
+            nodes
+              .append('text')
+              .style('font-family', 'Quicksand, sans-serif')
+              .attr('class', 'node-label')
+              .attr('x', `${nodeMidpointHorizontal}`)
+              .attr('y', `${nodeMidpointVertial}`)
+              .attr('dy', 6)
+              .style('font-size', 14)
+              .attr('text-anchor', 'middle')
+              .style('fill', 'black')
+              .style('pointer-events', 'none')
+              .text(d => d.node.title);
+
+            renderNodeLinks(svg, nodeMidpointHorizontal);
+
+              function reorderByRank(previousRank, newRank){
+                  nodes.each(function(d,i) { if(d.rank == newRank){
+                    d.rank=previousRank;
+                    d3.select(this).attr("y",`${d.rank*nodeTotalSpacingVertial}`);
+                  }});
+              }
+
+          function makeDragDropNode() {
+            let widget = undefined;
+            let color = undefined;
+            let initRank = undefined;
+            let currentRank = undefined;
+            let initClassification = undefined;
+            let currentClassification = undefined;
+            let widgetData = undefined;
+
+            let drags = d3
+              .drag()
+              .on("start", function() {
+                widget = d3.select(this);
+                color = widget.select("rect").attr("fill");
+                widget.select("rect").attr("filter","url(#selection-shadow)")
+                      .attr('x', 5).attr('y', 4)
+                      .attr("width", `${nodeWidth-10}`).attr("height", `${nodeHeight-8}`);
+                widgetData = widget.node().__data__;
+                initRank = widgetData.rank;
+                initClassification = widgetData.node.classification
+                swapDiv(this);
+              })
+              .on("drag", function() {
+                widget.attr("x", d3.event.x-nodeMidpointHorizontal).attr("y", d3.event.y-nodeMidpointVertial);
+                currentRank = Math.round(widget.attr("y")/nodeTotalSpacingVertial);
+                currentClassification = Math.round(widget.attr("x")/nodeTotalSpacingHorizontal);
+                if(currentRank != initRank){
+                    reorderByRank(initRank, currentRank);
+                    widgetData.rank = currentRank;
+                    initRank = currentRank;
+                }
+                if(currentClassification != initClassification){
+                    widgetData.node.classification = currentClassification;
+                    initClassification = currentClassification;
+                }
+                renderNodeLinks(svg, nodeMidpointHorizontal);
+              })
+              .on("end", function() {
+                if (widgetData.node.classification < 0) widgetData.node.classification = 0;
+                if (widgetData.node.classification > 2) widgetData.node.classification = 2;
+                if (widgetData.rank < 0) widgetData.rank = 0;
+                if (widgetData.rank > nodeStrategySet.length-1) widgetData.rank = nodeStrategySet.length-1;
+                widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
+                  .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("filter", "");
+                widget.attr("y",(d,i)=>`${d.rank*nodeTotalSpacingVertial}`)
+                    .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification}`);
+                updateJson();
+                renderNodeLinks(svg, nodeMidpointHorizontal);
+                widget = undefined;
+              });
+
+            drags(nodes);
+          }
+          makeDragDropNode();
+
+      }
+
+      $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                  xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+              }
+          }
+      });
+
+      function csrfSafeMethod(method) {
+
+          return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+      function getCsrfToken() {
+          return document
+            .getElementsByName("csrfmiddlewaretoken")[0]
+            .getAttribute("value");
+        }
+      function updateJson(){
+        let posting = $.post("{% url 'update-activity-json' %}", {json: JSON.stringify(activityJson)});
+        posting.done(function(data) {
+          console.info(data);
+      });
+    }
+
+      function addNode(nodePk, strategyPk){
+        let posting = $.post("{% url 'add-node' %}", {nodePk: nodePk, strategyPk: strategyPk, activityPk: '{{ object.pk|safe }}'});
+        posting.done(function(data) {
+          activityJson = JSON.parse(data);
+          console.log(activityJson);
+          renderActivity(strategyActivitySet, svgParent);
+        });
+      }
+
+      function addStrategy(strategyPk){
+        let posting = $.post("{% url 'add-node' %}", {strategyPk: strategyPk, activityPk: '{{ object.pk|safe }}'});
+        posting.done(function(data) {
+          activityJson = JSON.parse(data);
+          console.log(activityJson);
+          renderActivity(strategyActivitySet, svgParent);
+        });
+      }
+
+        });
+  </script>
+</html>

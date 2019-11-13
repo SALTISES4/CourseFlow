@@ -41,6 +41,16 @@ def flow_patterns():
             views.update_activity_json,
             name="update-activity-json",
         ),
+        url(
+            r"^activity/add-node",
+            views.add_node,
+            name="add-node",
+        ),
+        url(
+            r"^activity/add-strategy",
+            views.add_strategy,
+            name="add-strategy",
+        ),
     ]
 
 
