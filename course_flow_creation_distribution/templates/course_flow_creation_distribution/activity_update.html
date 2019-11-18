@@ -39,6 +39,12 @@
       defer="true"
       charset="utf-8"
     ></script>
+    <!-- ** material design components -->
+    <link
+      href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 
     <!-- Internal resources -->
     <!-- * CSS -->
@@ -46,7 +52,6 @@
       rel="stylesheet"
       href="{% static 'course_flow_creation_distribution/css/base_style.css' %}"
     />
-    <script src=""></script>
   </head>
 
   <body id="site">
@@ -129,20 +134,33 @@
         </form>
       </form>
     </div>
-    <svg width="1450" height="10000">
+    <svg width="2000" height="10000">
       <defs>
         <filter id="selection-shadow">
           <feDropShadow dx="1" dy="1" stdDeviation="2" />
         </filter>
       </defs>
     </svg>
+    <div class="mdc-snackbar">
+      <div class="mdc-snackbar__surface">
+        <div class="mdc-snackbar__label" role="status" aria-live="polite">
+          Can't send photo. Retry in 5 seconds.
+        </div>
+        <div class="mdc-snackbar__actions">
+          <button type="button" class="mdc-button mdc-snackbar__action">
+            Retry
+          </button>
+        </div>
+      </div>
+    </div>
     <footer></footer>
   </body>
   {% csrf_token %}
   <script>
+
+
+
         window.addEventListener("load", function() {
-
-
 
         function openForm() {
             document.getElementById("myForm").style.display = "block";
@@ -172,7 +190,7 @@
 
           const boardNodes = parent.selectAll('.board-node').data(jsonData).enter()
                             .append("svg").attr("class",'board-node')
-                            .attr("x", "1050")
+                            .attr("x", `${nodeTotalSpacingHorizontal*3+50}`)
                             .attr("y", (d,i) => `${nodeTotalSpacingVertial*i+50}`)
                             .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`);
 
@@ -275,7 +293,7 @@
 
           const defaultStrategies = parent.selectAll('.default-strategy').data(jsonData).enter()
                             .append("svg").attr("class","default-strategy")
-                            .attr("x", "1050")
+                            .attr("x", `${nodeTotalSpacingHorizontal*3+50}`)
                             .attr("y", (d,i) => `${nodeTotalSpacingVertial*i+totalHeight/2}`);
 
           defaultStrategies.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
@@ -359,15 +377,20 @@
 
           let strategyActivitySet = activityJson.strategyactivity_set;
 
-          const nodeHeight = 80.0;
-          const nodeWidth = 300.0;
-          const nodeSpacingVertial = 30.0;
+          const nodeHeight = 160.0;
+          const nodeWidth = 450.0;
+          const nodeSpacingVertial = 50.0;
           const nodeSpacingHorizontal = 30.0;
           const nodeTotalSpacingVertial = nodeHeight + nodeSpacingVertial;
           const nodeTotalSpacingHorizontal = nodeWidth + nodeSpacingHorizontal;
 
           const nodeMidpointVertial = nodeHeight/2.0;
           const nodeMidpointHorizontal = nodeWidth/2.0;
+
+          const strategyPadding = 30.0;
+          const strategyInfoHeight = 200.0;
+
+          const strategyWidth = 2*strategyPadding+nodeTotalSpacingHorizontal*3-nodeSpacingHorizontal;
 
           const scC = d3.scaleOrdinal( d3.schemePastel1 );
 
@@ -387,7 +410,7 @@
           function renderActivity(strategyActivitySet, parent){
 
               const svgActivity = parent.append("svg").attr("x","0").attr("y","0")
-                                  .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
+                                  .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal+2*strategyPadding}`)
                                   .attr("class","activity");
 
               var runningActivityHeight = 0;
@@ -400,20 +423,81 @@
               const strategies = svgActivity.selectAll('.strategy').data(strategyActivitySet).enter()
                                 .append("svg").attr("class","strategy")
                                 .attr("x", "0")
-                                .attr("height", (d,i)=>`${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertial)-nodeSpacingVertial}`)
-                                .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
+                                .attr("height", (d,i)=>`${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertial)-nodeSpacingVertial+2*strategyPadding+strategyInfoHeight}`)
+                                .attr("width", `${strategyWidth}`)
                                 .each(function(d,i){
 
                                   d3.select(this).append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
                                       .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
-                                      .attr("height", `${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertial)-nodeSpacingVertial}`)
-                                      .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
-                                      .attr("fill", scC(i)).attr("stroke", "black");
+                                      .attr("height", `${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertial)-nodeSpacingVertial+2*strategyPadding+strategyInfoHeight}`)
+                                      .attr("width", `${strategyWidth}`)
+                                      .attr("fill", scC(i));
                                   renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
                                   d3.select(this).attr("y", `${runningActivityHeight}`)
                                   runningActivityHeight += +d3.select(this).attr("height");
 
                                 });
+
+                    strategies
+                      .append('text')
+                      .style('font-family', 'Roboto')
+                      .attr('class', 'node-title')
+                      .attr('x', "15")
+                      .attr('y', "20")
+                      .attr('dy', 6)
+                      .style('font-size', 18)
+                      .style('fill', "#1976BC")
+                      .style('pointer-events', 'none')
+                      .text(d => d.strategy.title);
+
+                    strategies
+                      .append('text')
+                      .style('font-family', 'Roboto')
+                      .attr('class', 'node-author')
+                      .attr('x', "15")
+                      .attr('y', "40")
+                      .attr('dy', 6)
+                      .style('font-size', 12)
+                      .style('fill', 'white')
+                      .style('pointer-events', 'none')
+                      .text(d=> "created by "+d.strategy.author);
+
+                    strategies
+                      .append('text')
+                      .style('font-family', 'Roboto')
+                      .attr('class', 'node-description')
+                      .attr('x', "15")
+                      .attr('y', "70")
+                      .attr('dy', 6)
+                      .style('font-size', 14)
+                      .style('fill', "#1976BC")
+                      .style('pointer-events', 'none')
+                      .text(d => d.strategy.description);
+
+                  strategies.append("g")
+                    .append('image')
+                    .attr('x', `${strategyWidth-40}`)
+                    .attr('y', `${90}`)
+                    .attr("width", `${31}`)
+                    .attr("height", `${31}`)
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
+
+                  strategies.append("g")
+                    .append('image')
+                    .attr('x', `${strategyWidth-40}`)
+                    .attr('y', `${45}`)
+                    .attr("width", `${31}`)
+                    .attr("height", `${31}`)
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+
+                strategies.append("g")
+                    .append('image')
+                    .attr("class", "action-icon")
+                    .attr('x', `${strategyWidth-30}`)
+                    .attr('y', `${10}`)
+                    .attr("width", `${20}`)
+                    .attr("height", `${20}`)
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option (1).svg' %}");
 
               function makeDragDropStrategy() {
                 let widget = undefined;
@@ -431,7 +515,7 @@
 
                   })
                   .on("drag", function() {
-                    widget.attr("y", `${d3.event.y}`).attr("x", `${d3.event.x-(+widget.attr("width"))}`);
+                    widget.attr("y", `${d3.event.y}`);
                     if(d3.event.y<initYAxis){
                         strategies.each(function(d,i) { if((d.rank == widgetData.rank-1)&&((+d3.select(this).attr("y")+(+d3.select(this).attr("height"))/2)>=+widget.attr("y"))){
                           [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
@@ -453,7 +537,7 @@
                            yRealignPos += +d3.select(this).attr("height");
                         }
                     });
-                    widget.attr("y", `${yRealignPos}`).attr("x", "0");
+                    widget.attr("y", `${yRealignPos}`);
                     updateJson();
                     widget = undefined;
                   });
@@ -466,12 +550,20 @@
           }
 
 
+          function pathToNextSiblingRect(s, i) {
+            path = "M" + (s[i].x.animVal.value+nodeMidpointHorizontal) + "," + (s[i].y.animVal.value+nodeHeight) + "C" + (s[i].x.animVal.value+nodeMidpointHorizontal) + ","
+                    + (s[i].y.animVal.value + nodeHeight + s[i+1].y.animVal.value) / 2 + " " + (s[i+1].x.animVal.value+nodeMidpointHorizontal) + "," +  (s[i].y.animVal.value + nodeHeight + s[i+1].y.animVal.value) / 2
+                    + " " + (s[i+1].x.animVal.value+nodeMidpointHorizontal) + "," + s[i+1].y.animVal.value;
+            return path
+          }
 
 
 
-          function renderNodeLinks(svg, nodeMidpointHorizontal){
 
-              svg.selectAll('line').remove();
+
+          function renderNodeLinks(svg){
+
+              svg.selectAll('path').remove();
 
               let rects = svg.selectAll('.node')['_groups'][0];
 
@@ -487,14 +579,12 @@
                 }
               }
 
-
               for(let i=0; i<rects.length-1; i++){
-                  svg.append("line")
+                  svg.append("path")
                       .style("stroke", "black")
-                      .attr("x1", nodeMidpointHorizontal + sortedRects[i].x.animVal.value)
-                      .attr("y1", nodeHeight + sortedRects[i].y.animVal.value)
-                      .attr("x2", nodeMidpointHorizontal + sortedRects[i+1].x.animVal.value)
-                      .attr("y2", sortedRects[i+1].y.animVal.value);
+                      .style("stroke-width", 3)
+                      .attr('fill', 'none')
+                      .attr("d",  pathToNextSiblingRect(sortedRects, i));
 
 
               }
@@ -508,32 +598,100 @@
 
             const nodes = svg.selectAll('.node').data(nodeStrategySet).enter()
                               .append("svg").attr("class","node")
-                              .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification}`)
-                              .attr("y", (d,i) => `${nodeTotalSpacingVertial*d.rank}`);
+                              .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification+strategyPadding}`)
+                              .attr("y", (d,i) => `${nodeTotalSpacingVertial*d.rank+strategyPadding+strategyInfoHeight}`);
 
-            nodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
-                .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`)
-                .attr("fill", (d,i) => scC(i)).attr("stroke", "black");
+            nodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6").attr("class","node-rect")
+                .attr("fill","#1976BC").attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`);
 
             nodes
               .append('text')
-              .style('font-family', 'Quicksand, sans-serif')
-              .attr('class', 'node-label')
-              .attr('x', `${nodeMidpointHorizontal}`)
-              .attr('y', `${nodeMidpointVertial}`)
+              .style('font-family', 'Roboto')
+              .attr('class', 'node-title')
+              .attr('x', "15")
+              .attr('y', "20")
               .attr('dy', 6)
-              .style('font-size', 14)
-              .attr('text-anchor', 'middle')
-              .style('fill', 'black')
+              .style('font-size', 18)
+              .style('fill', "#54C0DB")
               .style('pointer-events', 'none')
               .text(d => d.node.title);
 
-            renderNodeLinks(svg, nodeMidpointHorizontal);
+              nodes
+                .append('text')
+                .style('font-family', 'Roboto')
+                .attr('class', 'node-author')
+                .attr('x', "15")
+                .attr('y', "40")
+                .attr('dy', 6)
+                .style('font-size', 12)
+                .style('fill', 'black')
+                .style('pointer-events', 'none')
+                .text(d=> "created by "+d.node.author);
+
+                nodes
+                  .append('text')
+                  .style('font-family', 'Roboto')
+                  .attr('class', 'node-description')
+                  .attr('x', "15")
+                  .attr('y', "70")
+                  .attr('dy', 6)
+                  .style('font-size', 14)
+                  .style('fill', "#54C0DB")
+                  .style('pointer-events', 'none')
+                  .text(d => d.node.description);
+
+                nodes.append("g")
+                  .append('image')
+                  .attr('x', `${nodeWidth-40}`)
+                  .attr('y', `${nodeHeight-45}`)
+                  .attr("width", `${31}`)
+                  .attr("height", `${31}`)
+                  .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
+
+                nodes.append("g")
+                  .append('image')
+                  .attr('x', `${nodeWidth-40}`)
+                  .attr('y', `${nodeHeight-90}`)
+                  .attr("width", `${31}`)
+                  .attr("height", `${31}`)
+                  .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+
+
+                nodes
+                  .append('image')
+                  .attr("class", "action-icon")
+                  .attr('x', `${nodeWidth-135}`)
+                  .attr('y', `${10}`)
+                  .attr("width", `${31}`)
+                  .attr("height", `${31}`)
+                  .attr("xlink:href","{% static 'course_flow_creation_distribution/img/multiple-users-silhouette.svg' %}");
+
+                nodes
+                  .append('image')
+                  .attr("class", "action-icon")
+                  .attr('x', `${nodeWidth-95}`)
+                  .attr('y', `${10}`)
+                  .attr("width", `${31}`)
+                  .attr("height", `${31}`)
+                  .attr("xlink:href","{% static 'course_flow_creation_distribution/img/classroom.svg' %}");
+
+                nodes.append("g")
+                  .append('image')
+                  .attr("class", "action-icon")
+                  .attr('x', `${nodeWidth-30}`)
+                  .attr('y', `${10}`)
+                  .attr("width", `${20}`)
+                  .attr("height", `${20}`)
+                  .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option (1).svg' %}");
+
+
+
+            renderNodeLinks(svg);
 
               function reorderByRank(previousRank, newRank){
                   nodes.each(function(d,i) { if(d.rank == newRank){
                     d.rank=previousRank;
-                    d3.select(this).attr("y",`${d.rank*nodeTotalSpacingVertial}`);
+                    d3.select(this).attr("y",`${d.rank*nodeTotalSpacingVertial+strategyPadding+strategyInfoHeight}`);
                   }});
               }
 
@@ -560,9 +718,9 @@
                 swapDiv(this);
               })
               .on("drag", function() {
-                widget.attr("x", d3.event.x-nodeMidpointHorizontal).attr("y", d3.event.y-nodeMidpointVertial);
-                currentRank = Math.round(widget.attr("y")/nodeTotalSpacingVertial);
-                currentClassification = Math.round(widget.attr("x")/nodeTotalSpacingHorizontal);
+                widget.attr("x", d3.event.x-nodeWidth+20).attr("y", d3.event.y-20);
+                currentRank = Math.round((widget.attr("y")-strategyPadding-strategyInfoHeight)/nodeTotalSpacingVertial);
+                currentClassification = Math.round((widget.attr("x")-strategyPadding)/nodeTotalSpacingHorizontal);
                 if(currentRank != initRank){
                     reorderByRank(initRank, currentRank);
                     widgetData.rank = currentRank;
@@ -581,8 +739,8 @@
                 if (widgetData.rank > nodeStrategySet.length-1) widgetData.rank = nodeStrategySet.length-1;
                 widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
                   .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("filter", "");
-                widget.attr("y",(d,i)=>`${d.rank*nodeTotalSpacingVertial}`)
-                    .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification}`);
+                widget.attr("y",(d,i)=>`${d.rank*nodeTotalSpacingVertial+strategyPadding+strategyInfoHeight}`)
+                    .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification+strategyPadding}`);
                 updateJson();
                 renderNodeLinks(svg, nodeMidpointHorizontal);
                 widget = undefined;
