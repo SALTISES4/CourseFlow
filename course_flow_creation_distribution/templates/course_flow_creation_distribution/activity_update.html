@@ -196,20 +196,89 @@
 
           boardNodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
               .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`)
-              .attr("fill", (d,i) => scC(i)).attr("stroke", "black");
+              .attr("fill", scC(2)).style('pointer-events', 'none');
 
-          boardNodes
-            .append('text')
-            .style('font-family', 'Quicksand, sans-serif')
-            .attr('class', 'node-label')
-            .attr('x', `${nodeMidpointHorizontal}`)
-            .attr('y', `${nodeMidpointVertial}`)
-            .attr('dy', 6)
-            .style('font-size', 14)
-            .attr('text-anchor', 'middle')
-            .style('fill', 'black')
-            .style('pointer-events', 'none')
-            .text(d => d.title);
+              boardNodes
+                .append('text')
+                .style('font-family', 'Roboto')
+                .attr('class', 'node-title')
+                .attr('x', "15")
+                .attr('y', "20")
+                .attr('dy', 6)
+                .style('font-size', 18)
+                .style('fill', "#54C0DB")
+                .style('pointer-events', 'none')
+                .text(d => d.title);
+
+                boardNodes
+                  .append('text')
+                  .style('font-family', 'Roboto')
+                  .attr('class', 'node-author')
+                  .attr('x', "15")
+                  .attr('y', "40")
+                  .attr('dy', 6)
+                  .style('font-size', 12)
+                  .style('fill', 'black')
+                  .style('pointer-events', 'none')
+                  .text(d=> "created by "+d.author);
+
+                  boardNodes
+                    .append('text')
+                    .style('font-family', 'Roboto')
+                    .attr('class', 'node-description')
+                    .attr('x', "15")
+                    .attr('y', "70")
+                    .attr('dy', 6)
+                    .style('font-size', 14)
+                    .style('fill', "#54C0DB")
+                    .style('pointer-events', 'none')
+                    .text(d => d.description);
+
+                  boardNodes.append("g")
+                    .attr("class", "action-icon")
+                    .append('image')
+                    .attr('x', `${nodeWidth-40}`)
+                    .attr('y', `${nodeHeight-45}`)
+                    .attr("width", `${31}`)
+                    .attr("height", `${31}`)
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
+
+                  boardNodes.append("g")
+                    .attr("class", "action-icon")
+                    .append('image')
+                    .attr('x', `${nodeWidth-40}`)
+                    .attr('y', `${nodeHeight-90}`)
+                    .attr("width", `${31}`)
+                    .attr("height", `${31}`)
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+
+
+                  boardNodes
+                    .append('image')
+                    .style('pointer-events', 'none')
+                    .attr('x', `${nodeWidth-135}`)
+                    .attr('y', `${10}`)
+                    .attr("width", `${31}`)
+                    .attr("height", `${31}`)
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/multiple-users-silhouette.svg' %}");
+
+                  boardNodes
+                    .append('image')
+                    .style('pointer-events', 'none')
+                    .attr('x', `${nodeWidth-95}`)
+                    .attr('y', `${10}`)
+                    .attr("width", `${31}`)
+                    .attr("height", `${31}`)
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/classroom.svg' %}");
+
+                  const dragDropIcons = boardNodes.append("g")
+                    .attr("class", "drag-icon")
+                    .append('image')
+                    .attr('x', `${nodeWidth-30}`)
+                    .attr('y', `${10}`)
+                    .attr("width", `${20}`)
+                    .attr("height", `${20}`)
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option (1).svg' %}");
 
 
             function makeDragDropBoardNode() {
@@ -222,6 +291,7 @@
                 .drag()
                 .on("start", function() {
                   widget = d3.select(this);
+                  dragDropIcons.style("cursor","grabbing");
                   initX = +widget.attr("x");
                   initY = +widget.attr("y");
                   color = widget.select("rect").attr("fill");
@@ -232,7 +302,7 @@
                   swapDiv(this);
                 })
                 .on("drag", function() {
-                  widget.attr("x", d3.event.x-nodeMidpointHorizontal).attr("y", d3.event.y-nodeMidpointVertial);
+                  widget.attr("x", d3.event.x-nodeWidth+20).attr("y", d3.event.y-20);
 
                   let flag = true;
 
@@ -242,7 +312,7 @@
                           &&(+strategy.attr("x")+(+strategy.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
                           &&+strategy.attr("y")<+widget.attr("y")&&+strategy.attr("x")<+widget.attr("x")){
 
-                          widget.select("rect").attr("fill", "red");
+                          widget.select("rect").attr("fill", "#1976BC");
                           flag = false;
                       }
                   });
@@ -264,10 +334,10 @@
                       }
                   });
 
-
+                  dragDropIcons.style("cursor","grab");
                   widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
                   .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("filter", "");
-                  widget.attr("x", initX).attr("y", initY);
+                  widget.attr("x", initX).attr("y", initY).style("cursor","default");
 
                   widget = undefined;
                 });
@@ -322,7 +392,7 @@
               let drags = d3
                 .drag()
                 .on("start", function() {
-                  widget = d3.select(this);
+                  widget = d3.select(this).style("cursor","move");
                   initX = +widget.attr("x");
                   initY = +widget.attr("y");
                   color = widget.select("rect").attr("fill");
@@ -360,7 +430,7 @@
 
                   widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
                     .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("filter", "");
-                  widget.attr("x", initX).attr("y", initY);
+                  widget.attr("x", initX).attr("y", initY).style("cursor","default");
 
                   widget = undefined;
                 });
@@ -409,15 +479,15 @@
 
           function renderActivity(strategyActivitySet, parent){
 
+              d3.selectAll(".activity").remove();
+
               const svgActivity = parent.append("svg").attr("x","0").attr("y","0")
-                                  .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal+2*strategyPadding}`)
+                                  .attr("width", `${strategyWidth}`)
                                   .attr("class","activity");
 
               var runningActivityHeight = 0;
 
               svgActivity.selectAll('.strategy').remove();
-
-
 
 
               const strategies = svgActivity.selectAll('.strategy').data(strategyActivitySet).enter()
@@ -427,16 +497,22 @@
                                 .attr("width", `${strategyWidth}`)
                                 .each(function(d,i){
 
-                                  d3.select(this).append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
-                                      .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
-                                      .attr("height", `${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertial)-nodeSpacingVertial+2*strategyPadding+strategyInfoHeight}`)
-                                      .attr("width", `${strategyWidth}`)
-                                      .attr("fill", scC(i));
-                                  renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
-                                  d3.select(this).attr("y", `${runningActivityHeight}`)
-                                  runningActivityHeight += +d3.select(this).attr("height");
-
+                                    d3.select(this).append("rect").attr('x', 0).attr('y', 0).attr("rx", "6").style('pointer-events', 'none')
+                                        .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
+                                        .attr("height", `${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertial)-nodeSpacingVertial+2*strategyPadding+strategyInfoHeight}`)
+                                        .attr("width", `${strategyWidth}`)
+                                        .attr("fill", scC(i));
+                                    renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
                                 });
+
+                  for(let i = 0; i<strategyActivitySet.length; i++){
+                    for(let j = 0; j<strategyActivitySet.length; j++){
+                      if(strategies["_groups"][0][j].__data__.rank == i){
+                          d3.select(strategies["_groups"][0][j]).attr("y", `${runningActivityHeight}`);
+                          runningActivityHeight += +d3.select(strategies["_groups"][0][j]).attr("height");
+                      }
+                    }
+                  }
 
                     strategies
                       .append('text')
@@ -475,29 +551,33 @@
                       .text(d => d.strategy.description);
 
                   strategies.append("g")
+                    .attr("class", "action-icon")
                     .append('image')
                     .attr('x', `${strategyWidth-40}`)
                     .attr('y', `${90}`)
                     .attr("width", `${31}`)
                     .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button-blue.svg' %}");
 
                   strategies.append("g")
+                    .attr("class", "action-icon")
                     .append('image')
                     .attr('x', `${strategyWidth-40}`)
                     .attr('y', `${45}`)
                     .attr("width", `${31}`)
                     .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil-blue.svg' %}");
 
-                strategies.append("g")
+                const dragDropIcons =  strategies.append("g")
+                    .attr("class", "drag-icon")
                     .append('image')
-                    .attr("class", "action-icon")
                     .attr('x', `${strategyWidth-30}`)
                     .attr('y', `${10}`)
                     .attr("width", `${20}`)
                     .attr("height", `${20}`)
                     .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option (1).svg' %}");
+
+
 
               function makeDragDropStrategy() {
                 let widget = undefined;
@@ -509,13 +589,18 @@
                   .drag()
                   .on("start", function() {
                     widget = d3.select(this);
+                    d3.selectAll(".strategy").attr("height", strategyInfoHeight).attr("y",(d,i)=>d.rank*strategyInfoHeight).select("rect").attr("height", strategyInfoHeight);
+                    widget.select("rect").attr("filter","url(#selection-shadow)")
+                          .attr('x', 5).attr('y', 4)
+                          .attr("width", +widget.attr("width")-10).attr("height", +widget.attr("height")-8);
                     widgetData = widget.node().__data__;
-                    initYAxis = d3.event.y;
+                    initYAxis = widget.attr("y");
                     swapDiv(this);
-
+                    dragDropIcons.style("cursor","grabbing");
                   })
                   .on("drag", function() {
-                    widget.attr("y", `${d3.event.y}`);
+                    widget.attr("y", `${d3.event.y-15}`);
+                    d3.event.x = strategyWidth-15;
                     if(d3.event.y<initYAxis){
                         strategies.each(function(d,i) { if((d.rank == widgetData.rank-1)&&((+d3.select(this).attr("y")+(+d3.select(this).attr("height"))/2)>=+widget.attr("y"))){
                           [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
@@ -538,7 +623,13 @@
                         }
                     });
                     widget.attr("y", `${yRealignPos}`);
+                    widget.select("rect").attr("filter","")
+                          .attr('x', 0).attr('y', 0)
+                          .attr("width", +widget.attr("width")).attr("height", +widget.attr("height"));
+                    dragDropIcons.style("cursor","grab");
                     updateJson();
+                    console.log(strategyActivitySet);
+                    renderActivity(strategyActivitySet, svgParent);
                     widget = undefined;
                   });
 
@@ -602,7 +693,7 @@
                               .attr("y", (d,i) => `${nodeTotalSpacingVertial*d.rank+strategyPadding+strategyInfoHeight}`);
 
             nodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6").attr("class","node-rect")
-                .attr("fill","#1976BC").attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`);
+                .attr("fill","#1976BC").attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).style('pointer-events', 'none');
 
             nodes
               .append('text')
@@ -641,6 +732,7 @@
                   .text(d => d.node.description);
 
                 nodes.append("g")
+                  .attr("class", "action-icon")
                   .append('image')
                   .attr('x', `${nodeWidth-40}`)
                   .attr('y', `${nodeHeight-45}`)
@@ -649,6 +741,7 @@
                   .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
                 nodes.append("g")
+                  .attr("class", "action-icon")
                   .append('image')
                   .attr('x', `${nodeWidth-40}`)
                   .attr('y', `${nodeHeight-90}`)
@@ -659,7 +752,7 @@
 
                 nodes
                   .append('image')
-                  .attr("class", "action-icon")
+                  .style('pointer-events', 'none')
                   .attr('x', `${nodeWidth-135}`)
                   .attr('y', `${10}`)
                   .attr("width", `${31}`)
@@ -668,21 +761,23 @@
 
                 nodes
                   .append('image')
-                  .attr("class", "action-icon")
+                  .style('pointer-events', 'none')
                   .attr('x', `${nodeWidth-95}`)
                   .attr('y', `${10}`)
                   .attr("width", `${31}`)
                   .attr("height", `${31}`)
                   .attr("xlink:href","{% static 'course_flow_creation_distribution/img/classroom.svg' %}");
 
-                nodes.append("g")
+                const dragDropIcons = nodes.append("g")
+                  .attr("class", "drag-icon")
                   .append('image')
-                  .attr("class", "action-icon")
                   .attr('x', `${nodeWidth-30}`)
                   .attr('y', `${10}`)
                   .attr("width", `${20}`)
                   .attr("height", `${20}`)
                   .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option (1).svg' %}");
+
+
 
 
 
@@ -712,6 +807,7 @@
                 widget.select("rect").attr("filter","url(#selection-shadow)")
                       .attr('x', 5).attr('y', 4)
                       .attr("width", `${nodeWidth-10}`).attr("height", `${nodeHeight-8}`);
+                dragDropIcons.style("cursor","grabbing");
                 widgetData = widget.node().__data__;
                 initRank = widgetData.rank;
                 initClassification = widgetData.node.classification
@@ -741,6 +837,7 @@
                   .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("filter", "");
                 widget.attr("y",(d,i)=>`${d.rank*nodeTotalSpacingVertial+strategyPadding+strategyInfoHeight}`)
                     .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification+strategyPadding}`);
+                dragDropIcons.style("cursor","grab");
                 updateJson();
                 renderNodeLinks(svg, nodeMidpointHorizontal);
                 widget = undefined;

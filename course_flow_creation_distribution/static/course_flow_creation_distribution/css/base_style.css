@@ -7,7 +7,12 @@ body {
 
 
 }
-
+.action-icon{
+  cursor: pointer;
+}
+.drag-icon{
+  cursor: grab;
+}
 .strategy-section{
   height: 100%;
 }
