@@ -141,12 +141,14 @@ def add_node(request):
     return JsonResponse(JSONRenderer().render(ActivitySerializer(activity).data).decode("utf-8"), safe=False)
 
 def duplicate_node(node):
-    new_node = node
-    new_node.pk = None
-    new_node.hash = uuid.uuid4()
-    new_node.is_original = False
-    new_node.parent_node = node
-    new_node.save()
+    new_node = Node.objects.create(title=node.title,
+        description=node.description,
+        is_original=False,
+        parent_node=node,
+        work_classification=node.work_classification,
+        activity_classification=node.activity_classification,
+        classification=node.classification
+    )
     return new_node
 
 def duplicate_strategy(strategy):

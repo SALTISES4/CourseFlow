@@ -134,6 +134,7 @@
         </form>
       </form>
     </div>
+    <div id="app"></div>
     <svg width="2000" height="10000">
       <defs>
         <filter id="selection-shadow">
@@ -153,9 +154,54 @@
         </div>
       </div>
     </div>
+
     <footer></footer>
   </body>
   {% csrf_token %}
+  <script type="module">
+    // Non-build preact app via htm
+
+    import { Component, h, render } from "https://unpkg.com/preact?module";
+    import htm from "https://unpkg.com/htm?module";
+    import Dialog from "https://www.unpkg.com/browse/preact-material-components@1.6.1/Dialog/";
+    import Button from "https://www.unpkg.com/browse/preact-material-components@1.6.1/Button/";
+    import "https://www.unpkg.com/preact-material-components@1.6.1/Dialog/style.css";
+    import "https://www.unpkg.com/preact-material-components@1.6.1/Button/style.css";
+
+    // Initialize htm with Preact
+    const html = htm.bind(h);
+
+    class DialogPage extends Component {
+      render() {
+        return html`
+          <div>
+            <dialog>
+              <Dialog.Header>Question</Dialog.Header>
+              <Dialog.Body>
+                dialog body text
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Dialog.FooterButton cancel="{true}"
+                  >Decline</Dialog.FooterButton
+                >
+                <Dialog.FooterButton accept="{true}"
+                  >Accept</Dialog.FooterButton
+                >
+              </Dialog.Footer>
+            </dialog>
+          </div>
+        `;
+      }
+    }
+
+    render(
+      html`
+        <${DialogPage} />
+      `,
+      document.getElementById("app")
+    );
+  </script>
+
   <script>
 
 
@@ -163,7 +209,7 @@
         window.addEventListener("load", function() {
 
         function openForm() {
-            document.getElementById("myForm").style.display = "block";
+          document.getElementById("myForm").style.display = "block";
         }
 
         function closeForm() {
@@ -196,7 +242,7 @@
 
           boardNodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
               .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`)
-              .attr("fill", scC(2)).style('pointer-events', 'none');
+              .attr("fill", "#979797").style('pointer-events', 'none');
 
               boardNodes
                 .append('text')
@@ -206,7 +252,7 @@
                 .attr('y', "20")
                 .attr('dy', 6)
                 .style('font-size', 18)
-                .style('fill', "#54C0DB")
+                .style('fill', "white")
                 .style('pointer-events', 'none')
                 .text(d => d.title);
 
@@ -218,7 +264,7 @@
                   .attr('y', "40")
                   .attr('dy', 6)
                   .style('font-size', 12)
-                  .style('fill', 'black')
+                  .style('fill', "white")
                   .style('pointer-events', 'none')
                   .text(d=> "created by "+d.author);
 
@@ -230,7 +276,7 @@
                     .attr('y', "70")
                     .attr('dy', 6)
                     .style('font-size', 14)
-                    .style('fill', "#54C0DB")
+                    .style('fill', "white")
                     .style('pointer-events', 'none')
                     .text(d => d.description);
 
@@ -459,6 +505,9 @@
 
           const strategyPadding = 30.0;
           const strategyInfoHeight = 200.0;
+          const strategyVerticalSpacing = 20.0;
+
+          const activityInfoHeight = 200.0;
 
           const strategyWidth = 2*strategyPadding+nodeTotalSpacingHorizontal*3-nodeSpacingHorizontal;
 
@@ -481,11 +530,67 @@
 
               d3.selectAll(".activity").remove();
 
-              const svgActivity = parent.append("svg").attr("x","0").attr("y","0")
+              const svgActivity = parent
+                                  .append("svg").attr("x","0").attr("y","0")
                                   .attr("width", `${strategyWidth}`)
                                   .attr("class","activity");
 
-              var runningActivityHeight = 0;
+              svgActivity
+                .append('text')
+                .style('font-family', 'Roboto')
+                .attr('class', 'node-title')
+                .attr('x', "15")
+                .attr('y', "20")
+                .attr('dy', 6)
+                .style('font-size', 18)
+                .style('fill', "white")
+                .style('pointer-events', 'none')
+                .text(activityJson.title);
+
+              svgActivity
+                .append('text')
+                .style('font-family', 'Roboto')
+                .attr('class', 'node-author')
+                .attr('x', "15")
+                .attr('y', "40")
+                .attr('dy', 6)
+                .style('font-size', 12)
+                .style('fill', 'white')
+                .style('pointer-events', 'none')
+                .text("created by "+activityJson.author);
+
+              svgActivity
+                .append('text')
+                .style('font-family', 'Roboto')
+                .attr('class', 'node-description')
+                .attr('x', "15")
+                .attr('y', "70")
+                .attr('dy', 6)
+                .style('font-size', 14)
+                .style('fill', "white")
+                .style('pointer-events', 'none')
+                .text(activityJson.description);
+
+              svgActivity.append("g")
+                .attr("class", "action-icon")
+                .append('image')
+                .attr('x', `${strategyWidth-40}`)
+                .attr('y', `${60}`)
+                .attr("width", `${31}`)
+                .attr("height", `${31}`)
+                .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
+
+              svgActivity.append("g")
+                .attr("class", "action-icon")
+                .append('image')
+                .attr('x', `${strategyWidth-40}`)
+                .attr('y', `${15}`)
+                .attr("width", `${31}`)
+                .attr("height", `${31}`)
+                .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+
+
+              var runningActivityHeight = activityInfoHeight;
 
               svgActivity.selectAll('.strategy').remove();
 
@@ -501,7 +606,7 @@
                                         .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
                                         .attr("height", `${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertial)-nodeSpacingVertial+2*strategyPadding+strategyInfoHeight}`)
                                         .attr("width", `${strategyWidth}`)
-                                        .attr("fill", scC(i));
+                                        .attr("fill", "#EDAA1E");
                                     renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
                                 });
 
@@ -509,7 +614,7 @@
                     for(let j = 0; j<strategyActivitySet.length; j++){
                       if(strategies["_groups"][0][j].__data__.rank == i){
                           d3.select(strategies["_groups"][0][j]).attr("y", `${runningActivityHeight}`);
-                          runningActivityHeight += +d3.select(strategies["_groups"][0][j]).attr("height");
+                          runningActivityHeight += +d3.select(strategies["_groups"][0][j]).attr("height")+strategyVerticalSpacing;
                       }
                     }
                   }
@@ -534,7 +639,7 @@
                       .attr('y', "40")
                       .attr('dy', 6)
                       .style('font-size', 12)
-                      .style('fill', 'white')
+                      .style('fill', '#1976BC')
                       .style('pointer-events', 'none')
                       .text(d=> "created by "+d.strategy.author);
 
@@ -575,7 +680,7 @@
                     .attr('y', `${10}`)
                     .attr("width", `${20}`)
                     .attr("height", `${20}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option (1).svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option-blue.svg' %}");
 
 
 
@@ -589,7 +694,7 @@
                   .drag()
                   .on("start", function() {
                     widget = d3.select(this);
-                    d3.selectAll(".strategy").attr("height", strategyInfoHeight).attr("y",(d,i)=>d.rank*strategyInfoHeight).select("rect").attr("height", strategyInfoHeight);
+                    d3.selectAll(".strategy").attr("height", strategyInfoHeight).attr("y",(d,i)=>d.rank*(strategyInfoHeight+strategyVerticalSpacing)+activityInfoHeight).select("rect").attr("height", strategyInfoHeight);
                     widget.select("rect").attr("filter","url(#selection-shadow)")
                           .attr('x', 5).attr('y', 4)
                           .attr("width", +widget.attr("width")-10).attr("height", +widget.attr("height")-8);
@@ -703,7 +808,7 @@
               .attr('y', "20")
               .attr('dy', 6)
               .style('font-size', 18)
-              .style('fill', "#54C0DB")
+              .style('fill', "white")
               .style('pointer-events', 'none')
               .text(d => d.node.title);
 
@@ -715,7 +820,7 @@
                 .attr('y', "40")
                 .attr('dy', 6)
                 .style('font-size', 12)
-                .style('fill', 'black')
+                .style('fill', 'white')
                 .style('pointer-events', 'none')
                 .text(d=> "created by "+d.node.author);
 
@@ -727,7 +832,7 @@
                   .attr('y', "70")
                   .attr('dy', 6)
                   .style('font-size', 14)
-                  .style('fill', "#54C0DB")
+                  .style('fill', "white")
                   .style('pointer-events', 'none')
                   .text(d => d.node.description);
 
