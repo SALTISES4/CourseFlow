@@ -477,28 +477,39 @@ class ComponentSerializer(serializers.ModelSerializer):
 
     content_object = serializers.SerializerMethodField()
 
+    content_type = serializers.SerializerMethodField()
+
     class Meta:
         model = Component
-        fields = ["content_object"]
+        fields = ["content_object", "content_type", "id"]
 
     def get_content_object(self, instance):
-        if type(instace.content_object) == Activity:
-            return ActivitySerializer(instace.content_object)
-        elif type(instace.content_object) == Preparation:
-            return PreparationSerializer(instace.content_object)
-        elif type(instace.content_object) == Assesment:
-            return AssesmentSerializer(instace.content_object)
+        if type(instance.content_object) == Activity:
+            return ActivitySerializer(instance.content_object).data
+        elif type(instance.content_object) == Preparation:
+            return PreparationSerializer(instance.content_object).data
+        elif type(instance.content_object) == Assesment:
+            return AssesmentSerializer(instance.content_object).data
         else:
-            return ArtifactSerializer(instace.content_object)
+            return ArtifactSerializer(instance.content_object).data
 
+    def get_content_type(self, instance):
+        if type(instance.content_object) == Activity:
+            return 0
+        elif type(instance.content_object) == Preparation:
+            return 1
+        elif type(instance.content_object) == Assesment:
+            return 2
+        else:
+            return 3
 
     def update(self, instance, validated_data):
         content_object_data = self.initial_data.pop('content_object')
-        if type(instace.content_object) == Activity:
+        if type(instance.content_object) == Activity:
             content_object_serializer = ActivitySerializer(Activity.objects.get(id=content_object_data['id']), data=content_object_data)
-        elif type(instace.content_object) == Preparation:
+        elif type(instance.content_object) == Preparation:
             content_object_serializer = PreparationSerializer(Preparation.objects.get(id=content_object_data['id']), data=content_object_data)
-        elif type(instace.content_object) == Assesment:
+        elif type(instance.content_object) == Assesment:
             content_object_serializer = AssesmentSerializer(Assesment.objects.get(id=content_object_data['id']), data=content_object_data)
         else:
             content_object_serializer = ArtifactSerializer(Artifact.objects.get(id=content_object_data['id']), data=content_object_data)
@@ -575,9 +586,8 @@ class WeekSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get('title', instance.title)
-        instance.description = validated_data.get('description', instance.description)
         for componentweek_data in self.initial_data.pop('componentweek_set'):
-            componentweek_serializer = ComponentWeekSerializer(ComponentWeek.objects.get(id=componentweek_data['id']), data=component_data)
+            componentweek_serializer = ComponentWeekSerializer(ComponentWeek.objects.get(id=componentweek_data['id']), data=componentweek_data)
             componentweek_serializer.is_valid()
             componentweek_serializer.save()
         for outcomeweek_data in self.initial_data.pop('outcomeweek_set'):
@@ -606,7 +616,7 @@ class WeekCourseSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get('rank', instance.rank)
-        week_data = self.initail_data.pop('week')
+        week_data = self.initial_data.pop('week')
         week_serializer = WeekSerializer(Week.objects.get(id=week_data['id']), week_data)
         week_serializer.is_valid()
         week_serializer.save()
@@ -638,7 +648,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     author = UserSerializer(allow_null=True)
 
-    discipline = DisciplineSerializer()
+    discipline = DisciplineSerializer(allow_null=True)
 
     outcomecourse_set = serializers.SerializerMethodField()
 
@@ -654,6 +664,7 @@ class CourseSerializer(serializers.ModelSerializer):
             "hash",
             "weekcourse_set",
             "outcomecourse_set",
+            "discipline",
         ]
 
     def get_weekcourse_set(self, instance):

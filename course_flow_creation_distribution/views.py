@@ -50,30 +50,19 @@ class CourseDetailView(DetailView):
 
 class CourseUpdateView(UpdateView):
     model = Course
-    template_name = "course_flow_creation_distribution/course_update.html"
     fields = ["title", "description", "author"]
+    template_name = "course_flow_creation_distribution/course_update.html"
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context["week_course_links"] = WeekCourse.objects.filter(
-            course=self.get_object()
-        ).order_by("-rank")
-        context["component_week_links"] = ComponentWeek.objects.filter(
-            week__in=self.get_object().weeks.all()
-        ).order_by("-rank")
-        context["preparations"] = Preparation.objects.all()
-        context["activities"] = Activity.objects.all()
-        context["assesments"] = Assesment.objects.all()
-        context["artifacts"] = Artifact.objects.all()
+        context["course_json"] = JSONRenderer().render(CourseSerializer(self.object).data).decode("utf-8")
+        # context["owned_components"] = Component.objects.all()
+        # context["owned_component_json"] = JSONRenderer().render(ComponentSerializer(context["owned_components"], many=True).data).decode("utf-8")
         return context
 
     def get_success_url(self):
         return reverse("course-detail", kwargs={"pk": self.object.pk})
 
-
-class CourseDeleteView(DeleteView):
-    model = Course
-    template_name = "course_flow_creation_distribution/course_delete.html"
 
 class NodeForm(ModelForm):
         class Meta:
@@ -116,14 +105,19 @@ class ActivityUpdateView(UpdateView):
         return reverse("activity-detail", kwargs={"pk": self.object.pk})
 
 
-class ActivityDeleteView(DeleteView):
-    model = Activity
-    template_name = "course_flow_creation_distribution/activity_delete.html"
 
 def update_activity_json(request):
     data = json.loads(request.POST.get("json"))
     serializer = ActivitySerializer(Activity.objects.get(id=data['id']), data=data)
     serializer.is_valid()
+    serializer.save()
+    return JsonResponse({"action": "updated"})
+
+def update_course_json(request):
+    data = json.loads(request.POST.get("json"))
+    serializer = CourseSerializer(Course.objects.get(id=data['id']), data=data)
+    serializer.is_valid()
+    print(serializer.errors)
     serializer.save()
     return JsonResponse({"action": "updated"})
 

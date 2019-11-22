@@ -17,11 +17,6 @@ def flow_patterns():
             name="course-update",
         ),
         url(
-            r"^course/(?P<pk>[0-9]+)/delete/$",
-            views.CourseDeleteView.as_view(),
-            name="course-delete",
-        ),
-        url(
             r"^activity/(?P<pk>[0-9]+)/$",
             views.ActivityDetailView.as_view(),
             name="activity-detail",
@@ -32,14 +27,14 @@ def flow_patterns():
             name="activity-update",
         ),
         url(
-            r"^activity/(?P<pk>[0-9]+)/delete/$",
-            views.ActivityDeleteView.as_view(),
-            name="activity-delete",
-        ),
-        url(
             r"^activity/update-json",
             views.update_activity_json,
             name="update-activity-json",
+        ),
+        url(
+            r"^course/update-json",
+            views.update_course_json,
+            name="update-course-json",
         ),
         url(
             r"^activity/add-node",
