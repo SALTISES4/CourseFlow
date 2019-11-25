@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .models import (
+    Program,
+    ComponentProgram,
     Course,
     Preparation,
     Activity,
@@ -23,6 +25,7 @@ from .models import (
     OutcomeArtifact,
     OutcomeWeek,
     OutcomeCourse,
+    OutcomeProgram,
     User,
 )
 
@@ -481,7 +484,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
         return instance
 
 
-class ComponentSerializer(serializers.ModelSerializer):
+class WeekLevelComponentSerializer(serializers.ModelSerializer):
 
     content_object = serializers.SerializerMethodField()
 
@@ -529,7 +532,7 @@ class ComponentSerializer(serializers.ModelSerializer):
 
 class ComponentWeekSerializer(serializers.ModelSerializer):
 
-    component = ComponentSerializer()
+    component = WeekLevelComponentSerializer()
 
     class Meta:
         model = ComponentWeek
@@ -538,7 +541,7 @@ class ComponentWeekSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.rank = validated_data.get('rank', instance.rank)
         component_data = self.initial_data.pop('component')
-        component_serializer = ComponentSerializer(Component.objects.get(id=component_data['id']), component_data)
+        component_serializer = WeekLevelComponentSerializer(Component.objects.get(id=component_data['id']), component_data)
         component_serializer.is_valid()
         component_serializer.save()
         instance.save()
@@ -695,5 +698,122 @@ class CourseSerializer(serializers.ModelSerializer):
             outcomecourse_serializer = OutcomeCourseSerializer(OutcomeCourse.objects.get(id=outcomecourse_data['id']), data=outcomecourse_data)
             outcomecourse_serializer.is_valid()
             outcomecourse_serializer.save()
+        instance.save()
+        return instance
+
+class CourseLevelComponentSerializer(serializers.ModelSerializer):
+
+    content_object = serializers.SerializerMethodField()
+
+    content_type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Component
+        fields = ["content_object", "content_type", "id"]
+
+    def get_content_object(self, instance):
+        if type(instance.content_object) == Course:
+            return CourseSerializer(instance.content_object).data
+        else:
+            return AssesmentSerializer(instance.content_object).data
+
+
+    def get_content_type(self, instance):
+        if type(instance.content_object) == Course:
+            return 0
+        else:
+            return 1
+
+    def update(self, instance, validated_data):
+        content_object_data = self.initial_data.pop('content_object')
+        if type(instance.content_object) == Course:
+            content_object_serializer = CourseSerializer(Course.objects.get(id=content_object_data['id']), data=content_object_data)
+        else:
+            content_object_serializer = AssesmentSerializer(Assesment.objects.get(id=content_object_data['id']), data=content_object_data)
+        content_object_serializer.is_valid()
+        content_object_serializer.save()
+        instance.save()
+        return instance
+
+
+class ComponentProgramSerializer(serializers.ModelSerializer):
+
+    component = CourseLevelComponentSerializer()
+
+    class Meta:
+        model = ComponentWeek
+        fields = ["course", "component", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get('rank', instance.rank)
+        component_data = self.initial_data.pop('component')
+        component_serializer = CourseLevelComponentSerializer(Component.objects.get(id=component_data['id']), component_data)
+        component_serializer.is_valid()
+        component_serializer.save()
+        instance.save()
+        return instance
+
+
+
+class OutcomeProgramSerializer(serializers.ModelSerializer):
+
+    outcome = OutcomeSerializer()
+
+    class Meta:
+        model = OutcomeProgram
+        fields = ["course", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get('rank', instance.title)
+        outcome_data = self.initial_data.pop('outcome')
+        outcome_serializer = OutcomeSerializer(Outcome.objects.get(id=outcome_data['id']), outcome_data)
+        outcome_serializer.is_valid()
+        outcome_serializer.save()
+        instance.save()
+        return instance
+
+
+class ProgramSerializer(serializers.ModelSerializer):
+
+    componentprogram_set = serializers.SerializerMethodField()
+
+    author = UserSerializer(allow_null=True)
+
+    outcomeprogram_set = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Course
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "created_on",
+            "last_modified",
+            "hash",
+            "weekcourse_set",
+            "outcomecourse_set",
+        ]
+
+    def get_componentprogram_set(self, instance):
+        links = instance.componentprogram_set.all().order_by("rank")
+        return ComponentProgramSerializer(links, many=True).data
+
+    def get_outcomeprogram_set(self, instance):
+        links = instance.outcomeprogram_set.all().order_by("rank")
+        return OutcomeProgramSerializer(links, many=True).data
+
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+        for componentprogram_data in self.initial_data.pop('componentprogram_set'):
+            componentprogram_serializer = ComponentProgramSerializer(ComponentProgram.objects.get(id=componentprogram_data['id']), data=componentprogram_data)
+            componentprogram_serializer.is_valid()
+            componentprogram_serializer.save()
+        for outcomeprogram_data in self.initial_data.pop('outcomeprogram_set'):
+            outcomeprogram_serializer = OutcomeProgramSerializer(OutcomeProgram.objects.get(id=outcomeprogram_data['id']), data=outcomeprogram_data)
+            outcomeprogram_serializer.is_valid()
+            outcomeprogram_serializer.save()
         instance.save()
         return instance

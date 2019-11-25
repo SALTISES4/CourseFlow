@@ -338,3 +338,31 @@ class WeekCourse(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+
+class Program(models.Model):
+    title = models.CharField(max_length=30)
+    description = models.TextField(max_length=400)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    components = models.ManyToManyField(Component, through="ComponentProgram", blank=True)
+
+    outcomes = models.ManyToManyField(Outcome, through="OutcomeProgram", blank=True)
+
+    def __unicode__(self):
+        return self.title
+
+class ComponentProgram(models.Model):
+    component = models.ForeignKey(Component, on_delete=models.CASCADE)
+    program = models.ForeignKey(Program, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+class OutcomeProgram(models.Model):
+    program = models.ForeignKey(Program, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)

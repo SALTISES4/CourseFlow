@@ -18,7 +18,7 @@ from .serializers import (
     CourseSerializer,
     StrategySerializer,
     NodeSerializer,
-    ComponentSerializer,
+    WeekLevelComponentSerializer,
 )
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
@@ -60,7 +60,7 @@ class CourseUpdateView(UpdateView):
         context = super(UpdateView, self).get_context_data(**kwargs)
         context["course_json"] = JSONRenderer().render(CourseSerializer(self.object).data).decode("utf-8")
         context["owned_components"] = Component.objects.all()
-        context["owned_component_json"] = JSONRenderer().render(ComponentSerializer(context["owned_components"], many=True).data).decode("utf-8")
+        context["owned_component_json"] = JSONRenderer().render(WeekLevelComponentSerializer(context["owned_components"], many=True).data).decode("utf-8")
         return context
 
     def get_success_url(self):
