@@ -19,6 +19,8 @@ from .serializers import (
     StrategySerializer,
     NodeSerializer,
     WeekLevelComponentSerializer,
+    ProgramSerializer,
+    ProgramLevelComponentSerializer,
 )
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
@@ -32,6 +34,21 @@ from django.db.models import Count
 import uuid
 import json
 
+
+class ProgramUpdateView(UpdateView):
+    model = Program
+    fields = ["title", "description", "author"]
+    template_name = "course_flow_creation_distribution/program_update.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(UpdateView, self).get_context_data(**kwargs)
+        context["program_json"] = JSONRenderer().render(ProgramSerializer(self.object).data).decode("utf-8")
+        context["owned_components"] = Component.objects.filter(content_type=Assesment)
+        context["owned_component_json"] = JSONRenderer().render(ProgramLevelComponentSerializer(context["owned_components"], many=True).data).decode("utf-8")
+        return context
+
+    def get_success_url(self):
+        return reverse("course-detail", kwargs={"pk": self.object.pk})
 
 
 class CourseDetailView(DetailView):
