@@ -289,6 +289,8 @@ class ActivitySerializer(serializers.ModelSerializer):
             "hash",
             "strategyactivity_set",
             "outcomeactivity_set",
+            "is_original",
+            "parent_activity",
         ]
 
     def get_strategyactivity_set(self, instance):
@@ -349,6 +351,8 @@ class PreparationSerializer(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "outcomepreparation_set",
+            "is_original",
+            "parent_preparation",
         ]
 
     def get_outcomepreparation_set(self, instance):
@@ -401,7 +405,9 @@ class AssesmentSerializer(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "outcomeassesment_set",
-            ]
+            "is_original",
+            "parent_assesment",
+        ]
 
     def get_outcomeassesment_set(self, instance):
         links = instance.outcomeassesment_set.all().order_by("rank")
@@ -455,6 +461,8 @@ class ArtifactSerializer(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "outcomeartifact_set",
+            "is_original",
+            "parent_artifact",
         ]
 
     def get_outcomeartifact_set(self, instance):

@@ -10,12 +10,14 @@ from .models import (
     StrategyActivity,
     ComponentWeek,
     WeekCourse,
+    Component,
 )
 from .serializers import (
     ActivitySerializer,
     CourseSerializer,
     StrategySerializer,
     NodeSerializer,
+    ComponentSerializer,
 )
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
@@ -56,8 +58,8 @@ class CourseUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         context["course_json"] = JSONRenderer().render(CourseSerializer(self.object).data).decode("utf-8")
-        # context["owned_components"] = Component.objects.all()
-        # context["owned_component_json"] = JSONRenderer().render(ComponentSerializer(context["owned_components"], many=True).data).decode("utf-8")
+        context["owned_components"] = Component.objects.all()
+        context["owned_component_json"] = JSONRenderer().render(ComponentSerializer(context["owned_components"], many=True).data).decode("utf-8")
         return context
 
     def get_success_url(self):
@@ -153,7 +155,7 @@ def duplicate_strategy(strategy):
             node=duplicate_node(node),
             rank=strategy.nodestrategy_set.order_by("-rank").first().rank + 1
         )
-
+    return new_strategy
 
 def add_strategy(request):
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
@@ -166,3 +168,32 @@ def add_strategy(request):
     )
 
     return JsonResponse(JSONRenderer().render(ActivitySerializer(activity).data).decode("utf-8"), safe=False)
+
+def duplicate_component(component):
+    if type(component.content_object) == Activity:
+        new_component = Component.objects.create(content_object=Activity.objects.create(title=component.content_object.title, description=component.content_object.description, is_original=False, parent_activity=component.content_object))
+        for strategy in component.content_object.strategies:
+            NodeStrategy.objects.create(
+                activity=new_component.content_object,
+                strategy=duplicate_strategy(strategy),
+                rank=new_component.content_object.strategyactivity_set.order_by("-rank").first().rank + 1
+            )
+    elif type(component.content_object) == Preparation:
+        new_component = Component.objects.create(content_object=Preparation.objects.create(title=component.content_object.title, description=component.content_object.description, is_original=False, parent_preparation=component.content_object))
+    elif type(component.content_object) == Assesment:
+        new_component = Component.objects.create(content_object=Assesment.objects.create(title=component.content_object.title, description=component.content_object.description, is_original=False, parent_assesment=component.content_object))
+    else:
+        new_component = Component.objects.create(content_object=Artifact.objects.create(title=component.content_object.title, description=component.content_object.description, is_original=False, parent_artifact=component.content_object))
+    return new_component
+
+def add_component(request):
+    week = Week.objects.get(pk=request.POST.get("weekPk"))
+    component = Component.objects.get(pk=request.POST.get("componentPk"))
+
+    ComponentWeek.objects.create(
+        week=week,
+        component=duplicate_component(component),
+        rank=week.componentweek_set.order_by("-rank").first().rank + 1
+    )
+
+    return JsonResponse(JSONRenderer().render(CourseSerializer(course).data).decode("utf-8"), safe=False)

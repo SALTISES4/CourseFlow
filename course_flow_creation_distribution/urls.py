@@ -46,6 +46,11 @@ def flow_patterns():
             views.add_strategy,
             name="add-strategy",
         ),
+        url(
+            r"^course/add-component",
+            views.add_component,
+            name="add-component",
+        ),
     ]
 
 

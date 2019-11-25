@@ -146,6 +146,9 @@ class Activity(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    parent_activity = models.ForeignKey("Activity", on_delete=models.SET_NULL, null=True)
+    is_original = models.BooleanField(default=True)
+
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     strategies = models.ManyToManyField(
@@ -179,6 +182,9 @@ class Preparation(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    parent_preparation = models.ForeignKey("Preparation", on_delete=models.SET_NULL, null=True)
+    is_original = models.BooleanField(default=True)
+
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomePreparation", blank=True)
@@ -201,6 +207,9 @@ class Artifact(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    parent_artifact = models.ForeignKey("Artifact", on_delete=models.SET_NULL, null=True)
+    is_original = models.BooleanField(default=True)
+
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomeArtifact", blank=True)
@@ -221,6 +230,9 @@ class Assesment(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+
+    parent_assesment = models.ForeignKey("Assesment", on_delete=models.SET_NULL, null=True)
+    is_original = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 

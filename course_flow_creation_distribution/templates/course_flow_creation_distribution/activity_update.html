@@ -389,7 +389,7 @@
 
 
 
-              function renderStrategyBoard(parent, jsonData){
+      function renderStrategyBoard(parent, jsonData){
 
               const defaultStrategies = parent.selectAll('.default-strategy').data(jsonData).enter()
                                 .append("svg").attr("class","default-strategy")
@@ -496,8 +496,6 @@
               const strategyWidth = 2*strategyPadding+nodeTotalSpacingHorizontal*3-nodeSpacingHorizontal;
 
               const scC = d3.scaleOrdinal( d3.schemePastel1 );
-
-              let runningActivityHeight = 0;
 
               function swapDiv(referenceNode){
                   referenceNode.parentNode.insertBefore(referenceNode, referenceNode.parentNode.lastChild.nextSibling);
@@ -672,7 +670,7 @@
                         .attr('y', `${10}`)
                         .attr("width", `${20}`)
                         .attr("height", `${20}`)
-                        .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option-blue.svg' %}");
+                        .attr("xlink:href", "{% static 'course_flow_creation_distribution/img/reorder-option-blue.svg' %}");
 
 
 
