@@ -11,6 +11,7 @@ from .models import (
     ComponentWeek,
     WeekCourse,
     Component,
+    Week,
 )
 from .serializers import (
     ActivitySerializer,
@@ -153,7 +154,7 @@ def duplicate_strategy(strategy):
         NodeStrategy.objects.create(
             strategy=new_strategy,
             node=duplicate_node(node),
-            rank=strategy.nodestrategy_set.order_by("-rank").first().rank + 1
+            rank=NodeStrategy.objects.get(node=node, strategy=strategy).rank,
         )
     return new_strategy
 
@@ -161,10 +162,10 @@ def add_strategy(request):
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
     activity = Activity.objects.get(pk=request.POST.get("activityPk"))
 
-    NodeStrategy.objects.create(
+    StrategyActivity.objects.create(
         activity=activity,
         strategy=duplicate_strategy(strategy),
-        rank=activity.strategyactivity_set.order_by("-rank").first().rank + 1
+        rank=(activity.strategyactivity_set.order_by("-rank").first().rank if activity.strategyactivity_set else -1) + 1
     )
 
     return JsonResponse(JSONRenderer().render(ActivitySerializer(activity).data).decode("utf-8"), safe=False)
@@ -172,11 +173,11 @@ def add_strategy(request):
 def duplicate_component(component):
     if type(component.content_object) == Activity:
         new_component = Component.objects.create(content_object=Activity.objects.create(title=component.content_object.title, description=component.content_object.description, is_original=False, parent_activity=component.content_object))
-        for strategy in component.content_object.strategies:
-            NodeStrategy.objects.create(
+        for strategy in component.content_object.strategies.all():
+            StrategyActivity.objects.create(
                 activity=new_component.content_object,
                 strategy=duplicate_strategy(strategy),
-                rank=new_component.content_object.strategyactivity_set.order_by("-rank").first().rank + 1
+                rank=StrategyActivity.objects.get(strategy=strategy, activity=component.content_object).rank,
             )
     elif type(component.content_object) == Preparation:
         new_component = Component.objects.create(content_object=Preparation.objects.create(title=component.content_object.title, description=component.content_object.description, is_original=False, parent_preparation=component.content_object))
@@ -189,11 +190,12 @@ def duplicate_component(component):
 def add_component(request):
     week = Week.objects.get(pk=request.POST.get("weekPk"))
     component = Component.objects.get(pk=request.POST.get("componentPk"))
+    course = Course.objects.get(pk=request.POST.get("coursePk"))
 
     ComponentWeek.objects.create(
         week=week,
         component=duplicate_component(component),
-        rank=week.componentweek_set.order_by("-rank").first().rank + 1
+        rank=(week.componentweek_set.order_by("-rank").first().rank if week.componentweek_set else -1) + 1,
     )
 
     return JsonResponse(JSONRenderer().render(CourseSerializer(course).data).decode("utf-8"), safe=False)

@@ -589,6 +589,7 @@
 
             function renderWeek(componentWeekSet, svg){
 
+              svg.selectAll('.component').remove();
 
               const components = svg.selectAll('.component').data(componentWeekSet).enter()
                                 .append("svg").attr("class","component")
@@ -762,7 +763,7 @@
           posting.done(function(data) {
             course = JSON.parse(data);
             console.log(courseJson);
-            renderActivity(componentWeekSet, svgParent);
+            renderCourse(componentWeekSet, svgParent);
           });
         }
 
