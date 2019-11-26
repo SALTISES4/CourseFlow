@@ -1,5 +1,7 @@
 # CourseFlow
 
+CourseFlow is a pedagogical tool for planning activities, courses, and programs, which is designed to enable Research Practice Partnerships between instructors, designers, and researchers.
+
 ## Setting up the development server
 
 1.  Set up a virtualenv.
