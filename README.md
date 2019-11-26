@@ -1,10 +1,6 @@
 # CourseFlow
 
-=========
-
 ## Setting up the development server
-
----
 
 1.  Set up a virtualenv.
 
