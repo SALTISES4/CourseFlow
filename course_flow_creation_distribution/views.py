@@ -12,6 +12,7 @@ from .models import (
     WeekCourse,
     Component,
     Week,
+    Program,
 )
 from .serializers import (
     ActivitySerializer,
@@ -33,7 +34,8 @@ from django.http import JsonResponse
 from django.db.models import Count
 import uuid
 import json
-
+from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 
 class ProgramUpdateView(UpdateView):
     model = Program
@@ -43,7 +45,7 @@ class ProgramUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         context["program_json"] = JSONRenderer().render(ProgramSerializer(self.object).data).decode("utf-8")
-        context["owned_components"] = Component.objects.filter(content_type=Assesment)
+        context["owned_components"] = Component.objects.filter(Q(content_type=ContentType.objects.get_for_model(Course))|Q(content_type=ContentType.objects.get_for_model(Assesment)))
         context["owned_component_json"] = JSONRenderer().render(ProgramLevelComponentSerializer(context["owned_components"], many=True).data).decode("utf-8")
         return context
 
@@ -76,7 +78,7 @@ class CourseUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         context["course_json"] = JSONRenderer().render(CourseSerializer(self.object).data).decode("utf-8")
-        context["owned_components"] = Component.objects.all()
+        context["owned_components"] = Component.objects.exclude(content_type=ContentType.objects.get_for_model(Course))
         context["owned_component_json"] = JSONRenderer().render(WeekLevelComponentSerializer(context["owned_components"], many=True).data).decode("utf-8")
         return context
 
@@ -144,13 +146,14 @@ def update_course_json(request):
 def add_node(request):
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
-    activity = Activity.objects.get(pk=request.POST.get("activityPk"))
 
     NodeStrategy.objects.create(
         strategy=strategy,
         node=duplicate_node(node),
         rank=strategy.nodestrategy_set.order_by("-rank").first().rank + 1
     )
+
+    activity = Activity.objects.get(pk=request.POST.get("activityPk"))
 
     return JsonResponse(JSONRenderer().render(ActivitySerializer(activity).data).decode("utf-8"), safe=False)
 
@@ -185,6 +188,8 @@ def add_strategy(request):
         rank=(activity.strategyactivity_set.order_by("-rank").first().rank if activity.strategyactivity_set else -1) + 1
     )
 
+    activity = Activity.objects.get(pk=request.POST.get("activityPk"))
+
     return JsonResponse(JSONRenderer().render(ActivitySerializer(activity).data).decode("utf-8"), safe=False)
 
 def duplicate_component(component):
@@ -207,12 +212,13 @@ def duplicate_component(component):
 def add_component(request):
     week = Week.objects.get(pk=request.POST.get("weekPk"))
     component = Component.objects.get(pk=request.POST.get("componentPk"))
-    course = Course.objects.get(pk=request.POST.get("coursePk"))
 
     ComponentWeek.objects.create(
         week=week,
         component=duplicate_component(component),
         rank=(week.componentweek_set.order_by("-rank").first().rank if week.componentweek_set else -1) + 1,
     )
+
+    course = Course.objects.get(pk=request.POST.get("coursePk"))
 
     return JsonResponse(JSONRenderer().render(CourseSerializer(course).data).decode("utf-8"), safe=False)

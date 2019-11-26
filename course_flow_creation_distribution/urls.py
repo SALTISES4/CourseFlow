@@ -7,6 +7,11 @@ from . import views
 def flow_patterns():
     return [
         url(
+            r"^program/(?P<pk>[0-9]+)/update/$",
+            views.ProgramUpdateView.as_view(),
+            name="program-update",
+        ),
+        url(
             r"^course/(?P<pk>[0-9]+)/$",
             views.CourseDetailView.as_view(),
             name="course-detail",

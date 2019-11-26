@@ -701,7 +701,7 @@ class CourseSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class CourseLevelComponentSerializer(serializers.ModelSerializer):
+class ProgramLevelComponentSerializer(serializers.ModelSerializer):
 
     content_object = serializers.SerializerMethodField()
 
@@ -738,16 +738,16 @@ class CourseLevelComponentSerializer(serializers.ModelSerializer):
 
 class ComponentProgramSerializer(serializers.ModelSerializer):
 
-    component = CourseLevelComponentSerializer()
+    component = ProgramLevelComponentSerializer()
 
     class Meta:
-        model = ComponentWeek
-        fields = ["course", "component", "added_on", "rank", "id"]
+        model = ComponentProgram
+        fields = ["program", "component", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get('rank', instance.rank)
         component_data = self.initial_data.pop('component')
-        component_serializer = CourseLevelComponentSerializer(Component.objects.get(id=component_data['id']), component_data)
+        component_serializer = ProgramLevelComponentSerializer(Component.objects.get(id=component_data['id']), component_data)
         component_serializer.is_valid()
         component_serializer.save()
         instance.save()
@@ -791,8 +791,8 @@ class ProgramSerializer(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "hash",
-            "weekcourse_set",
-            "outcomecourse_set",
+            "componentprogram_set",
+            "outcomeprogram_set",
         ]
 
     def get_componentprogram_set(self, instance):
