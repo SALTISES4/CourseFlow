@@ -317,6 +317,9 @@ class Course(models.Model):
         Discipline, on_delete=models.SET_NULL, null=True
     )
 
+    parent_course = models.ForeignKey("Course", on_delete=models.SET_NULL, null=True)
+    is_original = models.BooleanField(default=True)
+
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     weeks = models.ManyToManyField(Week, through="WeekCourse", blank=True)

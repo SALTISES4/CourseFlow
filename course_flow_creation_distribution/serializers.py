@@ -676,6 +676,8 @@ class CourseSerializer(serializers.ModelSerializer):
             "weekcourse_set",
             "outcomecourse_set",
             "discipline",
+            "is_original",
+            "parent_node",
         ]
 
     def get_weekcourse_set(self, instance):
