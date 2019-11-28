@@ -473,10 +473,6 @@
               }
 
 
-
-
-              let strategyActivitySet = activityJson.strategyactivity_set;
-
               const nodeHeight = 160.0;
               const nodeWidth = 450.0;
               const nodeSpacingVertical = 50.0;
@@ -501,7 +497,7 @@
                   referenceNode.parentNode.insertBefore(referenceNode, referenceNode.parentNode.lastChild.nextSibling);
               }
 
-              renderActivity(strategyActivitySet, svgParent);
+              renderActivity(activityJson.strategyactivity_set, svgParent);
 
               renderNodeBoard(svgParent, popularNodeJson);
               renderStrategyBoard(svgParent, defaultStrategyJson);
@@ -976,7 +972,7 @@
             posting.done(function(data) {
               activityJson = JSON.parse(data);
               console.log(activityJson);
-              renderActivity(strategyActivitySet, svgParent);
+              renderActivity(activityJson.strategyactivity_set, svgParent);
             });
           }
 
@@ -985,7 +981,7 @@
             posting.done(function(data) {
               activityJson = JSON.parse(data);
               console.log(activityJson);
-              renderActivity(strategyActivitySet, svgParent);
+              renderActivity(activityJson.strategyactivity_set, svgParent);
             });
           }
 

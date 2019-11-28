@@ -42,6 +42,11 @@ def flow_patterns():
             name="update-course-json",
         ),
         url(
+            r"^program/update-json",
+            views.update_program_json,
+            name="update-program-json",
+        ),
+        url(
             r"^activity/add-node",
             views.add_node,
             name="add-node",
@@ -53,8 +58,13 @@ def flow_patterns():
         ),
         url(
             r"^course/add-component",
-            views.add_component,
-            name="add-component",
+            views.add_component_to_course,
+            name="add-component-to-course",
+        ),
+        url(
+            r"^program/add-component",
+            views.add_component_to_program,
+            name="add-component-to-program",
         ),
     ]
 

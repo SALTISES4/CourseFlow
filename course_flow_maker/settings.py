@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "django_extensions",
     "course_flow_creation_distribution.apps.CourseFlowCreationDistributionConfig",
     "course_flow_statistics.apps.CourseFlowStatisticsConfig",
     "rest_framework",
@@ -80,6 +81,11 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
+}
+
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
 }
 
 

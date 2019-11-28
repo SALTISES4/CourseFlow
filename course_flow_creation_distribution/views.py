@@ -13,6 +13,7 @@ from .models import (
     Component,
     Week,
     Program,
+    ComponentProgram,
 )
 from .serializers import (
     ActivitySerializer,
@@ -139,9 +140,26 @@ def update_course_json(request):
     data = json.loads(request.POST.get("json"))
     serializer = CourseSerializer(Course.objects.get(id=data['id']), data=data)
     serializer.is_valid()
-    print(serializer.errors)
     serializer.save()
     return JsonResponse({"action": "updated"})
+
+def update_program_json(request):
+    data = json.loads(request.POST.get("json"))
+    serializer = ProgramSerializer(Program.objects.get(id=data['id']), data=data)
+    serializer.is_valid()
+    serializer.save()
+    return JsonResponse({"action": "updated"})
+
+def duplicate_node(node):
+    new_node = Node.objects.create(title=node.title,
+        description=node.description,
+        is_original=False,
+        parent_node=node,
+        work_classification=node.work_classification,
+        activity_classification=node.activity_classification,
+        classification=node.classification
+    )
+    return new_node
 
 def add_node(request):
     node = Node.objects.get(pk=request.POST.get("nodePk"))
@@ -156,17 +174,6 @@ def add_node(request):
     activity = Activity.objects.get(pk=request.POST.get("activityPk"))
 
     return JsonResponse(JSONRenderer().render(ActivitySerializer(activity).data).decode("utf-8"), safe=False)
-
-def duplicate_node(node):
-    new_node = Node.objects.create(title=node.title,
-        description=node.description,
-        is_original=False,
-        parent_node=node,
-        work_classification=node.work_classification,
-        activity_classification=node.activity_classification,
-        classification=node.classification
-    )
-    return new_node
 
 def duplicate_strategy(strategy):
     new_strategy = Strategy.objects.create(title=strategy.title, description=strategy.description, is_original=False, parent_strategy=strategy)
@@ -192,7 +199,7 @@ def add_strategy(request):
 
     return JsonResponse(JSONRenderer().render(ActivitySerializer(activity).data).decode("utf-8"), safe=False)
 
-def duplicate_component(component):
+def duplicate_component_course_level(component):
     if type(component.content_object) == Activity:
         new_component = Component.objects.create(content_object=Activity.objects.create(title=component.content_object.title, description=component.content_object.description, is_original=False, parent_activity=component.content_object))
         for strategy in component.content_object.strategies.all():
@@ -209,16 +216,51 @@ def duplicate_component(component):
         new_component = Component.objects.create(content_object=Artifact.objects.create(title=component.content_object.title, description=component.content_object.description, is_original=False, parent_artifact=component.content_object))
     return new_component
 
-def add_component(request):
+def add_component_to_course(request):
     week = Week.objects.get(pk=request.POST.get("weekPk"))
     component = Component.objects.get(pk=request.POST.get("componentPk"))
 
     ComponentWeek.objects.create(
         week=week,
-        component=duplicate_component(component),
+        component=duplicate_component_course_level(component),
         rank=(week.componentweek_set.order_by("-rank").first().rank if week.componentweek_set else -1) + 1,
     )
 
     course = Course.objects.get(pk=request.POST.get("coursePk"))
 
     return JsonResponse(JSONRenderer().render(CourseSerializer(course).data).decode("utf-8"), safe=False)
+
+def duplicate_week(week):
+    new_week = Week.objects.create(title=week.title)
+    for component in week.compmonents.all():
+        ComponentWeek.objects.create(
+            week=new_week,
+            component=duplicate_component_course_level(component),
+            rank=ComponentWeek.objects.get(week=week, component=component).rank,
+        )
+    return new_strategy
+
+def duplicate_component_program_level(component):
+    if type(component.content_object) == Assesment:
+        new_component = Component.objects.create(content_object=Assesment.objects.create(title=component.content_object.title, description=component.content_object.description, is_original=False, parent_assesment=component.content_object))
+    else:
+        new_component = Component.objects.create(content_object=Course.objects.create(title=component.content_object.title, description=component.content_object.description, is_original=False, parent_course=component.content_object))
+        for week in component.content_object.weeks.all():
+            WeekCourse.objects.create(
+                course=new_component.content_object,
+                week=duplicate_week(week),
+                rank=WeekCourse.objects.get(week=week, course=component.content_object).rank,
+            )
+    return new_component
+
+def add_component_to_program(request):
+    component = Component.objects.get(pk=request.POST.get("componentPk"))
+    program = Program.objects.get(pk=request.POST.get("programPk"))
+
+    ComponentProgram.objects.create(
+        program=program,
+        component=duplicate_component_program_level(component),
+        rank=(program.componentprogram_set.order_by("-rank").first().rank if program.componentprogram_set else -1) + 1,
+    )
+
+    return JsonResponse(JSONRenderer().render(ProgramSerializer(program).data).decode("utf-8"), safe=False)

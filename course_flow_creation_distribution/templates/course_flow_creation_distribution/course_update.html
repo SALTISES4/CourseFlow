@@ -140,7 +140,7 @@
           window.addEventListener("load", function() {
             console.log({{ course_json|safe }});
 
-            const courseJson = {{ course_json|safe }};
+            let courseJson = {{ course_json|safe }};
             const componentBoardJson = {{ owned_component_json|safe }};
 
             const componentHeight = 180.0;
@@ -163,9 +163,9 @@
 
             const svgParent = d3.select("svg").style("margin-top", "100px");
 
-            const componentWeekSet = courseJson.weekcourse_set;
+            let weekCourseSet = courseJson.weekcourse_set;
 
-            renderCourse(componentWeekSet, svgParent);
+            renderCourse(weekCourseSet, svgParent);
 
             renderComponentBoard(svgParent, componentBoardJson);
 
@@ -322,7 +322,7 @@
 
           window.addEventListener("scroll", repositionBoard);
 
-            function renderCourse(weekCourseSet, parent){
+            function renderCourse(jsonData, parent){
 
                 d3.selectAll(".course").remove();
 
@@ -395,7 +395,7 @@
                 svgCourse.selectAll('.week').remove();
 
 
-                const weeks = svgCourse.selectAll('.week').data(weekCourseSet).enter()
+                const weeks = svgCourse.selectAll('.week').data(jsonData).enter()
                                   .append("svg").attr("class","week")
                                   .attr("x", "0")
                                   .attr("height", (d,i)=>`${d.week.componentweek_set.length*(componentHeight+componentSpacingVertical)-componentSpacingVertical+2*weekPadding+weekInfoHeight}`)
@@ -410,8 +410,8 @@
                                       renderWeek(d.week.componentweek_set, d3.select(this));
                                   });
 
-                    for(let i = 0; i<weekCourseSet.length; i++){
-                      for(let j = 0; j<weekCourseSet.length; j++){
+                    for(let i = 0; i<jsonData.length; i++){
+                      for(let j = 0; j<jsonData.length; j++){
                         if(weeks["_groups"][0][j].__data__.rank == i){
                             d3.select(weeks["_groups"][0][j]).attr("y", `${runningWeekHeight}`);
                             runningWeekHeight += +d3.select(weeks["_groups"][0][j]).attr("height")+weekVerticalSpacing;
@@ -525,8 +525,8 @@
                             .attr("width", +widget.attr("width")).attr("height", +widget.attr("height"));
                       dragDropIcons.style("cursor","grab");
                       updateJson();
-                      console.log(weekCourseSet);
-                      renderCourse(weekCourseSet, svgParent);
+                      console.log(jsonData);
+                      renderCourse(jsonData, svgParent);
                       widget = undefined;
                     });
 
@@ -759,11 +759,10 @@
       }
 
         function addComponent(componentPk, weekPk){
-          let posting = $.post("{% url 'add-component' %}", {componentPk: componentPk, weekPk: weekPk, coursePk: '{{ object.pk|safe }}'});
+          let posting = $.post("{% url 'add-component-to-course' %}", {componentPk: componentPk, weekPk: weekPk, coursePk: '{{ object.pk|safe }}'});
           posting.done(function(data) {
-            course = JSON.parse(data);
-            console.log(courseJson);
-            renderCourse(componentWeekSet, svgParent);
+            courseJson = JSON.parse(data);
+            renderCourse(courseJson.weekcourse_set, svgParent);
           });
         }
 

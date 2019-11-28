@@ -139,7 +139,7 @@
   <script>
           window.addEventListener("load", function(){
 
-            const programJson = {{ program_json|safe }};
+            let programJson = {{ program_json|safe }};
             const componentBoardJson = {{ owned_component_json|safe }};
 
             console.log(programJson);
@@ -257,7 +257,7 @@
                     initX = +widget.attr("x");
                     initY = +widget.attr("y");
                     color = widget.select("rect").attr("fill");
-                    weeks = d3.selectAll(".week");
+                    program = d3.selectAll(".program");
                     widget.select("rect").attr("filter","url(#selection-shadow)")
                           .attr('x', 5).attr('y', 4)
                           .attr("width", `${componentWidth-10}`).attr("height", `${componentHeight-8}`);
@@ -266,35 +266,24 @@
                   .on("drag", function() {
                     widget.attr("x", d3.event.x-componentWidth+20).attr("y", d3.event.y-20);
 
-                    let flag = true;
-
-                    weeks.each(function(i,j){
-                        week = d3.select(this);
-                        if(flag&&(+week.attr("y")+(+week.attr("height")))>(+widget.attr("y")+(+widget.attr("height")))
-                            &&(+week.attr("x")+(+week.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
-                            &&+week.attr("y")<+widget.attr("y")&&+week.attr("x")<+widget.attr("x")){
+                        if((+program.attr("y")+(+program.attr("height")))>(+widget.attr("y")+(+widget.attr("height")))
+                            &&(+program.attr("x")+(+program.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
+                            &&+program.attr("y")<+widget.attr("y")&&+program.attr("x")<+widget.attr("x")){
 
                             widget.select("rect").attr("fill", "#1976BC");
-                            flag = false;
                         }
-                    });
-
-                    if(flag) widget.select("rect").attr("fill", color);
-
-
+                        else {
+                            widget.select("rect").attr("fill", color);
+                        }
                   })
                   .on("end", function() {
+                    if((+program.attr("y")+(+program.attr("height")))>(+widget.attr("y")+(+widget.attr("height")))
+                        &&(+program.attr("x")+(+program.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
+                        &&+program.attr("y")<+widget.attr("y")&&+program.attr("x")<+widget.attr("x")){
 
-                    weeks.each(function(i,j){
-                        week = d3.select(this);
-                        if(+week.attr("y")+(+week.attr("height"))>(+widget.attr("y")+(+widget.attr("height")))
-                            &&(+week.attr("x")+(+week.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
-                            &&+week.attr("y")<+widget.attr("y")&&+week.attr("x")<+widget.attr("x")){
-
-                              addComponent(widget.node().__data__.id, week.node().__data__.week.id);
+                              addComponent(widget.node().__data__.id);
 
                         }
-                    });
 
                     dragDropIcons.style("cursor","grab");
                     widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
@@ -323,13 +312,14 @@
 
                 d3.selectAll(".program").remove();
 
-                const svgProgram = parent
+                const program = parent
                                     .append("svg").attr("x","0").attr("y","0")
                                     .attr("width", `${programWidth}`)
+                                    .attr("height", `${programJson.componentprogram_set.length*componentTotalSpacingVertical-componentSpacingVertical+2*programPadding+programInfoHeight}`)
                                     .attr("class","program");
 
 
-                svgProgram
+                program
                   .append('text')
                   .style('font-family', 'Roboto')
                   .attr('class', 'program-title')
@@ -341,7 +331,7 @@
                   .style('pointer-events', 'none')
                   .text(programJson.title);
 
-                svgProgram
+                program
                   .append('text')
                   .style('font-family', 'Roboto')
                   .attr('class', 'program-author')
@@ -353,7 +343,7 @@
                   .style('pointer-events', 'none')
                   .text("created by "+programJson.author);
 
-                svgProgram
+                program
                   .append('text')
                   .style('font-family', 'Roboto')
                   .attr('class', 'program-description')
@@ -365,7 +355,7 @@
                   .style('pointer-events', 'none')
                   .text(programJson.description);
 
-                svgProgram.append("g")
+                program.append("g")
                   .attr("class", "action-icon")
                   .append('image')
                   .attr('x', `${programWidth-40}`)
@@ -374,7 +364,7 @@
                   .attr("height", `${31}`)
                   .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
-                svgProgram.append("g")
+                program.append("g")
                   .attr("class", "action-icon")
                   .on("click", function(d,i){
                       //openUpdateForm(d3.select(this.parentNode));
@@ -387,7 +377,7 @@
                   .attr("height", `${31}`)
                   .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
 
-                  renderComponents(programJson.componentprogram_set, svgProgram);
+                  renderComponents(programJson.componentprogram_set, program);
 
 
             }
@@ -541,7 +531,6 @@
               let initRank = undefined;
               let currentRank = undefined;
               let initXAxis = undefined;
-              let currentClassification = undefined;
               let widgetData = undefined;
 
               let drags = d3
@@ -609,18 +598,18 @@
               .getAttribute("value");
           }
         function updateJson(){
-          let posting = $.post("{% url 'update-course-json' %}", {json: JSON.stringify(courseJson)});
+          let posting = $.post("{% url 'update-program-json' %}", {json: JSON.stringify(programJson)});
           posting.done(function(data) {
             console.info(data);
         });
       }
 
-        function addComponent(componentPk, weekPk){
-          let posting = $.post("{% url 'add-component' %}", {componentPk: componentPk, weekPk: weekPk, coursePk: '{{ object.pk|safe }}'});
+        function addComponent(componentPk){
+          let posting = $.post("{% url 'add-component-to-program' %}", {componentPk: componentPk, programPk: '{{ object.pk|safe }}'});
           posting.done(function(data) {
-            course = JSON.parse(data);
-            console.log(courseJson);
-            renderCourse(componentWeekSet, svgParent);
+            programJson = JSON.parse(data);
+            console.log(programJson);
+            renderProgram(programJson, svgParent);
           });
         }
 
