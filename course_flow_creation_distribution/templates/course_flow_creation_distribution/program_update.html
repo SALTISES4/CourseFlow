@@ -521,7 +521,7 @@
                 function reorderByRank(previousRank, newRank){
                     components.each(function(d,i) { if(d.rank == newRank){
                       d.rank=previousRank;
-                      d3.select(this).attr("y",`${d.rank*componentTotalSpacingVertical+weekPadding+weekInfoHeight}`);
+                      d3.select(this).attr("y",`${d.rank*componentTotalSpacingVertical+programPadding+programInfoHeight}`);
                     }});
                 }
 
