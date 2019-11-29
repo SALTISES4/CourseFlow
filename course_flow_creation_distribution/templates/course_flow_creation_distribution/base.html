@@ -132,6 +132,7 @@
     </svg>
     {% block body %}{% endblock %}
     <footer>{% block foot %}{% endblock %}</footer>
+    {% csrf_token %}
   </body>
   {% block scripts %} {% endblock %}
 </html>

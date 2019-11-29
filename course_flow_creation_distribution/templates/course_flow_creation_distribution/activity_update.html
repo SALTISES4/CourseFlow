@@ -67,7 +67,7 @@
 
             boardNodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
                 .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`)
-                .attr("fill", "#979797").style('pointer-events', 'none');
+                .attr("fill", "rgb(142,156,167)").style('pointer-events', 'none');
 
                 boardNodes
                   .append('text')
@@ -112,7 +112,7 @@
                       .attr('y', `${nodeHeight-45}`)
                       .attr("width", `${31}`)
                       .attr("height", `${31}`)
-                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
+                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button-blue.svg' %}");
 
                     boardNodes.append("g")
                       .attr("class", "action-icon")
@@ -121,7 +121,7 @@
                       .attr('y', `${nodeHeight-90}`)
                       .attr("width", `${31}`)
                       .attr("height", `${31}`)
-                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil-blue.svg' %}");
 
 
                     boardNodes
@@ -131,7 +131,7 @@
                       .attr('y', `${10}`)
                       .attr("width", `${31}`)
                       .attr("height", `${31}`)
-                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/multiple-users-silhouette.svg' %}");
+                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/multiple-users-silhouette-blue.svg' %}");
 
                     boardNodes
                       .append('image')
@@ -140,7 +140,7 @@
                       .attr('y', `${10}`)
                       .attr("width", `${31}`)
                       .attr("height", `${31}`)
-                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/classroom.svg' %}");
+                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/classroom-blue.svg' %}");
 
                     const dragDropIcons = boardNodes.append("g")
                       .attr("class", "drag-icon")
@@ -149,7 +149,7 @@
                       .attr('y', `${10}`)
                       .attr("width", `${20}`)
                       .attr("height", `${20}`)
-                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option (1).svg' %}");
+                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option-blue.svg' %}");
 
 
               function makeDragDropBoardNode() {
@@ -429,7 +429,7 @@
                                           .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*3-nodeSpacingHorizontal}`)
                                           .attr("height", `${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertical)-nodeSpacingVertical+2*strategyPadding+strategyInfoHeight}`)
                                           .attr("width", `${strategyWidth}`)
-                                          .attr("fill", "#EDAA1E");
+                                          .attr("fill", "rgb(65,80,96)");
                                       renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
                                   });
 
@@ -450,7 +450,7 @@
                         .attr('y', "20")
                         .attr('dy', 6)
                         .style('font-size', 18)
-                        .style('fill', "#1976BC")
+                        .style('fill', "white")
                         .style('pointer-events', 'none')
                         .text(d => d.strategy.title);
 
@@ -462,7 +462,7 @@
                         .attr('y', "40")
                         .attr('dy', 6)
                         .style('font-size', 12)
-                        .style('fill', '#1976BC')
+                        .style('fill', 'white')
                         .style('pointer-events', 'none')
                         .text(d=> "created by "+d.strategy.author);
 
@@ -474,7 +474,7 @@
                         .attr('y', "70")
                         .attr('dy', 6)
                         .style('font-size', 14)
-                        .style('fill', "#1976BC")
+                        .style('fill', "white")
                         .style('pointer-events', 'none')
                         .text(d => d.strategy.description);
 
@@ -485,7 +485,7 @@
                       .attr('y', `${90}`)
                       .attr("width", `${31}`)
                       .attr("height", `${31}`)
-                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button-blue.svg' %}");
+                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
                     strategies.append("g")
                       .attr("class", "action-icon")
@@ -498,7 +498,7 @@
                       .attr('y', `${45}`)
                       .attr("width", `${31}`)
                       .attr("height", `${31}`)
-                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil-blue.svg' %}");
+                      .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
 
                   const dragDropIcons =  strategies.append("g")
                       .attr("class", "drag-icon")
@@ -507,7 +507,7 @@
                       .attr('y', `${10}`)
                       .attr("width", `${20}`)
                       .attr("height", `${20}`)
-                      .attr("xlink:href", "{% static 'course_flow_creation_distribution/img/reorder-option-blue.svg' %}");
+                      .attr("xlink:href", "{% static 'course_flow_creation_distribution/img/reorder-option (1).svg' %}");
 
 
 
@@ -801,6 +801,7 @@
               .getElementsByName("csrfmiddlewaretoken")[0]
               .getAttribute("value");
           }
+
         function updateJson(){
           let posting = $.post("{% url 'update-activity-json' %}", {json: JSON.stringify(activityJson)});
           posting.done(function(data) {

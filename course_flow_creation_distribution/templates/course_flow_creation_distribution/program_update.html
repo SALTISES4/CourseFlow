@@ -322,7 +322,7 @@
                               .attr("y", (d,i) => `${componentTotalSpacingVertical*d.rank+programPadding+programInfoHeight}`);
 
             components.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6").attr("class","component-rect")
-                .attr("fill","#1976BC").attr("width", `${componentWidth}`).attr("height", `${componentHeight}`).style('pointer-events', 'none');
+                .attr("fill","rgb(65,80,96)").attr("width", `${componentWidth}`).attr("height", `${componentHeight}`).style('pointer-events', 'none');
 
             components
               .append('text')

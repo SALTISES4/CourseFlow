@@ -102,7 +102,7 @@
                     .attr('y', `${componentHeight-45}`)
                     .attr("width", `${31}`)
                     .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button-blue.svg' %}");
 
                   boardComponents.append("g")
                     .attr("class", "action-icon")
@@ -111,7 +111,7 @@
                     .attr('y', `${componentHeight-90}`)
                     .attr("width", `${31}`)
                     .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil-blue.svg' %}");
 
                   const dragDropIcons = boardComponents
                     .append("g")
@@ -121,7 +121,7 @@
                     .attr('y', `${10}`)
                     .attr("width", `${20}`)
                     .attr("height", `${20}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option (1).svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option-blue.svg' %}");
 
 
             function makeDragDropBoardComponent() {
@@ -284,7 +284,7 @@
                                         .attr("width", `${(componentWidth+componentSpacingHorizontal)*4-componentSpacingHorizontal}`)
                                         .attr("height", `${d.week.componentweek_set.length*(componentHeight+componentSpacingVertical)-componentSpacingVertical+2*weekPadding+weekInfoHeight}`)
                                         .attr("width", `${weekWidth}`)
-                                        .attr("fill", "#EDAA1E");
+                                        .attr("fill", "rgb(65,80,96)");
                                     renderWeek(d.week.componentweek_set, d3.select(this));
                                 });
 
@@ -305,7 +305,7 @@
                       .attr('y', "20")
                       .attr('dy', 6)
                       .style('font-size', 18)
-                      .style('fill', "#1976BC")
+                      .style('fill', "white")
                       .style('pointer-events', 'none')
                       .text(d => d.week.title);
 
@@ -317,7 +317,7 @@
                       .attr('y', "40")
                       .attr('dy', 6)
                       .style('font-size', 12)
-                      .style('fill', '#1976BC')
+                      .style('fill', 'white')
                       .style('pointer-events', 'none')
                       .text(d=> "created by "+d.week.author);
 
@@ -328,7 +328,7 @@
                     .attr('y', `${90}`)
                     .attr("width", `${31}`)
                     .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button-blue.svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
                   weeks.append("g")
                     .attr("class", "action-icon")
@@ -341,7 +341,7 @@
                     .attr('y', `${45}`)
                     .attr("width", `${31}`)
                     .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil-blue.svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
 
                 const dragDropIcons =  weeks.append("g")
                     .attr("class", "drag-icon")
@@ -350,7 +350,7 @@
                     .attr('y', `${10}`)
                     .attr("width", `${20}`)
                     .attr("height", `${20}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option-blue.svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/reorder-option (1).svg' %}");
 
 
 
