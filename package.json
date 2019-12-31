@@ -1,0 +1,31 @@
+{
+  "name": "CourseFlow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "Scivero",
+  "browserslist": "last 4 versions and >=0.2% in CA and not ie <= 11",
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/plugin-transform-react-jsx": "^7.7.4",
+    "@babel/preset-env": "^7.6.3",
+    "@babel/preset-flow": "^7.0.0",
+    "gulp": "^4.0.2",
+    "preact": "^10.0.5",
+    "preact-material-components": "^1.6.1",
+    "rollup": "^1.25.2",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-postcss": "^2.0.3",
+    "rollup-plugin-terser": "^5.1.3"
+  },
+  "dependencies": {
+    "core-js": "^3.3.6",
+    "regenerator": "^0.14.2"
+  }
+}

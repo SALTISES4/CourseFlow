@@ -264,3 +264,22 @@ def add_component_to_program(request):
     )
 
     return JsonResponse(JSONRenderer().render(ProgramSerializer(program).data).decode("utf-8"), safe=False)
+
+def dialog_form_post(request):
+    data = json.loads(request.POST.get("json"))
+    if (request.POST.get("isNode")):
+        NodeSerializer(data)
+    elif (reqeust.POST.get("isCourse")):
+        CourseSerializer(data)
+    elif (request.POST.get("isWeek")):
+        WeekSerializer(data)
+    elif (data.componentType==1):
+        AssesmentSerializer(data)
+    elif (data.componentType==2):
+        ArtifactSerializer(data)
+    elif (data.componentType==3):
+        PreparationSerializer(data)
+    elif (request.POST.get("isProgramLevelComponent")):
+        CourseSerializer(data)
+    elif (request.POST.get("isCourseLevelComponent")):
+        ActivitySerializer(data)

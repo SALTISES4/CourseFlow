@@ -66,6 +66,11 @@ def flow_patterns():
             views.add_component_to_program,
             name="add-component-to-program",
         ),
+        url(
+            r"^dialog-form/post",
+            views.dialog_form_post,
+            name="dialog-form-post",
+        ),
     ]
 
 

@@ -73,6 +73,10 @@ TEMPLATES = [
 WSGI_APPLICATION = "course_flow_maker.wsgi.application"
 
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+ADMINS = [('John', 'john@example.com'), ('Mary', 'mary@example.com')]
+
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
