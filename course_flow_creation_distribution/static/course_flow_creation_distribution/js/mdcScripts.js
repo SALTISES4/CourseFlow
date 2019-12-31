@@ -32,7 +32,7 @@ class DialogPage extends Component {
   };
 
   onSubmit = e => {
-    postFromNodeForm(this.state);
+    postFromNodeForm(this);
     e.preventDefault();
     this.setState({
       title: null,
@@ -241,15 +241,11 @@ function getCsrfToken() {
     .getAttribute("value");
 }
 
-function postFromNodeForm(state) {
-  console.log(state);
-  let posting = $.post(window.location.origin + "/feedback/post", {
-    json: JSON.stringify(state),
-    isWeek: isWeek,
-    isCourse: isCourse,
-    isNode: isNode,
-    isProgramLevelComponent: isProgramLevelComponent,
-    isCourseLevelComponent: isCourseLevelComponent,
+function postFromNodeForm(component) {
+  console.log(component);
+  let posting = $.post(window.location.origin + "/dialog-form/post", {
+    json: JSON.stringify(component.state),
+    props: JSON.stringify(component.props)
     hash: `${window.location.href.split("/").pop()}`,
   });
   posting.done(function(data) {
