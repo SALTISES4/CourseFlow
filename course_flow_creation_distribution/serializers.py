@@ -153,6 +153,7 @@ class NodeSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class NodeStrategySerializer(serializers.ModelSerializer):
 
     node = NodeSerializer()

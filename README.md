@@ -16,6 +16,14 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
         (dev_venv) pip install -r requirements.txt
 
-4.  Run the Django development server.
+4.  Install node modules.
 
-        (dev_venv) python3 manage.py runserver
+        npm install
+
+5.  Build minified JS files.
+
+        yarn run gulp build-js
+
+6.  Run the Django development server.
+
+        (dev_venv) ./manage.py runserver

@@ -143,6 +143,6 @@ body {
   background-color: white;
 }
 
-.node-rect{
-
+.mdc-dialog__surface{
+  width: 50vw;
 }

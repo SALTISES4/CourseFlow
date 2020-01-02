@@ -267,19 +267,74 @@ def add_component_to_program(request):
 
 def dialog_form_post(request):
     data = json.loads(request.POST.get("json"))
-    if (request.POST.get("isNode")):
-        NodeSerializer(data)
-    elif (reqeust.POST.get("isCourse")):
-        CourseSerializer(data)
-    elif (request.POST.get("isWeek")):
-        WeekSerializer(data)
-    elif (data.componentType==1):
-        AssesmentSerializer(data)
-    elif (data.componentType==2):
-        ArtifactSerializer(data)
-    elif (data.componentType==3):
-        PreparationSerializer(data)
-    elif (request.POST.get("isProgramLevelComponent")):
-        CourseSerializer(data)
-    elif (request.POST.get("isCourseLevelComponent")):
-        ActivitySerializer(data)
+    props = json.loads(request.POST.get("props"))
+    print(props)
+    if props["isNode"]:
+        print("node cond")
+        del data["componentType"]
+        serializer = NodeSerializer(data=data)
+        data["work_classification"] = int(data["work_classification"]) - 1
+        data["activity_classification"] = int(data["activity_classification"]) - 1
+        data["parent_node"] = None
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            print(serializer.errors)
+            return JsonResponse({"action": "error"})
+    elif props["isCourse"]:
+        del data["componentType"], data["work_classification"], data["activity_classification"]
+        serializer = CourseSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            return JsonResponse({"action": "error"})
+    elif props["isWeek"]:
+        del data["componentType"], data["work_classification"], data["activity_classification"], data["description"]
+        serializer = WeekSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            return JsonResponse({"action": "error"})
+    elif (data["componentType"]==1):
+        del data["componentType"], data["work_classification"], data["activity_classification"]
+        serializer = AssesmentSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            return JsonResponse({"action": "error"})
+    elif (data["componentType"]==2):
+        del data["componentType"], data["work_classification"], data["activity_classification"]
+        serializer = ArtifactSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            return JsonResponse({"action": "error"})
+    elif (data["componentType"]==3):
+        del data["componentType"], data["work_classification"], data["activity_classification"]
+        serializer = PreparationSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            return JsonResponse({"action": "error"})
+    elif props["isProgramLevelComponent"]:
+        del data["componentType"], data["work_classification"], data["activity_classification"]
+        serializer = CourseSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            return JsonResponse({"action": "error"})
+    elif props["isCourseLevelComponent"]:
+        del data["componentType"], data["work_classification"], data["activity_classification"]
+        serializer = ActivitySerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            return JsonResponse({"action": "error"})

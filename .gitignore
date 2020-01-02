@@ -16,6 +16,7 @@ partner*.png
 .venv
 tags
 *.mypy_cache/
+*.pyc
 /htmlcov
 /media
 pytest-logs.txt
