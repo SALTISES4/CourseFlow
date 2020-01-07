@@ -24,35 +24,14 @@
               root.injectDialogForm(
                 false,
                 false,
+                false,
+                false,
                 true,
-                false,
-                false,
                 "{% trans 'posting worked' %}",
                 "{% trans 'posting didnt work' %}"
               );
 
 
-    /*
-            function updateActivityInfo(activity){
-              widget.node().__data__.title =
-              widget.node().__data__.description =
-
-              updateJson();
-            }
-            function updateStrategyInfo(strategy){
-              widget.node().__data__.strategy.title =
-              widget.node().__data__.strategy.description =
-              updateJson();
-            }
-            function updateNodeInfo(node){
-              widget.node().__data__.node.title =
-              widget.node().__data__.node.description =
-              widget.node().__data__.node.classification =
-              widget.node().__data__.node.activity_classification =
-              widget.node().__data__.node.work_classification =
-              updateJson();
-            }
-            */
               const svgParent = d3.select("svg").style("margin-top", "100px");
 
               let activityJson = {{ activity_json|safe }};
@@ -404,6 +383,9 @@
 
                   svgActivity.append("g")
                     .attr("class", "action-icon")
+                    .on("click", function(d,i){
+                        root.currentComponentInstance.dlg.MDComponent.show();
+                    })
                     .append('image')
                     .attr('x', `${strategyWidth-40}`)
                     .attr('y', `${60}`)
@@ -412,14 +394,25 @@
                     .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
                   svgActivity.append("g")
-                    .attr("class", "action-icon")
+                    .attr("class", "create-button")
                     .on("click", function(d,i){
-                        //openUpdateForm(d3.select(this.parentNode));
-                        console.log(d3.select(this.parentNode).data());
+                        root.currentComponentInstance.dlg.MDComponent.show();
                     })
                     .append('image')
                     .attr('x', `${strategyWidth-40}`)
                     .attr('y', `${15}`)
+                    .attr("width", `${31}`)
+                    .attr("height", `${31}`)
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+
+                  svgActivity.append("g")
+                    .attr("class", "action-icon")
+                    .on("click", function(d,i){
+                        root.currentComponentInstance.dlg.MDComponent.show();
+                    })
+                    .append('image')
+                    .attr('x', `${strategyWidth-40}`)
+                    .attr('y', `${95}`)
                     .attr("width", `${31}`)
                     .attr("height", `${31}`)
                     .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");

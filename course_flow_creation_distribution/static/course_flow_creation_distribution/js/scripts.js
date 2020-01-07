@@ -21,82 +21,39 @@ import "preact-material-components/List/style.css";
 import "preact-material-components/Button/style.css";
 import "preact-material-components/Dialog/style.css";
 
-class DeleteDialogForm extends Component {
-  onSubmit = e => {
-    deleteThisItem(this);
-    e.preventDefault();
-  };
-
-  onClose = e => {
-    e.preventDefault();
-  };
-
-  render() {
-    return (
-      <div>
-        <Icon
-          id="add-node-button"
-          primary={true}
-          raised={true}
-          onClick={() => {
-            this.dlg.MDComponent.show();
-          }}
-          class="material-icons-outlined"
-          style="cursor: pointer; font-size: 48px;"
-        >
-          add_box
-        </Icon>
-        <Dialog
-          style="padding: 0; border: 0; width: 0;"
-          ref={dlg => {
-            this.dlg = dlg;
-          }}
-        >
-          <form class="creation-form">
-            <Dialog.Header>{this.props.object.title}</Dialog.Header>
-            <Dialog.Body scrollable={false}>
-              Are you sure you'd like to delete this {type}?
-              {this.props.object.title}
-            </Dialog.Body>
-            <Dialog.Footer>
-              <Dialog.FooterButton cancel={true} onClick={this.onClose}>
-                Cancel
-              </Dialog.FooterButton>
-              <Dialog.FooterButton
-                accept={true}
-                disabled={false}
-                raised={true}
-                onClick={this.onSubmit}
-              >
-                Delete
-              </Dialog.FooterButton>
-            </Dialog.Footer>
-          </form>
-        </Dialog>
-        <Snackbar
-          ref={snack => {
-            this.snack = snack;
-          }}
-        />
-      </div>
-    );
-  }
-}
-
-class CreateDialogForm extends Component {
+export class CreateDialogForm extends Component {
   state = {
+    object: null,
+    objectType: null,
     title: "",
     description: "",
     author: null,
     componentType: null,
     work_classification: null,
-    activity_classification: null
+    activity_classification: null,
+    isWeek: this.props.isWeek,
+    isCourse: this.props.isCourse,
+    isNode: this.props.isNode,
+    isProgramLevelComponent: this.props.isProgramLevelComponent,
+    isCourseLevelComponent: this.props.isCourseLevelComponent,
+    isDeleteForm: false,
+    isUpdateForm: false
+  };
+
+  componentDidMount = e => {
+    currentComponentInstance = this;
   };
 
   onSubmit = e => {
-    postFromNodeForm(this);
+    if (this.state.isDeleteForm) {
+    } else if (this.state.isUpdateForm) {
+    } else {
+      createNode(this);
+    }
     e.preventDefault();
     this.setState({
+      object: null,
+      objectType: null,
       title: "",
       description: "",
       author: null,
@@ -109,6 +66,8 @@ class CreateDialogForm extends Component {
   onClose = e => {
     e.preventDefault();
     this.setState({
+      object: null,
+      objectType: null,
       title: "",
       description: "",
       author: null,
@@ -122,378 +81,341 @@ class CreateDialogForm extends Component {
     this.setState({ description: e.target.value });
   };
 
-  updateTitle = e => {
-    this.setState({ title: e.target.value });
-  };
-
-  render() {
-    return (
-      <div>
-        <Icon
-          id="add-node-button"
-          primary={true}
-          raised={true}
-          onClick={() => {
-            this.dlg.MDComponent.show();
-          }}
-          class="material-icons-outlined"
-          style="cursor: pointer; font-size: 48px;"
-        >
-          add_box
-        </Icon>
-        <Dialog
-          style="padding: 0; border: 0; width: 0;"
-          ref={dlg => {
-            this.dlg = dlg;
-          }}
-        >
-          <form class="creation-form">
-            <Dialog.Header></Dialog.Header>
-            <Dialog.Body scrollable={false}>
-              {this.props.isProgramLevelComponent && (
-                <div>
-                  <Select
-                    hintText="Select a node type"
-                    selectedIndex={this.state.componentType}
-                    onChange={e => {
-                      this.setState({
-                        componentType: e.target.selectedIndex
-                      });
-                    }}
-                  >
-                    <Select.Item>Course</Select.Item>
-                    <Select.Item>Assesment</Select.Item>
-                  </Select>
-                </div>
-              )}
-              {this.props.isCourseLevelComponent && (
-                <div>
-                  <Select
-                    hintText="Select a node type"
-                    selectedIndex={this.state.componentType}
-                    onChange={e => {
-                      this.setState({
-                        componentType: e.target.selectedIndex
-                      });
-                    }}
-                  >
-                    <Select.Item>Activity</Select.Item>
-                    <Select.Item>Assesment</Select.Item>
-                    <Select.Item>Artifact</Select.Item>
-                    <Select.Item>Preparation</Select.Item>
-                  </Select>
-                </div>
-              )}
-              <div>
-                <TextField
-                  label="Title"
-                  value={this.state.title}
-                  onInput={this.updateTitle}
-                />
-              </div>
-              {!this.props.isWeek && (
-                <div>
-                  <TextField
-                    textarea={true}
-                    label="description"
-                    value={this.state.description}
-                    onInput={this.updateDescription}
-                  />
-                </div>
-              )}
-              {this.props.isNode && (
-                <div>
-                  <Select
-                    hintText={
-                      this.state.work_classification &&
-                      "Select a work classification"
-                    }
-                    selectedIndex={this.state.work_classification}
-                    onChange={e => {
-                      this.setState({
-                        work_classification: e.target.selectedIndex
-                      });
-                    }}
-                  >
-                    <Select.Item>Individual Work</Select.Item>
-                    <Select.Item>Work in Groups</Select.Item>
-                    <Select.Item>Whole Class</Select.Item>
-                  </Select>
-                </div>
-              )}
-              {this.props.isNode && (
-                <div>
-                  <Select
-                    hintText={
-                      this.state.activity_classification &&
-                      "Select an activity classification"
-                    }
-                    selectedIndex={this.state.activity_classification}
-                    onChange={e => {
-                      this.setState({
-                        activity_classification: e.target.selectedIndex
-                      });
-                    }}
-                  >
-                    <Select.Item>Gather Information</Select.Item>
-                    <Select.Item>Discuss</Select.Item>
-                    <Select.Item>Solve</Select.Item>
-                    <Select.Item>Analyze</Select.Item>
-                    <Select.Item>Assess/Review Papers</Select.Item>
-                    <Select.Item>Whole Class</Select.Item>
-                    <Select.Item>Evaluate Peers</Select.Item>
-                    <Select.Item>Debate</Select.Item>
-                    <Select.Item>Game/Roleplay</Select.Item>
-                    <Select.Item>Create/Design</Select.Item>
-                    <Select.Item>Revise/Improve</Select.Item>
-                    <Select.Item>Read</Select.Item>
-                    <Select.Item>Write</Select.Item>
-                    <Select.Item>Present</Select.Item>
-                    <Select.Item>Experiment/Inquiry</Select.Item>
-                    <Select.Item>Quiz/Test</Select.Item>
-                    <Select.Item>Other</Select.Item>
-                  </Select>
-                </div>
-              )}
-            </Dialog.Body>
-            <Dialog.Footer>
-              <Dialog.FooterButton cancel={true} onClick={this.onClose}>
-                Cancel
-              </Dialog.FooterButton>
-              <Dialog.FooterButton
-                accept={true}
-                disabled={
-                  ((!this.state.title || !this.state.description) &&
-                    this.props.isWeek) ||
-                  (this.props.isNode &&
-                    (!this.state.work_classification ||
-                      !this.state.activity_classification)) ||
-                  ((this.props.isProgramLevelComponent ||
-                    this.props.isCourseLevelComponent) &&
-                    !this.state.component)
-                }
-                raised={true}
-                onClick={this.onSubmit}
-              >
-                Create
-              </Dialog.FooterButton>
-            </Dialog.Footer>
-          </form>
-        </Dialog>
-        <Snackbar
-          ref={snack => {
-            this.snack = snack;
-          }}
-        />
-      </div>
-    );
-  }
-}
-
-class UpdateDialogForm extends Component {
-  state = {
-    title: "",
-    description: "",
-    author: null,
-    componentType: null,
-    work_classification: null,
-    activity_classification: null
-  };
-
-  onSubmit = e => {
-    postFromNodeForm(this);
-    e.preventDefault();
+  updateObjectDescription = e => {
     this.setState({
-      title: "",
-      description: "",
-      author: null,
-      componentType: null,
-      work_classification: null,
-      activity_classification: null
+      object: { ...this.state.object, description: e.target.value }
     });
-  };
-
-  onClose = e => {
-    e.preventDefault();
-    this.setState({
-      title: "",
-      description: "",
-      author: null,
-      componentType: null,
-      work_classification: null,
-      activity_classification: null
-    });
-  };
-
-  updateDescription = e => {
-    this.setState({ description: e.target.value });
   };
 
   updateTitle = e => {
     this.setState({ title: e.target.value });
   };
 
+  updateObjectTitle = e => {
+    this.setState({ object: { ...this.state.object, title: e.target.value } });
+  };
+
   render() {
-    return (
-      <div>
-        <Icon
-          id="add-node-button"
-          primary={true}
-          raised={true}
-          onClick={() => {
-            this.dlg.MDComponent.show();
-          }}
-          class="material-icons-outlined"
-          style="cursor: pointer; font-size: 48px;"
-        >
-          add_box
-        </Icon>
-        <Dialog
-          style="padding: 0; border: 0; width: 0;"
-          ref={dlg => {
-            this.dlg = dlg;
-          }}
-        >
-          <form class="creation-form">
-            <Dialog.Header></Dialog.Header>
-            <Dialog.Body scrollable={false}>
-              {this.props.isProgramLevelComponent && (
-                <div>
-                  <Select
-                    hintText="Select a node type"
-                    selectedIndex={this.state.componentType}
-                    onChange={e => {
-                      this.setState({
-                        componentType: e.target.selectedIndex
-                      });
-                    }}
-                  >
-                    <Select.Item>Course</Select.Item>
-                    <Select.Item>Assesment</Select.Item>
-                  </Select>
-                </div>
-              )}
-              {this.props.isCourseLevelComponent && (
-                <div>
-                  <Select
-                    hintText="Select a node type"
-                    selectedIndex={this.state.componentType}
-                    onChange={e => {
-                      this.setState({
-                        componentType: e.target.selectedIndex
-                      });
-                    }}
-                  >
-                    <Select.Item>Activity</Select.Item>
-                    <Select.Item>Assesment</Select.Item>
-                    <Select.Item>Artifact</Select.Item>
-                    <Select.Item>Preparation</Select.Item>
-                  </Select>
-                </div>
-              )}
-              <div>
-                <TextField
-                  label="Title"
-                  value={this.state.title}
-                  onInput={this.updateTitle}
-                />
-              </div>
-              {!this.props.isWeek && (
+    if (this.state.isDeleteForm) {
+      return (
+        <div>
+          <Icon
+            id="delete-node-button"
+            primary={true}
+            raised={true}
+            onClick={() => {
+              this.dlg.MDComponent.show();
+            }}
+            class="material-icons-outlined"
+            style="cursor: pointer; font-size: 48px;"
+          >
+            add_box
+          </Icon>
+          <Dialog
+            style="padding: 0; border: 0; width: 0;"
+            ref={dlg => {
+              this.dlg = dlg;
+            }}
+          >
+            <form class="creation-form">
+              <Dialog.Header>{this.state.object.title}</Dialog.Header>
+              <Dialog.Body scrollable={false}>
+                Are you sure you'd like to delete this {this.state.objectType}?
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Dialog.FooterButton cancel={true} onClick={this.onClose}>
+                  Cancel
+                </Dialog.FooterButton>
+                <Dialog.FooterButton
+                  accept={true}
+                  disabled={false}
+                  raised={true}
+                  onClick={this.onSubmit}
+                >
+                  Delete
+                </Dialog.FooterButton>
+              </Dialog.Footer>
+            </form>
+          </Dialog>
+          <Snackbar
+            ref={snack => {
+              this.snack = snack;
+            }}
+          />
+        </div>
+      );
+    }
+    if (this.state.isUpdateForm) {
+      return (
+        <div>
+          <Dialog
+            style="padding: 0; border: 0; width: 0;"
+            ref={dlg => {
+              this.dlg = dlg;
+            }}
+          >
+            <form class="update-form">
+              <Dialog.Header></Dialog.Header>
+              <Dialog.Body scrollable={false}>
                 <div>
                   <TextField
-                    textarea={true}
-                    label="description"
-                    value={this.state.description}
-                    onInput={this.updateDescription}
+                    label="Title"
+                    value={this.state.object.title}
+                    onInput={this.updateObjectTitle}
                   />
                 </div>
-              )}
-              {this.props.isNode && (
+                {!this.state.isWeek && (
+                  <div>
+                    <TextField
+                      textarea={true}
+                      label="Description"
+                      value={this.state.object.description}
+                      onInput={this.updateObjectTitle}
+                    />
+                  </div>
+                )}
+                {this.state.isNode && (
+                  <div>
+                    <Select
+                      hintText={
+                        !this.state.object.work_classification &&
+                        "Select a work classification"
+                      }
+                      selectedIndex={this.state.object.work_classification}
+                      onChange={e => {
+                        this.setState({
+                          object: {
+                            ...this.state.object,
+                            work_classification: +e.target.selectedIndex - 1
+                          }
+                        });
+                      }}
+                    >
+                      <Select.Item>Individual Work</Select.Item>
+                      <Select.Item>Work in Groups</Select.Item>
+                      <Select.Item>Whole Class</Select.Item>
+                    </Select>
+                  </div>
+                )}
+                {this.state.isNode && (
+                  <div>
+                    <Select
+                      hintText={
+                        !this.state.object.activity_classification &&
+                        "Select an activity classification"
+                      }
+                      selectedIndex={this.state.object.activity_classification}
+                      onChange={e => {
+                        this.setState({
+                          object: {
+                            ...this.state.object,
+                            activity_classification: +e.target.selectedIndex - 1
+                          }
+                        });
+                      }}
+                    >
+                      <Select.Item>Gather Information</Select.Item>
+                      <Select.Item>Discuss</Select.Item>
+                      <Select.Item>Solve</Select.Item>
+                      <Select.Item>Analyze</Select.Item>
+                      <Select.Item>Assess/Review Papers</Select.Item>
+                      <Select.Item>Whole Class</Select.Item>
+                      <Select.Item>Evaluate Peers</Select.Item>
+                      <Select.Item>Debate</Select.Item>
+                      <Select.Item>Game/Roleplay</Select.Item>
+                      <Select.Item>Create/Design</Select.Item>
+                      <Select.Item>Revise/Improve</Select.Item>
+                      <Select.Item>Read</Select.Item>
+                      <Select.Item>Write</Select.Item>
+                      <Select.Item>Present</Select.Item>
+                      <Select.Item>Experiment/Inquiry</Select.Item>
+                      <Select.Item>Quiz/Test</Select.Item>
+                      <Select.Item>Other</Select.Item>
+                    </Select>
+                  </div>
+                )}
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Dialog.FooterButton cancel={true} onClick={this.onClose}>
+                  Cancel
+                </Dialog.FooterButton>
+                <Dialog.FooterButton
+                  accept={true}
+                  disabled={
+                    (!this.state.object.title && this.state.isWeek) ||
+                    ((!this.state.object.title ||
+                      !this.state.object.description) &&
+                      !this.state.isWeek) ||
+                    (this.state.isNode &&
+                      (!this.state.object.work_classification ||
+                        !this.state.object.activity_classification))
+                  }
+                  raised={true}
+                  onClick={this.onSubmit}
+                >
+                  Update
+                </Dialog.FooterButton>
+              </Dialog.Footer>
+            </form>
+          </Dialog>
+          <Snackbar
+            ref={snack => {
+              this.snack = snack;
+            }}
+          />
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <Dialog
+            style="padding: 0; border: 0; width: 0;"
+            ref={dlg => {
+              this.dlg = dlg;
+            }}
+          >
+            <form class="creation-form">
+              <Dialog.Header></Dialog.Header>
+              <Dialog.Body scrollable={false}>
+                {this.state.isProgramLevelComponent && (
+                  <div>
+                    <Select
+                      hintText="Select a node type"
+                      selectedIndex={this.state.componentType}
+                      onChange={e => {
+                        this.setState({
+                          componentType: e.target.selectedIndex
+                        });
+                      }}
+                    >
+                      <Select.Item>Course</Select.Item>
+                      <Select.Item>Assesment</Select.Item>
+                    </Select>
+                  </div>
+                )}
+                {this.state.isCourseLevelComponent && (
+                  <div>
+                    <Select
+                      hintText="Select a node type"
+                      selectedIndex={this.state.componentType}
+                      onChange={e => {
+                        this.setState({
+                          componentType: e.target.selectedIndex
+                        });
+                      }}
+                    >
+                      <Select.Item>Activity</Select.Item>
+                      <Select.Item>Assesment</Select.Item>
+                      <Select.Item>Artifact</Select.Item>
+                      <Select.Item>Preparation</Select.Item>
+                    </Select>
+                  </div>
+                )}
                 <div>
-                  <Select
-                    hintText={
-                      this.state.work_classification &&
-                      "Select a work classification"
-                    }
-                    selectedIndex={this.state.work_classification}
-                    onChange={e => {
-                      this.setState({
-                        work_classification: e.target.selectedIndex
-                      });
-                    }}
-                  >
-                    <Select.Item>Individual Work</Select.Item>
-                    <Select.Item>Work in Groups</Select.Item>
-                    <Select.Item>Whole Class</Select.Item>
-                  </Select>
+                  <TextField
+                    label="Title"
+                    value={this.state.title}
+                    onInput={this.updateTitle}
+                  />
                 </div>
-              )}
-              {this.props.isNode && (
-                <div>
-                  <Select
-                    hintText={
-                      this.state.activity_classification &&
-                      "Select an activity classification"
-                    }
-                    selectedIndex={this.state.activity_classification}
-                    onChange={e => {
-                      this.setState({
-                        activity_classification: e.target.selectedIndex
-                      });
-                    }}
-                  >
-                    <Select.Item>Gather Information</Select.Item>
-                    <Select.Item>Discuss</Select.Item>
-                    <Select.Item>Solve</Select.Item>
-                    <Select.Item>Analyze</Select.Item>
-                    <Select.Item>Assess/Review Papers</Select.Item>
-                    <Select.Item>Whole Class</Select.Item>
-                    <Select.Item>Evaluate Peers</Select.Item>
-                    <Select.Item>Debate</Select.Item>
-                    <Select.Item>Game/Roleplay</Select.Item>
-                    <Select.Item>Create/Design</Select.Item>
-                    <Select.Item>Revise/Improve</Select.Item>
-                    <Select.Item>Read</Select.Item>
-                    <Select.Item>Write</Select.Item>
-                    <Select.Item>Present</Select.Item>
-                    <Select.Item>Experiment/Inquiry</Select.Item>
-                    <Select.Item>Quiz/Test</Select.Item>
-                    <Select.Item>Other</Select.Item>
-                  </Select>
-                </div>
-              )}
-            </Dialog.Body>
-            <Dialog.Footer>
-              <Dialog.FooterButton cancel={true} onClick={this.onClose}>
-                Cancel
-              </Dialog.FooterButton>
-              <Dialog.FooterButton
-                accept={true}
-                disabled={
-                  ((!this.state.title || !this.state.description) &&
-                    this.props.isWeek) ||
-                  (this.props.isNode &&
-                    (!this.state.work_classification ||
-                      !this.state.activity_classification)) ||
-                  ((this.props.isProgramLevelComponent ||
-                    this.props.isCourseLevelComponent) &&
-                    !this.state.component)
-                }
-                raised={true}
-                onClick={this.onSubmit}
-              >
-                Create
-              </Dialog.FooterButton>
-            </Dialog.Footer>
-          </form>
-        </Dialog>
-        <Snackbar
-          ref={snack => {
-            this.snack = snack;
-          }}
-        />
-      </div>
-    );
+                {!this.state.isWeek && (
+                  <div>
+                    <TextField
+                      textarea={true}
+                      label="Description"
+                      value={this.state.description}
+                      onInput={this.updateDescription}
+                    />
+                  </div>
+                )}
+                {this.state.isNode && (
+                  <div>
+                    <Select
+                      hintText={
+                        this.state.work_classification &&
+                        "Select a work classification"
+                      }
+                      selectedIndex={this.state.work_classification}
+                      onChange={e => {
+                        this.setState({
+                          work_classification: e.target.selectedIndex
+                        });
+                      }}
+                    >
+                      <Select.Item>Individual Work</Select.Item>
+                      <Select.Item>Work in Groups</Select.Item>
+                      <Select.Item>Whole Class</Select.Item>
+                    </Select>
+                  </div>
+                )}
+                {this.state.isNode && (
+                  <div>
+                    <Select
+                      hintText={
+                        this.state.activity_classification &&
+                        "Select an activity classification"
+                      }
+                      selectedIndex={this.state.activity_classification}
+                      onChange={e => {
+                        this.setState({
+                          activity_classification: e.target.selectedIndex
+                        });
+                      }}
+                    >
+                      <Select.Item>Gather Information</Select.Item>
+                      <Select.Item>Discuss</Select.Item>
+                      <Select.Item>Solve</Select.Item>
+                      <Select.Item>Analyze</Select.Item>
+                      <Select.Item>Assess/Review Papers</Select.Item>
+                      <Select.Item>Whole Class</Select.Item>
+                      <Select.Item>Evaluate Peers</Select.Item>
+                      <Select.Item>Debate</Select.Item>
+                      <Select.Item>Game/Roleplay</Select.Item>
+                      <Select.Item>Create/Design</Select.Item>
+                      <Select.Item>Revise/Improve</Select.Item>
+                      <Select.Item>Read</Select.Item>
+                      <Select.Item>Write</Select.Item>
+                      <Select.Item>Present</Select.Item>
+                      <Select.Item>Experiment/Inquiry</Select.Item>
+                      <Select.Item>Quiz/Test</Select.Item>
+                      <Select.Item>Other</Select.Item>
+                    </Select>
+                  </div>
+                )}
+              </Dialog.Body>
+              <Dialog.Footer>
+                <Dialog.FooterButton cancel={true} onClick={this.onClose}>
+                  Cancel
+                </Dialog.FooterButton>
+                <Dialog.FooterButton
+                  accept={true}
+                  disabled={
+                    (!this.state.title && this.state.isWeek) ||
+                    ((!this.state.title || !this.state.description) &&
+                      !this.state.isWeek) ||
+                    (this.state.isNode &&
+                      (!this.state.work_classification ||
+                        !this.state.activity_classification)) ||
+                    ((this.state.isProgramLevelComponent ||
+                      this.state.isCourseLevelComponent) &&
+                      !this.state.componentType)
+                  }
+                  raised={true}
+                  onClick={this.onSubmit}
+                >
+                  Create
+                </Dialog.FooterButton>
+              </Dialog.Footer>
+            </form>
+          </Dialog>
+          <Snackbar
+            ref={snack => {
+              this.snack = snack;
+            }}
+          />
+        </div>
+      );
+    }
   }
 }
 
@@ -540,7 +462,8 @@ function deleteThisItem(component) {
     });
 }
 
-function postFromNodeForm(component) {
+//post new node
+function createNode(component) {
   $.post(window.location.origin + "/dialog-form/post", {
     json: JSON.stringify(component.state),
     props: JSON.stringify(component.props),
@@ -564,6 +487,52 @@ function postFromNodeForm(component) {
       });
     });
 }
+
+export function injectDialogUpdateForm(
+  json,
+  snackMessageOnSuccess,
+  snackMessageOnFailure
+) {
+  if (
+    document.body.contains(
+      document.getElementById("node-update-form-container")
+    )
+  ) {
+    render(
+      <UpdateDialogForm
+        json={json}
+        snackMessageOnSuccess={snackMessageOnSuccess}
+        snackMessageOnFailure={snackMessageOnFailure}
+      />,
+      document.getElementById("node-update-form-container")
+    );
+  }
+}
+
+export function injectDialogDeleteForm(
+  json,
+  canBeRemoved,
+  snackMessageOnSuccess,
+  snackMessageOnFailure
+) {
+  if (
+    document.body.contains(
+      document.getElementById("node-delete-form-container")
+    )
+  ) {
+    render(
+      <DeleteDialogForm
+        json={json}
+        canBeRemoved={canBeRemoved}
+        snackMessageOnSuccess={snackMessageOnSuccess}
+        snackMessageOnFailure={snackMessageOnFailure}
+      />,
+      document.getElementById("node-delete-form-container")
+    );
+  }
+}
+
+export var currentComponentInstance = null;
 
 export function injectDialogForm(
   isWeek,

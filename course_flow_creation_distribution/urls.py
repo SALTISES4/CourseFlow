@@ -7,6 +7,16 @@ from . import views
 def flow_patterns():
     return [
         url(
+            r"^program/create/$",
+            views.ProgramCreateView.as_view(),
+            name="program-create",
+        ),
+        url(
+            r"^program/(?P<pk>[0-9]+)/$",
+            views.ProgramDetailView.as_view(),
+            name="program-detail",
+        ),
+        url(
             r"^program/(?P<pk>[0-9]+)/update/$",
             views.ProgramUpdateView.as_view(),
             name="program-update",
@@ -67,9 +77,19 @@ def flow_patterns():
             name="add-component-to-program",
         ),
         url(
-            r"^dialog-form/post",
-            views.dialog_form_post,
-            name="dialog-form-post",
+            r"^dialog-form/create",
+            views.dialog_form_create,
+            name="dialog-form-create",
+        ),
+        url(
+            r"^dialog-form/update",
+            views.dialog_form_update,
+            name="dialog-form-update",
+        ),
+        url(
+            r"^dialog-form/delete",
+            views.dialog_form_delete,
+            name="dialog-form-delete",
         ),
     ]
 

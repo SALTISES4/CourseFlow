@@ -23,7 +23,12 @@ from .serializers import (
     WeekLevelComponentSerializer,
     ProgramSerializer,
     ProgramLevelComponentSerializer,
+    WeekSerializer,
+    ArtifactSerializer,
+    AssesmentSerializer,
+    PreparationSerializer,
 )
+from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 from django.forms import ModelForm
@@ -37,6 +42,28 @@ import uuid
 import json
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+
+class ProgramDetailView(DetailView):
+    model = Program
+    template_name = "course_flow_creation_distribution/program_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        context["program_json"] = JSONRenderer().render(ProgramSerializer(self.object).data).decode("utf-8")
+        return context
+
+class ProgramCreateView(CreateView):
+    model = Program
+    fields = ["title", "description"]
+    template_name = "course_flow_creation_distribution/program_create.html"
+
+    def form_valid(self, form):
+        if type(self.request.user) == "User":
+            form.instance.author = self.request.user
+        return super(ProgramCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse("program-update", kwargs={"pk": self.object.pk})
 
 class ProgramUpdateView(UpdateView):
     model = Program
@@ -59,15 +86,8 @@ class CourseDetailView(DetailView):
     template_name = "course_flow_creation_distribution/course_detail.html"
 
     def get_context_data(self, **kwargs):
-        context = super(DetaileView, self).get_context_data(**kwargs)
-        context["week_course_links"] = WeekCourse.objects.filter(
-            course=self.get_object()
-        )
-        context["component_week_links"] = []
-        for week in self.get_object().weeks.all():
-            context["component_week_links"].append(
-                ComponentWeek.objects.filter(week=week)
-            )
+        context = super(DetailView, self).get_context_data(**kwargs)
+        context["course_json"] = JSONRenderer().render(CourseSerializer(self.object).data).decode("utf-8")
         return context
 
 
@@ -86,18 +106,6 @@ class CourseUpdateView(UpdateView):
     def get_success_url(self):
         return reverse("course-detail", kwargs={"pk": self.object.pk})
 
-
-class NodeForm(ModelForm):
-        class Meta:
-            model = Node
-            fields = ['title', 'description', 'work_classification', 'activity_classification', 'classification']
-
-class StrategyForm(ModelForm):
-        class Meta:
-            model = Strategy
-            fields = ['title', 'description']
-
-
 class ActivityDetailView(DetailView):
     model = Activity
     template_name = "course_flow_creation_distribution/activity_detail.html"
@@ -106,7 +114,6 @@ class ActivityDetailView(DetailView):
         context = super(DetailView, self).get_context_data(**kwargs)
         context["activity_json"] = JSONRenderer().render(ActivitySerializer(self.object).data).decode("utf-8")
         return context
-
 
 class ActivityUpdateView(UpdateView):
     model = Activity
@@ -120,8 +127,6 @@ class ActivityUpdateView(UpdateView):
         context["default_strategy_json"] = JSONRenderer().render(StrategySerializer(context["default_strategies"], many=True).data).decode("utf-8")
         context["popular_nodes"] = Node.objects.filter(is_original=True).annotate(num_children=Count('node')).order_by('-num_children')[:3]
         context["popoular_node_json"] = JSONRenderer().render(NodeSerializer(context["popular_nodes"], many=True).data).decode("utf-8")
-        context['node_form'] = NodeForm()
-        context['strategy_form'] = StrategyForm()
         return context
 
     def get_success_url(self):
@@ -157,7 +162,7 @@ def duplicate_node(node):
         parent_node=node,
         work_classification=node.work_classification,
         activity_classification=node.activity_classification,
-        classification=node.classification
+        classification=node.classification,
     )
     return new_node
 
@@ -265,10 +270,10 @@ def add_component_to_program(request):
 
     return JsonResponse(JSONRenderer().render(ProgramSerializer(program).data).decode("utf-8"), safe=False)
 
-def dialog_form_post(request):
+def dialog_form_create(request):
     data = json.loads(request.POST.get("json"))
     props = json.loads(request.POST.get("props"))
-    print(props)
+    hash = json.loads(request.POST.get("hash"))
     if props["isNode"]:
         print("node cond")
         del data["componentType"]
@@ -298,7 +303,7 @@ def dialog_form_post(request):
             return JsonResponse({"action": "posted"})
         else:
             return JsonResponse({"action": "error"})
-    elif (data["componentType"]==1):
+    elif (data["componentType"]==2):
         del data["componentType"], data["work_classification"], data["activity_classification"]
         serializer = AssesmentSerializer(data=data)
         if serializer.is_valid():
@@ -306,7 +311,7 @@ def dialog_form_post(request):
             return JsonResponse({"action": "posted"})
         else:
             return JsonResponse({"action": "error"})
-    elif (data["componentType"]==2):
+    elif (data["componentType"]==3):
         del data["componentType"], data["work_classification"], data["activity_classification"]
         serializer = ArtifactSerializer(data=data)
         if serializer.is_valid():
@@ -314,7 +319,7 @@ def dialog_form_post(request):
             return JsonResponse({"action": "posted"})
         else:
             return JsonResponse({"action": "error"})
-    elif (data["componentType"]==3):
+    elif (data["componentType"]==4):
         del data["componentType"], data["work_classification"], data["activity_classification"]
         serializer = PreparationSerializer(data=data)
         if serializer.is_valid():
@@ -338,3 +343,9 @@ def dialog_form_post(request):
             return JsonResponse({"action": "posted"})
         else:
             return JsonResponse({"action": "error"})
+
+def dialog_form_update(request):
+    pass
+
+def dialog_form_delete(request):
+    pass
