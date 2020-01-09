@@ -6,7 +6,9 @@
 <!-- -->
 {% block metadescription %} {% endblock %}
 <!-- -->
-{% block body %} {% endblock %}
+{% block body %}
+<div id="node-form-container"></div>
+{% endblock %}
 <!-- -->
 {% block foot %} {% endblock %}
 <!-- -->
@@ -16,6 +18,13 @@
 <script>
 
         window.addEventListener("load", function() {
+
+
+          root.injectDialogForm(
+            "{% trans 'posting worked' %}",
+            "{% trans 'posting didnt work' %}"
+          );
+
           console.log({{ course_json|safe }});
 
           let courseJson = {{ course_json|safe }};
@@ -247,6 +256,15 @@
 
               svgCourse.append("g")
                 .attr("class", "action-icon")
+                .on("click", function(d,i){
+                    root.currentComponentInstance.setState({
+                      object: courseJson,
+                      objectType: "course",
+                      isCourse: true,
+                      isDeleteForm: true
+                    });
+                    root.currentComponentInstance.dlg.MDComponent.show();
+                })
                 .append('image')
                 .attr('x', `${weekWidth-40}`)
                 .attr('y', `${60}`)
@@ -257,8 +275,13 @@
               svgCourse.append("g")
                 .attr("class", "action-icon")
                 .on("click", function(d,i){
-                    //openUpdateForm(d3.select(this.parentNode));
-                    console.log(d3.select(this.parentNode).data());
+                    root.currentComponentInstance.setState({
+                      object: courseJson,
+                      objectType: "course",
+                      isCourse: true,
+                      isUpdateForm: true
+                    });
+                    root.currentComponentInstance.dlg.MDComponent.show();
                 })
                 .append('image')
                 .attr('x', `${weekWidth-40}`)
@@ -323,6 +346,15 @@
 
                   weeks.append("g")
                     .attr("class", "action-icon")
+                    .on("mousedown", function(d,i){
+                        root.currentComponentInstance.setState({
+                          object: d3.select(this.parentNode).node().__data__.week,
+                          objectType: "week",
+                          isWeek: true,
+                          isDeleteForm: true
+                        });
+                        root.currentComponentInstance.dlg.MDComponent.show();
+                    })
                     .append('image')
                     .attr('x', `${weekWidth-40}`)
                     .attr('y', `${90}`)
@@ -333,8 +365,13 @@
                   weeks.append("g")
                     .attr("class", "action-icon")
                     .on("mousedown", function(d,i){
-                        //openUpdateForm(d3.select(this.parentNode));
-                        console.log(d3.select(this.parentNode).node().__data__);
+                        root.currentComponentInstance.setState({
+                          object: d3.select(this.parentNode).node().__data__.week,
+                          objectType: "week",
+                          isWeek: true,
+                          isUpdateForm: true
+                        });
+                        root.currentComponentInstance.dlg.MDComponent.show();
                     })
                     .append('image')
                     .attr('x', `${weekWidth-40}`)
@@ -515,6 +552,15 @@
 
                 components.append("g")
                   .attr("class", "action-icon")
+                  .on("mousedown", function(d,i){
+                      root.currentComponentInstance.setState({
+                        object: d3.select(this.parentNode).node().__data__.component.content_object,
+                        objectType: d3.select(this.parentNode).node().__data__.component.content_type_in_text,
+                        isCourseLevelComponent: true,
+                        isDeleteForm: true
+                      });
+                      root.currentComponentInstance.dlg.MDComponent.show();
+                  })
                   .append('image')
                   .attr('x', `${componentWidth-40}`)
                   .attr('y', `${componentHeight-45}`)
@@ -525,7 +571,13 @@
                 components.append("g")
                   .attr("class", "action-icon")
                   .on("mousedown", function(d,i){
-                    console.log(d3.select(this.parentNode).node().__data__);
+                      root.currentComponentInstance.setState({
+                        object: d3.select(this.parentNode).node().__data__.component.content_object,
+                        objectType: d3.select(this.parentNode).node().__data__.component.content_type_in_text,
+                        isCourseLevelComponent: true,
+                        isUpdateForm: true
+                      });
+                      root.currentComponentInstance.dlg.MDComponent.show();
                   })
                   .append('image')
                   .attr('x', `${componentWidth-40}`)

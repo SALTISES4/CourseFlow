@@ -25,17 +25,23 @@ export class CreateDialogForm extends Component {
   state = {
     object: null,
     objectType: null,
-    title: "",
-    description: "",
-    author: null,
-    componentType: null,
-    work_classification: null,
-    activity_classification: null,
-    isWeek: this.props.isWeek,
-    isCourse: this.props.isCourse,
-    isNode: this.props.isNode,
-    isProgramLevelComponent: this.props.isProgramLevelComponent,
-    isCourseLevelComponent: this.props.isCourseLevelComponent,
+    objectToBe: {
+      title: "",
+      description: "",
+      author: null,
+      componentType: null,
+      work_classification: -1,
+      activity_classification: -1
+    },
+    parentID: null,
+    isNode: null,
+    isStrategy: null,
+    isActivity: null,
+    isWeek: null,
+    isCourse: null,
+    isProgram: null,
+    isCourseLevelComponent: null,
+    isProgramLevelComponent: null,
     isDeleteForm: false,
     isUpdateForm: false
   };
@@ -46,7 +52,9 @@ export class CreateDialogForm extends Component {
 
   onSubmit = e => {
     if (this.state.isDeleteForm) {
+      deleteNode(this);
     } else if (this.state.isUpdateForm) {
+      updateNode(this);
     } else {
       createNode(this);
     }
@@ -54,12 +62,25 @@ export class CreateDialogForm extends Component {
     this.setState({
       object: null,
       objectType: null,
-      title: "",
-      description: "",
-      author: null,
-      componentType: null,
-      work_classification: null,
-      activity_classification: null
+      objectToBe: {
+        title: "",
+        description: "",
+        author: null,
+        componentType: null,
+        work_classification: -1,
+        activity_classification: -1
+      },
+      parentID: null,
+      isNode: null,
+      isStrategy: null,
+      isActivity: null,
+      isWeek: null,
+      isCourse: null,
+      isProgram: null,
+      isCourseLevelComponent: null,
+      isProgramLevelComponent: null,
+      isDeleteForm: false,
+      isUpdateForm: false
     });
   };
 
@@ -68,17 +89,32 @@ export class CreateDialogForm extends Component {
     this.setState({
       object: null,
       objectType: null,
-      title: "",
-      description: "",
-      author: null,
-      componentType: null,
-      work_classification: null,
-      activity_classification: null
+      objectToBe: {
+        title: "",
+        description: "",
+        author: null,
+        componentType: null,
+        work_classification: -1,
+        activity_classification: -1
+      },
+      parentID: null,
+      isNode: null,
+      isStrategy: null,
+      isActivity: null,
+      isWeek: null,
+      isCourse: null,
+      isProgram: null,
+      isCourseLevelComponent: null,
+      isProgramLevelComponent: null,
+      isDeleteForm: false,
+      isUpdateForm: false
     });
   };
 
-  updateDescription = e => {
-    this.setState({ description: e.target.value });
+  updateObjectToBeDescription = e => {
+    this.setState({
+      objectToBe: { ...this.state.objectToBe, description: e.target.value }
+    });
   };
 
   updateObjectDescription = e => {
@@ -87,37 +123,74 @@ export class CreateDialogForm extends Component {
     });
   };
 
-  updateTitle = e => {
-    this.setState({ title: e.target.value });
+  updateObjectToBeTitle = e => {
+    this.setState({
+      objectToBe: { ...this.state.objectToBe, title: e.target.value }
+    });
   };
 
   updateObjectTitle = e => {
     this.setState({ object: { ...this.state.object, title: e.target.value } });
   };
 
+  updateObjectToBeWorkClassification = e => {
+    this.setState({
+      objectToBe: {
+        ...this.state.objectToBe,
+        work_classification: e.target.selectedIndex
+      }
+    });
+  };
+
+  updateObjectWorkClassification = e => {
+    console.log(e.target.selectedIndex);
+    this.setState({
+      object: {
+        ...this.state.object,
+        work_classification: e.target.selectedIndex
+      }
+    });
+  };
+
+  updateObjectToBeActivityClassification = e => {
+    this.setState({
+      objectToBe: {
+        ...this.state.objectToBe,
+        work_classification: e.target.selectedIndex
+      }
+    });
+  };
+
+  updateObjectActivityClassification = e => {
+    console.log(e.target.selectedIndex);
+    this.setState({
+      object: {
+        ...this.state.object,
+        activity_classification: e.target.selectedIndex
+      }
+    });
+  };
+
+  updateObjectToBeComponentType = e => {
+    this.setState({
+      objectToBe: {
+        ...this.state.objectToBe,
+        componentType: e.target.selectedIndex
+      }
+    });
+  };
+
   render() {
     if (this.state.isDeleteForm) {
       return (
         <div>
-          <Icon
-            id="delete-node-button"
-            primary={true}
-            raised={true}
-            onClick={() => {
-              this.dlg.MDComponent.show();
-            }}
-            class="material-icons-outlined"
-            style="cursor: pointer; font-size: 48px;"
-          >
-            add_box
-          </Icon>
           <Dialog
             style="padding: 0; border: 0; width: 0;"
             ref={dlg => {
               this.dlg = dlg;
             }}
           >
-            <form class="creation-form">
+            <form class="deletion-form">
               <Dialog.Header>{this.state.object.title}</Dialog.Header>
               <Dialog.Body scrollable={false}>
                 Are you sure you'd like to delete this {this.state.objectType}?
@@ -170,26 +243,16 @@ export class CreateDialogForm extends Component {
                       textarea={true}
                       label="Description"
                       value={this.state.object.description}
-                      onInput={this.updateObjectTitle}
+                      onInput={this.updateObjectDescription}
                     />
                   </div>
                 )}
                 {this.state.isNode && (
                   <div>
                     <Select
-                      hintText={
-                        !this.state.object.work_classification &&
-                        "Select a work classification"
-                      }
+                      hintText="Select a work classification"
                       selectedIndex={this.state.object.work_classification}
-                      onChange={e => {
-                        this.setState({
-                          object: {
-                            ...this.state.object,
-                            work_classification: +e.target.selectedIndex - 1
-                          }
-                        });
-                      }}
+                      onChange={this.updateObjectWorkClassification}
                     >
                       <Select.Item>Individual Work</Select.Item>
                       <Select.Item>Work in Groups</Select.Item>
@@ -200,26 +263,15 @@ export class CreateDialogForm extends Component {
                 {this.state.isNode && (
                   <div>
                     <Select
-                      hintText={
-                        !this.state.object.activity_classification &&
-                        "Select an activity classification"
-                      }
+                      hintText="Select an activity classification"
                       selectedIndex={this.state.object.activity_classification}
-                      onChange={e => {
-                        this.setState({
-                          object: {
-                            ...this.state.object,
-                            activity_classification: +e.target.selectedIndex - 1
-                          }
-                        });
-                      }}
+                      onChange={this.updateObjectActivityClassification}
                     >
                       <Select.Item>Gather Information</Select.Item>
                       <Select.Item>Discuss</Select.Item>
                       <Select.Item>Solve</Select.Item>
                       <Select.Item>Analyze</Select.Item>
                       <Select.Item>Assess/Review Papers</Select.Item>
-                      <Select.Item>Whole Class</Select.Item>
                       <Select.Item>Evaluate Peers</Select.Item>
                       <Select.Item>Debate</Select.Item>
                       <Select.Item>Game/Roleplay</Select.Item>
@@ -281,12 +333,8 @@ export class CreateDialogForm extends Component {
                   <div>
                     <Select
                       hintText="Select a node type"
-                      selectedIndex={this.state.componentType}
-                      onChange={e => {
-                        this.setState({
-                          componentType: e.target.selectedIndex
-                        });
-                      }}
+                      selectedIndex={this.state.objectToBe.componentType}
+                      onChange={this.updateObjectToBeComponentType}
                     >
                       <Select.Item>Course</Select.Item>
                       <Select.Item>Assesment</Select.Item>
@@ -297,12 +345,8 @@ export class CreateDialogForm extends Component {
                   <div>
                     <Select
                       hintText="Select a node type"
-                      selectedIndex={this.state.componentType}
-                      onChange={e => {
-                        this.setState({
-                          componentType: e.target.selectedIndex
-                        });
-                      }}
+                      selectedIndex={this.state.objectToBe.componentType}
+                      onChange={this.updateObjectToBeComponentType}
                     >
                       <Select.Item>Activity</Select.Item>
                       <Select.Item>Assesment</Select.Item>
@@ -314,8 +358,8 @@ export class CreateDialogForm extends Component {
                 <div>
                   <TextField
                     label="Title"
-                    value={this.state.title}
-                    onInput={this.updateTitle}
+                    value={this.state.objectToBe.title}
+                    onInput={this.updateObjectToBeTitle}
                   />
                 </div>
                 {!this.state.isWeek && (
@@ -323,24 +367,17 @@ export class CreateDialogForm extends Component {
                     <TextField
                       textarea={true}
                       label="Description"
-                      value={this.state.description}
-                      onInput={this.updateDescription}
+                      value={this.state.objectToBe.description}
+                      onInput={this.updateObjectToBeDescription}
                     />
                   </div>
                 )}
                 {this.state.isNode && (
                   <div>
                     <Select
-                      hintText={
-                        this.state.work_classification &&
-                        "Select a work classification"
-                      }
-                      selectedIndex={this.state.work_classification}
-                      onChange={e => {
-                        this.setState({
-                          work_classification: e.target.selectedIndex
-                        });
-                      }}
+                      hintText="Select a work classification"
+                      selectedIndex={this.state.objectToBe.work_classification}
+                      onChange={this.updateObjectToBeWorkClassification}
                     >
                       <Select.Item>Individual Work</Select.Item>
                       <Select.Item>Work in Groups</Select.Item>
@@ -351,23 +388,17 @@ export class CreateDialogForm extends Component {
                 {this.state.isNode && (
                   <div>
                     <Select
-                      hintText={
-                        this.state.activity_classification &&
-                        "Select an activity classification"
+                      hintText="Select an activity classification"
+                      selectedIndex={
+                        this.state.objectToBe.activity_classification
                       }
-                      selectedIndex={this.state.activity_classification}
-                      onChange={e => {
-                        this.setState({
-                          activity_classification: e.target.selectedIndex
-                        });
-                      }}
+                      onChange={this.updateObjectToBeActivityClassification}
                     >
                       <Select.Item>Gather Information</Select.Item>
                       <Select.Item>Discuss</Select.Item>
                       <Select.Item>Solve</Select.Item>
                       <Select.Item>Analyze</Select.Item>
                       <Select.Item>Assess/Review Papers</Select.Item>
-                      <Select.Item>Whole Class</Select.Item>
                       <Select.Item>Evaluate Peers</Select.Item>
                       <Select.Item>Debate</Select.Item>
                       <Select.Item>Game/Roleplay</Select.Item>
@@ -390,15 +421,16 @@ export class CreateDialogForm extends Component {
                 <Dialog.FooterButton
                   accept={true}
                   disabled={
-                    (!this.state.title && this.state.isWeek) ||
-                    ((!this.state.title || !this.state.description) &&
+                    (!this.state.objectToBe.title && this.state.isWeek) ||
+                    ((!this.state.objectToBe.title ||
+                      !this.state.objectToBe.description) &&
                       !this.state.isWeek) ||
                     (this.state.isNode &&
-                      (!this.state.work_classification ||
-                        !this.state.activity_classification)) ||
+                      (!this.state.objectToBe.work_classification ||
+                        !this.state.objectToBe.activity_classification)) ||
                     ((this.state.isProgramLevelComponent ||
                       this.state.isCourseLevelComponent) &&
-                      !this.state.componentType)
+                      !this.state.objectToBe.componentType)
                   }
                   raised={true}
                   onClick={this.onSubmit}
@@ -437,11 +469,34 @@ function getCsrfToken() {
     .getAttribute("value");
 }
 
-function deleteThisItem(component) {
+function deleteNode(component) {
   $.post(window.location.origin + "/dialog-form/delete", {
-    json: JSON.stringify(component.state),
-    props: JSON.stringify(component.props),
-    hash: `${window.location.href.split("/").pop()}`
+    objectID: JSON.stringify(component.state.object.id),
+    objectType: JSON.stringify(component.state.objectType)
+  })
+    .done(function(data) {
+      console.log(data.action);
+      if (data.action == "posted") {
+        component.snack.MDComponent.show({
+          message: component.props.snackMessageOnSuccess
+        });
+      } else {
+        component.snack.MDComponent.show({
+          message: component.props.snackMessageOnFailure
+        });
+      }
+    })
+    .fail(function(data) {
+      component.snack.MDComponent.show({
+        message: component.props.snackMessageOnFailure
+      });
+    });
+}
+
+function updateNode(component) {
+  $.post(window.location.origin + "/dialog-form/update", {
+    object: JSON.stringify(component.state.object),
+    objectType: JSON.stringify(component.state.objectType)
   })
     .done(function(data) {
       console.log(data.action);
@@ -464,10 +519,10 @@ function deleteThisItem(component) {
 
 //post new node
 function createNode(component) {
-  $.post(window.location.origin + "/dialog-form/post", {
-    json: JSON.stringify(component.state),
-    props: JSON.stringify(component.props),
-    hash: `${window.location.href.split("/").pop()}`
+  $.post(window.location.origin + "/dialog-form/create", {
+    object: JSON.stringify(component.state.objectToBe),
+    objectType: JSON.stringify(component.state.objectType),
+    parentID: JSON.stringify(component.state.parentID)
   })
     .done(function(data) {
       console.log(data.action);
@@ -488,69 +543,12 @@ function createNode(component) {
     });
 }
 
-export function injectDialogUpdateForm(
-  json,
-  snackMessageOnSuccess,
-  snackMessageOnFailure
-) {
-  if (
-    document.body.contains(
-      document.getElementById("node-update-form-container")
-    )
-  ) {
-    render(
-      <UpdateDialogForm
-        json={json}
-        snackMessageOnSuccess={snackMessageOnSuccess}
-        snackMessageOnFailure={snackMessageOnFailure}
-      />,
-      document.getElementById("node-update-form-container")
-    );
-  }
-}
-
-export function injectDialogDeleteForm(
-  json,
-  canBeRemoved,
-  snackMessageOnSuccess,
-  snackMessageOnFailure
-) {
-  if (
-    document.body.contains(
-      document.getElementById("node-delete-form-container")
-    )
-  ) {
-    render(
-      <DeleteDialogForm
-        json={json}
-        canBeRemoved={canBeRemoved}
-        snackMessageOnSuccess={snackMessageOnSuccess}
-        snackMessageOnFailure={snackMessageOnFailure}
-      />,
-      document.getElementById("node-delete-form-container")
-    );
-  }
-}
-
 export var currentComponentInstance = null;
 
-export function injectDialogForm(
-  isWeek,
-  isCourse,
-  isNode,
-  isProgramLevelComponent,
-  isCourseLevelComponent,
-  snackMessageOnSuccess,
-  snackMessageOnFailure
-) {
+export function injectDialogForm(snackMessageOnSuccess, snackMessageOnFailure) {
   if (document.body.contains(document.getElementById("node-form-container"))) {
     render(
       <CreateDialogForm
-        isWeek={isWeek}
-        isCourse={isCourse}
-        isNode={isNode}
-        isProgramLevelComponent={isProgramLevelComponent}
-        isCourseLevelComponent={isCourseLevelComponent}
         snackMessageOnSuccess={snackMessageOnSuccess}
         snackMessageOnFailure={snackMessageOnFailure}
       />,

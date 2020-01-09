@@ -1,8 +1,13 @@
 from django.conf.urls import include, url
-
+from rest_framework import routers
 
 from . import views
 
+
+router = routers.SimpleRouter()
+router.register(r'activity/read', views.ActivityViewSet)
+router.register(r'course/read', views.CourseViewSet)
+router.register(r'program/read', views.ProgramViewSet)
 
 def flow_patterns():
     return [
@@ -91,7 +96,6 @@ def flow_patterns():
             views.dialog_form_delete,
             name="dialog-form-delete",
         ),
-    ]
-
+    ] + router.urls
 
 urlpatterns = sum([flow_patterns()], [])

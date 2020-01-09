@@ -22,19 +22,19 @@
             window.addEventListener("load", function() {
 
               root.injectDialogForm(
-                false,
-                false,
-                false,
-                false,
-                true,
                 "{% trans 'posting worked' %}",
                 "{% trans 'posting didnt work' %}"
               );
-
+              let activityJson = null;
 
               const svgParent = d3.select("svg").style("margin-top", "100px");
-
-              let activityJson = {{ activity_json|safe }};
+/*
+              d3.json(window.location.origin+"/activity/read/"+{{object.pk}}+"/?format=json").then(function (json) {
+                console.log(json);
+                activityJson = json;
+              });
+*/
+              //let activityJson = {{ activity_json|safe }};
 
               const popularNodeJson = {{ popoular_node_json|safe }};
 
@@ -328,15 +328,21 @@
               function swapDiv(referenceNode){
                   referenceNode.parentNode.insertBefore(referenceNode, referenceNode.parentNode.lastChild.nextSibling);
               }
+              function fetchThenRenderActivity(){
+                d3.json(window.location.origin+"/activity/read/"+{{object.pk}}+"/?format=json").then(function (json) {
+                  activityJson = json;
+                  renderActivity(activityJson, svgParent);
+                });
+              }
 
-              renderActivity(activityJson.strategyactivity_set, svgParent);
+              fetchThenRenderActivity();
 
               renderNodeBoard(svgParent, popularNodeJson);
               renderStrategyBoard(svgParent, defaultStrategyJson);
 
               window.addEventListener("scroll", repositionBoard);
 
-              function renderActivity(strategyActivitySet, parent){
+              function renderActivity(activityData, parent){
 
                   d3.selectAll(".activity").remove();
 
@@ -355,7 +361,7 @@
                     .style('font-size', 18)
                     .style('fill', "white")
                     .style('pointer-events', 'none')
-                    .text(activityJson.title);
+                    .text(activityData.title);
 
                   svgActivity
                     .append('text')
@@ -367,7 +373,7 @@
                     .style('font-size', 12)
                     .style('fill', 'white')
                     .style('pointer-events', 'none')
-                    .text("created by "+activityJson.author);
+                    .text("created by "+activityData.author);
 
                   svgActivity
                     .append('text')
@@ -379,11 +385,17 @@
                     .style('font-size', 14)
                     .style('fill', "white")
                     .style('pointer-events', 'none')
-                    .text(activityJson.description);
+                    .text(activityData.description);
 
                   svgActivity.append("g")
                     .attr("class", "action-icon")
                     .on("click", function(d,i){
+                        root.currentComponentInstance.setState({
+                          object: activityJson,
+                          objectType: "activity",
+                          isActivity: true,
+                          isDeleteForm: true
+                        });
                         root.currentComponentInstance.dlg.MDComponent.show();
                     })
                     .append('image')
@@ -396,6 +408,12 @@
                   svgActivity.append("g")
                     .attr("class", "create-button")
                     .on("click", function(d,i){
+                        root.currentComponentInstance.setState({
+                          object: activityJson,
+                          objectType: "activity",
+                          isActivity: true,
+                          isUpdateForm: true
+                        });
                         root.currentComponentInstance.dlg.MDComponent.show();
                     })
                     .append('image')
@@ -408,6 +426,11 @@
                   svgActivity.append("g")
                     .attr("class", "action-icon")
                     .on("click", function(d,i){
+                        root.currentComponentInstance.setState({
+                          isStrategy: true,
+                          objectType: "strategy",
+                          parentID: activityJson.id
+                        });
                         root.currentComponentInstance.dlg.MDComponent.show();
                     })
                     .append('image')
@@ -423,7 +446,7 @@
                   svgActivity.selectAll('.strategy').remove();
 
 
-                  const strategies = svgActivity.selectAll('.strategy').data(strategyActivitySet).enter()
+                  const strategies = svgActivity.selectAll('.strategy').data(activityData.strategyactivity_set).enter()
                                     .append("svg").attr("class","strategy")
                                     .attr("x", "0")
                                     .attr("height", (d,i)=>`${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertical)-nodeSpacingVertical+2*strategyPadding+strategyInfoHeight}`)
@@ -438,8 +461,8 @@
                                         renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
                                     });
 
-                      for(let i = 0; i<strategyActivitySet.length; i++){
-                        for(let j = 0; j<strategyActivitySet.length; j++){
+                      for(let i = 0; i<activityData.strategyactivity_set.length; i++){
+                        for(let j = 0; j<activityData.strategyactivity_set.length; j++){
                           if(strategies["_groups"][0][j].__data__.rank == i){
                               d3.select(strategies["_groups"][0][j]).attr("y", `${runningActivityHeight}`);
                               runningActivityHeight += +d3.select(strategies["_groups"][0][j]).attr("height")+strategyVerticalSpacing;
@@ -485,6 +508,15 @@
 
                       strategies.append("g")
                         .attr("class", "action-icon")
+                        .on("mousedown", function(d,i){
+                            root.currentComponentInstance.setState({
+                              object: d3.select(this.parentNode).node().__data__.strategy,
+                              objectType: "strategy",
+                              isStrategy: true,
+                              isDeleteForm: true
+                            });
+                            root.currentComponentInstance.dlg.MDComponent.show();
+                        })
                         .append('image')
                         .attr('x', `${strategyWidth-40}`)
                         .attr('y', `${90}`)
@@ -495,8 +527,13 @@
                       strategies.append("g")
                         .attr("class", "action-icon")
                         .on("mousedown", function(d,i){
-                            //openUpdateForm(d3.select(this.parentNode));
-                            console.log(d3.select(this.parentNode).node().__data__);
+                            root.currentComponentInstance.setState({
+                              object: d3.select(this.parentNode).node().__data__.strategy,
+                              objectType: "strategy",
+                              isStrategy: true,
+                              isUpdateForm: true
+                            });
+                            root.currentComponentInstance.dlg.MDComponent.show();
                         })
                         .append('image')
                         .attr('x', `${strategyWidth-40}`)
@@ -565,8 +602,8 @@
                               .attr("width", +widget.attr("width")).attr("height", +widget.attr("height"));
                         dragDropIcons.style("cursor","grab");
                         updateJson();
-                        console.log(strategyActivitySet);
-                        renderActivity(strategyActivitySet, svgParent);
+                        console.log(activityData.strategyactivity_set);
+                        renderActivity(activityData, svgParent);
                         widget = undefined;
                       });
 
@@ -670,6 +707,15 @@
 
                     nodes.append("g")
                       .attr("class", "action-icon")
+                      .on("mousedown", function(d,i){
+                        root.currentComponentInstance.setState({
+                          object: d3.select(this.parentNode).node().__data__.node,
+                          objectType: "node",
+                          isNode: true,
+                          isDeleteForm: true
+                        });
+                        root.currentComponentInstance.dlg.MDComponent.show();
+                      })
                       .append('image')
                       .attr('x', `${nodeWidth-40}`)
                       .attr('y', `${nodeHeight-45}`)
@@ -680,7 +726,13 @@
                     nodes.append("g")
                       .attr("class", "action-icon")
                       .on("mousedown", function(d,i){
-                        console.log(d3.select(this.parentNode).node().__data__);
+                        root.currentComponentInstance.setState({
+                          object: d3.select(this.parentNode).node().__data__.node,
+                          objectType: "node",
+                          isNode: true,
+                          isUpdateForm: true
+                        });
+                        root.currentComponentInstance.dlg.MDComponent.show();
                       })
                       .append('image')
                       .attr('x', `${nodeWidth-40}`)
@@ -794,6 +846,10 @@
                   if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                       xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
                   }
+              },
+              success: function(){
+                console.log("called");
+                fetchThenRenderActivity();
               }
           });
 
@@ -815,7 +871,7 @@
         }
 
           function addNode(nodePk, strategyPk){
-            let posting = $.post("{% url 'add-node' %}", {nodePk: nodePk, strategyPk: strategyPk, activityPk: '{{ object.pk|safe }}'});
+            let posting = $.post("{% url 'add-node' %}", {nodePk: nodePk, strategyPk: strategyPk, activityPk: activityJson.id });
             posting.done(function(data) {
               activityJson = JSON.parse(data);
               console.log(activityJson);
@@ -824,7 +880,7 @@
           }
 
           function addStrategy(strategyPk){
-            let posting = $.post("{% url 'add-node' %}", {strategyPk: strategyPk, activityPk: '{{ object.pk|safe }}'});
+            let posting = $.post("{% url 'add-node' %}", {strategyPk: strategyPk, activityPk: activityJson.id });
             posting.done(function(data) {
               activityJson = JSON.parse(data);
               console.log(activityJson);

@@ -491,9 +491,11 @@ class WeekLevelComponentSerializer(serializers.ModelSerializer):
 
     content_type = serializers.SerializerMethodField()
 
+    content_type_in_text = serializers.SerializerMethodField()
+
     class Meta:
         model = Component
-        fields = ["content_object", "content_type", "id"]
+        fields = ["content_object", "content_type", "content_type_in_text", "id"]
 
     def get_content_object(self, instance):
         if type(instance.content_object) == Activity:
@@ -514,6 +516,16 @@ class WeekLevelComponentSerializer(serializers.ModelSerializer):
             return 2
         else:
             return 3
+
+    def get_content_type_in_text(self, instance):
+        if type(instance.content_object) == Activity:
+            return "activity"
+        elif type(instance.content_object) == Preparation:
+            return "preparation"
+        elif type(instance.content_object) == Assesment:
+            return "assesment"
+        else:
+            return "artifact"
 
     def update(self, instance, validated_data):
         content_object_data = self.initial_data.pop('content_object')
@@ -710,9 +722,11 @@ class ProgramLevelComponentSerializer(serializers.ModelSerializer):
 
     content_type = serializers.SerializerMethodField()
 
+    content_type = serializers.SerializerMethodField()
+
     class Meta:
         model = Component
-        fields = ["content_object", "content_type", "id"]
+        fields = ["content_object", "content_type", "content_type_in_text", "id"]
 
     def get_content_object(self, instance):
         if type(instance.content_object) == Course:
@@ -726,6 +740,12 @@ class ProgramLevelComponentSerializer(serializers.ModelSerializer):
             return 0
         else:
             return 1
+
+    def get_content_type_in_text(self, instance):
+        if type(instance.content_object) == Course:
+            return "course"
+        else:
+            return "assesment"
 
     def update(self, instance, validated_data):
         content_object_data = self.initial_data.pop('content_object')

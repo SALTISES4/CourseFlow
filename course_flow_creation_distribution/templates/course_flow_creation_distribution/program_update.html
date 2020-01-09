@@ -103,6 +103,7 @@
 
                   boardComponents.append("g")
                     .attr("class", "action-icon")
+
                     .append('image')
                     .attr('x', `${componentWidth-40}`)
                     .attr('y', `${componentHeight-90}`)
@@ -463,6 +464,9 @@
               if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                   xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
               }
+          },
+          success: function() {
+            // Your code
           }
       });
 

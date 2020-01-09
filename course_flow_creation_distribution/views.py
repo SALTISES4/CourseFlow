@@ -33,6 +33,7 @@ from django.views.generic.edit import CreateView
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView
 from django.forms import ModelForm
 from django.db.models import Q
+from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 import io
@@ -42,6 +43,24 @@ import uuid
 import json
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+
+class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
+
+    serializer_class = ActivitySerializer
+    renderer_classes = [JSONRenderer]
+    queryset = Activity.objects.all()
+
+class CourseViewSet(viewsets.ReadOnlyModelViewSet):
+
+    serializer_class = CourseSerializer
+    renderer_classes = [JSONRenderer]
+    queryset = Course.objects.all()
+
+class ProgramViewSet(viewsets.ReadOnlyModelViewSet):
+
+    serializer_class = ProgramSerializer
+    renderer_classes = [JSONRenderer]
+    queryset = Program.objects.all()
 
 class ProgramDetailView(DetailView):
     model = Program
@@ -122,7 +141,6 @@ class ActivityUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context["activity_json"] = JSONRenderer().render(ActivitySerializer(self.object).data).decode("utf-8")
         context["default_strategies"] = Strategy.objects.filter(default=True)
         context["default_strategy_json"] = JSONRenderer().render(StrategySerializer(context["default_strategies"], many=True).data).decode("utf-8")
         context["popular_nodes"] = Node.objects.filter(is_original=True).annotate(num_children=Count('node')).order_by('-num_children')[:3]
@@ -132,28 +150,30 @@ class ActivityUpdateView(UpdateView):
     def get_success_url(self):
         return reverse("activity-detail", kwargs={"pk": self.object.pk})
 
-
+def save_serializer(serializer):
+    if serializer:
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            return JsonResponse({"action": "error"})
+    else:
+        return JsonResponse({"action": "error"})
 
 def update_activity_json(request):
     data = json.loads(request.POST.get("json"))
     serializer = ActivitySerializer(Activity.objects.get(id=data['id']), data=data)
-    serializer.is_valid()
-    serializer.save()
-    return JsonResponse({"action": "updated"})
+    return save_serializer(serializer)
 
 def update_course_json(request):
     data = json.loads(request.POST.get("json"))
     serializer = CourseSerializer(Course.objects.get(id=data['id']), data=data)
-    serializer.is_valid()
-    serializer.save()
-    return JsonResponse({"action": "updated"})
+    return save_serializer(serializer)
 
 def update_program_json(request):
     data = json.loads(request.POST.get("json"))
     serializer = ProgramSerializer(Program.objects.get(id=data['id']), data=data)
-    serializer.is_valid()
-    serializer.save()
-    return JsonResponse({"action": "updated"})
+    return save_serializer(serializer)
 
 def duplicate_node(node):
     new_node = Node.objects.create(title=node.title,
@@ -271,81 +291,107 @@ def add_component_to_program(request):
     return JsonResponse(JSONRenderer().render(ProgramSerializer(program).data).decode("utf-8"), safe=False)
 
 def dialog_form_create(request):
-    data = json.loads(request.POST.get("json"))
-    props = json.loads(request.POST.get("props"))
-    hash = json.loads(request.POST.get("hash"))
-    if props["isNode"]:
-        print("node cond")
+    data = json.loads(request.POST.get("object"))
+    model = json.loads(request.POST.get("objectType"))
+    parent_id = json.loads(request.POST.get("parentID"))
+
+    if model == "node":
         del data["componentType"]
-        serializer = NodeSerializer(data=data)
-        data["work_classification"] = int(data["work_classification"]) - 1
-        data["activity_classification"] = int(data["activity_classification"]) - 1
+        data["work_classification"] = int(data["work_classification"])
+        data["activity_classification"] = int(data["activity_classification"])
         data["parent_node"] = None
-        if serializer.is_valid():
-            serializer.save()
+        serializer = NodeSerializer(data=data)
+        if parent_id:
+            strategy = Strategy.objects.get(id=parent_id)
+            if serializer.is_valid():
+                node = serializer.save()
+            else:
+                return JsonResponse({"action": "error"})
+            for link in NodeStrategy.objects.filter(strategy=strategy):
+                link.rank += 1
+                link.save()
+            NodeStrategy.objects.create(strategy=strategy, node=node)
             return JsonResponse({"action": "posted"})
-        else:
-            print(serializer.errors)
-            return JsonResponse({"action": "error"})
-    elif props["isCourse"]:
+    elif model == "strategy":
         del data["componentType"], data["work_classification"], data["activity_classification"]
-        serializer = CourseSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
+        data["parent_strategy"] = None
+        serializer = StrategySerializer(data=data)
+        if parent_id:
+            activity = Activity.objects.get(id=parent_id)
+            if serializer.is_valid():
+                strategy = serializer.save()
+            else:
+                print(serializer.errors)
+                return JsonResponse({"action": "error"})
+            for link in StrategyActivity.objects.filter(activity=activity):
+                link.rank += 1
+                link.save()
+            StrategyActivity.objects.create(activity=activity, strategy=strategy)
             return JsonResponse({"action": "posted"})
-        else:
-            return JsonResponse({"action": "error"})
-    elif props["isWeek"]:
-        del data["componentType"], data["work_classification"], data["activity_classification"], data["description"]
-        serializer = WeekSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({"action": "posted"})
-        else:
-            return JsonResponse({"action": "error"})
-    elif (data["componentType"]==2):
-        del data["componentType"], data["work_classification"], data["activity_classification"]
-        serializer = AssesmentSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({"action": "posted"})
-        else:
-            return JsonResponse({"action": "error"})
-    elif (data["componentType"]==3):
-        del data["componentType"], data["work_classification"], data["activity_classification"]
-        serializer = ArtifactSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({"action": "posted"})
-        else:
-            return JsonResponse({"action": "error"})
-    elif (data["componentType"]==4):
-        del data["componentType"], data["work_classification"], data["activity_classification"]
-        serializer = PreparationSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({"action": "posted"})
-        else:
-            return JsonResponse({"action": "error"})
-    elif props["isProgramLevelComponent"]:
-        del data["componentType"], data["work_classification"], data["activity_classification"]
-        serializer = CourseSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({"action": "posted"})
-        else:
-            return JsonResponse({"action": "error"})
-    elif props["isCourseLevelComponent"]:
-        del data["componentType"], data["work_classification"], data["activity_classification"]
+    elif model == "activity":
         serializer = ActivitySerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({"action": "posted"})
-        else:
-            return JsonResponse({"action": "error"})
+    elif model == "assesment":
+        serializer = AssesmentSerializer(data=data)
+    elif model == "artifact":
+        serializer = ArtifactSerializer(data=data)
+    elif model == "preparation":
+        serializer = PreparationSerializer(data=data)
+    elif model == "week":
+        serializer = WeekSerializer(data=data)
+    elif model == "course":
+        serializer = CourseSerializer(data=data)
+    elif model == "program":
+        serializer = ProgramSerializer(data=data)
+    return save_serializer(serializer)
+
+
+    del data["componentType"], data["work_classification"], data["activity_classification"]
 
 def dialog_form_update(request):
-    pass
+    data = json.loads(request.POST.get("object"))
+    model = json.loads(request.POST.get("objectType"))
+
+    if model == "node":
+        serializer = NodeSerializer(Node.objects.get(id=data['id']), data=data)
+    elif model == "strategy":
+        serializer = StrategySerializer(Strategy.objects.get(id=data['id']), data=data)
+    elif model == "activity":
+        serializer = ActivitySerializer(Activity.objects.get(id=data['id']), data=data)
+    elif model == "assesment":
+        serializer = AssesmentSerializer(Assesment.objects.get(id=data['id']), data=data)
+    elif model == "artifact":
+        serializer = ArtifactSerializer(Artifact.objects.get(id=data['id']), data=data)
+    elif model == "preparation":
+        serializer = PreparationSerializer(Preparation.objects.get(id=data['id']), data=data)
+    elif model == "week":
+        serializer = WeekSerializer(Week.objects.get(id=data['id']), data=data)
+    elif model == "course":
+        serializer = CourseSerializer(Course.objects.get(id=data['id']), data=data)
+    elif model == "program":
+        serializer = ProgramSerializer(Program.objects.get(id=data['id']), data=data)
+    return save_serializer(serializer)
+
 
 def dialog_form_delete(request):
-    pass
+    id = json.loads(request.POST.get("objectID"))
+    model = json.loads(request.POST.get("objectType"))
+
+    try:
+        if model == "node":
+            Node.objects.filter(id=id).delete()
+        elif model == "strategy":
+            Strategy.objects.filter(id=id).delete()
+        elif model == "activity":
+            Activity.objects.filter(id=id).delete()
+        elif model == "component":
+            Component.objects.filter(id=id).delete()
+        elif model == "week":
+            Week.objects.filter(id=id).delete()
+        elif model == "course":
+            Course.objects.filter(id=id).delete()
+        elif model == "program":
+            Program.objects.filter(id=id).delete()
+    except:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})

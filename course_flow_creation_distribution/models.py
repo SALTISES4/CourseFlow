@@ -1,15 +1,20 @@
-from django.db import models
-from django.utils.translation import ugettext_lazy as _
+import uuid
+
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import (
     GenericForeignKey,
     GenericRelation,
 )
-import uuid
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
 from django.db.models import Q
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
+
 
 User = get_user_model()
+
 
 class Outcome(models.Model):
     title = models.CharField(max_length=30)
@@ -20,7 +25,7 @@ class Outcome(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
 
@@ -34,31 +39,31 @@ class Node(models.Model):
     parent_node = models.ForeignKey("Node", on_delete=models.SET_NULL, null=True)
     is_original = models.BooleanField(default=True)
 
-    INDIVIDUAL = 0
-    GROUPS = 1
-    WHOLE_CLASS = 2
+    INDIVIDUAL = 1
+    GROUPS = 2
+    WHOLE_CLASS = 3
     WORK_TYPES = (
         (INDIVIDUAL, "Individual Work"),
         (GROUPS, "Work in Groups"),
         (WHOLE_CLASS, "Whole Class"),
     )
     work_classification = models.PositiveIntegerField(choices=WORK_TYPES, default=2)
-    GATHER_INFO = 0
-    DISCUSS = 1
-    SOLVE = 2
-    ANALYZE = 3
-    EVAL_PAPERS = 4
-    EVAL_PEERS = 5
-    DEBATE = 6
-    GAME_ROLEPLAY = 7
-    CREATE_DESIGN = 8
-    REVISE = 9
-    READ = 10
-    WRITE = 11
-    PRESENT = 12
-    EXPERIMENT = 13
-    QUIZ_TEST = 14
-    OTHER = 15
+    GATHER_INFO = 1
+    DISCUSS = 2
+    SOLVE = 3
+    ANALYZE = 4
+    EVAL_PAPERS = 5
+    EVAL_PEERS = 6
+    DEBATE = 7
+    GAME_ROLEPLAY = 8
+    CREATE_DESIGN = 9
+    REVISE = 10
+    READ = 11
+    WRITE = 12
+    PRESENT = 13
+    EXPERIMENT = 14
+    QUIZ_TEST = 15
+    OTHER = 16
     ACTIVITY_TYPES = (
         (GATHER_INFO, "Gather Information"),
         (DISCUSS, "Discuss"),
@@ -77,7 +82,7 @@ class Node(models.Model):
         (QUIZ_TEST, "Quiz/Test"),
         (OTHER, "Other"),
     )
-    activity_classification = models.PositiveIntegerField(choices=ACTIVITY_TYPES, default=0)
+    activity_classification = models.PositiveIntegerField(choices=ACTIVITY_TYPES, default=1)
     OUT_CLASS = 0
     IN_CLASS_INSTRUCTOR = 1
     IN_CLASS_STUDENTS = 2
@@ -92,16 +97,15 @@ class Node(models.Model):
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomeNode", blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
+
 
 class OutcomeNode(models.Model):
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
-
-
 
 
 class Strategy(models.Model):
@@ -120,8 +124,9 @@ class Strategy(models.Model):
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomeStrategy", blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
+
 
 class OutcomeStrategy(models.Model):
     strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
@@ -130,13 +135,11 @@ class OutcomeStrategy(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
 
-
 class NodeStrategy(models.Model):
     strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
-
 
 
 class Activity(models.Model):
@@ -157,15 +160,15 @@ class Activity(models.Model):
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomeActivity", blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
+
 
 class OutcomeActivity(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
-
 
 
 class StrategyActivity(models.Model):
@@ -189,15 +192,15 @@ class Preparation(models.Model):
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomePreparation", blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
+
 
 class OutcomePreparation(models.Model):
     preparation = models.ForeignKey(Preparation, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
-
 
 
 class Artifact(models.Model):
@@ -214,8 +217,9 @@ class Artifact(models.Model):
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomeArtifact", blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
+
 
 class OutcomeArtifact(models.Model):
     artifact = models.ForeignKey(Artifact, on_delete=models.CASCADE)
@@ -238,15 +242,15 @@ class Assesment(models.Model):
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomeAssesment", blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
+
 
 class OutcomeAssesment(models.Model):
     assesment = models.ForeignKey(Assesment, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
-
 
 
 class Week(models.Model):
@@ -262,8 +266,9 @@ class Week(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
+
 
 class OutcomeWeek(models.Model):
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
@@ -272,13 +277,12 @@ class OutcomeWeek(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
 
-
 class Component(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.content_object
 
 
@@ -289,8 +293,6 @@ class ComponentWeek(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
 
-
-
 class Discipline(models.Model):
     title = models.CharField(
         _("Discipline name"),
@@ -299,7 +301,7 @@ class Discipline(models.Model):
         help_text=_("Enter the name of a new discipline."),
     )
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:
@@ -326,14 +328,8 @@ class Course(models.Model):
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomeCourse", blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
-
-class OutcomeCourse(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
 
 
 class WeekCourse(models.Model):
@@ -341,6 +337,14 @@ class WeekCourse(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+
+
+class OutcomeCourse(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
 
 class Program(models.Model):
     title = models.CharField(max_length=30)
@@ -355,8 +359,9 @@ class Program(models.Model):
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomeProgram", blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
+
 
 class ComponentProgram(models.Model):
     component = models.ForeignKey(Component, on_delete=models.CASCADE)
@@ -364,8 +369,56 @@ class ComponentProgram(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
+
 class OutcomeProgram(models.Model):
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+
+
+@receiver(pre_delete, sender=NodeStrategy)
+def reorder_for_deleted_node_strategy(sender, instance, **kwargs):
+    for out_of_order_link in NodeStrategy.objects.filter(strategy=instance.strategy, rank__gt=instance.rank):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+
+@receiver(pre_delete, sender=StrategyActivity)
+def reorder_for_deleted_strategy_activity(sender, instance, **kwargs):
+    for out_of_order_link in StrategyActivity.objects.filter(activity=instance.activity, rank__gt=instance.rank):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+
+@receiver(pre_delete, sender=ComponentWeek)
+def reorder_for_deleted_component_week(sender, instance, **kwargs):
+    for out_of_order_link in ComponentWeek.objects.filter(week=instance.week, rank__gt=instance.rank):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+
+@receiver(pre_delete, sender=WeekCourse)
+def reorder_for_deleted_week_course(sender, instance, **kwargs):
+    for out_of_order_link in WeekCourse.objects.filter(course=instance.course, rank__gt=instance.rank):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+
+@receiver(pre_delete, sender=ComponentProgram)
+def reorder_for_deleted_component_program(sender, instance, **kwargs):
+    for out_of_order_link in ComponentProgram.objects.filter(program=instance.program, rank__gt=instance.rank):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+
+@receiver(pre_delete, sender=Activity)
+@receiver(pre_delete, sender=Assesment)
+@receiver(pre_delete, sender=Artifact)
+@receiver(pre_delete, sender=Preparation)
+@receiver(pre_delete, sender=Course)
+def delete_attached_component(sender, instance, **kwargs):
+    Component.objects.filter(
+            content_type=ContentType.objects.get_for_model(instance),
+            object_id=instance.pk
+        ).delete()
