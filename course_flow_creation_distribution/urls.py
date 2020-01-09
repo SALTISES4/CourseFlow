@@ -1,13 +1,14 @@
-from django.conf.urls import include, url
+from django.conf.urls import url
 from rest_framework import routers
 
 from . import views
 
 
 router = routers.SimpleRouter()
-router.register(r'activity/read', views.ActivityViewSet)
-router.register(r'course/read', views.CourseViewSet)
-router.register(r'program/read', views.ProgramViewSet)
+router.register(r"activity/read", views.ActivityViewSet)
+router.register(r"course/read", views.CourseViewSet)
+router.register(r"program/read", views.ProgramViewSet)
+
 
 def flow_patterns():
     return [
@@ -52,25 +53,15 @@ def flow_patterns():
             name="update-activity-json",
         ),
         url(
-            r"^course/update-json",
-            views.update_course_json,
-            name="update-course-json",
+            r"^course/update-json", views.update_course_json, name="update-course-json"
         ),
         url(
             r"^program/update-json",
             views.update_program_json,
             name="update-program-json",
         ),
-        url(
-            r"^activity/add-node",
-            views.add_node,
-            name="add-node",
-        ),
-        url(
-            r"^activity/add-strategy",
-            views.add_strategy,
-            name="add-strategy",
-        ),
+        url(r"^activity/add-node", views.add_node, name="add-node"),
+        url(r"^activity/add-strategy", views.add_strategy, name="add-strategy"),
         url(
             r"^course/add-component",
             views.add_component_to_course,
@@ -82,20 +73,15 @@ def flow_patterns():
             name="add-component-to-program",
         ),
         url(
-            r"^dialog-form/create",
-            views.dialog_form_create,
-            name="dialog-form-create",
+            r"^dialog-form/create", views.dialog_form_create, name="dialog-form-create"
         ),
         url(
-            r"^dialog-form/update",
-            views.dialog_form_update,
-            name="dialog-form-update",
+            r"^dialog-form/update", views.dialog_form_update, name="dialog-form-update"
         ),
         url(
-            r"^dialog-form/delete",
-            views.dialog_form_delete,
-            name="dialog-form-delete",
+            r"^dialog-form/delete", views.dialog_form_delete, name="dialog-form-delete"
         ),
     ] + router.urls
+
 
 urlpatterns = sum([flow_patterns()], [])

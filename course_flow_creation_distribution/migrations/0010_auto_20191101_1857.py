@@ -5,22 +5,23 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0009_auto_20191031_1802'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0009_auto_20191031_1802")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='node',
-            name='node_classification',
-        ),
+        migrations.RemoveField(model_name="node", name="node_classification"),
         migrations.AddField(
-            model_name='node',
-            name='classification',
-            field=models.CharField(choices=[('0', 'Out of Class'), ('1', 'In Class (Instructor)'), ('2', 'In Class (Students)')], default=1, max_length=1),
+            model_name="node",
+            name="classification",
+            field=models.CharField(
+                choices=[
+                    ("0", "Out of Class"),
+                    ("1", "In Class (Instructor)"),
+                    ("2", "In Class (Students)"),
+                ],
+                default=1,
+                max_length=1,
+            ),
             preserve_default=False,
         ),
-        migrations.DeleteModel(
-            name='NodeClassification',
-        ),
+        migrations.DeleteModel(name="NodeClassification"),
     ]

@@ -1,13 +1,9 @@
 import uuid
 
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.fields import (
-    GenericForeignKey,
-    GenericRelation,
-)
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import Q
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
@@ -82,7 +78,9 @@ class Node(models.Model):
         (QUIZ_TEST, "Quiz/Test"),
         (OTHER, "Other"),
     )
-    activity_classification = models.PositiveIntegerField(choices=ACTIVITY_TYPES, default=1)
+    activity_classification = models.PositiveIntegerField(
+        choices=ACTIVITY_TYPES, default=1
+    )
     OUT_CLASS = 0
     IN_CLASS_INSTRUCTOR = 1
     IN_CLASS_STUDENTS = 2
@@ -115,7 +113,9 @@ class Strategy(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     default = models.BooleanField(default=False)
-    parent_strategy = models.ForeignKey("Strategy", on_delete=models.SET_NULL, null=True)
+    parent_strategy = models.ForeignKey(
+        "Strategy", on_delete=models.SET_NULL, null=True
+    )
     is_original = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -149,7 +149,9 @@ class Activity(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    parent_activity = models.ForeignKey("Activity", on_delete=models.SET_NULL, null=True)
+    parent_activity = models.ForeignKey(
+        "Activity", on_delete=models.SET_NULL, null=True
+    )
     is_original = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -185,7 +187,9 @@ class Preparation(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    parent_preparation = models.ForeignKey("Preparation", on_delete=models.SET_NULL, null=True)
+    parent_preparation = models.ForeignKey(
+        "Preparation", on_delete=models.SET_NULL, null=True
+    )
     is_original = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -210,7 +214,9 @@ class Artifact(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    parent_artifact = models.ForeignKey("Artifact", on_delete=models.SET_NULL, null=True)
+    parent_artifact = models.ForeignKey(
+        "Artifact", on_delete=models.SET_NULL, null=True
+    )
     is_original = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -235,7 +241,9 @@ class Assesment(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    parent_assesment = models.ForeignKey("Assesment", on_delete=models.SET_NULL, null=True)
+    parent_assesment = models.ForeignKey(
+        "Assesment", on_delete=models.SET_NULL, null=True
+    )
     is_original = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -315,9 +323,7 @@ class Course(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-    discipline = models.ForeignKey(
-        Discipline, on_delete=models.SET_NULL, null=True
-    )
+    discipline = models.ForeignKey(Discipline, on_delete=models.SET_NULL, null=True)
 
     parent_course = models.ForeignKey("Course", on_delete=models.SET_NULL, null=True)
     is_original = models.BooleanField(default=True)
@@ -355,7 +361,9 @@ class Program(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
-    components = models.ManyToManyField(Component, through="ComponentProgram", blank=True)
+    components = models.ManyToManyField(
+        Component, through="ComponentProgram", blank=True
+    )
 
     outcomes = models.ManyToManyField(Outcome, through="OutcomeProgram", blank=True)
 
@@ -379,35 +387,45 @@ class OutcomeProgram(models.Model):
 
 @receiver(pre_delete, sender=NodeStrategy)
 def reorder_for_deleted_node_strategy(sender, instance, **kwargs):
-    for out_of_order_link in NodeStrategy.objects.filter(strategy=instance.strategy, rank__gt=instance.rank):
+    for out_of_order_link in NodeStrategy.objects.filter(
+        strategy=instance.strategy, rank__gt=instance.rank
+    ):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
 
 
 @receiver(pre_delete, sender=StrategyActivity)
 def reorder_for_deleted_strategy_activity(sender, instance, **kwargs):
-    for out_of_order_link in StrategyActivity.objects.filter(activity=instance.activity, rank__gt=instance.rank):
+    for out_of_order_link in StrategyActivity.objects.filter(
+        activity=instance.activity, rank__gt=instance.rank
+    ):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
 
 
 @receiver(pre_delete, sender=ComponentWeek)
 def reorder_for_deleted_component_week(sender, instance, **kwargs):
-    for out_of_order_link in ComponentWeek.objects.filter(week=instance.week, rank__gt=instance.rank):
+    for out_of_order_link in ComponentWeek.objects.filter(
+        week=instance.week, rank__gt=instance.rank
+    ):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
 
 
 @receiver(pre_delete, sender=WeekCourse)
 def reorder_for_deleted_week_course(sender, instance, **kwargs):
-    for out_of_order_link in WeekCourse.objects.filter(course=instance.course, rank__gt=instance.rank):
+    for out_of_order_link in WeekCourse.objects.filter(
+        course=instance.course, rank__gt=instance.rank
+    ):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
 
 
 @receiver(pre_delete, sender=ComponentProgram)
 def reorder_for_deleted_component_program(sender, instance, **kwargs):
-    for out_of_order_link in ComponentProgram.objects.filter(program=instance.program, rank__gt=instance.rank):
+    for out_of_order_link in ComponentProgram.objects.filter(
+        program=instance.program, rank__gt=instance.rank
+    ):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
 
@@ -419,6 +437,5 @@ def reorder_for_deleted_component_program(sender, instance, **kwargs):
 @receiver(pre_delete, sender=Course)
 def delete_attached_component(sender, instance, **kwargs):
     Component.objects.filter(
-            content_type=ContentType.objects.get_for_model(instance),
-            object_id=instance.pk
-        ).delete()
+        content_type=ContentType.objects.get_for_model(instance), object_id=instance.pk
+    ).delete()

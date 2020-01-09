@@ -5,14 +5,19 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0010_auto_20191101_1857'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0010_auto_20191101_1857")]
 
     operations = [
         migrations.AlterField(
-            model_name='node',
-            name='classification',
-            field=models.PositiveIntegerField(choices=[(0, 'Out of Class'), (1, 'In Class (Instructor)'), (2, 'In Class (Students)')], default=1),
-        ),
+            model_name="node",
+            name="classification",
+            field=models.PositiveIntegerField(
+                choices=[
+                    (0, "Out of Class"),
+                    (1, "In Class (Instructor)"),
+                    (2, "In Class (Students)"),
+                ],
+                default=1,
+            ),
+        )
     ]

@@ -5,25 +5,15 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0005_auto_20191017_1843'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0005_auto_20191017_1843")]
 
     operations = [
         migrations.RemoveConstraint(
-            model_name='componentweek',
-            name='component_ranking',
+            model_name="componentweek", name="component_ranking"
         ),
+        migrations.RemoveConstraint(model_name="nodestrategy", name="node_ranking"),
         migrations.RemoveConstraint(
-            model_name='nodestrategy',
-            name='node_ranking',
+            model_name="strategyactivity", name="strategy_ranking"
         ),
-        migrations.RemoveConstraint(
-            model_name='strategyactivity',
-            name='strategy_ranking',
-        ),
-        migrations.RemoveConstraint(
-            model_name='weekcourse',
-            name='week_ranking',
-        ),
+        migrations.RemoveConstraint(model_name="weekcourse", name="week_ranking"),
     ]

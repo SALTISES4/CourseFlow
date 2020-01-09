@@ -73,9 +73,9 @@ TEMPLATES = [
 WSGI_APPLICATION = "course_flow_maker.wsgi.application"
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-ADMINS = [('John', 'john@example.com'), ('Mary', 'mary@example.com')]
+ADMINS = [("John", "john@example.com"), ("Mary", "mary@example.com")]
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -87,10 +87,7 @@ DATABASES = {
     }
 }
 
-GRAPH_MODELS = {
-  'all_applications': True,
-  'group_models': True,
-}
+GRAPH_MODELS = {"all_applications": True, "group_models": True}
 
 
 # Password validation
@@ -98,15 +95,12 @@ GRAPH_MODELS = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
+        "NAME": "django.contrib.auth.password_validation.UserAttribute"
+        "SimilarityValidator"
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
@@ -132,9 +126,8 @@ STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "server_static/")
 
 
-
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication"
     ]
 }

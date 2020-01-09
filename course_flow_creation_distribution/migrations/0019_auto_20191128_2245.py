@@ -6,19 +6,21 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0018_auto_20191125_2149'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0018_auto_20191125_2149")]
 
     operations = [
         migrations.AddField(
-            model_name='course',
-            name='is_original',
+            model_name="course",
+            name="is_original",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='course',
-            name='parent_course',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.Course'),
+            model_name="course",
+            name="parent_course",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="course_flow_creation_distribution.Course",
+            ),
         ),
     ]

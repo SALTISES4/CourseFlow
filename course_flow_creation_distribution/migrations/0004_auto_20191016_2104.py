@@ -5,13 +5,8 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0003_week_hash'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0003_week_hash")]
 
     operations = [
-        migrations.RemoveConstraint(
-            model_name='nodestrategy',
-            name='ranking',
-        ),
+        migrations.RemoveConstraint(model_name="nodestrategy", name="ranking")
     ]

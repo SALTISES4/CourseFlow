@@ -6,49 +6,63 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0016_auto_20191113_1839'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0016_auto_20191113_1839")]
 
     operations = [
         migrations.AddField(
-            model_name='activity',
-            name='is_original',
+            model_name="activity",
+            name="is_original",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='activity',
-            name='parent_activity',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.Activity'),
+            model_name="activity",
+            name="parent_activity",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="course_flow_creation_distribution.Activity",
+            ),
         ),
         migrations.AddField(
-            model_name='artifact',
-            name='is_original',
+            model_name="artifact",
+            name="is_original",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='artifact',
-            name='parent_artifact',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.Artifact'),
+            model_name="artifact",
+            name="parent_artifact",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="course_flow_creation_distribution.Artifact",
+            ),
         ),
         migrations.AddField(
-            model_name='assesment',
-            name='is_original',
+            model_name="assesment",
+            name="is_original",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='assesment',
-            name='parent_assesment',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.Assesment'),
+            model_name="assesment",
+            name="parent_assesment",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="course_flow_creation_distribution.Assesment",
+            ),
         ),
         migrations.AddField(
-            model_name='preparation',
-            name='is_original',
+            model_name="preparation",
+            name="is_original",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='preparation',
-            name='parent_preparation',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.Preparation'),
+            model_name="preparation",
+            name="parent_preparation",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="course_flow_creation_distribution.Preparation",
+            ),
         ),
     ]

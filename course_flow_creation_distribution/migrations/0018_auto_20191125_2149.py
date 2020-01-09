@@ -10,50 +10,116 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('course_flow_creation_distribution', '0017_auto_20191125_1952'),
+        ("course_flow_creation_distribution", "0017_auto_20191125_1952"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ComponentProgram',
+            name="ComponentProgram",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('component', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Component')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "component",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Component",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='OutcomeProgram',
+            name="OutcomeProgram",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('outcome', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Outcome')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "outcome",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Outcome",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Program',
+            name="Program",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('description', models.TextField(max_length=400)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('hash', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
-                ('components', models.ManyToManyField(blank=True, through='course_flow_creation_distribution.ComponentProgram', to='course_flow_creation_distribution.Component')),
-                ('outcomes', models.ManyToManyField(blank=True, through='course_flow_creation_distribution.OutcomeProgram', to='course_flow_creation_distribution.Outcome')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                ("description", models.TextField(max_length=400)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "hash",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    "author",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "components",
+                    models.ManyToManyField(
+                        blank=True,
+                        through="course_flow_creation_distribution.ComponentProgram",
+                        to="course_flow_creation_distribution.Component",
+                    ),
+                ),
+                (
+                    "outcomes",
+                    models.ManyToManyField(
+                        blank=True,
+                        through="course_flow_creation_distribution.OutcomeProgram",
+                        to="course_flow_creation_distribution.Outcome",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='outcomeprogram',
-            name='program',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Program'),
+            model_name="outcomeprogram",
+            name="program",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="course_flow_creation_distribution.Program",
+            ),
         ),
         migrations.AddField(
-            model_name='componentprogram',
-            name='program',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Program'),
+            model_name="componentprogram",
+            name="program",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="course_flow_creation_distribution.Program",
+            ),
         ),
     ]

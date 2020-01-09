@@ -5,19 +5,22 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0008_auto_20191025_1844'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0008_auto_20191025_1844")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='nodeclassification',
-            name='title',
-        ),
+        migrations.RemoveField(model_name="nodeclassification", name="title"),
         migrations.AddField(
-            model_name='nodeclassification',
-            name='classification',
-            field=models.CharField(choices=[('OUT', 'Out of Class'), ('INI', 'In Class (Instructor)'), ('INS', 'In Class (Students)')], default='OUT', max_length=3),
+            model_name="nodeclassification",
+            name="classification",
+            field=models.CharField(
+                choices=[
+                    ("OUT", "Out of Class"),
+                    ("INI", "In Class (Instructor)"),
+                    ("INS", "In Class (Students)"),
+                ],
+                default="OUT",
+                max_length=3,
+            ),
             preserve_default=False,
         ),
     ]

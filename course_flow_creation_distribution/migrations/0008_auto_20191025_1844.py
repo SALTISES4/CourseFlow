@@ -10,145 +10,359 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('course_flow_creation_distribution', '0007_auto_20191018_1922'),
+        ("course_flow_creation_distribution", "0007_auto_20191018_1922"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Outcome',
+            name="Outcome",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('description', models.TextField(max_length=400)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('hash', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                ("description", models.TextField(max_length=400)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "hash",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    "author",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AlterField(
-            model_name='course',
-            name='weeks',
-            field=models.ManyToManyField(blank=True, through='course_flow_creation_distribution.WeekCourse', to='course_flow_creation_distribution.Week'),
+            model_name="course",
+            name="weeks",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow_creation_distribution.WeekCourse",
+                to="course_flow_creation_distribution.Week",
+            ),
         ),
         migrations.CreateModel(
-            name='OutcomeWeek',
+            name="OutcomeWeek",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('outcome', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Outcome')),
-                ('week', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Week')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "outcome",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Outcome",
+                    ),
+                ),
+                (
+                    "week",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Week",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='OutcomeStrategy',
+            name="OutcomeStrategy",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('outcome', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Outcome')),
-                ('strategy', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Strategy')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "outcome",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Outcome",
+                    ),
+                ),
+                (
+                    "strategy",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Strategy",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='OutcomePreparation',
+            name="OutcomePreparation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('outcome', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Outcome')),
-                ('preparation', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Preparation')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "outcome",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Outcome",
+                    ),
+                ),
+                (
+                    "preparation",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Preparation",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='OutcomeNode',
+            name="OutcomeNode",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('node', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Node')),
-                ('outcome', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Outcome')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "node",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Node",
+                    ),
+                ),
+                (
+                    "outcome",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Outcome",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='OutcomeCourse',
+            name="OutcomeCourse",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Course')),
-                ('outcome', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Outcome')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Course",
+                    ),
+                ),
+                (
+                    "outcome",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Outcome",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='OutcomeAssesment',
+            name="OutcomeAssesment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('assesment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Assesment')),
-                ('outcome', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Outcome')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "assesment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Assesment",
+                    ),
+                ),
+                (
+                    "outcome",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Outcome",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='OutcomeArtifact',
+            name="OutcomeArtifact",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('artifact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Artifact')),
-                ('outcome', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Outcome')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "artifact",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Artifact",
+                    ),
+                ),
+                (
+                    "outcome",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Outcome",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='OutcomeActivity',
+            name="OutcomeActivity",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('activity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Activity')),
-                ('outcome', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Outcome')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "activity",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Activity",
+                    ),
+                ),
+                (
+                    "outcome",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Outcome",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='activity',
-            name='outcomes',
-            field=models.ManyToManyField(blank=True, through='course_flow_creation_distribution.OutcomeActivity', to='course_flow_creation_distribution.Outcome'),
+            model_name="activity",
+            name="outcomes",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow_creation_distribution.OutcomeActivity",
+                to="course_flow_creation_distribution.Outcome",
+            ),
         ),
         migrations.AddField(
-            model_name='artifact',
-            name='outcomes',
-            field=models.ManyToManyField(blank=True, through='course_flow_creation_distribution.OutcomeArtifact', to='course_flow_creation_distribution.Outcome'),
+            model_name="artifact",
+            name="outcomes",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow_creation_distribution.OutcomeArtifact",
+                to="course_flow_creation_distribution.Outcome",
+            ),
         ),
         migrations.AddField(
-            model_name='assesment',
-            name='outcomes',
-            field=models.ManyToManyField(blank=True, through='course_flow_creation_distribution.OutcomeAssesment', to='course_flow_creation_distribution.Outcome'),
+            model_name="assesment",
+            name="outcomes",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow_creation_distribution.OutcomeAssesment",
+                to="course_flow_creation_distribution.Outcome",
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='outcomes',
-            field=models.ManyToManyField(blank=True, through='course_flow_creation_distribution.OutcomeCourse', to='course_flow_creation_distribution.Outcome'),
+            model_name="course",
+            name="outcomes",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow_creation_distribution.OutcomeCourse",
+                to="course_flow_creation_distribution.Outcome",
+            ),
         ),
         migrations.AddField(
-            model_name='node',
-            name='outcomes',
-            field=models.ManyToManyField(blank=True, through='course_flow_creation_distribution.OutcomeNode', to='course_flow_creation_distribution.Outcome'),
+            model_name="node",
+            name="outcomes",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow_creation_distribution.OutcomeNode",
+                to="course_flow_creation_distribution.Outcome",
+            ),
         ),
         migrations.AddField(
-            model_name='preparation',
-            name='outcomes',
-            field=models.ManyToManyField(blank=True, through='course_flow_creation_distribution.OutcomePreparation', to='course_flow_creation_distribution.Outcome'),
+            model_name="preparation",
+            name="outcomes",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow_creation_distribution.OutcomePreparation",
+                to="course_flow_creation_distribution.Outcome",
+            ),
         ),
         migrations.AddField(
-            model_name='strategy',
-            name='outcomes',
-            field=models.ManyToManyField(blank=True, through='course_flow_creation_distribution.OutcomeStrategy', to='course_flow_creation_distribution.Outcome'),
+            model_name="strategy",
+            name="outcomes",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow_creation_distribution.OutcomeStrategy",
+                to="course_flow_creation_distribution.Outcome",
+            ),
         ),
         migrations.AddField(
-            model_name='week',
-            name='outcomes',
-            field=models.ManyToManyField(blank=True, through='course_flow_creation_distribution.OutcomeWeek', to='course_flow_creation_distribution.Outcome'),
+            model_name="week",
+            name="outcomes",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow_creation_distribution.OutcomeWeek",
+                to="course_flow_creation_distribution.Outcome",
+            ),
         ),
     ]

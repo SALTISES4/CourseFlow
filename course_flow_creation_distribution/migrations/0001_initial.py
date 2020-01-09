@@ -10,223 +10,530 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
+        ("contenttypes", "0002_remove_content_type_name"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Activity',
+            name="Activity",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('description', models.TextField(max_length=400)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                ("description", models.TextField(max_length=400)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Component',
+            name="Component",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('object_id', models.PositiveIntegerField()),
-                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.ContentType')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("object_id", models.PositiveIntegerField()),
+                (
+                    "content_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="contenttypes.ContentType",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ComponentWeek',
+            name="ComponentWeek",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('component', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Component')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "component",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Component",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Course',
+            name="Course",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('description', models.TextField(max_length=400)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                ("description", models.TextField(max_length=400)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Discipline',
+            name="Discipline",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(help_text='Enter the name of a new discipline.', max_length=100, unique=True, verbose_name='Discipline name')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "title",
+                    models.CharField(
+                        help_text="Enter the name of a new discipline.",
+                        max_length=100,
+                        unique=True,
+                        verbose_name="Discipline name",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'discipline',
-                'verbose_name_plural': 'disciplines',
+                "verbose_name": "discipline",
+                "verbose_name_plural": "disciplines",
             },
         ),
         migrations.CreateModel(
-            name='LeftNodeIcon',
+            name="LeftNodeIcon",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
             ],
         ),
         migrations.CreateModel(
-            name='Node',
+            name="Node",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('description', models.TextField(max_length=400)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
-                ('left_node_icon', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.LeftNodeIcon')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                ("description", models.TextField(max_length=400)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "left_node_icon",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="course_flow_creation_distribution.LeftNodeIcon",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='NodeStrategy',
+            name="NodeStrategy",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('node', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Node')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "node",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Node",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Strategy',
+            name="Strategy",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('description', models.TextField(max_length=400)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
-                ('nodes', models.ManyToManyField(blank=True, through='course_flow_creation_distribution.NodeStrategy', to='course_flow_creation_distribution.Node')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                ("description", models.TextField(max_length=400)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "nodes",
+                    models.ManyToManyField(
+                        blank=True,
+                        through="course_flow_creation_distribution.NodeStrategy",
+                        to="course_flow_creation_distribution.Node",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='ThumbnailImage',
+            name="ThumbnailImage",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(upload_to='')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("image", models.ImageField(upload_to="")),
             ],
         ),
         migrations.CreateModel(
-            name='Week',
+            name="Week",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('components', models.ManyToManyField(blank=True, through='course_flow_creation_distribution.ComponentWeek', to='course_flow_creation_distribution.Component')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                (
+                    "components",
+                    models.ManyToManyField(
+                        blank=True,
+                        through="course_flow_creation_distribution.ComponentWeek",
+                        to="course_flow_creation_distribution.Component",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='WeekCourse',
+            name="WeekCourse",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Course')),
-                ('week', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Week')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "course",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Course",
+                    ),
+                ),
+                (
+                    "week",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Week",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='StrategyActivity',
+            name="StrategyActivity",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('activity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Activity')),
-                ('strategy', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Strategy')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "activity",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Activity",
+                    ),
+                ),
+                (
+                    "strategy",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow_creation_distribution.Strategy",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='RightNodeIcon',
+            name="RightNodeIcon",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('thumbnail_image', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.ThumbnailImage')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                (
+                    "thumbnail_image",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="course_flow_creation_distribution.ThumbnailImage",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Preparation',
+            name="Preparation",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('description', models.TextField(max_length=400)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                ("description", models.TextField(max_length=400)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='nodestrategy',
-            name='strategy',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Strategy'),
+            model_name="nodestrategy",
+            name="strategy",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="course_flow_creation_distribution.Strategy",
+            ),
         ),
         migrations.CreateModel(
-            name='NodeClassification',
+            name="NodeClassification",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30, unique=True)),
-                ('thumbnail_image', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.ThumbnailImage')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30, unique=True)),
+                (
+                    "thumbnail_image",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="course_flow_creation_distribution.ThumbnailImage",
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='node',
-            name='node_classification',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.NodeClassification'),
+            model_name="node",
+            name="node_classification",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="course_flow_creation_distribution.NodeClassification",
+            ),
         ),
         migrations.AddField(
-            model_name='node',
-            name='right_node_icon',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.RightNodeIcon'),
+            model_name="node",
+            name="right_node_icon",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="course_flow_creation_distribution.RightNodeIcon",
+            ),
         ),
         migrations.AddField(
-            model_name='leftnodeicon',
-            name='thumbnail_image',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.ThumbnailImage'),
+            model_name="leftnodeicon",
+            name="thumbnail_image",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="course_flow_creation_distribution.ThumbnailImage",
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='discipline',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.Discipline'),
+            model_name="course",
+            name="discipline",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="course_flow_creation_distribution.Discipline",
+            ),
         ),
         migrations.AddField(
-            model_name='course',
-            name='weeks',
-            field=models.ManyToManyField(through='course_flow_creation_distribution.WeekCourse', to='course_flow_creation_distribution.Week'),
+            model_name="course",
+            name="weeks",
+            field=models.ManyToManyField(
+                through="course_flow_creation_distribution.WeekCourse",
+                to="course_flow_creation_distribution.Week",
+            ),
         ),
         migrations.AddField(
-            model_name='componentweek',
-            name='week',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow_creation_distribution.Week'),
+            model_name="componentweek",
+            name="week",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="course_flow_creation_distribution.Week",
+            ),
         ),
         migrations.CreateModel(
-            name='Assesment',
+            name="Assesment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('description', models.TextField(max_length=400)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                ("description", models.TextField(max_length=400)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Artifact',
+            name="Artifact",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=30)),
-                ('description', models.TextField(max_length=400)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=30)),
+                ("description", models.TextField(max_length=400)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "author",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='activity',
-            name='strategies',
-            field=models.ManyToManyField(blank=True, through='course_flow_creation_distribution.StrategyActivity', to='course_flow_creation_distribution.Strategy'),
+            model_name="activity",
+            name="strategies",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow_creation_distribution.StrategyActivity",
+                to="course_flow_creation_distribution.Strategy",
+            ),
         ),
     ]

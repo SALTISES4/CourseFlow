@@ -6,14 +6,12 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0002_auto_20191016_2020'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0002_auto_20191016_2020")]
 
     operations = [
         migrations.AddField(
-            model_name='week',
-            name='hash',
+            model_name="week",
+            name="hash",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
-        ),
+        )
     ]

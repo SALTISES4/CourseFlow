@@ -5,37 +5,34 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0004_auto_20191016_2104'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0004_auto_20191016_2104")]
 
     operations = [
-        migrations.RemoveConstraint(
-            model_name='componentweek',
-            name='ranking',
-        ),
-        migrations.RemoveConstraint(
-            model_name='strategyactivity',
-            name='ranking',
-        ),
-        migrations.RemoveConstraint(
-            model_name='weekcourse',
-            name='ranking',
+        migrations.RemoveConstraint(model_name="componentweek", name="ranking"),
+        migrations.RemoveConstraint(model_name="strategyactivity", name="ranking"),
+        migrations.RemoveConstraint(model_name="weekcourse", name="ranking"),
+        migrations.AddConstraint(
+            model_name="componentweek",
+            constraint=models.UniqueConstraint(
+                fields=("week", "rank"), name="component_ranking"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='componentweek',
-            constraint=models.UniqueConstraint(fields=('week', 'rank'), name='component_ranking'),
+            model_name="nodestrategy",
+            constraint=models.UniqueConstraint(
+                fields=("strategy", "rank"), name="node_ranking"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='nodestrategy',
-            constraint=models.UniqueConstraint(fields=('strategy', 'rank'), name='node_ranking'),
+            model_name="strategyactivity",
+            constraint=models.UniqueConstraint(
+                fields=("activity", "rank"), name="strategy_ranking"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='strategyactivity',
-            constraint=models.UniqueConstraint(fields=('activity', 'rank'), name='strategy_ranking'),
-        ),
-        migrations.AddConstraint(
-            model_name='weekcourse',
-            constraint=models.UniqueConstraint(fields=('course', 'rank'), name='week_ranking'),
+            model_name="weekcourse",
+            constraint=models.UniqueConstraint(
+                fields=("course", "rank"), name="week_ranking"
+            ),
         ),
     ]

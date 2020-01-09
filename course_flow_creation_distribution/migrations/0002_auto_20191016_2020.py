@@ -6,75 +6,79 @@ import uuid
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0001_initial'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0001_initial")]
 
     operations = [
         migrations.AddField(
-            model_name='activity',
-            name='hash',
+            model_name="activity",
+            name="hash",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
         migrations.AddField(
-            model_name='artifact',
-            name='hash',
+            model_name="artifact",
+            name="hash",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
         migrations.AddField(
-            model_name='assesment',
-            name='hash',
+            model_name="assesment",
+            name="hash",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
         migrations.AddField(
-            model_name='course',
-            name='hash',
+            model_name="course",
+            name="hash",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
         migrations.AddField(
-            model_name='node',
-            name='hash',
+            model_name="node",
+            name="hash",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
         migrations.AddField(
-            model_name='preparation',
-            name='hash',
+            model_name="preparation",
+            name="hash",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
         migrations.AddField(
-            model_name='strategy',
-            name='default',
+            model_name="strategy",
+            name="default",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='strategy',
-            name='hash',
+            model_name="strategy",
+            name="hash",
             field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
         ),
         migrations.AlterField(
-            model_name='leftnodeicon',
-            name='title',
+            model_name="leftnodeicon",
+            name="title",
             field=models.CharField(max_length=30, unique=True),
         ),
         migrations.AlterField(
-            model_name='rightnodeicon',
-            name='title',
+            model_name="rightnodeicon",
+            name="title",
             field=models.CharField(max_length=30, unique=True),
         ),
         migrations.AddConstraint(
-            model_name='componentweek',
-            constraint=models.UniqueConstraint(fields=('week', 'rank'), name='ranking'),
+            model_name="componentweek",
+            constraint=models.UniqueConstraint(fields=("week", "rank"), name="ranking"),
         ),
         migrations.AddConstraint(
-            model_name='nodestrategy',
-            constraint=models.UniqueConstraint(fields=('strategy', 'rank'), name='ranking'),
+            model_name="nodestrategy",
+            constraint=models.UniqueConstraint(
+                fields=("strategy", "rank"), name="ranking"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='strategyactivity',
-            constraint=models.UniqueConstraint(fields=('activity', 'rank'), name='ranking'),
+            model_name="strategyactivity",
+            constraint=models.UniqueConstraint(
+                fields=("activity", "rank"), name="ranking"
+            ),
         ),
         migrations.AddConstraint(
-            model_name='weekcourse',
-            constraint=models.UniqueConstraint(fields=('course', 'rank'), name='ranking'),
+            model_name="weekcourse",
+            constraint=models.UniqueConstraint(
+                fields=("course", "rank"), name="ranking"
+            ),
         ),
     ]

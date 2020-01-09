@@ -6,19 +6,21 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow_creation_distribution', '0015_node_is_original'),
-    ]
+    dependencies = [("course_flow_creation_distribution", "0015_node_is_original")]
 
     operations = [
         migrations.AddField(
-            model_name='strategy',
-            name='is_original',
+            model_name="strategy",
+            name="is_original",
             field=models.BooleanField(default=True),
         ),
         migrations.AddField(
-            model_name='strategy',
-            name='parent_strategy',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='course_flow_creation_distribution.Strategy'),
+            model_name="strategy",
+            name="parent_strategy",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="course_flow_creation_distribution.Strategy",
+            ),
         ),
     ]
