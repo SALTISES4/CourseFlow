@@ -32,7 +32,6 @@ export class CreateDialogForm extends Component {
       work_classification: -1,
       activity_classification: -1
     },
-    componentType: null,
     parentID: null,
     isNode: null,
     isStrategy: null,
@@ -69,7 +68,6 @@ export class CreateDialogForm extends Component {
         work_classification: -1,
         activity_classification: -1
       },
-      componentType: null,
       parentID: null,
       isNode: null,
       isStrategy: null,
@@ -86,6 +84,7 @@ export class CreateDialogForm extends Component {
 
   onClose = e => {
     e.preventDefault();
+    console.log(this.state);
     this.setState({
       object: null,
       objectType: null,
@@ -96,7 +95,6 @@ export class CreateDialogForm extends Component {
         work_classification: -1,
         activity_classification: -1
       },
-      componentType: null,
       parentID: null,
       isNode: null,
       isStrategy: null,
@@ -137,17 +135,16 @@ export class CreateDialogForm extends Component {
     this.setState({
       objectToBe: {
         ...this.state.objectToBe,
-        work_classification: e.target.selectedIndex
+        work_classification: +e.target.value
       }
     });
   };
 
   updateObjectWorkClassification = e => {
-    console.log(e.target.selectedIndex);
     this.setState({
       object: {
         ...this.state.object,
-        work_classification: e.target.selectedIndex
+        work_classification: +e.target.value
       }
     });
   };
@@ -156,48 +153,22 @@ export class CreateDialogForm extends Component {
     this.setState({
       objectToBe: {
         ...this.state.objectToBe,
-        work_classification: e.target.selectedIndex
+        work_classification: +e.target.value
       }
     });
   };
 
   updateObjectActivityClassification = e => {
-    console.log(e.target.selectedIndex);
     this.setState({
       object: {
         ...this.state.object,
-        activity_classification: e.target.selectedIndex
+        activity_classification: +e.target.value
       }
     });
   };
 
-  updateObjectToBeComponentType = e => {
-    this.setState({ componentType: e.target.selectedIndex });
-    if (component.state.isCourseLevelComponent) {
-      switch (component.state.componentType) {
-        case 1:
-          component.setState({ objectType: "activity" });
-          break;
-        case 2:
-          component.setState({ objectType: "assesment" });
-          break;
-        case 3:
-          component.setState({ objectType: "artifact" });
-          break;
-        case 4:
-          component.setState({ objectType: "preparation" });
-          break;
-      }
-    } else if (component.state.isProgramLevelComponent) {
-      switch (component.state.componentType) {
-        case 1:
-          component.setState({ objectType: "course" });
-          break;
-        case 2:
-          component.setState({ objectType: "preparation" });
-          break;
-      }
-    }
+  updateObjectType = e => {
+    this.setState({ objectType: e.target.value });
   };
 
   render() {
@@ -274,9 +245,9 @@ export class CreateDialogForm extends Component {
                       selectedIndex={this.state.object.work_classification}
                       onChange={this.updateObjectWorkClassification}
                     >
-                      <Select.Item>Individual Work</Select.Item>
-                      <Select.Item>Work in Groups</Select.Item>
-                      <Select.Item>Whole Class</Select.Item>
+                      <Select.Item value="1">Individual Work</Select.Item>
+                      <Select.Item value="2">Work in Groups</Select.Item>
+                      <Select.Item value="3">Whole Class</Select.Item>
                     </Select>
                   </div>
                 )}
@@ -287,22 +258,22 @@ export class CreateDialogForm extends Component {
                       selectedIndex={this.state.object.activity_classification}
                       onChange={this.updateObjectActivityClassification}
                     >
-                      <Select.Item>Gather Information</Select.Item>
-                      <Select.Item>Discuss</Select.Item>
-                      <Select.Item>Solve</Select.Item>
-                      <Select.Item>Analyze</Select.Item>
-                      <Select.Item>Assess/Review Papers</Select.Item>
-                      <Select.Item>Evaluate Peers</Select.Item>
-                      <Select.Item>Debate</Select.Item>
-                      <Select.Item>Game/Roleplay</Select.Item>
-                      <Select.Item>Create/Design</Select.Item>
-                      <Select.Item>Revise/Improve</Select.Item>
-                      <Select.Item>Read</Select.Item>
-                      <Select.Item>Write</Select.Item>
-                      <Select.Item>Present</Select.Item>
-                      <Select.Item>Experiment/Inquiry</Select.Item>
-                      <Select.Item>Quiz/Test</Select.Item>
-                      <Select.Item>Other</Select.Item>
+                      <Select.Item value="1">Gather Information</Select.Item>
+                      <Select.Item value="2">Discuss</Select.Item>
+                      <Select.Item value="3">Solve</Select.Item>
+                      <Select.Item value="4">Analyze</Select.Item>
+                      <Select.Item value="5">Assess/Review Papers</Select.Item>
+                      <Select.Item value="6">Evaluate Peers</Select.Item>
+                      <Select.Item value="7">Debate</Select.Item>
+                      <Select.Item value="8">Game/Roleplay</Select.Item>
+                      <Select.Item value="9">Create/Design</Select.Item>
+                      <Select.Item value="10">Revise/Improve</Select.Item>
+                      <Select.Item value="11">Read</Select.Item>
+                      <Select.Item value="12">Write</Select.Item>
+                      <Select.Item value="13">Present</Select.Item>
+                      <Select.Item value="14">Experiment/Inquiry</Select.Item>
+                      <Select.Item value="15">Quiz/Test</Select.Item>
+                      <Select.Item value="16">Other</Select.Item>
                     </Select>
                   </div>
                 )}
@@ -353,11 +324,10 @@ export class CreateDialogForm extends Component {
                   <div>
                     <Select
                       hintText="Select a node type"
-                      selectedIndex={this.state.componentType}
-                      onChange={this.updateComponentType}
+                      onChange={this.updateObjectType}
                     >
-                      <Select.Item>Course</Select.Item>
-                      <Select.Item>Assesment</Select.Item>
+                      <Select.Item value="course">Course</Select.Item>
+                      <Select.Item value="assesment">Assesment</Select.Item>
                     </Select>
                   </div>
                 )}
@@ -365,13 +335,12 @@ export class CreateDialogForm extends Component {
                   <div>
                     <Select
                       hintText="Select a node type"
-                      selectedIndex={this.state.componentType}
-                      onChange={this.updateComponentType}
+                      onChange={this.updateObjectType}
                     >
-                      <Select.Item>Activity</Select.Item>
-                      <Select.Item>Assesment</Select.Item>
-                      <Select.Item>Artifact</Select.Item>
-                      <Select.Item>Preparation</Select.Item>
+                      <Select.Item value="activity">Activity</Select.Item>
+                      <Select.Item value="assesment">Assesment</Select.Item>
+                      <Select.Item value="artifact">Artifact</Select.Item>
+                      <Select.Item value="preparation">Preparation</Select.Item>
                     </Select>
                   </div>
                 )}
@@ -399,9 +368,9 @@ export class CreateDialogForm extends Component {
                       selectedIndex={this.state.objectToBe.work_classification}
                       onChange={this.updateObjectToBeWorkClassification}
                     >
-                      <Select.Item>Individual Work</Select.Item>
-                      <Select.Item>Work in Groups</Select.Item>
-                      <Select.Item>Whole Class</Select.Item>
+                      <Select.Item value="1">Individual Work</Select.Item>
+                      <Select.Item value="2">Work in Groups</Select.Item>
+                      <Select.Item value="3">Whole Class</Select.Item>
                     </Select>
                   </div>
                 )}
@@ -414,22 +383,22 @@ export class CreateDialogForm extends Component {
                       }
                       onChange={this.updateObjectToBeActivityClassification}
                     >
-                      <Select.Item>Gather Information</Select.Item>
-                      <Select.Item>Discuss</Select.Item>
-                      <Select.Item>Solve</Select.Item>
-                      <Select.Item>Analyze</Select.Item>
-                      <Select.Item>Assess/Review Papers</Select.Item>
-                      <Select.Item>Evaluate Peers</Select.Item>
-                      <Select.Item>Debate</Select.Item>
-                      <Select.Item>Game/Roleplay</Select.Item>
-                      <Select.Item>Create/Design</Select.Item>
-                      <Select.Item>Revise/Improve</Select.Item>
-                      <Select.Item>Read</Select.Item>
-                      <Select.Item>Write</Select.Item>
-                      <Select.Item>Present</Select.Item>
-                      <Select.Item>Experiment/Inquiry</Select.Item>
-                      <Select.Item>Quiz/Test</Select.Item>
-                      <Select.Item>Other</Select.Item>
+                      <Select.Item value="1">Gather Information</Select.Item>
+                      <Select.Item value="2">Discuss</Select.Item>
+                      <Select.Item value="3">Solve</Select.Item>
+                      <Select.Item value="4">Analyze</Select.Item>
+                      <Select.Item value="5">Assess/Review Papers</Select.Item>
+                      <Select.Item value="6">Evaluate Peers</Select.Item>
+                      <Select.Item value="7">Debate</Select.Item>
+                      <Select.Item value="8">Game/Roleplay</Select.Item>
+                      <Select.Item value="9">Create/Design</Select.Item>
+                      <Select.Item value="10">Revise/Improve</Select.Item>
+                      <Select.Item value="11">Read</Select.Item>
+                      <Select.Item value="12">Write</Select.Item>
+                      <Select.Item value="13">Present</Select.Item>
+                      <Select.Item value="14">Experiment/Inquiry</Select.Item>
+                      <Select.Item value="15">Quiz/Test</Select.Item>
+                      <Select.Item value="16">Other</Select.Item>
                     </Select>
                   </div>
                 )}
@@ -450,7 +419,7 @@ export class CreateDialogForm extends Component {
                         !this.state.objectToBe.activity_classification)) ||
                     ((this.state.isProgramLevelComponent ||
                       this.state.isCourseLevelComponent) &&
-                      !this.state.objectToBe.componentType)
+                      !this.state.objectType)
                   }
                   raised={true}
                   onClick={this.onSubmit}

@@ -117,7 +117,6 @@
 
                   boardComponents.append("g")
                     .attr("class", "action-icon")
-
                     .append('image')
                     .attr('x', `${componentWidth-40}`)
                     .attr('y', `${componentHeight-90}`)
@@ -283,6 +282,22 @@
                 .attr("width", `${31}`)
                 .attr("height", `${31}`)
                 .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+
+              program.append("g")
+                .attr("class", "action-icon")
+                .on("click", function(d,i){
+                    root.currentComponentInstance.setState({
+                      parentID: programJson.id,
+                      isProgramLevelComponent: true
+                    });
+                    root.currentComponentInstance.dlg.MDComponent.show();
+                })
+                .append('image')
+                .attr('x', `${programWidth-40}`)
+                .attr('y', `${100}`)
+                .attr("width", `${31}`)
+                .attr("height", `${31}`)
+                .attr("xlink:href","{% static 'course_flow_creation_distribution/img/add-square-button.svg' %}");
 
                 renderComponents(programJson.componentprogram_set, program);
 

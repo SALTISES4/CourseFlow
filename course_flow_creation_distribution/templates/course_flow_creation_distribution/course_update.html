@@ -295,6 +295,23 @@
                 .attr("height", `${31}`)
                 .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
 
+              svgCourse.append("g")
+                .attr("class", "action-icon")
+                .on("click", function(d,i){
+                    root.currentComponentInstance.setState({
+                      parentID: courseJson.id,
+                      objectType: "week",
+                      isWeek: true
+                    });
+                    root.currentComponentInstance.dlg.MDComponent.show();
+                })
+                .append('image')
+                .attr('x', `${weekWidth-40}`)
+                .attr('y', `${100}`)
+                .attr("width", `${31}`)
+                .attr("height", `${31}`)
+                .attr("xlink:href","{% static 'course_flow_creation_distribution/img/add-square-button.svg' %}");
+
 
               var runningWeekHeight = courseInfoHeight;
 
@@ -381,6 +398,22 @@
                     .append('image')
                     .attr('x', `${weekWidth-40}`)
                     .attr('y', `${45}`)
+                    .attr("width", `${31}`)
+                    .attr("height", `${31}`)
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+
+                  weeks.append("g")
+                    .attr("class", "action-icon")
+                    .on("mousedown", function(d,i){
+                        root.currentComponentInstance.setState({
+                          parentID: d3.select(this.parentNode).node().__data__.week.id,
+                          isCourseLevelComponent: true
+                        });
+                        root.currentComponentInstance.dlg.MDComponent.show();
+                    })
+                    .append('image')
+                    .attr('x', `${weekWidth-40}`)
+                    .attr('y', `${100}`)
                     .attr("width", `${31}`)
                     .attr("height", `${31}`)
                     .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");

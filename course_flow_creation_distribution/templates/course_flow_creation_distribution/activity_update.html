@@ -428,10 +428,10 @@
                     })
                     .append('image')
                     .attr('x', `${strategyWidth-40}`)
-                    .attr('y', `${95}`)
+                    .attr('y', `${100}`)
                     .attr("width", `${31}`)
                     .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/add-square-button.svg' %}");
 
 
                   var runningActivityHeight = activityInfoHeight;
@@ -534,6 +534,23 @@
                         .attr("width", `${31}`)
                         .attr("height", `${31}`)
                         .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+
+                        strategies.append("g")
+                          .attr("class", "action-icon")
+                          .on("mousedown", function(d,i){
+                              root.currentComponentInstance.setState({
+                                objectType: "node",
+                                parentID: d3.select(this.parentNode).node().__data__.strategy.id,
+                                isNode: true
+                              });
+                              root.currentComponentInstance.dlg.MDComponent.show();
+                          })
+                          .append('image')
+                          .attr('x', `${strategyWidth-40}`)
+                          .attr('y', `${100}`)
+                          .attr("width", `${31}`)
+                          .attr("height", `${31}`)
+                          .attr("xlink:href","{% static 'course_flow_creation_distribution/img/add-square-button.svg' %}");
 
                     const dragDropIcons =  strategies.append("g")
                         .attr("class", "drag-icon")
