@@ -28,13 +28,6 @@
               let activityJson = null;
 
               const svgParent = d3.select("svg").style("margin-top", "100px");
-/*
-              d3.json(window.location.origin+"/activity/read/"+{{object.pk}}+"/?format=json").then(function (json) {
-                console.log(json);
-                activityJson = json;
-              });
-*/
-              //let activityJson = {{ activity_json|safe }};
 
               const popularNodeJson = {{ popoular_node_json|safe }};
 
@@ -602,7 +595,6 @@
                               .attr("width", +widget.attr("width")).attr("height", +widget.attr("height"));
                         dragDropIcons.style("cursor","grab");
                         updateJson();
-                        console.log(activityData.strategyactivity_set);
                         renderActivity(activityData, svgParent);
                         widget = undefined;
                       });
@@ -848,7 +840,6 @@
                   }
               },
               success: function(){
-                console.log("called");
                 fetchThenRenderActivity();
               }
           });
@@ -872,20 +863,10 @@
 
           function addNode(nodePk, strategyPk){
             let posting = $.post("{% url 'add-node' %}", {nodePk: nodePk, strategyPk: strategyPk, activityPk: activityJson.id });
-            posting.done(function(data) {
-              activityJson = JSON.parse(data);
-              console.log(activityJson);
-              renderActivity(activityJson.strategyactivity_set, svgParent);
-            });
           }
 
           function addStrategy(strategyPk){
             let posting = $.post("{% url 'add-node' %}", {strategyPk: strategyPk, activityPk: activityJson.id });
-            posting.done(function(data) {
-              activityJson = JSON.parse(data);
-              console.log(activityJson);
-              renderActivity(activityJson.strategyactivity_set, svgParent);
-            });
           }
 
             });

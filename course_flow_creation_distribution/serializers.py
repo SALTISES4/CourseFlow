@@ -792,7 +792,7 @@ class ProgramLevelComponentSerializer(serializers.ModelSerializer):
 
     content_type = serializers.SerializerMethodField()
 
-    content_type = serializers.SerializerMethodField()
+    content_type_in_text = serializers.SerializerMethodField()
 
     class Meta:
         model = Component

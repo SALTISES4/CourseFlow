@@ -6,7 +6,9 @@
 <!-- -->
 {% block metadescription %} {% endblock %}
 <!-- -->
-{% block body %} {% endblock %}
+{% block body %}
+<div id="node-form-container"></div>
+{% endblock %}
 <!-- -->
 {% block foot %} {% endblock %}
 <!-- -->
@@ -17,10 +19,15 @@
 <script>
         window.addEventListener("load", function(){
 
-          let programJson = {{ program_json|safe }};
+          let programJson = null;
           const componentBoardJson = {{ owned_component_json|safe }};
 
           console.log(programJson);
+
+          root.injectDialogForm(
+            "{% trans 'posting worked' %}",
+            "{% trans 'posting didnt work' %}"
+          );
 
           const componentHeight = 180.0;
           const componentWidth = 350.0;
@@ -40,7 +47,14 @@
 
           const svgParent = d3.select("svg").style("margin-top", "100px");
 
-          renderProgram(programJson, svgParent);
+          function fetchThenRenderProgram(){
+            d3.json(window.location.origin+"/program/read/"+{{object.pk}}+"/?format=json").then(function (json) {
+              programJson = json;
+              renderProgram(programJson, svgParent);
+            });
+          }
+
+          fetchThenRenderProgram();
 
           renderComponentBoard(svgParent, componentBoardJson);
 
@@ -236,6 +250,15 @@
 
               program.append("g")
                 .attr("class", "action-icon")
+                .on("click", function(d,i){
+                    root.currentComponentInstance.setState({
+                      object: programJson,
+                      objectType: "program",
+                      isProgram: true,
+                      isDeleteForm: true
+                    });
+                    root.currentComponentInstance.dlg.MDComponent.show();
+                })
                 .append('image')
                 .attr('x', `${programWidth-40}`)
                 .attr('y', `${60}`)
@@ -246,8 +269,13 @@
               program.append("g")
                 .attr("class", "action-icon")
                 .on("click", function(d,i){
-                    //openUpdateForm(d3.select(this.parentNode));
-                    console.log(d3.select(this.parentNode).data());
+                    root.currentComponentInstance.setState({
+                      object: programJson,
+                      objectType: "program",
+                      isProgram: true,
+                      isUpdateForm: true
+                    });
+                    root.currentComponentInstance.dlg.MDComponent.show();
                 })
                 .append('image')
                 .attr('x', `${programWidth-40}`)
@@ -363,6 +391,15 @@
 
                 components.append("g")
                   .attr("class", "action-icon")
+                  .on("mousedown", function(d,i){
+                      root.currentComponentInstance.setState({
+                        object: d3.select(this.parentNode).node().__data__.component.content_object,
+                        objectType: d3.select(this.parentNode).node().__data__.component.content_type_in_text,
+                        isProgramLevelComponent: true,
+                        isDeleteForm: true
+                      });
+                      root.currentComponentInstance.dlg.MDComponent.show();
+                  })
                   .append('image')
                   .attr('x', `${componentWidth-40}`)
                   .attr('y', `${componentHeight-45}`)
@@ -373,7 +410,17 @@
                 components.append("g")
                   .attr("class", "action-icon")
                   .on("mousedown", function(d,i){
-                    console.log(d3.select(this.parentNode).node().__data__);
+                    if (d3.select(this.parentNode).node().__data__.component.content_type_in_text == "course") {
+                      window.location.href = window.location.origin+"/course/"+d3.select(this.parentNode).node().__data__.component.content_object.id+"/update/";
+                    } else {
+                      root.currentComponentInstance.setState({
+                        object: d3.select(this.parentNode).node().__data__.component.content_object,
+                        objectType: d3.select(this.parentNode).node().__data__.component.content_type_in_text,
+                        isProgramLevelComponent: true,
+                        isUpdateForm: true
+                      });
+                      root.currentComponentInstance.dlg.MDComponent.show();
+                    }
                   })
                   .append('image')
                   .attr('x', `${componentWidth-40}`)
@@ -465,8 +512,8 @@
                   xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
               }
           },
-          success: function() {
-            // Your code
+          success: function(){
+            fetchThenRenderProgram();
           }
       });
 
@@ -480,19 +527,11 @@
             .getAttribute("value");
         }
       function updateJson(){
-        let posting = $.post("{% url 'update-program-json' %}", {json: JSON.stringify(programJson)});
-        posting.done(function(data) {
-          console.info(data);
-      });
-    }
+        $.post("{% url 'update-program-json' %}", {json: JSON.stringify(programJson)});
+      }
 
       function addComponent(componentPk){
-        let posting = $.post("{% url 'add-component-to-program' %}", {componentPk: componentPk, programPk: '{{ object.pk|safe }}'});
-        posting.done(function(data) {
-          programJson = JSON.parse(data);
-          console.log(programJson);
-          renderProgram(programJson, svgParent);
-        });
+        $.post("{% url 'add-component-to-program' %}", {componentPk: componentPk, programPk: '{{ object.pk|safe }}'});
       }
 
   });

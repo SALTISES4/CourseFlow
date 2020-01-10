@@ -29,10 +29,10 @@ export class CreateDialogForm extends Component {
       title: "",
       description: "",
       author: null,
-      componentType: null,
       work_classification: -1,
       activity_classification: -1
     },
+    componentType: null,
     parentID: null,
     isNode: null,
     isStrategy: null,
@@ -66,10 +66,10 @@ export class CreateDialogForm extends Component {
         title: "",
         description: "",
         author: null,
-        componentType: null,
         work_classification: -1,
         activity_classification: -1
       },
+      componentType: null,
       parentID: null,
       isNode: null,
       isStrategy: null,
@@ -93,10 +93,10 @@ export class CreateDialogForm extends Component {
         title: "",
         description: "",
         author: null,
-        componentType: null,
         work_classification: -1,
         activity_classification: -1
       },
+      componentType: null,
       parentID: null,
       isNode: null,
       isStrategy: null,
@@ -172,12 +172,32 @@ export class CreateDialogForm extends Component {
   };
 
   updateObjectToBeComponentType = e => {
-    this.setState({
-      objectToBe: {
-        ...this.state.objectToBe,
-        componentType: e.target.selectedIndex
+    this.setState({ componentType: e.target.selectedIndex });
+    if (component.state.isCourseLevelComponent) {
+      switch (component.state.componentType) {
+        case 1:
+          component.setState({ objectType: "activity" });
+          break;
+        case 2:
+          component.setState({ objectType: "assesment" });
+          break;
+        case 3:
+          component.setState({ objectType: "artifact" });
+          break;
+        case 4:
+          component.setState({ objectType: "preparation" });
+          break;
       }
-    });
+    } else if (component.state.isProgramLevelComponent) {
+      switch (component.state.componentType) {
+        case 1:
+          component.setState({ objectType: "course" });
+          break;
+        case 2:
+          component.setState({ objectType: "preparation" });
+          break;
+      }
+    }
   };
 
   render() {
@@ -333,8 +353,8 @@ export class CreateDialogForm extends Component {
                   <div>
                     <Select
                       hintText="Select a node type"
-                      selectedIndex={this.state.objectToBe.componentType}
-                      onChange={this.updateObjectToBeComponentType}
+                      selectedIndex={this.state.componentType}
+                      onChange={this.updateComponentType}
                     >
                       <Select.Item>Course</Select.Item>
                       <Select.Item>Assesment</Select.Item>
@@ -345,8 +365,8 @@ export class CreateDialogForm extends Component {
                   <div>
                     <Select
                       hintText="Select a node type"
-                      selectedIndex={this.state.objectToBe.componentType}
-                      onChange={this.updateObjectToBeComponentType}
+                      selectedIndex={this.state.componentType}
+                      onChange={this.updateComponentType}
                     >
                       <Select.Item>Activity</Select.Item>
                       <Select.Item>Assesment</Select.Item>
@@ -522,7 +542,10 @@ function createNode(component) {
   $.post(window.location.origin + "/dialog-form/create", {
     object: JSON.stringify(component.state.objectToBe),
     objectType: JSON.stringify(component.state.objectType),
-    parentID: JSON.stringify(component.state.parentID)
+    parentID: JSON.stringify(component.state.parentID),
+    isProgramLevelComponent: JSON.stringify(
+      component.state.isProgramLevelComponent
+    )
   })
     .done(function(data) {
       console.log(data.action);

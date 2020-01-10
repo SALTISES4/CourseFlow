@@ -27,7 +27,7 @@
 
           console.log({{ course_json|safe }});
 
-          let courseJson = {{ course_json|safe }};
+          let courseJson = null;
           const componentBoardJson = {{ owned_component_json|safe }};
 
           const componentHeight = 180.0;
@@ -50,9 +50,14 @@
 
           const svgParent = d3.select("svg").style("margin-top", "100px");
 
-          let weekCourseSet = courseJson.weekcourse_set;
+          function fetchThenRenderCourse(){
+            d3.json(window.location.origin+"/course/read/"+{{object.pk}}+"/?format=json").then(function (json) {
+              courseJson = json;
+              renderCourse(courseJson, svgParent);
+            });
+          }
 
-          renderCourse(weekCourseSet, svgParent);
+          fetchThenRenderCourse();
 
           renderComponentBoard(svgParent, componentBoardJson);
 
@@ -228,7 +233,7 @@
                 .style('font-size', 18)
                 .style('fill', "white")
                 .style('pointer-events', 'none')
-                .text(courseJson.title);
+                .text(jsonData.title);
 
               svgCourse
                 .append('text')
@@ -240,7 +245,7 @@
                 .style('font-size', 12)
                 .style('fill', 'white')
                 .style('pointer-events', 'none')
-                .text("created by "+courseJson.author);
+                .text("created by "+jsonData.author);
 
               svgCourse
                 .append('text')
@@ -252,7 +257,7 @@
                 .style('font-size', 14)
                 .style('fill', "white")
                 .style('pointer-events', 'none')
-                .text(courseJson.description);
+                .text(jsonData.description);
 
               svgCourse.append("g")
                 .attr("class", "action-icon")
@@ -296,7 +301,7 @@
               svgCourse.selectAll('.week').remove();
 
 
-              const weeks = svgCourse.selectAll('.week').data(jsonData).enter()
+              const weeks = svgCourse.selectAll('.week').data(jsonData.weekcourse_set).enter()
                                 .append("svg").attr("class","week")
                                 .attr("x", "0")
                                 .attr("height", (d,i)=>`${d.week.componentweek_set.length*(componentHeight+componentSpacingVertical)-componentSpacingVertical+2*weekPadding+weekInfoHeight}`)
@@ -311,8 +316,8 @@
                                     renderWeek(d.week.componentweek_set, d3.select(this));
                                 });
 
-                  for(let i = 0; i<jsonData.length; i++){
-                    for(let j = 0; j<jsonData.length; j++){
+                  for(let i = 0; i<jsonData.weekcourse_set.length; i++){
+                    for(let j = 0; j<jsonData.weekcourse_set.length; j++){
                       if(weeks["_groups"][0][j].__data__.rank == i){
                           d3.select(weeks["_groups"][0][j]).attr("y", `${runningWeekHeight}`);
                           runningWeekHeight += +d3.select(weeks["_groups"][0][j]).attr("height")+weekVerticalSpacing;
@@ -440,8 +445,7 @@
                           .attr("width", +widget.attr("width")).attr("height", +widget.attr("height"));
                     dragDropIcons.style("cursor","grab");
                     updateJson();
-                    console.log(jsonData);
-                    renderCourse(jsonData, svgParent);
+                    renderCourse(jsonData, parent);
                     widget = undefined;
                   });
 
@@ -571,13 +575,17 @@
                 components.append("g")
                   .attr("class", "action-icon")
                   .on("mousedown", function(d,i){
-                      root.currentComponentInstance.setState({
-                        object: d3.select(this.parentNode).node().__data__.component.content_object,
-                        objectType: d3.select(this.parentNode).node().__data__.component.content_type_in_text,
-                        isCourseLevelComponent: true,
-                        isUpdateForm: true
-                      });
-                      root.currentComponentInstance.dlg.MDComponent.show();
+                      if (d3.select(this.parentNode).node().__data__.component.content_type_in_text == "activity") {
+                        window.location.href = window.location.origin+"/activity/"+d3.select(this.parentNode).node().__data__.component.content_object.id+"/update/";
+                      } else {
+                        root.currentComponentInstance.setState({
+                          object: d3.select(this.parentNode).node().__data__.component.content_object,
+                          objectType: d3.select(this.parentNode).node().__data__.component.content_type_in_text,
+                          isCourseLevelComponent: true,
+                          isUpdateForm: true
+                        });
+                        root.currentComponentInstance.dlg.MDComponent.show();
+                      }
                   })
                   .append('image')
                   .attr('x', `${componentWidth-40}`)
@@ -669,6 +677,9 @@
               if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                   xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
               }
+          },
+          success: function(){
+            fetchThenRenderCourse();
           }
       });
 
