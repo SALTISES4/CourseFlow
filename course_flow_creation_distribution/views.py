@@ -28,6 +28,7 @@ from .serializers import (
     AssesmentSerializer,
     PreparationSerializer,
 )
+from .decorators import ajax_login_required, is_owner
 from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.views.generic import DetailView, UpdateView
@@ -39,30 +40,33 @@ from django.db.models import Count
 import json
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
 
 
-class ActivityViewSet(viewsets.ReadOnlyModelViewSet):
+class ActivityViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
 
     serializer_class = ActivitySerializer
     renderer_classes = [JSONRenderer]
     queryset = Activity.objects.all()
 
 
-class CourseViewSet(viewsets.ReadOnlyModelViewSet):
+class CourseViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
 
     serializer_class = CourseSerializer
     renderer_classes = [JSONRenderer]
     queryset = Course.objects.all()
 
 
-class ProgramViewSet(viewsets.ReadOnlyModelViewSet):
+class ProgramViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
 
     serializer_class = ProgramSerializer
     renderer_classes = [JSONRenderer]
     queryset = Program.objects.all()
 
 
-class ProgramDetailView(DetailView):
+class ProgramDetailView(LoginRequiredMixin, DetailView):
     model = Program
     template_name = "course_flow_creation_distribution/program_detail.html"
 
@@ -74,7 +78,7 @@ class ProgramDetailView(DetailView):
         return context
 
 
-class ProgramCreateView(CreateView):
+class ProgramCreateView(LoginRequiredMixin, CreateView):
     model = Program
     fields = ["title", "description"]
     template_name = "course_flow_creation_distribution/program_create.html"
@@ -88,10 +92,13 @@ class ProgramCreateView(CreateView):
         return reverse("program-update", kwargs={"pk": self.object.pk})
 
 
-class ProgramUpdateView(UpdateView):
+class ProgramUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Program
     fields = ["title", "description", "author"]
     template_name = "course_flow_creation_distribution/program_update.html"
+
+    def test_func(self):
+        return self.get_object().author == self.request.user
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
@@ -117,7 +124,7 @@ class ProgramUpdateView(UpdateView):
         return reverse("course-detail", kwargs={"pk": self.object.pk})
 
 
-class CourseDetailView(DetailView):
+class CourseDetailView(LoginRequiredMixin, DetailView):
     model = Course
     template_name = "course_flow_creation_distribution/course_detail.html"
 
@@ -129,10 +136,27 @@ class CourseDetailView(DetailView):
         return context
 
 
-class CourseUpdateView(UpdateView):
+class CourseCreateView(LoginRequiredMixin, CreateView):
+    model = Course
+    fields = ["title", "description"]
+    template_name = "course_flow_creation_distribution/course_create.html"
+
+    def form_valid(self, form):
+        if type(self.request.user) == "User":
+            form.instance.author = self.request.user
+        return super(CourseCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse("course-update", kwargs={"pk": self.object.pk})
+
+
+class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Course
     fields = ["title", "description", "author"]
     template_name = "course_flow_creation_distribution/course_update.html"
+
+    def test_func(self):
+        return self.get_object().author == self.request.user
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
@@ -157,7 +181,7 @@ class CourseUpdateView(UpdateView):
         return reverse("course-detail", kwargs={"pk": self.object.pk})
 
 
-class ActivityDetailView(DetailView):
+class ActivityDetailView(LoginRequiredMixin, DetailView):
     model = Activity
     template_name = "course_flow_creation_distribution/activity_detail.html"
 
@@ -169,10 +193,27 @@ class ActivityDetailView(DetailView):
         return context
 
 
-class ActivityUpdateView(UpdateView):
+class ActivityCreateView(LoginRequiredMixin, CreateView):
+    model = Activity
+    fields = ["title", "description"]
+    template_name = "course_flow_creation_distribution/activity_create.html"
+
+    def form_valid(self, form):
+        if type(self.request.user) == "User":
+            form.instance.author = self.request.user
+        return super(ActivityCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse("activity-update", kwargs={"pk": self.object.pk})
+
+
+class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Activity
     fields = ["title", "description", "author"]
     template_name = "course_flow_creation_distribution/activity_update.html"
+
+    def test_func(self):
+        return self.get_object().author == self.request.user
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
@@ -209,18 +250,27 @@ def save_serializer(serializer):
         return JsonResponse({"action": "error"})
 
 
+@require_POST
+@ajax_login_required
+@is_owner("activity")
 def update_activity_json(request):
     data = json.loads(request.POST.get("json"))
     serializer = ActivitySerializer(Activity.objects.get(id=data["id"]), data=data)
     return save_serializer(serializer)
 
 
+@require_POST
+@ajax_login_required
+@is_owner("course")
 def update_course_json(request):
     data = json.loads(request.POST.get("json"))
     serializer = CourseSerializer(Course.objects.get(id=data["id"]), data=data)
     return save_serializer(serializer)
 
 
+@require_POST
+@ajax_login_required
+@is_owner("program")
 def update_program_json(request):
     data = json.loads(request.POST.get("json"))
     serializer = ProgramSerializer(Program.objects.get(id=data["id"]), data=data)
@@ -240,6 +290,9 @@ def duplicate_node(node):
     return new_node
 
 
+@login_required
+@ajax_login_required
+@is_owner("strategyPK")
 def add_node(request):
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
@@ -275,6 +328,9 @@ def duplicate_strategy(strategy):
     return new_strategy
 
 
+@require_POST
+@ajax_login_required
+@is_owner("activityPK")
 def add_strategy(request):
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
     activity = Activity.objects.get(pk=request.POST.get("activityPk"))
@@ -341,6 +397,9 @@ def duplicate_component_course_level(component):
     return new_component
 
 
+@require_POST
+@ajax_login_required
+@is_owner("weekPk")
 def add_component_to_course(request):
     week = Week.objects.get(pk=request.POST.get("weekPk"))
     component = Component.objects.get(pk=request.POST.get("componentPk"))
@@ -400,6 +459,9 @@ def duplicate_component_program_level(component):
     return new_component
 
 
+@require_POST
+@ajax_login_required
+@is_owner("programPk")
 def add_component_to_program(request):
     component = Component.objects.get(pk=request.POST.get("componentPk"))
     program = Program.objects.get(pk=request.POST.get("programPk"))
@@ -419,6 +481,8 @@ def add_component_to_program(request):
     return JsonResponse({"action": "posted"})
 
 
+@require_POST
+@ajax_login_required
 def dialog_form_create(request):
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
@@ -596,6 +660,9 @@ def dialog_form_create(request):
     ]
 
 
+@require_POST
+@ajax_login_required
+@is_owner
 def dialog_form_update(request):
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
@@ -625,25 +692,32 @@ def dialog_form_update(request):
     return save_serializer(serializer)
 
 
+@require_POST
+@ajax_login_required
+@is_owner
 def dialog_form_delete(request):
     id = json.loads(request.POST.get("objectID"))
     model = json.loads(request.POST.get("objectType"))
 
     try:
         if model == "node":
-            Node.objects.filter(id=id).delete()
+            Node.objects.get(id=id).delete()
         elif model == "strategy":
-            Strategy.objects.filter(id=id).delete()
+            Strategy.objects.get(id=id).delete()
         elif model == "activity":
-            Activity.objects.filter(id=id).delete()
-        elif model == "component":
-            Component.objects.filter(id=id).delete()
+            Activity.objects.get(id=id).delete()
+        elif model == "assesment":
+            Assesment.objects.get(id=id).delete()
+        elif model == "artifact":
+            Artifact.objects.get(id=id).delete()
+        elif model == "preparation":
+            Preparation.objects.get(id=id).delete()
         elif model == "week":
-            Week.objects.filter(id=id).delete()
+            Week.objects.get(id=id).delete()
         elif model == "course":
-            Course.objects.filter(id=id).delete()
+            Course.objects.get(id=id).delete()
         elif model == "program":
-            Program.objects.filter(id=id).delete()
+            Program.objects.get(id=id).delete()
     except:
         return JsonResponse({"action": "error"})
 
