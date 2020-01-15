@@ -1,6 +1,5 @@
-from functools import wraps, partial
+from functools import wraps
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
 from django.conf import settings
 import json
 from .models import (
@@ -36,10 +35,10 @@ def ajax_login_required(view_func):
     return _wrapped_view
 
 
-def is_owner(*args):
-    @wraps
-    def wrapped_view(fct, model=None):
-        def _wrapped_view(request, *args, **kwargs):
+def is_owner(model):
+    def wrapped_view(fct):
+        @wraps(fct)
+        def _wrapped_view(request, model=model, *args, **kwargs):
             if model:
                 if model[-2:] == "Pk":
                     id = json.loads(request.POST.get(model[:-2]))
@@ -72,7 +71,7 @@ def is_owner(*args):
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 401
                 return response
-            if get_object_or_404(User, user=request.user) == object.author:
+            if User.objects.get(id=request.user.id) == object.author:
                 return fct(request, *args, **kwargs)
             else:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
@@ -81,7 +80,4 @@ def is_owner(*args):
 
         return _wrapped_view
 
-    if len(args) == 1 and callable(args[0]):
-        return wrapped_view(args[0])
-    else:
-        return partial(wrapped_view, model=args[1])
+    return wrapped_view

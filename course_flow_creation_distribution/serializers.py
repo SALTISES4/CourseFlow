@@ -29,6 +29,13 @@ from .models import (
     User,
 )
 
+anonymous_text = "anonymous"
+
+"""
+def get_author(self, instance):
+    return anonymous_text if instance.author is None else instance.author.username
+"""
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -202,7 +209,9 @@ class OutcomeStrategySerializer(serializers.ModelSerializer):
 
 class StrategySerializer(serializers.ModelSerializer):
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(
+        queryset=User.objects.all(), slug_field="username"
+    )
 
     nodestrategy_set = serializers.SerializerMethodField()
 

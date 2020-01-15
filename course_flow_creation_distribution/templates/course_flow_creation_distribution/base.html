@@ -70,13 +70,6 @@
       </div>
     </div>
 
-    <svg width="2000" height="10000">
-      <defs>
-        <filter id="selection-shadow">
-          <feDropShadow dx="1" dy="1" stdDeviation="2" />
-        </filter>
-      </defs>
-    </svg>
     {% block body %}{% endblock %}
     <footer>{% block foot %}{% endblock %}</footer>
     {% csrf_token %}

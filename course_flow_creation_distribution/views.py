@@ -40,9 +40,28 @@ from django.db.models import Count
 import json
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from .forms import RegistrationForm
+from django.shortcuts import render, redirect
+
+
+def registration_view(request):
+
+    if request.method == "POST":
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get("username")
+            raw_password = form.cleaned_data.get("password1")
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect("home")
+    else:
+        form = RegistrationForm()
+    return render(request, "registration/registration.html", {"form": form})
 
 
 class ActivityViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
@@ -69,13 +88,6 @@ class ProgramViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
 class ProgramDetailView(LoginRequiredMixin, DetailView):
     model = Program
     template_name = "course_flow_creation_distribution/program_detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(DetailView, self).get_context_data(**kwargs)
-        context["program_json"] = (
-            JSONRenderer().render(ProgramSerializer(self.object).data).decode("utf-8")
-        )
-        return context
 
 
 class ProgramCreateView(LoginRequiredMixin, CreateView):
@@ -185,13 +197,6 @@ class ActivityDetailView(LoginRequiredMixin, DetailView):
     model = Activity
     template_name = "course_flow_creation_distribution/activity_detail.html"
 
-    def get_context_data(self, **kwargs):
-        context = super(DetailView, self).get_context_data(**kwargs)
-        context["activity_json"] = (
-            JSONRenderer().render(ActivitySerializer(self.object).data).decode("utf-8")
-        )
-        return context
-
 
 class ActivityCreateView(LoginRequiredMixin, CreateView):
     model = Activity
@@ -245,6 +250,7 @@ def save_serializer(serializer):
             serializer.save()
             return JsonResponse({"action": "posted"})
         else:
+            print(serializer.errors)
             return JsonResponse({"action": "error"})
     else:
         return JsonResponse({"action": "error"})
@@ -511,6 +517,8 @@ def dialog_form_create(request):
     elif model == "strategy":
         del data["work_classification"], data["activity_classification"]
         data["parent_strategy"] = None
+        print(request.user.username)
+        data["author"] = request.user.username
         serializer = StrategySerializer(data=data)
         if parent_id:
             activity = Activity.objects.get(id=parent_id)
@@ -662,7 +670,7 @@ def dialog_form_create(request):
 
 @require_POST
 @ajax_login_required
-@is_owner
+@is_owner(False)
 def dialog_form_update(request):
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
@@ -694,7 +702,7 @@ def dialog_form_update(request):
 
 @require_POST
 @ajax_login_required
-@is_owner
+@is_owner(False)
 def dialog_form_delete(request):
     id = json.loads(request.POST.get("objectID"))
     model = json.loads(request.POST.get("objectType"))

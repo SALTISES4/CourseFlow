@@ -72,6 +72,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "course_flow_maker.wsgi.application"
 
+LOGIN_REDIRECT_URL = "login"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
