@@ -2,18 +2,7 @@ from functools import wraps
 from django.http import JsonResponse
 from django.conf import settings
 import json
-from .models import (
-    User,
-    Course,
-    Preparation,
-    Activity,
-    Assesment,
-    Artifact,
-    Strategy,
-    Node,
-    Week,
-    Program,
-)
+from .models import model_lookups, User
 
 
 # Ajax login required view decorator
@@ -35,6 +24,21 @@ def ajax_login_required(view_func):
     return _wrapped_view
 
 
+owned_models = [
+    "node",
+    "strategy",
+    "activity",
+    "course",
+    "assesment",
+    "course",
+    "artifact",
+    "course",
+    "preparation",
+    "course",
+]
+program_level_owned_models = ["assesment", "program", "course", "program"]
+
+
 def is_owner(model):
     def wrapped_view(fct):
         @wraps(fct)
@@ -49,24 +53,7 @@ def is_owner(model):
                 id = json.loads(request.POST.get("objectID"))
                 model = json.loads(request.POST.get("objectType"))
             try:
-                if model == "node":
-                    object = Node.objects.get(id=id)
-                elif model == "strategy":
-                    object = Strategy.objects.get(id=id)
-                elif model == "activity":
-                    object = Activity.objects.get(id=id)
-                elif model == "assesment":
-                    object = Assesment.objects.get(id=id)
-                elif model == "artifact":
-                    object = Artifact.objects.get(id=id)
-                elif model == "preparation":
-                    object = Preparation.objects.get(id=id)
-                elif model == "week":
-                    object = Week.objects.get(id=id)
-                elif model == "course":
-                    object = Course.objects.get(id=id)
-                elif model == "program":
-                    object = Program.objects.get(id=id)
+                object = model_lookups[model].objects.get(id=id)
             except:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 401
@@ -81,3 +68,34 @@ def is_owner(model):
         return _wrapped_view
 
     return wrapped_view
+
+
+def is_parent_owner(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        model = json.loads(request.POST.get("objectType"))
+        parent_id = json.loads(request.POST.get("parentID"))
+        is_program_level = json.loads(request.POST.get("isProgramLevelComponent"))
+        try:
+            if is_program_level:
+                parent = model_lookups[
+                    program_level_owned_models[
+                        program_level_owned_models.index(model) + 1
+                    ]
+                ].objects.get(id=parent_id)
+            else:
+                parent = model_lookups[
+                    owned_models[owned_models.index(model) + 1]
+                ].objects.get(id=parent_id)
+        except:
+            response = JsonResponse({"login_url": settings.LOGIN_URL})
+            response.status_code = 401
+            return response
+        if model == "program" or User.objects.get(id=request.user.id) == parent.author:
+            return view_func(request, *args, **kwargs)
+        else:
+            response = JsonResponse({"login_url": settings.LOGIN_URL})
+            response.status_code = 401
+            return response
+
+    return _wrapped_view

@@ -153,7 +153,7 @@ export class CreateDialogForm extends Component {
     this.setState({
       objectToBe: {
         ...this.state.objectToBe,
-        work_classification: +e.target.value
+        activity_classification: +e.target.value
       }
     });
   };
@@ -226,6 +226,7 @@ export class CreateDialogForm extends Component {
                     label="Title"
                     value={this.state.object.title}
                     onInput={this.updateObjectTitle}
+                    maxlength="30"
                   />
                 </div>
                 {!this.state.isWeek && (
@@ -235,6 +236,7 @@ export class CreateDialogForm extends Component {
                       label="Description"
                       value={this.state.object.description}
                       onInput={this.updateObjectDescription}
+                      maxlength="400"
                     />
                   </div>
                 )}
@@ -349,6 +351,7 @@ export class CreateDialogForm extends Component {
                     label="Title"
                     value={this.state.objectToBe.title}
                     onInput={this.updateObjectToBeTitle}
+                    maxlength="30"
                   />
                 </div>
                 {!this.state.isWeek && (
@@ -358,6 +361,7 @@ export class CreateDialogForm extends Component {
                       label="Description"
                       value={this.state.objectToBe.description}
                       onInput={this.updateObjectToBeDescription}
+                      maxlength="400"
                     />
                   </div>
                 )}
@@ -485,6 +489,7 @@ function deleteNode(component) {
 function updateNode(component) {
   $.post(window.location.origin + "/dialog-form/update", {
     object: JSON.stringify(component.state.object),
+    objectID: JSON.stringify(component.state.object.id),
     objectType: JSON.stringify(component.state.objectType)
   })
     .done(function(data) {

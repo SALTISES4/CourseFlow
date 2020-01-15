@@ -29,13 +29,6 @@ from .models import (
     User,
 )
 
-anonymous_text = "anonymous"
-
-"""
-def get_author(self, instance):
-    return anonymous_text if instance.author is None else instance.author.username
-"""
-
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,7 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class OutcomeSerializer(serializers.ModelSerializer):
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     class Meta:
         model = Outcome
@@ -58,6 +51,12 @@ class OutcomeSerializer(serializers.ModelSerializer):
             "hash",
             "author",
         ]
+
+    def create(self, validated_data):
+        return Outcome.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -88,7 +87,7 @@ class OutcomeNodeSerializer(serializers.ModelSerializer):
 
 class ParentNodeSerializer(serializers.ModelSerializer):
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     class Meta:
         model = Node
@@ -107,7 +106,7 @@ class ParentNodeSerializer(serializers.ModelSerializer):
 
 class ParentStrategySerializer(serializers.ModelSerializer):
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     class Meta:
         model = Strategy
@@ -116,7 +115,7 @@ class ParentStrategySerializer(serializers.ModelSerializer):
 
 class NodeSerializer(serializers.ModelSerializer):
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     outcomenode_set = serializers.SerializerMethodField()
 
@@ -143,6 +142,12 @@ class NodeSerializer(serializers.ModelSerializer):
     def get_outcomenode_set(self, instance):
         links = instance.outcomenode_set.all().order_by("rank")
         return OutcomeNodeSerializer(links, many=True).data
+
+    def create(self, validated_data):
+        return Node.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -209,9 +214,7 @@ class OutcomeStrategySerializer(serializers.ModelSerializer):
 
 class StrategySerializer(serializers.ModelSerializer):
 
-    author = serializers.SlugRelatedField(
-        queryset=User.objects.all(), slug_field="username"
-    )
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     nodestrategy_set = serializers.SerializerMethodField()
 
@@ -243,6 +246,12 @@ class StrategySerializer(serializers.ModelSerializer):
     def get_outcomestrategy_set(self, instance):
         links = instance.outcomestrategy_set.all().order_by("rank")
         return OutcomeStrategySerializer(links, many=True).data
+
+    def create(self, validated_data):
+        return Strategy.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -307,7 +316,7 @@ class OutcomeActivitySerializer(serializers.ModelSerializer):
 
 class ActivitySerializer(serializers.ModelSerializer):
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     strategyactivity_set = serializers.SerializerMethodField()
 
@@ -336,6 +345,12 @@ class ActivitySerializer(serializers.ModelSerializer):
     def get_outcomeactivity_set(self, instance):
         links = instance.outcomeactivity_set.all().order_by("rank")
         return OutcomeActivitySerializer(links, many=True).data
+
+    def create(self, validated_data):
+        return Activity.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -380,7 +395,7 @@ class OutcomePreparationSerializer(serializers.ModelSerializer):
 
 class PreparationSerializer(serializers.ModelSerializer):
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     outcomepreparation_set = serializers.SerializerMethodField()
 
@@ -402,6 +417,12 @@ class PreparationSerializer(serializers.ModelSerializer):
     def get_outcomepreparation_set(self, instance):
         links = instance.outcomepreparation_set.all().order_by("rank")
         return OutcomePreparationSerializer(links, many=True).data
+
+    def create(self, validated_data):
+        return Preparation.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -439,7 +460,7 @@ class OutcomeAssesmentSerializer(serializers.ModelSerializer):
 
 class AssesmentSerializer(serializers.ModelSerializer):
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     outcomeassesment_set = serializers.SerializerMethodField()
 
@@ -461,6 +482,12 @@ class AssesmentSerializer(serializers.ModelSerializer):
     def get_outcomeassesment_set(self, instance):
         links = instance.outcomeassesment_set.all().order_by("rank")
         return OutcomeAssesmentSerializer(links, many=True).data
+
+    def create(self, validated_data):
+        return Assesment.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -498,7 +525,7 @@ class OutcomeArtifactSerializer(serializers.ModelSerializer):
 
 class ArtifactSerializer(serializers.ModelSerializer):
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     outcomeartifact_set = serializers.SerializerMethodField()
 
@@ -520,6 +547,12 @@ class ArtifactSerializer(serializers.ModelSerializer):
     def get_outcomeartifact_set(self, instance):
         links = instance.outcomeartifact_set.all().order_by("rank")
         return OutcomeArtifactSerializer(links, many=True).data
+
+    def create(self, validated_data):
+        return Artifact.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -649,7 +682,7 @@ class WeekSerializer(serializers.ModelSerializer):
 
     componentweek_set = serializers.SerializerMethodField()
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     outcomeweek_set = serializers.SerializerMethodField()
 
@@ -673,6 +706,12 @@ class WeekSerializer(serializers.ModelSerializer):
     def get_outcomeweek_set(self, instance):
         links = instance.outcomeweek_set.all().order_by("rank")
         return OutcomeWeekSerializer(links, many=True).data
+
+    def create(self, validated_data):
+        return Week.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -744,7 +783,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     weekcourse_set = serializers.SerializerMethodField()
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     discipline = DisciplineSerializer(allow_null=True)
 
@@ -774,6 +813,12 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_outcomecourse_set(self, instance):
         links = instance.outcomecourse_set.all().order_by("rank")
         return OutcomeCourseSerializer(links, many=True).data
+
+    def create(self, validated_data):
+        return Course.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -887,7 +932,7 @@ class ProgramSerializer(serializers.ModelSerializer):
 
     componentprogram_set = serializers.SerializerMethodField()
 
-    author = UserSerializer(allow_null=True)
+    author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
     outcomeprogram_set = serializers.SerializerMethodField()
 
@@ -913,6 +958,12 @@ class ProgramSerializer(serializers.ModelSerializer):
         links = instance.outcomeprogram_set.all().order_by("rank")
         return OutcomeProgramSerializer(links, many=True).data
 
+    def create(self, validated_data):
+        return Program.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
+
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get("description", instance.description)
@@ -932,3 +983,16 @@ class ProgramSerializer(serializers.ModelSerializer):
             outcomeprogram_serializer.save()
         instance.save()
         return instance
+
+
+serializer_lookups = {
+    "node": NodeSerializer,
+    "strategy": StrategySerializer,
+    "activity": ActivitySerializer,
+    "assesment": AssesmentSerializer,
+    "preparation": PreparationSerializer,
+    "artifact": ArtifactSerializer,
+    "week": WeekSerializer,
+    "course": CourseSerializer,
+    "program": ProgramSerializer,
+}

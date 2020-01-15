@@ -1,4 +1,5 @@
 from .models import (
+    model_lookups,
     Course,
     Preparation,
     Activity,
@@ -16,6 +17,7 @@ from .models import (
     ComponentProgram,
 )
 from .serializers import (
+    serializer_lookups,
     ActivitySerializer,
     CourseSerializer,
     StrategySerializer,
@@ -28,7 +30,7 @@ from .serializers import (
     AssesmentSerializer,
     PreparationSerializer,
 )
-from .decorators import ajax_login_required, is_owner
+from .decorators import ajax_login_required, is_owner, is_parent_owner
 from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.views.generic import DetailView, UpdateView
@@ -114,9 +116,6 @@ class ProgramUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context["program_json"] = (
-            JSONRenderer().render(ProgramSerializer(self.object).data).decode("utf-8")
-        )
         context["owned_components"] = Component.objects.filter(
             Q(content_type=ContentType.objects.get_for_model(Course))
             | Q(content_type=ContentType.objects.get_for_model(Assesment))
@@ -489,12 +488,19 @@ def add_component_to_program(request):
 
 @require_POST
 @ajax_login_required
+@is_parent_owner
 def dialog_form_create(request):
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
+    if model == "program":
+        del data["componentType"], data["work_classification"], data[
+            "activity_classification"
+        ]
+        serializer = ProgramSerializer(data=data)
+        return save_serializer(serializer)
     parent_id = json.loads(request.POST.get("parentID"))
     is_program_level = json.loads(request.POST.get("isProgramLevelComponent"))
-
+    data["author"] = request.user.username
     if model == "node":
         data["work_classification"] = int(data["work_classification"])
         data["activity_classification"] = int(data["activity_classification"])
@@ -517,8 +523,6 @@ def dialog_form_create(request):
     elif model == "strategy":
         del data["work_classification"], data["activity_classification"]
         data["parent_strategy"] = None
-        print(request.user.username)
-        data["author"] = request.user.username
         serializer = StrategySerializer(data=data)
         if parent_id:
             activity = Activity.objects.get(id=parent_id)
@@ -556,7 +560,7 @@ def dialog_form_create(request):
     elif model == "assesment":
         del data["work_classification"], data["activity_classification"]
         data["parent_activity"] = None
-        serializer = ActivitySerializer(data=data)
+        serializer = AssesmentSerializer(data=data)
         if parent_id:
             week = Week.objects.get(id=parent_id)
             if serializer.is_valid():
@@ -656,16 +660,7 @@ def dialog_form_create(request):
             except:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
-    elif model == "program":
-        del data["componentType"], data["work_classification"], data[
-            "activity_classification"
-        ]
-        serializer = ProgramSerializer(data=data)
     return save_serializer(serializer)
-
-    del data["componentType"], data["work_classification"], data[
-        "activity_classification"
-    ]
 
 
 @require_POST
@@ -675,28 +670,10 @@ def dialog_form_update(request):
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
 
-    if model == "node":
-        serializer = NodeSerializer(Node.objects.get(id=data["id"]), data=data)
-    elif model == "strategy":
-        serializer = StrategySerializer(Strategy.objects.get(id=data["id"]), data=data)
-    elif model == "activity":
-        serializer = ActivitySerializer(Activity.objects.get(id=data["id"]), data=data)
-    elif model == "assesment":
-        serializer = AssesmentSerializer(
-            Assesment.objects.get(id=data["id"]), data=data
-        )
-    elif model == "artifact":
-        serializer = ArtifactSerializer(Artifact.objects.get(id=data["id"]), data=data)
-    elif model == "preparation":
-        serializer = PreparationSerializer(
-            Preparation.objects.get(id=data["id"]), data=data
-        )
-    elif model == "week":
-        serializer = WeekSerializer(Week.objects.get(id=data["id"]), data=data)
-    elif model == "course":
-        serializer = CourseSerializer(Course.objects.get(id=data["id"]), data=data)
-    elif model == "program":
-        serializer = ProgramSerializer(Program.objects.get(id=data["id"]), data=data)
+    serializer = serializer_lookups[model](
+        model_lookups[model].objects.get(id=data["id"]), data=data
+    )
+
     return save_serializer(serializer)
 
 
@@ -708,24 +685,7 @@ def dialog_form_delete(request):
     model = json.loads(request.POST.get("objectType"))
 
     try:
-        if model == "node":
-            Node.objects.get(id=id).delete()
-        elif model == "strategy":
-            Strategy.objects.get(id=id).delete()
-        elif model == "activity":
-            Activity.objects.get(id=id).delete()
-        elif model == "assesment":
-            Assesment.objects.get(id=id).delete()
-        elif model == "artifact":
-            Artifact.objects.get(id=id).delete()
-        elif model == "preparation":
-            Preparation.objects.get(id=id).delete()
-        elif model == "week":
-            Week.objects.get(id=id).delete()
-        elif model == "course":
-            Course.objects.get(id=id).delete()
-        elif model == "program":
-            Program.objects.get(id=id).delete()
+        model_lookups[model].objects.get(id=id).delete()
     except:
         return JsonResponse({"action": "error"})
 

@@ -439,3 +439,16 @@ def delete_attached_component(sender, instance, **kwargs):
     Component.objects.filter(
         content_type=ContentType.objects.get_for_model(instance), object_id=instance.pk
     ).delete()
+
+
+model_lookups = {
+    "node": Node,
+    "strategy": Strategy,
+    "activity": Activity,
+    "assesment": Assesment,
+    "preparation": Preparation,
+    "artifact": Artifact,
+    "week": Week,
+    "course": Course,
+    "program": Program,
+}
