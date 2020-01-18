@@ -740,11 +740,7 @@
     }
 
       function addComponent(componentPk, weekPk){
-        let posting = $.post("{% url 'add-component-to-course' %}", {componentPk: componentPk, weekPk: weekPk, coursePk: '{{ object.pk|safe }}'});
-        posting.done(function(data) {
-          courseJson = JSON.parse(data);
-          renderCourse(courseJson.weekcourse_set, svgParent);
-        });
+        let posting = $.post("{% url 'add-component-to-course' %}", {componentPk: componentPk, weekPk: weekPk});
       }
 
   });

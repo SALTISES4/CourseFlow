@@ -98,8 +98,7 @@ class ProgramCreateView(LoginRequiredMixin, CreateView):
     template_name = "course_flow_creation_distribution/program_create.html"
 
     def form_valid(self, form):
-        if type(self.request.user) == "User":
-            form.instance.author = self.request.user
+        form.instance.author = self.request.user
         return super(ProgramCreateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -139,13 +138,6 @@ class CourseDetailView(LoginRequiredMixin, DetailView):
     model = Course
     template_name = "course_flow_creation_distribution/course_detail.html"
 
-    def get_context_data(self, **kwargs):
-        context = super(DetailView, self).get_context_data(**kwargs)
-        context["course_json"] = (
-            JSONRenderer().render(CourseSerializer(self.object).data).decode("utf-8")
-        )
-        return context
-
 
 class CourseCreateView(LoginRequiredMixin, CreateView):
     model = Course
@@ -153,8 +145,7 @@ class CourseCreateView(LoginRequiredMixin, CreateView):
     template_name = "course_flow_creation_distribution/course_create.html"
 
     def form_valid(self, form):
-        if type(self.request.user) == "User":
-            form.instance.author = self.request.user
+        form.instance.author = self.request.user
         return super(CourseCreateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -203,8 +194,7 @@ class ActivityCreateView(LoginRequiredMixin, CreateView):
     template_name = "course_flow_creation_distribution/activity_create.html"
 
     def form_valid(self, form):
-        if type(self.request.user) == "User":
-            form.instance.author = self.request.user
+        form.instance.author = self.request.user
         return super(ActivityCreateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -282,10 +272,11 @@ def update_program_json(request):
     return save_serializer(serializer)
 
 
-def duplicate_node(node):
+def duplicate_node(node, author):
     new_node = Node.objects.create(
         title=node.title,
         description=node.description,
+        author=author,
         is_original=False,
         parent_node=node,
         work_classification=node.work_classification,
@@ -297,7 +288,7 @@ def duplicate_node(node):
 
 @login_required
 @ajax_login_required
-@is_owner("strategyPK")
+@is_owner("strategyPk")
 def add_node(request):
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
@@ -308,7 +299,7 @@ def add_node(request):
             link.save()
 
         NodeStrategy.objects.create(
-            strategy=strategy, node=duplicate_node(node), rank=0
+            strategy=strategy, node=duplicate_node(node, request.user), rank=0
         )
 
     except:
@@ -317,17 +308,18 @@ def add_node(request):
     return JsonResponse({"action": "posted"})
 
 
-def duplicate_strategy(strategy):
+def duplicate_strategy(strategy, author):
     new_strategy = Strategy.objects.create(
         title=strategy.title,
         description=strategy.description,
+        author=author,
         is_original=False,
         parent_strategy=strategy,
     )
     for node in strategy.nodes.all():
         NodeStrategy.objects.create(
             strategy=new_strategy,
-            node=duplicate_node(node),
+            node=duplicate_node(node, author),
             rank=NodeStrategy.objects.get(node=node, strategy=strategy).rank,
         )
     return new_strategy
@@ -335,7 +327,7 @@ def duplicate_strategy(strategy):
 
 @require_POST
 @ajax_login_required
-@is_owner("activityPK")
+@is_owner("activityPk")
 def add_strategy(request):
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
     activity = Activity.objects.get(pk=request.POST.get("activityPk"))
@@ -346,7 +338,7 @@ def add_strategy(request):
             link.save()
 
         StrategyActivity.objects.create(
-            activity=activity, strategy=duplicate_strategy(strategy), rank=0
+            activity=activity, strategy=duplicate_strategy(strategy, request.user), rank=0
         )
     except:
         return JsonResponse({"action": "error"})
@@ -354,29 +346,23 @@ def add_strategy(request):
     return JsonResponse({"action": "posted"})
 
 
-def duplicate_component_course_level(component):
-    if type(component.content_object) == Activity:
+def duplicate_component(component, author):
+    if type(component.content_object) == Artifact:
         new_component = Component.objects.create(
-            content_object=Activity.objects.create(
+            content_object=Artifact.objects.create(
                 title=component.content_object.title,
                 description=component.content_object.description,
+                author=author,
                 is_original=False,
-                parent_activity=component.content_object,
+                parent_artifact=component.content_object,
             )
         )
-        for strategy in component.content_object.strategies.all():
-            StrategyActivity.objects.create(
-                activity=new_component.content_object,
-                strategy=duplicate_strategy(strategy),
-                rank=StrategyActivity.objects.get(
-                    strategy=strategy, activity=component.content_object
-                ).rank,
-            )
     elif type(component.content_object) == Preparation:
         new_component = Component.objects.create(
             content_object=Preparation.objects.create(
                 title=component.content_object.title,
                 description=component.content_object.description,
+                author=author,
                 is_original=False,
                 parent_preparation=component.content_object,
             )
@@ -386,19 +372,13 @@ def duplicate_component_course_level(component):
             content_object=Assesment.objects.create(
                 title=component.content_object.title,
                 description=component.content_object.description,
+                author=author,
                 is_original=False,
                 parent_assesment=component.content_object,
             )
         )
     else:
-        new_component = Component.objects.create(
-            content_object=Artifact.objects.create(
-                title=component.content_object.title,
-                description=component.content_object.description,
-                is_original=False,
-                parent_artifact=component.content_object,
-            )
-        )
+        return component
     return new_component
 
 
@@ -415,53 +395,12 @@ def add_component_to_course(request):
             link.save()
 
         ComponentWeek.objects.create(
-            week=week, component=duplicate_component_course_level(component), rank=0
+            week=week, component=duplicate_component(component, request.user), rank=0
         )
     except:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
-
-
-def duplicate_week(week):
-    new_week = Week.objects.create(title=week.title)
-    for component in week.compmonents.all():
-        ComponentWeek.objects.create(
-            week=new_week,
-            component=duplicate_component_course_level(component),
-            rank=ComponentWeek.objects.get(week=week, component=component).rank,
-        )
-    return new_week
-
-
-def duplicate_component_program_level(component):
-    if type(component.content_object) == Assesment:
-        new_component = Component.objects.create(
-            content_object=Assesment.objects.create(
-                title=component.content_object.title,
-                description=component.content_object.description,
-                is_original=False,
-                parent_assesment=component.content_object,
-            )
-        )
-    else:
-        new_component = Component.objects.create(
-            content_object=Course.objects.create(
-                title=component.content_object.title,
-                description=component.content_object.description,
-                is_original=False,
-                parent_course=component.content_object,
-            )
-        )
-        for week in component.content_object.weeks.all():
-            WeekCourse.objects.create(
-                course=new_component.content_object,
-                week=duplicate_week(week),
-                rank=WeekCourse.objects.get(
-                    week=week, course=component.content_object
-                ).rank,
-            )
-    return new_component
 
 
 @require_POST
@@ -478,11 +417,12 @@ def add_component_to_program(request):
 
         ComponentProgram.objects.create(
             program=program,
-            component=duplicate_component_program_level(component),
+            component=duplicate_component(component, request.user),
             rank=0,
         )
     except:
         return JsonResponse({"action": "error"})
+
     return JsonResponse({"action": "posted"})
 
 
@@ -493,14 +433,13 @@ def dialog_form_create(request):
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
     if model == "program":
-        del data["componentType"], data["work_classification"], data[
-            "activity_classification"
-        ]
+        del data["work_classification"], data["activity_classification"]
         serializer = ProgramSerializer(data=data)
         return save_serializer(serializer)
     parent_id = json.loads(request.POST.get("parentID"))
     is_program_level = json.loads(request.POST.get("isProgramLevelComponent"))
     data["author"] = request.user.username
+    print(request.user.username, request.user)
     if model == "node":
         data["work_classification"] = int(data["work_classification"])
         data["activity_classification"] = int(data["activity_classification"])

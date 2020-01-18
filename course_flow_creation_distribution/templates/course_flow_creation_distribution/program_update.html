@@ -553,7 +553,7 @@
       }
 
       function addComponent(componentPk){
-        $.post("{% url 'add-component-to-program' %}", {componentPk: componentPk, programPk: '{{ object.pk|safe }}'});
+        $.post("{% url 'add-component-to-program' %}", {componentPk: componentPk, programPk: programJson.id});
       }
 
   });

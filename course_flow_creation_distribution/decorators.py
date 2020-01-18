@@ -45,8 +45,8 @@ def is_owner(model):
         def _wrapped_view(request, model=model, *args, **kwargs):
             if model:
                 if model[-2:] == "Pk":
-                    id = json.loads(request.POST.get(model[:-2]))
-                    model = model[-2:]
+                    id = json.loads(request.POST.get(model))
+                    model = model[:-2]
                 else:
                     id = json.loads(request.POST.get("json"))["id"]
             else:
@@ -76,6 +76,8 @@ def is_parent_owner(view_func):
         model = json.loads(request.POST.get("objectType"))
         parent_id = json.loads(request.POST.get("parentID"))
         is_program_level = json.loads(request.POST.get("isProgramLevelComponent"))
+        if model == "program":
+            return view_func(request, *args, **kwargs)
         try:
             if is_program_level:
                 parent = model_lookups[

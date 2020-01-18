@@ -886,11 +886,11 @@
     }
 
       function addNode(nodePk, strategyPk){
-        let posting = $.post("{% url 'add-node' %}", {nodePk: nodePk, strategyPk: strategyPk, activityPk: activityJson.id });
+        let posting = $.post("{% url 'add-node' %}", {nodePk: nodePk, strategyPk: strategyPk});
       }
 
       function addStrategy(strategyPk){
-        let posting = $.post("{% url 'add-node' %}", {strategyPk: strategyPk, activityPk: activityJson.id });
+        let posting = $.post("{% url 'add-node' %}", {strategyPk: strategyPk, activityPk: activityJson.id});
       }
 
         });

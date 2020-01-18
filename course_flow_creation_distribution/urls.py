@@ -37,6 +37,11 @@ def flow_patterns():
             name="program-update",
         ),
         url(
+            r"^course/create/$",
+            views.CourseCreateView.as_view(),
+            name="course-create",
+        ),
+        url(
             r"^course/(?P<pk>[0-9]+)/$",
             views.CourseDetailView.as_view(),
             name="course-detail",
@@ -45,6 +50,11 @@ def flow_patterns():
             r"^course/(?P<pk>[0-9]+)/update/$",
             views.CourseUpdateView.as_view(),
             name="course-update",
+        ),
+        url(
+            r"^activity/create/$",
+            views.ActivityCreateView.as_view(),
+            name="activity-create",
         ),
         url(
             r"^activity/(?P<pk>[0-9]+)/$",

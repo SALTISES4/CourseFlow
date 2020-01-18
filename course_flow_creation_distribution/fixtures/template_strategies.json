@@ -1,0 +1,69 @@
+[
+  {
+    "id": 2,
+    "title": "strat title 2",
+    "description": "strat desc 2",
+    "hash": "876ae10a-1da6-4203-bc24-04754e93f8ad",
+    "default": true,
+    "author": null,
+    "nodestrategy_set": [
+      {
+        "strategy": 2,
+        "node": {
+          "id": 29,
+          "title": "Divide students into groups",
+          "description": "node desc 1",
+          "hash": "cc7b4892-2ddd-48d7-bfb7-c1b5f8d1253f",
+          "author": null,
+          "work_classification": 2,
+          "activity_classification": 1,
+          "classification": 1,
+          "outcomenode_set": [],
+          "is_original": true,
+          "parent_node": null
+        },
+        "rank": 0,
+        "id": 32
+      },
+      {
+        "strategy": 2,
+        "node": {
+          "id": 29,
+          "title": "node title 1",
+          "description": "node desc 1",
+          "hash": "cc7b4892-2ddd-48d7-bfb7-c1b5f8d1253f",
+          "author": null,
+          "work_classification": 2,
+          "activity_classification": 1,
+          "classification": 1,
+          "outcomenode_set": [],
+          "is_original": true,
+          "parent_node": null
+        },
+        "rank": 0,
+        "id": 32
+      },
+      {
+        "strategy": 2,
+        "node": {
+          "id": 29,
+          "title": "node title 1",
+          "description": "node desc 1",
+          "hash": "cc7b4892-2ddd-48d7-bfb7-c1b5f8d1253f",
+          "author": null,
+          "work_classification": 2,
+          "activity_classification": 1,
+          "classification": 1,
+          "outcomenode_set": [],
+          "is_original": true,
+          "parent_node": null
+        },
+        "rank": 0,
+        "id": 32
+      }
+    ],
+    "outcomestrategy_set": [],
+    "is_original": true,
+    "parent_strategy": null
+  }
+]
