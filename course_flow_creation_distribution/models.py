@@ -452,4 +452,14 @@ model_lookups = {
     "course": Course,
     "program": Program,
 }
-model_keys = ["node", "strategy", "activity", "assesment", "preparation", "artifact", "week", "course", "program"]
+model_keys = [
+    "node",
+    "strategy",
+    "activity",
+    "assesment",
+    "preparation",
+    "artifact",
+    "week",
+    "course",
+    "program",
+]

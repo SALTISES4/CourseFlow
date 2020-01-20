@@ -785,7 +785,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(read_only=True, slug_field="username")
 
-    discipline = DisciplineSerializer(allow_null=True)
+    discipline = DisciplineSerializer(read_only=True)
 
     outcomecourse_set = serializers.SerializerMethodField()
 

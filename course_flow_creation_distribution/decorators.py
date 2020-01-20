@@ -28,12 +28,16 @@ owned_models = [
     "node",
     "strategy",
     "activity",
+    "week",
     "course",
     "assesment",
+    "week",
     "course",
     "artifact",
+    "week",
     "course",
     "preparation",
+    "week",
     "course",
 ]
 program_level_owned_models = ["assesment", "program", "course", "program"]

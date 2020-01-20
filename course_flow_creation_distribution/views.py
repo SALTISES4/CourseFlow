@@ -338,7 +338,9 @@ def add_strategy(request):
             link.save()
 
         StrategyActivity.objects.create(
-            activity=activity, strategy=duplicate_strategy(strategy, request.user), rank=0
+            activity=activity,
+            strategy=duplicate_strategy(strategy, request.user),
+            rank=0,
         )
     except:
         return JsonResponse({"action": "error"})
@@ -432,14 +434,13 @@ def add_component_to_program(request):
 def dialog_form_create(request):
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
+    data["author"] = request.user.username
     if model == "program":
         del data["work_classification"], data["activity_classification"]
         serializer = ProgramSerializer(data=data)
         return save_serializer(serializer)
     parent_id = json.loads(request.POST.get("parentID"))
     is_program_level = json.loads(request.POST.get("isProgramLevelComponent"))
-    data["author"] = request.user.username
-    print(request.user.username, request.user)
     if model == "node":
         data["work_classification"] = int(data["work_classification"])
         data["activity_classification"] = int(data["activity_classification"])
