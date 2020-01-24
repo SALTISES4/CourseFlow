@@ -84,7 +84,6 @@ export class DialogForm extends Component {
 
   onClose = e => {
     e.preventDefault();
-    console.log(this.state);
     this.setState({
       object: null,
       objectType: null,
@@ -468,7 +467,6 @@ function deleteNode(component) {
     objectType: JSON.stringify(component.state.objectType)
   })
     .done(function(data) {
-      console.log(data.action);
       if (data.action == "posted") {
         component.snack.MDComponent.show({
           message: component.props.snackMessageOnSuccess
@@ -493,7 +491,6 @@ function updateNode(component) {
     objectType: JSON.stringify(component.state.objectType)
   })
     .done(function(data) {
-      console.log(data.action);
       if (data.action == "posted") {
         component.snack.MDComponent.show({
           message: component.props.snackMessageOnSuccess
@@ -522,7 +519,6 @@ function createNode(component) {
     )
   })
     .done(function(data) {
-      console.log(data.action);
       if (data.action == "posted") {
         component.snack.MDComponent.show({
           message: component.props.snackMessageOnSuccess

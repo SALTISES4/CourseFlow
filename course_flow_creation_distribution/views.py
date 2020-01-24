@@ -81,7 +81,7 @@ def get_user_courses(request):
     return JsonResponse(
         [
             {"id": course.pk, "title": course.title}
-            for course in Courses.objects.filter(author=request.user)
+            for course in Course.objects.filter(author=request.user)
         ]
     )
 
@@ -522,7 +522,6 @@ def dialog_form_create(request):
         data["parent_activity"] = None
         serializer = AssesmentSerializer(data=data)
         if parent_id:
-            week = Week.objects.get(id=parent_id)
             if serializer.is_valid():
                 assesment = serializer.save()
             else:
@@ -534,7 +533,9 @@ def dialog_form_create(request):
                     for link in ComponentProgram.objects.filter(program=program):
                         link.rank += 1
                         link.save()
-                    ComponentProgram.objects.create(week=week, program=program)
+                    ComponentProgram.objects.create(
+                        program=program, component=component
+                    )
                 else:
                     week = Week.objects.get(id=parent_id)
                     component = Component.objects.create(content_object=assesment)
@@ -590,7 +591,7 @@ def dialog_form_create(request):
         if parent_id:
             course = Course.objects.get(id=parent_id)
             if serializer.is_valid():
-                strategy = serializer.save()
+                week = serializer.save()
             else:
                 return JsonResponse({"action": "error"})
             try:

@@ -57,6 +57,7 @@
           function fetchThenRenderProgram(){
             d3.json(window.location.origin+"/program/read/"+{{object.pk}}+"/?format=json").then(function (json) {
               programJson = json;
+              console.log(programJson);
               renderProgram(programJson, svgParent);
             });
           }
@@ -362,8 +363,6 @@
 
 
           function renderComponents(componentProgramSet, svg){
-
-            console.log(componentProgramSet[0].component.content_object);
 
             svg.selectAll('.component').remove();
 

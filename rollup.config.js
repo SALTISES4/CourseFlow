@@ -8,17 +8,17 @@ import postcss from "rollup-plugin-postcss";
 
 const plugins = [
   postcss({
-    extensions: [".css"],
+    extensions: [".css"]
   }),
   resolve({
-    mainFields: ["browser", "module", "main"],
+    mainFields: ["browser", "module", "main"]
   }),
   babel({
     babelrc: false,
     exclude: ["node_modules/**"],
     plugins: [
       "@babel/plugin-proposal-class-properties",
-      ["@babel/plugin-transform-react-jsx", { pragma: "h" }],
+      ["@babel/plugin-transform-react-jsx", { pragma: "h" }]
     ],
     presets: [
       "@babel/preset-flow",
@@ -26,31 +26,29 @@ const plugins = [
         "@babel/preset-env",
         {
           targets: {
-            browsers: "last 4 versions and >=0.2% in CA and not ie <= 11",
+            browsers: "last 4 versions and >=0.2% in CA and not ie <= 11"
           },
           useBuiltIns: "usage",
-          corejs: 3,
-        },
-      ],
-    ],
+          corejs: 3
+        }
+      ]
+    ]
   }),
   commonjs(),
-  terser(),
+  terser()
 ];
 
 export default [
   {
     input:
       "course_flow_creation_distribution/static/course_flow_creation_distribution/js/scripts.js",
-      "course_flow_creation_distribution/static/course_flow_creation_distribution/js/__tests__/tests.js",
     output: {
       file:
         "course_flow_creation_distribution/static/course_flow_creation_distribution/js/scripts.min.js",
-        "course_flow_creation_distribution/static/course_flow_creation_distribution/js/__tests__/tests.min.js",
       name: "root",
       format: "iife",
-      sourceMap: "inline",
+      sourceMap: "inline"
     },
-    plugins: plugins,
-  },
+    plugins: plugins
+  }
 ];
