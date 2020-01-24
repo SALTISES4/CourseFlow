@@ -186,10 +186,15 @@ export class DialogForm extends Component {
                 Are you sure you'd like to delete this {this.state.objectType}?
               </Dialog.Body>
               <Dialog.Footer>
-                <Dialog.FooterButton cancel={true} onClick={this.onClose}>
+                <Dialog.FooterButton
+                  id="cancel-button"
+                  cancel={true}
+                  onClick={this.onClose}
+                >
                   Cancel
                 </Dialog.FooterButton>
                 <Dialog.FooterButton
+                  id="submit-button"
                   accept={true}
                   disabled={false}
                   raised={true}
@@ -222,6 +227,7 @@ export class DialogForm extends Component {
               <Dialog.Body scrollable={false}>
                 <div>
                   <TextField
+                    id="title-field"
                     label="Title"
                     value={this.state.object.title}
                     onInput={this.updateObjectTitle}
@@ -231,6 +237,7 @@ export class DialogForm extends Component {
                 {!this.state.isWeek && (
                   <div>
                     <TextField
+                      id="description-field"
                       textarea={true}
                       label="Description"
                       value={this.state.object.description}
@@ -242,6 +249,7 @@ export class DialogForm extends Component {
                 {this.state.isNode && (
                   <div>
                     <Select
+                      id="work-classification-field"
                       hintText="Select a work classification"
                       selectedIndex={this.state.object.work_classification}
                       onChange={this.updateObjectWorkClassification}
@@ -255,6 +263,7 @@ export class DialogForm extends Component {
                 {this.state.isNode && (
                   <div>
                     <Select
+                      id="activity-classification-field"
                       hintText="Select an activity classification"
                       selectedIndex={this.state.object.activity_classification}
                       onChange={this.updateObjectActivityClassification}
@@ -280,10 +289,15 @@ export class DialogForm extends Component {
                 )}
               </Dialog.Body>
               <Dialog.Footer>
-                <Dialog.FooterButton cancel={true} onClick={this.onClose}>
+                <Dialog.FooterButton
+                  id="cancel-button"
+                  cancel={true}
+                  onClick={this.onClose}
+                >
                   Cancel
                 </Dialog.FooterButton>
                 <Dialog.FooterButton
+                  id="submit-button"
                   accept={true}
                   disabled={
                     (!this.state.object.title && this.state.isWeek) ||
@@ -324,6 +338,7 @@ export class DialogForm extends Component {
                 {this.state.isProgramLevelComponent && (
                   <div>
                     <Select
+                      id="component-field"
                       hintText="Select a node type"
                       onChange={this.updateObjectType}
                     >
@@ -335,6 +350,7 @@ export class DialogForm extends Component {
                 {this.state.isCourseLevelComponent && (
                   <div>
                     <Select
+                      id="component_field"
                       hintText="Select a node type"
                       onChange={this.updateObjectType}
                     >
@@ -347,6 +363,7 @@ export class DialogForm extends Component {
                 )}
                 <div>
                   <TextField
+                    id="title-field"
                     label="Title"
                     value={this.state.objectToBe.title}
                     onInput={this.updateObjectToBeTitle}
@@ -356,6 +373,7 @@ export class DialogForm extends Component {
                 {!this.state.isWeek && (
                   <div>
                     <TextField
+                      id="description-field"
                       textarea={true}
                       label="Description"
                       value={this.state.objectToBe.description}
@@ -367,6 +385,7 @@ export class DialogForm extends Component {
                 {this.state.isNode && (
                   <div>
                     <Select
+                      id="work-classification-field"
                       hintText="Select a work classification"
                       selectedIndex={this.state.objectToBe.work_classification}
                       onChange={this.updateObjectToBeWorkClassification}
@@ -380,6 +399,7 @@ export class DialogForm extends Component {
                 {this.state.isNode && (
                   <div>
                     <Select
+                      id="activity-classification-field"
                       hintText="Select an activity classification"
                       selectedIndex={
                         this.state.objectToBe.activity_classification
@@ -407,10 +427,15 @@ export class DialogForm extends Component {
                 )}
               </Dialog.Body>
               <Dialog.Footer>
-                <Dialog.FooterButton cancel={true} onClick={this.onClose}>
+                <Dialog.FooterButton
+                  id="cancel-button"
+                  cancel={true}
+                  onClick={this.onClose}
+                >
                   Cancel
                 </Dialog.FooterButton>
                 <Dialog.FooterButton
+                  id="submit-button"
                   accept={true}
                   disabled={
                     (!this.state.objectToBe.title && this.state.isWeek) ||

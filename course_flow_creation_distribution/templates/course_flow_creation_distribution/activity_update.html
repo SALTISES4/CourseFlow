@@ -353,8 +353,8 @@
 
               svgActivity
                 .append('text')
+                .attr('id','course-title')
                 .style('font-family', 'Roboto')
-                .attr('class', 'node-title')
                 .attr('x', "15")
                 .attr('y', "20")
                 .attr('dy', 6)
@@ -366,7 +366,7 @@
               svgActivity
                 .append('text')
                 .style('font-family', 'Roboto')
-                .attr('class', 'node-author')
+                .attr('id','course-author')
                 .attr('x', "15")
                 .attr('y', "40")
                 .attr('dy', 6)
@@ -378,7 +378,7 @@
               svgActivity
                 .append('text')
                 .style('font-family', 'Roboto')
-                .attr('class', 'node-description')
+                .attr('id','course-description')
                 .attr('x', "15")
                 .attr('y', "70")
                 .attr('dy', 6)
@@ -389,7 +389,7 @@
 
               svgActivity.append("g")
                 .attr("class", "action-icon")
-                .attr("id", "activity-delete")
+                .attr("id", "delete-activity")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
                       object: activityJson,
@@ -408,7 +408,7 @@
 
               svgActivity.append("g")
                 .attr("class", "action-icon")
-                .attr("id", "activity-update")
+                .attr("id", "update-activity")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
                       object: activityJson,
@@ -476,7 +476,7 @@
                     strategies
                       .append('text')
                       .style('font-family', 'Roboto')
-                      .attr('class', 'node-title')
+                      .attr('class', 'strategy-title')
                       .attr('x', "15")
                       .attr('y', "20")
                       .attr('dy', 6)
@@ -488,7 +488,7 @@
                     strategies
                       .append('text')
                       .style('font-family', 'Roboto')
-                      .attr('class', 'node-author')
+                      .attr('class', 'strategy-author')
                       .attr('x', "15")
                       .attr('y', "40")
                       .attr('dy', 6)
@@ -500,7 +500,7 @@
                     strategies
                       .append('text')
                       .style('font-family', 'Roboto')
-                      .attr('class', 'node-description')
+                      .attr('class', 'strategy-description')
                       .attr('x', "15")
                       .attr('y', "70")
                       .attr('dy', 6)
@@ -510,7 +510,7 @@
                       .text(d => d.strategy.description);
 
                   strategies.append("g")
-                    .attr("class", "action-icon")
+                    .attr("class", "action-icon delete-strategy")
                     .on("mousedown", function(d,i){
                         root.currentComponentInstance.setState({
                           object: d3.select(this.parentNode).node().__data__.strategy,
@@ -528,7 +528,7 @@
                     .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
                   strategies.append("g")
-                    .attr("class", "action-icon")
+                    .attr("class", "action-icon update-strategy")
                     .on("mousedown", function(d,i){
                         root.currentComponentInstance.setState({
                           object: d3.select(this.parentNode).node().__data__.strategy,
@@ -546,7 +546,7 @@
                     .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
 
                     strategies.append("g")
-                      .attr("class", "action-icon")
+                      .attr("class", "action-icon add-node")
                       .on("mousedown", function(d,i){
                           root.currentComponentInstance.setState({
                             objectType: "node",
@@ -725,7 +725,7 @@
                   .text(d => d.node.description);
 
                 nodes.append("g")
-                  .attr("class", "action-icon")
+                  .attr("class", "action-icon delete-node")
                   .on("mousedown", function(d,i){
                     root.currentComponentInstance.setState({
                       object: d3.select(this.parentNode).node().__data__.node,
@@ -743,7 +743,7 @@
                   .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
                 nodes.append("g")
-                  .attr("class", "action-icon")
+                  .attr("class", "action-icon update-node")
                   .on("mousedown", function(d,i){
                     root.currentComponentInstance.setState({
                       object: d3.select(this.parentNode).node().__data__.node,

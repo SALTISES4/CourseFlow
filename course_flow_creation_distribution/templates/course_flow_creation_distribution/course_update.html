@@ -232,6 +232,7 @@
 
               svgCourse
                 .append('text')
+                .attr('id','course-title')
                 .style('font-family', 'Roboto')
                 .attr('class', 'course-title')
                 .attr('x', "15")
@@ -244,6 +245,7 @@
 
               svgCourse
                 .append('text')
+                .attr('id','course-author')
                 .style('font-family', 'Roboto')
                 .attr('class', 'course-author')
                 .attr('x', "15")
@@ -256,6 +258,7 @@
 
               svgCourse
                 .append('text')
+                .attr('id','course-description')
                 .style('font-family', 'Roboto')
                 .attr('class', 'course-description')
                 .attr('x', "15")
@@ -268,6 +271,7 @@
 
               svgCourse.append("g")
                 .attr("class", "action-icon")
+                .attr("id", "delete-course")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
                       object: courseJson,
@@ -286,6 +290,7 @@
 
               svgCourse.append("g")
                 .attr("class", "action-icon")
+                .attr("id", "update-course")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
                       object: courseJson,
@@ -304,6 +309,7 @@
 
               svgCourse.append("g")
                 .attr("class", "action-icon")
+                .attr("id", "add-week")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
                       parentID: courseJson.id,
@@ -374,7 +380,7 @@
                       .text(d=> "created by "+d.week.author);
 
                   weeks.append("g")
-                    .attr("class", "action-icon")
+                    .attr("class", "action-icon delete-week")
                     .on("mousedown", function(d,i){
                         root.currentComponentInstance.setState({
                           object: d3.select(this.parentNode).node().__data__.week,
@@ -392,7 +398,7 @@
                     .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
                   weeks.append("g")
-                    .attr("class", "action-icon")
+                    .attr("class", "action-icon update-week")
                     .on("mousedown", function(d,i){
                         root.currentComponentInstance.setState({
                           object: d3.select(this.parentNode).node().__data__.week,
@@ -410,7 +416,7 @@
                     .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
 
                   weeks.append("g")
-                    .attr("class", "action-icon")
+                    .attr("class", "action-icon add-component")
                     .on("mousedown", function(d,i){
                         root.currentComponentInstance.setState({
                           parentID: d3.select(this.parentNode).node().__data__.week.id,
@@ -420,10 +426,10 @@
                     })
                     .append('image')
                     .attr('x', `${weekWidth-40}`)
-                    .attr('y', `${100}`)
+                    .attr('y', `${135}`)
                     .attr("width", `${31}`)
                     .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
+                    .attr("xlink:href","{% static 'course_flow_creation_distribution/img/add-square-button.svg' %}");
 
                 const dragDropIcons =  weeks.append("g")
                     .attr("class", "drag-icon")
@@ -595,7 +601,7 @@
                   .text(d => d.component.content_object.description);
 
                 components.append("g")
-                  .attr("class", "action-icon")
+                  .attr("class", "action-icon delete-component")
                   .on("mousedown", function(d,i){
                       root.currentComponentInstance.setState({
                         object: d3.select(this.parentNode).node().__data__.component.content_object,
@@ -613,7 +619,7 @@
                   .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
                 components.append("g")
-                  .attr("class", "action-icon")
+                  .attr("class", "action-icon update-component")
                   .on("mousedown", function(d,i){
                       if (d3.select(this.parentNode).node().__data__.component.content_type_in_text == "activity") {
                         window.location.href = window.location.origin+"/activity/"+d3.select(this.parentNode).node().__data__.component.content_object.id+"/update/";

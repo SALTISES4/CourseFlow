@@ -221,8 +221,8 @@
 
               program
                 .append('text')
+                .attr('id','program-title')
                 .style('font-family', 'Roboto')
-                .attr('class', 'program-title')
                 .attr('x', "15")
                 .attr('y', "20")
                 .attr('dy', 6)
@@ -233,8 +233,8 @@
 
               program
                 .append('text')
+                .attr('id','program-author')
                 .style('font-family', 'Roboto')
-                .attr('class', 'program-author')
                 .attr('x', "15")
                 .attr('y', "40")
                 .attr('dy', 6)
@@ -245,8 +245,8 @@
 
               program
                 .append('text')
+                .attr('id','program-description')
                 .style('font-family', 'Roboto')
-                .attr('class', 'program-description')
                 .attr('x', "15")
                 .attr('y', "70")
                 .attr('dy', 6)
@@ -256,6 +256,7 @@
                 .text(programJson.description);
 
               program.append("g")
+                .attr('id','delete-program')
                 .attr("class", "action-icon")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
@@ -274,6 +275,7 @@
                 .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
               program.append("g")
+                .attr('id','update-program')
                 .attr("class", "action-icon")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
@@ -292,6 +294,7 @@
                 .attr("xlink:href","{% static 'course_flow_creation_distribution/img/pencil.svg' %}");
 
               program.append("g")
+                .attr('id','ass-component')
                 .attr("class", "action-icon")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
@@ -411,7 +414,7 @@
                   .text(d => d.component.content_object.description);
 
                 components.append("g")
-                  .attr("class", "action-icon")
+                  .attr("class", "action-icon delete-component")
                   .on("mousedown", function(d,i){
                       root.currentComponentInstance.setState({
                         object: d3.select(this.parentNode).node().__data__.component.content_object,
@@ -429,7 +432,7 @@
                   .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
                 components.append("g")
-                  .attr("class", "action-icon")
+                  .attr("class", "action-icon update-component")
                   .on("mousedown", function(d,i){
                     if (d3.select(this.parentNode).node().__data__.component.content_type_in_text == "course") {
                       window.location.href = window.location.origin+"/course/"+d3.select(this.parentNode).node().__data__.component.content_object.id+"/update/";
