@@ -389,6 +389,7 @@
 
               svgActivity.append("g")
                 .attr("class", "action-icon")
+                .attr("id", "activity-delete")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
                       object: activityJson,
@@ -406,7 +407,8 @@
                 .attr("xlink:href","{% static 'course_flow_creation_distribution/img/rubbish-bin-delete-button.svg' %}");
 
               svgActivity.append("g")
-                .attr("class", "create-button")
+                .attr("class", "action-icon")
+                .attr("id", "activity-update")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
                       object: activityJson,
@@ -425,6 +427,7 @@
 
               svgActivity.append("g")
                 .attr("class", "action-icon")
+                .attr("id", "add-strategy")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
                       isStrategy: true,

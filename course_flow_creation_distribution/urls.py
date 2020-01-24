@@ -21,6 +21,7 @@ def flow_patterns():
             name="login",
         ),
         url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+        url(r"home/$", views.home_view, name="home"),
         url(
             r"^program/create/$",
             views.ProgramCreateView.as_view(),
@@ -29,7 +30,7 @@ def flow_patterns():
         url(
             r"^program/(?P<pk>[0-9]+)/$",
             views.ProgramDetailView.as_view(),
-            name="program-detail",
+            name="program-detail-view",
         ),
         url(
             r"^program/(?P<pk>[0-9]+)/update/$",
@@ -42,7 +43,7 @@ def flow_patterns():
         url(
             r"^course/(?P<pk>[0-9]+)/$",
             views.CourseDetailView.as_view(),
-            name="course-detail",
+            name="course-detail-view",
         ),
         url(
             r"^course/(?P<pk>[0-9]+)/update/$",
@@ -57,7 +58,7 @@ def flow_patterns():
         url(
             r"^activity/(?P<pk>[0-9]+)/$",
             views.ActivityDetailView.as_view(),
-            name="activity-detail",
+            name="activity-detail-view",
         ),
         url(
             r"^activity/(?P<pk>[0-9]+)/update/$",

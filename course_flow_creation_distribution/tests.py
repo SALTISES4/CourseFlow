@@ -17,6 +17,435 @@ from .models import (
 from .serializers import serializer_lookups
 from rest_framework.renderers import JSONRenderer
 
+from django.test import LiveServerTestCase
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+
+import time
+
+
+class BulkTestCase(LiveServerTestCase):
+    def setUp(self):
+        self.selenium = webdriver.Chrome()
+        super(BulkTestCase, self).setUp()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(BulkTestCase, self).tearDown()
+
+    def test_register_create_activity(self):
+        selenium = self.selenium
+
+        selenium.get(self.live_server_url + "/register/")
+
+        first_name = selenium.find_element_by_id("id_first_name")
+        last_name = selenium.find_element_by_id("id_last_name")
+        username = selenium.find_element_by_id("id_username")
+        email = selenium.find_element_by_id("id_email")
+        password1 = selenium.find_element_by_id("id_password1")
+        password2 = selenium.find_element_by_id("id_password2")
+
+        username_text = "test_user1"
+        password_text = "testpass123"
+
+        first_name.send_keys("test")
+        last_name.send_keys("user")
+        username.send_keys(username_text)
+        email.send_keys("testuser@test.com")
+        password1.send_keys(password_text)
+        password2.send_keys(password_text)
+
+        selenium.find_element_by_id("register-button").click()
+
+        assert "Homepage" in selenium.find_element_by_id("header").text
+
+        selenium.find_elements_by_class_name("create-button")[2].click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        activity_title = "test activity title"
+        activity_description = "test activity description"
+
+        title.send_keys(activity_title)
+        description.send_keys(activity_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert (
+            activity_title in selenium.find_elements_by_class_name("node-title")[0].text
+        )
+
+        assert (
+            activity_description
+            in selenium.find_elements_by_class_name("node-description")[0].text
+        )
+
+        selenium.find_element_by_id("activity-update").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        activity_title = "test activity title updated"
+        activity_description = "test activity description updated"
+
+        title.send_keys(activity_title)
+        description.send_keys(activity_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert (
+            activity_title in selenium.find_elements_by_class_name("node-title")[0].text
+        )
+
+        assert (
+            activity_description
+            in selenium.find_elements_by_class_name("node-description")[0].text
+        )
+
+        selenium.find_element_by_id("add-strategy").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        strategy_title = "test strategy title"
+        strategy_description = "test strategy description"
+
+        title.send_keys(strategy_title)
+        description.send_keys(strategy_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        selenium.find_elements_by_class_name("strategy")
+
+        assert (
+            strategy_title in selenium.find_elements_by_class_name("node-title")[1].text
+        )
+
+        assert (
+            strategy_description
+            in selenium.find_elements_by_class_name("node-description")[1].text
+        )
+
+        selenium.find_element_by_id("strategy-update").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        strategy_title = "test strategy title updated"
+        strategy_description = "test strategy description updated"
+
+        title.send_keys(strategy_title)
+        description.send_keys(strategy_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert (
+            strategy_title in selenium.find_elements_by_class_name("node-title")[1].text
+        )
+
+        assert (
+            strategy_description
+            in selenium.find_elements_by_class_name("node-description")[1].text
+        )
+
+        selenium.find_element_by_id("add-node").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        node_title = "test node title"
+        node_description = "test node description"
+
+        title.send_keys(node_title)
+        description.send_keys(node_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        selenium.find_elements_by_class_name("node")
+
+        assert node_title in selenium.find_elements_by_class_name("node-title")[2].text
+
+        assert (
+            node_description
+            in selenium.find_elements_by_class_name("node-description")[2].text
+        )
+
+        selenium.find_element_by_id("update-node").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        node_title = "test node title edited"
+        node_description = "test node description edited"
+
+        title.send_keys(node_title)
+        description.send_keys(node_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        selenium.find_elements_by_class_name("node")
+
+        assert node_title in selenium.find_elements_by_class_name("node-title")[2].text
+
+        assert (
+            node_description
+            in selenium.find_elements_by_class_name("node-description")[2].text
+        )
+
+        selenium.find_element_by_id("delete-node").click()
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert not selenium.find_elements_by_class_name("node")
+
+        selenium.find_element_by_id("delete-strategy").click()
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert not selenium.find_elements_by_class_name("strategy")
+
+        selenium.find_element_by_id("delete-activity").click()
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert "Homepage" in selenium.find_element_by_id("header").text
+
+        selenium.find_elements_by_class_name("create-button")[1].click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        course_title = "test course title"
+        course_description = "test course description"
+
+        title.send_keys(course_title)
+        description.send_keys(course_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert (
+            course_title in selenium.find_elements_by_class_name("node-title")[0].text
+        )
+
+        assert (
+            course_description
+            in selenium.find_elements_by_class_name("node-description")[0].text
+        )
+
+        selenium.find_element_by_id("course-update").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        course_title = "test course title updated"
+        course_description = "test course description updated"
+
+        title.send_keys(course_title)
+        description.send_keys(course_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert (
+            course_title in selenium.find_elements_by_class_name("node-title")[0].text
+        )
+
+        assert (
+            course_description
+            in selenium.find_elements_by_class_name("node-description")[0].text
+        )
+
+        selenium.find_element_by_id("add-week").click()
+
+        title = selenium.find_element_by_id("id_title")
+
+        week_title = "test week title"
+
+        title.send_keys(week_title)
+
+        selenium.find_element_by_id("save-button").click()
+
+        selenium.find_elements_by_class_name("week")
+
+        assert week_title in selenium.find_elements_by_class_name("node-title")[1].text
+
+        selenium.find_element_by_id("week-update").click()
+
+        title = selenium.find_element_by_id("id_title")
+
+        strategy_title = "test strategy title updated"
+
+        title.send_keys(strategy_title)
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert week_title in selenium.find_elements_by_class_name("node-title")[1].text
+
+        selenium.find_element_by_id("add-component").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        component_title = "test component title"
+        component_description = "test component description"
+
+        title.send_keys(component_title)
+        description.send_keys(component_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        selenium.find_elements_by_class_name("node")
+
+        assert (
+            component_title
+            in selenium.find_elements_by_class_name("node-title")[2].text
+        )
+
+        assert (
+            component_description
+            in selenium.find_elements_by_class_name("node-description")[2].text
+        )
+
+        selenium.find_element_by_id("update-component").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        component_title = "test component title edited"
+        component_description = "test component description edited"
+
+        title.send_keys(node_title)
+        description.send_keys(node_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        selenium.find_elements_by_class_name("node")
+
+        assert (
+            component_title
+            in selenium.find_elements_by_class_name("node-title")[2].text
+        )
+
+        assert (
+            component_description
+            in selenium.find_elements_by_class_name("node-description")[2].text
+        )
+
+        selenium.find_element_by_id("delete-component").click()
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert not selenium.find_elements_by_class_name("component")
+
+        selenium.find_element_by_id("delete-week").click()
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert not selenium.find_elements_by_class_name("week")
+
+        selenium.find_element_by_id("delete-course").click()
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert "Homepage" in selenium.find_element_by_id("header").text
+
+        selenium.find_elements_by_class_name("create-button")[0].click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        program_title = "test program title"
+        program_description = "test program description"
+
+        title.send_keys(program_title)
+        description.send_keys(program_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        selenium.find_element_by_id("program-update").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        program_title = "test program title updated"
+        program_description = "test program description updated"
+
+        title.send_keys(program_title)
+        description.send_keys(program_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert (
+            program_title in selenium.find_elements_by_class_name("node-title")[0].text
+        )
+
+        assert (
+            program_description
+            in selenium.find_elements_by_class_name("node-description")[0].text
+        )
+
+        selenium.find_element_by_id("add-component").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        component_title = "test component title"
+        component_description = "test component description"
+
+        title.send_keys(component_title)
+        description.send_keys(component_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        selenium.find_elements_by_class_name("node")
+
+        assert (
+            component_title
+            in selenium.find_elements_by_class_name("node-title")[2].text
+        )
+
+        assert (
+            component_description
+            in selenium.find_elements_by_class_name("node-description")[2].text
+        )
+
+        selenium.find_element_by_id("update-component").click()
+
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+
+        component_title = "test component title edited"
+        component_description = "test component description edited"
+
+        title.send_keys(node_title)
+        description.send_keys(node_description)
+
+        selenium.find_element_by_id("save-button").click()
+
+        selenium.find_elements_by_class_name("node")
+
+        assert (
+            component_title
+            in selenium.find_elements_by_class_name("node-title")[2].text
+        )
+
+        assert (
+            component_description
+            in selenium.find_elements_by_class_name("node-description")[2].text
+        )
+
+        selenium.find_element_by_id("delete-component").click()
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert not selenium.find_elements_by_class_name("component")
+
+        selenium.find_element_by_id("delete-course").click()
+
+        selenium.find_element_by_id("save-button").click()
+
+        assert "Homepage" in selenium.find_element_by_id("header").text
+
 
 def make_object(model_key, author=None):
     if model_key == "week":

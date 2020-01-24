@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "django_lti_tool_provider",
     "django_extensions",
     "course_flow_creation_distribution.apps.CourseFlowCreationDistributionConfig",
     "course_flow_statistics.apps.CourseFlowStatisticsConfig",

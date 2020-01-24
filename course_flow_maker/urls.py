@@ -19,6 +19,7 @@ from django.conf import settings
 
 
 urlpatterns = [
+    url(r"^lti/", include("django_lti_tool_provider.urls")),
     url("", include("course_flow_creation_distribution.urls")),
     url("stats/", include("course_flow_statistics.urls")),
     url("admin/", admin.site.urls),

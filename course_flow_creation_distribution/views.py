@@ -66,6 +66,26 @@ def registration_view(request):
     return render(request, "registration/registration.html", {"form": form})
 
 
+@login_required
+def home_view(request):
+    context = {
+        "programs": Program.objects.all(),
+        "courses": Course.objects.all(),
+        "activities": Activity.objects.all(),
+    }
+    return render(request, "course_flow_creation_distribution/home.html", context)
+
+
+@ajax_login_required
+def get_user_courses(request):
+    return JsonResponse(
+        [
+            {"id": course.pk, "title": course.title}
+            for course in Courses.objects.filter(author=request.user)
+        ]
+    )
+
+
 class ActivityViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
 
     serializer_class = ActivitySerializer

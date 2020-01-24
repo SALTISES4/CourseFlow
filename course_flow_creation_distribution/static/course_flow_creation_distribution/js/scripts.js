@@ -21,7 +21,7 @@ import "preact-material-components/List/style.css";
 import "preact-material-components/Button/style.css";
 import "preact-material-components/Dialog/style.css";
 
-export class CreateDialogForm extends Component {
+export class DialogForm extends Component {
   state = {
     object: null,
     objectType: null,
@@ -545,7 +545,7 @@ export var currentComponentInstance = null;
 export function injectDialogForm(snackMessageOnSuccess, snackMessageOnFailure) {
   if (document.body.contains(document.getElementById("node-form-container"))) {
     render(
-      <CreateDialogForm
+      <DialogForm
         snackMessageOnSuccess={snackMessageOnSuccess}
         snackMessageOnFailure={snackMessageOnFailure}
       />,

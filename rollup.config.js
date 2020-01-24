@@ -42,9 +42,11 @@ export default [
   {
     input:
       "course_flow_creation_distribution/static/course_flow_creation_distribution/js/scripts.js",
+      "course_flow_creation_distribution/static/course_flow_creation_distribution/js/__tests__/tests.js",
     output: {
       file:
         "course_flow_creation_distribution/static/course_flow_creation_distribution/js/scripts.min.js",
+        "course_flow_creation_distribution/static/course_flow_creation_distribution/js/__tests__/tests.min.js",
       name: "root",
       format: "iife",
       sourceMap: "inline",
