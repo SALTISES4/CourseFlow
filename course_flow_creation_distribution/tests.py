@@ -1,5 +1,7 @@
 from django.test import TestCase
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait, Select
+from selenium.webdriver.support.expected_conditions import presence_of_element_located
 from django.test.client import RequestFactory
 from django.urls import reverse
 from .models import (
@@ -17,14 +19,15 @@ from .models import (
 from .serializers import serializer_lookups
 from rest_framework.renderers import JSONRenderer
 
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 
 import time
 
+timeout = 200
 
-class BulkTestCase(LiveServerTestCase):
+
+class BulkTestCase(StaticLiveServerTestCase):
     def setUp(self):
         self.selenium = webdriver.Chrome()
         super(BulkTestCase, self).setUp()
@@ -72,41 +75,51 @@ class BulkTestCase(LiveServerTestCase):
 
         selenium.find_element_by_id("save-button").click()
 
-        assert (
-            activity_title in selenium.find_elements_by_class_name("node-title")[0].text
+        WebDriverWait(selenium, timeout).until(
+            presence_of_element_located((By.CLASS_NAME, "activity"))
         )
+
+        assert activity_title in selenium.find_element_by_id("activity-title").text
 
         assert (
             activity_description
-            in selenium.find_elements_by_class_name("node-description")[0].text
+            in selenium.find_element_by_id("activity-description").text
         )
 
-        selenium.find_element_by_id("activity-update").click()
+        assert username_text in selenium.find_element_by_id("activity-author").text
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
+        selenium.find_element_by_id("update-activity").click()
+
+        time.sleep(2)
+
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
 
         activity_title = "test activity title updated"
         activity_description = "test activity description updated"
 
-        title.send_keys(activity_title)
-        description.send_keys(activity_description)
+        title.send_keys(" updated")
+        description.send_keys(" updated")
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_element_by_id("submit-button").click()
 
-        assert (
-            activity_title in selenium.find_elements_by_class_name("node-title")[0].text
-        )
+        time.sleep(2)
+
+        assert activity_title in selenium.find_element_by_id("activity-title").text
 
         assert (
             activity_description
-            in selenium.find_elements_by_class_name("node-description")[0].text
+            in selenium.find_element_by_id("activity-description").text
         )
+
+        assert username_text in selenium.find_element_by_id("activity-author").text
 
         selenium.find_element_by_id("add-strategy").click()
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
+        time.sleep(2)
+
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
 
         strategy_title = "test strategy title"
         strategy_description = "test strategy description"
@@ -114,102 +127,152 @@ class BulkTestCase(LiveServerTestCase):
         title.send_keys(strategy_title)
         description.send_keys(strategy_description)
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
 
         selenium.find_elements_by_class_name("strategy")
 
         assert (
-            strategy_title in selenium.find_elements_by_class_name("node-title")[1].text
+            strategy_title
+            in selenium.find_elements_by_class_name("strategy-title")[0].text
         )
 
         assert (
             strategy_description
-            in selenium.find_elements_by_class_name("node-description")[1].text
+            in selenium.find_elements_by_class_name("strategy-description")[0].text
         )
 
-        selenium.find_element_by_id("strategy-update").click()
+        assert (
+            username_text
+            in selenium.find_elements_by_class_name("strategy-author")[0].text
+        )
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
+        selenium.find_elements_by_class_name("update-strategy")[0].click()
+
+        time.sleep(2)
+
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
 
         strategy_title = "test strategy title updated"
         strategy_description = "test strategy description updated"
 
-        title.send_keys(strategy_title)
-        description.send_keys(strategy_description)
+        title.send_keys(" updated")
+        description.send_keys(" updated")
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
 
         assert (
-            strategy_title in selenium.find_elements_by_class_name("node-title")[1].text
+            strategy_title
+            in selenium.find_elements_by_class_name("strategy-title")[0].text
         )
 
         assert (
             strategy_description
-            in selenium.find_elements_by_class_name("node-description")[1].text
+            in selenium.find_elements_by_class_name("strategy-description")[0].text
         )
 
-        selenium.find_element_by_id("add-node").click()
+        assert (
+            username_text
+            in selenium.find_elements_by_class_name("strategy-author")[0].text
+        )
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
+        selenium.find_elements_by_class_name("add-node")[0].click()
+
+        time.sleep(2)
+
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
 
         node_title = "test node title"
         node_description = "test node description"
 
         title.send_keys(node_title)
         description.send_keys(node_description)
+        Select(
+            selenium.find_elements_by_class_name("mdc-select__native-control")[0]
+        ).select_by_value("1")
+        Select(
+            selenium.find_elements_by_class_name("mdc-select__native-control")[1]
+        ).select_by_value("1")
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_element_by_id("submit-button").click()
 
-        selenium.find_elements_by_class_name("node")
-
-        assert node_title in selenium.find_elements_by_class_name("node-title")[2].text
-
-        assert (
-            node_description
-            in selenium.find_elements_by_class_name("node-description")[2].text
-        )
-
-        selenium.find_element_by_id("update-node").click()
-
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
-
-        node_title = "test node title edited"
-        node_description = "test node description edited"
-
-        title.send_keys(node_title)
-        description.send_keys(node_description)
-
-        selenium.find_element_by_id("save-button").click()
+        time.sleep(2)
 
         selenium.find_elements_by_class_name("node")
 
-        assert node_title in selenium.find_elements_by_class_name("node-title")[2].text
+        assert node_title in selenium.find_elements_by_class_name("node-title")[0].text
 
         assert (
             node_description
-            in selenium.find_elements_by_class_name("node-description")[2].text
+            in selenium.find_elements_by_class_name("node-description")[0].text
         )
 
-        selenium.find_element_by_id("delete-node").click()
+        assert (
+            username_text in selenium.find_elements_by_class_name("node-author")[0].text
+        )
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_elements_by_class_name("update-node")[0].click()
+
+        time.sleep(2)
+
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
+
+        node_title = "test node title updated"
+        node_description = "test node description updated"
+
+        title.send_keys(" updated")
+        description.send_keys(" updated")
+
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
+
+        selenium.find_elements_by_class_name("node")
+
+        assert node_title in selenium.find_elements_by_class_name("node-title")[0].text
+
+        assert (
+            node_description
+            in selenium.find_elements_by_class_name("node-description")[0].text
+        )
+
+        assert (
+            username_text in selenium.find_elements_by_class_name("node-author")[0].text
+        )
+
+        selenium.find_elements_by_class_name("delete-node")[0].click()
+
+        time.sleep(2)
+
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
 
         assert not selenium.find_elements_by_class_name("node")
 
-        selenium.find_element_by_id("delete-strategy").click()
+        selenium.find_elements_by_class_name("delete-strategy")[0].click()
 
-        selenium.find_element_by_id("save-button").click()
+        time.sleep(2)
+
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
 
         assert not selenium.find_elements_by_class_name("strategy")
 
         selenium.find_element_by_id("delete-activity").click()
 
-        selenium.find_element_by_id("save-button").click()
+        time.sleep(2)
 
-        assert "Homepage" in selenium.find_element_by_id("header").text
+        selenium.find_element_by_id("submit-button").click()
+
+        selenium.get(self.live_server_url + "/home/")
 
         selenium.find_elements_by_class_name("create-button")[1].click()
 
@@ -224,128 +287,185 @@ class BulkTestCase(LiveServerTestCase):
 
         selenium.find_element_by_id("save-button").click()
 
-        assert (
-            course_title in selenium.find_elements_by_class_name("node-title")[0].text
+        WebDriverWait(selenium, timeout).until(
+            presence_of_element_located((By.CLASS_NAME, "course"))
         )
 
+        assert course_title in selenium.find_element_by_id("course-title").text
+
         assert (
-            course_description
-            in selenium.find_elements_by_class_name("node-description")[0].text
+            course_description in selenium.find_element_by_id("course-description").text
         )
 
-        selenium.find_element_by_id("course-update").click()
+        assert username_text in selenium.find_element_by_id("course-author").text
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
+        selenium.find_element_by_id("update-course").click()
+
+        time.sleep(2)
+
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
 
         course_title = "test course title updated"
         course_description = "test course description updated"
 
-        title.send_keys(course_title)
-        description.send_keys(course_description)
+        title.send_keys(" updated")
+        description.send_keys(" updated")
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
+
+        assert course_title in selenium.find_element_by_id("course-title").text
 
         assert (
-            course_title in selenium.find_elements_by_class_name("node-title")[0].text
+            course_description in selenium.find_element_by_id("course-description").text
         )
 
-        assert (
-            course_description
-            in selenium.find_elements_by_class_name("node-description")[0].text
-        )
+        assert username_text in selenium.find_element_by_id("course-author").text
 
         selenium.find_element_by_id("add-week").click()
 
-        title = selenium.find_element_by_id("id_title")
+        time.sleep(2)
+
+        title = selenium.find_element_by_id("title-field")
 
         week_title = "test week title"
 
         title.send_keys(week_title)
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_element_by_id("submit-button").click()
 
-        selenium.find_elements_by_class_name("week")
+        time.sleep(2)
 
-        assert week_title in selenium.find_elements_by_class_name("node-title")[1].text
+        selenium.find_elements_by_class_name("week")[0]
 
-        selenium.find_element_by_id("week-update").click()
+        assert week_title in selenium.find_elements_by_class_name("week-title")[0].text
 
-        title = selenium.find_element_by_id("id_title")
+        assert (
+            username_text in selenium.find_elements_by_class_name("week-author")[0].text
+        )
+
+        selenium.find_elements_by_class_name("update-week")[0].click()
+
+        time.sleep(2)
+
+        title = selenium.find_element_by_id("title-field")
 
         strategy_title = "test strategy title updated"
 
-        title.send_keys(strategy_title)
+        title.send_keys(" updated")
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_element_by_id("submit-button").click()
 
-        assert week_title in selenium.find_elements_by_class_name("node-title")[1].text
+        time.sleep(2)
 
-        selenium.find_element_by_id("add-component").click()
+        assert week_title in selenium.find_elements_by_class_name("week-title")[0].text
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
+        assert (
+            username_text in selenium.find_elements_by_class_name("week-author")[0].text
+        )
+
+        selenium.find_elements_by_class_name("add-component")[0].click()
+
+        time.sleep(2)
+
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
 
         component_title = "test component title"
         component_description = "test component description"
 
+        Select(
+            selenium.find_elements_by_class_name("mdc-select__native-control")[0]
+        ).select_by_value("assesment")
         title.send_keys(component_title)
         description.send_keys(component_description)
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_element_by_id("submit-button").click()
 
-        selenium.find_elements_by_class_name("node")
+        time.sleep(2)
+
+        selenium.find_elements_by_class_name("component")[0]
 
         assert (
             component_title
-            in selenium.find_elements_by_class_name("node-title")[2].text
+            in selenium.find_elements_by_class_name("component-title")[0].text
         )
 
         assert (
             component_description
-            in selenium.find_elements_by_class_name("node-description")[2].text
+            in selenium.find_elements_by_class_name("component-description")[0].text
         )
 
-        selenium.find_element_by_id("update-component").click()
+        assert (
+            username_text
+            in selenium.find_elements_by_class_name("component-author")[0].text
+        )
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
+        selenium.find_elements_by_class_name("update-component")[0].click()
 
-        component_title = "test component title edited"
-        component_description = "test component description edited"
+        time.sleep(2)
 
-        title.send_keys(node_title)
-        description.send_keys(node_description)
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
 
-        selenium.find_element_by_id("save-button").click()
+        component_title = "test component title updated"
+        component_description = "test component description updated"
 
-        selenium.find_elements_by_class_name("node")
+        title.send_keys(" updated")
+        description.send_keys(" updated")
+
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
+
+        selenium.find_elements_by_class_name("component")[0]
 
         assert (
             component_title
-            in selenium.find_elements_by_class_name("node-title")[2].text
+            in selenium.find_elements_by_class_name("component-title")[0].text
         )
 
         assert (
             component_description
-            in selenium.find_elements_by_class_name("node-description")[2].text
+            in selenium.find_elements_by_class_name("component-description")[0].text
         )
 
-        selenium.find_element_by_id("delete-component").click()
+        assert (
+            username_text
+            in selenium.find_elements_by_class_name("component-author")[0].text
+        )
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_elements_by_class_name("delete-component")[0].click()
+
+        time.sleep(2)
+
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
 
         assert not selenium.find_elements_by_class_name("component")
 
-        selenium.find_element_by_id("delete-week").click()
+        selenium.find_elements_by_class_name("delete-week")[0].click()
 
-        selenium.find_element_by_id("save-button").click()
+        time.sleep(2)
+
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
 
         assert not selenium.find_elements_by_class_name("week")
 
         selenium.find_element_by_id("delete-course").click()
 
-        selenium.find_element_by_id("save-button").click()
+        time.sleep(2)
+
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
+
+        selenium.get(self.live_server_url + "/home/")
 
         assert "Homepage" in selenium.find_element_by_id("header").text
 
@@ -362,89 +482,131 @@ class BulkTestCase(LiveServerTestCase):
 
         selenium.find_element_by_id("save-button").click()
 
-        selenium.find_element_by_id("program-update").click()
+        WebDriverWait(selenium, timeout).until(
+            presence_of_element_located((By.CLASS_NAME, "program"))
+        )
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
+        assert program_title in selenium.find_element_by_id("program-title").text
+
+        assert (
+            program_description
+            in selenium.find_element_by_id("program-description").text
+        )
+
+        assert username_text in selenium.find_element_by_id("program-author").text
+
+        selenium.find_element_by_id("update-program").click()
+
+        time.sleep(2)
+
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
 
         program_title = "test program title updated"
         program_description = "test program description updated"
 
-        title.send_keys(program_title)
-        description.send_keys(program_description)
+        title.send_keys(" updated")
+        description.send_keys(" updated")
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_element_by_id("submit-button").click()
 
-        assert (
-            program_title in selenium.find_elements_by_class_name("node-title")[0].text
-        )
+        time.sleep(2)
+
+        assert program_title in selenium.find_element_by_id("program-title").text
 
         assert (
             program_description
-            in selenium.find_elements_by_class_name("node-description")[0].text
+            in selenium.find_element_by_id("program-description").text
         )
+
+        assert username_text in selenium.find_element_by_id("program-author").text
 
         selenium.find_element_by_id("add-component").click()
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
+        time.sleep(2)
 
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
+
+        Select(
+            selenium.find_elements_by_class_name("mdc-select__native-control")[0]
+        ).select_by_value("assesment")
         component_title = "test component title"
         component_description = "test component description"
 
         title.send_keys(component_title)
         description.send_keys(component_description)
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_element_by_id("submit-button").click()
 
-        selenium.find_elements_by_class_name("node")
+        time.sleep(2)
+
+        selenium.find_elements_by_class_name("component")[0]
 
         assert (
             component_title
-            in selenium.find_elements_by_class_name("node-title")[2].text
+            in selenium.find_elements_by_class_name("component-title")[0].text
         )
 
         assert (
             component_description
-            in selenium.find_elements_by_class_name("node-description")[2].text
+            in selenium.find_elements_by_class_name("component-description")[0].text
         )
 
-        selenium.find_element_by_id("update-component").click()
+        assert (
+            username_text
+            in selenium.find_elements_by_class_name("component-author")[0].text
+        )
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
+        selenium.find_elements_by_class_name("update-component")[0].click()
 
-        component_title = "test component title edited"
-        component_description = "test component description edited"
+        time.sleep(2)
 
-        title.send_keys(node_title)
-        description.send_keys(node_description)
+        title = selenium.find_element_by_id("title-field")
+        description = selenium.find_element_by_id("description-field")
 
-        selenium.find_element_by_id("save-button").click()
+        component_title = "test component title updated"
+        component_description = "test component description updated"
 
-        selenium.find_elements_by_class_name("node")
+        title.send_keys(" updated")
+        description.send_keys(" updated")
+
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
 
         assert (
             component_title
-            in selenium.find_elements_by_class_name("node-title")[2].text
+            in selenium.find_elements_by_class_name("component-title")[0].text
         )
 
         assert (
             component_description
-            in selenium.find_elements_by_class_name("node-description")[2].text
+            in selenium.find_elements_by_class_name("component-description")[0].text
         )
 
-        selenium.find_element_by_id("delete-component").click()
+        assert (
+            username_text
+            in selenium.find_elements_by_class_name("component-author")[0].text
+        )
 
-        selenium.find_element_by_id("save-button").click()
+        selenium.find_elements_by_class_name("delete-component")[0].click()
+
+        time.sleep(2)
+
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(2)
 
         assert not selenium.find_elements_by_class_name("component")
 
-        selenium.find_element_by_id("delete-course").click()
+        selenium.find_element_by_id("delete-program").click()
 
-        selenium.find_element_by_id("save-button").click()
+        time.sleep(2)
 
-        assert "Homepage" in selenium.find_element_by_id("header").text
+        selenium.find_element_by_id("submit-button").click()
+
+        time.sleep(20)
 
 
 def make_object(model_key, author=None):
@@ -591,7 +753,6 @@ class ModelPostTest(TestCase):
             "work_classification": 1,
             "activity_classification": 1,
         }
-        object_id = 1
         parent_id = 1
         is_program_level_component = False
         for object_type in model_keys:
@@ -627,7 +788,7 @@ class ModelPostTest(TestCase):
             self.assertEqual(response.status_code, 401)
 
     def test_dialog_post_permissions_no_authorship(self):
-        user = login(self)
+        login(self)
         author = get_author()
         object_to_be = {
             "title": "test title 1",
@@ -636,7 +797,6 @@ class ModelPostTest(TestCase):
             "work_classification": 1,
             "activity_classification": 1,
         }
-        object_id = 1
         parent_id = 1
         is_program_level_component = False
         for object_type in model_keys:
@@ -771,7 +931,7 @@ class ModelPostTest(TestCase):
             self.assertEqual(response.status_code, 401)
 
     def test_json_update_permissions_no_authorship(self):
-        user = login(self)
+        login(self)
         author = get_author()
         for object_type in ["activity", "course", "program"]:
             serializer_data = serializer_lookups[object_type](
@@ -817,7 +977,7 @@ class ModelPostTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_add_node_permissions_no_authorship(self):
-        user = login(self)
+        login(self)
         author = get_author()
         strategy = make_object("strategy", author)
         node = make_object("node", author)
@@ -836,7 +996,7 @@ class ModelPostTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_add_strategy_no_authorship(self):
-        user = login(self)
+        login(self)
         author = get_author()
         strategy = make_object("strategy", author)
         activity = make_object("activity", author)
@@ -916,7 +1076,7 @@ class ModelPostTest(TestCase):
             self.assertEqual(response.status_code, 401)
 
     def test_add_course_level_component_permissions_no_authorship(self):
-        user = login(self)
+        login(self)
         author = get_author()
         week = make_object("week", author)
         for component_type in ["assesment", "artifact", "preparation", "activity"]:
@@ -974,7 +1134,7 @@ class ModelPostTest(TestCase):
             self.assertEqual(response.status_code, 401)
 
     def test_add_program_level_component_permissions_no_authorship(self):
-        user = login(self)
+        login(self)
         author = get_author()
         program = make_object("program", author)
         for component_type in ["course", "assesment"]:
