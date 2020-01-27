@@ -23,6 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "c!x(_h$!)!1rww@soycu0x7_(kvja5)tkb0v=n^m51m88a%98("
 PASSWORD_KEY = "AvXgoGuagSelJ3mVTuOq9y0mjMMheEIA"
 
+LTI_CLIENT_KEY = "edx"
+LTI_CLIENT_SECRET = "jVtCV33AQlCSianuAXdhFpJI9aUlFg"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -102,8 +105,12 @@ AUTH_PASSWORD_VALIDATORS = [
         "SimilarityValidator"
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
+    },
 ]
 
 
