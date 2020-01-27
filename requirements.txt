@@ -21,6 +21,7 @@ pytest-cov
 pytest-django
 pytz==2019.3
 PyYAML==5.2
+selenium
 six==1.13.0
 sqlparse==0.3.0
 toml==0.10.0
