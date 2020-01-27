@@ -1,8 +1,14 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate as authenticate_
+from django.db.utils import IntegrityError
+from django.conf import settings
+import hashlib
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django_lti_tool_provider import AbstractApplicationHookManager
 from typing import Optional
+import logging
+
+logger = logging.getLogger("courseflow")
 
 
 class ApplicationHookManager(AbstractApplicationHookManager):
@@ -20,15 +26,21 @@ class ApplicationHookManager(AbstractApplicationHookManager):
             redirect_url = reverse("course-detail-view", pk=course_id)
         return redirect_url
 
-    def authentication_hook(self, request, username=None, email=None):
+    def authentication_hook(
+        self, request, user_id: str, username: None = None, email: None = None
+    ) -> None:
 
-        user = authenticate(username)
+        user = authenticate(user_id)
 
         if not isinstance(user, User):
             try:
                 user = create(username, email)
-            except:  # todo
-                pass
+            except IntegrityError:  # todo
+                logger.error(
+                    f"Lti tried to create a new user with username {username}"
+                    ", but there already exists a user with that username."
+                )
+                return
         login(request, user)
 
     def vary_by_key(self, lti_data):
@@ -36,8 +48,61 @@ class ApplicationHookManager(AbstractApplicationHookManager):
 
 
 def authenticate(username: str) -> Optional[User]:
-    pass
+    """
+    Authenticates the user from the username and returns it if it exists. As
+    the password is created from the username, this verifies that the user
+    exists and they were created through the `create` function.
+
+    Parameters
+    ----------
+    username : str
+        Username
+
+    Returns
+    -------
+    Optional[User]
+        User if they exist and None if not
+    """
+    return authenticate_(username=username, password=generate_password(username))
 
 
-def create(username: str, email: str) -> User:
-    pass
+def create(username: str) -> User:
+    """
+    Creates the user from the username and a password generated from it.
+
+    Parameters
+    ----------
+    username : str
+        Username
+
+    Returns
+    -------
+    User
+        Created user
+
+    Raises
+    ------
+    IntegrityError
+        If the user already exists
+    """
+    return User.objects.create_user(
+        username=username, password=generate_password(username)
+    )
+
+
+def generate_password(username: str) -> str:
+    """
+    Generates the password created from the `username`. This will always be the
+    same as long as `PASSWORD_KEY` doesn't change.
+
+    Parameters
+    ----------
+    username : str
+        Username used to create the password
+
+    Returns
+    -------
+    str
+        Password as a hashed string of length 64
+    """
+    return hashlib.sha3_256(f"{username}.{settings.PASSWORD_KEY}".encode()).hexdigest()
