@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.urls import reverse
+from django.views.decorators.http import require_GET
 from django_lti_tool_provider import AbstractApplicationHookManager
 
 from .decorators import ajax_login_required
@@ -129,6 +130,7 @@ def generate_password(username: str) -> str:
 
 
 @ajax_login_required
+@require_GET
 def get_course_list(req: HttpRequest) -> HttpResponse:
     """
     Returns all available courses for the currently logged in user.

@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
+from django.urls import reverse
 
 from course_flow_creation_distribution.lti import (
     authenticate,
@@ -89,4 +90,22 @@ def test_lti__user_already_exists_wrong_password(client, lti_consumer, caplog):
         "Lti tried to create a new user with username "
         f"{lti_consumer.launch_params['user_id']}, but there already exists "
         "a user with that username."
+    )
+
+
+def test_get_course_list(client, users, courses):
+    user = users[0]
+
+    client.login(
+        username=user.username, password=generate_password(user.username)
+    )
+
+    courses_ = [course for course in courses if course.author == user]
+
+    resp = client.get(reverse("course-list"))
+    data = resp.json()
+
+    assert len(courses_) == len(data["courses"])
+    assert all(
+        course.id in (c["id"] for c in data["courses"]) for course in courses_
     )
