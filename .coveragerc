@@ -1,0 +1,6 @@
+[run]
+source =
+  course_flow_creation_distribution
+omit =
+  */tests/*
+  */migrations/*
