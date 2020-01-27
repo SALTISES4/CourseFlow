@@ -21,6 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "c!x(_h$!)!1rww@soycu0x7_(kvja5)tkb0v=n^m51m88a%98("
+PASSWORD_KEY = "AvXgoGuagSelJ3mVTuOq9y0mjMMheEIA"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -101,12 +102,8 @@ AUTH_PASSWORD_VALIDATORS = [
         "SimilarityValidator"
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
@@ -136,4 +133,40 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.SessionAuthentication"
     ]
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "simple": {
+            "format": "%(name)s - %(levelname)s - %(asctime)s - %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        }
+    },
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "formatter": "simple",
+            "filename": os.path.join(BASE_DIR, "logs"),
+        },
+        "console": {
+            "level": "DEBUG" if DEBUG else "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+            "stream": "ext://sys.stdout",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "DEBUG" if DEBUG else "INFO",
+            "propagate": True,
+        },
+        "courseflow": {
+            "handlers": ["console", "file"],
+            "level": "DEBUG" if DEBUG else "INFO",
+        },
+    },
 }
