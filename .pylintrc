@@ -1,0 +1,15 @@
+[MESSAGES CONTROL]
+disable=
+  arguments-differ,
+  bad-continuation,
+  invalid-name,
+  logging-format-interpolation,
+  missing-docstring,
+  no-else-return,
+  no-init,
+  no-member,
+  no-method-argument,
+  old-style-class,
+  redefined-outer-name,
+  too-few-public-methods,
+  unused-wildcard-import
