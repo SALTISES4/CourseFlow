@@ -1,5 +1,6 @@
 from .models import (
     model_lookups,
+    User,
     Course,
     Preparation,
     Activity,
@@ -37,7 +38,7 @@ from django.views.generic import DetailView, UpdateView
 from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
-from django.http import JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.db.models import Count
 import json
 from django.contrib.contenttypes.models import ContentType
@@ -251,7 +252,7 @@ class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return reverse("activity-detail", kwargs={"pk": self.object.pk})
 
 
-def save_serializer(serializer):
+def save_serializer(serializer) -> HttpResponse:
     if serializer:
         if serializer.is_valid():
             serializer.save()
@@ -266,7 +267,7 @@ def save_serializer(serializer):
 @require_POST
 @ajax_login_required
 @is_owner("activity")
-def update_activity_json(request):
+def update_activity_json(request: HttpRequest) -> HttpResponse:
     data = json.loads(request.POST.get("json"))
     serializer = ActivitySerializer(
         Activity.objects.get(id=data["id"]), data=data
@@ -277,7 +278,7 @@ def update_activity_json(request):
 @require_POST
 @ajax_login_required
 @is_owner("course")
-def update_course_json(request):
+def update_course_json(request: HttpRequest) -> HttpResponse:
     data = json.loads(request.POST.get("json"))
     serializer = CourseSerializer(Course.objects.get(id=data["id"]), data=data)
     return save_serializer(serializer)
@@ -286,7 +287,7 @@ def update_course_json(request):
 @require_POST
 @ajax_login_required
 @is_owner("program")
-def update_program_json(request):
+def update_program_json(request: HttpRequest) -> HttpResponse:
     data = json.loads(request.POST.get("json"))
     serializer = ProgramSerializer(
         Program.objects.get(id=data["id"]), data=data
@@ -294,7 +295,7 @@ def update_program_json(request):
     return save_serializer(serializer)
 
 
-def duplicate_node(node, author):
+def duplicate_node(node: Node, author: User) -> Node:
     new_node = Node.objects.create(
         title=node.title,
         description=node.description,
@@ -311,7 +312,7 @@ def duplicate_node(node, author):
 @login_required
 @ajax_login_required
 @is_owner("strategyPk")
-def add_node(request):
+def add_node(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
 
@@ -330,7 +331,7 @@ def add_node(request):
     return JsonResponse({"action": "posted"})
 
 
-def duplicate_strategy(strategy, author):
+def duplicate_strategy(strategy: Strategy, author: User) -> Strategy:
     new_strategy = Strategy.objects.create(
         title=strategy.title,
         description=strategy.description,
@@ -350,7 +351,7 @@ def duplicate_strategy(strategy, author):
 @require_POST
 @ajax_login_required
 @is_owner("activityPk")
-def add_strategy(request):
+def add_strategy(request: HttpRequest) -> HttpResponse:
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
     activity = Activity.objects.get(pk=request.POST.get("activityPk"))
 
@@ -370,7 +371,7 @@ def add_strategy(request):
     return JsonResponse({"action": "posted"})
 
 
-def duplicate_component(component, author):
+def duplicate_component(component: Component, author: User) -> Component:
     if type(component.content_object) == Artifact:
         new_component = Component.objects.create(
             content_object=Artifact.objects.create(
@@ -409,7 +410,7 @@ def duplicate_component(component, author):
 @require_POST
 @ajax_login_required
 @is_owner("weekPk")
-def add_component_to_course(request):
+def add_component_to_course(request: HttpRequest) -> HttpResponse:
     week = Week.objects.get(pk=request.POST.get("weekPk"))
     component = Component.objects.get(pk=request.POST.get("componentPk"))
 
@@ -432,7 +433,7 @@ def add_component_to_course(request):
 @require_POST
 @ajax_login_required
 @is_owner("programPk")
-def add_component_to_program(request):
+def add_component_to_program(request: HttpRequest) -> HttpResponse:
     component = Component.objects.get(pk=request.POST.get("componentPk"))
     program = Program.objects.get(pk=request.POST.get("programPk"))
 
@@ -455,7 +456,7 @@ def add_component_to_program(request):
 @require_POST
 @ajax_login_required
 @is_parent_owner
-def dialog_form_create(request):
+def dialog_form_create(request: HttpRequest) -> HttpResponse:
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
     data["author"] = request.user.username
@@ -645,7 +646,7 @@ def dialog_form_create(request):
 @require_POST
 @ajax_login_required
 @is_owner(False)
-def dialog_form_update(request):
+def dialog_form_update(request: HttpRequest) -> HttpResponse:
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
 
@@ -659,7 +660,7 @@ def dialog_form_update(request):
 @require_POST
 @ajax_login_required
 @is_owner(False)
-def dialog_form_delete(request):
+def dialog_form_delete(request: HttpRequest) -> HttpResponse:
     id = json.loads(request.POST.get("objectID"))
     model = json.loads(request.POST.get("objectType"))
 
