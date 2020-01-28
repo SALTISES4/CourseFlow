@@ -1,12 +1,19 @@
-from django.contrib.auth import login, authenticate as authenticate_
-from django.db.utils import IntegrityError
-from django.conf import settings
 import hashlib
-from django.contrib.auth.models import User
-from django.urls import reverse
-from django_lti_tool_provider import AbstractApplicationHookManager
-from typing import Optional
 import logging
+from typing import Optional
+
+from django.conf import settings
+from django.contrib.auth import authenticate as authenticate_
+from django.contrib.auth import login
+from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.urls import reverse
+from django.views.decorators.http import require_GET
+from django_lti_tool_provider import AbstractApplicationHookManager
+
+from .decorators import ajax_login_required
+from .models import Course
 
 logger = logging.getLogger("courseflow")
 
@@ -16,35 +23,45 @@ class ApplicationHookManager(AbstractApplicationHookManager):
 
     def authenticated_redirect_to(self, request, lti_data):
         course_id = lti_data.get("custom_course_id")
-        course_list = lti_data.get("course_list", "0") == "1"
+        course_list = lti_data.get("custom_course_list", "0") == "1"
 
         if course_list:
             redirect_url = reverse("course-list")
         elif course_id is None:
             redirect_url = reverse("home")
         else:
-            redirect_url = reverse("course-detail-view", pk=course_id)
+            redirect_url = reverse(
+                "course-detail-view", kwargs={"pk": course_id}
+            )
         return redirect_url
 
-    def authentication_hook(
-        self, request, user_id: str, username: None = None, email: None = None
+    def authentication_hook(  # pylint: disable=signature-differs,too-many-arguments
+        self,
+        request,
+        user_id: str,
+        username: None = None,
+        email: None = None,
+        extra_params: None = None,
     ) -> None:
 
         user = authenticate(user_id)
 
         if not isinstance(user, User):
             try:
-                user = create(username, email)
-            except IntegrityError:  # todo
+                user = create(user_id)
+            except IntegrityError:
                 logger.error(
-                    f"Lti tried to create a new user with username {username}"
-                    ", but there already exists a user with that username."
+                    "Lti tried to create a new user with username "
+                    f"{user_id}, but there already exists a user with "
+                    "that username."
                 )
                 return
         login(request, user)
 
     def vary_by_key(self, lti_data):
-        return ":".join(str(lti_data[k]) for k in self.LTI_KEYS)
+        return ":".join(
+            str(lti_data[k]) for k in self.LTI_KEYS if k in lti_data
+        )
 
 
 def authenticate(username: str) -> Optional[User]:
@@ -63,7 +80,9 @@ def authenticate(username: str) -> Optional[User]:
     Optional[User]
         User if they exist and None if not
     """
-    return authenticate_(username=username, password=generate_password(username))
+    return authenticate_(
+        username=username, password=generate_password(username)
+    )
 
 
 def create(username: str) -> User:
@@ -105,4 +124,37 @@ def generate_password(username: str) -> str:
     str
         Password as a hashed string of length 64
     """
-    return hashlib.sha3_256(f"{username}.{settings.PASSWORD_KEY}".encode()).hexdigest()
+    return hashlib.sha3_256(
+        f"{username}.{settings.PASSWORD_KEY}".encode()
+    ).hexdigest()
+
+
+@ajax_login_required
+@require_GET
+def get_course_list(req: HttpRequest) -> HttpResponse:
+    """
+    Returns all available courses for the currently logged in user.
+
+    Parameters
+    ----------
+    req : HttpRequest
+        Request with a logged in user
+
+    Returns
+    -------
+    JsonResponse with data:
+        courses: [{
+            id : int
+                Pk of the course
+            title : str
+                Title of the course
+        }]
+    """
+    return JsonResponse(
+        {
+            "courses": [
+                {"id": course.pk, "title": course.title}
+                for course in Course.objects.filter(author=req.user)
+            ]
+        }
+    )

@@ -1,9 +1,9 @@
 from django.conf.urls import url
+from django.contrib.auth import views as auth_views
+from django.urls import path
 from rest_framework import routers
 
-from . import views
-from django.contrib.auth import views as auth_views
-
+from . import lti, views
 
 router = routers.SimpleRouter()
 router.register(r"activity/read", views.ActivityViewSet)
@@ -38,7 +38,9 @@ def flow_patterns():
             name="program-update",
         ),
         url(
-            r"^course/create/$", views.CourseCreateView.as_view(), name="course-create"
+            r"^course/create/$",
+            views.CourseCreateView.as_view(),
+            name="course-create",
         ),
         url(
             r"^course/(?P<pk>[0-9]+)/$",
@@ -71,7 +73,9 @@ def flow_patterns():
             name="update-activity-json",
         ),
         url(
-            r"^course/update-json", views.update_course_json, name="update-course-json"
+            r"^course/update-json",
+            views.update_course_json,
+            name="update-course-json",
         ),
         url(
             r"^program/update-json",
@@ -79,7 +83,9 @@ def flow_patterns():
             name="update-program-json",
         ),
         url(r"^activity/add-node", views.add_node, name="add-node"),
-        url(r"^activity/add-strategy", views.add_strategy, name="add-strategy"),
+        url(
+            r"^activity/add-strategy", views.add_strategy, name="add-strategy"
+        ),
         url(
             r"^course/add-component",
             views.add_component_to_course,
@@ -91,15 +97,25 @@ def flow_patterns():
             name="add-component-to-program",
         ),
         url(
-            r"^dialog-form/create", views.dialog_form_create, name="dialog-form-create"
+            r"^dialog-form/create",
+            views.dialog_form_create,
+            name="dialog-form-create",
         ),
         url(
-            r"^dialog-form/update", views.dialog_form_update, name="dialog-form-update"
+            r"^dialog-form/update",
+            views.dialog_form_update,
+            name="dialog-form-update",
         ),
         url(
-            r"^dialog-form/delete", views.dialog_form_delete, name="dialog-form-delete"
+            r"^dialog-form/delete",
+            views.dialog_form_delete,
+            name="dialog-form-delete",
         ),
     ] + router.urls
 
 
-urlpatterns = sum([flow_patterns()], [])
+def lti_patterns():
+    return [path("course-list/", lti.get_course_list, name="course-list")]
+
+
+urlpatterns = sum([flow_patterns(), lti_patterns()], [])

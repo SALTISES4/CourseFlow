@@ -73,16 +73,8 @@ def home_view(request):
         "courses": Course.objects.all(),
         "activities": Activity.objects.all(),
     }
-    return render(request, "course_flow_creation_distribution/home.html", context)
-
-
-@ajax_login_required
-def get_user_courses(request):
-    return JsonResponse(
-        [
-            {"id": course.pk, "title": course.title}
-            for course in Course.objects.filter(author=request.user)
-        ]
+    return render(
+        request, "course_flow_creation_distribution/home.html", context
     )
 
 
@@ -183,7 +175,9 @@ class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         context["course_json"] = (
-            JSONRenderer().render(CourseSerializer(self.object).data).decode("utf-8")
+            JSONRenderer()
+            .render(CourseSerializer(self.object).data)
+            .decode("utf-8")
         )
         context["owned_components"] = Component.objects.exclude(
             content_type=ContentType.objects.get_for_model(Course)
@@ -234,7 +228,11 @@ class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context["default_strategies"] = Strategy.objects.filter(default=True)
         context["default_strategy_json"] = (
             JSONRenderer()
-            .render(StrategySerializer(context["default_strategies"], many=True).data)
+            .render(
+                StrategySerializer(
+                    context["default_strategies"], many=True
+                ).data
+            )
             .decode("utf-8")
         )
         context["popular_nodes"] = (
@@ -270,7 +268,9 @@ def save_serializer(serializer):
 @is_owner("activity")
 def update_activity_json(request):
     data = json.loads(request.POST.get("json"))
-    serializer = ActivitySerializer(Activity.objects.get(id=data["id"]), data=data)
+    serializer = ActivitySerializer(
+        Activity.objects.get(id=data["id"]), data=data
+    )
     return save_serializer(serializer)
 
 
@@ -288,7 +288,9 @@ def update_course_json(request):
 @is_owner("program")
 def update_program_json(request):
     data = json.loads(request.POST.get("json"))
-    serializer = ProgramSerializer(Program.objects.get(id=data["id"]), data=data)
+    serializer = ProgramSerializer(
+        Program.objects.get(id=data["id"]), data=data
+    )
     return save_serializer(serializer)
 
 
@@ -417,7 +419,9 @@ def add_component_to_course(request):
             link.save()
 
         ComponentWeek.objects.create(
-            week=week, component=duplicate_component(component, request.user), rank=0
+            week=week,
+            component=duplicate_component(component, request.user),
+            rank=0,
         )
     except:
         return JsonResponse({"action": "error"})
@@ -494,7 +498,9 @@ def dialog_form_create(request):
                 for link in StrategyActivity.objects.filter(activity=activity):
                     link.rank += 1
                     link.save()
-                StrategyActivity.objects.create(activity=activity, strategy=strategy)
+                StrategyActivity.objects.create(
+                    activity=activity, strategy=strategy
+                )
             except:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
@@ -529,8 +535,12 @@ def dialog_form_create(request):
             try:
                 if is_program_level:
                     program = Program.objects.get(id=parent_id)
-                    component = Component.objects.create(content_object=assesment)
-                    for link in ComponentProgram.objects.filter(program=program):
+                    component = Component.objects.create(
+                        content_object=assesment
+                    )
+                    for link in ComponentProgram.objects.filter(
+                        program=program
+                    ):
                         link.rank += 1
                         link.save()
                     ComponentProgram.objects.create(
@@ -538,11 +548,15 @@ def dialog_form_create(request):
                     )
                 else:
                     week = Week.objects.get(id=parent_id)
-                    component = Component.objects.create(content_object=assesment)
+                    component = Component.objects.create(
+                        content_object=assesment
+                    )
                     for link in ComponentWeek.objects.filter(week=week):
                         link.rank += 1
                         link.save()
-                    ComponentWeek.objects.create(week=week, component=component)
+                    ComponentWeek.objects.create(
+                        week=week, component=component
+                    )
             except:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
@@ -576,7 +590,9 @@ def dialog_form_create(request):
             else:
                 return JsonResponse({"action": "error"})
             try:
-                component = Component.objects.create(content_object=preparation)
+                component = Component.objects.create(
+                    content_object=preparation
+                )
                 for link in ComponentWeek.objects.filter(week=week):
                     link.rank += 1
                     link.save()
@@ -617,7 +633,9 @@ def dialog_form_create(request):
                 for link in ComponentProgram.objects.filter(program=program):
                     link.rank += 1
                     link.save()
-                ComponentProgram.objects.create(program=program, component=component)
+                ComponentProgram.objects.create(
+                    program=program, component=component
+                )
             except:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
