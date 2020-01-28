@@ -32,7 +32,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "django_lti_tool_provider",
-    "django_extensions",
     "course_flow_creation_distribution.apps.CourseFlowCreationDistributionConfig",
     "course_flow_statistics.apps.CourseFlowStatisticsConfig",
     "rest_framework",
@@ -142,7 +141,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication"
     ]
 }
-
+"""
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -178,3 +177,4 @@ LOGGING = {
         },
     },
 }
+"""

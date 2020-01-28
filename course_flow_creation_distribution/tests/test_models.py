@@ -183,7 +183,7 @@ class BulkTestCase(StaticLiveServerTestCase):
 
         assert (
             strategy_title
-            in selenium.find_elements_by_class_name("node-title")[1].text
+            in selenium.find_elements_by_class_name("strategy-title")[0].text
         )
 
         assert (
