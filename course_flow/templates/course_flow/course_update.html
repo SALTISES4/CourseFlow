@@ -58,7 +58,7 @@
           const svgParent = d3.select("svg").style("margin-top", "100px");
 
           function fetchThenRenderCourse(){
-            d3.json(window.location.origin+"course-flow/course/read/"+{{object.pk}}+"/?format=json").then(function (json) {
+            d3.json(window.location.origin+"/course-flow/course/read/"+{{object.pk}}+"/?format=json").then(function (json) {
               courseJson = json;
               renderCourse(courseJson, svgParent);
             });
