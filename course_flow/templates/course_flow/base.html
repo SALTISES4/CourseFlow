@@ -1,4 +1,4 @@
-{% load csp static i18n %} {% get_current_language as LANGUAGE_CODE %}
+{% load csp compress static i18n %} {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
 <html lang="{{LANGUAGE_CODE}}">
   <head>
@@ -40,18 +40,21 @@
     ></script>
 
     <!-- Internal resources -->
+    {% compress js %}
     <script
       src="{% static 'course_flow/js/scripts.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
+    {% endcompress %}
     <!-- * CSS -->
+    {% compress css %}
     <link
       rel="stylesheet"
       href="{% static 'course_flow/css/base_style.css' %}"
     />
   </head>
-
+  {% endcompress %}
   <body id="site">
     <div class="topnav">
       <div class="titlebar">
