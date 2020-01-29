@@ -21,8 +21,8 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
-{% block scripts %} {% script type="text/javascript" %}
-<script>
+{% block scripts %}
+<script nonce="{{ request.csp_nonce }}">
 
 
 
@@ -898,4 +898,4 @@
 
         });
 </script>
-{% endscript %} {% endblock %}
+{% endblock %}
