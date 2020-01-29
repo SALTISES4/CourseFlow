@@ -13,7 +13,11 @@ router.register(r"program/read", views.ProgramViewSet)
 
 def flow_patterns():
     return [
-        url(r"^register/$", views.registration_view, name="registration"),
+        url(
+            r"^register/$",
+            views.registration_view,
+            name="course-flow-registration",
+        ),
         url(
             r"^login/$",
             auth_views.LoginView.as_view(),
