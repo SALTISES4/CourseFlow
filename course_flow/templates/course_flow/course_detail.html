@@ -15,7 +15,7 @@
 {% csrf_token %}
 <!-- -->
 {% block scripts %}
-<script>
+<script nonce="{{ request.csp_nonce }}">
 
             window.addEventListener("load", function() {
 

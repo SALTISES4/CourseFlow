@@ -33,8 +33,3 @@ tags
 db.sqlite3
 db.sqlite3-journal
 local_settings.py
-
-*.min.css
-*.min.css.map
-*.min.js
-*.min.js.map

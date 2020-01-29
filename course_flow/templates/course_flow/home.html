@@ -1,5 +1,5 @@
 {% load static %}
-<style>
+<style nonce="{{ request.csp_nonce }}">
   body {
     background-color: #1976bc;
   }
@@ -111,16 +111,13 @@
       <!-- -->
       <a href="{% url 'program-update' pk=program.id %}">
         <!-- -->
-        <img
-          src="{% static 'course_flow/img/pencil-blue.svg' %}"
-        />
+        <img src="{% static 'course_flow/img/pencil-blue.svg' %}" />
       </a>
       <!-- -->
       {% else %}
       <!-- -->
       <a href="{% url 'program-detail-view' pk=program.id %}"
-        ><img
-          src="{% static 'course_flow/img/pageview-24px.svg' %}"
+        ><img src="{% static 'course_flow/img/pageview-24px.svg' %}"
       /></a>
       <!-- -->
       {% endif %}
@@ -157,16 +154,13 @@
       <!-- -->
       <a href="{% url 'course-update' pk=course.id %}">
         <!-- -->
-        <img
-          src="{% static 'course_flow/img/pencil-blue.svg' %}"
-        />
+        <img src="{% static 'course_flow/img/pencil-blue.svg' %}" />
       </a>
       <!-- -->
       {% else %}
       <!-- -->
       <a href="{% url 'course-detail-view' pk=course.id %}"
-        ><img
-          src="{% static 'course_flow/img/pageview-24px.svg' %}"
+        ><img src="{% static 'course_flow/img/pageview-24px.svg' %}"
       /></a>
       <!-- -->
       {% endif %}
@@ -203,16 +197,13 @@
       <!-- -->
       <a href="{% url 'activity-update' pk=activity.id %}">
         <!-- -->
-        <img
-          src="{% static 'course_flow/img/pencil-blue.svg' %}"
-        />
+        <img src="{% static 'course_flow/img/pencil-blue.svg' %}" />
       </a>
       <!-- -->
       {% else %}
       <!-- -->
       <a href="{% url 'activity-detail-view' pk=activity.id %}"
-        ><img
-          src="{% static 'course_flow/img/pageview-24px.svg' %}"
+        ><img src="{% static 'course_flow/img/pageview-24px.svg' %}"
       /></a>
       <!-- -->
       {% endif %}
