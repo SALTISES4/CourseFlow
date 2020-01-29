@@ -34,17 +34,14 @@ const plugins = [
       ]
     ]
   }),
-  commonjs(),
-  terser()
+  commonjs()
 ];
 
 export default [
   {
-    input:
-      "course_flow/static/course_flow/js/scripts.js",
+    input: "course_flow/static/course_flow/js/scripts.js",
     output: {
-      file:
-        "course_flow/static/course_flow/js/scripts.min.js",
+      file: "course_flow/static/course_flow/js/scripts.min.js",
       name: "root",
       format: "iife",
       sourceMap: "inline"
