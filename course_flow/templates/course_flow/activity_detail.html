@@ -1,6 +1,6 @@
 {% extends "course_flow/base.html" %}
 <!-- -->
-{% load static i18n %}
+{% load csp static i18n %}
 <!-- -->
 {% block title %}{% endblock %}
 <!-- -->
@@ -14,7 +14,7 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
-{% block scripts %}
+{% block scripts %} {% script type="text/javascript" %}
 <script>
 
 
@@ -288,4 +288,4 @@
 
     });
 </script>
-{% endblock %}
+{% endscript %} {% endblock %}
