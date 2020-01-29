@@ -18,4 +18,4 @@ jobs:
           command: |
             . test_venv/bin/activate
             ./manage.py migrate
-            ./python3 manage.py test
+            ./manage.py test
