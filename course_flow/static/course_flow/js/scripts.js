@@ -175,7 +175,7 @@ export class DialogForm extends Component {
       return (
         <div>
           <Dialog
-            style="padding: 0; border: 0; width: 0;"
+            //    style="padding: 0; border: 0; width: 0;"
             ref={dlg => {
               this.dlg = dlg;
             }}
@@ -217,7 +217,7 @@ export class DialogForm extends Component {
       return (
         <div>
           <Dialog
-            style="padding: 0; border: 0; width: 0;"
+            //  style="padding: 0; border: 0; width: 0;"
             ref={dlg => {
               this.dlg = dlg;
             }}
@@ -327,7 +327,7 @@ export class DialogForm extends Component {
       return (
         <div>
           <Dialog
-            style="padding: 0; border: 0; width: 0;"
+            //  style="padding: 0; border: 0; width: 0;"
             ref={dlg => {
               this.dlg = dlg;
             }}
