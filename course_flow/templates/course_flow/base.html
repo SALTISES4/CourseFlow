@@ -1,0 +1,78 @@
+{% load static i18n %} {% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{LANGUAGE_CODE}}">
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="{% block metadescription %}{% endblock %}"
+    />
+    <meta name="theme-color" content="#1976BC" />
+
+    <!-- External resources -->
+    <!-- * Fonts and icons -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Material+Icons|Roboto|Fanwood+Text:400i|Quicksand:300,400|Rubik:200,300,300i,400"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <!-- * Scripts -->
+    <!-- ** Preloads -->
+    <link
+      rel="preload"
+      href="https://cdn.polyfill.io/v2/polyfill.min.js"
+      as="script"
+    />
+    <link rel="preload" href="https://d3js.org/d3.v5.min.js" as="script" />
+    <!-- ** jquery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- ** Polyfills for non-awesome browsers-->
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <!-- ** d3 -->
+    <script
+      src="https://d3js.org/d3.v5.min.js"
+      defer="true"
+      charset="utf-8"
+    ></script>
+
+    <!-- Internal resources -->
+    <script
+      src="{% static 'course_flow/js/scripts.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    <!-- * CSS -->
+    <link
+      rel="stylesheet"
+      href="{% static 'course_flow/css/base_style.css' %}"
+    />
+  </head>
+
+  <body id="site">
+    <div class="topnav">
+      <div class="titlebar">
+        <div class="title">
+          <font size="6"><b>CourseFlow</b></font>
+        </div>
+      </div>
+      <div class="menubar">
+        <div class="topnavimage">
+          <a href="www.saltise.ca"
+            ><img
+              src="{% static 'course_flow/img/saltise_logo.svg'%}"
+              href="www.saltise.ca"
+          /></a>
+        </div>
+      </div>
+    </div>
+
+    {% block body %}{% endblock %}
+    <footer>{% block foot %}{% endblock %}</footer>
+    {% csrf_token %}
+  </body>
+  {% block scripts %} {% endblock %}
+</html>

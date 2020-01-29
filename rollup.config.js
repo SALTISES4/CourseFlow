@@ -41,10 +41,10 @@ const plugins = [
 export default [
   {
     input:
-      "course_flow_creation_distribution/static/course_flow_creation_distribution/js/scripts.js",
+      "course_flow/static/course_flow/js/scripts.js",
     output: {
       file:
-        "course_flow_creation_distribution/static/course_flow_creation_distribution/js/scripts.min.js",
+        "course_flow/static/course_flow/js/scripts.min.js",
       name: "root",
       format: "iife",
       sourceMap: "inline"

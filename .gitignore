@@ -11,7 +11,7 @@
 .tern-port
 .venv
 /CACHE
-/course_flow_creation_distribution/local_settings.py
+/course_flow/local_settings.py
 /htmlcov
 /log
 /media
