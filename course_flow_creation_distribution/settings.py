@@ -33,7 +33,6 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     "django_lti_tool_provider",
     "course_flow_creation_distribution.apps.CourseFlowCreationDistributionConfig",
-    "course_flow_statistics.apps.CourseFlowStatisticsConfig",
     "rest_framework",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -53,7 +52,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "course_flow_maker.urls"
+ROOT_URLCONF = "course_flow_creation_distribution.urls"
 
 TEMPLATES = [
     {
@@ -71,7 +70,6 @@ TEMPLATES = [
     }
 ]
 
-WSGI_APPLICATION = "course_flow_maker.wsgi.application"
 
 LOGIN_REDIRECT_URL = "login"
 
