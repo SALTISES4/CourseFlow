@@ -26,7 +26,7 @@ from selenium import webdriver
 
 import time
 
-timeout = 200
+timeout = 10
 
 
 class BulkTestCase(StaticLiveServerTestCase):
@@ -669,8 +669,6 @@ class BulkTestCase(StaticLiveServerTestCase):
         time.sleep(2)
 
         selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(20)
 
 
 def make_object(model_key, author=None):

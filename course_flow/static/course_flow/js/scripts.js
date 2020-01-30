@@ -476,7 +476,7 @@ function getCsrfToken() {
 }
 
 function deleteNode(component) {
-  $.post(window.location.origin + "/en/course-flow/dialog-form/delete", {
+  $.post(component.props.deleteURL, {
     objectID: JSON.stringify(component.state.object.id),
     objectType: JSON.stringify(component.state.objectType)
   })
@@ -499,7 +499,7 @@ function deleteNode(component) {
 }
 
 function updateNode(component) {
-  $.post(window.location.origin + "/en/course-flow/dialog-form/update", {
+  $.post(component.props.updateURL, {
     object: JSON.stringify(component.state.object),
     objectID: JSON.stringify(component.state.object.id),
     objectType: JSON.stringify(component.state.objectType)
@@ -524,7 +524,7 @@ function updateNode(component) {
 
 //post new node
 function createNode(component) {
-  $.post(window.location.origin + "/en/course-flow/dialog-form/create", {
+  $.post(component.props.createURL, {
     object: JSON.stringify(component.state.objectToBe),
     objectType: JSON.stringify(component.state.objectType),
     parentID: JSON.stringify(component.state.parentID),
@@ -552,10 +552,19 @@ function createNode(component) {
 
 export var currentComponentInstance = null;
 
-export function injectDialogForm(snackMessageOnSuccess, snackMessageOnFailure) {
+export function injectDialogForm(
+  createURL,
+  updateURL,
+  deleteURL,
+  snackMessageOnSuccess,
+  snackMessageOnFailure
+) {
   if (document.body.contains(document.getElementById("node-form-container"))) {
     render(
       <DialogForm
+        createURL={createURL}
+        updateURL={updateURL}
+        deleteURL={deleteURL}
         snackMessageOnSuccess={snackMessageOnSuccess}
         snackMessageOnFailure={snackMessageOnFailure}
       />,

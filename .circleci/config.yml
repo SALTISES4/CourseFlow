@@ -17,5 +17,5 @@ jobs:
           name: Tests
           command: |
             . test_venv/bin/activate
-            ./manage.py migrate
-            ./manage.py test
+            python3 course_flow.py migrate
+            python3 course_flow.py test

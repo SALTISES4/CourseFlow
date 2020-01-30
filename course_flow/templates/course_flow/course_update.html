@@ -28,6 +28,9 @@
 
 
           root.injectDialogForm(
+            "{% url 'dialog-form-create' %}",
+            "{% url 'dialog-form-update' %}",
+            "{% url 'dialog-form-delete' %}",
             "{% trans 'posting worked' %}",
             "{% trans 'posting didnt work' %}"
           );
