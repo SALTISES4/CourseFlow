@@ -1,6 +1,6 @@
 # CourseFlow
 
-[![CircleCI](https://circleci.com/gh/aahilgert/CourseFlow.svg?style=svg)](https://circleci.com/gh/aahilgert/CourseFlow)
+[![CircleCI](https://circleci.com/gh/SALTISES4/CourseFlow.svg?style=svg)](https://circleci.com/gh/SALTISES4/CourseFlow)
 
 CourseFlow is a pedagogical tool for planning activities, courses, and programs, which is designed to enable Research Practice Partnerships between instructors, designers, and researchers.
 
