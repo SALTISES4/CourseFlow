@@ -55,7 +55,7 @@
           const svgParent = d3.select("svg").style("margin-top", "100px");
 
           function fetchThenRenderProgram(){
-            d3.json(window.location.origin+"/course-flow/program/read/"+{{object.pk}}+"/?format=json").then(function (json) {
+            d3.json("{% url 'program-detail' pk=object.pk %}").then(function (json) {
               programJson = json;
               console.log(programJson);
               renderProgram(programJson, svgParent);
@@ -435,7 +435,7 @@
                   .attr("class", "action-icon update-component")
                   .on("mousedown", function(d,i){
                     if (d3.select(this.parentNode).node().__data__.component.content_type_in_text == "course") {
-                      window.location.href = window.location.origin+"course-flow/course/"+d3.select(this.parentNode).node().__data__.component.content_object.id+"/update/";
+                      window.location.href = "{% url 'course-update' pk=0 %}".replace("0", d3.select(this.parentNode).node().__data__.component.content_object.id);
                     } else {
                       root.currentComponentInstance.setState({
                         object: d3.select(this.parentNode).node().__data__.component.content_object,

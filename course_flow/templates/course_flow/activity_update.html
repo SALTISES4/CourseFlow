@@ -329,7 +329,7 @@
               referenceNode.parentNode.insertBefore(referenceNode, referenceNode.parentNode.lastChild.nextSibling);
           }
           function fetchThenRenderActivity(){
-            d3.json(window.location.origin+"/course-flow/activity/read/"+{{object.pk}}+"/?format=json").then(function (json) {
+            d3.json("{% url 'activity-detail' pk=object.pk %}").then(function (json) {
               activityJson = json;
               renderActivity(activityJson, svgParent);
             });
