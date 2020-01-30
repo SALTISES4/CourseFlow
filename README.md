@@ -32,7 +32,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
 7.  Migrate
 
-        (dev_venv) python3 course_flow.py runserver
+        (dev_venv) python3 course_flow.py migrate
 
 8.  Run the Django development server.
 
