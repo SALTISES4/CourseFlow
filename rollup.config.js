@@ -34,7 +34,8 @@ const plugins = [
       ]
     ]
   }),
-  commonjs()
+  commonjs(),
+  terser()
 ];
 
 export default [

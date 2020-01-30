@@ -9,17 +9,6 @@ import Icon from "preact-material-components/Icon";
 import IconButton from "preact-material-components/IconButton";
 import Select from "preact-material-components/Select";
 import Snackbar from "preact-material-components/Snackbar";
-import "preact-material-components/List/style.css";
-import "preact-material-components/Menu/style.css";
-import "preact-material-components/Select/style.css";
-import "preact-material-components/Snackbar/style.css";
-import "preact-material-components/IconButton/style.css";
-import "preact-material-components/Radio/style.css";
-import "preact-material-components/FormField/style.css";
-import "preact-material-components/TextField/style.css";
-import "preact-material-components/List/style.css";
-import "preact-material-components/Button/style.css";
-import "preact-material-components/Dialog/style.css";
 
 export class DialogForm extends Component {
   state = {
@@ -175,7 +164,7 @@ export class DialogForm extends Component {
       return (
         <div>
           <Dialog
-            //    style="padding: 0; border: 0; width: 0;"
+            style="padding: 0; border: 0; width: 0;"
             ref={dlg => {
               this.dlg = dlg;
             }}
@@ -217,7 +206,7 @@ export class DialogForm extends Component {
       return (
         <div>
           <Dialog
-            //  style="padding: 0; border: 0; width: 0;"
+            style="padding: 0; border: 0; width: 0;"
             ref={dlg => {
               this.dlg = dlg;
             }}
@@ -327,7 +316,7 @@ export class DialogForm extends Component {
       return (
         <div>
           <Dialog
-            //  style="padding: 0; border: 0; width: 0;"
+            style="padding: 0; border: 0; width: 0;"
             ref={dlg => {
               this.dlg = dlg;
             }}
