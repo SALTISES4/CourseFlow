@@ -476,7 +476,7 @@ function getCsrfToken() {
 }
 
 function deleteNode(component) {
-  $.post(window.location.origin + "/course-flow/dialog-form/delete", {
+  $.post(window.location.origin + "/en/course-flow/dialog-form/delete", {
     objectID: JSON.stringify(component.state.object.id),
     objectType: JSON.stringify(component.state.objectType)
   })
@@ -499,7 +499,7 @@ function deleteNode(component) {
 }
 
 function updateNode(component) {
-  $.post(window.location.origin + "/course-flow/dialog-form/update", {
+  $.post(window.location.origin + "/en/course-flow/dialog-form/update", {
     object: JSON.stringify(component.state.object),
     objectID: JSON.stringify(component.state.object.id),
     objectType: JSON.stringify(component.state.objectType)
@@ -524,7 +524,7 @@ function updateNode(component) {
 
 //post new node
 function createNode(component) {
-  $.post(window.location.origin + "/course-flow/dialog-form/create", {
+  $.post(window.location.origin + "/en/course-flow/dialog-form/create", {
     object: JSON.stringify(component.state.objectToBe),
     objectType: JSON.stringify(component.state.objectType),
     parentID: JSON.stringify(component.state.parentID),
