@@ -100,25 +100,6 @@
                     .style('pointer-events', 'none')
                     .text(d => d.description);
 
-                  boardNodes.append("g")
-                    .attr("class", "action-icon")
-                    .append('image')
-                    .attr('x', `${nodeWidth-40}`)
-                    .attr('y', `${nodeHeight-45}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/rubbish-bin-delete-button-blue.svg' %}");
-
-                  boardNodes.append("g")
-                    .attr("class", "action-icon")
-                    .append('image')
-                    .attr('x', `${nodeWidth-40}`)
-                    .attr('y', `${nodeHeight-90}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/pencil-blue.svg' %}");
-
-
                   boardNodes
                     .append('image')
                     .style('pointer-events', 'none')
