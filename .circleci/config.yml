@@ -16,7 +16,7 @@ jobs:
       - run:
           name: Setup local_settings.py
           command: |
-            tools/gen_secret_key.py > course_flow/local_settings.py
+            echo 'SECRET_KEY' = "Bzch875rhtrJnfnYml9vMiB4M70NJZKy" > course_flow/local_settings.py
             echo 'PASSWORD_KEY' = "Bzch875rhtrJnfnYml9vMiB4M70NJZKy" >> course_flow/local_settings.py
             echo 'LTI_CLIENT_KEY' = "edx" >> course_flow/local_settings.py
             echo 'LTI_CLIENT_SECRET' = "Bzch875rhtrJnfnYml9vMiB4M70NJZKy" >> course_flow/local_settings.py
