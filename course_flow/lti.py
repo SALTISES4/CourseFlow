@@ -26,12 +26,12 @@ class ApplicationHookManager(AbstractApplicationHookManager):
         course_list = lti_data.get("custom_course_list", "0") == "1"
 
         if course_list:
-            redirect_url = reverse("course-list")
+            redirect_url = reverse("course_flow:course-list")
         elif course_id is None or course_id == "":
             redirect_url = reverse("home")
         else:
             redirect_url = reverse(
-                "course-detail-view", kwargs={"pk": course_id}
+                "course_flow:course-detail-view", kwargs={"pk": course_id}
             )
         return redirect_url
 

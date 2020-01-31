@@ -61,7 +61,7 @@ def registration_view(request):
             raw_password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect("home")
+            return redirect("course_flow:home")
     else:
         form = RegistrationForm()
     return render(
@@ -115,7 +115,9 @@ class ProgramCreateView(LoginRequiredMixin, CreateView):
         return super(ProgramCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse("course_flow:program-update", kwargs={"pk": self.object.pk})
+        return reverse(
+            "course_flow:program-update", kwargs={"pk": self.object.pk}
+        )
 
 
 class ProgramUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -144,7 +146,9 @@ class ProgramUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("course_flow:course-detail", kwargs={"pk": self.object.pk})
+        return reverse(
+            "course_flow:course-detail", kwargs={"pk": self.object.pk}
+        )
 
 
 class CourseDetailView(LoginRequiredMixin, DetailView):
@@ -162,7 +166,9 @@ class CourseCreateView(LoginRequiredMixin, CreateView):
         return super(CourseCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse("course_flow:course-update", kwargs={"pk": self.object.pk})
+        return reverse(
+            "course_flow:course-update", kwargs={"pk": self.object.pk}
+        )
 
 
 class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -195,7 +201,9 @@ class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("course_flow:course-detail", kwargs={"pk": self.object.pk})
+        return reverse(
+            "course_flow:course-detail", kwargs={"pk": self.object.pk}
+        )
 
 
 class ActivityDetailView(LoginRequiredMixin, DetailView):
@@ -213,7 +221,9 @@ class ActivityCreateView(LoginRequiredMixin, CreateView):
         return super(ActivityCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse("course_flow:activity-update", kwargs={"pk": self.object.pk})
+        return reverse(
+            "course_flow:activity-update", kwargs={"pk": self.object.pk}
+        )
 
 
 class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -249,7 +259,9 @@ class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse("course_flow:activity-detail", kwargs={"pk": self.object.pk})
+        return reverse(
+            "course_flow:activity-detail", kwargs={"pk": self.object.pk}
+        )
 
 
 def save_serializer(serializer) -> HttpResponse:

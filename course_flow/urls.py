@@ -11,7 +11,7 @@ router.register(r"course/read", views.CourseViewSet)
 router.register(r"program/read", views.ProgramViewSet)
 
 
-app_name = "courseflow"
+app_name = "course_flow"
 
 
 def flow_patterns():
@@ -20,7 +20,7 @@ def flow_patterns():
         url(
             r"^login/$",
             auth_views.LoginView.as_view(),
-            {"template_name": "course_flow/registration/login.html"},
+            {"template_name": "registration/login.html"},
             name="login",
         ),
         url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),

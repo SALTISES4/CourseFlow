@@ -716,12 +716,12 @@ class ModelViewTest(TestCase):
         author = get_author()
         program = make_object("program", author)
         response = self.client.get(
-            reverse("program-detail", args=str(program.pk))
+            reverse("course_flow:program-detail", args=str(program.pk))
         )
         self.assertEqual(response.status_code, 302)
         login(self)
         response = self.client.get(
-            reverse("program-detail", args=str(program.pk))
+            reverse("course_flow:program-detail", args=str(program.pk))
         )
         self.assertEqual(response.status_code, 200)
 
@@ -729,12 +729,12 @@ class ModelViewTest(TestCase):
         author = get_author()
         course = make_object("course", author)
         response = self.client.get(
-            reverse("course-detail", args=str(course.pk))
+            reverse("course_flow:course-detail", args=str(course.pk))
         )
         self.assertEqual(response.status_code, 302)
         login(self)
         response = self.client.get(
-            reverse("course-detail", args=str(course.pk))
+            reverse("course_flow:course-detail", args=str(course.pk))
         )
         self.assertEqual(response.status_code, 200)
 
@@ -742,46 +742,46 @@ class ModelViewTest(TestCase):
         author = get_author()
         activity = make_object("activity", author)
         response = self.client.get(
-            reverse("activity-detail", args=str(activity.pk))
+            reverse("course_flow:activity-detail", args=str(activity.pk))
         )
         self.assertEqual(response.status_code, 302)
         login(self)
         response = self.client.get(
-            reverse("activity-detail", args=str(activity.pk))
+            reverse("course_flow:activity-detail", args=str(activity.pk))
         )
         self.assertEqual(response.status_code, 200)
 
     def test_program_create_view(self):
-        response = self.client.get(reverse("program-create"))
+        response = self.client.get(reverse("course_flow:program-create"))
         self.assertEqual(response.status_code, 302)
         login(self)
-        response = self.client.get(reverse("program-create"))
+        response = self.client.get(reverse("course_flow:program-create"))
         self.assertEqual(response.status_code, 200)
 
     def test_course_create_view(self):
-        response = self.client.get(reverse("course-create"))
+        response = self.client.get(reverse("course_flow:course-create"))
         self.assertEqual(response.status_code, 302)
         login(self)
-        response = self.client.get(reverse("course-create"))
+        response = self.client.get(reverse("course_flow:course-create"))
         self.assertEqual(response.status_code, 200)
 
     def test_activity_create_view(self):
-        response = self.client.get(reverse("activity-create"))
+        response = self.client.get(reverse("course_flow:activity-create"))
         self.assertEqual(response.status_code, 302)
         login(self)
-        response = self.client.get(reverse("activity-create"))
+        response = self.client.get(reverse("course_flow:activity-create"))
         self.assertEqual(response.status_code, 200)
 
     def test_program_update_view(self):
         author = get_author()
         program = make_object("program", author)
         response = self.client.get(
-            reverse("program-update", args=str(program.pk))
+            reverse("course_flow:program-update", args=str(program.pk))
         )
         self.assertEqual(response.status_code, 302)
         login(self)
         response = self.client.get(
-            reverse("program-update", args=str(program.pk))
+            reverse("course_flow:program-update", args=str(program.pk))
         )
         self.assertEqual(response.status_code, 403)
 
@@ -789,12 +789,12 @@ class ModelViewTest(TestCase):
         author = get_author()
         course = make_object("course", author)
         response = self.client.get(
-            reverse("course-update", args=str(course.pk))
+            reverse("course_flow:course-update", args=str(course.pk))
         )
         self.assertEqual(response.status_code, 302)
         login(self)
         response = self.client.get(
-            reverse("course-update", args=str(course.pk))
+            reverse("course_flow:course-update", args=str(course.pk))
         )
         self.assertEqual(response.status_code, 403)
 
@@ -802,12 +802,12 @@ class ModelViewTest(TestCase):
         author = get_author()
         activity = make_object("activity", author)
         response = self.client.get(
-            reverse("activity-update", args=str(activity.pk))
+            reverse("course_flow:activity-update", args=str(activity.pk))
         )
         self.assertEqual(response.status_code, 302)
         login(self)
         response = self.client.get(
-            reverse("activity-update", args=str(activity.pk))
+            reverse("course_flow:activity-update", args=str(activity.pk))
         )
         self.assertEqual(response.status_code, 403)
 
@@ -815,7 +815,7 @@ class ModelViewTest(TestCase):
         user = login(self)
         program = make_object("program", user)
         response = self.client.get(
-            reverse("program-update", args=str(program.pk))
+            reverse("course_flow:program-update", args=str(program.pk))
         )
         self.assertEqual(response.status_code, 200)
 
@@ -823,7 +823,7 @@ class ModelViewTest(TestCase):
         user = login(self)
         course = make_object("course", user)
         response = self.client.get(
-            reverse("course-update", args=str(course.pk))
+            reverse("course_flow:course-update", args=str(course.pk))
         )
         self.assertEqual(response.status_code, 200)
 
@@ -831,7 +831,7 @@ class ModelViewTest(TestCase):
         user = login(self)
         activity = make_object("activity", user)
         response = self.client.get(
-            reverse("activity-update", args=str(activity.pk))
+            reverse("course_flow:activity-update", args=str(activity.pk))
         )
         self.assertEqual(response.status_code, 200)
 
@@ -856,7 +856,7 @@ class ModelPostTest(TestCase):
         for object_type in model_keys:
             object = make_object(object_type, author)
             response = self.client.post(
-                reverse("dialog-form-create"),
+                reverse("course_flow:dialog-form-create"),
                 {
                     "object": object_to_be,
                     "objectType": object_type,
@@ -869,7 +869,7 @@ class ModelPostTest(TestCase):
             serializer_data["title"] = "updated test title 1"
             serializer_data["description"] = "update test description 1"
             response = self.client.post(
-                reverse("dialog-form-update"),
+                reverse("course_flow:dialog-form-update"),
                 {
                     "object": serializer_data,
                     "objectID": serializer_data["id"],
@@ -878,7 +878,7 @@ class ModelPostTest(TestCase):
             )
             self.assertEqual(response.status_code, 401)
             response = self.client.post(
-                reverse("dialog-form-delete"),
+                reverse("course_flow:dialog-form-delete"),
                 {"objectID": object.id, "objectType": object_type},
             )
             self.assertEqual(response.status_code, 401)
@@ -900,7 +900,7 @@ class ModelPostTest(TestCase):
         for object_type in model_keys:
             object = make_object(object_type, author)
             response = self.client.post(
-                reverse("dialog-form-create"),
+                reverse("course_flow:dialog-form-create"),
                 {
                     "object": JSONRenderer()
                     .render(object_to_be)
@@ -922,7 +922,7 @@ class ModelPostTest(TestCase):
             serializer_data["title"] = "updated test title 1"
             serializer_data["description"] = "update test description 1"
             response = self.client.post(
-                reverse("dialog-form-update"),
+                reverse("course_flow:dialog-form-update"),
                 {
                     "object": JSONRenderer()
                     .render(serializer_data)
@@ -935,7 +935,7 @@ class ModelPostTest(TestCase):
             )
             self.assertEqual(response.status_code, 401)
             response = self.client.post(
-                reverse("dialog-form-delete"),
+                reverse("course_flow:dialog-form-delete"),
                 {
                     "objectID": object.id,
                     "objectType": JSONRenderer()
@@ -963,7 +963,7 @@ class ModelPostTest(TestCase):
             else:
                 is_program_level_component = False
             response = self.client.post(
-                reverse("dialog-form-create"),
+                reverse("course_flow:dialog-form-create"),
                 {
                     "object": JSONRenderer()
                     .render(object_to_be)
@@ -999,7 +999,7 @@ class ModelPostTest(TestCase):
             if object_type is not "week":
                 serializer_data["description"] = "update test description 1"
             response = self.client.post(
-                reverse("dialog-form-update"),
+                reverse("course_flow:dialog-form-update"),
                 {
                     "object": JSONRenderer()
                     .render(serializer_data)
@@ -1028,7 +1028,7 @@ class ModelPostTest(TestCase):
                 )
         for object_type in model_keys:
             response = self.client.post(
-                reverse("dialog-form-delete"),
+                reverse("course_flow:dialog-form-delete"),
                 {
                     "objectID": object_id,
                     "objectType": JSONRenderer()
@@ -1053,7 +1053,7 @@ class ModelPostTest(TestCase):
             serializer_data["title"] = "updated test title 1"
             serializer_data["description"] = "update test description 1"
             response = self.client.post(
-                reverse("update-" + object_type + "-json"),
+                reverse("course_flow:update-" + object_type + "-json"),
                 {
                     "json": JSONRenderer()
                     .render(serializer_data)
@@ -1072,7 +1072,7 @@ class ModelPostTest(TestCase):
             serializer_data["title"] = "updated test title 1"
             serializer_data["description"] = "update test description 1"
             response = self.client.post(
-                reverse("update-" + object_type + "-json"),
+                reverse("course_flow:update-" + object_type + "-json"),
                 {
                     "json": JSONRenderer()
                     .render(serializer_data)
@@ -1090,7 +1090,7 @@ class ModelPostTest(TestCase):
             serializer_data["title"] = "updated test title 1"
             serializer_data["description"] = "update test description 1"
             response = self.client.post(
-                reverse("update-" + object_type + "-json"),
+                reverse("course_flow:update-" + object_type + "-json"),
                 {
                     "json": JSONRenderer()
                     .render(serializer_data)
@@ -1119,7 +1119,8 @@ class ModelPostTest(TestCase):
         strategy = make_object("strategy", author)
         node = make_object("node", author)
         response = self.client.post(
-            reverse("add-node"), {"strategyPk": strategy.id, "nodePk": node.id}
+            reverse("course_flow:add-node"),
+            {"strategyPk": strategy.id, "nodePk": node.id},
         )
         self.assertEqual(response.status_code, 302)
 
@@ -1129,7 +1130,8 @@ class ModelPostTest(TestCase):
         strategy = make_object("strategy", author)
         node = make_object("node", author)
         response = self.client.post(
-            reverse("add-node"), {"strategyPk": strategy.id, "nodePk": node.id}
+            reverse("course_flow:add-node"),
+            {"strategyPk": strategy.id, "nodePk": node.id},
         )
         self.assertEqual(response.status_code, 401)
 
@@ -1138,7 +1140,7 @@ class ModelPostTest(TestCase):
         strategy = make_object("strategy", author)
         activity = make_object("activity", author)
         response = self.client.post(
-            reverse("add-node"),
+            reverse("course_flow:add-node"),
             {"activityPk": activity.id, "strategyPk": strategy.id},
         )
         self.assertEqual(response.status_code, 302)
@@ -1149,7 +1151,7 @@ class ModelPostTest(TestCase):
         strategy = make_object("strategy", author)
         activity = make_object("activity", author)
         response = self.client.post(
-            reverse("add-strategy"),
+            reverse("course_flow:add-strategy"),
             {"activityPk": activity.id, "strategyPk": strategy.id},
         )
         self.assertEqual(response.status_code, 401)
@@ -1160,7 +1162,8 @@ class ModelPostTest(TestCase):
         activity = make_object("activity", user)
         node = make_object("node", user)
         response = self.client.post(
-            reverse("add-node"), {"nodePk": node.id, "strategyPk": strategy.id}
+            reverse("course_flow:add-node"),
+            {"nodePk": node.id, "strategyPk": strategy.id},
         )
         self.assertEqual(response.status_code, 200)
 
@@ -1185,7 +1188,7 @@ class ModelPostTest(TestCase):
         )
         self.assertEqual(created_node.classification, node.classification)
         response = self.client.post(
-            reverse("add-strategy"),
+            reverse("course_flow:add-strategy"),
             {"activityPk": activity.id, "strategyPk": strategy.id},
         )
         self.assertEqual(Strategy.objects.all().count(), 2)
@@ -1240,7 +1243,7 @@ class ModelPostTest(TestCase):
         ]:
             component = make_component(component_type, author)
             response = self.client.post(
-                reverse("add-component-to-course"),
+                reverse("course_flow:add-component-to-course"),
                 {"componentPk": component.id, "weekPk": week.id},
             )
             self.assertEqual(response.status_code, 401)
@@ -1257,7 +1260,7 @@ class ModelPostTest(TestCase):
         ]:
             component = make_component(component_type, author)
             response = self.client.post(
-                reverse("add-component-to-course"),
+                reverse("course_flow:add-component-to-course"),
                 {"componentPk": component.id, "weekPk": week.id},
             )
             self.assertEqual(response.status_code, 401)
@@ -1273,7 +1276,7 @@ class ModelPostTest(TestCase):
         ]:
             component = make_component(component_type, user)
             response = self.client.post(
-                reverse("add-component-to-course"),
+                reverse("course_flow:add-component-to-course"),
                 {"componentPk": component.id, "weekPk": week.id},
             )
             self.assertEqual(response.status_code, 200)
@@ -1313,7 +1316,7 @@ class ModelPostTest(TestCase):
         for component_type in ["course", "assesment"]:
             component = make_component(component_type, author)
             response = self.client.post(
-                reverse("add-component-to-program"),
+                reverse("course_flow:add-component-to-program"),
                 {"componentPk": component.id, "programPk": program.id},
             )
             self.assertEqual(response.status_code, 401)
@@ -1325,7 +1328,7 @@ class ModelPostTest(TestCase):
         for component_type in ["course", "assesment"]:
             component = make_component(component_type, author)
             response = self.client.post(
-                reverse("add-component-to-program"),
+                reverse("course_flow:add-component-to-program"),
                 {"componentPk": component.id, "programPk": program.id},
             )
             self.assertEqual(response.status_code, 401)
@@ -1336,7 +1339,7 @@ class ModelPostTest(TestCase):
         for component_type in ["course", "assesment"]:
             component = make_component(component_type, user)
             response = self.client.post(
-                reverse("add-component-to-program"),
+                reverse("course_flow:add-component-to-program"),
                 {"componentPk": component.id, "programPk": program.id},
             )
             self.assertEqual(response.status_code, 200)

@@ -98,7 +98,7 @@ def test_get_course_list(client, users, courses):
 
     courses_ = [course for course in courses if course.author == user]
 
-    resp = client.get(reverse("course-list"))
+    resp = client.get(reverse("course_flow:course-list"))
     data = resp.json()
 
     assert len(courses_) == len(data["courses"])

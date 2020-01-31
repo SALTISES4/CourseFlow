@@ -1,0 +1,25 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block title %}Create an Account{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<svg width="500" height="150">
+  <defs>
+    <filter id="selection-shadow">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" />
+    </filter>
+  </defs>
+</svg>
+<form method="POST" id="registration-form">
+  {% csrf_token %} {{ form }}
+  <button id="register-button" type="submit">Register</button>
+</form>
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% block scripts %} {% endblock %}

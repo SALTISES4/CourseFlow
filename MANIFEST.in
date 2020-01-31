@@ -1,6 +1,8 @@
 include LICENSE
 include README.rst
 recursive-include user_feedback/static/user_feedback/js/scripts.min.js
-exclude course_flow/tests/test_models.py
+exclude course_flow/tests/*
+exclude course_flow/test*.py
 exclude course_flow/settings.py
 exclude course_flow/static/course_flow/js/scripts.js
+exclude course_flow/static/course_flow/template/registration/*
