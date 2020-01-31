@@ -29,9 +29,9 @@
         window.addEventListener("load", function() {
 
           root.injectDialogForm(
-            "{% url ' course_flow:dialog-form-create' %}",
-            "{% url ' course_flow:dialog-form-update' %}",
-            "{% url ' course_flow:dialog-form-delete' %}",
+            "{% url 'course_flow:dialog-form-create' %}",
+            "{% url 'course_flow:dialog-form-update' %}",
+            "{% url 'course_flow:dialog-form-delete' %}",
             "{% trans 'posting worked' %}",
             "{% trans 'posting didnt work' %}"
           );
@@ -314,7 +314,7 @@
               referenceNode.parentNode.insertBefore(referenceNode, referenceNode.parentNode.lastChild.nextSibling);
           }
           function fetchThenRenderActivity(){
-            d3.json("{% url ' course_flow:activity-detail' pk=object.pk %}").then(function (json) {
+            d3.json("{% url 'course_flow:activity-detail' pk=object.pk %}").then(function (json) {
               activityJson = json;
               renderActivity(activityJson, svgParent);
             });
@@ -867,18 +867,18 @@
         }
 
       function updateJson(){
-        let posting = $.post("{% url ' course_flow:update-activity-json' %}", {json: JSON.stringify(activityJson)});
+        let posting = $.post("{% url 'course_flow:update-activity-json' %}", {json: JSON.stringify(activityJson)});
         posting.done(function(data) {
           console.info(data);
       });
     }
 
       function addNode(nodePk, strategyPk){
-        let posting = $.post("{% url ' course_flow:add-node' %}", {nodePk: nodePk, strategyPk: strategyPk});
+        let posting = $.post("{% url 'course_flow:add-node' %}", {nodePk: nodePk, strategyPk: strategyPk});
       }
 
       function addStrategy(strategyPk){
-        let posting = $.post("{% url ' course_flow:add-node' %}", {strategyPk: strategyPk, activityPk: activityJson.id});
+        let posting = $.post("{% url 'course_flow:add-node' %}", {strategyPk: strategyPk, activityPk: activityJson.id});
       }
 
         });

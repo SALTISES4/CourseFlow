@@ -32,9 +32,9 @@
           console.log(programJson);
 
           root.injectDialogForm(
-            "{% url ' course_flow:dialog-form-create' %}",
-            "{% url ' course_flow:dialog-form-update' %}",
-            "{% url ' course_flow:dialog-form-delete' %}",
+            "{% url 'course_flow:dialog-form-create' %}",
+            "{% url 'course_flow:dialog-form-update' %}",
+            "{% url 'course_flow:dialog-form-delete' %}",
             "{% trans 'posting worked' %}",
             "{% trans 'posting didnt work' %}"
           );
@@ -58,7 +58,7 @@
           const svgParent = d3.select("svg").style("margin-top", "100px");
 
           function fetchThenRenderProgram(){
-            d3.json("{% url ' course_flow:program-detail' pk=object.pk %}").then(function (json) {
+            d3.json("{% url 'course_flow:program-detail' pk=object.pk %}").then(function (json) {
               programJson = json;
               console.log(programJson);
               renderProgram(programJson, svgParent);
@@ -438,7 +438,7 @@
                   .attr("class", "action-icon update-component")
                   .on("mousedown", function(d,i){
                     if (d3.select(this.parentNode).node().__data__.component.content_type_in_text == "course") {
-                      window.location.href = "{% url ' course_flow:course-update' pk=0 %}".replace("0", d3.select(this.parentNode).node().__data__.component.content_object.id);
+                      window.location.href = "{% url 'course_flow:course-update' pk=0 %}".replace("0", d3.select(this.parentNode).node().__data__.component.content_object.id);
                     } else {
                       root.currentComponentInstance.setState({
                         object: d3.select(this.parentNode).node().__data__.component.content_object,
@@ -554,11 +554,11 @@
             .getAttribute("value");
         }
       function updateJson(){
-        $.post("{% url ' course_flow:update-program-json' %}", {json: JSON.stringify(programJson)});
+        $.post("{% url 'course_flow:update-program-json' %}", {json: JSON.stringify(programJson)});
       }
 
       function addComponent(componentPk){
-        $.post("{% url ' course_flow:add-component-to-program' %}", {componentPk: componentPk, programPk: programJson.id});
+        $.post("{% url 'course_flow:add-component-to-program' %}", {componentPk: componentPk, programPk: programJson.id});
       }
 
   });
