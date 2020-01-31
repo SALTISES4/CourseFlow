@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
-from django.urls import path
+from django.urls import include, path
 from rest_framework import routers
 
 from . import lti, views
@@ -11,25 +11,20 @@ router.register(r"course/read", views.CourseViewSet)
 router.register(r"program/read", views.ProgramViewSet)
 
 
+app_name = "courseflow"
+
+
 def flow_patterns():
     return [
-        url(
-            r"^register/$",
-            views.registration_view,
-            name="course-flow-registration",
-        ),
+        url(r"^register/$", views.registration_view, name="registration"),
         url(
             r"^login/$",
             auth_views.LoginView.as_view(),
             {"template_name": "registration/login.html"},
-            name="course-flow-login",
+            name="login",
         ),
-        url(
-            r"^logout/$",
-            auth_views.LogoutView.as_view(),
-            name="course-flow-logout",
-        ),
-        url(r"home/$", views.home_view, name="course-flow-home"),
+        url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+        url(r"home/$", views.home_view, name="home"),
         url(
             r"^program/create/$",
             views.ProgramCreateView.as_view(),
@@ -126,4 +121,11 @@ def lti_patterns():
     return [path("course-list/", lti.get_course_list, name="course-list")]
 
 
-urlpatterns = sum([flow_patterns(), lti_patterns()], [])
+urlpatterns = sum(
+    [
+        [path("lti/", include("django_lti_tool_provider.urls"))],
+        flow_patterns(),
+        lti_patterns(),
+    ],
+    [],
+)
