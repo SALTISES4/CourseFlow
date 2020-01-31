@@ -1,0 +1,566 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<svg width="2000" height="10000">
+  <defs>
+    <filter id="selection-shadow">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" />
+    </filter>
+  </defs>
+</svg>
+<div id="node-form-container"></div>
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %}
+
+<script nonce="{{ request.csp_nonce }}">
+        window.addEventListener("load", function(){
+
+          let programJson = null;
+          const componentBoardJson = {{ owned_component_json|safe }};
+
+          console.log(programJson);
+
+          root.injectDialogForm(
+            "{% url 'dialog-form-create' %}",
+            "{% url 'dialog-form-update' %}",
+            "{% url 'dialog-form-delete' %}",
+            "{% trans 'posting worked' %}",
+            "{% trans 'posting didnt work' %}"
+          );
+
+          const componentHeight = 180.0;
+          const componentWidth = 350.0;
+          const componentSpacingVertical = 50.0;
+          const componentSpacingHorizontal = 30.0;
+          const componentTotalSpacingVertical = componentHeight + componentSpacingVertical;
+          const componentTotalSpacingHorizontal = componentWidth + componentSpacingHorizontal;
+
+          const componentMidpointVertical = componentHeight/2.0;
+          const componentMidpointHorizontal = componentWidth/2.0;
+
+          const programPadding = 30.0;
+
+          const programInfoHeight = 200.0;
+
+          const programWidth = 2*programPadding+componentTotalSpacingHorizontal*2-componentSpacingHorizontal;
+
+          const svgParent = d3.select("svg").style("margin-top", "100px");
+
+          function fetchThenRenderProgram(){
+            d3.json("{% url 'program-detail' pk=object.pk %}").then(function (json) {
+              programJson = json;
+              console.log(programJson);
+              renderProgram(programJson, svgParent);
+            });
+          }
+
+          fetchThenRenderProgram();
+
+          renderComponentBoard(svgParent, componentBoardJson);
+
+          function renderComponentBoard(parent, jsonData){
+
+          const boardComponents = parent.selectAll('.board-component').data(jsonData).enter()
+                            .append("svg").attr("class",'board-component')
+                            .attr("x", `${componentTotalSpacingHorizontal*2+50}`)
+                            .attr("y", (d,i) => `${componentTotalSpacingVertical*i+50}`)
+                            .attr("width", `${componentWidth}`).attr("height", `${componentHeight}`);
+
+          boardComponents.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
+              .attr("width", `${componentWidth}`).attr("height", `${componentHeight}`)
+              .attr("fill", "#979797").style('pointer-events', 'none');
+
+              boardComponents
+                .append('text')
+                .style('font-family', 'Roboto')
+                .attr('class', 'component-title')
+                .attr('x', "15")
+                .attr('y', "20")
+                .attr('dy', 6)
+                .style('font-size', 18)
+                .style('fill', "white")
+                .style('pointer-events', 'none')
+                .text(d => d.content_object.title);
+
+                boardComponents
+                  .append('text')
+                  .style('font-family', 'Roboto')
+                  .attr('class', 'component-author')
+                  .attr('x', "15")
+                  .attr('y', "40")
+                  .attr('dy', 6)
+                  .style('font-size', 12)
+                  .style('fill', "white")
+                  .style('pointer-events', 'none')
+                  .text(d=> "created by "+d.content_object.author);
+
+                  boardComponents
+                    .append('text')
+                    .style('font-family', 'Roboto')
+                    .attr('class', 'component-description')
+                    .attr('x', "15")
+                    .attr('y', "70")
+                    .attr('dy', 6)
+                    .style('font-size', 14)
+                    .style('fill', "white")
+                    .style('pointer-events', 'none')
+                    .text(d => d.content_object.description);
+
+                  boardComponents.append("g")
+                    .attr("class", "action-icon")
+                    .append('image')
+                    .attr('x', `${componentWidth-40}`)
+                    .attr('y', `${componentHeight-45}`)
+                    .attr("width", `${31}`)
+                    .attr("height", `${31}`)
+                    .attr("xlink:href","{% static 'course_flow/img/rubbish-bin-delete-button.svg' %}");
+
+                  boardComponents.append("g")
+                    .attr("class", "action-icon")
+                    .append('image')
+                    .attr('x', `${componentWidth-40}`)
+                    .attr('y', `${componentHeight-90}`)
+                    .attr("width", `${31}`)
+                    .attr("height", `${31}`)
+                    .attr("xlink:href","{% static 'course_flow/img/pencil.svg' %}");
+
+                  const dragDropIcons = boardComponents
+                    .append("g")
+                    .attr("class", "drag-icon")
+                    .append('image')
+                    .attr('x', `${componentWidth-30}`)
+                    .attr('y', `${10}`)
+                    .attr("width", `${20}`)
+                    .attr("height", `${20}`)
+                    .attr("xlink:href","{% static 'course_flow/img/reorder-option (1).svg' %}");
+
+
+            function makeDragDropBoardComponent() {
+              let widget = undefined;
+              let color = undefined;
+              let initX = undefined;
+              let initY = undefined;
+
+              let drags = d3
+                .drag()
+                .on("start", function() {
+                  widget = d3.select(this);
+                  dragDropIcons.style("cursor","grabbing");
+                  initX = +widget.attr("x");
+                  initY = +widget.attr("y");
+                  color = widget.select("rect").attr("fill");
+                  program = d3.selectAll(".program");
+                  widget.select("rect").attr("filter","url(#selection-shadow)")
+                        .attr('x', 5).attr('y', 4)
+                        .attr("width", `${componentWidth-10}`).attr("height", `${componentHeight-8}`);
+                  swapDiv(this);
+                })
+                .on("drag", function() {
+                  widget.attr("x", d3.event.x-componentWidth+20).attr("y", d3.event.y-20);
+
+                      if((+program.attr("y")+(+program.attr("height")))>(+widget.attr("y")+(+widget.attr("height")))
+                          &&(+program.attr("x")+(+program.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
+                          &&+program.attr("y")<+widget.attr("y")&&+program.attr("x")<+widget.attr("x")){
+
+                          widget.select("rect").attr("fill", "#1976BC");
+                      }
+                      else {
+                          widget.select("rect").attr("fill", color);
+                      }
+                })
+                .on("end", function() {
+                  if((+program.attr("y")+(+program.attr("height")))>(+widget.attr("y")+(+widget.attr("height")))
+                      &&(+program.attr("x")+(+program.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
+                      &&+program.attr("y")<+widget.attr("y")&&+program.attr("x")<+widget.attr("x")){
+
+                            addComponent(widget.node().__data__.id);
+
+                      }
+
+                  dragDropIcons.style("cursor","grab");
+                  widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
+                  .attr("width", `${componentWidth}`).attr("height", `${componentHeight}`).attr("filter", "");
+                  widget.attr("x", initX).attr("y", initY).style("cursor","default");
+
+                  widget = undefined;
+                });
+
+              drags(boardComponents);
+            }
+            makeDragDropBoardComponent();
+
+        }
+
+
+        let repositionBoard = function(){
+          let displacement = $(window).scrollTop();
+          d3.selectAll('.board-component').attr("y", (d,i) => `${componentTotalSpacingVertical*i+50+displacement}`);
+
+        }
+
+        window.addEventListener("scroll", repositionBoard);
+
+          function renderProgram(programJson, parent){
+
+              d3.selectAll(".program").remove();
+
+              const program = parent
+                                  .append("svg").attr("x","0").attr("y","0")
+                                  .attr("width", `${programWidth}`)
+                                  .attr("height", `${programJson.componentprogram_set.length*componentTotalSpacingVertical-componentSpacingVertical+2*programPadding+programInfoHeight}`)
+                                  .attr("class","program");
+
+
+              program
+                .append('text')
+                .attr('id','program-title')
+                .style('font-family', 'Roboto')
+                .attr('x', "15")
+                .attr('y', "20")
+                .attr('dy', 6)
+                .style('font-size', 18)
+                .style('fill', "white")
+                .style('pointer-events', 'none')
+                .text(programJson.title);
+
+              program
+                .append('text')
+                .attr('id','program-author')
+                .style('font-family', 'Roboto')
+                .attr('x', "15")
+                .attr('y', "40")
+                .attr('dy', 6)
+                .style('font-size', 12)
+                .style('fill', 'white')
+                .style('pointer-events', 'none')
+                .text("created by "+programJson.author);
+
+              program
+                .append('text')
+                .attr('id','program-description')
+                .style('font-family', 'Roboto')
+                .attr('x', "15")
+                .attr('y', "70")
+                .attr('dy', 6)
+                .style('font-size', 14)
+                .style('fill', "white")
+                .style('pointer-events', 'none')
+                .text(programJson.description);
+
+              program.append("g")
+                .attr('id','delete-program')
+                .attr("class", "action-icon")
+                .on("click", function(d,i){
+                    root.currentComponentInstance.setState({
+                      object: programJson,
+                      objectType: "program",
+                      isProgram: true,
+                      isDeleteForm: true
+                    });
+                    root.currentComponentInstance.dlg.MDComponent.show();
+                })
+                .append('image')
+                .attr('x', `${programWidth-40}`)
+                .attr('y', `${60}`)
+                .attr("width", `${31}`)
+                .attr("height", `${31}`)
+                .attr("xlink:href","{% static 'course_flow/img/rubbish-bin-delete-button.svg' %}");
+
+              program.append("g")
+                .attr('id','update-program')
+                .attr("class", "action-icon")
+                .on("click", function(d,i){
+                    root.currentComponentInstance.setState({
+                      object: programJson,
+                      objectType: "program",
+                      isProgram: true,
+                      isUpdateForm: true
+                    });
+                    root.currentComponentInstance.dlg.MDComponent.show();
+                })
+                .append('image')
+                .attr('x', `${programWidth-40}`)
+                .attr('y', `${15}`)
+                .attr("width", `${31}`)
+                .attr("height", `${31}`)
+                .attr("xlink:href","{% static 'course_flow/img/pencil.svg' %}");
+
+              program.append("g")
+                .attr('id','add-component')
+                .attr("class", "action-icon")
+                .on("click", function(d,i){
+                    root.currentComponentInstance.setState({
+                      parentID: programJson.id,
+                      isProgramLevelComponent: true
+                    });
+                    root.currentComponentInstance.dlg.MDComponent.show();
+                })
+                .append('image')
+                .attr('x', `${programWidth-40}`)
+                .attr('y', `${100}`)
+                .attr("width", `${31}`)
+                .attr("height", `${31}`)
+                .attr("xlink:href","{% static 'course_flow/img/add-square-button.svg' %}");
+
+                renderComponents(programJson.componentprogram_set, program);
+
+
+          }
+
+
+          function pathToNextSiblingRect(s, i) {
+            path = "M" + (s[i].x.animVal.value+componentMidpointHorizontal) + "," + (s[i].y.animVal.value+componentHeight) + "C" + (s[i].x.animVal.value+componentMidpointHorizontal) + ","
+                    + (s[i].y.animVal.value + componentHeight + s[i+1].y.animVal.value) / 2 + " " + (s[i+1].x.animVal.value+componentMidpointHorizontal) + "," +  (s[i].y.animVal.value + componentHeight + s[i+1].y.animVal.value) / 2
+                    + " " + (s[i+1].x.animVal.value+componentMidpointHorizontal) + "," + s[i+1].y.animVal.value;
+            return path
+          }
+
+
+
+
+
+          function renderComponentLinks(svg){
+
+              svg.selectAll('path').remove();
+
+              let rects = svg.selectAll('.component')['_groups'][0];
+
+              console.log(rects);
+
+              sortedRects = [rects.length];
+
+              console.log(rects.length)
+
+              for(let i=0; i<rects.length; i++){
+                  for(let j=0; j<rects.length; j++){
+                  if(i==rects[j].__data__.rank){
+                      sortedRects[i]=rects[j];
+                  }
+                  else if(rects[j].__data__.rank<0) sortedRects[0]=rects[j];
+                  else if(rects[j].__data__.rank>rects.length-1) sortedRects[rects.length-1]=rects[j];
+                }
+              }
+
+              console.log(sortedRects);
+
+              for(let i=0; i<rects.length-1; i++){
+                  svg.append("path")
+                      .style("stroke", "black")
+                      .style("stroke-width", 3)
+                      .attr('fill', 'none')
+                      .attr("d",  pathToNextSiblingRect(sortedRects, i));
+
+
+              }
+
+
+          }
+
+
+          function renderComponents(componentProgramSet, svg){
+
+            svg.selectAll('.component').remove();
+
+            const components = svg.selectAll('.component').data(componentProgramSet).enter()
+                              .append("svg").attr("class","component")
+                              .attr("x", (d,i) => `${componentTotalSpacingHorizontal*d.component.content_type+programPadding}`)
+                              .attr("y", (d,i) => `${componentTotalSpacingVertical*d.rank+programPadding+programInfoHeight}`);
+
+            components.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6").attr("class","component-rect")
+                .attr("fill","rgb(65,80,96)").attr("width", `${componentWidth}`).attr("height", `${componentHeight}`).style('pointer-events', 'none');
+
+            components
+              .append('text')
+              .style('font-family', 'Roboto')
+              .attr('class', 'component-title')
+              .attr('x', "15")
+              .attr('y', "20")
+              .attr('dy', 6)
+              .style('font-size', 18)
+              .style('fill', "white")
+              .style('pointer-events', 'none')
+              .text(d => d.component.content_object.title);
+
+              components
+                .append('text')
+                .style('font-family', 'Roboto')
+                .attr('class', 'component-author')
+                .attr('x', "15")
+                .attr('y', "40")
+                .attr('dy', 6)
+                .style('font-size', 12)
+                .style('fill', 'white')
+                .style('pointer-events', 'none')
+                .text(d=> "created by "+d.component.content_object.author);
+
+                components
+                  .append('text')
+                  .style('font-family', 'Roboto')
+                  .attr('class', 'component-description')
+                  .attr('x', "15")
+                  .attr('y', "70")
+                  .attr('dy', 6)
+                  .style('font-size', 14)
+                  .style('fill', "white")
+                  .style('pointer-events', 'none')
+                  .text(d => d.component.content_object.description);
+
+                components.append("g")
+                  .attr("class", "action-icon delete-component")
+                  .on("mousedown", function(d,i){
+                      root.currentComponentInstance.setState({
+                        object: d3.select(this.parentNode).node().__data__.component.content_object,
+                        objectType: d3.select(this.parentNode).node().__data__.component.content_type_in_text,
+                        isProgramLevelComponent: true,
+                        isDeleteForm: true
+                      });
+                      root.currentComponentInstance.dlg.MDComponent.show();
+                  })
+                  .append('image')
+                  .attr('x', `${componentWidth-40}`)
+                  .attr('y', `${componentHeight-45}`)
+                  .attr("width", `${31}`)
+                  .attr("height", `${31}`)
+                  .attr("xlink:href","{% static 'course_flow/img/rubbish-bin-delete-button.svg' %}");
+
+                components.append("g")
+                  .attr("class", "action-icon update-component")
+                  .on("mousedown", function(d,i){
+                    if (d3.select(this.parentNode).node().__data__.component.content_type_in_text == "course") {
+                      window.location.href = "{% url 'course-update' pk=0 %}".replace("0", d3.select(this.parentNode).node().__data__.component.content_object.id);
+                    } else {
+                      root.currentComponentInstance.setState({
+                        object: d3.select(this.parentNode).node().__data__.component.content_object,
+                        objectType: d3.select(this.parentNode).node().__data__.component.content_type_in_text,
+                        isProgramLevelComponent: true,
+                        isUpdateForm: true
+                      });
+                      root.currentComponentInstance.dlg.MDComponent.show();
+                    }
+                  })
+                  .append('image')
+                  .attr('x', `${componentWidth-40}`)
+                  .attr('y', `${componentHeight-90}`)
+                  .attr("width", `${31}`)
+                  .attr("height", `${31}`)
+                  .attr("xlink:href","{% static 'course_flow/img/pencil.svg' %}");
+
+                const dragDropIcons = components.append("g")
+                  .attr("class", "drag-icon")
+                  .append('image')
+                  .attr('x', `${componentWidth-30}`)
+                  .attr('y', `${10}`)
+                  .attr("width", `${20}`)
+                  .attr("height", `${20}`)
+                  .attr("xlink:href","{% static 'course_flow/img/reorder-option (1).svg' %}");
+
+
+
+
+
+            renderComponentLinks(svg);
+
+              function reorderByRank(previousRank, newRank){
+                  components.each(function(d,i) { if(d.rank == newRank){
+                    d.rank=previousRank;
+                    d3.select(this).attr("y",`${d.rank*componentTotalSpacingVertical+programPadding+programInfoHeight}`);
+                  }});
+              }
+
+          function makeDragDropComponent() {
+            let widget = undefined;
+            let color = undefined;
+            let initRank = undefined;
+            let currentRank = undefined;
+            let initXAxis = undefined;
+            let widgetData = undefined;
+
+            let drags = d3
+              .drag()
+              .on("start", function() {
+                widget = d3.select(this);
+                color = widget.select("rect").attr("fill");
+                widget.select("rect").attr("filter","url(#selection-shadow)")
+                      .attr('x', 5).attr('y', 4)
+                      .attr("width", `${componentWidth-10}`).attr("height", `${componentHeight-8}`);
+                dragDropIcons.style("cursor","grabbing");
+                widgetData = widget.node().__data__;
+                initRank = widgetData.rank;
+                initXAxis = +widget.attr("x");
+                swapDiv(this);
+              })
+              .on("drag", function() {
+                widget.attr("x", d3.event.x-componentWidth+20).attr("y", d3.event.y-20);
+                currentRank = Math.round((widget.attr("y")-programPadding-programInfoHeight)/componentTotalSpacingVertical);
+                if(currentRank != initRank){
+                    reorderByRank(initRank, currentRank);
+                    widgetData.rank = currentRank;
+                    initRank = currentRank;
+                }
+                renderComponentLinks(svg, componentMidpointHorizontal);
+              })
+              .on("end", function() {
+                if (widgetData.rank < 0) widgetData.rank = 0;
+                if (widgetData.rank > componentProgramSet.length-1) widgetData.rank = componentProgramSet.length-1;
+                widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
+                  .attr("width", `${componentWidth}`).attr("height", `${componentHeight}`).attr("filter", "");
+                widget.attr("y",(d,i)=>`${d.rank*componentTotalSpacingVertical+programPadding+programInfoHeight}`)
+                    .attr("x", `${initXAxis}`);
+                dragDropIcons.style("cursor","grab");
+                updateJson();
+                renderComponentLinks(svg, componentMidpointHorizontal);
+                widget = undefined;
+              });
+
+            drags(components);
+          }
+          makeDragDropComponent();
+
+      }
+
+      function swapDiv(referenceNode){
+          referenceNode.parentNode.insertBefore(referenceNode, referenceNode.parentNode.lastChild.nextSibling);
+      }
+
+      $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                  xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+              }
+          },
+          success: function(){
+            fetchThenRenderProgram();
+          }
+      });
+
+      function csrfSafeMethod(method) {
+
+          return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      }
+      function getCsrfToken() {
+          return document
+            .getElementsByName("csrfmiddlewaretoken")[0]
+            .getAttribute("value");
+        }
+      function updateJson(){
+        $.post("{% url 'update-program-json' %}", {json: JSON.stringify(programJson)});
+      }
+
+      function addComponent(componentPk){
+        $.post("{% url 'add-component-to-program' %}", {componentPk: componentPk, programPk: programJson.id});
+      }
+
+  });
+</script>
+{% endblock %}

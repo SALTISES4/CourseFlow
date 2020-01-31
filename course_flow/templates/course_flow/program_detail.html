@@ -1,0 +1,254 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<svg width="2000" height="10000" />
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %}
+
+<script nonce="{{ request.csp_nonce }}">
+  window.addEventListener("load", function() {
+    let programJson = null;
+
+    const componentHeight = 180.0;
+    const componentWidth = 350.0;
+    const componentSpacingVertical = 50.0;
+    const componentSpacingHorizontal = 30.0;
+    const componentTotalSpacingVertical =
+      componentHeight + componentSpacingVertical;
+    const componentTotalSpacingHorizontal =
+      componentWidth + componentSpacingHorizontal;
+
+    const componentMidpointVertical = componentHeight / 2.0;
+    const componentMidpointHorizontal = componentWidth / 2.0;
+
+    const programPadding = 30.0;
+
+    const programInfoHeight = 200.0;
+
+    const programWidth =
+      2 * programPadding +
+      componentTotalSpacingHorizontal * 2 -
+      componentSpacingHorizontal;
+
+    const svgParent = d3.select("svg").style("margin-top", "100px");
+
+    function fetchThenRenderProgram() {
+      d3.json("{% url 'program-detail' pk=object.pk %}").then(function(json) {
+        programJson = json;
+        renderProgram(programJson, svgParent);
+      });
+    }
+
+    fetchThenRenderProgram();
+
+    function renderProgram(programJson, parent) {
+      d3.selectAll(".program").remove();
+
+      const program = parent
+        .append("svg")
+        .attr("x", "0")
+        .attr("y", "0")
+        .attr("width", `${programWidth}`)
+        .attr(
+          "height",
+          `${programJson.componentprogram_set.length *
+            componentTotalSpacingVertical -
+            componentSpacingVertical +
+            2 * programPadding +
+            programInfoHeight}`
+        )
+        .attr("class", "program");
+
+      program
+        .append("text")
+        .style("font-family", "Roboto")
+        .attr("class", "program-title")
+        .attr("x", "15")
+        .attr("y", "20")
+        .attr("dy", 6)
+        .style("font-size", 18)
+        .style("fill", "white")
+        .style("pointer-events", "none")
+        .text(programJson.title);
+
+      program
+        .append("text")
+        .style("font-family", "Roboto")
+        .attr("class", "program-author")
+        .attr("x", "15")
+        .attr("y", "40")
+        .attr("dy", 6)
+        .style("font-size", 12)
+        .style("fill", "white")
+        .style("pointer-events", "none")
+        .text("created by " + programJson.author);
+
+      program
+        .append("text")
+        .style("font-family", "Roboto")
+        .attr("class", "program-description")
+        .attr("x", "15")
+        .attr("y", "70")
+        .attr("dy", 6)
+        .style("font-size", 14)
+        .style("fill", "white")
+        .style("pointer-events", "none")
+        .text(programJson.description);
+
+      program
+        .append("g")
+        .attr("class", "action-icon")
+        .attr("id", "update-program")
+        .on("click", function(d, i) {
+          window.location.href = "{% url 'program-update' pk=object.pk %}";
+        })
+        .append("image")
+        .attr("x", `${programWidth - 40}`)
+        .attr("y", `${15}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr("xlink:href", "{% static 'course_flow/img/pencil.svg' %}");
+
+      renderComponents(programJson.componentprogram_set, program);
+    }
+
+    function pathToNextSiblingRect(s, i) {
+      path =
+        "M" +
+        (s[i].x.animVal.value + componentMidpointHorizontal) +
+        "," +
+        (s[i].y.animVal.value + componentHeight) +
+        "C" +
+        (s[i].x.animVal.value + componentMidpointHorizontal) +
+        "," +
+        (s[i].y.animVal.value + componentHeight + s[i + 1].y.animVal.value) /
+          2 +
+        " " +
+        (s[i + 1].x.animVal.value + componentMidpointHorizontal) +
+        "," +
+        (s[i].y.animVal.value + componentHeight + s[i + 1].y.animVal.value) /
+          2 +
+        " " +
+        (s[i + 1].x.animVal.value + componentMidpointHorizontal) +
+        "," +
+        s[i + 1].y.animVal.value;
+      return path;
+    }
+
+    function renderComponentLinks(svg) {
+      svg.selectAll("path").remove();
+
+      let rects = svg.selectAll(".component")["_groups"][0];
+
+      sortedRects = [rects.length];
+
+      for (let i = 0; i < rects.length; i++) {
+        for (let j = 0; j < rects.length; j++) {
+          if (i == rects[j].__data__.rank) {
+            sortedRects[i] = rects[j];
+          } else if (rects[j].__data__.rank < 0) sortedRects[0] = rects[j];
+          else if (rects[j].__data__.rank > rects.length - 1)
+            sortedRects[rects.length - 1] = rects[j];
+        }
+      }
+
+      console.log(sortedRects);
+
+      for (let i = 0; i < rects.length - 1; i++) {
+        svg
+          .append("path")
+          .style("stroke", "black")
+          .style("stroke-width", 3)
+          .attr("fill", "none")
+          .attr("d", pathToNextSiblingRect(sortedRects, i));
+      }
+    }
+
+    function renderComponents(componentProgramSet, svg) {
+      console.log(componentProgramSet[0].component.content_object);
+
+      svg.selectAll(".component").remove();
+
+      const components = svg
+        .selectAll(".component")
+        .data(componentProgramSet)
+        .enter()
+        .append("svg")
+        .attr("class", "component")
+        .attr(
+          "x",
+          (d, i) =>
+            `${componentTotalSpacingHorizontal * d.component.content_type +
+              programPadding}`
+        )
+        .attr(
+          "y",
+          (d, i) =>
+            `${componentTotalSpacingVertical * d.rank +
+              programPadding +
+              programInfoHeight}`
+        );
+
+      components
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("rx", "6")
+        .attr("class", "component-rect")
+        .attr("fill", "rgb(65,80,96)")
+        .attr("width", `${componentWidth}`)
+        .attr("height", `${componentHeight}`)
+        .style("pointer-events", "none");
+
+      components
+        .append("text")
+        .style("font-family", "Roboto")
+        .attr("class", "component-title")
+        .attr("x", "15")
+        .attr("y", "20")
+        .attr("dy", 6)
+        .style("font-size", 18)
+        .style("fill", "white")
+        .style("pointer-events", "none")
+        .text(d => d.component.content_object.title);
+
+      components
+        .append("text")
+        .style("font-family", "Roboto")
+        .attr("class", "component-author")
+        .attr("x", "15")
+        .attr("y", "40")
+        .attr("dy", 6)
+        .style("font-size", 12)
+        .style("fill", "white")
+        .style("pointer-events", "none")
+        .text(d => "created by " + d.component.content_object.author);
+
+      components
+        .append("text")
+        .style("font-family", "Roboto")
+        .attr("class", "component-description")
+        .attr("x", "15")
+        .attr("y", "70")
+        .attr("dy", 6)
+        .style("font-size", 14)
+        .style("fill", "white")
+        .style("pointer-events", "none")
+        .text(d => d.component.content_object.description);
+
+      renderComponentLinks(svg);
+    }
+  });
+</script>
+{% endblock %}

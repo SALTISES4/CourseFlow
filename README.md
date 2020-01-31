@@ -1,5 +1,7 @@
 # CourseFlow
 
+[![CircleCI](https://circleci.com/gh/SALTISES4/CourseFlow.svg?style=svg)](https://circleci.com/gh/SALTISES4/CourseFlow)
+
 CourseFlow is a pedagogical tool for planning activities, courses, and programs, which is designed to enable Research Practice Partnerships between instructors, designers, and researchers.
 
 ## Setting up the development server
@@ -28,6 +30,10 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
         yarn run gulp build-js
 
-7.  Run the Django development server.
+7.  Migrate
 
-        (dev_venv) ./manage.py runserver
+        (dev_venv) python3 course_flow.py migrate
+
+8.  Run the Django development server.
+
+        (dev_venv) python3 course_flow.py runserver

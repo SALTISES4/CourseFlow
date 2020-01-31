@@ -11,7 +11,7 @@
 .tern-port
 .venv
 /CACHE
-/course_flow_maker/local_settings.py
+/course_flow/local_settings.py
 /htmlcov
 /log
 /media
@@ -33,8 +33,3 @@ tags
 db.sqlite3
 db.sqlite3-journal
 local_settings.py
-
-*.min.css
-*.min.css.map
-*.min.js
-*.min.js.map
