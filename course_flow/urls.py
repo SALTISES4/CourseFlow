@@ -15,17 +15,15 @@ app_name = "courseflow"
 
 
 def flow_patterns():
-    """
+    return [
         url(r"^register/$", views.registration_view, name="registration"),
         url(
             r"^login/$",
             auth_views.LoginView.as_view(),
-            {"template_name": "registration/login.html"},
+            {"template_name": "course_flow/registration/login.html"},
             name="login",
         ),
         url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
-    """
-    return [
         url(r"home/$", views.home_view, name="home"),
         url(
             r"^program/create/$",

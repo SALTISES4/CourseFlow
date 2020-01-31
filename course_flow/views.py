@@ -61,10 +61,10 @@ def registration_view(request):
             raw_password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect("course-flow-home")
+            return redirect("home")
     else:
         form = RegistrationForm()
-    return render(request, "registration/registration.html", {"form": form})
+    return render(request, "course_flow/registration/registration.html", {"form": form})
 
 
 @login_required
