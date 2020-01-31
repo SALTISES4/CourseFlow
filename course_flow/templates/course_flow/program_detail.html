@@ -44,7 +44,7 @@
     const svgParent = d3.select("svg").style("margin-top", "100px");
 
     function fetchThenRenderProgram() {
-      d3.json("{% url 'program-detail' pk=object.pk %}").then(function(json) {
+      d3.json("{% url ' course_flow:program-detail' pk=object.pk %}").then(function(json) {
         programJson = json;
         renderProgram(programJson, svgParent);
       });
@@ -111,7 +111,7 @@
         .attr("class", "action-icon")
         .attr("id", "update-program")
         .on("click", function(d, i) {
-          window.location.href = "{% url 'program-update' pk=object.pk %}";
+          window.location.href = "{% url ' course_flow:program-update' pk=object.pk %}";
         })
         .append("image")
         .attr("x", `${programWidth - 40}`)

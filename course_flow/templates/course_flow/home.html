@@ -85,7 +85,7 @@
 
 <h2>
   Programs
-  <a href="{% url 'program-create' %}"
+  <a href="{% url ' course_flow:course_flow:program-create' %}"
     ><img
       class="create-button"
       src="{% static 'course_flow/img/add-square-button.svg' %}"
@@ -109,14 +109,17 @@
     <div class="mdc-card__action-icons">
       {% if user.pk is program.author.pk %}
       <!-- -->
-      <a href="{% url 'program-update' pk=program.id %}">
+      <a
+        href="{% url ' course_flow:course_flow:program-update' pk=program.id %}"
+      >
         <!-- -->
         <img src="{% static 'course_flow/img/pencil-blue.svg' %}" />
       </a>
       <!-- -->
       {% else %}
       <!-- -->
-      <a href="{% url 'program-detail-view' pk=program.id %}"
+      <a
+        href="{% url ' course_flow:course_flow:program-detail-view' pk=program.id %}"
         ><img src="{% static 'course_flow/img/pageview-24px.svg' %}"
       /></a>
       <!-- -->
@@ -128,7 +131,7 @@
 <!-- -->
 <h2>
   Courses
-  <a href="{% url 'course-create' %}"
+  <a href="{% url ' course_flow:course-create' %}"
     ><img
       class="create-button"
       src="{% static 'course_flow/img/add-square-button.svg' %}"
@@ -152,14 +155,14 @@
     <div class="mdc-card__action-icons">
       {% if user.pk is course.author.pk %}
       <!-- -->
-      <a href="{% url 'course-update' pk=course.id %}">
+      <a href="{% url ' course_flow:course-update' pk=course.id %}">
         <!-- -->
         <img src="{% static 'course_flow/img/pencil-blue.svg' %}" />
       </a>
       <!-- -->
       {% else %}
       <!-- -->
-      <a href="{% url 'course-detail-view' pk=course.id %}"
+      <a href="{% url ' course_flow:course-detail-view' pk=course.id %}"
         ><img src="{% static 'course_flow/img/pageview-24px.svg' %}"
       /></a>
       <!-- -->
@@ -171,7 +174,7 @@
 <!-- -->
 <h2>
   Activities
-  <a href="{% url 'activity-create' %}"
+  <a href="{% url ' course_flow:activity-create' %}"
     ><img
       class="create-button"
       src="{% static 'course_flow/img/add-square-button.svg' %}"
@@ -195,14 +198,14 @@
     <div class="mdc-card__action-icons">
       {% if user.pk is activity.author.pk %}
       <!-- -->
-      <a href="{% url 'activity-update' pk=activity.id %}">
+      <a href="{% url ' course_flow:activity-update' pk=activity.id %}">
         <!-- -->
         <img src="{% static 'course_flow/img/pencil-blue.svg' %}" />
       </a>
       <!-- -->
       {% else %}
       <!-- -->
-      <a href="{% url 'activity-detail-view' pk=activity.id %}"
+      <a href="{% url ' course_flow:activity-detail-view' pk=activity.id %}"
         ><img src="{% static 'course_flow/img/pageview-24px.svg' %}"
       /></a>
       <!-- -->

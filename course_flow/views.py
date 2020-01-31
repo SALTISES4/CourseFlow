@@ -64,7 +64,9 @@ def registration_view(request):
             return redirect("home")
     else:
         form = RegistrationForm()
-    return render(request, "course_flow/registration/registration.html", {"form": form})
+    return render(
+        request, "course_flow/registration/registration.html", {"form": form}
+    )
 
 
 @login_required
