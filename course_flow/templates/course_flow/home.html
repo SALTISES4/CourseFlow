@@ -85,7 +85,7 @@
 
 <h2>
   Programs
-  <a href="{% url ' course_flow:course_flow:program-create' %}"
+  <a href="{% url ' course_flow:program-create' %}"
     ><img
       class="create-button"
       src="{% static 'course_flow/img/add-square-button.svg' %}"
@@ -109,17 +109,14 @@
     <div class="mdc-card__action-icons">
       {% if user.pk is program.author.pk %}
       <!-- -->
-      <a
-        href="{% url ' course_flow:course_flow:program-update' pk=program.id %}"
-      >
+      <a href="{% url ' course_flow:program-update' pk=program.id %}">
         <!-- -->
         <img src="{% static 'course_flow/img/pencil-blue.svg' %}" />
       </a>
       <!-- -->
       {% else %}
       <!-- -->
-      <a
-        href="{% url ' course_flow:course_flow:program-detail-view' pk=program.id %}"
+      <a href="{% url ' course_flow:program-detail-view' pk=program.id %}"
         ><img src="{% static 'course_flow/img/pageview-24px.svg' %}"
       /></a>
       <!-- -->
