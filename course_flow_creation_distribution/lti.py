@@ -27,7 +27,7 @@ class ApplicationHookManager(AbstractApplicationHookManager):
 
         if course_list:
             redirect_url = reverse("course-list")
-        elif course_id is None:
+        elif course_id is None or course_id == "":
             redirect_url = reverse("home")
         else:
             redirect_url = reverse(
