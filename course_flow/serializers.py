@@ -382,7 +382,7 @@ class ActivitySerializer(serializers.ModelSerializer):
         """
         do not update the following code, this will only be used for default strategy creation
         """
-        if self.initial_data.pop("strategyactivity_set", None) is not None:
+        if self.initial_data["strategyactivity_set"] is not None:
             for strategyactivity_data in self.initial_data.pop(
                 "strategyactivity_set"
             ):
