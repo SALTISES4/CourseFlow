@@ -375,7 +375,7 @@ class ActivitySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         if User.objects.filter(username=self.initial_data["author"]):
-            author = User.objects.filter(username=self.initial_data["author"])
+            author = User.objects.get(username=self.initial_data["author"])
         else:
             author = None
         activity = Activity.objects.create(author=author, **validated_data)
