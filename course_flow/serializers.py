@@ -374,10 +374,30 @@ class ActivitySerializer(serializers.ModelSerializer):
         return OutcomeActivitySerializer(links, many=True).data
 
     def create(self, validated_data):
-        return Activity.objects.create(
-            author=User.objects.get(username=self.initial_data["author"]),
-            **validated_data
-        )
+        if User.objects.filter(username=self.initial_data["author"]):
+            author = User.objects.filter(username=self.initial_data["author"])
+        else:
+            author = None
+        activity = Activity.objects.create(author=author, **validated_data)
+        for strategyactivity_data in self.initial_data.pop(
+            "strategyactivity_set"
+        ):
+            strategy_data = strategyactivity_data.pop("strategy")
+            strategy = Strategy.objects.create(**strategy_data)
+            link = StrategyActivity.objects.create(
+                strategy=strategy,
+                activity=activity,
+                rank=strategyactivity_data["rank"],
+            )
+            for nodestrategy_data in strategy_data.pop("nodestrategy_set"):
+                node_data = nodestrategy_data.pop("node")
+                node = Node.objects.create(**node_data)
+                link = NodeStrategy.objects.create(
+                    node=node,
+                    strategy=strategy,
+                    rank=strategyactivity_data["rank"],
+                )
+        return activity
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
