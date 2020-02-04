@@ -1,0 +1,892 @@
+{
+  "title": "default strategies",
+  "description": "description",
+  "author": null,
+  "strategyactivity_set": [
+    {
+      "strategy": {
+        "title": "Peer Assessment",
+        "description": "description",
+        "default": true,
+        "author": null,
+        "nodestrategy_set": [
+          {
+            "node": {
+              "title": "Assign rubric to students",
+              "description": "Instructor assigns students, individually or in groups, to review the work produced by peers using a rubric or template.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 0
+          },
+          {
+            "node": {
+              "title": "Provide feedback using rubric",
+              "description": "Individually or in small groups, students review another individual's or group's work using the rubric or template. Students provide peers with feedback in writing or prepared for oral presentation.",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 5,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 1
+          },
+          {
+            "node": {
+              "title": "Review and change work",
+              "description": "Individually or in small groups, students review feedback and decide how to make changes.",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 12,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 2
+          }
+        ],
+        "outcomestrategy_set": [],
+        "is_original": true,
+        "parent_strategy": null
+      },
+      "rank": 0
+    },
+    {
+      "strategy": {
+        "title": "Jigsaw",
+        "description": "description",
+        "default": true,
+        "author": null,
+        "nodestrategy_set": [
+          {
+            "node": {
+              "title": "Divide students into groups",
+              "description": "Instructor divides students into small groups of five or six students.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 0
+          },
+          {
+            "node": {
+              "title": "Assign an assignment",
+              "description": "Instructor prepares an assignment and divides it into as many parts as there are students in each group. Each member of the group is assigned a portion of the assignment or research project to complete.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 1
+          },
+          {
+            "node": {
+              "title": "Research Material",
+              "description": "In groups, students research the material(s) pertaining to their section of the assignment and prepare to discuss it with their classmates.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 1,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 2
+          },
+          {
+            "node": {
+              "title": "Expert Groups",
+              "description": "Students form temporary \"expert groups\" with others who have been assigned the same portion of the assignment and discuss the material they have covered, and prepare to present this material to their original \"jigsaw\" group.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 2,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 3
+          },
+          {
+            "node": {
+              "title": "Present to original group",
+              "description": "Students return to their original \"jigsaw\" group and present the material they have covered.",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 13,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 4
+          },
+          {
+            "node": {
+              "title": "Complete assignment",
+              "description": "Using their collective knowledge, students complete their assignment.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 12,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 5
+          },
+          {
+            "node": {
+              "title": "Evaluation",
+              "description": "Instructor evaluates the completed assignment. Option: Additional assessment of the students' knowledge (individual or group) can be added.",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 6
+          }
+        ],
+        "outcomestrategy_set": [],
+        "is_original": true,
+        "parent_strategy": null
+      },
+      "rank": 1
+    },
+    {
+      "strategy": {
+        "title": "Distributed Problem Solving",
+        "description": "description",
+        "default": true,
+        "author": null,
+        "nodestrategy_set": [
+          {
+            "node": {
+              "title": "Assign groups",
+              "description": "Instructor divides the class into small groups (4-6 students) and assigns each to a shared writable surface (whiteboard or interactive board).",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 0
+          },
+          {
+            "node": {
+              "title": "Assign distinct problems",
+              "description": "Instructor assigns one problem for each group. Problems should be closely related but distinct, and there should be at least two different problems.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 1
+          },
+          {
+            "node": {
+              "title": "Begin problem solving",
+              "description": "Groups begin their problem solving process, making sure to record their worked solutions on the surface, e.g. Group 1 working on Problem A, Group 2 working on Problem B, etc.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 3,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 2
+          },
+          {
+            "node": {
+              "title": "Switch groups",
+              "description": "Instructor interrupts the process and has students switch problems and take up another group's problem-solving process, e.g. Group 1 moves to Group 2's problem B, Group 2 moves to Group 1's Problem A.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 3
+          },
+          {
+            "node": {
+              "title": "Review other groups' work",
+              "description": "Groups review and revise the solution of the first group and decide how they will continue the problem solving process.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 5,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 4
+          },
+          {
+            "node": {
+              "title": "Interrupt process",
+              "description": "Instructor interrupts the process and instructs groups to return to their original problem and evaluated the completed solution.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 5
+          },
+          {
+            "node": {
+              "title": "Evaluate solution",
+              "description": "Groups review and evaluate the final solution to the original problem - e.g. Group 1 returns to Problem A, which was completed by Group 2.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 5,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 6
+          },
+          {
+            "node": {
+              "title": "Instructor evaluation",
+              "description": "Instructor evaluates all responses with the class, highlighting any errors and distinct procedures for arriving at correct solutions.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 2,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 7
+          }
+        ],
+        "outcomestrategy_set": [],
+        "is_original": true,
+        "parent_strategy": null
+      },
+      "rank": 2
+    },
+    {
+      "strategy": {
+        "title": "One Minute Paper",
+        "description": "description",
+        "default": true,
+        "author": null,
+        "nodestrategy_set": [
+          {
+            "node": {
+              "title": "Assign reflection",
+              "description": "Instructor asks students to write a brief reflection on their understanding of a lesson or activity. A time limit is provided (1 min or more).",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 0
+          },
+          {
+            "node": {
+              "title": "One minute response",
+              "description": "Individually, students provide written responses, addressing such issues as the most important thing learned during this class or what important questions remain unanswered.",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 12,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 1
+          },
+          {
+            "node": {
+              "title": "Analysis of responses",
+              "description": "Instructor collects written reflections and uses them to determine the lesson plan for the next class, including which topics need further review or explanation and what activities or material can be used next.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 2
+          }
+        ],
+        "outcomestrategy_set": [],
+        "is_original": true,
+        "parent_strategy": null
+      },
+      "rank": 3
+    },
+    {
+      "strategy": {
+        "title": "Reflective Writing",
+        "description": "description",
+        "default": true,
+        "author": null,
+        "nodestrategy_set": [
+          {
+            "node": {
+              "title": "Assign reading",
+              "description": "Instructor assigns reading or viewing material(s) - a section of textbook, video, etc. Specific prompts are provided to guide this task, which can include:\n\nWhat is not understood or unclear and why it is unclear.\nWhat is understood and how it might related to what the student already knows or to other ideas from the course.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 0
+          },
+          {
+            "node": {
+              "title": "Read material",
+              "description": "Individually, students review the material with the intention of documenting in writing their understanding using the prompts.",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 11,
+              "classification": 0,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 1
+          },
+          {
+            "node": {
+              "title": "Reflective writing",
+              "description": "Students:\nReflect on the material, identifying the items they understand and those with which they are struggling\nFormulate short paragraphs in response to the prompts\nSubmit their writings to the instructor",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 12,
+              "classification": 0,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 2
+          },
+          {
+            "node": {
+              "title": "Evaluation and analysis",
+              "description": "Instructor reviews students' work and uses it to determine the lesson plan, such as which topics need further review and explanation or what activities or materials can be used next.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 3
+          }
+        ],
+        "outcomestrategy_set": [],
+        "is_original": true,
+        "parent_strategy": null
+      },
+      "rank": 4
+    },
+    {
+      "strategy": {
+        "title": "Case Studies",
+        "description": "description",
+        "default": true,
+        "author": null,
+        "nodestrategy_set": [
+          {
+            "node": {
+              "title": "Distribute Case",
+              "description": "Instructor selects and distributes case study (or studies) that they want students to work with.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 0
+          },
+          {
+            "node": {
+              "title": "Read and prepare",
+              "description": "Students - individually or in groups - read the case study and identify key components.",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 11,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 1
+          },
+          {
+            "node": {
+              "title": "Discuss",
+              "description": "In groups, students discuss key components and lessons learned - i.e., general principles or exceptions.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 2,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 2
+          },
+          {
+            "node": {
+              "title": "Distribute new case",
+              "description": "Insert a description here.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 3
+          },
+          {
+            "node": {
+              "title": "Solve new case",
+              "description": "In groups, students work with the new case, applying lessons learned to solve it. Students apply general principles and reason as to whether or not the new case is typical or an exception.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 2,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 4
+          },
+          {
+            "node": {
+              "title": "Class discussion",
+              "description": "As a class, students discuss key components and lessons learned - i.e. general principles or exceptions.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 2,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 5
+          }
+        ],
+        "outcomestrategy_set": [],
+        "is_original": true,
+        "parent_strategy": null
+      },
+      "rank": 5
+    },
+    {
+      "strategy": {
+        "title": "Peer Instruction",
+        "description": "description",
+        "default": true,
+        "author": null,
+        "nodestrategy_set": [
+          {
+            "node": {
+              "title": "Initial Content",
+              "description": "Instructor provides students with content (e.g., mini-lecture, pre-class reading).",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 0
+          },
+          {
+            "node": {
+              "title": "Multiple Choice",
+              "description": "Instructor prepares multiple choice questions/problems.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 1
+          },
+          {
+            "node": {
+              "title": "Individual answers",
+              "description": "Individually, students answer the question and enter their vote using a polling method or device (e.g., clickers or phone app).",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 3,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 2
+          },
+          {
+            "node": {
+              "title": "Group Discussion",
+              "description": "Students, in pairs or small groups, discuss their answers and explain their reasoning.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 2,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 3
+          },
+          {
+            "node": {
+              "title": "Re-answer",
+              "description": "Individually, students vote again and select answer based on discussion - they can either keep their original answer or change.",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 3,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 4
+          },
+          {
+            "node": {
+              "title": "Review",
+              "description": "Instructor briefly reviews the concepts.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 5
+          }
+        ],
+        "outcomestrategy_set": [],
+        "is_original": true,
+        "parent_strategy": null
+      },
+      "rank": 6
+    },
+    {
+      "strategy": {
+        "title": "Gallery Walk",
+        "description": "description",
+        "default": true,
+        "author": null,
+        "nodestrategy_set": [
+          {
+            "node": {
+              "title": "Assign problems",
+              "description": "Instructor assigns a problem to each group of students. Problems may be identical or distinct, but they generally address related content.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 0
+          },
+          {
+            "node": {
+              "title": "Solve problems",
+              "description": "In groups, students try to solve their assigned problem.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 3,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 1
+          },
+          {
+            "node": {
+              "title": "Peer review",
+              "description": "In groups, students move around the classroom and peer-review the work completed by another group, making annotations and providing feedback.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 5,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 2
+          },
+          {
+            "node": {
+              "title": "Analyze feedback",
+              "description": "In groups, students examine the feedback provided by their peers before finalizing their response.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 2,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 3
+          },
+          {
+            "node": {
+              "title": "Class discussion",
+              "description": "Instructor evaluates all responses with the class, highlighting any errors and distinct procedures for arriving at correct solutions.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 2,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 4
+          }
+        ],
+        "outcomestrategy_set": [],
+        "is_original": true,
+        "parent_strategy": null
+      },
+      "rank": 7
+    },
+    {
+      "strategy": {
+        "title": "Two-Stage Exam",
+        "description": "description",
+        "default": true,
+        "author": null,
+        "nodestrategy_set": [
+          {
+            "node": {
+              "title": "Preparation",
+              "description": "Prior to class, instructor prepares two levels of assessment - individual and group, then in class distributes the individual assessment.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 0
+          },
+          {
+            "node": {
+              "title": "Individual assessment",
+              "description": "Individually, students complete the assessment.",
+              "author": null,
+              "work_classification": 1,
+              "activity_classification": 15,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 1
+          },
+          {
+            "node": {
+              "title": "Assign groups",
+              "description": "Instructor collects the assessment then splits the students into small groups (3-4 students).",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 2
+          },
+          {
+            "node": {
+              "title": "Group discussion",
+              "description": "As groups, students discuss their answers then work together to answer the new questions.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 2,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 3
+          },
+          {
+            "node": {
+              "title": "Group assessment",
+              "description": "As a group, students complete the group assessment.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 15,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 4
+          },
+          {
+            "node": {
+              "title": "Evaluation",
+              "description": "Instructor collects the group assessment, and evaluates both.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 6,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 5
+          }
+        ],
+        "outcomestrategy_set": [],
+        "is_original": true,
+        "parent_strategy": null
+      },
+      "rank": 8
+    },
+    {
+      "strategy": {
+        "title": "Toolkit",
+        "description": "description",
+        "default": true,
+        "author": null,
+        "nodestrategy_set": [
+          {
+            "node": {
+              "title": "Give students a template",
+              "description": "Instructor provides students, at the end of a series of lessons/activities, with a template to support their identification and consolidation of the major intellectual tools learned and used in the preceding lessons.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 16,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 0
+          },
+          {
+            "node": {
+              "title": "Discussion on themes",
+              "description": "In groups, students discuss the lesson content and identify use-case examples of discipline-relevant principles, themes, rules/algorithms, etc.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 2,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 1
+          },
+          {
+            "node": {
+              "title": "Presentation of toolkit",
+              "description": "In groups, students present their list to the whole class.",
+              "author": null,
+              "work_classification": 2,
+              "activity_classification": 13,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 2
+          },
+          {
+            "node": {
+              "title": "Feedback",
+              "description": "Instructor provides feedback on the relevance of the items to be included in the Toolkit list and guides students in their review, evaluation, and decision-making.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 2,
+              "classification": 1,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 3
+          },
+          {
+            "node": {
+              "title": "Discuss and consolidate",
+              "description": "As a class, students discuss, evaluate, and justify decisions for entry of items into a single list.",
+              "author": null,
+              "work_classification": 3,
+              "activity_classification": 2,
+              "classification": 2,
+              "outcomenode_set": [],
+              "is_original": true,
+              "parent_node": null
+            },
+            "rank": 4
+          }
+        ],
+        "outcomestrategy_set": [],
+        "is_original": true,
+        "parent_strategy": null
+      },
+      "rank": 9
+    }
+  ],
+  "outcomeactivity_set": [],
+  "is_original": true,
+  "parent_activity": null
+}

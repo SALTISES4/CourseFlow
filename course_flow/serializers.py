@@ -328,7 +328,7 @@ class OutcomeActivitySerializer(serializers.ModelSerializer):
         fields = ["activity", "outcome", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
-        instance.rank = validated_data.get("rank", instance.title)
+        instance.rank = validated_data.get("rank", instance.rank)
         outcome_data = self.initial_data.pop("outcome")
         outcome_serializer = OutcomeSerializer(
             Outcome.objects.get(id=outcome_data["id"]), outcome_data
@@ -382,7 +382,8 @@ class ActivitySerializer(serializers.ModelSerializer):
         """
         do not update the following code, this will only be used for default strategy creation
         """
-        if self.initial_data["strategyactivity_set"] is not None:
+        if "strategyactivity_set" in self.initial_data.keys():
+            Strategy.objects.filter(default=True).update(default=False)
             for strategyactivity_data in self.initial_data.pop(
                 "strategyactivity_set"
             ):
@@ -390,7 +391,9 @@ class ActivitySerializer(serializers.ModelSerializer):
                 null_author = strategy_data.pop("author")
                 nodestrategy_set = strategy_data.pop("nodestrategy_set")
                 outcomestategy_set = strategy_data.pop("outcomestrategy_set")
-                strategy = Strategy.objects.create(author=author, **strategy_data)
+                strategy = Strategy.objects.create(
+                    author=author, **strategy_data
+                )
                 link = StrategyActivity.objects.create(
                     strategy=strategy,
                     activity=activity,
@@ -404,7 +407,7 @@ class ActivitySerializer(serializers.ModelSerializer):
                     link = NodeStrategy.objects.create(
                         node=node,
                         strategy=strategy,
-                        rank=strategyactivity_data["rank"],
+                        rank=nodestrategy_data["rank"],
                     )
         return activity
 
