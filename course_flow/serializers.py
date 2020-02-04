@@ -379,13 +379,14 @@ class ActivitySerializer(serializers.ModelSerializer):
         else:
             author = None
         activity = Activity.objects.create(author=author, **validated_data)
-        '''
+        """
         do not update the following code, this will only be used for default strategy creation
-        '''
+        """
         for strategyactivity_data in self.initial_data.pop(
-            "strategyactivity_set"
+            "strategyactivity_set", None
         ):
             strategy_data = strategyactivity_data.pop("strategy")
+            null_author = strategy_data.pop("author")
             nodestrategy_set = strategy_data.pop("nodestrategy_set")
             outcomestategy_set = strategy_data.pop("outcomestrategy_set")
             strategy = Strategy.objects.create(author=author, **strategy_data)
@@ -396,6 +397,7 @@ class ActivitySerializer(serializers.ModelSerializer):
             )
             for nodestrategy_data in nodestrategy_set:
                 node_data = nodestrategy_data.pop("node")
+                null_author = node_data.pop("author")
                 outcomenode_set = node_data.pop("outcomenode_set")
                 node = Node.objects.create(author=author, **node_data)
                 link = NodeStrategy.objects.create(
