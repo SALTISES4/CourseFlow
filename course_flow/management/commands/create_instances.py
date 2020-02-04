@@ -10,4 +10,5 @@ class Command(BaseCommand):
             serializer.save()
             self.stdout.write("Default strategies have been built")
         else:
-            self.stdout.write("The fixtures are not valid")
+            self.stdout.write(fixtures)
+            self.stdout.write(serializer.errors)
