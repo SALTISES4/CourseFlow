@@ -374,24 +374,30 @@ class ActivitySerializer(serializers.ModelSerializer):
         return OutcomeActivitySerializer(links, many=True).data
 
     def create(self, validated_data):
-        if User.objects.filter(username=self.initial_data["author"]):
+        if User.objects.filter(username=self.initial_data["author"]).exists():
             author = User.objects.get(username=self.initial_data["author"])
         else:
             author = None
         activity = Activity.objects.create(author=author, **validated_data)
+        '''
+        do not update the following code, this will only be used for default strategy creation
+        '''
         for strategyactivity_data in self.initial_data.pop(
             "strategyactivity_set"
         ):
             strategy_data = strategyactivity_data.pop("strategy")
-            strategy = Strategy.objects.create(**strategy_data)
+            nodestrategy_set = strategy_data.pop("nodestrategy_set")
+            outcomestategy_set = strategy_data.pop("outcomestrategy_set")
+            strategy = Strategy.objects.create(author=author, **strategy_data)
             link = StrategyActivity.objects.create(
                 strategy=strategy,
                 activity=activity,
                 rank=strategyactivity_data["rank"],
             )
-            for nodestrategy_data in strategy_data.pop("nodestrategy_set"):
+            for nodestrategy_data in nodestrategy_set:
                 node_data = nodestrategy_data.pop("node")
-                node = Node.objects.create(**node_data)
+                outcomenode_set = node_data.pop("outcomenode_set")
+                node = Node.objects.create(author=author, **node_data)
                 link = NodeStrategy.objects.create(
                     node=node,
                     strategy=strategy,
