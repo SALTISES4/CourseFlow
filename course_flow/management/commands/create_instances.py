@@ -10,5 +10,5 @@ class Command(BaseCommand):
             serializer.save()
             self.stdout.write("Default strategies have been built")
         else:
-            self.stdout.write(fixtures)
+            print(fixtures)
             self.stdout.write(serializer.errors)
