@@ -10,14 +10,22 @@ User = get_user_model()
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument("username", type=str, nargs='?', default=None)
+        parser.add_argument("username", type=str, nargs="?", default=None)
 
     def handle(self, *args, **kwargs):
-        if not User.objects.filter(username=kwargs["username"]).exists() and kwargs["username"] is not None:
+        if (
+            not User.objects.filter(username=kwargs["username"]).exists()
+            and kwargs["username"] is not None
+        ):
             return self.stdout.write(
                 "No user has the username '%s'" % kwargs["username"]
             )
-        json_data = open(os.path.join(settings.STATIC_ROOT, 'course_flow/initial_data/template_strategies.json'))
+        json_data = open(
+            os.path.join(
+                settings.BASE_DIR,
+                "course_flow/initial_data/template_strategies.json",
+            )
+        )
         fixtures = json.load(json_data)
         fixtures["author"] = kwargs["username"]
         serializer = ActivitySerializer(data=fixtures)
