@@ -35,6 +35,7 @@
             "{% url 'course_flow:dialog-form-create' %}",
             "{% url 'course_flow:dialog-form-update' %}",
             "{% url 'course_flow:dialog-form-delete' %}",
+            "{% url 'course_flow:dialog-form-remove' %}",
             "{% trans 'posting worked' %}",
             "{% trans 'posting didnt work' %}"
           );
@@ -55,13 +56,15 @@
 
           const programWidth = 2*programPadding+componentTotalSpacingHorizontal*2-componentSpacingHorizontal;
 
+          const classificationLabels = ["Course","Assesment"];
+
           const svgParent = d3.select("svg").style("margin-top", "100px");
 
           function fetchThenRenderProgram(){
             d3.json("{% url 'course_flow:program-detail' pk=object.pk %}").then(function (json) {
               programJson = json;
-              console.log(programJson);
               renderProgram(programJson, svgParent);
+              svgParent.attr("height",Math.max(d3.select(".program").node().getBBox().height+20,$(window).innerHeight()-100));
             });
           }
 
@@ -74,11 +77,11 @@
           const boardComponents = parent.selectAll('.board-component').data(jsonData).enter()
                             .append("svg").attr("class",'board-component')
                             .attr("x", `${componentTotalSpacingHorizontal*2+50}`)
-                            .attr("y", (d,i) => `${componentTotalSpacingVertical*i+50}`)
-                            .attr("width", `${componentWidth}`).attr("height", `${componentHeight}`);
+                            .attr("y", (d,i) => `${componentTotalSpacingVertical/3*i+50}`)
+                            .attr("width", `${componentWidth/2}`).attr("height", `${componentHeight/3}`);
 
           boardComponents.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
-              .attr("width", `${componentWidth}`).attr("height", `${componentHeight}`)
+              .attr("width", `${componentWidth/2}`).attr("height", `${componentHeight/3}`)
               .attr("fill", "#979797").style('pointer-events', 'none');
 
               boardComponents
@@ -88,61 +91,19 @@
                 .attr('x', "15")
                 .attr('y', "20")
                 .attr('dy', 6)
-                .style('font-size', 18)
+                .style('font-size', 16)
                 .style('fill', "white")
                 .style('pointer-events', 'none')
                 .text(d => d.content_object.title);
-
-                boardComponents
-                  .append('text')
-                  .style('font-family', 'Roboto')
-                  .attr('class', 'component-author')
-                  .attr('x', "15")
-                  .attr('y', "40")
-                  .attr('dy', 6)
-                  .style('font-size', 12)
-                  .style('fill', "white")
-                  .style('pointer-events', 'none')
-                  .text(d=> "created by "+d.content_object.author);
-
-                  boardComponents
-                    .append('text')
-                    .style('font-family', 'Roboto')
-                    .attr('class', 'component-description')
-                    .attr('x', "15")
-                    .attr('y', "70")
-                    .attr('dy', 6)
-                    .style('font-size', 14)
-                    .style('fill', "white")
-                    .style('pointer-events', 'none')
-                    .text(d => d.content_object.description);
-
-                  boardComponents.append("g")
-                    .attr("class", "action-icon")
-                    .append('image')
-                    .attr('x', `${componentWidth-40}`)
-                    .attr('y', `${componentHeight-45}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/rubbish-bin-delete-button.svg' %}");
-
-                  boardComponents.append("g")
-                    .attr("class", "action-icon")
-                    .append('image')
-                    .attr('x', `${componentWidth-40}`)
-                    .attr('y', `${componentHeight-90}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/pencil.svg' %}");
 
                   const dragDropIcons = boardComponents
                     .append("g")
                     .attr("class", "drag-icon")
                     .append('image')
-                    .attr('x', `${componentWidth-30}`)
-                    .attr('y', `${10}`)
-                    .attr("width", `${20}`)
-                    .attr("height", `${20}`)
+                    .attr('x', `${(componentWidth-30)/2}`)
+                    .attr('y', `${10/2}`)
+                    .attr("width", `${20/2}`)
+                    .attr("height", `${20/2}`)
                     .attr("xlink:href","{% static 'course_flow/img/reorder-option (1).svg' %}");
 
 
@@ -162,12 +123,12 @@
                   color = widget.select("rect").attr("fill");
                   program = d3.selectAll(".program");
                   widget.select("rect").attr("filter","url(#selection-shadow)")
-                        .attr('x', 5).attr('y', 4)
-                        .attr("width", `${componentWidth-10}`).attr("height", `${componentHeight-8}`);
+                        .attr('x', 3).attr('y', 2)
+                        .attr("width", `${(componentWidth-10)/2}`).attr("height", `${(componentHeight-8)/3}`);
                   swapDiv(this);
                 })
                 .on("drag", function() {
-                  widget.attr("x", d3.event.x-componentWidth+20).attr("y", d3.event.y-20);
+                  widget.attr("x", d3.event.x-(componentWidth+10)/2).attr("y", d3.event.y-20);
 
                       if((+program.attr("y")+(+program.attr("height")))>(+widget.attr("y")+(+widget.attr("height")))
                           &&(+program.attr("x")+(+program.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
@@ -190,7 +151,7 @@
 
                   dragDropIcons.style("cursor","grab");
                   widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
-                  .attr("width", `${componentWidth}`).attr("height", `${componentHeight}`).attr("filter", "");
+                  .attr("width", `${componentWidth/2}`).attr("height", `${componentHeight/3}`).attr("filter", "");
                   widget.attr("x", initX).attr("y", initY).style("cursor","default");
 
                   widget = undefined;
@@ -205,7 +166,7 @@
 
         let repositionBoard = function(){
           let displacement = $(window).scrollTop();
-          d3.selectAll('.board-component').attr("y", (d,i) => `${componentTotalSpacingVertical*i+50+displacement}`);
+          d3.selectAll('.board-component').attr("y", (d,i) => `${componentTotalSpacingVertical/3*i+50+displacement}`);
 
         }
 
@@ -312,6 +273,21 @@
                 .attr("width", `${31}`)
                 .attr("height", `${31}`)
                 .attr("xlink:href","{% static 'course_flow/img/add-square-button.svg' %}");
+
+                for (let i=0; i<2; i++) {
+                  program
+                    .append('text')
+                    .style('font-family', 'Roboto')
+                    .attr('class','activity-classification')
+                    .attr('text-anchor',"middle")
+                    .attr('x', `${componentTotalSpacingHorizontal*i+componentTotalSpacingHorizontal/2}`)
+                    .attr('y', "160")
+                    .attr('dy', 6)
+                    .style('font-size', 16)
+                    .style('fill', "white")
+                    .style('pointer-events', 'none')
+                    .text(classificationLabels[i]);
+                }
 
                 renderComponents(programJson.componentprogram_set, program);
 
@@ -422,6 +398,7 @@
                       root.currentComponentInstance.setState({
                         object: d3.select(this.parentNode).node().__data__.component.content_object,
                         objectType: d3.select(this.parentNode).node().__data__.component.content_type_in_text,
+                        linkID: d3.select(this.parentNode).node().__data__.id,
                         isProgramLevelComponent: true,
                         isDeleteForm: true
                       });

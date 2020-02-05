@@ -32,6 +32,7 @@
               "{% url 'course_flow:dialog-form-create' %}",
               "{% url 'course_flow:dialog-form-update' %}",
               "{% url 'course_flow:dialog-form-delete' %}",
+              "{% url 'course_flow:dialog-form-remove' %}",
               "{% trans 'posting worked' %}",
               "{% trans 'posting didnt work' %}"
             );
@@ -50,6 +51,7 @@
 
             console.log(activityJson, popularNodeJson, defaultStrategyJson);
 
+            const classificationLabels = ["Out of Class","In Class (Instructor)","In Class (Strudents)"];
 
 
             function renderNodeBoard(parent, jsonData){
@@ -173,6 +175,7 @@
               d3.json("{% url 'course_flow:activity-detail' pk=object.pk %}").then(function (json) {
                 activityJson = json;
                 renderActivity(activityJson, svgParent);
+                svgParent.attr("height",Math.max(d3.select(".activity").node().getBBox().height+20,$(window).innerHeight()-100));
               });
             }
 
@@ -282,6 +285,23 @@
                   .attr("width", `${31}`)
                   .attr("height", `${31}`)
                   .attr("xlink:href","{% static 'course_flow/img/add-square-button.svg' %}");
+
+
+
+                  for (let i=0; i<3; i++) {
+                    svgActivity
+                      .append('text')
+                      .style('font-family', 'Roboto')
+                      .attr('class','activity-classification')
+                      .attr('text-anchor',"middle")
+                      .attr('x', `${nodeTotalSpacingHorizontal*i+nodeTotalSpacingHorizontal/2}`)
+                      .attr('y', "160")
+                      .attr('dy', 6)
+                      .style('font-size', 16)
+                      .style('fill', "white")
+                      .style('pointer-events', 'none')
+                      .text(classificationLabels[i]);
+                  }
 
 
                 var runningActivityHeight = activityInfoHeight;

@@ -130,9 +130,17 @@ class ProgramUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
+        component_set = set()
+        for course in Course.objects.filter(author=self.request.user).order_by(
+            "-last_modified"
+        )[:10]:
+            component, created = Component.objects.get_or_create(
+                object_id=course.id,
+                content_type=ContentType.objects.get_for_model(Course),
+            )
+            component_set.add(component.pk)
         context["owned_components"] = Component.objects.filter(
-            Q(content_type=ContentType.objects.get_for_model(Course))
-            | Q(content_type=ContentType.objects.get_for_model(Assesment))
+            pk__in=component_set
         )
         context["owned_component_json"] = (
             JSONRenderer()
@@ -181,13 +189,17 @@ class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context["course_json"] = (
-            JSONRenderer()
-            .render(CourseSerializer(self.object).data)
-            .decode("utf-8")
-        )
-        context["owned_components"] = Component.objects.exclude(
-            content_type=ContentType.objects.get_for_model(Course)
+        component_set = set()
+        for activity in Activity.objects.filter(
+            author=self.request.user
+        ).order_by("-last_modified")[:10]:
+            component, created = Component.objects.get_or_create(
+                object_id=activity.id,
+                content_type=ContentType.objects.get_for_model(Activity),
+            )
+            component_set.add(component.pk)
+        context["owned_components"] = Component.objects.filter(
+            pk__in=component_set
         )
         context["owned_component_json"] = (
             JSONRenderer()
@@ -678,6 +690,24 @@ def dialog_form_delete(request: HttpRequest) -> HttpResponse:
 
     try:
         model_lookups[model].objects.get(id=id).delete()
+    except:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
+
+@require_POST
+@ajax_login_required
+@is_owner(False)
+def dialog_form_remove(request: HttpRequest) -> HttpResponse:
+    link_id = json.loads(request.POST.get("linkID"))
+    is_program_level = json.loads(request.POST.get("isProgramLevelComponent"))
+
+    try:
+        if is_program_level:
+            ComponentProgram.objects.get(id=link_id).delete()
+        else:
+            ComponentWeek.objects.get(id=link_id).delete()
     except:
         return JsonResponse({"action": "error"})
 

@@ -21,6 +21,7 @@ export class DialogForm extends Component {
       work_classification: -1,
       activity_classification: -1
     },
+    linkID: null,
     parentID: null,
     isNode: null,
     isStrategy: null,
@@ -36,6 +37,34 @@ export class DialogForm extends Component {
 
   componentDidMount = e => {
     currentComponentInstance = this;
+  };
+
+  onRemove = e => {
+    removeNode(this);
+    e.preventDefault();
+    this.setState({
+      object: null,
+      objectType: null,
+      objectToBe: {
+        title: "",
+        description: "",
+        author: null,
+        work_classification: -1,
+        activity_classification: -1
+      },
+      linkID: null,
+      parentID: null,
+      isNode: null,
+      isStrategy: null,
+      isActivity: null,
+      isWeek: null,
+      isCourse: null,
+      isProgram: null,
+      isCourseLevelComponent: null,
+      isProgramLevelComponent: null,
+      isDeleteForm: false,
+      isUpdateForm: false
+    });
   };
 
   onSubmit = e => {
@@ -57,6 +86,7 @@ export class DialogForm extends Component {
         work_classification: -1,
         activity_classification: -1
       },
+      linkID: null,
       parentID: null,
       isNode: null,
       isStrategy: null,
@@ -83,6 +113,7 @@ export class DialogForm extends Component {
         work_classification: -1,
         activity_classification: -1
       },
+      linkID: null,
       parentID: null,
       isNode: null,
       isStrategy: null,
@@ -172,7 +203,8 @@ export class DialogForm extends Component {
             <form class="deletion-form">
               <Dialog.Header>{this.state.object.title}</Dialog.Header>
               <Dialog.Body scrollable={false}>
-                Are you sure you'd like to delete this {this.state.objectType}?
+                Are you sure you'd like to delete or remove this{" "}
+                {this.state.objectType}?
               </Dialog.Body>
               <Dialog.Footer>
                 <Dialog.FooterButton
@@ -181,6 +213,18 @@ export class DialogForm extends Component {
                   onClick={this.onClose}
                 >
                   Cancel
+                </Dialog.FooterButton>
+                <Dialog.FooterButton
+                  id="remove-button"
+                  accept={true}
+                  disabled={
+                    !this.state.isProgramLevelComponent ||
+                    !this.state.isCourseLevelComponent
+                  }
+                  raised={true}
+                  onClick={this.onRemove}
+                >
+                  Remove
                 </Dialog.FooterButton>
                 <Dialog.FooterButton
                   id="submit-button"
@@ -212,7 +256,7 @@ export class DialogForm extends Component {
             }}
           >
             <form class="update-form">
-              <Dialog.Header></Dialog.Header>
+              <Dialog.Header>Edit your {this.state.objectType}.</Dialog.Header>
               <Dialog.Body scrollable={false}>
                 <div>
                   <TextField
@@ -242,6 +286,7 @@ export class DialogForm extends Component {
                       hintText="Select a work classification"
                       selectedIndex={this.state.object.work_classification}
                       onChange={this.updateObjectWorkClassification}
+                      style="min-width: 240px;"
                     >
                       <Select.Item value="1">Individual Work</Select.Item>
                       <Select.Item value="2">Work in Groups</Select.Item>
@@ -256,6 +301,7 @@ export class DialogForm extends Component {
                       hintText="Select an activity classification"
                       selectedIndex={this.state.object.activity_classification}
                       onChange={this.updateObjectActivityClassification}
+                      style="min-width: 265px;"
                     >
                       <Select.Item value="1">Gather Information</Select.Item>
                       <Select.Item value="2">Discuss</Select.Item>
@@ -322,7 +368,17 @@ export class DialogForm extends Component {
             }}
           >
             <form class="creation-form">
-              <Dialog.Header></Dialog.Header>
+              <Dialog.Header>
+                Create a{" "}
+                {(this.state.isCourseLevelComponent ||
+                  this.state.isProgramLevelComponent) &&
+                  "node"}
+                {!(
+                  this.state.isCourseLevelComponent ||
+                  this.state.isProgramLevelComponent
+                ) && this.state.objectType}
+                .
+              </Dialog.Header>
               <Dialog.Body scrollable={false}>
                 {this.state.isProgramLevelComponent && (
                   <div>
@@ -330,6 +386,7 @@ export class DialogForm extends Component {
                       id="component-field"
                       hintText="Select a node type"
                       onChange={this.updateObjectType}
+                      style="min-width:180px;"
                     >
                       <Select.Item value="course">Course</Select.Item>
                       <Select.Item value="assesment">Assesment</Select.Item>
@@ -342,6 +399,7 @@ export class DialogForm extends Component {
                       id="component_field"
                       hintText="Select a node type"
                       onChange={this.updateObjectType}
+                      style="min-width:180px;"
                     >
                       <Select.Item value="activity">Activity</Select.Item>
                       <Select.Item value="assesment">Assesment</Select.Item>
@@ -378,6 +436,7 @@ export class DialogForm extends Component {
                       hintText="Select a work classification"
                       selectedIndex={this.state.objectToBe.work_classification}
                       onChange={this.updateObjectToBeWorkClassification}
+                      style="min-width: 240px;"
                     >
                       <Select.Item value="1">Individual Work</Select.Item>
                       <Select.Item value="2">Work in Groups</Select.Item>
@@ -394,6 +453,7 @@ export class DialogForm extends Component {
                         this.state.objectToBe.activity_classification
                       }
                       onChange={this.updateObjectToBeActivityClassification}
+                      style="min-width: 265px;"
                     >
                       <Select.Item value="1">Gather Information</Select.Item>
                       <Select.Item value="2">Discuss</Select.Item>
@@ -473,6 +533,33 @@ function getCsrfToken() {
   return document
     .getElementsByName("csrfmiddlewaretoken")[0]
     .getAttribute("value");
+}
+
+function removeNode(component) {
+  $.post(component.props.removeURL, {
+    linkID: JSON.stringify(component.state.linkID),
+    isProgramLevelComponent: JSON.stringify(
+      component.state.isProgramLevelComponent
+    ),
+    objectID: JSON.stringify(component.state.object.id),
+    objectType: JSON.stringify(component.state.objectType)
+  })
+    .done(function(data) {
+      if (data.action == "posted") {
+        component.snack.MDComponent.show({
+          message: component.props.snackMessageOnSuccess
+        });
+      } else {
+        component.snack.MDComponent.show({
+          message: component.props.snackMessageOnFailure
+        });
+      }
+    })
+    .fail(function(data) {
+      component.snack.MDComponent.show({
+        message: component.props.snackMessageOnFailure
+      });
+    });
 }
 
 function deleteNode(component) {
@@ -556,6 +643,7 @@ export function injectDialogForm(
   createURL,
   updateURL,
   deleteURL,
+  removeURL,
   snackMessageOnSuccess,
   snackMessageOnFailure
 ) {
@@ -565,6 +653,7 @@ export function injectDialogForm(
         createURL={createURL}
         updateURL={updateURL}
         deleteURL={deleteURL}
+        removeURL={removeURL}
         snackMessageOnSuccess={snackMessageOnSuccess}
         snackMessageOnFailure={snackMessageOnFailure}
       />,

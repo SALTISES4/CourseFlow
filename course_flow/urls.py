@@ -114,6 +114,11 @@ def flow_patterns():
             views.dialog_form_delete,
             name="dialog-form-delete",
         ),
+        url(
+            r"^dialog-form/remove",
+            views.dialog_form_remove,
+            name="dialog-form-remove",
+        ),
     ] + router.urls
 
 
