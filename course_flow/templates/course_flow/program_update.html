@@ -40,10 +40,14 @@
             "{% trans 'posting didnt work' %}"
           );
 
-          const componentHeight = 180.0;
-          const componentWidth = 350.0;
+          const innerWidth = $(window).innerWidth();
+          const svgParent = d3.select("svg").style("margin-top", "100px");
+          svgParent.attr("width", innerWidth);
+
+          const componentHeight = innerWidth/10;
+          const componentWidth = innerWidth/3;
           const componentSpacingVertical = 50.0;
-          const componentSpacingHorizontal = 30.0;
+          const componentSpacingHorizontal = 70.0;
           const componentTotalSpacingVertical = componentHeight + componentSpacingVertical;
           const componentTotalSpacingHorizontal = componentWidth + componentSpacingHorizontal;
 
@@ -58,7 +62,6 @@
 
           const classificationLabels = ["Course","Assesment"];
 
-          const svgParent = d3.select("svg").style("margin-top", "100px");
 
           function fetchThenRenderProgram(){
             d3.json("{% url 'course_flow:program-detail' pk=object.pk %}").then(function (json) {

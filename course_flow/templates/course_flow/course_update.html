@@ -39,8 +39,12 @@
           let courseJson = null;
           const componentBoardJson = {{ owned_component_json|safe }};
 
-          const componentHeight = 180.0;
-          const componentWidth = 350.0;
+          const innerWidth = $(window).innerWidth();
+          const svgParent = d3.select("svg").style("margin-top", "100px");
+          svgParent.attr("width", innerWidth);
+
+          const componentHeight = innerWidth/10;
+          const componentWidth = innerWidth/5.5;
           const componentSpacingVertical = 50.0;
           const componentSpacingHorizontal = 30.0;
           const componentTotalSpacingVertical = componentHeight + componentSpacingVertical;
@@ -58,8 +62,6 @@
           const weekWidth = 2*weekPadding+componentTotalSpacingHorizontal*4-componentSpacingHorizontal;
 
           const classificationLabels = ["Activity","Preparation","Assesment","Artifact"];
-
-          const svgParent = d3.select("svg").style("margin-top", "100px");
 
           function fetchThenRenderCourse(){
             d3.json("{% url 'course_flow:course-detail' pk=object.pk %}").then(function (json) {
@@ -79,10 +81,10 @@
                             .append("svg").attr("class",'board-component')
                             .attr("x", `${componentTotalSpacingHorizontal*4+50}`)
                             .attr("y", (d,i) => `${componentTotalSpacingVertical/3*i+50}`)
-                            .attr("width", `${componentWidth/2}`).attr("height", `${componentHeight/3}`);
+                            .attr("width", `${componentWidth/1.5}`).attr("height", `${componentHeight/3}`);
 
           boardComponents.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
-              .attr("width", `${componentWidth/2}`).attr("height", `${componentHeight/3}`)
+              .attr("width", `${componentWidth/1.5}`).attr("height", `${componentHeight/3}`)
               .attr("fill", "#979797").style('pointer-events', 'none');
 
               boardComponents
@@ -92,7 +94,7 @@
                 .attr('x', "15")
                 .attr('y', "20")
                 .attr('dy', 6)
-                .style('font-size', 16)
+                .style('font-size', componentWidth/20)
                 .style('fill', "white")
                 .style('pointer-events', 'none')
                 .text(d => d.content_object.title);
@@ -101,7 +103,7 @@
                     .append("g")
                     .attr("class", "drag-icon")
                     .append('image')
-                    .attr('x', `${(componentWidth-30)/2}`)
+                    .attr('x', `${(componentWidth-30)/1.5}`)
                     .attr('y', `${10/2}`)
                     .attr("width", `${20/2}`)
                     .attr("height", `${20/2}`)
@@ -125,7 +127,7 @@
                   weeks = d3.selectAll(".week");
                   widget.select("rect").attr("filter","url(#selection-shadow)")
                         .attr('x', 3).attr('y', 2)
-                        .attr("width", `${(componentWidth-10)/2}`).attr("height", `${(componentHeight-8)/3}`);
+                        .attr("width", `${(componentWidth-10)/1.5}`).attr("height", `${(componentHeight-8)/3}`);
                   swapDiv(this);
                 })
                 .on("drag", function() {
@@ -163,7 +165,7 @@
 
                   dragDropIcons.style("cursor","grab");
                   widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
-                  .attr("width", `${componentWidth/2}`).attr("height", `${componentHeight/3}`).attr("filter", "");
+                  .attr("width", `${componentWidth/1.5}`).attr("height", `${componentHeight/3}`).attr("filter", "");
                   widget.attr("x", initX).attr("y", initY).style("cursor","default");
 
                   widget = undefined;

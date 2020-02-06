@@ -248,25 +248,19 @@ class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context["default_strategies"] = Strategy.objects.filter(default=True)
+        default_strategy_quearyset = Strategy.objects.filter(default=True)
         context["default_strategy_json"] = (
             JSONRenderer()
             .render(
-                StrategySerializer(
-                    context["default_strategies"], many=True
-                ).data
+                StrategySerializer(default_strategy_quearyset, many=True).data
             )
             .decode("utf-8")
         )
-        context["popular_nodes"] = (
-            Node.objects.filter(is_original=True)
-            .annotate(num_children=Count("node"))
-            .order_by("-num_children")[:3]
-        )
-        context["popoular_node_json"] = (
-            JSONRenderer()
-            .render(NodeSerializer(context["popular_nodes"], many=True).data)
-            .decode("utf-8")
+        children_count = {}
+        for i, strategy in enumerate(default_strategy_quearyset):
+            children_count[i] = strategy.strategy_set.count()
+        context["children_count_json"] = (
+            JSONRenderer().render(children_count).decode("utf-8")
         )
         return context
 

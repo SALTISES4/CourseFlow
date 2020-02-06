@@ -7,7 +7,7 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<svg width="2000" height="10000">
+<svg id="container" width="1000" height="1000">
   <defs>
     <filter id="selection-shadow">
       <feDropShadow dx="1" dy="1" stdDeviation="2" />
@@ -43,13 +43,29 @@
 
             const popularNodeJson = {{ default_strategy_json|safe }};
 
-            const defaultStrategyJson = {{ default_strategy_json|safe }};
+            const childrenCountJson = {{ children_count_json|safe }};
 
-            const totalHeight = 900;
+            const innerWidth = $(window).innerWidth();
 
-            const sideBoardWidth = 450;
+            svgParent.attr("width", innerWidth);
 
-            console.log(activityJson, popularNodeJson, defaultStrategyJson);
+            const nodeHeight = innerWidth/10;
+            const nodeWidth = innerWidth/4;
+            const nodeSpacingVertical = 50.0;
+            const nodeSpacingHorizontal = 30.0;
+            const nodeTotalSpacingVertical = nodeHeight + nodeSpacingVertical;
+            const nodeTotalSpacingHorizontal = nodeWidth + nodeSpacingHorizontal;
+
+            const nodeMidpointVertical = nodeHeight/2.0;
+            const nodeMidpointHorizontal = nodeWidth/2.0;
+
+            const strategyPadding = 30.0;
+            const strategyInfoHeight = 200.0;
+            const strategyVerticalSpacing = 20.0;
+
+            const activityInfoHeight = 200.0;
+
+            const strategyWidth = 2*strategyPadding+nodeTotalSpacingHorizontal*3-nodeSpacingHorizontal;
 
             const classificationLabels = ["Out of Class","In Class (Instructor)","In Class (Strudents)"];
 
@@ -71,12 +87,24 @@
                   .style('font-family', 'Roboto')
                   .attr('class', 'node-title')
                   .attr('x', "15")
-                  .attr('y', "20")
+                  .attr('y', `${nodeHeight/10}`)
                   .attr('dy', 6)
-                  .style('font-size', 16)
+                  .style('font-size', nodeWidth/30)
                   .style('fill', "white")
                   .style('pointer-events', 'none')
                   .text(d => d.title);
+
+                  boardNodes
+                    .append('text')
+                    .style('font-family', 'Roboto')
+                    .attr('class','node-stats')
+                    .attr('x', "15")
+                    .attr('y', `${nodeHeight/4.5}`)
+                    .attr('dy', 6)
+                    .style('font-size', nodeWidth/45)
+                    .style('fill', 'white')
+                    .style('pointer-events', 'none')
+                    .text((d,i) => `${d.title}s created: ${childrenCountJson[i]}`);
 
                     const dragDropIcons = boardNodes.append("g")
                       .attr("class", "drag-icon")
@@ -109,10 +137,9 @@
                     swapDiv(this);
                   })
                   .on("drag", function() {
-                    widget.attr("x", d3.event.x-(nodeWidth+10)/2).attr("y", d3.event.y-20);
+                    widget.attr("x", d3.event.x-(nodeWidth-30)/2).attr("y", d3.event.y-10/2);
 
                         if((+strategy.attr("x")+(+strategy.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))){
-
                             widget.select("rect").attr("fill", "#1976BC");
                         }else{
                           widget.select("rect").attr("fill", color);
@@ -124,6 +151,10 @@
                         if((+strategy.attr("x")+(+strategy.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))){
 
                               addStrategy(widget.node().__data__.id);
+                              widget.call(function(d,i){
+                                  console.log(i);
+                                  return `${d.title}s created: ${childrenCountJson[i]}`;
+                                });
 
                         }
 
@@ -148,25 +179,6 @@
             console.log(d3.selectAll(".default-strategy"));
             d3.selectAll('.default-strategy').attr("y", (d,i) => `${nodeTotalSpacingVertical/3*i+50+displacement}`);
           }
-
-
-            const nodeHeight = 160.0;
-            const nodeWidth = 450.0;
-            const nodeSpacingVertical = 50.0;
-            const nodeSpacingHorizontal = 30.0;
-            const nodeTotalSpacingVertical = nodeHeight + nodeSpacingVertical;
-            const nodeTotalSpacingHorizontal = nodeWidth + nodeSpacingHorizontal;
-
-            const nodeMidpointVertical = nodeHeight/2.0;
-            const nodeMidpointHorizontal = nodeWidth/2.0;
-
-            const strategyPadding = 30.0;
-            const strategyInfoHeight = 200.0;
-            const strategyVerticalSpacing = 20.0;
-
-            const activityInfoHeight = 200.0;
-
-            const strategyWidth = 2*strategyPadding+nodeTotalSpacingHorizontal*3-nodeSpacingHorizontal;
 
             function swapDiv(referenceNode){
                 referenceNode.parentNode.insertBefore(referenceNode, referenceNode.parentNode.lastChild.nextSibling);
@@ -555,7 +567,7 @@
                 .attr('x', "15")
                 .attr('y', "20")
                 .attr('dy', 6)
-                .style('font-size', 18)
+                .style('font-size', nodeWidth/25)
                 .style('fill', "white")
                 .style('pointer-events', 'none')
                 .text(d => d.node.title);
@@ -579,12 +591,13 @@
                     .attr('x', "15")
                     .attr('y', "0")
                     .attr('dy', 6)
-                    .style('font-size', 14)
+                    .style('font-size', nodeWidth/30)
                     .style('fill', "white")
                     .style('pointer-events', 'none')
                     .text(d => d.node.description)
                     .call(wrap, nodeWidth-50);
-  // taken from Mike Bostock's Wrapping Long Labels
+
+  // following function taken from Mike Bostock's 'Wrapping Long Labels'
 
                     function wrap(text, width) {
       text.each(function() {
@@ -752,9 +765,15 @@
                 if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                     xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
                 }
+                d3.select("#container").style("pointer-events","none");
             },
             success: function(){
               fetchThenRenderActivity();
+              d3.select("#container").style("pointer-events","auto");
+            },
+            failure: function(){
+              fetchThenRenderActivity();
+              d3.select("#container").style("pointer-events","auto");
             }
         });
 
@@ -769,14 +788,43 @@
           }
 
         function updateJson(){
-          let posting = $.post("{% url 'course_flow:update-activity-json' %}", {json: JSON.stringify(activityJson)});
-          posting.done(function(data) {
-            console.info(data);
-        });
+          $.post("{% url 'course_flow:update-activity-json' %}", {json: JSON.stringify(activityJson)})
+            .done(function(data) {
+            if (data.action == "posted") {
+              root.currentComponentInstance.snack.MDComponent.show({
+                message: root.currentComponentInstance.props.snackMessageOnSuccess
+              });
+            } else {
+              root.currentComponentInstance.snack.MDComponent.show({
+                message: root.currentComponentInstance.props.snackMessageOnFailure
+              });
+            }
+          })
+          .fail(function(data) {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnFailure
+            });
+          });
       }
 
         function addStrategy(strategyPk){
-          let posting = $.post("{% url 'course_flow:add-strategy' %}", {strategyPk: strategyPk, activityPk: activityJson.id});
+          $.post("{% url 'course_flow:add-strategy' %}", {strategyPk: strategyPk, activityPk: activityJson.id})
+          .done(function(data) {
+          if (data.action == "posted") {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnSuccess
+            });
+          } else {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnFailure
+            });
+          }
+        })
+        .fail(function(data) {
+          root.currentComponentInstance.snack.MDComponent.show({
+            message: root.currentComponentInstance.props.snackMessageOnFailure
+          });
+        });
         }
 
           });
