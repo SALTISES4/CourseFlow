@@ -32,7 +32,8 @@ export class DialogForm extends Component {
     isCourseLevelComponent: null,
     isProgramLevelComponent: null,
     isDeleteForm: false,
-    isUpdateForm: false
+    isUpdateForm: false,
+    isOwnView: false
   };
 
   componentDidMount = e => {
@@ -63,7 +64,8 @@ export class DialogForm extends Component {
       isCourseLevelComponent: null,
       isProgramLevelComponent: null,
       isDeleteForm: false,
-      isUpdateForm: false
+      isUpdateForm: false,
+      isOwnView: false
     });
   };
 
@@ -97,7 +99,8 @@ export class DialogForm extends Component {
       isCourseLevelComponent: null,
       isProgramLevelComponent: null,
       isDeleteForm: false,
-      isUpdateForm: false
+      isUpdateForm: false,
+      isOwnView: false
     });
   };
 
@@ -218,8 +221,10 @@ export class DialogForm extends Component {
                   id="remove-button"
                   accept={true}
                   disabled={
-                    !this.state.isProgramLevelComponent ||
-                    !this.state.isCourseLevelComponent
+                    !(
+                      this.state.isProgramLevelComponent ||
+                      this.state.isCourseLevelComponent
+                    )
                   }
                   raised={true}
                   onClick={this.onRemove}
@@ -583,6 +588,9 @@ function deleteNode(component) {
         message: component.props.snackMessageOnFailure
       });
     });
+  if (component.state.isOwnView) {
+    window.location.href = component.props.homeURL;
+  }
 }
 
 function updateNode(component) {
@@ -644,6 +652,7 @@ export function injectDialogForm(
   updateURL,
   deleteURL,
   removeURL,
+  homeURL,
   snackMessageOnSuccess,
   snackMessageOnFailure
 ) {
@@ -654,6 +663,7 @@ export function injectDialogForm(
         updateURL={updateURL}
         deleteURL={deleteURL}
         removeURL={removeURL}
+        homeURL={homeURL}
         snackMessageOnSuccess={snackMessageOnSuccess}
         snackMessageOnFailure={snackMessageOnFailure}
       />,

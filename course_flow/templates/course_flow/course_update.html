@@ -7,7 +7,7 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<svg width="2000" height="10000">
+<svg id="container" width="2000" height="2000">
   <defs>
     <filter id="selection-shadow">
       <feDropShadow dx="1" dy="1" stdDeviation="2" />
@@ -32,6 +32,7 @@
             "{% url 'course_flow:dialog-form-update' %}",
             "{% url 'course_flow:dialog-form-delete' %}",
             "{% url 'course_flow:dialog-form-remove' %}",
+            "{% url 'course_flow:home' %}",
             "{% trans 'posting worked' %}",
             "{% trans 'posting didnt work' %}"
           );
@@ -242,7 +243,8 @@
                       object: courseJson,
                       objectType: "course",
                       isCourse: true,
-                      isDeleteForm: true
+                      isDeleteForm: true,
+                      isOwnView: true
                     });
                     root.currentComponentInstance.dlg.MDComponent.show();
                 })
@@ -432,7 +434,8 @@
                   .drag()
                   .on("start", function() {
                     widget = d3.select(this);
-                    d3.selectAll(".week").attr("height", weekInfoHeight).attr("y",(d,i)=>d.rank*(weekInfoHeight+weekVerticalSpacing)+weekInfoHeight).select("rect").attr("height", weekInfoHeight);
+                    d3.selectAll(".week").attr("height", 45).attr("y",(d,i)=>d.rank*(45+weekVerticalSpacing)+weekInfoHeight).select("rect").attr("height", 45);
+                    d3.selectAll(".week").select(".week-author").remove();
                     widget.select("rect").attr("filter","url(#selection-shadow)")
                           .attr('x', 5).attr('y', 4)
                           .attr("width", +widget.attr("width")-10).attr("height", +widget.attr("height")-8);
@@ -442,21 +445,21 @@
                     dragDropIcons.style("cursor","grabbing");
                   })
                   .on("drag", function() {
-                    widget.attr("y", `${d3.event.y-15}`);
-                    d3.event.x = weekWidth-15;
-                    if(d3.event.y<initYAxis){
+                    widget.attr("y", `${Math.max(d3.event.y-15,courseInfoHeight-10)}`);
+
+                    if(widget.attr("y")<initYAxis){
                         weeks.each(function(d,i) { if((d.rank == widgetData.rank-1)&&((+d3.select(this).attr("y")+(+d3.select(this).attr("height"))/2)>=+widget.attr("y"))){
                           [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
                           d3.select(this).attr("y",`${+d3.select(this).attr("y")+(+widget.attr("height"))}`);
                         }});
                     }
-                    else{
+                    else if(widget.attr("y")>initYAxis){
                       weeks.each(function(d,i) { if((d.rank == widgetData.rank+1)&&((+d3.select(this).attr("y")+(+d3.select(this).attr("height"))/2)<=(+widget.attr("y")+(+widget.attr("height"))))){
                         [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
                         d3.select(this).attr("y",`${+d3.select(this).attr("y")-(+widget.attr("height"))}`);
                       }});
                     }
-                    initYAxis = d3.event.y;
+                    initYAxis = +widget.attr("y");
                   })
                   .on("end", function() {
                     let yRealignPos = 0;
@@ -470,8 +473,8 @@
                           .attr('x', 0).attr('y', 0)
                           .attr("width", +widget.attr("width")).attr("height", +widget.attr("height"));
                     dragDropIcons.style("cursor","grab");
-                    updateJson();
                     renderCourse(jsonData, parent);
+                    updateJson();
                     widget = undefined;
                   });
 
@@ -704,9 +707,15 @@
               if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                   xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
               }
+              d3.select("#container").style("pointer-events","none");
           },
           success: function(){
             fetchThenRenderCourse();
+            d3.select("#container").style("pointer-events","auto");
+          },
+          failure: function(){
+            fetchThenRenderCourse();
+            d3.select("#container").style("pointer-events","auto");
           }
       });
 
@@ -720,14 +729,43 @@
             .getAttribute("value");
         }
       function updateJson(){
-        let posting = $.post("{% url 'course_flow:update-course-json' %}", {json: JSON.stringify(courseJson)});
-        posting.done(function(data) {
-          console.info(data);
-      });
-    }
+        $.post("{% url 'course_flow:update-course-json' %}", {json: JSON.stringify(courseJson)})
+          .done(function(data) {
+            if (data.action == "posted") {
+              root.currentComponentInstance.snack.MDComponent.show({
+                message: root.currentComponentInstance.props.snackMessageOnSuccess
+              });
+            } else {
+              root.currentComponentInstance.snack.MDComponent.show({
+                message: root.currentComponentInstance.props.snackMessageOnFailure
+              });
+            }
+          })
+          .fail(function(data) {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnFailure
+            });
+          });
+        }
 
       function addComponent(componentPk, weekPk){
-        let posting = $.post("{% url 'course_flow:add-component-to-course' %}", {componentPk: componentPk, weekPk: weekPk});
+        $.post("{% url 'course_flow:add-component-to-course' %}", {componentPk: componentPk, weekPk: weekPk});
+        .done(function(data) {
+          if (data.action == "posted") {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnSuccess
+            });
+          } else {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnFailure
+            });
+          }
+        })
+        .fail(function(data) {
+          root.currentComponentInstance.snack.MDComponent.show({
+            message: root.currentComponentInstance.props.snackMessageOnFailure
+          });
+        });
       }
 
   });

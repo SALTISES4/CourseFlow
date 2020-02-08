@@ -7,7 +7,7 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<svg width="2000" height="10000">
+<svg width="2000" height="2000">
   <defs>
     <filter id="selection-shadow">
       <feDropShadow dx="1" dy="1" stdDeviation="2" />
@@ -36,6 +36,7 @@
             "{% url 'course_flow:dialog-form-update' %}",
             "{% url 'course_flow:dialog-form-delete' %}",
             "{% url 'course_flow:dialog-form-remove' %}",
+            "{% url 'course_flow:home' %}",
             "{% trans 'posting worked' %}",
             "{% trans 'posting didnt work' %}"
           );
@@ -67,6 +68,7 @@
             d3.json("{% url 'course_flow:program-detail' pk=object.pk %}").then(function (json) {
               programJson = json;
               renderProgram(programJson, svgParent);
+              d3.select(".program").attr("height",Math.max(d3.select(".program").node().getBBox().height,$(window).innerHeight()-100));
               svgParent.attr("height",Math.max(d3.select(".program").node().getBBox().height+20,$(window).innerHeight()-100));
             });
           }
@@ -230,7 +232,8 @@
                       object: programJson,
                       objectType: "program",
                       isProgram: true,
-                      isDeleteForm: true
+                      isDeleteForm: true,
+                      isOwnView: true
                     });
                     root.currentComponentInstance.dlg.MDComponent.show();
                 })
@@ -518,9 +521,15 @@
               if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                   xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
               }
+              d3.select("#container").style("pointer-events","none");
           },
           success: function(){
             fetchThenRenderProgram();
+            d3.select("#container").style("pointer-events","auto");
+          },
+          failure: function(){
+            fetchThenRenderProgram();
+            d3.select("#container").style("pointer-events","auto");
           }
       });
 
@@ -534,12 +543,42 @@
             .getAttribute("value");
         }
       function updateJson(){
-        $.post("{% url 'course_flow:update-program-json' %}", {json: JSON.stringify(programJson)});
+            $.post("{% url 'course_flow:update-program-json' %}", {json: JSON.stringify(programJson)}).done(function(data) {
+            if (data.action == "posted") {
+              root.currentComponentInstance.snack.MDComponent.show({
+                message: root.currentComponentInstance.props.snackMessageOnSuccess
+              });
+            } else {
+              root.currentComponentInstance.snack.MDComponent.show({
+                message: root.currentComponentInstance.props.snackMessageOnFailure
+              });
+            }
+          })
+          .fail(function(data) {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnFailure
+            });
+          });
       }
 
       function addComponent(componentPk){
-        $.post("{% url 'course_flow:add-component-to-program' %}", {componentPk: componentPk, programPk: programJson.id});
-      }
+        $.post("{% url 'course_flow:add-component-to-program' %}", {componentPk: componentPk, programPk: programJson.id}).done(function(data) {
+        if (data.action == "posted") {
+          root.currentComponentInstance.snack.MDComponent.show({
+            message: root.currentComponentInstance.props.snackMessageOnSuccess
+          });
+        } else {
+          root.currentComponentInstance.snack.MDComponent.show({
+            message: root.currentComponentInstance.props.snackMessageOnFailure
+          });
+        }
+      })
+      .fail(function(data) {
+        root.currentComponentInstance.snack.MDComponent.show({
+          message: root.currentComponentInstance.props.snackMessageOnFailure
+        });
+      });
+  }
 
   });
 </script>

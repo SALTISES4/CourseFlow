@@ -33,6 +33,7 @@
               "{% url 'course_flow:dialog-form-update' %}",
               "{% url 'course_flow:dialog-form-delete' %}",
               "{% url 'course_flow:dialog-form-remove' %}",
+              "{% url 'course_flow:home' %}",
               "{% trans 'posting worked' %}",
               "{% trans 'posting didnt work' %}"
             );
@@ -42,8 +43,6 @@
             const svgParent = d3.select("svg").style("margin-top", "100px");
 
             const popularNodeJson = {{ default_strategy_json|safe }};
-
-            const childrenCountJson = {{ children_count_json|safe }};
 
             const innerWidth = $(window).innerWidth();
 
@@ -71,6 +70,8 @@
 
 
             function renderNodeBoard(parent, jsonData){
+
+              console.log(jsonData);
 
             const boardNodes = parent.selectAll('.default-strategy').data(jsonData).enter()
                               .append("svg").attr("class",'default-strategy')
@@ -104,7 +105,7 @@
                     .style('font-size', nodeWidth/45)
                     .style('fill', 'white')
                     .style('pointer-events', 'none')
-                    .text((d,i) => `${d.title}s created: ${childrenCountJson[i]}`);
+                    .text((d,i) => `${d.title}s created: ${d.num_children}`);
 
                     const dragDropIcons = boardNodes.append("g")
                       .attr("class", "drag-icon")
@@ -151,10 +152,8 @@
                         if((+strategy.attr("x")+(+strategy.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))){
 
                               addStrategy(widget.node().__data__.id);
-                              widget.call(function(d,i){
-                                  console.log(i);
-                                  return `${d.title}s created: ${childrenCountJson[i]}`;
-                                });
+                              widget.node().__data__.num_children++;
+                              widget.select(".node-stats").text(d => `${d.title}s created: ${d.num_children}`);
 
                         }
 
@@ -250,7 +249,8 @@
                         object: activityJson,
                         objectType: "activity",
                         isActivity: true,
-                        isDeleteForm: true
+                        isDeleteForm: true,
+                        isOwnView: true
                       });
                       root.currentComponentInstance.dlg.MDComponent.show();
                   })
@@ -455,31 +455,32 @@
                     .drag()
                     .on("start", function() {
                       widget = d3.select(this);
-                      d3.selectAll(".strategy").attr("height", strategyInfoHeight).attr("y",(d,i)=>d.rank*(strategyInfoHeight+strategyVerticalSpacing)+activityInfoHeight).select("rect").attr("height", strategyInfoHeight);
+                      d3.selectAll(".strategy").attr("height", 45).attr("y",(d,i)=>d.rank*(45+strategyVerticalSpacing)+activityInfoHeight).select("rect").attr("height", 45);
+                      d3.selectAll(".strategy").select(".strategy-author").remove();
+                      window.scrollTo(0, 0);
                       widget.select("rect").attr("filter","url(#selection-shadow)")
                             .attr('x', 5).attr('y', 4)
                             .attr("width", +widget.attr("width")-10).attr("height", +widget.attr("height")-8);
                       widgetData = widget.node().__data__;
-                      initYAxis = widget.attr("y");
+                      initYAxis = +widget.attr("y");
                       swapDiv(this);
                       dragDropIcons.style("cursor","grabbing");
                     })
                     .on("drag", function() {
-                      widget.attr("y", `${d3.event.y-15}`);
-                      d3.event.x = strategyWidth-15;
-                      if(d3.event.y<initYAxis){
+                      widget.attr("y", `${Math.max(d3.event.y-15,activityInfoHeight-10)}`);
+                      if(widget.attr("y")<initYAxis){
                           strategies.each(function(d,i) { if((d.rank == widgetData.rank-1)&&((+d3.select(this).attr("y")+(+d3.select(this).attr("height"))/2)>=+widget.attr("y"))){
                             [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
                             d3.select(this).attr("y",`${+d3.select(this).attr("y")+(+widget.attr("height"))}`);
                           }});
                       }
-                      else{
+                      else if(widget.attr("y")>initYAxis){
                         strategies.each(function(d,i) { if((d.rank == widgetData.rank+1)&&((+d3.select(this).attr("y")+(+d3.select(this).attr("height"))/2)<=(+widget.attr("y")+(+widget.attr("height"))))){
                           [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
                           d3.select(this).attr("y",`${+d3.select(this).attr("y")-(+widget.attr("height"))}`);
                         }});
                       }
-                      initYAxis = d3.event.y;
+                      initYAxis = +widget.attr("y");
                     })
                     .on("end", function() {
                       let yRealignPos = 0;
@@ -493,8 +494,8 @@
                             .attr('x', 0).attr('y', 0)
                             .attr("width", +widget.attr("width")).attr("height", +widget.attr("height"));
                       dragDropIcons.style("cursor","grab");
-                      updateJson();
                       renderActivity(activityData, svgParent);
+                      updateJson();
                       widget = undefined;
                     });
 

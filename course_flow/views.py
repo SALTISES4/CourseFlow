@@ -248,19 +248,15 @@ class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        default_strategy_quearyset = Strategy.objects.filter(default=True)
+        default_strategy_quearyset = Strategy.objects.filter(
+            default=True
+        ).annotate(num_children=Count("strategy"))
         context["default_strategy_json"] = (
             JSONRenderer()
             .render(
                 StrategySerializer(default_strategy_quearyset, many=True).data
             )
             .decode("utf-8")
-        )
-        children_count = {}
-        for i, strategy in enumerate(default_strategy_quearyset):
-            children_count[i] = strategy.strategy_set.count()
-        context["children_count_json"] = (
-            JSONRenderer().render(children_count).decode("utf-8")
         )
         return context
 

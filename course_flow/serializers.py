@@ -243,6 +243,8 @@ class StrategySerializer(serializers.ModelSerializer):
 
     parent_strategy = ParentStrategySerializer(allow_null=True)
 
+    num_children = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Strategy
         fields = [
@@ -258,7 +260,11 @@ class StrategySerializer(serializers.ModelSerializer):
             "outcomestrategy_set",
             "is_original",
             "parent_strategy",
+            "num_children",
         ]
+
+    def get_num_children(self, instance):
+        return instance.strategy_set.count()
 
     def get_nodestrategy_set(self, instance):
         links = instance.nodestrategy_set.all().order_by("rank")
