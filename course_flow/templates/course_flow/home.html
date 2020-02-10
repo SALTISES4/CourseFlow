@@ -1,4 +1,8 @@
-{% load static %}
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block header %}
 <style nonce="{{ request.csp_nonce }}">
   body {
     background-color: #1976bc;
@@ -80,6 +84,20 @@
     margin-right: 0;
   }
 </style>
+{% endblock %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<svg width="500" height="100">
+  <defs>
+    <filter id="selection-shadow">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" />
+    </filter>
+  </defs>
+</svg>
 
 <h1 id="header">Homepage</h1>
 
@@ -211,3 +229,11 @@
   </div>
 </div>
 {% endfor %}
+<!-- -->
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %} {% endblock %}

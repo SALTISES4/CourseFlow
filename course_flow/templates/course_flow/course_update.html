@@ -4,6 +4,8 @@
 <!-- -->
 {% block title %}{% endblock %}
 <!-- -->
+{% block header %}{% endblock %}
+<!-- -->
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
@@ -436,6 +438,7 @@
                     widget = d3.select(this);
                     d3.selectAll(".week").attr("height", 45).attr("y",(d,i)=>d.rank*(45+weekVerticalSpacing)+weekInfoHeight).select("rect").attr("height", 45);
                     d3.selectAll(".week").select(".week-author").remove();
+                    window.scrollTo(0, 0);
                     widget.select("rect").attr("filter","url(#selection-shadow)")
                           .attr('x', 5).attr('y', 4)
                           .attr("width", +widget.attr("width")-10).attr("height", +widget.attr("height")-8);
@@ -749,7 +752,7 @@
         }
 
       function addComponent(componentPk, weekPk){
-        $.post("{% url 'course_flow:add-component-to-course' %}", {componentPk: componentPk, weekPk: weekPk});
+        $.post("{% url 'course_flow:add-component-to-course' %}", {componentPk: componentPk, weekPk: weekPk})
         .done(function(data) {
           if (data.action == "posted") {
             root.currentComponentInstance.snack.MDComponent.show({

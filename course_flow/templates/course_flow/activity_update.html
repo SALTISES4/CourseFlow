@@ -6,6 +6,8 @@
 <!-- -->
 {% block metadescription %} {% endblock %}
 <!-- -->
+{% block header %}{% endblock %}
+<!-- -->
 {% block body %}
 <svg id="container" width="1000" height="1000">
   <defs>
@@ -600,7 +602,7 @@
 
   // following function taken from Mike Bostock's 'Wrapping Long Labels'
 
-                    function wrap(text, width) {
+  function wrap(text, width) {
       text.each(function() {
         var text = d3.select(this),
             words = text.text().split(/\s+/).reverse(),

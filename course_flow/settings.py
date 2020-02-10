@@ -67,6 +67,7 @@ TEMPLATES = [
     }
 ]
 
+LOGIN_URL = "course_flow:login"
 
 LOGIN_REDIRECT_URL = "course_flow:home"
 

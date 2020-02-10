@@ -6,6 +6,8 @@
 <!-- -->
 {% block metadescription %} {% endblock %}
 <!-- -->
+{% block header %}{% endblock %}
+<!-- -->
 {% block body %}
 <svg width="2000" height="10000"></svg>
 {% endblock %}
@@ -19,8 +21,12 @@
   window.addEventListener("load", function() {
     let courseJson = null;
 
-    const componentHeight = 180.0;
-    const componentWidth = 350.0;
+    const innerWidth = $(window).innerWidth();
+    const svgParent = d3.select("svg").style("margin-top", "100px");
+    svgParent.attr("width", innerWidth);
+
+    const componentHeight = innerWidth / 9;
+    const componentWidth = innerWidth / 4.4;
     const componentSpacingVertical = 50.0;
     const componentSpacingHorizontal = 30.0;
     const componentTotalSpacingVertical =
@@ -32,7 +38,7 @@
     const componentMidpointHorizontal = componentWidth / 2.0;
 
     const weekPadding = 30.0;
-    const weekInfoHeight = 140.0;
+    const weekInfoHeight = 200.0;
     const weekVerticalSpacing = 20.0;
 
     const courseInfoHeight = 200.0;
@@ -42,13 +48,28 @@
       componentTotalSpacingHorizontal * 4 -
       componentSpacingHorizontal;
 
-    const svgParent = d3.select("svg").style("margin-top", "100px");
+    const classificationLabels = [
+      "Activity",
+      "Preparation",
+      "Assesment",
+      "Artifact"
+    ];
 
     function fetchThenRenderCourse() {
       d3.json("{% url 'course_flow:course-detail' pk=object.pk %}").then(
         function(json) {
           courseJson = json;
           renderCourse(courseJson, svgParent);
+          svgParent.attr(
+            "height",
+            Math.max(
+              d3
+                .select(".course")
+                .node()
+                .getBBox().height + 20,
+              $(window).innerHeight() - 100
+            )
+          );
         }
       );
     }
@@ -67,6 +88,7 @@
 
       svgCourse
         .append("text")
+        .attr("id", "course-title")
         .style("font-family", "Roboto")
         .attr("class", "course-title")
         .attr("x", "15")
@@ -79,6 +101,7 @@
 
       svgCourse
         .append("text")
+        .attr("id", "course-author")
         .style("font-family", "Roboto")
         .attr("class", "course-author")
         .attr("x", "15")
@@ -91,6 +114,7 @@
 
       svgCourse
         .append("text")
+        .attr("id", "course-description")
         .style("font-family", "Roboto")
         .attr("class", "course-description")
         .attr("x", "15")
@@ -100,6 +124,8 @@
         .style("fill", "white")
         .style("pointer-events", "none")
         .text(jsonData.description);
+
+      {% if user == object.author %}
 
       svgCourse
         .append("g")
@@ -115,6 +141,28 @@
         .attr("width", `${31}`)
         .attr("height", `${31}`)
         .attr("xlink:href", "{% static 'course_flow/img/pencil.svg' %}");
+
+      {% endif %}
+
+
+      for (let i = 0; i < 4; i++) {
+        svgCourse
+          .append("text")
+          .style("font-family", "Roboto")
+          .attr("class", "activity-classification")
+          .attr("text-anchor", "middle")
+          .attr(
+            "x",
+            `${componentTotalSpacingHorizontal * i +
+              componentTotalSpacingHorizontal / 2}`
+          )
+          .attr("y", "160")
+          .attr("dy", 6)
+          .style("font-size", 16)
+          .style("fill", "white")
+          .style("pointer-events", "none")
+          .text(classificationLabels[i]);
+      }
 
       var runningWeekHeight = courseInfoHeight;
 
@@ -196,6 +244,8 @@
         .style("fill", "white")
         .style("pointer-events", "none")
         .text(d => "created by " + d.week.author);
+
+
     }
 
     function pathToNextSiblingRect(s, i) {
@@ -226,11 +276,8 @@
 
       let rects = svg.selectAll(".component")["_groups"][0];
 
-      console.log(rects);
-
       sortedRects = [rects.length];
 
-      console.log(rects.length);
 
       for (let i = 0; i < rects.length; i++) {
         for (let j = 0; j < rects.length; j++) {
@@ -242,7 +289,6 @@
         }
       }
 
-      console.log(sortedRects);
 
       for (let i = 0; i < rects.length - 1; i++) {
         svg
@@ -323,6 +369,45 @@
         .style("fill", "white")
         .style("pointer-events", "none")
         .text(d => d.component.content_object.description);
+
+      components
+        .append("g")
+        .attr("class", function(d,i){
+          if( d3.select(this.parentNode).node().__data__.component
+            .content_type_in_text == "activity"
+            ){
+              return "action-icon view-component";
+            }else{
+              return "";
+            }
+        })
+        .on("mousedown", function(d, i) {
+          if( d3.select(this.parentNode).node().__data__.component
+            .content_type_in_text == "activity"
+            ){
+            window.location.href = "{% url 'course_flow:activity-detail-view' pk=0 %}".replace(
+                "0",
+                d3.select(this.parentNode).node().__data__.component
+                  .content_object.id
+              );
+          }
+        })
+        .append("image")
+        .attr("x", `${componentWidth - 40}`)
+        .attr("y", `${10}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr("xlink:href", "{% static 'course_flow/img/pageview-grey.svg' %}")
+        .style("opacity", function(d, i){
+          if(
+            d3.select(this.parentNode).node().__data__.component
+              .content_type_in_text == "activity"
+          ){
+            return "1";
+          }else{
+            return "0";
+          }
+        });
 
       renderComponentLinks(svg);
     }

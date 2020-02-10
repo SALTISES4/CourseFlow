@@ -589,7 +589,9 @@ function deleteNode(component) {
       });
     });
   if (component.state.isOwnView) {
-    window.location.href = component.props.homeURL;
+    setTimeout(function() {
+      window.location.href = component.props.homeURL;
+    }, 2000);
   }
 }
 

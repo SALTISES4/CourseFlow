@@ -6,6 +6,8 @@
 <!-- -->
 {% block metadescription %} {% endblock %}
 <!-- -->
+{% block header %}{% endblock %}
+<!-- -->
 {% block body %}
 <svg width="2000" height="2000">
   <defs>
@@ -109,7 +111,7 @@
                     .attr('y', `${10/2}`)
                     .attr("width", `${20/2}`)
                     .attr("height", `${20/2}`)
-                    .attr("xlink:href","{% static 'course_flow/img/reorder-option (1).svg' %}");
+                    .attr("xlink:href","{% static 'course_flow/img/reorder-option-blue.svg' %}");
 
 
             function makeDragDropBoardComponent() {
@@ -386,17 +388,46 @@
                 .style('pointer-events', 'none')
                 .text(d=> "created by "+d.component.content_object.author);
 
+
+                // following function taken from Mike Bostock's 'Wrapping Long Labels'
+
+                function wrap(text, width) {
+                    text.each(function() {
+                      var text = d3.select(this),
+                          words = text.text().split(/\s+/).reverse(),
+                          word,
+                          line = [],
+                          lineNumber = 0,
+                          lineHeight = 1.5, // ems
+                          y = text.attr("y")
+                          x = text.attr("x"),
+                          dy = parseFloat(text.attr("dy")),
+                          tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
+                      while (word = words.pop()) {
+                        line.push(word);
+                        tspan.text(line.join(" "));
+                        if (tspan.node().getComputedTextLength() > width) {
+                          line.pop();
+                          tspan.text(line.join(" "));
+                          line = [word];
+                          tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+                        }
+                      }
+                    });
+                  }
+
                 components
                   .append('text')
                   .style('font-family', 'Roboto')
                   .attr('class', 'component-description')
                   .attr('x', "15")
-                  .attr('y', "70")
+                  .attr('y', "5")
                   .attr('dy', 6)
-                  .style('font-size', 14)
+                  .style('font-size', componentHeight/15)
                   .style('fill', "white")
                   .style('pointer-events', 'none')
-                  .text(d => d.component.content_object.description);
+                  .text(d => d.component.content_object.description)
+                  .call(wrap, componentWidth-60);
 
                 components.append("g")
                   .attr("class", "action-icon delete-component")

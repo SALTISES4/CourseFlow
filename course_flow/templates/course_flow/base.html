@@ -56,12 +56,17 @@
       rel="stylesheet"
       href="{% static 'course_flow/css/base_style.css' %}"
     />
+    {% block header %}{% endblock %}
   </head>
   <body id="site">
     <div class="topnav">
       <div class="titlebar">
         <div class="title">
-          <font size="6"><b>CourseFlow</b></font>
+          <font size="6">
+            <b>
+              CourseFlow
+            </b>
+          </font>
         </div>
       </div>
       <div class="menubar">
