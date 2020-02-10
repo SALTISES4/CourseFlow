@@ -35,20 +35,20 @@ from .decorators import ajax_login_required, is_owner, is_parent_owner
 from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.views.generic import DetailView, UpdateView
-from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.db.models import Count
 import json
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from .forms import RegistrationForm
 from django.shortcuts import render, redirect
+from django.db.models import ProtectedError
+from django.core.exceptions import ValidationError
 
 
 def registration_view(request):
@@ -272,7 +272,6 @@ def save_serializer(serializer) -> HttpResponse:
             serializer.save()
             return JsonResponse({"action": "posted"})
         else:
-            print(serializer.errors)
             return JsonResponse({"action": "error"})
     else:
         return JsonResponse({"action": "error"})
@@ -339,7 +338,7 @@ def add_node(request: HttpRequest) -> HttpResponse:
             strategy=strategy, node=duplicate_node(node, request.user), rank=0
         )
 
-    except:
+    except ValidationError:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
@@ -379,7 +378,7 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
             strategy=duplicate_strategy(strategy, request.user),
             rank=0,
         )
-    except:
+    except ValidationError:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
@@ -438,7 +437,7 @@ def add_component_to_course(request: HttpRequest) -> HttpResponse:
             component=duplicate_component(component, request.user),
             rank=0,
         )
-    except:
+    except ValidationError:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
@@ -461,7 +460,7 @@ def add_component_to_program(request: HttpRequest) -> HttpResponse:
             component=duplicate_component(component, request.user),
             rank=0,
         )
-    except:
+    except ValidationError:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
@@ -496,7 +495,7 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
                     link.rank += 1
                     link.save()
                 NodeStrategy.objects.create(strategy=strategy, node=node)
-            except:
+            except ValidationError:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
     elif model == "strategy":
@@ -516,7 +515,7 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
                 StrategyActivity.objects.create(
                     activity=activity, strategy=strategy
                 )
-            except:
+            except ValidationError:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
     elif model == "activity":
@@ -535,7 +534,7 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
                     link.rank += 1
                     link.save()
                 ComponentWeek.objects.create(week=week, component=component)
-            except:
+            except ValidationError:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
     elif model == "assesment":
@@ -572,7 +571,7 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
                     ComponentWeek.objects.create(
                         week=week, component=component
                     )
-            except:
+            except ValidationError:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
     elif model == "artifact":
@@ -591,7 +590,7 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
                     link.rank += 1
                     link.save()
                 ComponentWeek.objects.create(week=week, component=component)
-            except:
+            except ValidationError:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
     elif model == "preparation":
@@ -612,7 +611,7 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
                     link.rank += 1
                     link.save()
                 ComponentWeek.objects.create(week=week, component=component)
-            except:
+            except ValidationError:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
     elif model == "week":
@@ -630,7 +629,7 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
                     link.rank += 1
                     link.save()
                 WeekCourse.objects.create(course=course, week=week)
-            except:
+            except ValidationError:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
     elif model == "course":
@@ -651,7 +650,7 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
                 ComponentProgram.objects.create(
                     program=program, component=component
                 )
-            except:
+            except ValidationError:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
     return save_serializer(serializer)
@@ -680,7 +679,7 @@ def dialog_form_delete(request: HttpRequest) -> HttpResponse:
 
     try:
         model_lookups[model].objects.get(id=id).delete()
-    except:
+    except ProtectedError:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
@@ -698,7 +697,7 @@ def dialog_form_remove(request: HttpRequest) -> HttpResponse:
             ComponentProgram.objects.get(id=link_id).delete()
         else:
             ComponentWeek.objects.get(id=link_id).delete()
-    except:
+    except ProtectedError:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})

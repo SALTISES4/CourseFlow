@@ -28,9 +28,9 @@
           svgParent.attr("width", innerWidth);
 
           const componentHeight = innerWidth/8;
-          const componentWidth = innerWidth/2.2;
+          const componentWidth = innerWidth/2.3;
           const componentSpacingVertical = 50.0;
-          const componentSpacingHorizontal = 70.0;
+          const componentSpacingHorizontal = 90.0;
           const componentTotalSpacingVertical = componentHeight + componentSpacingVertical;
           const componentTotalSpacingHorizontal = componentWidth + componentSpacingHorizontal;
 
@@ -206,7 +206,7 @@
               .attr('x', "15")
               .attr('y', "25")
               .attr('dy', 6)
-              .style('font-size', componentHeight/12)
+              .style('font-size', componentHeight/10)
               .style('fill', "white")
               .style('pointer-events', 'none')
               .text(d => d.component.content_object.title);

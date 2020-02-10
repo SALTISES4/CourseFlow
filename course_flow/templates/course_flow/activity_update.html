@@ -73,8 +73,6 @@
 
             function renderNodeBoard(parent, jsonData){
 
-              console.log(jsonData);
-
             const boardNodes = parent.selectAll('.default-strategy').data(jsonData).enter()
                               .append("svg").attr("class",'default-strategy')
                               .attr("x", `${nodeTotalSpacingHorizontal*3+50}`)
@@ -177,7 +175,6 @@
 
           let repositionBoard = function(){
             let displacement = $(window).scrollTop();
-            console.log(d3.selectAll(".default-strategy"));
             d3.selectAll('.default-strategy').attr("y", (d,i) => `${nodeTotalSpacingVertical/3*i+50+displacement}`);
           }
 
@@ -598,7 +595,7 @@
                     .style('fill', "white")
                     .style('pointer-events', 'none')
                     .text(d => d.node.description)
-                    .call(wrap, nodeWidth-50);
+                    .call(wrap, nodeWidth-60);
 
   // following function taken from Mike Bostock's 'Wrapping Long Labels'
 
@@ -609,7 +606,7 @@
             word,
             line = [],
             lineNumber = 0,
-            lineHeight = 1.1, // ems
+            lineHeight = 1.5, // ems
             y = text.attr("y")
             x = text.attr("x"),
             dy = parseFloat(text.attr("dy")),

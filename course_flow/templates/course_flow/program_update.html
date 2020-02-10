@@ -31,8 +31,6 @@
           let programJson = null;
           const componentBoardJson = {{ owned_component_json|safe }};
 
-          console.log(programJson);
-
           root.injectDialogForm(
             "{% url 'course_flow:dialog-form-create' %}",
             "{% url 'course_flow:dialog-form-update' %}",
@@ -320,11 +318,7 @@
 
               let rects = svg.selectAll('.component')['_groups'][0];
 
-              console.log(rects);
-
               sortedRects = [rects.length];
-
-              console.log(rects.length)
 
               for(let i=0; i<rects.length; i++){
                   for(let j=0; j<rects.length; j++){
@@ -335,8 +329,6 @@
                   else if(rects[j].__data__.rank>rects.length-1) sortedRects[rects.length-1]=rects[j];
                 }
               }
-
-              console.log(sortedRects);
 
               for(let i=0; i<rects.length-1; i++){
                   svg.append("path")
@@ -371,7 +363,7 @@
               .attr('x', "15")
               .attr('y', "20")
               .attr('dy', 6)
-              .style('font-size', componentHeight/12)
+              .style('font-size', componentHeight/10)
               .style('fill', "white")
               .style('pointer-events', 'none')
               .text(d => d.component.content_object.title);
@@ -383,7 +375,7 @@
                 .attr('x', "15")
                 .attr('y', "40")
                 .attr('dy', 6)
-                .style('font-size', componentHeight/17)
+                .style('font-size', componentHeight/16)
                 .style('fill', 'white')
                 .style('pointer-events', 'none')
                 .text(d=> "created by "+d.component.content_object.author);
@@ -421,9 +413,9 @@
                   .style('font-family', 'Roboto')
                   .attr('class', 'component-description')
                   .attr('x', "15")
-                  .attr('y', "10")
+                  .attr('y', "5")
                   .attr('dy', 6)
-                  .style('font-size', componentHeight/16)
+                  .style('font-size', componentHeight/14)
                   .style('fill', "white")
                   .style('pointer-events', 'none')
                   .text(d => d.component.content_object.description)
