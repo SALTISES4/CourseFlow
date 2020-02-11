@@ -23,6 +23,13 @@
 
           window.addEventListener("load", function() {
 
+            userFeedback.injectDialog(
+              "{% trans 'Let us know how we can improve your experience!' %}",
+              "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
+              "{% trans 'Thanks for your feedback!' %}",
+              "{% trans 'Sorry, please try again later!' %}"
+            );
+
             let activityJson = null;
 
             const svgParent = d3.select("svg").style("margin-top", "100px");
