@@ -6,5 +6,6 @@ app_name = "test_course_flow"
 urlpatterns = [
     path(
         "", include((urls.urlpatterns, urls.app_name), namespace="course_flow")
-    )
+    ),
+    path("feedback/", include("user_feedback.urls")),
 ]

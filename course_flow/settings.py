@@ -27,8 +27,13 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+ADMINS = [("John", "john@example.com"), ("Mary", "mary@example.com")]
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 INSTALLED_APPS = [
     "django_lti_tool_provider",
+    "user_feedback",
     "course_flow.apps.CourseFlowConfig",
     "rest_framework",
     "django.contrib.admin",

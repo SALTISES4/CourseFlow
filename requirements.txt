@@ -24,3 +24,4 @@ webencodings==0.5.1
 zipp==0.6.0
 
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
+-e git+https://github.com/aahilgert/UserFeedback@master#egg=user_feedback
