@@ -78,6 +78,15 @@
       .topdropwrapper {
         padding-top: 3px;
       }
+      #username {
+        display: inline;
+        right: 40px;
+        position: absolute;
+      }
+      #username-container {
+        position: absolute;
+        right: 300px;
+      }
     </style>
     {% block header %}{% endblock %}
   </head>
@@ -105,6 +114,11 @@
                 id="home-icon"
                 src="{% static 'course_flow/img/home-24px.svg' %}"
             /></a>
+          </button>
+        </div>
+        <div id="username-container" class="topdropwrapper">
+          <button id="username" class="topdropbutton">
+            {{ user.username }}
           </button>
         </div>
         <div class="topdropwrapper">

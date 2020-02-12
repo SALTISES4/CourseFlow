@@ -24,6 +24,10 @@ class Outcome(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = "Outcome"
+        verbose_name_plural = "Outcomes"
+
 
 class Node(models.Model):
     title = models.CharField(max_length=30)
@@ -111,6 +115,10 @@ class OutcomeNode(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Outcome-Node Link"
+        verbose_name_plural = "Outcome-Node Links"
+
 
 class Strategy(models.Model):
     title = models.CharField(max_length=30)
@@ -135,6 +143,10 @@ class Strategy(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = "Strategy"
+        verbose_name_plural = "Strategies"
+
 
 class OutcomeStrategy(models.Model):
     strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
@@ -142,12 +154,20 @@ class OutcomeStrategy(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Outcome-Strategy Link"
+        verbose_name_plural = "Outcome-Strategy Links"
+
 
 class NodeStrategy(models.Model):
     strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Node-Strategy Link"
+        verbose_name_plural = "Node-Strategy Links"
 
 
 class Activity(models.Model):
@@ -175,6 +195,10 @@ class Activity(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = "Activity"
+        verbose_name_plural = "Activities"
+
 
 class OutcomeActivity(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
@@ -182,12 +206,20 @@ class OutcomeActivity(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Outcome-Activity Link"
+        verbose_name_plural = "Outcome-Activity Links"
+
 
 class StrategyActivity(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Strategy-Activity Link"
+        verbose_name_plural = "Strategy-Activity Links"
 
 
 class Preparation(models.Model):
@@ -218,6 +250,10 @@ class OutcomePreparation(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Outcome-Preparation Link"
+        verbose_name_plural = "Outcome-Preparation Links"
+
 
 class Artifact(models.Model):
     title = models.CharField(max_length=30)
@@ -246,6 +282,10 @@ class OutcomeArtifact(models.Model):
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Outcome-Artifact Link"
+        verbose_name_plural = "Outcome-Artifact Links"
 
 
 class Assesment(models.Model):
@@ -276,6 +316,10 @@ class OutcomeAssesment(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Outcome-Assesment Link"
+        verbose_name_plural = "Outcome-Assesment Links"
+
 
 class Week(models.Model):
     title = models.CharField(max_length=30)
@@ -302,6 +346,10 @@ class OutcomeWeek(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Outcome-Week Link"
+        verbose_name_plural = "Outcome-Week Links"
+
 
 class Component(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -321,6 +369,10 @@ class ComponentWeek(models.Model):
     component = models.ForeignKey(Component, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Component-Week Link"
+        verbose_name_plural = "Component-Week Links"
 
 
 class Discipline(models.Model):
@@ -372,12 +424,20 @@ class WeekCourse(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Week-Course Link"
+        verbose_name_plural = "Week-Course Links"
+
 
 class OutcomeCourse(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Outcome-Course Link"
+        verbose_name_plural = "Outcome-Course Links"
 
 
 class Program(models.Model):
@@ -407,12 +467,20 @@ class ComponentProgram(models.Model):
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Component-Program Link"
+        verbose_name_plural = "Component-Program Links"
+
 
 class OutcomeProgram(models.Model):
     program = models.ForeignKey(Program, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Outcome-Program Link"
+        verbose_name_plural = "Outcome-Program Links"
 
 
 @receiver(pre_delete, sender=NodeStrategy)

@@ -72,9 +72,12 @@ def registration_view(request):
 @login_required
 def home_view(request):
     context = {
-        "programs": Program.objects.all(),
-        "courses": Course.objects.all(),
-        "activities": Activity.objects.all(),
+        "programs": Program.objects.exclude(author=request.user),
+        "courses": Course.objects.exclude(author=request.user),
+        "activities": Activity.objects.exclude(author=request.user),
+        "owned_programs": Program.objects.filter(author=request.user),
+        "owned_courses": Course.objects.filter(author=request.user),
+        "owned_activities": Activity.objects.filter(author=request.user),
     }
     return render(request, "course_flow/home.html", context)
 

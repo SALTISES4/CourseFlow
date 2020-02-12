@@ -1,4 +1,5 @@
 from django.urls import include, path
+from django.contrib import admin
 from . import urls
 
 app_name = "test_course_flow"
@@ -10,4 +11,5 @@ urlpatterns = [
     path(
         "feedback/", include("user_feedback.urls", namespace="user_feedback")
     ),
+    path("admin/", admin.site.urls),
 ]
