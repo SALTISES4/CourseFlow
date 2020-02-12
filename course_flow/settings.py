@@ -34,7 +34,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 INSTALLED_APPS = [
     "django_lti_tool_provider",
-    "user_feedback",
+    "user_feedback.apps.UserFeedbackConfig",
     "course_flow.apps.CourseFlowConfig",
     "rest_framework",
     "django.contrib.admin",

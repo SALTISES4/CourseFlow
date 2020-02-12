@@ -152,6 +152,8 @@
     </div>
   </div>
 </div>
+{% empty %}
+<p>{% trans "You haven't created a program yet" %}</p>
 {% endfor %}
 <!-- -->
 <h2>
@@ -200,6 +202,8 @@
     </div>
   </div>
 </div>
+{% empty %}
+<p>{% trans "You haven't created a course yet." %}</p>
 {% endfor %}
 <!-- -->
 <h2>
@@ -248,9 +252,11 @@
     </div>
   </div>
 </div>
+{% empty %}
+<p>{% trans "You haven't created an activity yet." %}</p>
 {% endfor %}
 <h2>
-  Programs
+  All Programs
 </h2>
 <br />
 {% for program in programs %}
@@ -290,10 +296,12 @@
     </div>
   </div>
 </div>
+{% empty %}
+<p>{% trans "Nobody else has created a program yet." %}</p>
 {% endfor %}
 <!-- -->
 <h2>
-  Courses
+  All Courses
 </h2>
 <br />
 {% for course in courses %}
@@ -333,10 +341,12 @@
     </div>
   </div>
 </div>
+{% empty %}
+<p>{% trans "Nobody else has created a course yet." %}</p>
 {% endfor %}
 <!-- -->
 <h2>
-  Activities
+  All Activities
 </h2>
 <br />
 {% for activity in activities %}
@@ -376,6 +386,8 @@
     </div>
   </div>
 </div>
+{% empty %}
+<p>{% trans "Nobody else has created an activity yet." %}</p>
 {% endfor %}
 
 <!-- -->
