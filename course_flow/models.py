@@ -309,7 +309,11 @@ class Component(models.Model):
     content_object = GenericForeignKey("content_type", "object_id")
 
     def __str__(self):
-        return self.content_object
+        return (
+            self.content_type.model_class()
+            .objects.get(id=self.object_id)
+            .title
+        )
 
 
 class ComponentWeek(models.Model):
