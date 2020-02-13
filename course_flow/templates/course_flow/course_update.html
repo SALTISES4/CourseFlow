@@ -100,14 +100,11 @@
 
               boardComponents
                 .append('text')
-                .style('font-family', 'Roboto')
                 .attr('class', 'component-title')
                 .attr('x', "15")
                 .attr('y', "20")
                 .attr('dy', 6)
                 .style('font-size', componentWidth/20)
-                .style('fill', "white")
-                .style('pointer-events', 'none')
                 .text(d => d.content_object.title);
 
                   const dragDropIcons = boardComponents
@@ -209,40 +206,28 @@
               svgCourse
                 .append('text')
                 .attr('id','course-title')
-                .style('font-family', 'Roboto')
                 .attr('class', 'course-title')
                 .attr('x', "15")
                 .attr('y', "20")
                 .attr('dy', 6)
-                .style('font-size', 18)
-                .style('fill', "white")
-                .style('pointer-events', 'none')
                 .text(jsonData.title);
 
               svgCourse
                 .append('text')
                 .attr('id','course-author')
-                .style('font-family', 'Roboto')
                 .attr('class', 'course-author')
                 .attr('x', "15")
                 .attr('y', "40")
                 .attr('dy', 6)
-                .style('font-size', 12)
-                .style('fill', 'white')
-                .style('pointer-events', 'none')
                 .text("created by "+jsonData.author);
 
               svgCourse
                 .append('text')
                 .attr('id','course-description')
-                .style('font-family', 'Roboto')
                 .attr('class', 'course-description')
                 .attr('x', "15")
                 .attr('y', "70")
                 .attr('dy', 6)
-                .style('font-size', 14)
-                .style('fill', "white")
-                .style('pointer-events', 'none')
                 .text(jsonData.description);
 
               svgCourse.append("g")
@@ -305,15 +290,11 @@
                 for (let i=0; i<4; i++) {
                   svgCourse
                     .append('text')
-                    .style('font-family', 'Roboto')
-                    .attr('class','activity-classification')
+                    .attr('class','course-classification')
                     .attr('text-anchor',"middle")
                     .attr('x', `${componentTotalSpacingHorizontal*i+componentTotalSpacingHorizontal/2}`)
                     .attr('y', "160")
                     .attr('dy', 6)
-                    .style('font-size', 16)
-                    .style('fill', "white")
-                    .style('pointer-events', 'none')
                     .text(classificationLabels[i]);
                 }
 
@@ -349,26 +330,18 @@
 
                     weeks
                       .append('text')
-                      .style('font-family', 'Roboto')
                       .attr('class', 'week-title')
                       .attr('x', "15")
                       .attr('y', "20")
                       .attr('dy', 6)
-                      .style('font-size', 18)
-                      .style('fill', "white")
-                      .style('pointer-events', 'none')
                       .text(d => d.week.title);
 
                     weeks
                       .append('text')
-                      .style('font-family', 'Roboto')
                       .attr('class', 'week-author')
                       .attr('x', "15")
                       .attr('y', "40")
                       .attr('dy', 6)
-                      .style('font-size', 12)
-                      .style('fill', 'white')
-                      .style('pointer-events', 'none')
                       .text(d=> "created by "+d.week.author);
 
                   weeks.append("g")
@@ -554,26 +527,20 @@
 
             components
               .append('text')
-              .style('font-family', 'Roboto')
               .attr('class', 'component-title')
               .attr('x', "15")
               .attr('y', "20")
               .attr('dy', 6)
               .style('font-size', componentHeight/12)
-              .style('fill', "white")
-              .style('pointer-events', 'none')
               .text(d => d.component.content_object.title);
 
               components
                 .append('text')
-                .style('font-family', 'Roboto')
                 .attr('class', 'component-author')
                 .attr('x', "15")
                 .attr('y', "35")
                 .attr('dy', 6)
                 .style('font-size', componentHeight/18)
-                .style('fill', 'white')
-                .style('pointer-events', 'none')
                 .text(d=> "created by "+d.component.content_object.author);
 
                   // following function taken from Mike Bostock's 'Wrapping Long Labels'
@@ -605,14 +572,11 @@
 
                 components
                   .append('text')
-                  .style('font-family', 'Roboto')
                   .attr('class', 'component-description')
                   .attr('x', "15")
                   .attr('y', "5")
                   .attr('dy', 6)
                   .style('font-size', componentHeight/16)
-                  .style('fill', "white")
-                  .style('pointer-events', 'none')
                   .text(d => d.component.content_object.description)
                   .call(wrap, componentWidth-60);
 

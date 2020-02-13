@@ -79,37 +79,25 @@
               program
                 .append('text')
                 .attr('id','program-title')
-                .style('font-family', 'Roboto')
                 .attr('x', "15")
                 .attr('y', "20")
                 .attr('dy', 6)
-                .style('font-size', 18)
-                .style('fill', "white")
-                .style('pointer-events', 'none')
                 .text(programJson.title);
 
               program
                 .append('text')
                 .attr('id','program-author')
-                .style('font-family', 'Roboto')
                 .attr('x', "15")
                 .attr('y', "40")
                 .attr('dy', 6)
-                .style('font-size', 12)
-                .style('fill', 'white')
-                .style('pointer-events', 'none')
                 .text("created by "+programJson.author);
 
               program
                 .append('text')
                 .attr('id','program-description')
-                .style('font-family', 'Roboto')
                 .attr('x', "15")
                 .attr('y', "70")
                 .attr('dy', 6)
-                .style('font-size', 14)
-                .style('fill', "white")
-                .style('pointer-events', 'none')
                 .text(programJson.description);
 
               {% if user == object.author %}
@@ -133,15 +121,11 @@
                 for (let i=0; i<2; i++) {
                   program
                     .append('text')
-                    .style('font-family', 'Roboto')
-                    .attr('class','activity-classification')
+                    .attr('class','program-classification')
                     .attr('text-anchor',"middle")
                     .attr('x', `${componentTotalSpacingHorizontal*i+componentTotalSpacingHorizontal/2}`)
                     .attr('y', "160")
                     .attr('dy', 6)
-                    .style('font-size', 16)
-                    .style('fill', "white")
-                    .style('pointer-events', 'none')
                     .text(classificationLabels[i]);
                 }
 
@@ -209,26 +193,20 @@
 
             components
               .append('text')
-              .style('font-family', 'Roboto')
               .attr('class', 'component-title')
               .attr('x', "15")
               .attr('y', "25")
               .attr('dy', 6)
               .style('font-size', componentHeight/10)
-              .style('fill', "white")
-              .style('pointer-events', 'none')
               .text(d => d.component.content_object.title);
 
               components
                 .append('text')
-                .style('font-family', 'Roboto')
                 .attr('class', 'component-author')
                 .attr('x', "15")
                 .attr('y', "45")
                 .attr('dy', 6)
                 .style('font-size', componentHeight/16)
-                .style('fill', 'white')
-                .style('pointer-events', 'none')
                 .text(d=> "created by "+d.component.content_object.author);
 
                 function wrap(text, width) {
@@ -258,14 +236,11 @@
 
                 components
                   .append('text')
-                  .style('font-family', 'Roboto')
                   .attr('class', 'component-description')
                   .attr('x', "15")
                   .attr('y', "5")
                   .attr('dy', 6)
                   .style('font-size', componentHeight/14)
-                  .style('fill', "white")
-                  .style('pointer-events', 'none')
                   .text(d => d.component.content_object.description)
                   .call(wrap, componentWidth-80);
 

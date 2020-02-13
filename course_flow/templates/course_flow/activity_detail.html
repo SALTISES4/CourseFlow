@@ -83,37 +83,25 @@
                 svgActivity
                   .append('text')
                   .attr('id','activity-title')
-                  .style('font-family', 'Roboto')
                   .attr('x', "15")
                   .attr('y', "20")
                   .attr('dy', 6)
-                  .style('font-size', 18)
-                  .style('fill', "white")
-                  .style('pointer-events', 'none')
                   .text(activityData.title);
 
                 svgActivity
                   .append('text')
-                  .style('font-family', 'Roboto')
                   .attr('id','activity-author')
                   .attr('x', "15")
                   .attr('y', "40")
                   .attr('dy', 6)
-                  .style('font-size', 12)
-                  .style('fill', 'white')
-                  .style('pointer-events', 'none')
                   .text("created by "+activityData.author);
 
                 svgActivity
                   .append('text')
-                  .style('font-family', 'Roboto')
                   .attr('id','activity-description')
                   .attr('x', "15")
                   .attr('y', "70")
                   .attr('dy', 6)
-                  .style('font-size', 14)
-                  .style('fill', "white")
-                  .style('pointer-events', 'none')
                   .text(activityData.description);
 
                   {% if user == object.author %}
@@ -136,15 +124,11 @@
                   for (let i=0; i<3; i++) {
                     svgActivity
                       .append('text')
-                      .style('font-family', 'Roboto')
                       .attr('class','activity-classification')
                       .attr('text-anchor',"middle")
                       .attr('x', `${nodeTotalSpacingHorizontal*i+nodeTotalSpacingHorizontal/2}`)
                       .attr('y', "160")
                       .attr('dy', 6)
-                      .style('font-size', 16)
-                      .style('fill', "white")
-                      .style('pointer-events', 'none')
                       .text(classificationLabels[i]);
                   }
 
@@ -180,38 +164,26 @@
 
                       strategies
                         .append('text')
-                        .style('font-family', 'Roboto')
                         .attr('class', 'strategy-title')
                         .attr('x', "15")
                         .attr('y', "20")
                         .attr('dy', 6)
-                        .style('font-size', 18)
-                        .style('fill', "white")
-                        .style('pointer-events', 'none')
                         .text(d => d.strategy.title);
 
                       strategies
                         .append('text')
-                        .style('font-family', 'Roboto')
                         .attr('class', 'strategy-author')
                         .attr('x', "15")
                         .attr('y', "40")
                         .attr('dy', 6)
-                        .style('font-size', 12)
-                        .style('fill', 'white')
-                        .style('pointer-events', 'none')
                         .text(d=> "created by "+d.strategy.author);
 
                       strategies
                         .append('text')
-                        .style('font-family', 'Roboto')
                         .attr('class', 'strategy-description')
                         .attr('x', "15")
                         .attr('y', "70")
                         .attr('dy', 6)
-                        .style('font-size', 14)
-                        .style('fill', "white")
-                        .style('pointer-events', 'none')
                         .text(d => d.strategy.description);
 
 
@@ -274,38 +246,29 @@
 
               nodes
                 .append('text')
-                .style('font-family', 'Roboto')
                 .attr('class', 'node-title')
                 .attr('x', "15")
                 .attr('y', "20")
                 .attr('dy', 6)
                 .style('font-size', nodeWidth/25)
-                .style('fill', "white")
-                .style('pointer-events', 'none')
                 .text(d => d.node.title);
 
                 nodes
                   .append('text')
-                  .style('font-family', 'Roboto')
                   .attr('class', 'node-author')
                   .attr('x', "15")
                   .attr('y', "40")
                   .attr('dy', 6)
                   .style('font-size', 12)
-                  .style('fill', 'white')
-                  .style('pointer-events', 'none')
                   .text(d=> "created by "+d.node.author);
 
                   nodes
                     .append('text')
-                    .style('font-family', 'Roboto')
                     .attr('class', 'node-description')
                     .attr('x', "15")
                     .attr('y', "0")
                     .attr('dy', 6)
                     .style('font-size', nodeWidth/30)
-                    .style('fill', "white")
-                    .style('pointer-events', 'none')
                     .text(d => d.node.description)
                     .call(wrap, nodeWidth-40);
 
