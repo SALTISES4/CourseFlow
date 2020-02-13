@@ -134,12 +134,24 @@
         })
         .append("image")
         .attr("x", `${weekWidth - 40}`)
-        .attr("y", `${15}`)
+        .attr("y", `${55}`)
         .attr("width", `${31}`)
         .attr("height", `${31}`)
         .attr("xlink:href", "{% static 'course_flow/img/pencil.svg' %}");
 
       {% endif %}
+
+      svgCourse
+        .append("g")
+        .attr("class", "action-icon")
+        .attr("id", "clone-course")
+        .on("click", cloneCourse)
+        .append("image")
+        .attr("x", `${weekWidth - 40}`)
+        .attr("y", `${15}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr("xlink:href", "{% static 'course_flow/img/file_copy-24px.svg' %}");
 
 
       for (let i = 0; i < 4; i++) {
@@ -418,6 +430,33 @@
         });
 
       renderComponentLinks(svg);
+    }
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+            }
+        }
+    });
+
+    function csrfSafeMethod(method) {
+
+        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+    }
+    function getCsrfToken() {
+        return document
+          .getElementsByName("csrfmiddlewaretoken")[0]
+          .getAttribute("value");
+      }
+
+    function cloneCourse(){
+      $.post("{% url 'course_flow:course-duplication' %}", {coursePk: courseJson.id})
+      .done(function(data) {
+      if (data.action == "posted") {
+        window.location.href = "{% url 'course_flow:course-update' pk=0 %}".replace(0, data.clone_pk);
+      }
+    });
     }
   });
 </script>

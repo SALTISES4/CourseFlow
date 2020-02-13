@@ -387,7 +387,39 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
+def duplicate_activity(activity: Activity, author: User) -> Activity:
+    new_activity = Activity.objects.create(
+        title=activity.title,
+        description=activity.description,
+        author=author,
+        is_original=False,
+        parent_activity=activity,
+    )
+    for strategy in activity.strategies.all():
+        StrategyActivity.objects.create(
+            activity=new_activity,
+            strategy=duplicate_strategy(strategy, author),
+            rank=StrategyActivity.objects.get(
+                activity=activity, strategy=strategy
+            ).rank,
+        )
+    return new_activity
+
+
+@require_POST
+@ajax_login_required
+def duplicate_activity_ajax(request: HttpRequest) -> HttpResponse:
+    activity = Activity.objects.get(pk=request.POST.get("activityPk"))
+    try:
+        clone = duplicate_activity(activity, request.user)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+
+
 def duplicate_component(component: Component, author: User) -> Component:
+    print("comp:", component)
     if type(component.content_object) == Artifact:
         new_component = Component.objects.create(
             content_object=Artifact.objects.create(
@@ -418,9 +450,57 @@ def duplicate_component(component: Component, author: User) -> Component:
                 parent_assesment=component.content_object,
             )
         )
-    else:
-        return component
+    elif type(component.content_object) == Activity:
+        new_component = Component.objects.create(
+            content_object=duplicate_activity(component.content_object, author)
+        )
+    print("new_comp:", new_component)
     return new_component
+
+
+def duplicate_week(week: Week, author: User) -> Week:
+    new_week = Week.objects.create(title=week.title, author=author)
+    print("new_week:", new_week)
+    for component in week.components.all():
+        ComponentWeek.objects.create(
+            week=new_week,
+            component=duplicate_component(component, author),
+            rank=ComponentWeek.objects.get(
+                component=component, week=week
+            ).rank,
+        )
+    return new_week
+
+
+def duplicate_course(course: Course, author: User) -> Course:
+    new_course = Course.objects.create(
+        title=course.title,
+        description=course.description,
+        author=author,
+        is_original=False,
+        parent_course=course,
+    )
+    print(new_course)
+    for week in course.weeks.all():
+        print("link")
+        WeekCourse.objects.create(
+            course=new_course,
+            week=duplicate_week(week, author),
+            rank=WeekCourse.objects.get(week=week, course=course).rank,
+        )
+    return new_course
+
+
+@require_POST
+@ajax_login_required
+def duplicate_course_ajax(request: HttpRequest) -> HttpResponse:
+    course = Course.objects.get(pk=request.POST.get("coursePk"))
+    try:
+        clone = duplicate_course(course, request.user)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
 
 
 @require_POST
@@ -435,11 +515,7 @@ def add_component_to_course(request: HttpRequest) -> HttpResponse:
             link.rank += 1
             link.save()
 
-        ComponentWeek.objects.create(
-            week=week,
-            component=duplicate_component(component, request.user),
-            rank=0,
-        )
+        ComponentWeek.objects.create(week=week, component=component, rank=0)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -459,9 +535,7 @@ def add_component_to_program(request: HttpRequest) -> HttpResponse:
             link.save()
 
         ComponentProgram.objects.create(
-            program=program,
-            component=duplicate_component(component, request.user),
-            rank=0,
+            program=program, component=component, rank=0
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
