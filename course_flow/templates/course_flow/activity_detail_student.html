@@ -27,6 +27,12 @@
       "{% url 'user_feedback:post' %}"
     );
 
+    root.injectStudentCompletionStatusDialog(
+      "{% url 'course_flow:switch_node_completion_status' %}",
+      "{% trans 'posting worked' %}",
+      "{% trans 'posting didnt work' %}"
+    );
+
     let activityJson = null;
 
     const svgParent = d3.select("svg").style("margin-top", "100px");
@@ -385,6 +391,25 @@
         .attr("height", `${31}`)
         .attr("xlink:href", "{% static 'course_flow/img/classroom.svg' %}");
 
+      nodes
+        .append("g")
+        .attr("class", "action-icon update-node")
+        .on("mousedown", function(d, i) {
+          root.currentComponentInstance.setState({
+            object: d3.select(this.parentNode).node().__data__.node,
+            isCompleted: getCompletionStatus(
+              d3.select(this.parentNode).node().__data__.node.id
+            )
+          });
+          root.currentComponentInstance.dlg.MDComponent.show();
+        })
+        .append("image")
+        .attr("x", `${nodeWidth - 40}`)
+        .attr("y", `${nodeHeight - 90}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr("xlink:href", "{% static 'course_flow/img/info-24px.svg' %}");
+
       renderNodeLinks(svg);
     }
 
@@ -405,15 +430,12 @@
         .getAttribute("value");
     }
 
-    function cloneActivity() {
-      $.post("{% url 'course_flow:activity-duplication' %}", {
-        activityPk: activityJson.id
+    function getCompletionStatus(nodePk) {
+      return $.get("{% url 'course_flow:get-node-completion-status' %}", {
+        nodePk: nodePk
       }).done(function(data) {
-        if (data.action == "posted") {
-          window.location.href = "{% url 'course_flow:activity-update' pk=0 %}".replace(
-            0,
-            data.clone_pk
-          );
+        if (data.action == "got") {
+          return data.completion_status;
         }
       });
     }

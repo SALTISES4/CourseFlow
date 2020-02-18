@@ -27,6 +27,12 @@
       "{% url 'user_feedback:post' %}"
     );
 
+    root.injectStudentCompletionStatusDialog(
+      "{% url 'course_flow:switch_component_completion_status' %}",
+      "{% trans 'posting worked' %}",
+      "{% trans 'posting didnt work' %}"
+    );
+
     let courseJson = null;
 
     const innerWidth = $(window).innerWidth();
@@ -383,11 +389,20 @@
             d3.select(this.parentNode).node().__data__.component
               .content_type_in_text == "activity"
           ) {
-            window.location.href = "{% url 'course_flow:activity-detail-view' pk=0 %}".replace(
+            window.location.href = "{% url 'course_flow:student-activity-detail-view' pk=0 %}".replace(
               "0",
               d3.select(this.parentNode).node().__data__.component
                 .content_object.id
             );
+          } else {
+            root.currentComponentInstance.setState({
+              object: d3.select(this.parentNode).node().__data__.component,
+              isComponent: true,
+              isCompleted: getCompletionStatus(
+                d3.select(this.parentNode).node().__data__.component.id
+              )
+            });
+            root.currentComponentInstance.dlg.MDComponent.show();
           }
         })
         .append("image")
@@ -395,15 +410,14 @@
         .attr("y", `${10}`)
         .attr("width", `${31}`)
         .attr("height", `${31}`)
-        .attr("xlink:href", "{% static 'course_flow/img/pageview-grey.svg' %}")
-        .style("opacity", function(d, i) {
+        .attr("xlink:href", function(d, i) {
           if (
             d3.select(this.parentNode).node().__data__.component
               .content_type_in_text == "activity"
           ) {
-            return "1";
+            return "{% static 'course_flow/img/pageview-grey.svg' %}";
           } else {
-            return "0";
+            return "{% static 'course_flow/img/info-24px.svg' %}";
           }
         });
 
@@ -427,15 +441,12 @@
         .getAttribute("value");
     }
 
-    function cloneCourse() {
-      $.post("{% url 'course_flow:course-duplication' %}", {
-        coursePk: courseJson.id
+    function getCompletionStatus(componentPk) {
+      return $.get("{% url 'course_flow:get-component-completion-status' %}", {
+        componentPk: componentPk
       }).done(function(data) {
-        if (data.action == "posted") {
-          window.location.href = "{% url 'course_flow:course-update' pk=0 %}".replace(
-            0,
-            data.clone_pk
-          );
+        if (data.action == "got") {
+          return data.completion_status;
         }
       });
     }

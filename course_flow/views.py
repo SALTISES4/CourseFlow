@@ -534,7 +534,7 @@ def link_to_group(request: HttpRequest) -> HttpResponse:
                 activity = component.content_object
                 activity.static = True
                 activity.save()
-                for stategy in activity.strategies.all():
+                for strategy in activity.strategies.all():
                     for node in strategy.nodes.all():
                         for student in students:
                             NodeCompletionStatus.objects.create(
@@ -549,7 +549,7 @@ def link_to_group(request: HttpRequest) -> HttpResponse:
 @require_POST
 @ajax_login_required
 def switch_node_completion_status(request: HttpRequest) -> HttpResponse:
-    node = Node.objects.get(pk=request.POST.get("nodePk"))
+    node = Node.objects.get(pk=request.POST.get("pk"))
 
     try:
         status = NodeCompletionStatus.objects.get(
@@ -565,8 +565,8 @@ def switch_node_completion_status(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
-def switch_component_completion_status(reqeust: HttpRequest) -> HttpResponse:
-    component = Component.objects.get(pk=request.POST.get("componentPk"))
+def switch_component_completion_status(request: HttpRequest) -> HttpResponse:
+    component = Component.objects.get(pk=request.POST.get("pk"))
 
     try:
         status = ComponentCompletionStatus.objects.get(
@@ -580,37 +580,37 @@ def switch_component_completion_status(reqeust: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-@require_POST
 @ajax_login_required
-def get_node_completion_status(reqeust: HttpRequest) -> HttpResponse:
-    node = Node.objects.get(pk=request.POST.get("nodePk"))
+def get_node_completion_status(request: HttpRequest) -> HttpResponse:
 
     try:
         status = NodeCompletionStatus.objects.get(
-            node=node, student=request.user
+            node=Node.objects.get(pk=request.POST.get("nodePk")),
+            student=request.user,
         )
     except:
         return JsonResponse({"action": "error"})
 
     return JsonResponse(
-        {"action": "posted", "completion_status": status.is_completed}
+        {"action": "got", "completion_status": status.is_completed}
     )
 
 
-@require_POST
 @ajax_login_required
-def get_component_completion_status(reqeust: HttpRequest) -> HttpResponse:
-    component = Component.objects.get(pk=request.POST.get("componentPk"))
+def get_component_completion_status(request: HttpRequest) -> HttpResponse:
 
     try:
         status = ComponentCompletionStatus.objects.get(
-            component=component, student=request.user
+            component=Component.objects.get(
+                pk=request.POST.get("componentPk")
+            ),
+            student=request.user,
         )
     except:
         return JsonResponse({"action": "error"})
 
     return JsonResponse(
-        {"action": "posted", "completion_status": status.is_completed}
+        {"action": "got", "completion_status": status.is_completed}
     )
 
 

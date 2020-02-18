@@ -527,6 +527,7 @@ export class StudentCompletionStatusDialog extends Component {
   state = {
     object: null,
     objectType: null,
+    isComponent: null,
     isCompleted: null
   };
 
@@ -535,15 +536,12 @@ export class StudentCompletionStatusDialog extends Component {
   };
 
   onSubmit = e => {
-    if (this.state.objectType == "node") {
-      switchNodeCompletion(this);
-    } else {
-      switchComponentCompletion(this);
-    }
+    switchCompletion(this);
     e.preventDefault();
     this.setState({
       object: null,
       objectType: null,
+      isComponent: null,
       isCompleted: null
     });
   };
@@ -553,6 +551,7 @@ export class StudentCompletionStatusDialog extends Component {
     this.setState({
       object: null,
       objectType: null,
+      isComponent: null,
       isCompleted: null
     });
   };
@@ -571,9 +570,15 @@ export class StudentCompletionStatusDialog extends Component {
           }}
         >
           <form class="student-node-form">
-            <Dialog.Header>{this.state.object.title}</Dialog.Header>
+            <Dialog.Header>
+              {isComponent && this.state.object.content_object.title}
+              {!isComponent && this.state.object.title}
+            </Dialog.Header>
             <Dialog.Body scrollable={false}>
-              <div id="description">{this.state.object.description}</div>
+              <div id="description">
+                {isComponent && this.state.object.content_object.description}
+                {!isComponent && this.state.object.description}
+              </div>
               <Formfield>
                 <label for="completion-checkbox" id="completion-checkbox-label">
                   Have you completed this task?
@@ -632,31 +637,9 @@ function getCsrfToken() {
     .getAttribute("value");
 }
 
-function switchComponentCompletion(component) {
-  $.post(component.props.switchComponentURL, {
-    componentPk: JSON.stringify(component.state.object.id)
-  })
-    .done(function(data) {
-      if (data.action == "posted") {
-        component.snack.MDComponent.show({
-          message: component.props.snackMessageOnSuccess
-        });
-      } else {
-        component.snack.MDComponent.show({
-          message: component.props.snackMessageOnFailure
-        });
-      }
-    })
-    .fail(function(data) {
-      component.snack.MDComponent.show({
-        message: component.props.snackMessageOnFailure
-      });
-    });
-}
-
-function switchNodeCompletion(component) {
-  $.post(component.props.switchNodeURL, {
-    nodePk: JSON.stringify(component.state.object.id)
+function switchCompletion(component) {
+  $.post(component.props.switchURL, {
+    pk: JSON.stringify(component.state.object.id)
   })
     .done(function(data) {
       if (data.action == "posted") {
@@ -786,19 +769,14 @@ function createNode(component) {
 export var currentComponentInstance = null;
 
 export function injectStudentCompletionStatusDialog(
-  switchNodeURL,
-  switchComponentURL,
+  switchURL,
   snackMessageOnSuccess,
   snackMessageOnFailure
 ) {
   if (document.body.contains(document.getElementById("node-form-container"))) {
     render(
       <StudentCompletionStatusDialog
-        switchNodeURL={switchNodeURL}
-        switchComponentURL={switchComponentURL}
-        deleteURL={deleteURL}
-        removeURL={removeURL}
-        homeURL={homeURL}
+        switchURL={switchURL}
         snackMessageOnSuccess={snackMessageOnSuccess}
         snackMessageOnFailure={snackMessageOnFailure}
       />,
