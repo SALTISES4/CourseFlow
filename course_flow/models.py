@@ -105,8 +105,22 @@ class Node(models.Model):
         Outcome, through="OutcomeNode", blank=True
     )
 
+    students = models.ManyToManyField(
+        User, through="NodeCompletionStatus", blank=True
+    )
+
     def __str__(self):
         return self.title
+
+
+class NodeCompletionStatus(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    node = models.ForeignKey(Node, on_delete=models.CASCADE)
+    is_completed = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Node Completion Status"
+        verbose_name_plural = "Node Completion Statuses"
 
 
 class OutcomeNode(models.Model):
@@ -176,6 +190,8 @@ class Activity(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+
+    static = models.BooleanField(default=False)
 
     parent_activity = models.ForeignKey(
         "Activity", on_delete=models.SET_NULL, null=True
@@ -364,6 +380,16 @@ class Component(models.Model):
         )
 
 
+class ComponentCompletionStatus(models.Model):
+    student = models.ForeignKey(User, on_delete=models.CASCADE)
+    component = models.ForeignKey(Component, on_delete=models.CASCADE)
+    is_completed = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Component Completion Status"
+        verbose_name_plural = "Component Completion Statuses"
+
+
 class ComponentWeek(models.Model):
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
     component = models.ForeignKey(Component, on_delete=models.CASCADE)
@@ -400,6 +426,8 @@ class Course(models.Model):
     discipline = models.ForeignKey(
         Discipline, on_delete=models.SET_NULL, null=True
     )
+
+    static = models.BooleanField(default=False)
 
     parent_course = models.ForeignKey(
         "Course", on_delete=models.SET_NULL, null=True

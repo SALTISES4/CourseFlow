@@ -9,6 +9,7 @@ import Icon from "preact-material-components/Icon";
 import IconButton from "preact-material-components/IconButton";
 import Select from "preact-material-components/Select";
 import Snackbar from "preact-material-components/Snackbar";
+import Checkbox from "preact-material-components/Checkbox";
 
 export class DialogForm extends Component {
   state = {
@@ -522,6 +523,97 @@ export class DialogForm extends Component {
   }
 }
 
+export class StudentCompletionStatusDialog extends Component {
+  state = {
+    object: null,
+    objectType: null,
+    isCompleted: null
+  };
+
+  componentDidMount = e => {
+    currentComponentInstance = this;
+  };
+
+  onSubmit = e => {
+    if (this.state.objectType == "node") {
+      switchNodeCompletion(this);
+    } else {
+      switchComponentCompletion(this);
+    }
+    e.preventDefault();
+    this.setState({
+      object: null,
+      objectType: null,
+      isCompleted: null
+    });
+  };
+
+  onClose = e => {
+    e.preventDefault();
+    this.setState({
+      object: null,
+      objectType: null,
+      isCompleted: null
+    });
+  };
+
+  updateIsCompleted = e => {
+    this.setState({ isCompleted: !this.state.isCompleted });
+  };
+
+  render() {
+    return (
+      <div>
+        <Dialog
+          style="padding: 0; border: 0; width: 0;"
+          ref={dlg => {
+            this.dlg = dlg;
+          }}
+        >
+          <form class="student-node-form">
+            <Dialog.Header>{this.state.object.title}</Dialog.Header>
+            <Dialog.Body scrollable={false}>
+              <div id="description">{this.state.object.description}</div>
+              <Formfield>
+                <label for="completion-checkbox" id="completion-checkbox-label">
+                  Have you completed this task?
+                </label>
+                <Checkbox
+                  id="completion-checkbox"
+                  checked={this.state.isCompleted}
+                  onchange={this.updateIsCompleted}
+                />
+              </Formfield>
+            </Dialog.Body>
+            <Dialog.Footer>
+              <Dialog.FooterButton
+                id="cancel-button"
+                cancel={true}
+                onClick={this.onClose}
+              >
+                Cancel
+              </Dialog.FooterButton>
+              <Dialog.FooterButton
+                id="submit-button"
+                accept={true}
+                disabled={false}
+                raised={true}
+                onClick={this.onSubmit}
+              >
+                Submit
+              </Dialog.FooterButton>
+            </Dialog.Footer>
+          </form>
+        </Dialog>
+        <Snackbar
+          ref={snack => {
+            this.snack = snack;
+          }}
+        />
+      </div>
+    );
+  }
+}
 $.ajaxSetup({
   beforeSend: function(xhr, settings) {
     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -538,6 +630,50 @@ function getCsrfToken() {
   return document
     .getElementsByName("csrfmiddlewaretoken")[0]
     .getAttribute("value");
+}
+
+function switchComponentCompletion(component) {
+  $.post(component.props.switchComponentURL, {
+    componentPk: JSON.stringify(component.state.object.id)
+  })
+    .done(function(data) {
+      if (data.action == "posted") {
+        component.snack.MDComponent.show({
+          message: component.props.snackMessageOnSuccess
+        });
+      } else {
+        component.snack.MDComponent.show({
+          message: component.props.snackMessageOnFailure
+        });
+      }
+    })
+    .fail(function(data) {
+      component.snack.MDComponent.show({
+        message: component.props.snackMessageOnFailure
+      });
+    });
+}
+
+function switchNodeCompletion(component) {
+  $.post(component.props.switchNodeURL, {
+    nodePk: JSON.stringify(component.state.object.id)
+  })
+    .done(function(data) {
+      if (data.action == "posted") {
+        component.snack.MDComponent.show({
+          message: component.props.snackMessageOnSuccess
+        });
+      } else {
+        component.snack.MDComponent.show({
+          message: component.props.snackMessageOnFailure
+        });
+      }
+    })
+    .fail(function(data) {
+      component.snack.MDComponent.show({
+        message: component.props.snackMessageOnFailure
+      });
+    });
 }
 
 function removeNode(component) {
@@ -648,6 +784,28 @@ function createNode(component) {
 }
 
 export var currentComponentInstance = null;
+
+export function injectStudentCompletionStatusDialog(
+  switchNodeURL,
+  switchComponentURL,
+  snackMessageOnSuccess,
+  snackMessageOnFailure
+) {
+  if (document.body.contains(document.getElementById("node-form-container"))) {
+    render(
+      <StudentCompletionStatusDialog
+        switchNodeURL={switchNodeURL}
+        switchComponentURL={switchComponentURL}
+        deleteURL={deleteURL}
+        removeURL={removeURL}
+        homeURL={homeURL}
+        snackMessageOnSuccess={snackMessageOnSuccess}
+        snackMessageOnFailure={snackMessageOnFailure}
+      />,
+      document.getElementById("node-form-container")
+    );
+  }
+}
 
 export function injectDialogForm(
   createURL,

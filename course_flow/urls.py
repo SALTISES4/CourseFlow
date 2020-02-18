@@ -52,6 +52,11 @@ def flow_patterns():
             name="course-detail-view",
         ),
         url(
+            r"^course/(?P<pk>[0-9]+)/student/$",
+            views.StudentCourseDetailView.as_view(),
+            name="student-course-detail-view",
+        ),
+        url(
             r"^course/(?P<pk>[0-9]+)/update/$",
             views.CourseUpdateView.as_view(),
             name="course-update",
@@ -65,6 +70,11 @@ def flow_patterns():
             r"^activity/(?P<pk>[0-9]+)/$",
             views.ActivityDetailView.as_view(),
             name="activity-detail-view",
+        ),
+        url(
+            r"^activity/(?P<pk>[0-9]+)/student/$",
+            views.StudentActivityDetailView.as_view(),
+            name="student-activity-detail-view",
         ),
         url(
             r"^activity/(?P<pk>[0-9]+)/update/$",
@@ -129,6 +139,28 @@ def flow_patterns():
             r"^activity/duplication",
             views.duplicate_activity_ajax,
             name="activity-duplication",
+        ),
+        url(r"^course/link", views.link_to_group, name="link-to-group"),
+        url(r"^course/link", views.link_to_group, name="link-to-group"),
+        url(
+            r"^node/switch-completion-status",
+            views.switch_node_completion_status,
+            name="switch-node-completion-status",
+        ),
+        url(
+            r"^component/switch-completion-status",
+            views.switch_component_completion_status,
+            name="switch-component-completion-status",
+        ),
+        url(
+            r"^node/get-completion-status",
+            views.get_node_completion_status,
+            name="get-node-completion-status",
+        ),
+        url(
+            r"^component/get-completion-status",
+            views.get_component_completion_status,
+            name="get-component-completion-status",
         ),
     ] + router.urls
 

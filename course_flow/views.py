@@ -16,6 +16,8 @@ from .models import (
     Week,
     Program,
     ComponentProgram,
+    NodeCompletionStatus,
+    ComponentCompletionStatus,
 )
 from .serializers import (
     serializer_lookups,
@@ -167,6 +169,11 @@ class CourseDetailView(LoginRequiredMixin, DetailView):
     template_name = "course_flow/course_detail.html"
 
 
+class StudentCourseDetailView(LoginRequiredMixin, DetailView):
+    model = Course
+    template_name = "course_flow/course_detail_student.html"
+
+
 class CourseCreateView(LoginRequiredMixin, CreateView):
     model = Course
     fields = ["title", "description"]
@@ -224,6 +231,11 @@ class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class ActivityDetailView(LoginRequiredMixin, DetailView):
     model = Activity
     template_name = "course_flow/activity_detail.html"
+
+
+class StudentActivityDetailView(LoginRequiredMixin, DetailView):
+    model = Activity
+    template_name = "course_flow/activity_detail_student.html"
 
 
 class ActivityCreateView(LoginRequiredMixin, CreateView):
@@ -419,7 +431,6 @@ def duplicate_activity_ajax(request: HttpRequest) -> HttpResponse:
 
 
 def duplicate_component(component: Component, author: User) -> Component:
-    print("comp:", component)
     if type(component.content_object) == Artifact:
         new_component = Component.objects.create(
             content_object=Artifact.objects.create(
@@ -454,13 +465,11 @@ def duplicate_component(component: Component, author: User) -> Component:
         new_component = Component.objects.create(
             content_object=duplicate_activity(component.content_object, author)
         )
-    print("new_comp:", new_component)
     return new_component
 
 
 def duplicate_week(week: Week, author: User) -> Week:
     new_week = Week.objects.create(title=week.title, author=author)
-    print("new_week:", new_week)
     for component in week.components.all():
         ComponentWeek.objects.create(
             week=new_week,
@@ -480,9 +489,7 @@ def duplicate_course(course: Course, author: User) -> Course:
         is_original=False,
         parent_course=course,
     )
-    print(new_course)
     for week in course.weeks.all():
-        print("link")
         WeekCourse.objects.create(
             course=new_course,
             week=duplicate_week(week, author),
@@ -501,6 +508,110 @@ def duplicate_course_ajax(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+
+
+@require_POST
+@ajax_login_required
+def link_to_group(request: HttpRequest) -> HttpResponse:
+    course = Course.objects.get(pk=request.POST.get("coursePk"))
+    students = User.objects.filter(pk__in=request.POST.get("studentUserPks"))
+
+    try:
+        clone = duplicate_course(course, request.user)
+        clone.static = True
+        clone.save()
+        for week in clone.weeks.all():
+            for component in week.components.exclude(
+                content_type=ContentType.objects.get_for_model(Activity)
+            ):
+                for student in students:
+                    ComponentCompletionStatus.objects.create(
+                        student=student, component=component
+                    )
+            for component in week.components.filter(
+                content_type=ContentType.objects.get_for_model(Activity)
+            ):
+                activity = component.content_object
+                activity.static = True
+                activity.save()
+                for stategy in activity.strategies.all():
+                    for node in strategy.nodes.all():
+                        for student in students:
+                            NodeCompletionStatus.objects.create(
+                                student=student, node=node
+                            )
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+
+
+@require_POST
+@ajax_login_required
+def switch_node_completion_status(request: HttpRequest) -> HttpResponse:
+    node = Node.objects.get(pk=request.POST.get("nodePk"))
+
+    try:
+        status = NodeCompletionStatus.objects.get(
+            node=node, student=request.user
+        )
+        status.is_completed = not status.is_completed
+        status.save()
+    except:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
+
+@require_POST
+@ajax_login_required
+def switch_component_completion_status(reqeust: HttpRequest) -> HttpResponse:
+    component = Component.objects.get(pk=request.POST.get("componentPk"))
+
+    try:
+        status = ComponentCompletionStatus.objects.get(
+            component=component, student=request.user
+        )
+        status.is_completed = not status.is_completed
+        status.save()
+    except:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
+
+@require_POST
+@ajax_login_required
+def get_node_completion_status(reqeust: HttpRequest) -> HttpResponse:
+    node = Node.objects.get(pk=request.POST.get("nodePk"))
+
+    try:
+        status = NodeCompletionStatus.objects.get(
+            node=node, student=request.user
+        )
+    except:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse(
+        {"action": "posted", "completion_status": status.is_completed}
+    )
+
+
+@require_POST
+@ajax_login_required
+def get_component_completion_status(reqeust: HttpRequest) -> HttpResponse:
+    component = Component.objects.get(pk=request.POST.get("componentPk"))
+
+    try:
+        status = ComponentCompletionStatus.objects.get(
+            component=component, student=request.user
+        )
+    except:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse(
+        {"action": "posted", "completion_status": status.is_completed}
+    )
 
 
 @require_POST

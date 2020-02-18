@@ -26,6 +26,8 @@ from .models import (
     OutcomeWeek,
     OutcomeCourse,
     OutcomeProgram,
+    NodeCompletionStatus,
+    ComponentCompletionStatus,
     User,
 )
 
