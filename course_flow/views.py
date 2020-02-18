@@ -510,6 +510,21 @@ def duplicate_course_ajax(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted", "clone_pk": clone.pk})
 
 
+@ajax_login_required
+def get_owned_courses(request: HttpRequest) -> HttpResponse:
+    course_queary_set = Course.objects.filter(author=request.user).order_by(
+        "-last_modified"
+    )[:10]
+    course_json_set = (
+        JSONRenderer()
+        .render(
+            ProgramLevelComponentSerializer(course_queary_set, many=True).data
+        )
+        .decode("utf-8")
+    )
+    return JsonResponse({"action": "got", "course_set": course_json_set})
+
+
 @require_POST
 @ajax_login_required
 def link_to_group(request: HttpRequest) -> HttpResponse:
@@ -544,6 +559,48 @@ def link_to_group(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+
+
+def remove_student_from_group(student, course):
+    for week in course.weeks.all():
+        for component in week.components.exclude(
+            content_type=ContentType.objects.get_for_model(Activity)
+        ):
+            ComponentCompletionStatus.objects.get(
+                student=student, component=component
+            ).delete()
+        for component in week.components.filter(
+            content_type=ContentType.objects.get_for_model(Activity)
+        ):
+            activity = component.content_object
+            activity.static = True
+            activity.save()
+            for strategy in activity.strategies.all():
+                for node in strategy.nodes.all():
+                    NodeCompletionStatus.objects.get(
+                        student=student, node=node
+                    ).delete()
+
+
+def add_student_to_group(student, course):
+    for week in course.weeks.all():
+        for component in week.components.exclude(
+            content_type=ContentType.objects.get_for_model(Activity)
+        ):
+            ComponentCompletionStatus.objects.create(
+                student=student, component=component
+            )
+        for component in week.components.filter(
+            content_type=ContentType.objects.get_for_model(Activity)
+        ):
+            activity = component.content_object
+            activity.static = True
+            activity.save()
+            for strategy in activity.strategies.all():
+                for node in strategy.nodes.all():
+                    NodeCompletionStatus.objects.create(
+                        student=student, node=node
+                    )
 
 
 @require_POST
