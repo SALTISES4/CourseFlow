@@ -32,7 +32,9 @@ class Outcome(models.Model):
 class Node(models.Model):
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(
+        User, related_name="author", on_delete=models.SET_NULL, null=True
+    )
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -106,7 +108,10 @@ class Node(models.Model):
     )
 
     students = models.ManyToManyField(
-        User, through="NodeCompletionStatus", blank=True
+        User,
+        related_name="students",
+        through="NodeCompletionStatus",
+        blank=True,
     )
 
     def __str__(self):
