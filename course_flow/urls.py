@@ -140,8 +140,6 @@ def flow_patterns():
             views.duplicate_activity_ajax,
             name="activity-duplication",
         ),
-        url(r"^course/link", views.link_to_group, name="link-to-group"),
-        url(r"^course/link", views.link_to_group, name="link-to-group"),
         url(
             r"^node/switch-completion-status",
             views.switch_node_completion_status,

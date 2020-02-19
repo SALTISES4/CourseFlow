@@ -510,55 +510,60 @@ def duplicate_course_ajax(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted", "clone_pk": clone.pk})
 
 
-@ajax_login_required
-def get_owned_courses(request: HttpRequest) -> HttpResponse:
-    course_queary_set = Course.objects.filter(author=request.user).order_by(
+def get_owned_courses(user: User):
+    return Course.objects.filter(author=user, static=False).order_by(
         "-last_modified"
     )[:10]
-    course_json_set = (
-        JSONRenderer()
-        .render(
-            ProgramLevelComponentSerializer(course_queary_set, many=True).data
-        )
-        .decode("utf-8")
-    )
-    return JsonResponse({"action": "got", "course_set": course_json_set})
 
 
-@require_POST
-@ajax_login_required
-def link_to_group(request: HttpRequest) -> HttpResponse:
-    course = Course.objects.get(pk=request.POST.get("coursePk"))
-    students = User.objects.filter(pk__in=request.POST.get("studentUserPks"))
+def setup_link_to_group(course_pk, students) -> Course:
 
-    try:
-        clone = duplicate_course(course, request.user)
-        clone.static = True
-        clone.save()
-        for week in clone.weeks.all():
-            for component in week.components.exclude(
-                content_type=ContentType.objects.get_for_model(Activity)
-            ):
-                for student in students:
-                    ComponentCompletionStatus.objects.create(
-                        student=student, component=component
-                    )
-            for component in week.components.filter(
-                content_type=ContentType.objects.get_for_model(Activity)
-            ):
-                activity = component.content_object
-                activity.static = True
-                activity.save()
-                for strategy in activity.strategies.all():
-                    for node in strategy.nodes.all():
-                        for student in students:
-                            NodeCompletionStatus.objects.create(
-                                student=student, node=node
-                            )
-    except ValidationError:
-        return JsonResponse({"action": "error"})
+    course = Course.objects.get(pk=course_pk)
 
-    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+    clone = duplicate_course(course, course.author)
+    clone.static = True
+    clone.save()
+    for week in clone.weeks.all():
+        for component in week.components.exclude(
+            content_type=ContentType.objects.get_for_model(Activity)
+        ):
+            for student in students:
+                ComponentCompletionStatus.objects.create(
+                    student=student, component=component
+                )
+        for component in week.components.filter(
+            content_type=ContentType.objects.get_for_model(Activity)
+        ):
+            activity = component.content_object
+            activity.static = True
+            activity.save()
+            for strategy in activity.strategies.all():
+                for node in strategy.nodes.all():
+                    for student in students:
+                        NodeCompletionStatus.objects.create(
+                            student=student, node=node
+                        )
+    return clone
+
+
+def setup_unlink_from_group(course_pk):
+    course = Course.objects.get(pk=course_pk)
+    for week in course.weeks.all():
+        for component in week.components.exclude(
+            content_type=ContentType.objects.get_for_model(Activity)
+        ):
+            component.contetn_object.delete()
+        for component in week.components.filter(
+            content_type=ContentType.objects.get_for_model(Activity)
+        ):
+            activity = component.content_object
+            for strategy in activity.strategies.all():
+                strategy.nodes.all().delete()
+                strategy.delete()
+            activity.delete()
+        week.delete()
+    course.delete()
+    return
 
 
 def remove_student_from_group(student, course):
