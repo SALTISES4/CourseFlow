@@ -395,13 +395,13 @@
         .append("g")
         .attr("class", "action-icon update-node")
         .on("mousedown", function(d, i) {
-          root.currentComponentInstance.setState({
+          root.currentStudentComponentInstance.setState({
             object: d3.select(this.parentNode).node().__data__.node,
             isCompleted: getCompletionStatus(
               d3.select(this.parentNode).node().__data__.node.id
             )
           });
-          root.currentComponentInstance.dlg.MDComponent.show();
+          root.currentStudentComponentInstance.dlg.MDComponent.show();
         })
         .append("image")
         .attr("x", `${nodeWidth - 40}`)

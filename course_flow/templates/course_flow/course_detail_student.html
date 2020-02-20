@@ -9,7 +9,7 @@
 {% block header %}{% endblock %}
 <!-- -->
 {% block body %}
-<svg width="2000" height="10000"></svg>
+<svg width="2000" height="2000"></svg>
 {% endblock %}
 <!-- -->
 {% block foot %} {% endblock %}
@@ -395,14 +395,15 @@
                 .content_object.id
             );
           } else {
-            root.currentComponentInstance.setState({
+            console.log(root.currentStudentComponentInstance);
+            root.currentStudentComponentInstance.setState({
               object: d3.select(this.parentNode).node().__data__.component,
               isComponent: true,
               isCompleted: getCompletionStatus(
                 d3.select(this.parentNode).node().__data__.component.id
               )
             });
-            root.currentComponentInstance.dlg.MDComponent.show();
+            root.currentStudentComponentInstance.dlg.MDComponent.show();
           }
         })
         .append("image")

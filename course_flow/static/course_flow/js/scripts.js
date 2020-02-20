@@ -532,7 +532,7 @@ export class StudentCompletionStatusDialog extends Component {
   };
 
   componentDidMount = e => {
-    currentComponentInstance = this;
+    currentStudentComponentInstance = this;
   };
 
   onSubmit = e => {
@@ -767,6 +767,7 @@ function createNode(component) {
 }
 
 export var currentComponentInstance = null;
+export var currentStudentComponentInstance = null;
 
 export function injectStudentCompletionStatusDialog(
   switchURL,
