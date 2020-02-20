@@ -571,13 +571,14 @@ export class StudentCompletionStatusDialog extends Component {
         >
           <form class="student-node-form">
             <Dialog.Header>
-              {isComponent && this.state.object.content_object.title}
-              {!isComponent && this.state.object.title}
+              {this.state.isComponent && this.state.object.content_object.title}
+              {!this.state.isComponent && this.state.object.title}
             </Dialog.Header>
             <Dialog.Body scrollable={false}>
               <div id="description">
-                {isComponent && this.state.object.content_object.description}
-                {!isComponent && this.state.object.description}
+                {this.state.isComponent &&
+                  this.state.object.content_object.description}
+                {!this.state.isComponent && this.state.object.description}
               </div>
               <Formfield>
                 <label for="completion-checkbox" id="completion-checkbox-label">

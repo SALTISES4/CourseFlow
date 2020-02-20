@@ -173,7 +173,7 @@ text {
 #total-content-container {
   right: 0;
 }
-h2, p {
+h2:not(.mdc-dialog__header__title), p {
   font-family: "Montserrat", serif;
   color: #F4F4F4;
 }
