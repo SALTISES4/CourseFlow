@@ -563,7 +563,7 @@ def setup_unlink_from_group(course_pk):
             activity.delete()
         week.delete()
     course.delete()
-    return
+    return "done"
 
 
 def remove_student_from_group(student, course):
