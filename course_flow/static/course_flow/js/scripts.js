@@ -774,7 +774,11 @@ export function injectStudentCompletionStatusDialog(
   snackMessageOnSuccess,
   snackMessageOnFailure
 ) {
-  if (document.body.contains(document.getElementById("node-form-container"))) {
+  if (
+    document.body.contains(
+      document.getElementById("student-node-form-container")
+    )
+  ) {
     render(
       <StudentCompletionStatusDialog
         switchURL={switchURL}
