@@ -785,7 +785,7 @@ export function injectStudentCompletionStatusDialog(
         snackMessageOnSuccess={snackMessageOnSuccess}
         snackMessageOnFailure={snackMessageOnFailure}
       />,
-      document.getElementById("node-form-container")
+      document.getElementById("student-node-form-container")
     );
   }
 }
