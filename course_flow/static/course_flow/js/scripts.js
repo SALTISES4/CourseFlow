@@ -587,7 +587,7 @@ export class StudentCompletionStatusDialog extends Component {
                   this.state.object &&
                   this.state.object.description}
               </div>
-              <Formfield>
+              <FormField>
                 <label for="completion-checkbox" id="completion-checkbox-label">
                   Have you completed this task?
                 </label>
@@ -596,7 +596,7 @@ export class StudentCompletionStatusDialog extends Component {
                   checked={this.state.isCompleted}
                   onchange={this.updateIsCompleted}
                 />
-              </Formfield>
+              </FormField>
             </Dialog.Body>
             <Dialog.Footer>
               <Dialog.FooterButton
