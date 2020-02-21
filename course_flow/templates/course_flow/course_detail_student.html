@@ -375,16 +375,7 @@
 
       components
         .append("g")
-        .attr("class", function(d, i) {
-          if (
-            d3.select(this.parentNode).node().__data__.component
-              .content_type_in_text == "activity"
-          ) {
-            return "action-icon view-component";
-          } else {
-            return "";
-          }
-        })
+        .attr("class", "action-icon view-component")
         .on("mousedown", function(d, i) {
           if (
             d3.select(this.parentNode).node().__data__.component
