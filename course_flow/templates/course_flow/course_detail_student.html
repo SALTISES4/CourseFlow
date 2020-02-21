@@ -438,6 +438,7 @@
       $.get("{% url 'course_flow:get-component-completion-status' %}", {
         componentPk: componentPk
       }).done(function(data) {
+        console.log(data);
         if (data.action == "got") {
           status = data.completion_status;
         }

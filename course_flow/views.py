@@ -674,6 +674,7 @@ def get_component_completion_status(request: HttpRequest) -> HttpResponse:
     except:
         return JsonResponse({"action": "error"})
 
+    print(status.is_completed)
     return JsonResponse(
         {"action": "got", "completion_status": status.is_completed}
     )
