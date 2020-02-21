@@ -635,10 +635,10 @@ def switch_component_completion_status(request: HttpRequest) -> HttpResponse:
         status = ComponentCompletionStatus.objects.get(
             component=component, student=request.user
         )
-        print(status)
+        print(status.is_completed)
         status.is_completed = not status.is_completed
         status.save()
-        print(status)
+        print(status.is_completed)
     except:
         return JsonResponse({"action": "error"})
 

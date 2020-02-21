@@ -434,13 +434,16 @@
     }
 
     function getCompletionStatus(componentPk) {
-      return $.get("{% url 'course_flow:get-component-completion-status' %}", {
+      let status = null;
+      $.get("{% url 'course_flow:get-component-completion-status' %}", {
         componentPk: componentPk
       }).done(function(data) {
         if (data.action == "got") {
-          return data.completion_status;
+          status = data.completion_status;
         }
       });
+      console.log(status);
+      return status;
     }
   });
 </script>
