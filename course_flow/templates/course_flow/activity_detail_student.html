@@ -395,12 +395,13 @@
       nodes
         .append("g")
         .attr("class", "action-icon update-node")
-        .on("mousedown", function(d, i) {
+        .on("mousedown", async function(d, i) {
+          const completionStatus = await getCompletionStatus(
+            d3.select(this.parentNode).node().__data__.node.id
+          );
           root.currentStudentComponentInstance.setState({
             object: d3.select(this.parentNode).node().__data__.node,
-            isCompleted: getCompletionStatus(
-              d3.select(this.parentNode).node().__data__.node.id
-            )
+            isCompleted: completionStatus
           });
           root.currentStudentComponentInstance.dlg.MDComponent.show();
         })
@@ -431,14 +432,14 @@
         .getAttribute("value");
     }
 
-    function getCompletionStatus(nodePk) {
-      return $.get("{% url 'course_flow:get-node-completion-status' %}", {
-        nodePk: nodePk
-      }).done(function(data) {
-        if (data.action == "got") {
-          return data.completion_status;
+    async function getCompletionStatus(nodePk) {
+      let resp = await $.get(
+        "{% url 'course_flow:get-node-completion-status' %}",
+        {
+          nodePk: nodePk
         }
-      });
+      );
+      return data.completion_status;
     }
   });
 </script>

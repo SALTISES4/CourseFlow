@@ -629,16 +629,13 @@ def switch_node_completion_status(request: HttpRequest) -> HttpResponse:
 @ajax_login_required
 def switch_component_completion_status(request: HttpRequest) -> HttpResponse:
     component = Component.objects.get(pk=request.POST.get("pk"))
-    print(request.POST)
 
     try:
         status = ComponentCompletionStatus.objects.get(
             component=component, student=request.user
         )
-        print(status.is_completed)
         status.is_completed = not status.is_completed
         status.save()
-        print(status.is_completed)
     except:
         return JsonResponse({"action": "error"})
 
@@ -672,7 +669,6 @@ def get_component_completion_status(request: HttpRequest) -> HttpResponse:
     except:
         return JsonResponse({"action": "error"})
 
-    print(status.is_completed)
     return JsonResponse(
         {"action": "got", "completion_status": status.is_completed}
     )
