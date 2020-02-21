@@ -387,6 +387,11 @@
                 .content_object.id
             );
           } else {
+            console.log(
+              getCompletionStatus(
+                d3.select(this.parentNode).node().__data__.component.id
+              )
+            );
             root.currentStudentComponentInstance.setState({
               object: d3.select(this.parentNode).node().__data__.component,
               isComponent: true,
@@ -394,6 +399,7 @@
                 d3.select(this.parentNode).node().__data__.component.id
               )
             });
+            console.log(root.currentStudentComponentInstance.state);
             root.currentStudentComponentInstance.dlg.MDComponent.show();
           }
         })
