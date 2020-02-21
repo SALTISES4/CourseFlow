@@ -376,7 +376,7 @@
       components
         .append("g")
         .attr("class", "action-icon view-component")
-        .on("mousedown", function(d, i) {
+        .on("mousedown", async function(d, i) {
           if (
             d3.select(this.parentNode).node().__data__.component
               .content_type_in_text == "activity"
@@ -387,19 +387,14 @@
                 .content_object.id
             );
           } else {
-            console.log(
-              getCompletionStatus(
-                d3.select(this.parentNode).node().__data__.component.id
-              )
+            const completionStatus = await getCompletionStatus(
+              d3.select(this.parentNode).node().__data__.component.id
             );
             root.currentStudentComponentInstance.setState({
               object: d3.select(this.parentNode).node().__data__.component,
               isComponent: true,
-              isCompleted: getCompletionStatus(
-                d3.select(this.parentNode).node().__data__.component.id
-              )
+              isCompleted: completionStatus
             });
-            console.log(root.currentStudentComponentInstance.state);
             root.currentStudentComponentInstance.dlg.MDComponent.show();
           }
         })
