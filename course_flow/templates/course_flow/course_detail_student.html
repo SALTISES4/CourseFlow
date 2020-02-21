@@ -433,18 +433,14 @@
         .getAttribute("value");
     }
 
-    function getCompletionStatus(componentPk) {
-      let status = null;
-      $.get("{% url 'course_flow:get-component-completion-status' %}", {
-        componentPk: componentPk
-      }).done(function(data) {
-        console.log(data);
-        if (data.action == "got") {
-          status = data.completion_status;
+    async function getCompletionStatus(componentPk) {
+      let resp = await $.get(
+        "{% url 'course_flow:get-component-completion-status' %}",
+        {
+          componentPk: componentPk
         }
-      });
-      console.log(status);
-      return status;
+      );
+      return resp.completion_status;
     }
   });
 </script>
