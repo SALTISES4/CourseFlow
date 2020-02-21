@@ -650,7 +650,7 @@ def get_node_completion_status(request: HttpRequest) -> HttpResponse:
 
     try:
         status = NodeCompletionStatus.objects.get(
-            node=Node.objects.get(pk=request.POST.get("nodePk")),
+            node=Node.objects.get(pk=request.GET.get("nodePk")),
             student=request.user,
         )
     except:
@@ -666,9 +666,7 @@ def get_component_completion_status(request: HttpRequest) -> HttpResponse:
 
     try:
         status = ComponentCompletionStatus.objects.get(
-            component=Component.objects.get(
-                pk=request.POST.get("componentPk")
-            ),
+            component=Component.objects.get(pk=request.GET.get("componentPk")),
             student=request.user,
         )
     except:
