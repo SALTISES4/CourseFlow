@@ -470,13 +470,11 @@ def duplicate_component(component: Component, author: User) -> Component:
 
 def duplicate_week(week: Week, author: User) -> Week:
     new_week = Week.objects.create(title=week.title, author=author)
-    for component in week.components.all():
+    for componentweek in ComponentWeek.objects.filter(week=week):
         ComponentWeek.objects.create(
             week=new_week,
-            component=duplicate_component(component, author),
-            rank=ComponentWeek.objects.get(
-                component=component, week=week
-            ).rank,
+            component=duplicate_component(componentweek.component, author),
+            rank=componentweek.rank,
         )
     return new_week
 
