@@ -552,7 +552,7 @@ def setup_unlink_from_group(course_pk):
         for component in week.components.exclude(
             content_type=ContentType.objects.get_for_model(Activity)
         ):
-            component.contetn_object.delete()
+            component.content_object.delete()
         for component in week.components.filter(
             content_type=ContentType.objects.get_for_model(Activity)
         ):
