@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, post_save, m2m_changed
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
@@ -33,7 +33,10 @@ class Node(models.Model):
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
     author = models.ForeignKey(
-        User, related_name="author", on_delete=models.SET_NULL, null=True
+        User,
+        related_name="authored_nodes",
+        on_delete=models.SET_NULL,
+        null=True,
     )
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -109,7 +112,7 @@ class Node(models.Model):
 
     students = models.ManyToManyField(
         User,
-        related_name="students",
+        related_name="assigned_nodes",
         through="NodeCompletionStatus",
         blank=True,
     )
@@ -192,11 +195,20 @@ class NodeStrategy(models.Model):
 class Activity(models.Model):
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(
+        User,
+        related_name="authored_activities",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
     static = models.BooleanField(default=False)
+
+    students = models.ManyToManyField(
+        User, related_name="assigned_activities", blank=True
+    )
 
     parent_activity = models.ForeignKey(
         "Activity", on_delete=models.SET_NULL, null=True
@@ -309,37 +321,37 @@ class OutcomeArtifact(models.Model):
         verbose_name_plural = "Outcome-Artifact Links"
 
 
-class Assesment(models.Model):
+class Assessment(models.Model):
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    parent_assesment = models.ForeignKey(
-        "Assesment", on_delete=models.SET_NULL, null=True
+    parent_assessment = models.ForeignKey(
+        "Assessment", on_delete=models.SET_NULL, null=True
     )
     is_original = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeAssesment", blank=True
+        Outcome, through="OutcomeAssessment", blank=True
     )
 
     def __str__(self):
         return self.title
 
 
-class OutcomeAssesment(models.Model):
-    assesment = models.ForeignKey(Assesment, on_delete=models.CASCADE)
+class OutcomeAssessment(models.Model):
+    assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
     class Meta:
-        verbose_name = "Outcome-Assesment Link"
-        verbose_name_plural = "Outcome-Assesment Links"
+        verbose_name = "Outcome-Assessment Link"
+        verbose_name_plural = "Outcome-Assessment Links"
 
 
 class Week(models.Model):
@@ -425,7 +437,12 @@ class Discipline(models.Model):
 class Course(models.Model):
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(
+        User,
+        related_name="authored_courses",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     discipline = models.ForeignKey(
@@ -433,6 +450,10 @@ class Course(models.Model):
     )
 
     static = models.BooleanField(default=False)
+
+    students = models.ManyToManyField(
+        User, related_name="assigned_courses", blank=True
+    )
 
     parent_course = models.ForeignKey(
         "Course", on_delete=models.SET_NULL, null=True
@@ -562,7 +583,7 @@ def reorder_for_deleted_component_program(sender, instance, **kwargs):
 
 
 @receiver(pre_delete, sender=Activity)
-@receiver(pre_delete, sender=Assesment)
+@receiver(pre_delete, sender=Assessment)
 @receiver(pre_delete, sender=Artifact)
 @receiver(pre_delete, sender=Preparation)
 @receiver(pre_delete, sender=Course)
@@ -573,11 +594,92 @@ def delete_attached_component(sender, instance, **kwargs):
     ).delete()
 
 
+@receiver(pre_delete, sender=Course)
+def delete_course_objects(sender, instance, **kwargs):
+    if instance.static:
+        for week in instance.weeks:
+            for component in week.components:
+                component.content_object.delete()
+    instance.weeks.all().delete()
+
+
+@receiver(pre_delete, sender=Activity)
+def delete_activity_objects(sender, instance, **kwargs):
+    instance.strategies.all().delete()
+
+
+@receiver(pre_delete, sender=Strategy)
+def delete_strategy_objects(sender, instance, **kwargs):
+    instance.nodes.all().delete()
+
+
+@receiver(post_save, sender=Node)
+def create_completion_statuses(sender, instance, created, **kwargs):
+    if created:
+        if Strategy.objects.filter(nodes=instance):
+            if Activity.objects.filter(
+                strategies=Strategy.objects.filter(nodes=instance).first()
+            ):
+                activity = Activity.objects.filter(
+                    strategies=Strategy.objects.filter(nodes=instance).first()
+                ).first()
+                if activity.static:
+                    for student in activity.students:
+                        NodeCompletionStatus.objects.create(
+                            student=student, node=instance
+                        )
+
+
+@receiver(post_save, sender=Component)
+def create_completion_statuses(sender, instance, created, **kwargs):
+    if created:
+        if type(instance.content_object) == Activity:
+            if Week.objects.filter(components=instance):
+                if Course.objects.filter(
+                    week=Week.objects.filter(components=instance).first()
+                ):
+                    course = Course.objects.filter(
+                        week=Week.objects.filter(components=instance).first()
+                    ).first()
+                    if course.static:
+                        for student in course.students:
+                            ComponentCompletionStatus.objects.create(
+                                student=student, component=instance
+                            )
+
+
+@receiver(m2m_changed, sender=Week.components.through)
+def switch_activity_to_static(sender, instance, pk_set, action, **kwargs):
+    if action == "pre_add":
+        if (
+            type(Component.objects.get(pk=list(pk_set)[0]).content_object)
+            == Activity
+        ):
+            if Course.objects.filter(week=instance).first().static:
+                activity = Component.objects.get(
+                    pk=list(pk_set)[0]
+                ).content_object
+                if not activity.static:
+                    activity.static = True
+                    activity.save()
+                    activity.students.add(
+                        Course.objects.filter(week=instance)
+                        .first()
+                        .students.all()
+                    )
+                    for strategy in activity.strategies.all():
+                        for node in strategy.nodes.all():
+                            for student in activity.students.all():
+                                NodeCompletionStatus.objects.create(
+                                    student=student, node=node
+                                )
+
+
 model_lookups = {
     "node": Node,
     "strategy": Strategy,
     "activity": Activity,
-    "assesment": Assesment,
+    "assessment": Assessment,
     "preparation": Preparation,
     "artifact": Artifact,
     "week": Week,
@@ -588,7 +690,7 @@ model_keys = [
     "node",
     "strategy",
     "activity",
-    "assesment",
+    "assessment",
     "preparation",
     "artifact",
     "week",

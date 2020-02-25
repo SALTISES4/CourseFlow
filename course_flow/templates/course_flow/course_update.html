@@ -72,7 +72,7 @@
 
           const weekWidth = 2*weekPadding+componentTotalSpacingHorizontal*4-componentSpacingHorizontal;
 
-          const classificationLabels = ["Activity","Preparation","Assesment","Artifact"];
+          const classificationLabels = ["Activity","Preparation","Assessment","Artifact"];
 
           function fetchThenRenderCourse(){
             d3.json("{% url 'course_flow:course-detail' pk=object.pk %}").then(function (json) {

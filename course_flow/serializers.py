@@ -5,7 +5,7 @@ from .models import (
     Course,
     Preparation,
     Activity,
-    Assesment,
+    Assessment,
     Artifact,
     Strategy,
     Node,
@@ -21,7 +21,7 @@ from .models import (
     OutcomeStrategy,
     OutcomePreparation,
     OutcomeActivity,
-    OutcomeAssesment,
+    OutcomeAssessment,
     OutcomeArtifact,
     OutcomeWeek,
     OutcomeCourse,
@@ -519,13 +519,13 @@ class PreparationSerializer(serializers.ModelSerializer):
         return instance
 
 
-class OutcomeAssesmentSerializer(serializers.ModelSerializer):
+class OutcomeAssessmentSerializer(serializers.ModelSerializer):
 
     outcome = OutcomeSerializer()
 
     class Meta:
-        model = OutcomeAssesment
-        fields = ["assesment", "outcome", "added_on", "rank", "id"]
+        model = OutcomeAssessment
+        fields = ["assessment", "outcome", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.title)
@@ -539,16 +539,16 @@ class OutcomeAssesmentSerializer(serializers.ModelSerializer):
         return instance
 
 
-class AssesmentSerializer(serializers.ModelSerializer):
+class AssessmentSerializer(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
 
-    outcomeassesment_set = serializers.SerializerMethodField()
+    outcomeassessment_set = serializers.SerializerMethodField()
 
     class Meta:
-        model = Assesment
+        model = Assessment
         fields = [
             "id",
             "title",
@@ -557,17 +557,17 @@ class AssesmentSerializer(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "hash",
-            "outcomeassesment_set",
+            "outcomeassessment_set",
             "is_original",
-            "parent_assesment",
+            "parent_assessment",
         ]
 
-    def get_outcomeassesment_set(self, instance):
-        links = instance.outcomeassesment_set.all().order_by("rank")
-        return OutcomeAssesmentSerializer(links, many=True).data
+    def get_outcomeassessment_set(self, instance):
+        links = instance.outcomeassessment_set.all().order_by("rank")
+        return OutcomeAssessmentSerializer(links, many=True).data
 
     def create(self, validated_data):
-        return Assesment.objects.create(
+        return Assessment.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
@@ -577,15 +577,15 @@ class AssesmentSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
-        for outcomeassesment_data in self.initial_data.pop(
-            "outcomeassesment_set"
+        for outcomeassessment_data in self.initial_data.pop(
+            "outcomeassessment_set"
         ):
-            outcomeassesment_serializer = OutcomeAssesmentSerializer(
-                OutcomeAssesment.objects.get(id=outcomeassesment_data["id"]),
-                data=outcomeassesment_data,
+            outcomeassessment_serializer = OutcomeAssessmentSerializer(
+                OutcomeAssessment.objects.get(id=outcomeassessment_data["id"]),
+                data=outcomeassessment_data,
             )
-            outcomeassesment_serializer.is_valid()
-            outcomeassesment_serializer.save()
+            outcomeassessment_serializer.is_valid()
+            outcomeassessment_serializer.save()
         instance.save()
         return instance
 
@@ -683,8 +683,8 @@ class WeekLevelComponentSerializer(serializers.ModelSerializer):
             return ActivitySerializer(instance.content_object).data
         elif type(instance.content_object) == Preparation:
             return PreparationSerializer(instance.content_object).data
-        elif type(instance.content_object) == Assesment:
-            return AssesmentSerializer(instance.content_object).data
+        elif type(instance.content_object) == Assessment:
+            return AssessmentSerializer(instance.content_object).data
         else:
             return ArtifactSerializer(instance.content_object).data
 
@@ -693,7 +693,7 @@ class WeekLevelComponentSerializer(serializers.ModelSerializer):
             return 0
         elif type(instance.content_object) == Preparation:
             return 1
-        elif type(instance.content_object) == Assesment:
+        elif type(instance.content_object) == Assessment:
             return 2
         else:
             return 3
@@ -703,8 +703,8 @@ class WeekLevelComponentSerializer(serializers.ModelSerializer):
             return "activity"
         elif type(instance.content_object) == Preparation:
             return "preparation"
-        elif type(instance.content_object) == Assesment:
-            return "assesment"
+        elif type(instance.content_object) == Assessment:
+            return "assessment"
         else:
             return "artifact"
 
@@ -720,9 +720,9 @@ class WeekLevelComponentSerializer(serializers.ModelSerializer):
                 Preparation.objects.get(id=content_object_data["id"]),
                 data=content_object_data,
             )
-        elif type(instance.content_object) == Assesment:
-            content_object_serializer = AssesmentSerializer(
-                Assesment.objects.get(id=content_object_data["id"]),
+        elif type(instance.content_object) == Assessment:
+            content_object_serializer = AssessmentSerializer(
+                Assessment.objects.get(id=content_object_data["id"]),
                 data=content_object_data,
             )
         else:
@@ -966,7 +966,7 @@ class ProgramLevelComponentSerializer(serializers.ModelSerializer):
         if type(instance.content_object) == Course:
             return CourseSerializer(instance.content_object).data
         else:
-            return AssesmentSerializer(instance.content_object).data
+            return AssessmentSerializer(instance.content_object).data
 
     def get_content_type(self, instance):
         if type(instance.content_object) == Course:
@@ -978,7 +978,7 @@ class ProgramLevelComponentSerializer(serializers.ModelSerializer):
         if type(instance.content_object) == Course:
             return "course"
         else:
-            return "assesment"
+            return "assessment"
 
     def update(self, instance, validated_data):
         content_object_data = self.initial_data.pop("content_object")
@@ -988,8 +988,8 @@ class ProgramLevelComponentSerializer(serializers.ModelSerializer):
                 data=content_object_data,
             )
         else:
-            content_object_serializer = AssesmentSerializer(
-                Assesment.objects.get(id=content_object_data["id"]),
+            content_object_serializer = AssessmentSerializer(
+                Assessment.objects.get(id=content_object_data["id"]),
                 data=content_object_data,
             )
         content_object_serializer.is_valid()
@@ -1105,7 +1105,7 @@ serializer_lookups = {
     "node": NodeSerializer,
     "strategy": StrategySerializer,
     "activity": ActivitySerializer,
-    "assesment": AssesmentSerializer,
+    "assessment": AssessmentSerializer,
     "preparation": PreparationSerializer,
     "artifact": ArtifactSerializer,
     "week": WeekSerializer,

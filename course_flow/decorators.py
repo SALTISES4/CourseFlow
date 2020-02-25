@@ -30,7 +30,7 @@ owned_models = [
     "activity",
     "week",
     "course",
-    "assesment",
+    "assessment",
     "week",
     "course",
     "artifact",
@@ -40,7 +40,7 @@ owned_models = [
     "week",
     "course",
 ]
-program_level_owned_models = ["assesment", "program", "course", "program"]
+program_level_owned_models = ["assessment", "program", "course", "program"]
 
 
 def is_owner(model):

@@ -395,7 +395,7 @@ export class DialogForm extends Component {
                       style="min-width:180px;"
                     >
                       <Select.Item value="course">Course</Select.Item>
-                      <Select.Item value="assesment">Assesment</Select.Item>
+                      <Select.Item value="assessment">Assessment</Select.Item>
                     </Select>
                   </div>
                 )}
@@ -408,7 +408,7 @@ export class DialogForm extends Component {
                       style="min-width:180px;"
                     >
                       <Select.Item value="activity">Activity</Select.Item>
-                      <Select.Item value="assesment">Assesment</Select.Item>
+                      <Select.Item value="assessment">Assessment</Select.Item>
                       <Select.Item value="artifact">Artifact</Select.Item>
                       <Select.Item value="preparation">Preparation</Select.Item>
                     </Select>

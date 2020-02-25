@@ -63,10 +63,10 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.AlterModelOptions(
-            name="outcomeassesment",
+            name="outcomeassessment",
             options={
-                "verbose_name": "Outcome-Assesment Link",
-                "verbose_name_plural": "Outcome-Assesment Links",
+                "verbose_name": "Outcome-Assessment Link",
+                "verbose_name_plural": "Outcome-Assessment Links",
             },
         ),
         migrations.AlterModelOptions(

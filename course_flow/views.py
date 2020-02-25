@@ -4,7 +4,7 @@ from .models import (
     Course,
     Preparation,
     Activity,
-    Assesment,
+    Assessment,
     Artifact,
     Strategy,
     Node,
@@ -30,7 +30,7 @@ from .serializers import (
     ProgramLevelComponentSerializer,
     WeekSerializer,
     ArtifactSerializer,
-    AssesmentSerializer,
+    AssessmentSerializer,
     PreparationSerializer,
 )
 from .decorators import ajax_login_required, is_owner, is_parent_owner
@@ -451,14 +451,14 @@ def duplicate_component(component: Component, author: User) -> Component:
                 parent_preparation=component.content_object,
             )
         )
-    elif type(component.content_object) == Assesment:
+    elif type(component.content_object) == Assessment:
         new_component = Component.objects.create(
-            content_object=Assesment.objects.create(
+            content_object=Assessment.objects.create(
                 title=component.content_object.title,
                 description=component.content_object.description,
                 author=author,
                 is_original=False,
-                parent_assesment=component.content_object,
+                parent_assessment=component.content_object,
             )
         )
     elif type(component.content_object) == Activity:
@@ -521,6 +521,7 @@ def setup_link_to_group(course_pk, students) -> Course:
     clone = duplicate_course(course, course.author)
     clone.static = True
     clone.save()
+    course.students.add(students)
     for week in clone.weeks.all():
         for component in week.components.exclude(
             content_type=ContentType.objects.get_for_model(Activity)
@@ -535,6 +536,7 @@ def setup_link_to_group(course_pk, students) -> Course:
             activity = component.content_object
             activity.static = True
             activity.save()
+            activity.students.add(students)
             for strategy in activity.strategies.all():
                 for node in strategy.nodes.all():
                     for student in students:
@@ -545,26 +547,12 @@ def setup_link_to_group(course_pk, students) -> Course:
 
 
 def setup_unlink_from_group(course_pk):
-    course = Course.objects.get(pk=course_pk)
-    for week in course.weeks.all():
-        for component in week.components.exclude(
-            content_type=ContentType.objects.get_for_model(Activity)
-        ):
-            component.content_object.delete()
-        for component in week.components.filter(
-            content_type=ContentType.objects.get_for_model(Activity)
-        ):
-            activity = component.content_object
-            for strategy in activity.strategies.all():
-                strategy.nodes.all().delete()
-                strategy.delete()
-            activity.delete()
-        week.delete()
-    course.delete()
+    Course.objects.get(pk=course_pk).delete()
     return "done"
 
 
 def remove_student_from_group(student, course):
+    course.students.remove(student)
     for week in course.weeks.all():
         for component in week.components.exclude(
             content_type=ContentType.objects.get_for_model(Activity)
@@ -576,8 +564,7 @@ def remove_student_from_group(student, course):
             content_type=ContentType.objects.get_for_model(Activity)
         ):
             activity = component.content_object
-            activity.static = True
-            activity.save()
+            activity.students.remove(student)
             for strategy in activity.strategies.all():
                 for node in strategy.nodes.all():
                     NodeCompletionStatus.objects.get(
@@ -586,6 +573,7 @@ def remove_student_from_group(student, course):
 
 
 def add_student_to_group(student, course):
+    course.students.add(student)
     for week in course.weeks.all():
         for component in week.components.exclude(
             content_type=ContentType.objects.get_for_model(Activity)
@@ -597,8 +585,7 @@ def add_student_to_group(student, course):
             content_type=ContentType.objects.get_for_model(Activity)
         ):
             activity = component.content_object
-            activity.static = True
-            activity.save()
+            activity.students.add(student)
             for strategy in activity.strategies.all():
                 for node in strategy.nodes.all():
                     NodeCompletionStatus.objects.create(
@@ -678,6 +665,11 @@ def get_component_completion_status(request: HttpRequest) -> HttpResponse:
 def add_component_to_course(request: HttpRequest) -> HttpResponse:
     week = Week.objects.get(pk=request.POST.get("weekPk"))
     component = Component.objects.get(pk=request.POST.get("componentPk"))
+
+    if ComponentWeek.objects.filter(week=week, component=component):
+        component = duplicate_component(component)
+        component.title += " (duplicate)"
+        component.save()
 
     try:
         for link in ComponentWeek.objects.filter(week=week):
@@ -783,20 +775,20 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
             except ValidationError:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
-    elif model == "assesment":
+    elif model == "assessment":
         del data["work_classification"], data["activity_classification"]
         data["parent_activity"] = None
-        serializer = AssesmentSerializer(data=data)
+        serializer = AssessmentSerializer(data=data)
         if parent_id:
             if serializer.is_valid():
-                assesment = serializer.save()
+                assessment = serializer.save()
             else:
                 return JsonResponse({"action": "error"})
             try:
                 if is_program_level:
                     program = Program.objects.get(id=parent_id)
                     component = Component.objects.create(
-                        content_object=assesment
+                        content_object=assessment
                     )
                     for link in ComponentProgram.objects.filter(
                         program=program
@@ -809,7 +801,7 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
                 else:
                     week = Week.objects.get(id=parent_id)
                     component = Component.objects.create(
-                        content_object=assesment
+                        content_object=assessment
                     )
                     for link in ComponentWeek.objects.filter(week=week):
                         link.rank += 1

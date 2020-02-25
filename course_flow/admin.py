@@ -5,7 +5,7 @@ from .models import (
     Strategy,
     Activity,
     Preparation,
-    Assesment,
+    Assessment,
     Artifact,
     Component,
     Week,
@@ -22,7 +22,7 @@ admin.site.register(Node)
 admin.site.register(Strategy)
 admin.site.register(Activity)
 admin.site.register(Preparation)
-admin.site.register(Assesment)
+admin.site.register(Assessment)
 admin.site.register(Artifact)
 admin.site.register(Component)
 admin.site.register(Week)

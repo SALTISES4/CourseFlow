@@ -424,7 +424,7 @@ class BulkTestCase(StaticLiveServerTestCase):
             selenium.find_elements_by_class_name("mdc-select__native-control")[
                 0
             ]
-        ).select_by_value("assesment")
+        ).select_by_value("assessment")
         title.send_keys(component_title)
         description.send_keys(component_description)
 
@@ -590,7 +590,7 @@ class BulkTestCase(StaticLiveServerTestCase):
             selenium.find_elements_by_class_name("mdc-select__native-control")[
                 0
             ]
-        ).select_by_value("assesment")
+        ).select_by_value("assessment")
         component_title = "test component title"
         component_description = "test component description"
 
@@ -1236,7 +1236,7 @@ class ModelPostTest(TestCase):
         author = get_author()
         week = make_object("week", author)
         for component_type in [
-            "assesment",
+            "assessment",
             "artifact",
             "preparation",
             "activity",
@@ -1253,7 +1253,7 @@ class ModelPostTest(TestCase):
         author = get_author()
         week = make_object("week", author)
         for component_type in [
-            "assesment",
+            "assessment",
             "artifact",
             "preparation",
             "activity",
@@ -1269,7 +1269,7 @@ class ModelPostTest(TestCase):
         user = login(self)
         week = make_object("week", user)
         for component_type in [
-            "assesment",
+            "assessment",
             "artifact",
             "preparation",
             "activity",
@@ -1313,7 +1313,7 @@ class ModelPostTest(TestCase):
     def test_add_program_level_component_permissions_no_login(self):
         author = get_author()
         program = make_object("program", author)
-        for component_type in ["course", "assesment"]:
+        for component_type in ["course", "assessment"]:
             component = make_component(component_type, author)
             response = self.client.post(
                 reverse("course_flow:add-component-to-program"),
@@ -1325,7 +1325,7 @@ class ModelPostTest(TestCase):
         login(self)
         author = get_author()
         program = make_object("program", author)
-        for component_type in ["course", "assesment"]:
+        for component_type in ["course", "assessment"]:
             component = make_component(component_type, author)
             response = self.client.post(
                 reverse("course_flow:add-component-to-program"),
@@ -1336,7 +1336,7 @@ class ModelPostTest(TestCase):
     def test_add_program_level_component(self):
         user = login(self)
         program = make_object("program", user)
-        for component_type in ["course", "assesment"]:
+        for component_type in ["course", "assessment"]:
             component = make_component(component_type, user)
             response = self.client.post(
                 reverse("course_flow:add-component-to-program"),

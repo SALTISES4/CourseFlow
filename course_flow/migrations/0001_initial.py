@@ -83,7 +83,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name="Assesment",
+            name="Assessment",
             fields=[
                 (
                     "id",
@@ -824,7 +824,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name="OutcomeAssesment",
+            name="OutcomeAssessment",
             fields=[
                 (
                     "id",
@@ -838,10 +838,10 @@ class Migration(migrations.Migration):
                 ("added_on", models.DateTimeField(auto_now_add=True)),
                 ("rank", models.PositiveIntegerField(default=0)),
                 (
-                    "assesment",
+                    "assessment",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="course_flow.Assesment",
+                        to="course_flow.Assessment",
                     ),
                 ),
                 (
@@ -992,21 +992,21 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.AddField(
-            model_name="assesment",
+            model_name="assessment",
             name="outcomes",
             field=models.ManyToManyField(
                 blank=True,
-                through="course_flow.OutcomeAssesment",
+                through="course_flow.OutcomeAssessment",
                 to="course_flow.Outcome",
             ),
         ),
         migrations.AddField(
-            model_name="assesment",
-            name="parent_assesment",
+            model_name="assessment",
+            name="parent_assessment",
             field=models.ForeignKey(
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
-                to="course_flow.Assesment",
+                to="course_flow.Assessment",
             ),
         ),
         migrations.AddField(
