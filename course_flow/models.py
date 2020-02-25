@@ -598,7 +598,7 @@ def delete_attached_component(sender, instance, **kwargs):
 def delete_course_objects(sender, instance, **kwargs):
     if instance.static:
         for week in instance.weeks.all():
-            for component in week.components:
+            for component in week.components.all():
                 component.content_object.delete()
     instance.weeks.all().delete()
 
