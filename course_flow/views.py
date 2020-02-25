@@ -526,17 +526,22 @@ def setup_link_to_group(course_pk, students) -> Course:
         for component in week.components.exclude(
             content_type=ContentType.objects.get_for_model(Activity)
         ):
+            print(students, component)
             component.students.add(*students)
         for component in week.components.filter(
             content_type=ContentType.objects.get_for_model(Activity)
         ):
+            print(students, component)
             activity = component.content_object
             activity.static = True
             activity.save()
             activity.students.add(*students)
             for strategy in activity.strategies.all():
                 for node in strategy.nodes.all():
+                    print(students, node)
                     node.students.add(*students)
+                    print(node.students.all())
+                    print(NodeCompletionStatus.objects.filter(node=node))
     return clone
 
 
