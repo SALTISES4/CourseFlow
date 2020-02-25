@@ -414,6 +414,7 @@
           const completionStatus = await getCompletionStatus(
             d3.select(this.parentNode).node().__data__.node.id
           );
+          console.log(completionStatus);
           if (completionStatus) {
             return "{% static 'course_flow/img/info-green.svg' %}";
           } else {
@@ -442,6 +443,7 @@
     }
 
     async function getCompletionStatus(nodePk) {
+      console.log(nodePk);
       let resp = await $.get(
         "{% url 'course_flow:get-node-completion-status' %}",
         {
