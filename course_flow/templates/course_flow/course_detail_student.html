@@ -403,17 +403,16 @@
         .attr("y", `${10}`)
         .attr("width", `${31}`)
         .attr("height", `${31}`)
-        .attr("xlink:href", function(d, i) {
+        .attr("xlink:href", async function(d, i) {
+          const completionStatus = await getCompletionStatus(
+            d3.select(this.parentNode).node().__data__.component.id
+          );
           if (
             d3.select(this.parentNode).node().__data__.component
               .content_type_in_text == "activity"
           ) {
             return "{% static 'course_flow/img/pageview-grey.svg' %}";
-          } else if (
-            getCompletionStatus(
-              d3.select(this.parentNode).node().__data__.component.id
-            )
-          ) {
+          } else if (completionStatus) {
             return "{% static 'course_flow/img/info-green.svg' %}";
           } else {
             return "{% static 'course_flow/img/info-24px.svg' %}";
@@ -447,6 +446,7 @@
           componentPk: componentPk
         }
       );
+      console.log(resp.completion_status);
       return resp.completion_status;
     }
   });
