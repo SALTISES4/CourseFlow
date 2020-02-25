@@ -410,9 +410,9 @@
         .attr("y", `${nodeHeight - 90}`)
         .attr("width", `${31}`)
         .attr("height", `${31}`)
-        .attr("xlink:href", async function(d, i) {
+        .attr("xlink:href", function(d, i) {
           if (
-            await getCompletionStatus(
+            getCompletionStatus(
               d3.select(this.parentNode).node().__data__.node.id
             )
           ) {
@@ -449,7 +449,7 @@
           nodePk: nodePk
         }
       );
-      return data.completion_status;
+      return resp.completion_status;
     }
   });
 </script>
