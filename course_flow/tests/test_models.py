@@ -1287,28 +1287,8 @@ class ModelPostTest(TestCase):
                 ).rank,
                 0,
             )
-            if component_type is not "activity":
-                self.assertNotEqual(new_component, component)
-                self.assertNotEqual(
-                    new_component.content_object, component.content_object
-                )
-                self.assertEqual(
-                    new_component.content_object.title,
-                    component.content_object.title,
-                )
-                self.assertEqual(
-                    new_component.content_object.description,
-                    component.content_object.description,
-                )
-                self.assertEqual(
-                    new_component.content_object.author,
-                    component.content_object.author,
-                )
-                self.assertEqual(new_component.content_object.author, user)
-                self.assertFalse(new_component.content_object.is_original)
-            else:
-                self.assertEqual(new_component, component)
-                self.assertTrue(new_component.content_object.is_original)
+            self.assertEqual(new_component, component)
+            self.assertTrue(new_component.content_object.is_original)
 
     def test_add_program_level_component_permissions_no_login(self):
         author = get_author()
@@ -1350,22 +1330,5 @@ class ModelPostTest(TestCase):
                 ).rank,
                 0,
             )
-            if component_type is not "course":
-                self.assertNotEqual(new_component, component)
-                self.assertEqual(
-                    new_component.content_object.title,
-                    component.content_object.title,
-                )
-                self.assertEqual(
-                    new_component.content_object.description,
-                    component.content_object.description,
-                )
-                self.assertEqual(
-                    new_component.content_object.author,
-                    component.content_object.author,
-                )
-                self.assertEqual(new_component.content_object.author, user)
-                self.assertFalse(new_component.content_object.is_original)
-            else:
-                self.assertEqual(new_component, component)
-                self.assertTrue(new_component.content_object.is_original)
+            self.assertEqual(new_component, component)
+            self.assertTrue(new_component.content_object.is_original)
