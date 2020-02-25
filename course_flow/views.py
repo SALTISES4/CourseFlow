@@ -526,10 +526,7 @@ def setup_link_to_group(course_pk, students) -> Course:
         for component in week.components.exclude(
             content_type=ContentType.objects.get_for_model(Activity)
         ):
-            for student in students:
-                ComponentCompletionStatus.objects.create(
-                    student=student, component=component
-                )
+            component.students.add(*students)
         for component in week.components.filter(
             content_type=ContentType.objects.get_for_model(Activity)
         ):
@@ -539,10 +536,7 @@ def setup_link_to_group(course_pk, students) -> Course:
             activity.students.add(*students)
             for strategy in activity.strategies.all():
                 for node in strategy.nodes.all():
-                    for student in students:
-                        NodeCompletionStatus.objects.create(
-                            student=student, node=node
-                        )
+                    node.students.add(*students)
     return clone
 
 
@@ -597,15 +591,11 @@ def add_student_to_group(student, course):
 @ajax_login_required
 def switch_node_completion_status(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("pk"))
+    is_completed = request.POST.get("isCompleted")
 
-    try:
-        status = NodeCompletionStatus.objects.get(
-            node=node, student=request.user
-        )
-        status.is_completed = not status.is_completed
-        status.save()
-    except:
-        return JsonResponse({"action": "error"})
+    status = NodeCompletionStatus.objects.get(node=node, student=request.user)
+    status.is_completed = is_completed
+    status.save()
 
     return JsonResponse({"action": "posted"})
 
@@ -614,12 +604,13 @@ def switch_node_completion_status(request: HttpRequest) -> HttpResponse:
 @ajax_login_required
 def switch_component_completion_status(request: HttpRequest) -> HttpResponse:
     component = Component.objects.get(pk=request.POST.get("pk"))
+    is_completed = request.POST.get("isCompleted")
 
     # try:
     status = ComponentCompletionStatus.objects.get(
         component=component, student=request.user
     )
-    status.is_completed = not status.is_completed
+    status.is_completed = is_completed
     status.save()
     # except:
     #    return JsonResponse({"action": "error"})

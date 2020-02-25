@@ -647,7 +647,8 @@ function getCsrfToken() {
 
 function switchCompletion(component) {
   $.post(component.props.switchURL, {
-    pk: JSON.stringify(component.state.object.id)
+    pk: JSON.stringify(component.state.object.id),
+    isCompleted: JSON.stringify(component.state.isCompleted)
   })
     .done(function(data) {
       if (data.action == "posted") {
