@@ -403,14 +403,14 @@
         .attr("y", `${10}`)
         .attr("width", `${31}`)
         .attr("height", `${31}`)
-        .attr("xlink:href", async function(d, i) {
+        .attr("xlink:href", function(d, i) {
           if (
             d3.select(this.parentNode).node().__data__.component
               .content_type_in_text == "activity"
           ) {
             return "{% static 'course_flow/img/pageview-grey.svg' %}";
           } else if (
-            await getCompletionStatus(
+            getCompletionStatus(
               d3.select(this.parentNode).node().__data__.component.id
             )
           ) {
