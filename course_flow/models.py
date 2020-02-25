@@ -597,7 +597,7 @@ def delete_attached_component(sender, instance, **kwargs):
 @receiver(pre_delete, sender=Course)
 def delete_course_objects(sender, instance, **kwargs):
     if instance.static:
-        for week in instance.weeks:
+        for week in instance.weeks.all():
             for component in week.components:
                 component.content_object.delete()
     instance.weeks.all().delete()
@@ -624,7 +624,7 @@ def create_completion_statuses(sender, instance, created, **kwargs):
                     strategies=Strategy.objects.filter(nodes=instance).first()
                 ).first()
                 if activity.static:
-                    for student in activity.students:
+                    for student in activity.students.all():
                         NodeCompletionStatus.objects.create(
                             student=student, node=instance
                         )
@@ -642,7 +642,7 @@ def create_completion_statuses(sender, instance, created, **kwargs):
                         week=Week.objects.filter(components=instance).first()
                     ).first()
                     if course.static:
-                        for student in course.students:
+                        for student in course.students.all():
                             ComponentCompletionStatus.objects.create(
                                 student=student, component=instance
                             )
