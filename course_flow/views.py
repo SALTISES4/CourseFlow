@@ -521,7 +521,7 @@ def setup_link_to_group(course_pk, students) -> Course:
     clone = duplicate_course(course, course.author)
     clone.static = True
     clone.save()
-    course.students.add(students)
+    course.students.add(*students)
     for week in clone.weeks.all():
         for component in week.components.exclude(
             content_type=ContentType.objects.get_for_model(Activity)
@@ -536,7 +536,7 @@ def setup_link_to_group(course_pk, students) -> Course:
             activity = component.content_object
             activity.static = True
             activity.save()
-            activity.students.add(students)
+            activity.students.add(*students)
             for strategy in activity.strategies.all():
                 for node in strategy.nodes.all():
                     for student in students:

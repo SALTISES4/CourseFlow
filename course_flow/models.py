@@ -663,7 +663,7 @@ def switch_activity_to_static(sender, instance, pk_set, action, **kwargs):
                     activity.static = True
                     activity.save()
                     activity.students.add(
-                        Course.objects.filter(week=instance)
+                        *Course.objects.filter(week=instance)
                         .first()
                         .students.all()
                     )
