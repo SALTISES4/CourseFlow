@@ -438,8 +438,10 @@
           xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
         }
       },
-      success: function() {
-        fetchThenRenderActivity();
+      success: function(resp) {
+        if resp.action != "got" {
+          fetchThenRenderActivity();
+        }
       }
     });
 
