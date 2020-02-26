@@ -403,7 +403,7 @@
         .attr("y", `${10}`)
         .attr("width", `${31}`)
         .attr("height", `${31}`)
-        .attr("xlink:href", async function(d, i) {
+        .each(async function() {
           if (
             d3.select(this.parentNode).node().__data__.component
               .content_type_in_text == "activity"
@@ -414,9 +414,17 @@
               d3.select(this.parentNode).node().__data__.component.id
             );
             if (completionStatus) {
-              return "{% static 'course_flow/img/info-green.svg' %}";
+              console.log("Completion status is true");
+              d3.select(this).attr(
+                "xlink:href",
+                "{% static 'course_flow/img/info-green.svg' %}"
+              );
             } else {
-              return "{% static 'course_flow/img/info-24px.svg' %}";
+              console.log("Completion status is not true");
+              d3.select(this).attr(
+                "xlink:href",
+                "{% static 'course_flow/img/info-24px.svg' %}"
+              );
             }
           }
         });
@@ -428,6 +436,11 @@
       beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
           xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+        }
+      },
+      success: function(resp) {
+        if (resp.action != "got") {
+          fetchThenRenderCourse();
         }
       }
     });
