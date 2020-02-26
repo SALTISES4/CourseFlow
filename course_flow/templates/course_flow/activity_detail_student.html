@@ -410,19 +410,20 @@
         .attr("y", `${nodeHeight - 90}`)
         .attr("width", `${31}`)
         .attr("height", `${31}`)
-        .attr("xlink:href", async function(d, i) {
+        .each(async el => {
           const completionStatus = await getCompletionStatus(
             d3.select(this.parentNode).node().__data__.node.id
           );
-          console.log("outside if", completionStatus);
           if (completionStatus) {
             console.log("Completion status is true");
-            return "{% static 'course_flow/img/info-green.svg' %}";
+            d3.select(el).attr("xlink:href","{% static 'course_flow/img/info-green.svg' %}");
           } else {
             console.log("Completion status is not true");
-            return "{% static 'course_flow/img/info-24px.svg' %}";
+            d3.select(el).attr("xlink:href","{% static 'course_flow/img/info-24px.svg' %}");
           }
         });
+
+        };
 
       renderNodeLinks(svg);
     }
