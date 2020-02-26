@@ -408,7 +408,10 @@
             d3.select(this.parentNode).node().__data__.component
               .content_type_in_text == "activity"
           ) {
-            return "{% static 'course_flow/img/pageview-grey.svg' %}";
+            d3.select(this).attr(
+              "xlink:href",
+              "{% static 'course_flow/img/pageview-grey.svg' %}"
+            );
           } else {
             const completionStatus = await getCompletionStatus(
               d3.select(this.parentNode).node().__data__.component.id
