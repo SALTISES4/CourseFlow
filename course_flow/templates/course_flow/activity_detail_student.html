@@ -412,7 +412,7 @@
         .attr("height", `${31}`)
         .each(async el => {
           const completionStatus = await getCompletionStatus(
-            d3.select(this.parentNode).node().__data__.node.id
+            d3.select(el.parentNode).node().__data__.node.id
           );
           if (completionStatus) {
             console.log("Completion status is true");
