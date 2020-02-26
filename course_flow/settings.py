@@ -28,6 +28,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+TEACHER_GROUP = "Teacher"
+
 ADMINS = [("John", "john@example.com"), ("Mary", "mary@example.com")]
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

@@ -42,11 +42,13 @@ from rest_framework.renderers import JSONRenderer
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.db.models import Count
 import json
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 from .forms import RegistrationForm
 from django.shortcuts import render, redirect
 from django.db.models import ProtectedError
@@ -105,15 +107,27 @@ class ProgramViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Program.objects.all()
 
 
-class ProgramDetailView(LoginRequiredMixin, DetailView):
+class ProgramDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Program
     template_name = "course_flow/program_detail.html"
 
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
 
-class ProgramCreateView(LoginRequiredMixin, CreateView):
+
+class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Program
     fields = ["title", "description"]
     template_name = "course_flow/program_create.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -164,9 +178,15 @@ class ProgramUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         )
 
 
-class CourseDetailView(LoginRequiredMixin, DetailView):
+class CourseDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Course
     template_name = "course_flow/course_detail.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
 
 
 class StudentCourseDetailView(LoginRequiredMixin, DetailView):
@@ -174,10 +194,16 @@ class StudentCourseDetailView(LoginRequiredMixin, DetailView):
     template_name = "course_flow/course_detail_student.html"
 
 
-class CourseCreateView(LoginRequiredMixin, CreateView):
+class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Course
     fields = ["title", "description"]
     template_name = "course_flow/course_create.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -228,9 +254,15 @@ class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         )
 
 
-class ActivityDetailView(LoginRequiredMixin, DetailView):
+class ActivityDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Activity
     template_name = "course_flow/activity_detail.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
 
 
 class StudentActivityDetailView(LoginRequiredMixin, DetailView):
@@ -238,10 +270,16 @@ class StudentActivityDetailView(LoginRequiredMixin, DetailView):
     template_name = "course_flow/activity_detail_student.html"
 
 
-class ActivityCreateView(LoginRequiredMixin, CreateView):
+class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Activity
     fields = ["title", "description"]
     template_name = "course_flow/activity_create.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
