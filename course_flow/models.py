@@ -389,6 +389,13 @@ class Component(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
 
+    students = models.ManyToManyField(
+        User,
+        related_name="assigned_componenets",
+        through="ComponentCompletionStatus",
+        blank=True,
+    )
+
     def __str__(self):
         return (
             self.content_type.model_class()
