@@ -416,14 +416,18 @@
           );
           if (completionStatus) {
             console.log("Completion status is true");
-            d3.select(el).attr("xlink:href","{% static 'course_flow/img/info-green.svg' %}");
+            d3.select(el).attr(
+              "xlink:href",
+              "{% static 'course_flow/img/info-green.svg' %}"
+            );
           } else {
             console.log("Completion status is not true");
-            d3.select(el).attr("xlink:href","{% static 'course_flow/img/info-24px.svg' %}");
+            d3.select(el).attr(
+              "xlink:href",
+              "{% static 'course_flow/img/info-24px.svg' %}"
+            );
           }
         });
-
-        };
 
       renderNodeLinks(svg);
     }
