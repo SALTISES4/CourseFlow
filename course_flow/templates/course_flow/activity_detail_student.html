@@ -410,19 +410,19 @@
         .attr("y", `${nodeHeight - 90}`)
         .attr("width", `${31}`)
         .attr("height", `${31}`)
-        .each(async el => {
+        .each(async function() {
           const completionStatus = await getCompletionStatus(
-            d3.select(el.parentNode).node().__data__.node.id
+            d3.select(this.parentNode).node().__data__.node.id
           );
           if (completionStatus) {
             console.log("Completion status is true");
-            d3.select(el).attr(
+            d3.select(this).attr(
               "xlink:href",
               "{% static 'course_flow/img/info-green.svg' %}"
             );
           } else {
             console.log("Completion status is not true");
-            d3.select(el).attr(
+            d3.select(this).attr(
               "xlink:href",
               "{% static 'course_flow/img/info-24px.svg' %}"
             );
