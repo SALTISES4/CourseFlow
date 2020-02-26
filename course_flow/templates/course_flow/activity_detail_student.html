@@ -410,11 +410,11 @@
         .attr("y", `${nodeHeight - 90}`)
         .attr("width", `${31}`)
         .attr("height", `${31}`)
-        .attr("xlink:href", function(d, i) {
-          const completionStatus = getCompletionStatus(
+        .attr("xlink:href", async function(d, i) {
+          const completionStatus = await getCompletionStatus(
             d3.select(this.parentNode).node().__data__.node.id
           );
-          console.log(completionStatus);
+          console.log("outside if", completionStatus);
           if (completionStatus) {
             console.log("Completion status is true");
             return "{% static 'course_flow/img/info-green.svg' %}";
@@ -445,15 +445,13 @@
     }
 
     async function getCompletionStatus(nodePk) {
-      console.log(nodePk);
       let resp = await $.get(
         "{% url 'course_flow:get-node-completion-status' %}",
         {
           nodePk: nodePk
         }
       );
-      console.log(resp.completion_status);
-      console.log(resp);
+      console.log("getCompletionStatus 1", resp);
       return resp.completion_status;
     }
   });
