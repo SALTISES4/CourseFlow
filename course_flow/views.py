@@ -740,11 +740,11 @@ def get_component_completion_status_count(
 
     status_count = ComponentCompletionStatus.objects.filter(
         component=Component.objects.get(pk=request.GET.get("componentPk")), is_completed=True
-    ).count()
-    print(status_count)
+    )
+    print(status_count, status_count.count())
 
     return JsonResponse(
-        {"action": "got", "completion_status_count": status_count}
+        {"action": "got", "completion_status_count": status_count.count()}
     )
 
 
