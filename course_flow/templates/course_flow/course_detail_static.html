@@ -406,6 +406,7 @@
           const completionStatusCount = await getCompletionStatusCount(
             d.component.id
           );
+          console.log(completionStatusCount);
           d3.select(this)
             .append("text")
             .attr("class", "component-completion-count")

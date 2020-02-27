@@ -1,4 +1,4 @@
-{% load static i18n %} {% get_current_language as LANGUAGE_CODE %}
+{% load static compress i18n %} {% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
 <html lang="{{LANGUAGE_CODE}}">
   <head>
@@ -40,27 +40,34 @@
     ></script>
 
     <!-- Internal resources -->
-
+    {% compress js %}
     <script
       src="{% static 'course_flow/js/scripts.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
-
+    {% endcompress %}
+    <!-- -->
+    {% compress js %}
     <script
       src="{% static 'user_feedback/js/scripts.min.js' %}"
       defer="true"
     ></script>
-
+    {% endcompress %}
     <!-- * CSS -->
+    {% compress css %}
     <link
       rel="stylesheet"
       href="{% static 'course_flow/css/preact_styles.css' %}"
     />
+    {% endcompress %}
+    <!--  -->
+    {% compress css %}
     <link
       rel="stylesheet"
       href="{% static 'course_flow/css/base_style.css' %}"
     />
+    {% endcompress %}
     <style nonce="{{ request.csp_nonce }}">
       #user-feedback-button {
         color: #1976bc;

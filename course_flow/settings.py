@@ -35,6 +35,7 @@ ADMINS = [("John", "john@example.com"), ("Mary", "mary@example.com")]
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 INSTALLED_APPS = [
+    "compressor",
     "django_lti_tool_provider",
     "user_feedback.apps.UserFeedbackConfig",
     "course_flow.apps.CourseFlowConfig",
