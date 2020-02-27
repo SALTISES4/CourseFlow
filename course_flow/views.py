@@ -578,7 +578,7 @@ def setup_link_to_group(course_pk, students) -> Course:
     clone = duplicate_course(course, course.author)
     clone.static = True
     clone.save()
-    course.students.add(*students)
+    clone.students.add(*students)
     for week in clone.weeks.all():
         for component in week.components.exclude(
             content_type=ContentType.objects.get_for_model(Activity)
@@ -733,17 +733,20 @@ def get_node_completion_status_count(request: HttpRequest) -> HttpResponse:
     )
 
 
-@ajax_login_required
 def get_component_completion_status_count(request):
 
     print(request, request.GET.get("componentPk"))
 
-    print(ComponentCompletionStatus.objects.filter(
-        component=Component.objects.get(pk=request.GET.get("componentPk")), is_completed=True
-    ))
+    print(
+        ComponentCompletionStatus.objects.filter(
+            component=Component.objects.get(pk=request.GET.get("componentPk")),
+            is_completed=True,
+        )
+    )
 
     status_count = ComponentCompletionStatus.objects.filter(
-        component=Component.objects.get(pk=request.GET.get("componentPk")), is_completed=True
+        component=Component.objects.get(pk=request.GET.get("componentPk")),
+        is_completed=True,
     )
     print(status_count, status_count.count())
 
