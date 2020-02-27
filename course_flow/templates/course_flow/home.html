@@ -209,6 +209,52 @@
     {% endfor %}
     <!-- -->
     <h2>
+      Your Courses Linked to Groups
+    </h2>
+    <br />
+    <!-- -->
+    {% for course in owned_static_courses %}
+
+    <div class="mdc-card" id="card">
+      <div class="mdc-typography--title">{{ course.title }}</div>
+      <div class="mdc-typography--caption">
+        {% if course.author %}Created by {{ course.author.username }}{% endif %}
+      </div>
+      <div class="mdc-typography--body1">{{ course.description }}</div>
+      <div class="mdc-card__actions">
+        <div class="mdc-card__action-buttons">
+          <div class="mdc-typography--caption caption">
+            <div>Published on {{ course.created_on }}</div>
+          </div>
+        </div>
+        <div class="mdc-card__action-icons">
+          {% if user.pk is course.author.pk %}
+          <!-- -->
+          <a href="{% url 'course_flow:course-update' pk=course.id %}">
+            <!-- -->
+            <img
+              class="link-image"
+              src="{% static 'course_flow/img/pencil-blue.svg' %}"
+            />
+          </a>
+          <!-- -->
+          {% else %}
+          <!-- -->
+          <a href="{% url 'course_flow:course-detail-view' pk=course.id %}"
+            ><img
+              class="link-image"
+              src="{% static 'course_flow/img/pageview-24px.svg' %}"
+          /></a>
+          <!-- -->
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>{% trans "You haven't connnected a course to a group yet." %}</p>
+    {% endfor %}
+    <!-- -->
+    <h2>
       Your Activities
       <a href="{% url 'course_flow:activity-create' %}"
         ><img
@@ -339,7 +385,8 @@
           <!-- -->
           {% else %}
           <!-- -->
-          <a href="{% url 'course_flow:course-detail-view' pk=course.id %}"
+          <a
+            href="{% url 'course_flow:static-course-detail-view' pk=course.id %}"
             ><img
               class="link-image"
               src="{% static 'course_flow/img/pageview-24px.svg' %}"

@@ -52,6 +52,11 @@ def flow_patterns():
             name="course-detail-view",
         ),
         url(
+            r"^course/(?P<pk>[0-9]+)/static/$",
+            views.StaticCourseDetailView.as_view(),
+            name="static-course-detail-view",
+        ),
+        url(
             r"^course/(?P<pk>[0-9]+)/student/$",
             views.StudentCourseDetailView.as_view(),
             name="student-course-detail-view",
@@ -70,6 +75,11 @@ def flow_patterns():
             r"^activity/(?P<pk>[0-9]+)/$",
             views.ActivityDetailView.as_view(),
             name="activity-detail-view",
+        ),
+        url(
+            r"^activity/(?P<pk>[0-9]+)/static/$",
+            views.StaticActivityDetailView.as_view(),
+            name="static-activity-detail-view",
         ),
         url(
             r"^activity/(?P<pk>[0-9]+)/student/$",
@@ -159,6 +169,16 @@ def flow_patterns():
             r"^component/get-completion-status",
             views.get_component_completion_status,
             name="get-component-completion-status",
+        ),
+        url(
+            r"^node/get-completion-status-count",
+            views.get_node_completion_status_count,
+            name="get-node-completion-status-count",
+        ),
+        url(
+            r"^component/get-completion-status-count",
+            views.get_component_completion_status_count,
+            name="get-component-completion-status-count",
         ),
     ] + router.urls
 

@@ -77,11 +77,20 @@ def registration_view(request):
 def home_view(request):
     context = {
         "programs": Program.objects.exclude(author=request.user),
-        "courses": Course.objects.exclude(author=request.user),
-        "activities": Activity.objects.exclude(author=request.user),
+        "courses": Course.objects.exclude(author=request.user, static=False),
+        "activities": Activity.objects.exclude(
+            author=request.user, static=False
+        ),
         "owned_programs": Program.objects.filter(author=request.user),
-        "owned_courses": Course.objects.filter(author=request.user),
-        "owned_activities": Activity.objects.filter(author=request.user),
+        "owned_courses": Course.objects.filter(
+            author=request.user, static=False
+        ),
+        "owned_activities": Activity.objects.filter(
+            author=request.user, static=False
+        ),
+        "owned_static_courses": Course.objects.filter(
+            author=request.user, static=True
+        ),
     }
     return render(request, "course_flow/home.html", context)
 
@@ -189,6 +198,11 @@ class CourseDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         )
 
 
+class StaticCourseDetailView(LoginRequiredMixin, DetailView):
+    model = Course
+    template_name = "course_flow/course_detail_static.html"
+
+
 class StudentCourseDetailView(LoginRequiredMixin, DetailView):
     model = Course
     template_name = "course_flow/course_detail_student.html"
@@ -263,6 +277,11 @@ class ActivityDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             Group.objects.get(name=settings.TEACHER_GROUP)
             in self.request.user.groups.all()
         )
+
+
+class StaticActivityDetailView(LoginRequiredMixin, DetailView):
+    model = Activity
+    template_name = "course_flow/activity_detail_static.html"
 
 
 class StudentActivityDetailView(LoginRequiredMixin, DetailView):
@@ -698,6 +717,38 @@ def get_component_completion_status(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse(
         {"action": "got", "completion_status": status.is_completed}
+    )
+
+
+@ajax_login_required
+def get_node_completion_status_count(request: HttpRequest) -> HttpResponse:
+
+    try:
+        status_count = NodeCompletionStatus.objects.filter(
+            node=Node.objects.get(pk=request.GET.get("nodePk"))
+        ).count()
+    except:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse(
+        {"action": "got", "completion_status_count": status_count}
+    )
+
+
+@ajax_login_required
+def get_component_completion_status_count(
+    request: HttpRequest
+) -> HttpResponse:
+
+    try:
+        status_count = ComponentCompletionStatus.objects.filter(
+            component=Component.objects.get(pk=request.GET.get("componentPk"))
+        ).count()
+    except:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse(
+        {"action": "got", "completion_status_count": status_count}
     )
 
 
