@@ -409,9 +409,10 @@
           console.log(d.component.id, completionStatusCount);
           d3.select(this)
             .append("text")
+            .attr("text-achor", "end")
             .attr("class", "component-completion-count")
-            .attr("x", "15")
-            .attr("y", "60")
+            .attr("x", componentWidth)
+            .attr("y", "10")
             .attr("dy", 6)
             .style("font-size", 12)
             .text(completionStatusCount + "/{{ object.students.count }}");
@@ -443,7 +444,6 @@
         "{% url 'course_flow:get-component-completion-count' %}",
         { componentPk: componentPk }
       );
-      console.log(resp);
       return resp.completion_status;
     }
   });

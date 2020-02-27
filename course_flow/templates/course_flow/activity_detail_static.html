@@ -403,8 +403,9 @@
       nodes
         .append("text")
         .attr("class", "node-completion-count")
-        .attr("x", "15")
-        .attr("y", "60")
+        .attr("text-achor", "end")
+        .attr("x", nodeWidth)
+        .attr("y", "40")
         .attr("dy", 6)
         .style("font-size", 12)
         .each(async function() {
@@ -438,12 +439,12 @@
 
     async function getCompletionStatusCount(nodePk) {
       let resp = await $.get(
-        "{% url 'course_flow:get-node-completion-status-count' %}",
+        "{% url 'course_flow:get-node-completion-count' %}",
         {
           nodePk: nodePk
         }
       );
-      return resp.completion_status_count;
+      return resp.completion_status;
     }
   });
 </script>
