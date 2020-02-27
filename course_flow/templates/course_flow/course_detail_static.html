@@ -19,7 +19,6 @@
 {% block scripts %}
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
-
     userFeedback.injectDialog(
       "{% trans 'Let us know how we can improve your experience!' %}",
       "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
@@ -122,8 +121,6 @@
         .attr("dy", 6)
         .text(jsonData.description);
 
-      {% if user == object.author %}
-
       svgCourse
         .append("g")
         .attr("class", "action-icon")
@@ -138,21 +135,6 @@
         .attr("width", `${31}`)
         .attr("height", `${31}`)
         .attr("xlink:href", "{% static 'course_flow/img/pencil.svg' %}");
-
-      {% endif %}
-
-      svgCourse
-        .append("g")
-        .attr("class", "action-icon")
-        .attr("id", "clone-course")
-        .on("click", cloneCourse)
-        .append("image")
-        .attr("x", `${weekWidth - 40}`)
-        .attr("y", `${15}`)
-        .attr("width", `${31}`)
-        .attr("height", `${31}`)
-        .attr("xlink:href", "{% static 'course_flow/img/file_copy-24px.svg' %}");
-
 
       for (let i = 0; i < 4; i++) {
         svgCourse
@@ -245,8 +227,6 @@
         .attr("y", "40")
         .attr("dy", 6)
         .text(d => "created by " + d.week.author);
-
-
     }
 
     function pathToNextSiblingRect(s, i) {
@@ -279,7 +259,6 @@
 
       sortedRects = [rects.length];
 
-
       for (let i = 0; i < rects.length; i++) {
         for (let j = 0; j < rects.length; j++) {
           if (i == rects[j].__data__.rank) {
@@ -289,7 +268,6 @@
             sortedRects[rects.length - 1] = rects[j];
         }
       }
-
 
       for (let i = 0; i < rects.length - 1; i++) {
         svg
@@ -341,7 +319,7 @@
         .attr("x", "15")
         .attr("y", "20")
         .attr("dy", 6)
-        .style("font-size", componentHeight/12)
+        .style("font-size", componentHeight / 12)
         .text(d => d.component.content_object.title);
 
       components
@@ -350,35 +328,48 @@
         .attr("x", "15")
         .attr("y", "40")
         .attr("dy", 6)
-        .style("font-size", componentHeight/18)
+        .style("font-size", componentHeight / 18)
         .text(d => "created by " + d.component.content_object.author);
 
-        // following function taken from Mike Bostock's 'Wrapping Long Labels'
+      // following function taken from Mike Bostock's 'Wrapping Long Labels'
 
       function wrap(text, width) {
-          text.each(function() {
-            var text = d3.select(this),
-                words = text.text().split(/\s+/).reverse(),
-                word,
-                line = [],
-                lineNumber = 0,
-                lineHeight = 1.5, // ems
-                y = text.attr("y")
-                x = text.attr("x"),
-                dy = parseFloat(text.attr("dy")),
-                tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
-            while (word = words.pop()) {
-              line.push(word);
+        text.each(function() {
+          var text = d3.select(this),
+            words = text
+              .text()
+              .split(/\s+/)
+              .reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.5, // ems
+            y = text.attr("y");
+          (x = text.attr("x")),
+            (dy = parseFloat(text.attr("dy"))),
+            (tspan = text
+              .text(null)
+              .append("tspan")
+              .attr("x", x)
+              .attr("y", y)
+              .attr("dy", dy + "em"));
+          while ((word = words.pop())) {
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+              line.pop();
               tspan.text(line.join(" "));
-              if (tspan.node().getComputedTextLength() > width) {
-                line.pop();
-                tspan.text(line.join(" "));
-                line = [word];
-                tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
-              }
+              line = [word];
+              tspan = text
+                .append("tspan")
+                .attr("x", x)
+                .attr("y", y)
+                .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                .text(word);
             }
-          });
-        }
+          }
+        });
+      }
 
       components
         .append("text")
@@ -386,73 +377,74 @@
         .attr("x", "15")
         .attr("y", "5")
         .attr("dy", 6)
-        .style("font-size", componentHeight/16)
+        .style("font-size", componentHeight / 16)
         .text(d => d.component.content_object.description)
-        .call(wrap, componentWidth-35)
+        .call(wrap, componentWidth - 35);
 
-      components.each(async function(d,i){
-
-
-        if (d.component.content_type_in_text=="activity") {
-        d3.select(this).append("g")
-        .attr("class", "action-icon view-component")
-        .on("mousedown", function(d, i) {
-            window.location.href = "{% url 'course_flow:activity-detail-view' pk=0 %}".replace(
+      components.each(async function(d, i) {
+        if (d.component.content_type_in_text == "activity") {
+          d3.select(this)
+            .append("g")
+            .attr("class", "action-icon view-component")
+            .on("mousedown", function(d, i) {
+              window.location.href = "{% url 'course_flow:activity-detail-view' pk=0 %}".replace(
                 "0",
                 d3.select(this.parentNode).node().__data__.component
                   .content_object.id
               );
-        })
-        .append("image")
-        .attr("x", `${componentWidth - 40}`)
-        .attr("y", `${10}`)
-        .attr("width", `${31}`)
-        .attr("height", `${31}`)
-        .attr("xlink:href", "{% static 'course_flow/img/pageview-grey.svg' %}");
-      } else {
-        const completionStatusCount = await getCompletionStatusCount(d.component.id);
-        d3.select(this).append("text")
-        .attr("class", "component-completion-count")
-        .attr("x", "15")
-        .attr("y", "60")
-        .attr("dy", 6)
-        .style("font-size", 12).text(
-          completionStatusCount + "/{{ object.students.count }}"
-        );
-      }
-
+            })
+            .append("image")
+            .attr("x", `${componentWidth - 40}`)
+            .attr("y", `${10}`)
+            .attr("width", `${31}`)
+            .attr("height", `${31}`)
+            .attr(
+              "xlink:href",
+              "{% static 'course_flow/img/pageview-grey.svg' %}"
+            );
+        } else {
+          const completionStatusCount = await getCompletionStatusCount(
+            d.component.id
+          );
+          d3.select(this)
+            .append("text")
+            .attr("class", "component-completion-count")
+            .attr("x", "15")
+            .attr("y", "60")
+            .attr("dy", 6)
+            .style("font-size", 12)
+            .text(completionStatusCount + "/{{ object.students.count }}");
+        }
       });
       renderComponentLinks(svg);
     }
 
     $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
-            }
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
         }
+      }
     });
 
     function csrfSafeMethod(method) {
-
-        return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+      return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
     }
     function getCsrfToken() {
-        return document
-          .getElementsByName("csrfmiddlewaretoken")[0]
-          .getAttribute("value");
-      }
+      return document
+        .getElementsByName("csrfmiddlewaretoken")[0]
+        .getAttribute("value");
+    }
 
-      async function getCompletionStatusCount(componentPk) {
-        let resp = await $.get(
-          "{% url 'course_flow:get-component-completion-status-count' %}",
-          {
-            componentPk: componentPk
-          }
-        );
-        return resp.completion_status_count;
-      }
-
+    async function getCompletionStatusCount(componentPk) {
+      let resp = await $.get(
+        "{% url 'course_flow:get-component-completion-status-count' %}",
+        {
+          componentPk: componentPk
+        }
+      );
+      return resp.completion_status_count;
+    }
   });
 </script>
 {% endblock %}
