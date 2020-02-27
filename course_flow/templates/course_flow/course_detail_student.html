@@ -20,6 +20,9 @@
 {% block scripts %}
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
+    d3.select("#home-icon").remove();
+    d3.select("#username").text("{{ user.email }}");
+
     userFeedback.injectDialog(
       "{% trans 'Let us know how we can improve your experience!' %}",
       "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
