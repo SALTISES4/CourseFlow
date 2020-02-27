@@ -176,9 +176,9 @@ def flow_patterns():
             name="get-node-completion-status-count",
         ),
         url(
-            r"^component/get-completion-status-count",
-            views.get_component_completion_status_count,
-            name="get-component-completion-status-count",
+            r"^component/get-completion-count",
+            views.get_component_completion_count,
+            name="get-component-completion-count",
         ),
     ] + router.urls
 

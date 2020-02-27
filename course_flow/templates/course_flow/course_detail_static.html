@@ -403,9 +403,7 @@
               "{% static 'course_flow/img/pageview-grey.svg' %}"
             );
         } else {
-          const completionStatusCount = await getCompletionStatusCount(
-            d.component.id
-          );
+          const completionStatusCount = await getCompletionStatusCount();
           console.log(d.component.id, completionStatusCount);
           d3.select(this)
             .append("text")
@@ -438,16 +436,12 @@
         .getAttribute("value");
     }
 
-    async function getCompletionStatusCount(componentPk) {
-      console.log(componentPk);
+    async function getCompletionStatusCount() {
       let resp = await $.get(
-        "{% url 'course_flow:get-component-completion-status-count' %}",
-        {
-          componentPk: componentPk
-        }
+        "{% url 'course_flow:get-component-completion-count' %}"
       );
       console.log(resp);
-      return resp.completion_status_count;
+      return resp.completion_status;
     }
   });
 </script>
