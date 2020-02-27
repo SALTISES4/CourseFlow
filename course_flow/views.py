@@ -723,13 +723,10 @@ def get_component_completion_status(request: HttpRequest) -> HttpResponse:
 @ajax_login_required
 def get_node_completion_status_count(request: HttpRequest) -> HttpResponse:
 
-    try:
-        status_count = NodeCompletionStatus.objects.filter(
-            node=Node.objects.get(pk=request.GET.get("nodePk"))
-        ).count()
-        print(status_count)
-    except:
-        return JsonResponse({"action": "error"})
+    status_count = NodeCompletionStatus.objects.filter(
+        node=Node.objects.get(pk=request.GET.get("nodePk"))
+    ).count()
+    print(status_count)
 
     return JsonResponse(
         {"action": "got", "completion_status_count": status_count}
@@ -741,13 +738,10 @@ def get_component_completion_status_count(
     request: HttpRequest
 ) -> HttpResponse:
 
-    try:
-        status_count = ComponentCompletionStatus.objects.filter(
-            component=Component.objects.get(pk=request.GET.get("componentPk"))
-        ).count()
-        print(status_count)
-    except:
-        return JsonResponse({"action": "error"})
+    status_count = ComponentCompletionStatus.objects.filter(
+        component=Component.objects.get(pk=request.GET.get("componentPk"))
+    ).count()
+    print(status_count)
 
     return JsonResponse(
         {"action": "got", "completion_status_count": status_count}
