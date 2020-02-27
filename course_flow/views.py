@@ -577,6 +577,7 @@ def setup_link_to_group(course_pk, students) -> Course:
 
     clone = duplicate_course(course, course.author)
     clone.static = True
+    clone.title += " -- Live"
     clone.save()
     clone.students.add(*students)
     for week in clone.weeks.all():
