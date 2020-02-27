@@ -22,6 +22,7 @@
   window.addEventListener("load", function() {
     d3.select("#home-icon").remove();
     d3.select("#username").text("{{ user.email }}");
+    d3.select("body").style("background-color", "rgb(65,80,96)");
 
     userFeedback.injectDialog(
       "{% trans 'Let us know how we can improve your experience!' %}",
@@ -183,7 +184,7 @@
                 strategyInfoHeight}`
             )
             .attr("width", `${strategyWidth}`)
-            .attr("fill", "rgb(65,80,96)");
+            .attr("fill", "#1976BC");
           renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
         });
 
@@ -301,7 +302,7 @@
         .attr("y", 0)
         .attr("rx", "6")
         .attr("class", "node-rect")
-        .attr("fill", "#1976BC")
+        .attr("fill", "rgb(65,80,96)")
         .attr("width", `${nodeWidth}`)
         .attr("height", `${nodeHeight}`)
         .style("pointer-events", "none");

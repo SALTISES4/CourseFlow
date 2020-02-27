@@ -22,6 +22,7 @@
   window.addEventListener("load", function() {
     d3.select("#home-icon").remove();
     d3.select("#username").text("{{ user.email }}");
+    d3.select("body").style("background-color", "rgb(65,80,96)");
 
     userFeedback.injectDialog(
       "{% trans 'Let us know how we can improve your experience!' %}",
@@ -192,7 +193,7 @@
                 weekInfoHeight}`
             )
             .attr("width", `${weekWidth}`)
-            .attr("fill", "rgb(65,80,96)");
+            .attr("fill", "#1976BC");
           renderWeek(d.week.componentweek_set, d3.select(this));
         });
 
@@ -303,7 +304,7 @@
         .attr("y", 0)
         .attr("rx", "6")
         .attr("class", "component-rect")
-        .attr("fill", "#1976BC")
+        .attr("fill", "rgb(65,80,96)")
         .attr("width", `${componentWidth}`)
         .attr("height", `${componentHeight}`)
         .style("pointer-events", "none");
