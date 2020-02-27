@@ -431,6 +431,7 @@
     function csrfSafeMethod(method) {
       return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
     }
+
     function getCsrfToken() {
       return document
         .getElementsByName("csrfmiddlewaretoken")[0]
