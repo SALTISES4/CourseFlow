@@ -403,11 +403,11 @@
       nodes
         .append("text")
         .attr("class", "node-completion-count")
-        .attr("text-achor", "end")
+        .attr("text-anchor", "end")
         .attr("x", nodeWidth)
-        .attr("y", "40")
+        .attr("y", "60")
         .attr("dy", 6)
-        .style("font-size", 12)
+        .style("font-size", 20)
         .each(async function() {
           const completionStatusCount = await getCompletionStatusCount(
             d3.select(this.parentNode).node().__data__.node.id

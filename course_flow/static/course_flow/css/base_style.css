@@ -160,6 +160,9 @@ text {
 #activity-description, #course-description, #program-description, .strategy-description {
   font-size: 14px;
 }
+.component-completion-count, .node-completion-count{
+  color: black;
+}
 .activity-classification, .course-classification, .program-classification {
   font-size: 16px;
 }

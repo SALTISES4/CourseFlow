@@ -409,12 +409,12 @@
           console.log(d.component.id, completionStatusCount);
           d3.select(this)
             .append("text")
-            .attr("text-achor", "end")
+            .attr("text-anchor", "end")
             .attr("class", "component-completion-count")
             .attr("x", componentWidth)
             .attr("y", "10")
             .attr("dy", 6)
-            .style("font-size", 12)
+            .style("font-size", 20)
             .text(completionStatusCount + "/{{ object.students.count }}");
         }
       });
