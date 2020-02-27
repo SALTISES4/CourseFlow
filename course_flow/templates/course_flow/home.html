@@ -228,7 +228,6 @@
           </div>
         </div>
         <div class="mdc-card__action-icons">
-          {% if user.pk is course.author.pk %}
           <!-- -->
           <a
             href="{% url 'course_flow:static-course-detail-view' pk=course.id %}"
@@ -236,19 +235,10 @@
             <!-- -->
             <img
               class="link-image"
-              src="{% static 'course_flow/img/pencil-blue.svg' %}"
+              src="{% static 'course_flow/img/pageview-24px.svg.svg' %}"
             />
           </a>
           <!-- -->
-          {% else %}
-          <!-- -->
-          <a href="{% url 'course_flow:course-detail-view' pk=course.id %}"
-            ><img
-              class="link-image"
-              src="{% static 'course_flow/img/pageview-24px.svg' %}"
-          /></a>
-          <!-- -->
-          {% endif %}
         </div>
       </div>
     </div>

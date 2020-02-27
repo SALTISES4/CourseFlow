@@ -387,7 +387,7 @@
             .append("g")
             .attr("class", "action-icon view-component")
             .on("mousedown", function(d, i) {
-              window.location.href = "{% url 'course_flow:activity-detail-view' pk=0 %}".replace(
+              window.location.href = "{% url 'course_flow:static-activity-detail-view' pk=0 %}".replace(
                 "0",
                 d3.select(this.parentNode).node().__data__.component
                   .content_object.id
