@@ -732,7 +732,7 @@ def get_node_completion_status_count(request: HttpRequest) -> HttpResponse:
         {"action": "got", "completion_status_count": status_count.count()}
     )
 
-
+@ajax_login_required
 def get_component_completion_status_count(request):
 
     print(request, request.GET.get("componentPk"))
