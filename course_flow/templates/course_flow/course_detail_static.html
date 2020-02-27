@@ -411,8 +411,8 @@
             .append("text")
             .attr("text-anchor", "end")
             .attr("class", "component-completion-count")
-            .attr("x", componentWidth)
-            .attr("y", "10")
+            .attr("x", componentWidth - 5)
+            .attr("y", "20")
             .attr("dy", 6)
             .style("font-size", 20)
             .text(completionStatusCount + "/{{ object.students.count }}");
