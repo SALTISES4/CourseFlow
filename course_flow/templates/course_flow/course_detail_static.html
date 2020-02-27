@@ -403,7 +403,9 @@
               "{% static 'course_flow/img/pageview-grey.svg' %}"
             );
         } else {
-          const completionStatusCount = await getCompletionStatusCount();
+          const completionStatusCount = await getCompletionStatusCount(
+            d.component.id
+          );
           console.log(d.component.id, completionStatusCount);
           d3.select(this)
             .append("text")
@@ -436,9 +438,10 @@
         .getAttribute("value");
     }
 
-    async function getCompletionStatusCount() {
+    async function getCompletionStatusCount(componentPk) {
       let resp = await $.get(
-        "{% url 'course_flow:get-component-completion-count' %}"
+        "{% url 'course_flow:get-component-completion-count' %}",
+        { componentPk: componentPk }
       );
       console.log(resp);
       return resp.completion_status;
