@@ -736,7 +736,7 @@ def get_node_completion_status_count(request: HttpRequest) -> HttpResponse:
 def get_component_completion_status_count(request):
 
     print(request, request.GET.get("componentPk"))
-'''
+    '''
     print(
         ComponentCompletionStatus.objects.filter(
             component=Component.objects.get(pk=request.GET.get("componentPk")),
@@ -750,7 +750,7 @@ def get_component_completion_status_count(request):
     )
 
     print(status_count, status_count.count())
-'''
+    '''
     return JsonResponse(
         {"action": "got", "completion_status_count": "hello"}
     )
