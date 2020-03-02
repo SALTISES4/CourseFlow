@@ -692,13 +692,10 @@ def switch_component_completion_status(request: HttpRequest) -> HttpResponse:
 @ajax_login_required
 def get_node_completion_status(request: HttpRequest) -> HttpResponse:
 
-    try:
-        status = NodeCompletionStatus.objects.get(
-            node=Node.objects.get(pk=request.GET.get("nodePk")),
-            student=request.user,
-        )
-    except:
-        return JsonResponse({"action": "error"})
+    status = NodeCompletionStatus.objects.get(
+        node=Node.objects.get(pk=request.GET.get("nodePk")),
+        student=request.user,
+    )
 
     return JsonResponse(
         {"action": "got", "completion_status": status.is_completed}
@@ -708,13 +705,10 @@ def get_node_completion_status(request: HttpRequest) -> HttpResponse:
 @ajax_login_required
 def get_component_completion_status(request: HttpRequest) -> HttpResponse:
 
-    try:
-        status = ComponentCompletionStatus.objects.get(
-            component=Component.objects.get(pk=request.GET.get("componentPk")),
-            student=request.user,
-        )
-    except:
-        return JsonResponse({"action": "error"})
+    status = ComponentCompletionStatus.objects.get(
+        component=Component.objects.get(pk=request.GET.get("componentPk")),
+        student=request.user,
+    )
 
     return JsonResponse(
         {"action": "got", "completion_status": status.is_completed}
@@ -753,7 +747,10 @@ def add_component_to_course(request: HttpRequest) -> HttpResponse:
     week = Week.objects.get(pk=request.POST.get("weekPk"))
     component = Component.objects.get(pk=request.POST.get("componentPk"))
 
-    if ComponentWeek.objects.filter(week=week, component=component):
+    if (
+        ComponentWeek.objects.filter(week=week, component=component)
+        or Course.objects.filter(weeks=week).first().static
+    ):
         component = duplicate_component(component)
         component.title += " (duplicate)"
         component.save()
