@@ -648,9 +648,10 @@ def switch_component_to_static(sender, instance, created, **kwargs):
     print(instance, created)
     if created:
         course = Course.objects.filter(weeks=instance.week).first()
+        print(course, course.static)
         if course:
             if course.static:
-                if type(instance.component.content_object) == Activity:
+                if type(instance.component.content_object) != Activity:
                     instance.component.students.add(
                         *list(course.students.all())
                     )
