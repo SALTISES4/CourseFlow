@@ -623,7 +623,7 @@ def delete_strategy_objects(sender, instance, **kwargs):
 @receiver(post_save, sender=NodeStrategy)
 def switch_node_to_static(sender, instance, created, **kwargs):
     if created:
-        activity = Activity.objects.filter(strategy=instance.strategy).first()
+        activity = Activity.objects.filter(strategies=instance.strategy).first()
         if activity.static:
             instance.node.students.add(*list(activity.students.all()))
 
@@ -639,7 +639,7 @@ def switch_strategy_to_static(sender, instance, created, **kwargs):
 @receiver(post_save, sender=ComponentWeek)
 def switch_component_to_static(sender, instance, created, **kwargs):
     if created:
-        course = Course.objects.filter(component=instance.component).first()
+        course = Course.objects.filter(components=instance.component).first()
         if course.static:
             if type(instance.component.content_object) == Activity:
                 instance.component.students.add(*list(course.students.all()))
