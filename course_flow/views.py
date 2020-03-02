@@ -752,8 +752,9 @@ def add_component_to_course(request: HttpRequest) -> HttpResponse:
         or Course.objects.filter(weeks=week).first().static
     ):
         component = duplicate_component(component, request.user)
-        component.title += " (duplicate)"
-        component.save()
+        component_object = component.content_object
+        component_object.title += " (duplicate)"
+        component_object.save()
 
     try:
         for link in ComponentWeek.objects.filter(week=week):
