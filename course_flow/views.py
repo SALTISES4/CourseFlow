@@ -751,7 +751,7 @@ def add_component_to_course(request: HttpRequest) -> HttpResponse:
         ComponentWeek.objects.filter(week=week, component=component)
         or Course.objects.filter(weeks=week).first().static
     ):
-        component = duplicate_component(component)
+        component = duplicate_component(component, request.user)
         component.title += " (duplicate)"
         component.save()
 
