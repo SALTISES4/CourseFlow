@@ -626,8 +626,9 @@ def switch_node_to_static(sender, instance, created, **kwargs):
         activity = Activity.objects.filter(
             strategies=instance.strategy
         ).first()
-        if activity.static:
-            instance.node.students.add(*list(activity.students.all()))
+        if activity:
+            if activity.static:
+                instance.node.students.add(*list(activity.students.all()))
 
 
 @receiver(post_save, sender=StrategyActivity)
@@ -642,17 +643,20 @@ def switch_strategy_to_static(sender, instance, created, **kwargs):
 def switch_component_to_static(sender, instance, created, **kwargs):
     if created:
         course = Course.objects.filter(weeks=instance.week).first()
-        if course.static:
-            if type(instance.component.content_object) == Activity:
-                instance.component.students.add(*list(course.students.all()))
-            else:
-                activity = instance.component.content_object
-                activity.static = True
-                activity.save()
-                activity.students.add(*list(course.students.all()))
-                for strategy in activity.strategies.all():
-                    for node in strategy.nodes.all():
-                        node.students.add(*list(course.students.all()))
+        if course:
+            if course.static:
+                if type(instance.component.content_object) == Activity:
+                    instance.component.students.add(
+                        *list(course.students.all())
+                    )
+                else:
+                    activity = instance.component.content_object
+                    activity.static = True
+                    activity.save()
+                    activity.students.add(*list(course.students.all()))
+                    for strategy in activity.strategies.all():
+                        for node in strategy.nodes.all():
+                            node.students.add(*list(course.students.all()))
 
 
 model_lookups = {
