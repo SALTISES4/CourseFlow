@@ -622,7 +622,6 @@ def delete_strategy_objects(sender, instance, **kwargs):
 
 @receiver(post_save, sender=NodeStrategy)
 def switch_node_to_static(sender, instance, created, **kwargs):
-    print(instance, created)
     if created:
         activity = Activity.objects.filter(
             strategies=instance.strategy
@@ -630,25 +629,20 @@ def switch_node_to_static(sender, instance, created, **kwargs):
         if activity:
             if activity.static:
                 instance.node.students.add(*list(activity.students.all()))
-                print(activity.students.all())
 
 
 @receiver(post_save, sender=StrategyActivity)
 def switch_strategy_to_static(sender, instance, created, **kwargs):
-    print(instance, created)
     if created:
         if instance.activity.static:
             for node in instance.strategy.nodes.all():
                 node.students.add(*list(instance.activity.students.all()))
-                print(instance.activity.students.all())
 
 
 @receiver(post_save, sender=ComponentWeek)
 def switch_component_to_static(sender, instance, created, **kwargs):
-    print(instance, created)
     if created:
         course = Course.objects.filter(weeks=instance.week).first()
-        print(course, course.static)
         if course:
             if course.static:
                 if type(instance.component.content_object) != Activity:
@@ -663,7 +657,6 @@ def switch_component_to_static(sender, instance, created, **kwargs):
                     for strategy in activity.strategies.all():
                         for node in strategy.nodes.all():
                             node.students.add(*list(course.students.all()))
-                            print(course.students.all())
 
 
 model_lookups = {
