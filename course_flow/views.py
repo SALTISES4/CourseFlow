@@ -77,9 +77,9 @@ def registration_view(request):
 def home_view(request):
     context = {
         "programs": Program.objects.exclude(author=request.user),
-        "courses": Course.objects.exclude(author=request.user, static=False),
+        "courses": Course.objects.exclude(author=request.user, static=True),
         "activities": Activity.objects.exclude(
-            author=request.user, static=False
+            author=request.user, static=True
         ),
         "owned_programs": Program.objects.filter(author=request.user),
         "owned_courses": Course.objects.filter(

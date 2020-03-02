@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models.signals import pre_delete, post_save, m2m_changed
+from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
@@ -620,66 +620,37 @@ def delete_strategy_objects(sender, instance, **kwargs):
     instance.nodes.all().delete()
 
 
-@receiver(post_save, sender=Node)
-def create_completion_statuses(sender, instance, created, **kwargs):
+@receiver(post_save, sender=NodeStrategy)
+def switch_node_to_static(sender, instance, created, **kwargs):
     if created:
-        if Strategy.objects.filter(nodes=instance):
-            if Activity.objects.filter(
-                strategies=Strategy.objects.filter(nodes=instance).first()
-            ):
-                activity = Activity.objects.filter(
-                    strategies=Strategy.objects.filter(nodes=instance).first()
-                ).first()
-                if activity.static:
-                    for student in activity.students.all():
-                        NodeCompletionStatus.objects.create(
-                            student=student, node=instance
-                        )
+        activity = Activity.objects.filter(strategy=instance.strategy).first()
+        if activity.static:
+            instance.node.students.add(*list(activity.students.all()))
 
 
-@receiver(post_save, sender=Component)
-def create_completion_statuses(sender, instance, created, **kwargs):
+@receiver(post_save, sender=StrategyActivity)
+def switch_strategy_to_static(sender, instance, created, **kwargs):
     if created:
-        if type(instance.content_object) == Activity:
-            if Week.objects.filter(components=instance):
-                if Course.objects.filter(
-                    week=Week.objects.filter(components=instance).first()
-                ):
-                    course = Course.objects.filter(
-                        week=Week.objects.filter(components=instance).first()
-                    ).first()
-                    if course.static:
-                        for student in course.students.all():
-                            ComponentCompletionStatus.objects.create(
-                                student=student, component=instance
-                            )
+        if instance.activity.static:
+            for node in instance.strategy.nodes.all():
+                node.students.add(*list(instance.activity.students.all()))
 
 
-@receiver(m2m_changed, sender=Week.components.through)
-def switch_activity_to_static(sender, instance, pk_set, action, **kwargs):
-    if action == "pre_add":
-        if (
-            type(Component.objects.get(pk=list(pk_set)[0]).content_object)
-            == Activity
-        ):
-            if Course.objects.filter(week=instance).first().static:
-                activity = Component.objects.get(
-                    pk=list(pk_set)[0]
-                ).content_object
-                if not activity.static:
-                    activity.static = True
-                    activity.save()
-                    activity.students.add(
-                        *Course.objects.filter(week=instance)
-                        .first()
-                        .students.all()
-                    )
-                    for strategy in activity.strategies.all():
-                        for node in strategy.nodes.all():
-                            for student in activity.students.all():
-                                NodeCompletionStatus.objects.create(
-                                    student=student, node=node
-                                )
+@receiver(post_save, sender=ComponentWeek)
+def switch_component_to_static(sender, instance, created, **kwargs):
+    if created:
+        course = Course.objects.filter(component=instance.component).first()
+        if course.static:
+            if type(instance.component.content_object) == Activity:
+                instance.component.students.add(*list(course.students.all()))
+            else:
+                activity = instance.component.content_object
+                activity.static = True
+                activity.save()
+                activity.students.add(*list(course.students.all()))
+                for strategy in activity.strategies.all():
+                    for node in strategy.nodes.all():
+                        node.students.add(*list(course.students.all()))
 
 
 model_lookups = {

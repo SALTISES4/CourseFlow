@@ -20,7 +20,7 @@
 {% block scripts %}
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
-    d3.select("#home-icon-link").attr("href", "student-page");
+    d3.select("#home-icon-link").attr("href", "{% url 'student-page' %}");
     d3.select("#username").text("{{ user.email }}");
     d3.select("body").style("background-color", "rgb(65,80,96)");
 
