@@ -159,9 +159,9 @@ class ProgramUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         component_set = set()
-        for course in Course.objects.filter(author=self.request.user).order_by(
-            "-last_modified"
-        )[:10]:
+        for course in Course.objects.filter(
+            author=self.request.user, static=False
+        ).order_by("-last_modified")[:10]:
             component, created = Component.objects.get_or_create(
                 object_id=course.id,
                 content_type=ContentType.objects.get_for_model(Course),
@@ -241,7 +241,7 @@ class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context = super(UpdateView, self).get_context_data(**kwargs)
         component_set = set()
         for activity in Activity.objects.filter(
-            author=self.request.user
+            author=self.request.user, static=False
         ).order_by("-last_modified")[:10]:
             component, created = Component.objects.get_or_create(
                 object_id=activity.id,
