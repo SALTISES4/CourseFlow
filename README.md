@@ -45,3 +45,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 10. If you don't have a local_settings.py set up, change line 25 in settings.py to:
 
         DEBUG = True
+
+11. For testing before commits, run:
+
+        (dev_venv) python3 course_flow.py test
