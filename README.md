@@ -18,13 +18,13 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
         (dev_venv) pip install -r requirements.txt
 
-4.  Install pre-commit.
+4.  Install pre-commit (optional).
 
         pre-commit install
 
 5.  Install node modules.
 
-        npm install
+        yarn install
 
 6.  Build minified JS files.
 
