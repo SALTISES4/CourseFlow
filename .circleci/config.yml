@@ -25,5 +25,4 @@ jobs:
           command: |
             . test_venv/bin/activate
             python3 course_flow.py migrate
-            python3 couse_flow.py create_instances
             python3 course_flow.py test

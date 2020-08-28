@@ -64,6 +64,10 @@ def registration_view(request):
             username = form.cleaned_data.get("username")
             raw_password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=raw_password)
+            teacher_group, _ = Group.objects.get_or_create(
+                name=settings.TEACHER_GROUP
+            )
+            user.groups.add(teacher_group)
             login(request, user)
             return redirect("course_flow:home")
     else:
@@ -747,10 +751,7 @@ def add_component_to_course(request: HttpRequest) -> HttpResponse:
     week = Week.objects.get(pk=request.POST.get("weekPk"))
     component = Component.objects.get(pk=request.POST.get("componentPk"))
 
-    if (
-        ComponentWeek.objects.filter(week=week, component=component)
-        or Course.objects.filter(weeks=week).first().static
-    ):
+    if ComponentWeek.objects.filter(week=week, component=component):
         component = duplicate_component(component, request.user)
         component_object = component.content_object
         component_object.title += " (duplicate)"

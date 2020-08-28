@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.conf import settings
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support.expected_conditions import (
@@ -6,10 +7,10 @@ from selenium.webdriver.support.expected_conditions import (
 )
 from django.test.client import RequestFactory
 from django.urls import reverse
+from django.contrib.auth.models import Group, User
 from course_flow.models import (
     model_lookups,
     model_keys,
-    User,
     Strategy,
     Node,
     NodeStrategy,
@@ -694,6 +695,8 @@ def login(test_case):
     user = User.objects.create(username="testuser1")
     user.set_password("testpass1")
     user.save()
+    teacher_group, _ = Group.objects.get_or_create(name=settings.TEACHER_GROUP)
+    user.groups.add(teacher_group)
     logged_in = test_case.client.login(
         username="testuser1", password="testpass1"
     )
@@ -705,6 +708,8 @@ def get_author():
     author = User.objects.create(username="testuser2")
     author.set_password("testpass2")
     author.save()
+    teacher_group, _ = Group.objects.get_or_create(name=settings.TEACHER_GROUP)
+    author.groups.add(teacher_group)
     return author
 
 
