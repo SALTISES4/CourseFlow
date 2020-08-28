@@ -34,18 +34,22 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
         (dev_venv) python3 course_flow.py migrate
 
-8.  Create default strategies.
+8.  If you don't have a local_settings.py set up, change line 25 in settings.py to:
 
-        (dev_venv) python3 couse_flow.py create_instances
+        DEBUG = True
 
 9.  Run the Django development server.
 
         (dev_venv) python3 course_flow.py runserver
 
-10. If you don't have a local_settings.py set up, change line 25 in settings.py to:
+10. Register at:
 
-        DEBUG = True
+        127.0.0.1:8000/register
 
-11. For testing before commits, run:
+11. Create default strategies.
+
+        (dev_venv) python3 cousre_flow.py create_instances course_flow/initial_data/template_strategies.json <username you registered under>
+
+12. For testing before commits, run:
 
         (dev_venv) python3 course_flow.py test
