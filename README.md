@@ -41,3 +41,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 9.  Run the Django development server.
 
         (dev_venv) python3 course_flow.py runserver
+
+10. If you don't have a local_settings.py set up, change line 25 in settings.py to:
+
+        DEBUG = True
