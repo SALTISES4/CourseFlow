@@ -3,6 +3,7 @@ from .models import (
     User,
     Course,
     Column,
+    ColumnActivity,
     Preparation,
     Activity,
     Assessment,
@@ -437,6 +438,12 @@ def duplicate_strategy(strategy: Strategy, author: User) -> Strategy:
         )
     return new_strategy
 
+def column_view(request,column_id):
+    response = "<h1>You're looking at column %s</h1>"
+    col = Column.objects.get(pk=column_id)
+    response += "<p>The title is "+col.title+"</p>"
+    
+    return HttpResponse(response % column_id)
 
 @require_POST
 @ajax_login_required

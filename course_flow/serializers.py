@@ -8,6 +8,8 @@ from .models import (
     Assessment,
     Artifact,
     Strategy,
+    Column,
+    ColumnActivity,
     Node,
     NodeStrategy,
     StrategyActivity,
@@ -232,6 +234,33 @@ class OutcomeStrategySerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    
+class ColumnSerializer(serializers.ModelSerializer):
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field="username"
+    )
+    
+    class Meta:
+        model = Column
+        fields = [
+            "id",
+            "title",
+            "author",
+            "created_on",
+            "last_modified"
+        ]
+        
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.save()
+        return instance
+    
+    def create(self, validated_data):
+        return Column.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
+    
 
 class StrategySerializer(serializers.ModelSerializer):
 
@@ -326,6 +355,24 @@ class StrategyActivitySerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class ColumnActivitySerializer(serializers.ModelSerializer):
+    column = ColumnSerializer()
+    
+    class Meta:
+        model = ColumnActivity
+        fields = ["activity","column","added_on","rank","id"]
+        
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get("rank", instance.rank)
+        column_data = self.initial_data.pop("column")
+        column_serializer = ColumnSerializer(
+            Column.objects.get(id=column_data["id"]), column_data
+        )
+        column_serializer.is_valid()
+        column_serializer.save()
+        instance.save()
+        return instance
+    
 
 class OutcomeActivitySerializer(serializers.ModelSerializer):
 
@@ -367,11 +414,16 @@ class ActivitySerializer(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "hash",
+            "columnactivity_set",
             "strategyactivity_set",
             "outcomeactivity_set",
             "is_original",
             "parent_activity",
         ]
+        
+    def get_columnactivity_set(self, instance):
+        links = instance.columnactivity_set.all().order_by("rank")
+        return ColumnActivitySerializer(links, many=True).data
 
     def get_strategyactivity_set(self, instance):
         links = instance.strategyactivity_set.all().order_by("rank")
@@ -1104,6 +1156,7 @@ class ProgramSerializer(serializers.ModelSerializer):
 serializer_lookups = {
     "node": NodeSerializer,
     "strategy": StrategySerializer,
+    "column": ColumnSerializer,
     "activity": ActivitySerializer,
     "assessment": AssessmentSerializer,
     "preparation": PreparationSerializer,

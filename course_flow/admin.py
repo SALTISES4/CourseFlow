@@ -14,6 +14,7 @@ from .models import (
     Program,
     NodeStrategy,
     StrategyActivity,
+    ColumnActivity,
     ComponentWeek,
     WeekCourse,
     ComponentProgram,
@@ -21,6 +22,7 @@ from .models import (
 
 admin.site.register(Node)
 admin.site.register(Column)
+admin.site.register(ColumnActivity)
 admin.site.register(Strategy)
 admin.site.register(Activity)
 admin.site.register(Preparation)
