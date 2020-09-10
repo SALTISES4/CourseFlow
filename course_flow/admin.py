@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import (
     Node,
+    Column,
     Strategy,
     Activity,
     Preparation,
@@ -19,6 +20,7 @@ from .models import (
 )
 
 admin.site.register(Node)
+admin.site.register(Column)
 admin.site.register(Strategy)
 admin.site.register(Activity)
 admin.site.register(Preparation)

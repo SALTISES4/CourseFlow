@@ -12,6 +12,22 @@ from django.utils.translation import ugettext_lazy as _
 User = get_user_model()
 
 
+class Column(models.Model):
+    title = models.CharField(max_length=50)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Column"
+        verbose_name_plural = "Columns"
+
+
 class Outcome(models.Model):
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
@@ -661,6 +677,7 @@ def switch_component_to_static(sender, instance, created, **kwargs):
 
 model_lookups = {
     "node": Node,
+    "column": Column,
     "strategy": Strategy,
     "activity": Activity,
     "assessment": Assessment,
@@ -672,6 +689,7 @@ model_lookups = {
 }
 model_keys = [
     "node",
+    "column",
     "strategy",
     "activity",
     "assessment",
