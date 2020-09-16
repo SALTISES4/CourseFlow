@@ -69,7 +69,7 @@ def flow_patterns():
         url(
             r"^columnview/(?P<column_id>[0-9]+)/$",
             views.column_view,
-            name="column-view"
+            name="column-view",
         ),
         url(
             r"^activity/create/$",

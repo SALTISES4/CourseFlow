@@ -17,17 +17,16 @@ class Column(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-    
+
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    
-    
+
     def __str__(self):
         return self.title
 
     class Meta:
         verbose_name = "Column"
         verbose_name_plural = "Columns"
-    
+
 
 class Outcome(models.Model):
     title = models.CharField(max_length=30)
@@ -120,8 +119,8 @@ class Node(models.Model):
         (IN_CLASS_STUDENTS, "In Class (Students)"),
     )
     classification = models.PositiveIntegerField(choices=NODE_TYPES, default=1)
-        
-    column = models.ForeignKey("Column",on_delete=models.PROTECT)
+
+    column = models.ForeignKey("Column", on_delete=models.PROTECT)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -239,9 +238,9 @@ class Activity(models.Model):
     strategies = models.ManyToManyField(
         Strategy, through="StrategyActivity", blank=True
     )
-    
+
     columns = models.ManyToManyField(
-        Column, through="ColumnActivity",blank=True
+        Column, through="ColumnActivity", blank=True
     )
 
     outcomes = models.ManyToManyField(
@@ -255,17 +254,17 @@ class Activity(models.Model):
         verbose_name = "Activity"
         verbose_name_plural = "Activities"
 
-        
+
 class ColumnActivity(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     column = models.ForeignKey(Column, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
-    
     class Meta:
         verbose_name = "Column-Activity Link"
         verbose_name_plural = "Column-Activity Links"
+
 
 class OutcomeActivity(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
@@ -287,7 +286,6 @@ class StrategyActivity(models.Model):
     class Meta:
         verbose_name = "Strategy-Activity Link"
         verbose_name_plural = "Strategy-Activity Links"
-
 
 
 class Preparation(models.Model):
@@ -670,14 +668,23 @@ def switch_node_to_static(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Activity)
 def create_default_activity_content(sender, instance, created, **kwargs):
     if created:
-        #If the activity is newly created, add the default columns
-        cols = ['ooci','ooc','ici','ics']
+        # If the activity is newly created, add the default columns
+        cols = ["ooci", "ooc", "ici", "ics"]
         for col in range(len(cols)):
-            instance.columns.create(through_defaults={'rank':col},title="Default "+cols[col]+" column",author=instance.author)
-        
-        instance.strategies.create(title="New Strategy",description="default strategy",author=instance.author)
+            instance.columns.create(
+                through_defaults={"rank": col},
+                title="Default " + cols[col] + " column",
+                author=instance.author,
+            )
+
+        instance.strategies.create(
+            title="New Strategy",
+            description="default strategy",
+            author=instance.author,
+        )
         instance.save()
-                
+
+
 @receiver(post_save, sender=StrategyActivity)
 def switch_strategy_to_static(sender, instance, created, **kwargs):
     if created:
@@ -708,7 +715,7 @@ def switch_component_to_static(sender, instance, created, **kwargs):
 
 model_lookups = {
     "node": Node,
-    "column":Column,
+    "column": Column,
     "strategy": Strategy,
     "activity": Activity,
     "assessment": Assessment,
