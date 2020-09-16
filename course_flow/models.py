@@ -17,6 +17,8 @@ class Column(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    
+    default_activity_columns = ["ooci", "ooc", "ici", "ics"]
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -120,7 +122,7 @@ class Node(models.Model):
     )
     classification = models.PositiveIntegerField(choices=NODE_TYPES, default=1)
 
-    column = models.ForeignKey("Column", on_delete=models.PROTECT)
+    column = models.ForeignKey("Column", on_delete=models.PROTECT,null=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -669,11 +671,11 @@ def switch_node_to_static(sender, instance, created, **kwargs):
 def create_default_activity_content(sender, instance, created, **kwargs):
     if created:
         # If the activity is newly created, add the default columns
-        cols = ["ooci", "ooc", "ici", "ics"]
-        for col in range(len(cols)):
+        cols = Column.default_activity_columns
+        for i, col in enumerate(cols):
             instance.columns.create(
-                through_defaults={"rank": col},
-                title="Default " + cols[col] + " column",
+                through_defaults={"rank": i},
+                title=f"Default {col} column",
                 author=instance.author,
             )
 
