@@ -211,6 +211,36 @@ class NodeStrategy(models.Model):
         verbose_name = "Node-Strategy Link"
         verbose_name_plural = "Node-Strategy Links"
 
+        
+class Workflow(models.Model):
+    title = models.CharField(max_length=30)
+    description = models.TextField(max_length=400)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+
+    static = models.BooleanField(default=False)
+
+    parent_activity = models.ForeignKey(
+        "Activity", on_delete=models.SET_NULL, null=True
+    )
+    is_original = models.BooleanField(default=True)
+
+    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    strategies = models.ManyToManyField(
+        Strategy, through="StrategyWorkflow", blank=True
+    )
+
+    columns = models.ManyToManyField(
+        Column, through="ColumnWorkflow", blank=True
+    )
+
+    outcomes = models.ManyToManyField(
+        Outcome, through="OutcomeWorkflow", blank=True
+    )
+
+    def __str__(self):
+        return self.title
 
 class Activity(models.Model):
     title = models.CharField(max_length=30)
@@ -256,6 +286,38 @@ class Activity(models.Model):
         verbose_name = "Activity"
         verbose_name_plural = "Activities"
 
+
+class ColumnWorkflow(models.Model):
+    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
+    column = models.ForeignKey(Column, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Column-Workflow Link"
+        verbose_name_plural = "Column-Workflow Links"
+
+
+class OutcomeWorkflow(models.Model):
+    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Outcome-Workflow Link"
+        verbose_name_plural = "Outcome-Workflow Links"
+
+
+class StrategyWorkflow(models.Model):
+    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
+    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Strategy-Workflow Link"
+        verbose_name_plural = "Strategy-Workflow Links"
 
 class ColumnActivity(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
