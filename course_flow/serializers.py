@@ -150,6 +150,7 @@ class NodeSerializer(serializers.ModelSerializer):
             "description",
             "created_on",
             "last_modified",
+            "column",
             "hash",
             "author",
             "work_classification",
@@ -401,6 +402,8 @@ class ActivitySerializer(serializers.ModelSerializer):
     )
 
     strategyactivity_set = serializers.SerializerMethodField()
+    
+    columnactivity_set = serializers.SerializerMethodField()
 
     outcomeactivity_set = serializers.SerializerMethodField()
 
@@ -439,6 +442,8 @@ class ActivitySerializer(serializers.ModelSerializer):
         else:
             author = None
         activity = Activity.objects.create(author=author, **validated_data)
+                
+        
         """
         do not update the following code, this will only be used for default strategy creation
         """
@@ -472,6 +477,8 @@ class ActivitySerializer(serializers.ModelSerializer):
         return activity
 
     def update(self, instance, validated_data):
+        
+        
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
             "description", instance.description
@@ -494,6 +501,15 @@ class ActivitySerializer(serializers.ModelSerializer):
             )
             outcomeactivity_serializer.is_valid()
             outcomeactivity_serializer.save()
+        for columnactivity_data in self.initial_data.pop(
+            "columnactivity_set"
+        ):
+            columnactivity_serializer = ColumnActivitySerializer(
+                ColumnActivity.objects.get(id=columnactivity_data["id"]),
+                data = columnactivity_data,
+            )
+            columnactivity_serializer.is_valid()
+            columnactivity_serializer.save()
         instance.save()
         return instance
 

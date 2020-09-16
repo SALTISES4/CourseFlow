@@ -120,6 +120,8 @@ class Node(models.Model):
         (IN_CLASS_STUDENTS, "In Class (Students)"),
     )
     classification = models.PositiveIntegerField(choices=NODE_TYPES, default=1)
+        
+    column = models.ForeignKey("Column",on_delete=models.PROTECT)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -646,6 +648,7 @@ def delete_course_objects(sender, instance, **kwargs):
 @receiver(pre_delete, sender=Activity)
 def delete_activity_objects(sender, instance, **kwargs):
     instance.strategies.all().delete()
+    instance.columns.all().delete()
 
 
 @receiver(pre_delete, sender=Strategy)
@@ -664,6 +667,17 @@ def switch_node_to_static(sender, instance, created, **kwargs):
                 instance.node.students.add(*list(activity.students.all()))
 
 
+@receiver(post_save, sender=Activity)
+def create_default_activity_content(sender, instance, created, **kwargs):
+    if created:
+        #If the activity is newly created, add the default columns
+        cols = ['ooci','ooc','ici','ics']
+        for col in range(len(cols)):
+            instance.columns.create(through_defaults={'rank':col},title="Default "+cols[col]+" column",author=instance.author)
+        
+        instance.strategies.create(title="New Strategy",description="default strategy",author=instance.author)
+        instance.save()
+                
 @receiver(post_save, sender=StrategyActivity)
 def switch_strategy_to_static(sender, instance, created, **kwargs):
     if created:

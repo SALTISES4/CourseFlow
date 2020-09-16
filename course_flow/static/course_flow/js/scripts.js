@@ -20,8 +20,10 @@ export class DialogForm extends Component {
       description: "",
       author: null,
       work_classification: -1,
-      activity_classification: -1
+      activity_classification: -1,
+      column:null
     },
+    parentActivity:null,
     linkID: null,
     parentID: null,
     isNode: null,
@@ -52,8 +54,10 @@ export class DialogForm extends Component {
         description: "",
         author: null,
         work_classification: -1,
-        activity_classification: -1
+        activity_classification: -1,
+        column:null
       },
+      parentActivity:null,
       linkID: null,
       parentID: null,
       isNode: null,
@@ -87,8 +91,10 @@ export class DialogForm extends Component {
         description: "",
         author: null,
         work_classification: -1,
-        activity_classification: -1
+        activity_classification: -1,
+        column:null
       },
+      parentActivity:null,
       linkID: null,
       parentID: null,
       isNode: null,
@@ -115,8 +121,10 @@ export class DialogForm extends Component {
         description: "",
         author: null,
         work_classification: -1,
-        activity_classification: -1
+        activity_classification: -1,
+        column:null
       },
+      parentActivity: null,
       linkID: null,
       parentID: null,
       isNode: null,
@@ -190,6 +198,24 @@ export class DialogForm extends Component {
     });
   };
 
+  updateObjectNodeColumn = e => {
+      this.setState({
+          object:{
+              ...this.state.object,
+              column: e.target.value
+          }
+      })
+  }
+  
+  updateObjectToBeNodeColumn = e => {
+      this.setState({
+          objectToBe:{
+              ...this.state.objectToBe,
+              column: e.target.value
+          }
+      })
+  }
+
   updateObjectType = e => {
     this.setState({ objectType: e.target.value });
   };
@@ -253,6 +279,13 @@ export class DialogForm extends Component {
       );
     }
     if (this.state.isUpdateForm) {
+      var columnrows=[];
+      if(this.state.isNode){
+        var columnSet = this.state.parentActivity.columnactivity_set;
+        for(var i=0;i<columnSet.length;i++){
+            columnrows.push(<Select.Item value={columnSet[i].column.id}>{columnSet[i].column.title}</Select.Item>);
+        }
+      }
       return (
         <div>
           <Dialog
@@ -328,6 +361,18 @@ export class DialogForm extends Component {
                     </Select>
                   </div>
                 )}
+                {this.state.isNode && (
+                  <div>
+                    <Select
+                      id="node-column-field"
+                      hintText="Select a column"
+                      onChange={this.updateObjectNodeColumn}
+                      style="min-width: 265px;"
+                    >
+                      {columnrows}
+                    </Select>
+                  </div>
+                )}
               </Dialog.Body>
               <Dialog.Footer>
                 <Dialog.FooterButton
@@ -365,6 +410,13 @@ export class DialogForm extends Component {
         </div>
       );
     } else {
+      var columnrows=[];
+      if(this.state.isNode){
+        var columnSet = this.state.parentActivity.columnactivity_set;
+        for(var i=0;i<columnSet.length;i++){
+            columnrows.push(<Select.Item value={columnSet[i].column.id}>{columnSet[i].column.title}</Select.Item>);
+        }
+      }
       return (
         <div>
           <Dialog
@@ -477,6 +529,17 @@ export class DialogForm extends Component {
                       <Select.Item value="14">Experiment/Inquiry</Select.Item>
                       <Select.Item value="15">Quiz/Test</Select.Item>
                       <Select.Item value="16">Other</Select.Item>
+                    </Select>
+                  </div>
+                )}
+                {this.state.isNode && (
+                  <div>
+                    <Select
+                      id="node-column-field"
+                      hintText="Select a column"
+                      onChange={this.updateObjectToBeNodeColumn}
+                      style="min-width: 265px;"
+                    >{columnrows}
                     </Select>
                   </div>
                 )}

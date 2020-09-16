@@ -397,7 +397,8 @@
                             root.currentComponentInstance.setState({
                               objectType: "node",
                               parentID: d3.select(this.parentNode).node().__data__.strategy.id,
-                              isNode: true
+                              isNode: true,
+                              parentActivity:activityData
                             });
                             root.currentComponentInstance.dlg.MDComponent.show();
                         })
@@ -615,7 +616,8 @@
                         object: d3.select(this.parentNode).node().__data__.node,
                         objectType: "node",
                         isNode: true,
-                        isUpdateForm: true
+                        isUpdateForm: true,
+                        parentActivity:activityJson
                       });
                       root.currentComponentInstance.dlg.MDComponent.show();
                     })
