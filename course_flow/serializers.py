@@ -345,8 +345,8 @@ class StrategyActivitySerializer(serializers.ModelSerializer):
         strategy_serializer = StrategySerializer(
             Strategy.objects.get(id=strategy_data["id"]), strategy_data
         )
-        strategy_serializer.is_valid()
-        strategy_serializer.save()
+        if strategy_serializer.is_valid():
+            strategy_serializer.save()
         instance.save()
         return instance
 
@@ -364,8 +364,8 @@ class ColumnActivitySerializer(serializers.ModelSerializer):
         column_serializer = ColumnSerializer(
             Column.objects.get(id=column_data["id"]), column_data
         )
-        column_serializer.is_valid()
-        column_serializer.save()
+        if column_serializer.is_valid():
+            column_serializer.save()
         instance.save()
         return instance
 

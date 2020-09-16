@@ -20,7 +20,6 @@
 /sent_emails
 /static
 /dev_venv
-/course_flow/migrations
 locust*
 logs
 mysql_scripts/
