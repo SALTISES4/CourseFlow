@@ -67,11 +67,6 @@ def flow_patterns():
             name="course-update",
         ),
         url(
-            r"^columnview/(?P<column_id>[0-9]+)/$",
-            views.column_view,
-            name="column-view",
-        ),
-        url(
             r"^activity/create/$",
             views.ActivityCreateView.as_view(),
             name="activity-create",
