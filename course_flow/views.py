@@ -3,15 +3,16 @@ from .models import (
     User,
     Course,
     Column,
-    ColumnActivity,
+    ColumnWorkflow,
     Preparation,
+    Workflow,
     Activity,
     Assessment,
     Artifact,
     Strategy,
     Node,
     NodeStrategy,
-    StrategyActivity,
+    StrategyWorkflow,
     ComponentWeek,
     WeekCourse,
     Component,
@@ -441,18 +442,18 @@ def duplicate_strategy(strategy: Strategy, author: User) -> Strategy:
 
 @require_POST
 @ajax_login_required
-@is_owner("activityPk")
+@is_owner("workflowPk")
 def add_strategy(request: HttpRequest) -> HttpResponse:
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
-    activity = Activity.objects.get(pk=request.POST.get("activityPk"))
+    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
 
     try:
-        for link in StrategyActivity.objects.filter(activity=activity):
+        for link in StrategyWorkflow.objects.filter(workflow=workflow):
             link.rank += 1
             link.save()
 
-        StrategyActivity.objects.create(
-            activity=activity,
+        StrategyWorkflow.objects.create(
+            workflow=workflow,
             strategy=duplicate_strategy(strategy, request.user),
             rank=0,
         )
@@ -471,11 +472,11 @@ def duplicate_activity(activity: Activity, author: User) -> Activity:
         parent_activity=activity,
     )
     for strategy in activity.strategies.all():
-        StrategyActivity.objects.create(
+        StrategyWorkflow.objects.create(
             activity=new_activity,
             strategy=duplicate_strategy(strategy, author),
-            rank=StrategyActivity.objects.get(
-                activity=activity, strategy=strategy
+            rank=StrategyWorkflow.objects.get(
+                workflow=activity, strategy=strategy
             ).rank,
         )
     return new_activity
@@ -829,17 +830,17 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
         data["parent_strategy"] = None
         serializer = StrategySerializer(data=data)
         if parent_id:
-            activity = Activity.objects.get(id=parent_id)
+            workflow = Workflow.objects.get(id=parent_id)
             if serializer.is_valid():
                 strategy = serializer.save()
             else:
                 return JsonResponse({"action": "error"})
             try:
-                for link in StrategyActivity.objects.filter(activity=activity):
+                for link in StrategyWorkflow.objects.filter(workflow=workflow):
                     link.rank += 1
                     link.save()
-                StrategyActivity.objects.create(
-                    activity=activity, strategy=strategy
+                StrategyWorkflow.objects.create(
+                    workflow=workflow, strategy=strategy
                 )
             except ValidationError:
                 return JsonResponse({"action": "error"})

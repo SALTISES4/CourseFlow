@@ -9,10 +9,10 @@ from .models import (
     Artifact,
     Strategy,
     Column,
-    ColumnActivity,
+    ColumnWorkflow,
     Node,
     NodeStrategy,
-    StrategyActivity,
+    StrategyWorkflow,
     ComponentWeek,
     WeekCourse,
     Component,
@@ -22,7 +22,7 @@ from .models import (
     OutcomeNode,
     OutcomeStrategy,
     OutcomePreparation,
-    OutcomeActivity,
+    OutcomeWorkflow,
     OutcomeAssessment,
     OutcomeArtifact,
     OutcomeWeek,
@@ -331,13 +331,13 @@ class StrategySerializer(serializers.ModelSerializer):
         return instance
 
 
-class StrategyActivitySerializer(serializers.ModelSerializer):
+class StrategyWorkflowSerializer(serializers.ModelSerializer):
 
     strategy = StrategySerializer()
 
     class Meta:
-        model = StrategyActivity
-        fields = ["activity", "strategy", "added_on", "rank", "id"]
+        model = StrategyWorkflow
+        fields = ["workflow", "strategy", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
@@ -351,12 +351,12 @@ class StrategyActivitySerializer(serializers.ModelSerializer):
         return instance
 
 
-class ColumnActivitySerializer(serializers.ModelSerializer):
+class ColumnWorkflowSerializer(serializers.ModelSerializer):
     column = ColumnSerializer()
 
     class Meta:
-        model = ColumnActivity
-        fields = ["activity", "column", "added_on", "rank", "id"]
+        model = ColumnWorkflow
+        fields = ["workflow", "column", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
@@ -370,13 +370,13 @@ class ColumnActivitySerializer(serializers.ModelSerializer):
         return instance
 
 
-class OutcomeActivitySerializer(serializers.ModelSerializer):
+class OutcomeWorkflowSerializer(serializers.ModelSerializer):
 
     outcome = OutcomeSerializer()
 
     class Meta:
-        model = OutcomeActivity
-        fields = ["activity", "outcome", "added_on", "rank", "id"]
+        model = OutcomeWorkflow
+        fields = ["workflow", "outcome", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
@@ -396,11 +396,11 @@ class ActivitySerializer(serializers.ModelSerializer):
         read_only=True, slug_field="username"
     )
 
-    strategyactivity_set = serializers.SerializerMethodField()
+    strategyworkflow_set = serializers.SerializerMethodField()
 
-    columnactivity_set = serializers.SerializerMethodField()
+    columnworkflow_set = serializers.SerializerMethodField()
 
-    outcomeactivity_set = serializers.SerializerMethodField()
+    outcomeworkflow_set = serializers.SerializerMethodField()
 
     class Meta:
         model = Activity
@@ -412,24 +412,24 @@ class ActivitySerializer(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "hash",
-            "columnactivity_set",
-            "strategyactivity_set",
-            "outcomeactivity_set",
+            "columnworkflow_set",
+            "strategyworkflow_set",
+            "outcomeworkflow_set",
             "is_original",
             "parent_activity",
         ]
 
-    def get_columnactivity_set(self, instance):
-        links = instance.columnactivity_set.all().order_by("rank")
-        return ColumnActivitySerializer(links, many=True).data
+    def get_columnworkflow_set(self, instance):
+        links = instance.columnworkflow_set.all().order_by("rank")
+        return ColumnWorkflowSerializer(links, many=True).data
 
-    def get_strategyactivity_set(self, instance):
-        links = instance.strategyactivity_set.all().order_by("rank")
-        return StrategyActivitySerializer(links, many=True).data
+    def get_strategyworkflow_set(self, instance):
+        links = instance.strategyworkflow_set.all().order_by("rank")
+        return StrategyWorkflowSerializer(links, many=True).data
 
-    def get_outcomeactivity_set(self, instance):
-        links = instance.outcomeactivity_set.all().order_by("rank")
-        return OutcomeActivitySerializer(links, many=True).data
+    def get_outcomeworkflow_set(self, instance):
+        links = instance.outcomeworkflow_set.all().order_by("rank")
+        return OutcomeWorkflowSerializer(links, many=True).data
 
     def create(self, validated_data):
         if User.objects.filter(username=self.initial_data["author"]).exists():
@@ -476,31 +476,31 @@ class ActivitySerializer(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
-        for strategyactivity_data in self.initial_data.pop(
-            "strategyactivity_set"
+        for strategyworkflow_data in self.initial_data.pop(
+            "strategyworkflow_set"
         ):
-            strategyactivity_serializer = StrategyActivitySerializer(
-                StrategyActivity.objects.get(id=strategyactivity_data["id"]),
-                data=strategyactivity_data,
+            strategyworkflow_serializer = StrategyWorkflowSerializer(
+                StrategyWorkflow.objects.get(id=strategyworkflow_data["id"]),
+                data=strategyworkflow_data,
             )
-            strategyactivity_serializer.is_valid()
-            strategyactivity_serializer.save()
-        for outcomeactivity_data in self.initial_data.pop(
-            "outcomeactivity_set"
+            strategyworkflow_serializer.is_valid()
+            strategyworkflow_serializer.save()
+        for outcomeworkflow_data in self.initial_data.pop(
+            "outcomeworkflow_set"
         ):
-            outcomeactivity_serializer = OutcomeActivitySerializer(
-                OutcomeActivity.objects.get(id=outcomeactivity_data["id"]),
-                data=outcomeactivity_data,
+            outcomeworkflow_serializer = OutcomeWorkflowSerializer(
+                OutcomeWorkflow.objects.get(id=outcomeworkflow_data["id"]),
+                data=outcomeworkflow_data,
             )
-            outcomeactivity_serializer.is_valid()
-            outcomeactivity_serializer.save()
-        for columnactivity_data in self.initial_data.pop("columnactivity_set"):
-            columnactivity_serializer = ColumnActivitySerializer(
-                ColumnActivity.objects.get(id=columnactivity_data["id"]),
-                data=columnactivity_data,
+            outcomeworkflow_serializer.is_valid()
+            outcomeworkflow_serializer.save()
+        for columnworkflow_data in self.initial_data.pop("columnworkflow_set"):
+            columnworkflow_serializer = ColumnWorkflowSerializer(
+                ColumnWorkflow.objects.get(id=columnworkflow_data["id"]),
+                data=columnworkflow_data,
             )
-            columnactivity_serializer.is_valid()
-            columnactivity_serializer.save()
+            columnworkflow_serializer.is_valid()
+            columnworkflow_serializer.save()
         instance.save()
         return instance
 
@@ -510,7 +510,7 @@ class OutcomePreparationSerializer(serializers.ModelSerializer):
     outcome = OutcomeSerializer()
 
     class Meta:
-        model = OutcomeActivity
+        model = OutcomePreparation
         fields = ["preparation", "outcome", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):

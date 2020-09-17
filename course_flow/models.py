@@ -593,10 +593,10 @@ def reorder_for_deleted_node_strategy(sender, instance, **kwargs):
         out_of_order_link.save()
 
 
-@receiver(pre_delete, sender=StrategyActivity)
-def reorder_for_deleted_strategy_activity(sender, instance, **kwargs):
-    for out_of_order_link in StrategyActivity.objects.filter(
-        activity=instance.activity, rank__gt=instance.rank
+@receiver(pre_delete, sender=StrategyWorkflow)
+def reorder_for_deleted_strategy_workflow(sender, instance, **kwargs):
+    for out_of_order_link in StrategyWorkflow.objects.filter(
+        workflow=instance.workflow, rank__gt=instance.rank
     ):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
@@ -692,12 +692,12 @@ def create_default_activity_content(sender, instance, created, **kwargs):
         instance.save()
 
 
-@receiver(post_save, sender=StrategyActivity)
+@receiver(post_save, sender=StrategyWorkflow)
 def switch_strategy_to_static(sender, instance, created, **kwargs):
     if created:
-        if instance.activity.static:
+        if instance.workflow.static:
             for node in instance.strategy.nodes.all():
-                node.students.add(*list(instance.activity.students.all()))
+                node.students.add(*list(instance.workflow.students.all()))
 
 
 @receiver(post_save, sender=ComponentWeek)

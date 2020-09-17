@@ -307,7 +307,7 @@
                 svgActivity.selectAll('.strategy').remove();
 
 
-                const strategies = svgActivity.selectAll('.strategy').data(activityData.strategyactivity_set).enter()
+                const strategies = svgActivity.selectAll('.strategy').data(activityData.strategyworkflow_set).enter()
                                   .append("svg").attr("class","strategy")
                                   .attr("x", "0")
                                   .attr("height", (d,i)=>`${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertical)-nodeSpacingVertical+2*strategyPadding+strategyInfoHeight}`)
@@ -322,8 +322,8 @@
                                       renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
                                   });
 
-                    for(let i = 0; i<activityData.strategyactivity_set.length; i++){
-                      for(let j = 0; j<activityData.strategyactivity_set.length; j++){
+                    for(let i = 0; i<activityData.strategyworkflow_set.length; i++){
+                      for(let j = 0; j<activityData.strategyworkflow_set.length; j++){
                         if(strategies["_groups"][0][j].__data__.rank == i){
                             d3.select(strategies["_groups"][0][j]).attr("y", `${runningActivityHeight}`);
                             runningActivityHeight += +d3.select(strategies["_groups"][0][j]).attr("height")+strategyVerticalSpacing;
