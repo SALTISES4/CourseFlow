@@ -261,6 +261,43 @@ class Activity(Workflow):
         verbose_name = "Activity"
         verbose_name_plural = "Activities"
 
+class Course(models.Model):
+    title = models.CharField(max_length=30)
+    description = models.TextField(max_length=400)
+    author = models.ForeignKey(
+        User,
+        related_name="authored_courses",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+    discipline = models.ForeignKey(
+        'Discipline', on_delete=models.SET_NULL, null=True
+    )
+
+    static = models.BooleanField(default=False)
+
+    students = models.ManyToManyField(
+        User, related_name="assigned_courses", blank=True
+    )
+
+    parent_course = models.ForeignKey(
+        "Course", on_delete=models.SET_NULL, null=True
+    )
+    is_original = models.BooleanField(default=True)
+
+    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    weeks = models.ManyToManyField('Week', through="WeekCourse", blank=True)
+
+    outcomes = models.ManyToManyField(
+        Outcome, through="OutcomeCourse", blank=True
+    )
+
+    def __str__(self):
+        return self.title
+
 
 class ColumnWorkflow(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
@@ -480,43 +517,6 @@ class Discipline(models.Model):
         verbose_name = _("discipline")
         verbose_name_plural = _("disciplines")
 
-
-class Course(models.Model):
-    title = models.CharField(max_length=30)
-    description = models.TextField(max_length=400)
-    author = models.ForeignKey(
-        User,
-        related_name="authored_courses",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
-    created_on = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-    discipline = models.ForeignKey(
-        Discipline, on_delete=models.SET_NULL, null=True
-    )
-
-    static = models.BooleanField(default=False)
-
-    students = models.ManyToManyField(
-        User, related_name="assigned_courses", blank=True
-    )
-
-    parent_course = models.ForeignKey(
-        "Course", on_delete=models.SET_NULL, null=True
-    )
-    is_original = models.BooleanField(default=True)
-
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-    weeks = models.ManyToManyField(Week, through="WeekCourse", blank=True)
-
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeCourse", blank=True
-    )
-
-    def __str__(self):
-        return self.title
 
 
 class WeekCourse(models.Model):
