@@ -14,11 +14,9 @@ from .models import (
     NodeStrategy,
     StrategyWorkflow,
     ComponentWeek,
-    WeekCourse,
     Component,
     Week,
     Program,
-    ComponentProgram,
     NodeCompletionStatus,
     ComponentCompletionStatus,
 )

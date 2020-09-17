@@ -537,23 +537,6 @@ def reorder_for_deleted_component_week(sender, instance, **kwargs):
         out_of_order_link.save()
 
 
-@receiver(pre_delete, sender=WeekCourse)
-def reorder_for_deleted_week_course(sender, instance, **kwargs):
-    for out_of_order_link in WeekCourse.objects.filter(
-        course=instance.course, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
-
-
-@receiver(pre_delete, sender=ComponentProgram)
-def reorder_for_deleted_component_program(sender, instance, **kwargs):
-    for out_of_order_link in ComponentProgram.objects.filter(
-        program=instance.program, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
-
 
 @receiver(pre_delete, sender=Activity)
 @receiver(pre_delete, sender=Assessment)
