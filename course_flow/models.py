@@ -221,7 +221,7 @@ class Workflow(models.Model):
     static = models.BooleanField(default=False)
 
     parent_activity = models.ForeignKey(
-        "Activity", on_delete=models.SET_NULL, null=True
+        "Workflow", on_delete=models.SET_NULL, null=True
     )
     is_original = models.BooleanField(default=True)
 
@@ -242,41 +242,16 @@ class Workflow(models.Model):
     def __str__(self):
         return self.title
 
-class Activity(models.Model):
-    title = models.CharField(max_length=30)
-    description = models.TextField(max_length=400)
+class Activity(Workflow):
     author = models.ForeignKey(
         User,
         related_name="authored_activities",
         on_delete=models.SET_NULL,
         null=True,
     )
-    created_on = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-
-    static = models.BooleanField(default=False)
-
+    
     students = models.ManyToManyField(
         User, related_name="assigned_activities", blank=True
-    )
-
-    parent_activity = models.ForeignKey(
-        "Activity", on_delete=models.SET_NULL, null=True
-    )
-    is_original = models.BooleanField(default=True)
-
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-    strategies = models.ManyToManyField(
-        Strategy, through="StrategyActivity", blank=True
-    )
-
-    columns = models.ManyToManyField(
-        Column, through="ColumnActivity", blank=True
-    )
-
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeActivity", blank=True
     )
 
     def __str__(self):
@@ -318,38 +293,6 @@ class StrategyWorkflow(models.Model):
     class Meta:
         verbose_name = "Strategy-Workflow Link"
         verbose_name_plural = "Strategy-Workflow Links"
-
-class ColumnActivity(models.Model):
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    column = models.ForeignKey(Column, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Column-Activity Link"
-        verbose_name_plural = "Column-Activity Links"
-
-
-class OutcomeActivity(models.Model):
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Activity Link"
-        verbose_name_plural = "Outcome-Activity Links"
-
-
-class StrategyActivity(models.Model):
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Strategy-Activity Link"
-        verbose_name_plural = "Strategy-Activity Links"
 
 
 class Preparation(models.Model):
