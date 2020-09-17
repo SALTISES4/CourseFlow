@@ -510,52 +510,6 @@ class Discipline(models.Model):
         verbose_name_plural = _("disciplines")
 
 
-
-class WeekCourse(models.Model):
-    week = models.ForeignKey(Week, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Week-Course Link"
-        verbose_name_plural = "Week-Course Links"
-
-
-class OutcomeCourse(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Course Link"
-        verbose_name_plural = "Outcome-Course Links"
-
-
-
-class ComponentProgram(models.Model):
-    component = models.ForeignKey(Component, on_delete=models.CASCADE)
-    program = models.ForeignKey(Program, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Component-Program Link"
-        verbose_name_plural = "Component-Program Links"
-
-
-class OutcomeProgram(models.Model):
-    program = models.ForeignKey(Program, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Program Link"
-        verbose_name_plural = "Outcome-Program Links"
-
-
 @receiver(pre_delete, sender=NodeStrategy)
 def reorder_for_deleted_node_strategy(sender, instance, **kwargs):
     for out_of_order_link in NodeStrategy.objects.filter(
