@@ -21,6 +21,7 @@ class Column(models.Model):
     
     default_activity_columns = ["ooci", "ooc", "ici", "ics"]
     default_course_columns = ["Preparation", "Lesson", "Artifact", "Assessment"]
+    default_program_columns = ["Category 1", "Category 2", "Category 3"]
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -609,6 +610,25 @@ def create_default_course_content(sender, instance, created, **kwargs):
         instance.strategies.create(
             title="New Week",
             description="default week",
+            author=instance.author,
+        )
+        instance.save()
+
+@receiver(post_save, sender=Program)
+def create_default_program_content(sender, instance, created, **kwargs):
+    if created:
+        # If the activity is newly created, add the default columns
+        cols = Column.default_program_columns
+        for i, col in enumerate(cols):
+            instance.columns.create(
+                through_defaults={"rank": i},
+                title=f"Default {col} column",
+                author=instance.author,
+            )
+
+        instance.strategies.create(
+            title="New Term",
+            description="default term",
             author=instance.author,
         )
         instance.save()
