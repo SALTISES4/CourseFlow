@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from model_utils.managers import InheritanceManager
 
 
 User = get_user_model()
@@ -19,6 +20,7 @@ class Column(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     
     default_activity_columns = ["ooci", "ooc", "ici", "ics"]
+    default_course_columns = ["Preparation", "Lesson", "Artifact", "Assessment"]
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -213,6 +215,8 @@ class NodeStrategy(models.Model):
 
         
 class Workflow(models.Model):
+    objects = InheritanceManager()
+    
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -550,20 +554,10 @@ def delete_attached_component(sender, instance, **kwargs):
     ).delete()
 
 
-@receiver(pre_delete, sender=Course)
-def delete_course_objects(sender, instance, **kwargs):
-    if instance.static:
-        for week in instance.weeks.all():
-            for component in week.components.all():
-                component.content_object.delete()
-    instance.weeks.all().delete()
-
-
-@receiver(pre_delete, sender=Activity)
-def delete_activity_objects(sender, instance, **kwargs):
+@receiver(pre_delete, sender=Workflow)
+def delete_workflow_objects(sender, instance, **kwargs):
     instance.strategies.all().delete()
     instance.columns.all().delete()
-
 
 @receiver(pre_delete, sender=Strategy)
 def delete_strategy_objects(sender, instance, **kwargs):
@@ -594,8 +588,27 @@ def create_default_activity_content(sender, instance, created, **kwargs):
             )
 
         instance.strategies.create(
-            title="New Strategy",
-            description="default strategy",
+            title="New Part",
+            description="default part",
+            author=instance.author,
+        )
+        instance.save()
+
+@receiver(post_save, sender=Course)
+def create_default_course_content(sender, instance, created, **kwargs):
+    if created:
+        # If the activity is newly created, add the default columns
+        cols = Column.default_course_columns
+        for i, col in enumerate(cols):
+            instance.columns.create(
+                through_defaults={"rank": i},
+                title=f"Default {col} column",
+                author=instance.author,
+            )
+
+        instance.strategies.create(
+            title="New Week",
+            description="default week",
             author=instance.author,
         )
         instance.save()
@@ -640,6 +653,7 @@ model_lookups = {
     "week": Week,
     "course": Course,
     "program": Program,
+    "workflow": Workflow,
 }
 model_keys = [
     "node",

@@ -897,6 +897,8 @@ class DisciplineSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
 
     strategyworkflow_set = serializers.SerializerMethodField()
+    
+    columnworkflow_set = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
@@ -918,6 +920,7 @@ class CourseSerializer(serializers.ModelSerializer):
             "hash",
             "strategyworkflow_set",
             "outcomeworkflow_set",
+            "columnworkflow_set",
             "discipline",
             "is_original",
             "parent_activity",
@@ -926,6 +929,10 @@ class CourseSerializer(serializers.ModelSerializer):
     def get_strategyworkflow_set(self, instance):
         links = instance.strategyworkflow_set.all().order_by("rank")
         return StrategyWorkflowSerializer(links, many=True).data
+    
+    def get_columnworkflow_set(self, instance):
+        links = instance.columnworkflow_set.all().order_by("rank")
+        return ColumnWorkflowSerializer(links, many=True).data
 
     def get_outcomeworkflow_set(self, instance):
         links = instance.outcomeworkflow_set.all().order_by("rank")
@@ -949,6 +956,13 @@ class CourseSerializer(serializers.ModelSerializer):
             )
             strategyworkflow_serializer.is_valid()
             strategyworkflow_serializer.save()
+        for columnworkflow_data in self.initial_data.pop("columnworkflow_set"):
+            columnworkflow_serializer = ColumnWorkflowSerializer(
+                ColumnWorkflow.objects.get(id=columnworkflow_data["id"]),
+                data=columnworkflow_data,
+            )
+            columnworkflow_serializer.is_valid()
+            columnworkflow_serializer.save()
         for outcomeworkflow_data in self.initial_data.pop("outcomeworkflow_set"):
             outcomeworkflow_serializer = OutcomeWorkflowSerializer(
                 OutcomeWorkflow.objects.get(id=outcomeworkflow_data["id"]),

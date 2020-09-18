@@ -235,7 +235,7 @@
                 .attr("id", "delete-course")
                 .on("click", function(d,i){
                     root.currentComponentInstance.setState({
-                      object: courseJson,
+                      object: jsonData,
                       objectType: "course",
                       isCourse: true,
                       isDeleteForm: true,
@@ -383,9 +383,12 @@
                   strategys.append("g")
                     .attr("class", "action-icon add-node")
                     .on("mousedown", function(d,i){
+                        console.log(jsonData);
                         root.currentComponentInstance.setState({
+                          objectType: "node",
                           parentID: d3.select(this.parentNode).node().__data__.strategy.id,
-                          isCourseLevelNode: true
+                          isNode: true,
+                          parentActivity:jsonData,
                         });
                         root.currentComponentInstance.dlg.MDComponent.show();
                     })
@@ -600,12 +603,13 @@
                   nodes.append("g")
                     .attr("class", "action-icon update-node")
                     .on("mousedown", function(d,i){
+                      console.log(courseJson)
                       root.currentComponentInstance.setState({
                         object: d3.select(this.parentNode).node().__data__.node,
                         objectType: "node",
                         isNode: true,
                         isUpdateForm: true,
-                        parentActivity:activityJson
+                        parentActivity:courseJson
                       });
                       root.currentComponentInstance.dlg.MDComponent.show();
                     })

@@ -795,6 +795,7 @@ def add_component_to_program(request: HttpRequest) -> HttpResponse:
 @ajax_login_required
 @is_parent_owner
 def dialog_form_create(request: HttpRequest) -> HttpResponse:
+    print("creating")
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
     data["author"] = request.user.username

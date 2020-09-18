@@ -281,7 +281,7 @@ export class DialogForm extends Component {
     if (this.state.isUpdateForm) {
       var columnrows=[];
       if(this.state.isNode){
-        var columnSet = this.state.parentActivity.columnactivity_set;
+        var columnSet = this.state.parentActivity.columnworkflow_set;
         for(var i=0;i<columnSet.length;i++){
             columnrows.push(<Select.Item value={columnSet[i].column.id}>{columnSet[i].column.title}</Select.Item>);
         }
@@ -410,9 +410,10 @@ export class DialogForm extends Component {
         </div>
       );
     } else {
+      console.log(this.state);
       var columnrows=[];
       if(this.state.isNode){
-        var columnSet = this.state.parentActivity.columnactivity_set;
+        var columnSet = this.state.parentActivity.columnworkflow_set;
         for(var i=0;i<columnSet.length;i++){
             columnrows.push(<Select.Item value={columnSet[i].column.id}>{columnSet[i].column.title}</Select.Item>);
         }
@@ -787,6 +788,11 @@ function deleteNode(component) {
 }
 
 function updateNode(component) {
+    console.log(component.props.updateURL);
+    console.log(JSON.stringify(component.state.objectToBe));
+    console.log(JSON.stringify(component.state.objectType));
+    console.log(JSON.stringify(component.state.parentID));
+    console.log(JSON.stringify(component.state.isProgramLevelComponent));
   $.post(component.props.updateURL, {
     object: JSON.stringify(component.state.object),
     objectID: JSON.stringify(component.state.object.id),
@@ -812,6 +818,11 @@ function updateNode(component) {
 
 //post new node
 function createNode(component) {
+    console.log(component.props.createURL);
+    console.log(JSON.stringify(component.state.objectToBe));
+    console.log(JSON.stringify(component.state.objectType));
+    console.log(JSON.stringify(component.state.parentID));
+    console.log(JSON.stringify(component.state.isProgramLevelComponent));
   $.post(component.props.createURL, {
     object: JSON.stringify(component.state.objectToBe),
     objectType: JSON.stringify(component.state.objectType),

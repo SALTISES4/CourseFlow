@@ -27,18 +27,7 @@ def ajax_login_required(view_func):
 owned_models = [
     "node",
     "strategy",
-    "activity",
-    "week",
-    "course",
-    "assessment",
-    "week",
-    "course",
-    "artifact",
-    "week",
-    "course",
-    "preparation",
-    "week",
-    "course",
+    "workflow"
 ]
 program_level_owned_models = ["assessment", "program", "course", "program"]
 
@@ -79,6 +68,7 @@ def is_parent_owner(view_func):
     def _wrapped_view(request, *args, **kwargs):
         model = json.loads(request.POST.get("objectType"))
         parent_id = json.loads(request.POST.get("parentID"))
+        print(parent_id)
         is_program_level = json.loads(
             request.POST.get("isProgramLevelComponent")
         )
@@ -92,10 +82,15 @@ def is_parent_owner(view_func):
                     ]
                 ].objects.get(id=parent_id)
             else:
-                parent = model_lookups[
+                print(owned_models)
+                parentType = model_lookups[
                     owned_models[owned_models.index(model) + 1]
-                ].objects.get(id=parent_id)
+                ]
+                if hasattr(parentType.objects,"get_subclass"): 
+                    parent = parentType.objects.get_subclass(id=parent_id)
+                else: parent = parentType.objects.get(id=parent_id)
         except:
+            print("did not work")
             response = JsonResponse({"login_url": settings.LOGIN_URL})
             response.status_code = 401
             return response

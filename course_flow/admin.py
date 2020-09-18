@@ -16,6 +16,7 @@ from .models import (
     StrategyWorkflow,
     ColumnWorkflow,
     ComponentWeek,
+    Workflow,
 )
 
 admin.site.register(Node)
@@ -33,3 +34,4 @@ admin.site.register(Program)
 admin.site.register(NodeStrategy)
 admin.site.register(StrategyWorkflow)
 admin.site.register(ComponentWeek)
+admin.site.register(Workflow)
