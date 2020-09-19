@@ -465,9 +465,9 @@
 
 
           function pathToNextSiblingRect(s, i) {
-            path = "M" + (s[i].x.animVal.value+componentMidpointHorizontal) + "," + (s[i].y.animVal.value+componentHeight) + "C" + (s[i].x.animVal.value+componentMidpointHorizontal) + ","
-                    + (s[i].y.animVal.value + componentHeight + s[i+1].y.animVal.value) / 2 + " " + (s[i+1].x.animVal.value+componentMidpointHorizontal) + "," +  (s[i].y.animVal.value + componentHeight + s[i+1].y.animVal.value) / 2
-                    + " " + (s[i+1].x.animVal.value+componentMidpointHorizontal) + "," + s[i+1].y.animVal.value;
+            path = "M" + (s[i].x.animVal.value+nodeMidpointHorizontal) + "," + (s[i].y.animVal.value+nodeHeight) + "C" + (s[i].x.animVal.value+nodeMidpointHorizontal) + ","
+                    + (s[i].y.animVal.value + nodeHeight + s[i+1].y.animVal.value) / 2 + " " + (s[i+1].x.animVal.value+nodeMidpointHorizontal) + "," +  (s[i].y.animVal.value + nodeHeight + s[i+1].y.animVal.value) / 2
+                    + " " + (s[i+1].x.animVal.value+nodeMidpointHorizontal) + "," + s[i+1].y.animVal.value;
             return path
           }
 
@@ -593,6 +593,7 @@
                   nodes.append("g")
                     .attr("class", "action-icon update-node")
                     .on("mousedown", function(d,i){
+                        console.log(programJson);
                       root.currentComponentInstance.setState({
                         object: d3.select(this.parentNode).node().__data__.node,
                         objectType: "node",
@@ -740,6 +741,7 @@
             .getAttribute("value");
         }
       function updateJson(){
+          console.log(programJson);
             $.post("{% url 'course_flow:update-program-json' %}", {json: JSON.stringify(programJson)}).done(function(data) {
             if (data.action == "posted") {
               root.currentComponentInstance.snack.MDComponent.show({
@@ -758,24 +760,25 @@
           });
       }
 
-      function addComponent(componentPk){
-        $.post("{% url 'course_flow:add-component-to-program' %}", {componentPk: componentPk, programPk: programJson.id}).done(function(data) {
-        if (data.action == "posted") {
-          root.currentComponentInstance.snack.MDComponent.show({
-            message: root.currentComponentInstance.props.snackMessageOnSuccess
-          });
-        } else {
+      function addNode(nodePk, strategyPk){
+        $.post("{% url 'course_flow:add-node' %}", {nodePk: nodePk, strategyPk: strategyPk})
+        .done(function(data) {
+          if (data.action == "posted") {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnSuccess
+            });
+          } else {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnFailure
+            });
+          }
+        })
+        .fail(function(data) {
           root.currentComponentInstance.snack.MDComponent.show({
             message: root.currentComponentInstance.props.snackMessageOnFailure
           });
-        }
-      })
-      .fail(function(data) {
-        root.currentComponentInstance.snack.MDComponent.show({
-          message: root.currentComponentInstance.props.snackMessageOnFailure
         });
-      });
-  }
+      }
 
   });
 </script>

@@ -386,121 +386,6 @@ class OutcomeWorkflowSerializer(serializers.ModelSerializer):
         return instance
 
 
-class ActivitySerializer(serializers.ModelSerializer):
-
-    author = serializers.SlugRelatedField(
-        read_only=True, slug_field="username"
-    )
-
-    strategyworkflow_set = serializers.SerializerMethodField()
-
-    columnworkflow_set = serializers.SerializerMethodField()
-
-    outcomeworkflow_set = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Activity
-        fields = [
-            "id",
-            "title",
-            "description",
-            "author",
-            "created_on",
-            "last_modified",
-            "hash",
-            "columnworkflow_set",
-            "strategyworkflow_set",
-            "outcomeworkflow_set",
-            "is_original",
-            "parent_activity",
-        ]
-
-    def get_columnworkflow_set(self, instance):
-        links = instance.columnworkflow_set.all().order_by("rank")
-        return ColumnWorkflowSerializer(links, many=True).data
-
-    def get_strategyworkflow_set(self, instance):
-        links = instance.strategyworkflow_set.all().order_by("rank")
-        return StrategyWorkflowSerializer(links, many=True).data
-
-    def get_outcomeworkflow_set(self, instance):
-        links = instance.outcomeworkflow_set.all().order_by("rank")
-        return OutcomeWorkflowSerializer(links, many=True).data
-
-    def create(self, validated_data):
-        if User.objects.filter(username=self.initial_data["author"]).exists():
-            author = User.objects.get(username=self.initial_data["author"])
-        else:
-            author = None
-        activity = Activity.objects.create(author=author, **validated_data)
-
-        """
-        do not update the following code, this will only be used for default strategy creation
-        """
-        if "strategyactivity_set" in self.initial_data.keys():
-            Strategy.objects.filter(default=True).update(default=False)
-            for strategyactivity_data in self.initial_data.pop(
-                "strategyactivity_set"
-            ):
-                strategy_data = strategyactivity_data.pop("strategy")
-                null_author = strategy_data.pop("author")
-                nodestrategy_set = strategy_data.pop("nodestrategy_set")
-                outcomestategy_set = strategy_data.pop("outcomestrategy_set")
-                strategy = Strategy.objects.create(
-                    author=author, **strategy_data
-                )
-                link = StrategyActivity.objects.create(
-                    strategy=strategy,
-                    activity=activity,
-                    rank=strategyactivity_data["rank"],
-                )
-                for nodestrategy_data in nodestrategy_set:
-                    node_data = nodestrategy_data.pop("node")
-                    null_author = node_data.pop("author")
-                    outcomenode_set = node_data.pop("outcomenode_set")
-                    node = Node.objects.create(author=author, **node_data)
-                    link = NodeStrategy.objects.create(
-                        node=node,
-                        strategy=strategy,
-                        rank=nodestrategy_data["rank"],
-                    )
-        return activity
-
-    def update(self, instance, validated_data):
-
-        instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description
-        )
-        for strategyworkflow_data in self.initial_data.pop(
-            "strategyworkflow_set"
-        ):
-            strategyworkflow_serializer = StrategyWorkflowSerializer(
-                StrategyWorkflow.objects.get(id=strategyworkflow_data["id"]),
-                data=strategyworkflow_data,
-            )
-            strategyworkflow_serializer.is_valid()
-            strategyworkflow_serializer.save()
-        for outcomeworkflow_data in self.initial_data.pop(
-            "outcomeworkflow_set"
-        ):
-            outcomeworkflow_serializer = OutcomeWorkflowSerializer(
-                OutcomeWorkflow.objects.get(id=outcomeworkflow_data["id"]),
-                data=outcomeworkflow_data,
-            )
-            outcomeworkflow_serializer.is_valid()
-            outcomeworkflow_serializer.save()
-        for columnworkflow_data in self.initial_data.pop("columnworkflow_set"):
-            columnworkflow_serializer = ColumnWorkflowSerializer(
-                ColumnWorkflow.objects.get(id=columnworkflow_data["id"]),
-                data=columnworkflow_data,
-            )
-            columnworkflow_serializer.is_valid()
-            columnworkflow_serializer.save()
-        instance.save()
-        return instance
-
-
 class OutcomePreparationSerializer(serializers.ModelSerializer):
 
     outcome = OutcomeSerializer()
@@ -894,85 +779,6 @@ class DisciplineSerializer(serializers.ModelSerializer):
         fields = ["id", "title"]
 
 
-class CourseSerializer(serializers.ModelSerializer):
-
-    strategyworkflow_set = serializers.SerializerMethodField()
-    
-    columnworkflow_set = serializers.SerializerMethodField()
-
-    author = serializers.SlugRelatedField(
-        read_only=True, slug_field="username"
-    )
-
-    discipline = DisciplineSerializer(read_only=True)
-
-    outcomeworkflow_set = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Course
-        fields = [
-            "id",
-            "title",
-            "description",
-            "author",
-            "created_on",
-            "last_modified",
-            "hash",
-            "strategyworkflow_set",
-            "outcomeworkflow_set",
-            "columnworkflow_set",
-            "discipline",
-            "is_original",
-            "parent_activity",
-        ]
-
-    def get_strategyworkflow_set(self, instance):
-        links = instance.strategyworkflow_set.all().order_by("rank")
-        return StrategyWorkflowSerializer(links, many=True).data
-    
-    def get_columnworkflow_set(self, instance):
-        links = instance.columnworkflow_set.all().order_by("rank")
-        return ColumnWorkflowSerializer(links, many=True).data
-
-    def get_outcomeworkflow_set(self, instance):
-        links = instance.outcomeworkflow_set.all().order_by("rank")
-        return OutcomeWorkflowSerializer(links, many=True).data
-
-    def create(self, validated_data):
-        return Course.objects.create(
-            author=User.objects.get(username=self.initial_data["author"]),
-            **validated_data
-        )
-
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description
-        )
-        for strategyworkflow_data in self.initial_data.pop("strategyworkflow_set"):
-            strategyworkflow_serializer = StrategyWorkflowSerializer(
-                StrategyWorkflow.objects.get(id=strategyworkflow_data["id"]),
-                data=strategyworkflow_data,
-            )
-            strategyworkflow_serializer.is_valid()
-            strategyworkflow_serializer.save()
-        for columnworkflow_data in self.initial_data.pop("columnworkflow_set"):
-            columnworkflow_serializer = ColumnWorkflowSerializer(
-                ColumnWorkflow.objects.get(id=columnworkflow_data["id"]),
-                data=columnworkflow_data,
-            )
-            columnworkflow_serializer.is_valid()
-            columnworkflow_serializer.save()
-        for outcomeworkflow_data in self.initial_data.pop("outcomeworkflow_set"):
-            outcomeworkflow_serializer = OutcomeWorkflowSerializer(
-                OutcomeWorkflow.objects.get(id=outcomeworkflow_data["id"]),
-                data=outcomeworkflow_data,
-            )
-            outcomeworkflow_serializer.is_valid()
-            outcomeworkflow_serializer.save()
-        instance.save()
-        return instance
-
 
 class ProgramLevelComponentSerializer(serializers.ModelSerializer):
 
@@ -1026,46 +832,29 @@ class ProgramLevelComponentSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
-class ProgramSerializer(serializers.ModelSerializer):
-
+class WorkflowSerializer(serializers.ModelSerializer):
+    
     strategyworkflow_set = serializers.SerializerMethodField()
-
+    outcomeworkflow_set = serializers.SerializerMethodField()
+    columnworkflow_set = serializers.SerializerMethodField()
+    
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
-
-    outcomeworkflow_set = serializers.SerializerMethodField()
     
-    columnworkflow_set = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Program
-        fields = [
-            "id",
-            "title",
-            "description",
-            "author",
-            "created_on",
-            "last_modified",
-            "hash",
-            "strategyworkflow_set",
-            "outcomeworkflow_set",
-            "columnworkflow_set",
-        ]
-
     def get_strategyworkflow_set(self, instance):
         links = instance.strategyworkflow_set.all().order_by("rank")
         return StrategyWorkflowSerializer(links, many=True).data
     
     def get_columnworkflow_set(self, instance):
         links = instance.columnworkflow_set.all().order_by("rank")
+        print(links)
         return ColumnWorkflowSerializer(links, many=True).data
 
     def get_outcomeworkflow_set(self, instance):
         links = instance.outcomeworkflow_set.all().order_by("rank")
         return OutcomeWorkflowSerializer(links, many=True).data
-
+    
     def create(self, validated_data):
         return Program.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
@@ -1085,6 +874,7 @@ class ProgramSerializer(serializers.ModelSerializer):
             strategyworkflow_serializer.is_valid()
             strategyworkflow_serializer.save()
         for columnworkflow_data in self.initial_data.pop("columnworkflow_set"):
+            print(columnworkflow_data)
             columnworkflow_serializer = ColumnWorkflowSerializer(
                 ColumnWorkflow.objects.get(id=columnworkflow_data["id"]),
                 data=columnworkflow_data,
@@ -1100,6 +890,109 @@ class ProgramSerializer(serializers.ModelSerializer):
             outcomeworkflow_serializer.save()
         instance.save()
         return instance
+    
+    
+class ProgramSerializer(WorkflowSerializer):
+
+    class Meta:
+        model = Program
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "created_on",
+            "last_modified",
+            "hash",
+            "columnworkflow_set",
+            "strategyworkflow_set",
+            "outcomeworkflow_set",
+            "is_original",
+            "parent_activity",
+        ]
+
+    
+
+class ActivitySerializer(WorkflowSerializer):
+
+    class Meta:
+        model = Activity
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "created_on",
+            "last_modified",
+            "hash",
+            "columnworkflow_set",
+            "strategyworkflow_set",
+            "outcomeworkflow_set",
+            "is_original",
+            "parent_activity",
+        ]
+
+    def create(self, validated_data):
+        if User.objects.filter(username=self.initial_data["author"]).exists():
+            author = User.objects.get(username=self.initial_data["author"])
+        else:
+            author = None
+        activity = Activity.objects.create(author=author, **validated_data)
+
+        """
+        do not update the following code, this will only be used for default strategy creation
+        
+        if "strategyactivity_set" in self.initial_data.keys():
+            Strategy.objects.filter(default=True).update(default=False)
+            for strategyactivity_data in self.initial_data.pop(
+                "strategyactivity_set"
+            ):
+                strategy_data = strategyactivity_data.pop("strategy")
+                null_author = strategy_data.pop("author")
+                nodestrategy_set = strategy_data.pop("nodestrategy_set")
+                outcomestategy_set = strategy_data.pop("outcomestrategy_set")
+                strategy = Strategy.objects.create(
+                    author=author, **strategy_data
+                )
+                link = StrategyActivity.objects.create(
+                    strategy=strategy,
+                    activity=activity,
+                    rank=strategyactivity_data["rank"],
+                )
+                for nodestrategy_data in nodestrategy_set:
+                    node_data = nodestrategy_data.pop("node")
+                    null_author = node_data.pop("author")
+                    outcomenode_set = node_data.pop("outcomenode_set")
+                    node = Node.objects.create(author=author, **node_data)
+                    link = NodeStrategy.objects.create(
+                        node=node,
+                        strategy=strategy,
+                        rank=nodestrategy_data["rank"],
+                    )
+        """
+        return activity
+    
+class CourseSerializer(WorkflowSerializer):
+
+    discipline = DisciplineSerializer(read_only=True)
+
+    class Meta:
+        model = Course
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "created_on",
+            "last_modified",
+            "hash",
+            "strategyworkflow_set",
+            "outcomeworkflow_set",
+            "columnworkflow_set",
+            "discipline",
+            "is_original",
+            "parent_activity",
+        ]
 
 
 serializer_lookups = {
