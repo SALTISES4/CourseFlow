@@ -12,6 +12,24 @@ from django.utils.translation import ugettext_lazy as _
 User = get_user_model()
 
 
+class Column(models.Model):
+    title = models.CharField(max_length=50)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+    
+    default_activity_columns = ["ooci", "ooc", "ici", "ics"]
+
+    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = "Column"
+        verbose_name_plural = "Columns"
+
+
 class Outcome(models.Model):
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
@@ -103,6 +121,8 @@ class Node(models.Model):
         (IN_CLASS_STUDENTS, "In Class (Students)"),
     )
     classification = models.PositiveIntegerField(choices=NODE_TYPES, default=1)
+
+    column = models.ForeignKey("Column", on_delete=models.PROTECT,null=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -221,6 +241,10 @@ class Activity(models.Model):
         Strategy, through="StrategyActivity", blank=True
     )
 
+    columns = models.ManyToManyField(
+        Column, through="ColumnActivity", blank=True
+    )
+
     outcomes = models.ManyToManyField(
         Outcome, through="OutcomeActivity", blank=True
     )
@@ -231,6 +255,17 @@ class Activity(models.Model):
     class Meta:
         verbose_name = "Activity"
         verbose_name_plural = "Activities"
+
+
+class ColumnActivity(models.Model):
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    column = models.ForeignKey(Column, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Column-Activity Link"
+        verbose_name_plural = "Column-Activity Links"
 
 
 class OutcomeActivity(models.Model):
@@ -613,6 +648,7 @@ def delete_course_objects(sender, instance, **kwargs):
 @receiver(pre_delete, sender=Activity)
 def delete_activity_objects(sender, instance, **kwargs):
     instance.strategies.all().delete()
+    instance.columns.all().delete()
 
 
 @receiver(pre_delete, sender=Strategy)
@@ -629,6 +665,26 @@ def switch_node_to_static(sender, instance, created, **kwargs):
         if activity:
             if activity.static:
                 instance.node.students.add(*list(activity.students.all()))
+
+
+@receiver(post_save, sender=Activity)
+def create_default_activity_content(sender, instance, created, **kwargs):
+    if created:
+        # If the activity is newly created, add the default columns
+        cols = Column.default_activity_columns
+        for i, col in enumerate(cols):
+            instance.columns.create(
+                through_defaults={"rank": i},
+                title=f"Default {col} column",
+                author=instance.author,
+            )
+
+        instance.strategies.create(
+            title="New Strategy",
+            description="default strategy",
+            author=instance.author,
+        )
+        instance.save()
 
 
 @receiver(post_save, sender=StrategyActivity)
@@ -661,6 +717,7 @@ def switch_component_to_static(sender, instance, created, **kwargs):
 
 model_lookups = {
     "node": Node,
+    "column": Column,
     "strategy": Strategy,
     "activity": Activity,
     "assessment": Assessment,
@@ -672,6 +729,7 @@ model_lookups = {
 }
 model_keys = [
     "node",
+    "column",
     "strategy",
     "activity",
     "assessment",

@@ -2,6 +2,8 @@ from .models import (
     model_lookups,
     User,
     Course,
+    Column,
+    ColumnActivity,
     Preparation,
     Activity,
     Assessment,
