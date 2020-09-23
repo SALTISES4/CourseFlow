@@ -1,0 +1,79 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block header %}{% endblock %}
+<!-- -->
+{% block body %}
+
+<svg id="container" width="1000" height="1000">
+  <defs>
+    <filter id="selection-shadow">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" />
+    </filter>
+  </defs>
+</svg>
+<div id="node-form-container"></div>
+
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %}
+
+<script>
+    
+class StrategyView extends Component{
+    
+}
+
+class WorkflowView extends Component{
+    render(){
+        
+    }
+}
+
+
+
+</script>
+
+
+
+<script nonce="{{request.csp_nonce}}">
+window.addEventListener("load", function(){
+    
+    let fetchThenRenderWorkflow = function(){
+        $.getJSON('{% url "course_flow:workflow-detail" pk=object.pk %}',
+            function(json){
+                renderWorkflow(json);
+            }
+        );
+    }
+    
+    let renderWorkflow = function(jsonData){
+        console.log(jsonData);
+    }
+    
+    fetchThenRenderWorkflow();
+    
+})
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+{% endblock %}

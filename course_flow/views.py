@@ -30,6 +30,7 @@ from .serializers import (
     ProgramSerializer,
     ProgramLevelComponentSerializer,
     WeekSerializer,
+    WorkflowSerializer,
 )
 from .decorators import ajax_login_required, is_owner, is_parent_owner
 from django.urls import reverse
@@ -95,6 +96,58 @@ def home_view(request):
         ),
     }
     return render(request, "course_flow/home.html", context)
+
+
+class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Workflow
+    fields = ["title", "description"]
+    template_name = "course_flow/workflow_update.html"
+    
+    
+    def get_queryset(self):
+        return self.model.objects.select_subclasses()
+    
+    def get_object(self):
+        wf = super().get_object()
+        return Workflow.objects.get_subclass(pk=wf.pk)
+    
+    def test_func(self):
+        return self.get_object().author == self.request.user
+
+    def get_success_url(self):
+        return reverse(
+            "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
+        )
+
+
+class WorkflowDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Workflow
+    template_name = "course_flow/workflow_detail.html"
+
+    def get_object(self):
+        wf = super().get_object()
+        return Workflow.objects.get_subclass(pk=wf.pk)
+    
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
+
+
+
+class WorkflowViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+
+    serializer_class = CourseSerializer
+    renderer_classes = [JSONRenderer]
+    queryset = Workflow.objects.select_subclasses()
+
+
+
+
+
+
+
 
 
 class ActivityViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
@@ -338,6 +391,7 @@ class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return reverse(
             "course_flow:activity-detail", kwargs={"pk": self.object.pk}
         )
+
 
 
 def save_serializer(serializer) -> HttpResponse:

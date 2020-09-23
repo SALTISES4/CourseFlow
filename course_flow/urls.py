@@ -9,6 +9,7 @@ router = routers.SimpleRouter()
 router.register(r"activity/read", views.ActivityViewSet)
 router.register(r"course/read", views.CourseViewSet)
 router.register(r"program/read", views.ProgramViewSet)
+router.register(r"workflow/read", views.WorkflowViewSet)
 
 
 app_name = "course_flow"
@@ -26,6 +27,16 @@ def flow_patterns():
         ),
         url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
         url(r"home/$", views.home_view, name="home"),
+        url(
+            r"^workflow/(?P<pk>[0-9]+)/update/$",
+            views.WorkflowUpdateView.as_view(),
+            name="workflow-update",
+        ),
+        url(
+            r"^workflow/(?P<pk>[0-9]+)/$",
+            views.WorkflowDetailView.as_view(),
+            name="workflow-detail-view",
+        ),
         url(
             r"^program/create/$",
             views.ProgramCreateView.as_view(),
