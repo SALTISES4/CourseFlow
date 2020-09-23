@@ -12,12 +12,10 @@ from course_flow.models import (
     model_lookups,
     model_keys,
     Strategy,
+    Column,
     Node,
     NodeStrategy,
-    StrategyActivity,
-    ComponentWeek,
-    Component,
-    ComponentProgram,
+    StrategyWorkflow,
 )
 from course_flow.serializers import serializer_lookups
 from rest_framework.renderers import JSONRenderer
@@ -675,7 +673,7 @@ class BulkTestCase(StaticLiveServerTestCase):
 """
 
 def make_object(model_key, author=None):
-    if model_key == "week":
+    if model_key == "column":
         return model_lookups[model_key].objects.create(
             title="test" + model_key + "title", author=author
         )
@@ -857,55 +855,13 @@ class ModelPostTest(TestCase):
             "activity_classification": 1,
         }
         parent_id = 1
-        is_program_level_component = False
-        for object_type in model_keys:
-            make_object(object_type, author)
-        for object_type in model_keys:
-            object = make_object(object_type, author)
-            response = self.client.post(
-                reverse("course_flow:dialog-form-create"),
-                {
-                    "object": object_to_be,
-                    "objectType": object_type,
-                    "parentID": parent_id,
-                    "isProgramLevelComponent": is_program_level_component,
-                },
-            )
-            self.assertEqual(response.status_code, 401)
-            serializer_data = serializer_lookups[object_type](object).data
-            serializer_data["title"] = "updated test title 1"
-            serializer_data["description"] = "update test description 1"
-            response = self.client.post(
-                reverse("course_flow:dialog-form-update"),
-                {
-                    "object": serializer_data,
-                    "objectID": serializer_data["id"],
-                    "objectType": object_type,
-                },
-            )
-            self.assertEqual(response.status_code, 401)
-            response = self.client.post(
-                reverse("course_flow:dialog-form-delete"),
-                {"objectID": object.id, "objectType": object_type},
-            )
-            self.assertEqual(response.status_code, 401)
-
-    def test_dialog_post_permissions_no_authorship(self):
-        login(self)
-        author = get_author()
-        object_to_be = {
-            "title": "test title 1",
-            "description": "test description 1",
-            "author": None,
-            "work_classification": 1,
-            "activity_classification": 1,
-        }
-        parent_id = 1
-        is_program_level_component = False
-        for object_type in model_keys:
-            make_object(object_type, author)
-        for object_type in model_keys:
-            object = make_object(object_type, author)
+        object_id = 1
+        idlist = []
+        type_list = ["program","strategy","node","activity","strategy","node","course","strategy","node"]
+        for object_type in type_list:
+            object =  make_object(object_type, author)
+            object_id = object.id
+            idlist.append(object_id)
             response = self.client.post(
                 reverse("course_flow:dialog-form-create"),
                 {
@@ -916,18 +872,14 @@ class ModelPostTest(TestCase):
                     .render(object_type)
                     .decode("utf-8"),
                     "parentID": parent_id,
-                    "isProgramLevelComponent": JSONRenderer()
-                    .render(is_program_level_component)
-                    .decode("utf-8"),
                 },
             )
-            if object_type == "program":
-                self.assertEqual(response.status_code, 200)
-            else:
-                self.assertEqual(response.status_code, 401)
+            self.assertEqual(response.status_code, 401)
+            
             serializer_data = serializer_lookups[object_type](object).data
             serializer_data["title"] = "updated test title 1"
-            serializer_data["description"] = "update test description 1"
+            if object_type is not "column":
+                serializer_data["description"] = "update test description 1"
             response = self.client.post(
                 reverse("course_flow:dialog-form-update"),
                 {
@@ -941,19 +893,22 @@ class ModelPostTest(TestCase):
                 },
             )
             self.assertEqual(response.status_code, 401)
+            parent_id = object_id
+        for i, object_id in reversed(list(enumerate(idlist))):
             response = self.client.post(
                 reverse("course_flow:dialog-form-delete"),
                 {
-                    "objectID": object.id,
+                    "objectID": object_id,
                     "objectType": JSONRenderer()
-                    .render(object_type)
+                    .render(type_list[i])
                     .decode("utf-8"),
                 },
             )
             self.assertEqual(response.status_code, 401)
-
-    def test_dialog_post(self):
-        user = login(self)
+    
+    def test_dialog_post_permissions_no_authorship(self):
+        author = get_author()
+        login(self)
         object_to_be = {
             "title": "test title 1",
             "description": "test description 1",
@@ -961,14 +916,14 @@ class ModelPostTest(TestCase):
             "work_classification": 1,
             "activity_classification": 1,
         }
-        object_id = 1
         parent_id = 1
-        is_program_level_component = False
-        for object_type in reversed(model_keys):
-            if object_type == "course":
-                is_program_level_component = True
-            else:
-                is_program_level_component = False
+        object_id = 1
+        idlist = []
+        type_list = ["program","strategy","node","activity","strategy","node","course","strategy","node"]
+        for object_type in type_list:
+            object =  make_object(object_type, author)
+            object_id = object.id
+            idlist.append(object_id)
             response = self.client.post(
                 reverse("course_flow:dialog-form-create"),
                 {
@@ -979,15 +934,76 @@ class ModelPostTest(TestCase):
                     .render(object_type)
                     .decode("utf-8"),
                     "parentID": parent_id,
-                    "isProgramLevelComponent": JSONRenderer()
-                    .render(is_program_level_component)
+                },
+            )
+            if object_type == "program" or object_type == "course" or object_type == "activity":
+                self.assertEqual(response.status_code, 200)
+            else: self.assertEqual(response.status_code, 401)
+            
+            serializer_data = serializer_lookups[object_type](object).data
+            serializer_data["title"] = "updated test title 1"
+            if object_type is not "column":
+                serializer_data["description"] = "update test description 1"
+            response = self.client.post(
+                reverse("course_flow:dialog-form-update"),
+                {
+                    "object": JSONRenderer()
+                    .render(serializer_data)
+                    .decode("utf-8"),
+                    "objectID": serializer_data["id"],
+                    "objectType": JSONRenderer()
+                    .render(object_type)
                     .decode("utf-8"),
                 },
             )
+            self.assertEqual(response.status_code, 401)
+            parent_id = object_id
+        for i, object_id in reversed(list(enumerate(idlist))):
+            response = self.client.post(
+                reverse("course_flow:dialog-form-delete"),
+                {
+                    "objectID": object_id,
+                    "objectType": JSONRenderer()
+                    .render(type_list[i])
+                    .decode("utf-8"),
+                },
+            )
+            self.assertEqual(response.status_code, 401)
+        
+        
+
+    def test_dialog_post(self):
+        user = login(self)
+        object_to_be = {
+            "title": "test title 1",
+            "description": "test description 1",
+            "author": None,
+            "work_classification": 1,
+            "activity_classification": 1,
+        }
+        parent_id = 1
+        object_id = 1
+        idlist = []
+        type_list = ["program","strategy","node","activity","strategy","node","course","strategy","node"]
+        for object_type in type_list:
+            response = self.client.post(
+                reverse("course_flow:dialog-form-create"),
+                {
+                    "object": JSONRenderer()
+                    .render(object_to_be)
+                    .decode("utf-8"),
+                    "objectType": JSONRenderer()
+                    .render(object_type)
+                    .decode("utf-8"),
+                    "parentID": parent_id,
+                },
+            )
             self.assertEqual(response.status_code, 200)
-            object = model_lookups[object_type].objects.first()
+            object = model_lookups[object_type].objects.all().order_by('-created_on').first()
+            object_id = object.id
+            idlist.append(object_id)
             self.assertEqual(object.title, object_to_be["title"])
-            if object_type is not "week":
+            if object_type is not "column":
                 self.assertEqual(
                     object.description, object_to_be["description"]
                 )
@@ -1003,7 +1019,7 @@ class ModelPostTest(TestCase):
                 )
             serializer_data = serializer_lookups[object_type](object).data
             serializer_data["title"] = "updated test title 1"
-            if object_type is not "week":
+            if object_type is not "column":
                 serializer_data["description"] = "update test description 1"
             response = self.client.post(
                 reverse("course_flow:dialog-form-update"),
@@ -1028,18 +1044,19 @@ class ModelPostTest(TestCase):
             self.assertEqual(
                 serializer_data["id"], serializer_data_refresh["id"]
             )
-            if object_type is not "week":
+            if object_type is not "column":
                 self.assertEqual(
                     serializer_data["description"],
                     serializer_data_refresh["description"],
                 )
-        for object_type in model_keys:
+            parent_id = object_id
+        for i, object_id in reversed(list(enumerate(idlist))):
             response = self.client.post(
                 reverse("course_flow:dialog-form-delete"),
                 {
                     "objectID": object_id,
                     "objectType": JSONRenderer()
-                    .render(object_type)
+                    .render(type_list[i])
                     .decode("utf-8"),
                 },
             )
@@ -1144,198 +1161,108 @@ class ModelPostTest(TestCase):
 
     def test_add_strategy_permissions_no_login(self):
         author = get_author()
-        strategy = make_object("strategy", author)
-        activity = make_object("activity", author)
-        response = self.client.post(
-            reverse("course_flow:add-node"),
-            {"activityPk": activity.id, "strategyPk": strategy.id},
-        )
-        self.assertEqual(response.status_code, 302)
+        for object_type in ["activity", "course", "program"]:
+            strategy = make_object("strategy", author)
+            wf = make_object(object_type, author)
+            response = self.client.post(
+                reverse("course_flow:add-strategy"),
+                {"workflowPk": wf.id, "strategyPk": strategy.id},
+            )
+            self.assertEqual(response.status_code, 401)
 
     def test_add_strategy_no_authorship(self):
         login(self)
         author = get_author()
-        strategy = make_object("strategy", author)
-        activity = make_object("activity", author)
-        response = self.client.post(
-            reverse("course_flow:add-strategy"),
-            {"activityPk": activity.id, "strategyPk": strategy.id},
-        )
-        self.assertEqual(response.status_code, 401)
+        for object_type in ["activity", "course", "program"]:
+            strategy = make_object("strategy", author)
+            wf = make_object(object_type, author)
+            response = self.client.post(
+                reverse("course_flow:add-strategy"),
+                {"workflowPk": wf.id, "strategyPk": strategy.id},
+            )
+            self.assertEqual(response.status_code, 401)
 
     def test_add_strategy_add_node(self):
         user = login(self)
-        strategy = make_object("strategy", user)
-        activity = make_object("activity", user)
-        node = make_object("node", user)
-        response = self.client.post(
-            reverse("course_flow:add-node"),
-            {"nodePk": node.id, "strategyPk": strategy.id},
-        )
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(Node.objects.all().count(), 2)
-        self.assertEqual(
-            NodeStrategy.objects.filter(strategy=strategy).count(), 1
-        )
-        created_node = NodeStrategy.objects.get(strategy=strategy).node
-        self.assertEqual(NodeStrategy.objects.get(strategy=strategy).rank, 0)
-        self.assertNotEqual(created_node, node)
-        self.assertEqual(created_node.title, node.title)
-        self.assertEqual(created_node.description, node.description)
-        self.assertEqual(created_node.author, node.author)
-        self.assertEqual(created_node.author, user)
-        self.assertEqual(created_node.parent_node, node)
-        self.assertFalse(created_node.is_original)
-        self.assertEqual(
-            created_node.work_classification, node.work_classification
-        )
-        self.assertEqual(
-            created_node.activity_classification, node.activity_classification
-        )
-        self.assertEqual(created_node.classification, node.classification)
-        response = self.client.post(
-            reverse("course_flow:add-strategy"),
-            {"activityPk": activity.id, "strategyPk": strategy.id},
-        )
-        self.assertEqual(Strategy.objects.all().count(), 2)
-        self.assertEqual(
-            StrategyActivity.objects.filter(activity=activity).count(), 1
-        )
-        created_strategy = StrategyActivity.objects.get(
-            activity=activity
-        ).strategy
-        self.assertEqual(
-            StrategyActivity.objects.get(activity=activity).rank, 0
-        )
-        self.assertNotEqual(created_strategy, strategy)
-        self.assertEqual(created_strategy.title, strategy.title)
-        self.assertEqual(created_strategy.description, strategy.description)
-        self.assertEqual(created_strategy.author, strategy.author)
-        self.assertEqual(created_strategy.author, user)
-        self.assertEqual(created_strategy.parent_strategy, strategy)
-        self.assertFalse(created_strategy.is_original)
-
-        self.assertEqual(Node.objects.all().count(), 3)
-        new_created_node = NodeStrategy.objects.get(
-            strategy=created_strategy
-        ).node
-        self.assertEqual(
-            NodeStrategy.objects.get(strategy=created_strategy).rank, 0
-        )
-        self.assertNotEqual(new_created_node, node)
-        self.assertEqual(new_created_node.title, node.title)
-        self.assertEqual(new_created_node.description, node.description)
-        self.assertEqual(new_created_node.author, node.author)
-        self.assertEqual(new_created_node.author, user)
-        self.assertEqual(new_created_node.parent_node, created_node)
-        self.assertFalse(new_created_node.is_original)
-        self.assertEqual(
-            new_created_node.work_classification, node.work_classification
-        )
-        self.assertEqual(
-            new_created_node.activity_classification,
-            node.activity_classification,
-        )
-        self.assertEqual(new_created_node.classification, node.classification)
-
-    def test_add_course_level_component_permissions_no_login(self):
-        author = get_author()
-        week = make_object("week", author)
-        for component_type in [
-            "assessment",
-            "artifact",
-            "preparation",
-            "activity",
-        ]:
-            component = make_component(component_type, author)
+        for object_type in ["activity", "course", "program"]:
+            wf = make_object(object_type, user)
+            #Check for the default strategy
+            self.assertEqual(Strategy.objects.all().count(),1)
+            #Check for the default columns
+            self.assertEqual(wf.columns.all().count(),len(Column.default_columns[object_type]))
+            strategy = make_object("strategy", user)
+            #Create a node outside the workflow
+            node = make_object("node", user)
+            #Add the node through add-node
             response = self.client.post(
-                reverse("course_flow:add-component-to-course"),
-                {"componentPk": component.id, "weekPk": week.id},
-            )
-            self.assertEqual(response.status_code, 401)
-
-    def test_add_course_level_component_permissions_no_authorship(self):
-        login(self)
-        author = get_author()
-        week = make_object("week", author)
-        for component_type in [
-            "assessment",
-            "artifact",
-            "preparation",
-            "activity",
-        ]:
-            component = make_component(component_type, author)
-            response = self.client.post(
-                reverse("course_flow:add-component-to-course"),
-                {"componentPk": component.id, "weekPk": week.id},
-            )
-            self.assertEqual(response.status_code, 401)
-
-    def test_add_course_level_component(self):
-        user = login(self)
-        week = make_object("week", user)
-        for component_type in [
-            "assessment",
-            "artifact",
-            "preparation",
-            "activity",
-        ]:
-            component = make_component(component_type, user)
-            response = self.client.post(
-                reverse("course_flow:add-component-to-course"),
-                {"componentPk": component.id, "weekPk": week.id},
+                reverse("course_flow:add-node"),
+                {"nodePk": node.id, "strategyPk": strategy.id},
             )
             self.assertEqual(response.status_code, 200)
-            new_component = Component.objects.latest("pk")
+            self.assertEqual(Node.objects.all().count(), 2)
             self.assertEqual(
-                ComponentWeek.objects.get(
-                    week=week, component=new_component
-                ).rank,
-                0,
+                NodeStrategy.objects.filter(strategy=strategy).count(), 1
             )
-            self.assertEqual(new_component, component)
-            self.assertTrue(new_component.content_object.is_original)
-
-    def test_add_program_level_component_permissions_no_login(self):
-        author = get_author()
-        program = make_object("program", author)
-        for component_type in ["course", "assessment"]:
-            component = make_component(component_type, author)
-            response = self.client.post(
-                reverse("course_flow:add-component-to-program"),
-                {"componentPk": component.id, "programPk": program.id},
-            )
-            self.assertEqual(response.status_code, 401)
-
-    def test_add_program_level_component_permissions_no_authorship(self):
-        login(self)
-        author = get_author()
-        program = make_object("program", author)
-        for component_type in ["course", "assessment"]:
-            component = make_component(component_type, author)
-            response = self.client.post(
-                reverse("course_flow:add-component-to-program"),
-                {"componentPk": component.id, "programPk": program.id},
-            )
-            self.assertEqual(response.status_code, 401)
-
-    def test_add_program_level_component(self):
-        user = login(self)
-        program = make_object("program", user)
-        for component_type in ["course", "assessment"]:
-            component = make_component(component_type, user)
-            response = self.client.post(
-                reverse("course_flow:add-component-to-program"),
-                {"componentPk": component.id, "programPk": program.id},
-            )
-            self.assertEqual(response.status_code, 200)
-            new_component = Component.objects.latest("pk")
+            created_node = NodeStrategy.objects.get(strategy=strategy).node
+            self.assertEqual(NodeStrategy.objects.get(strategy=strategy).rank, 0)
+            self.assertNotEqual(created_node, node)
+            self.assertEqual(created_node.title, node.title)
+            self.assertEqual(created_node.description, node.description)
+            self.assertEqual(created_node.author, node.author)
+            self.assertEqual(created_node.author, user)
+            self.assertEqual(created_node.parent_node, node)
+            self.assertFalse(created_node.is_original)
             self.assertEqual(
-                ComponentProgram.objects.get(
-                    program=program, component=new_component
-                ).rank,
-                0,
+                created_node.work_classification, node.work_classification
             )
-            self.assertEqual(new_component, component)
-            self.assertTrue(new_component.content_object.is_original)
+            self.assertEqual(
+                created_node.activity_classification, node.activity_classification
+            )
+            self.assertEqual(created_node.classification, node.classification)
+            #Add the strategy through add-strategy
+            response = self.client.post(
+                reverse("course_flow:add-strategy"),
+                {"workflowPk": wf.id, "strategyPk": strategy.id},
+            )
+            self.assertEqual(Strategy.objects.all().count(), 3)
+            self.assertEqual(
+                StrategyWorkflow.objects.filter(workflow=wf).count(), 2
+            )
+            created_strategy = StrategyWorkflow.objects.get(
+                workflow=wf,rank=0
+            ).strategy
+            self.assertEqual(
+                StrategyWorkflow.objects.get(workflow=wf,strategy=created_strategy).rank, 0
+            )
+            self.assertNotEqual(created_strategy, strategy)
+            self.assertEqual(created_strategy.title, strategy.title)
+            self.assertEqual(created_strategy.description, strategy.description)
+            self.assertEqual(created_strategy.author, strategy.author)
+            self.assertEqual(created_strategy.author, user)
+            self.assertEqual(created_strategy.parent_strategy, strategy)
+            self.assertFalse(created_strategy.is_original)
+
+            self.assertEqual(Node.objects.all().count(), 3)
+            new_created_node = NodeStrategy.objects.get(
+                strategy=created_strategy
+            ).node
+            self.assertEqual(
+                NodeStrategy.objects.get(strategy=created_strategy).rank, 0
+            )
+            self.assertNotEqual(new_created_node, node)
+            self.assertEqual(new_created_node.title, node.title)
+            self.assertEqual(new_created_node.description, node.description)
+            self.assertEqual(new_created_node.author, node.author)
+            self.assertEqual(new_created_node.author, user)
+            self.assertEqual(new_created_node.parent_node, created_node)
+            self.assertFalse(new_created_node.is_original)
+            self.assertEqual(
+                new_created_node.work_classification, node.work_classification
+            )
+            self.assertEqual(
+                new_created_node.activity_classification,
+                node.activity_classification,
+            )
+            self.assertEqual(new_created_node.classification, node.classification)
+            Strategy.objects.all().delete()
+            Node.objects.all().delete()

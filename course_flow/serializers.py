@@ -848,18 +848,12 @@ class WorkflowSerializer(serializers.ModelSerializer):
     
     def get_columnworkflow_set(self, instance):
         links = instance.columnworkflow_set.all().order_by("rank")
-        print(links)
         return ColumnWorkflowSerializer(links, many=True).data
 
     def get_outcomeworkflow_set(self, instance):
         links = instance.outcomeworkflow_set.all().order_by("rank")
         return OutcomeWorkflowSerializer(links, many=True).data
     
-    def create(self, validated_data):
-        return Program.objects.create(
-            author=User.objects.get(username=self.initial_data["author"]),
-            **validated_data
-        )
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -874,7 +868,6 @@ class WorkflowSerializer(serializers.ModelSerializer):
             strategyworkflow_serializer.is_valid()
             strategyworkflow_serializer.save()
         for columnworkflow_data in self.initial_data.pop("columnworkflow_set"):
-            print(columnworkflow_data)
             columnworkflow_serializer = ColumnWorkflowSerializer(
                 ColumnWorkflow.objects.get(id=columnworkflow_data["id"]),
                 data=columnworkflow_data,
@@ -910,7 +903,41 @@ class ProgramSerializer(WorkflowSerializer):
             "is_original",
             "parent_activity",
         ]
+        
+    def create(self, validated_data):
+        return Program.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
 
+class CourseSerializer(WorkflowSerializer):
+    
+    discipline = DisciplineSerializer(read_only=True)
+    
+    class Meta:
+        model = Course
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "created_on",
+            "last_modified",
+            "hash",
+            "strategyworkflow_set",
+            "outcomeworkflow_set",
+            "columnworkflow_set",
+            "discipline",
+            "is_original",
+            "parent_activity",
+        ]
+        
+        
+    def create(self, validated_data):
+        return Course.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
     
 
 class ActivitySerializer(WorkflowSerializer):
@@ -971,28 +998,7 @@ class ActivitySerializer(WorkflowSerializer):
                     )
         """
         return activity
-    
-class CourseSerializer(WorkflowSerializer):
 
-    discipline = DisciplineSerializer(read_only=True)
-
-    class Meta:
-        model = Course
-        fields = [
-            "id",
-            "title",
-            "description",
-            "author",
-            "created_on",
-            "last_modified",
-            "hash",
-            "strategyworkflow_set",
-            "outcomeworkflow_set",
-            "columnworkflow_set",
-            "discipline",
-            "is_original",
-            "parent_activity",
-        ]
 
 
 serializer_lookups = {
@@ -1000,10 +1006,6 @@ serializer_lookups = {
     "strategy": StrategySerializer,
     "column": ColumnSerializer,
     "activity": ActivitySerializer,
-    "assessment": AssessmentSerializer,
-    "preparation": PreparationSerializer,
-    "artifact": ArtifactSerializer,
-    "week": WeekSerializer,
     "course": CourseSerializer,
     "program": ProgramSerializer,
 }

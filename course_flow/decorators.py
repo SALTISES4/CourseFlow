@@ -46,7 +46,10 @@ def is_owner(model):
                 id = json.loads(request.POST.get("objectID"))
                 model = json.loads(request.POST.get("objectType"))
             try:
-                object = model_lookups[model].objects.get(id=id)
+                objectType = model_lookups[model]
+                if hasattr(objectType.objects,"get_subclass"): 
+                    object = model_lookups[model].objects.get_subclass(id=id)
+                else: object = model_lookups[model].objects.get(id=id)
             except:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 401
@@ -68,21 +71,9 @@ def is_parent_owner(view_func):
     def _wrapped_view(request, *args, **kwargs):
         model = json.loads(request.POST.get("objectType"))
         parent_id = json.loads(request.POST.get("parentID"))
-        print(parent_id)
-        is_program_level = json.loads(
-            request.POST.get("isProgramLevelComponent")
-        )
-        if model == "program":
+        if model == "activity" or model == "course" or model == "program":
             return view_func(request, *args, **kwargs)
         try:
-            if is_program_level:
-                parent = model_lookups[
-                    program_level_owned_models[
-                        program_level_owned_models.index(model) + 1
-                    ]
-                ].objects.get(id=parent_id)
-            else:
-                print(owned_models)
                 parentType = model_lookups[
                     owned_models[owned_models.index(model) + 1]
                 ]
@@ -90,13 +81,11 @@ def is_parent_owner(view_func):
                     parent = parentType.objects.get_subclass(id=parent_id)
                 else: parent = parentType.objects.get(id=parent_id)
         except:
-            print("did not work")
             response = JsonResponse({"login_url": settings.LOGIN_URL})
             response.status_code = 401
             return response
         if (
-            model == "program"
-            or User.objects.get(id=request.user.id) == parent.author
+            User.objects.get(id=request.user.id) == parent.author
         ):
             return view_func(request, *args, **kwargs)
         else:

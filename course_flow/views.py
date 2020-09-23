@@ -30,9 +30,6 @@ from .serializers import (
     ProgramSerializer,
     ProgramLevelComponentSerializer,
     WeekSerializer,
-    ArtifactSerializer,
-    AssessmentSerializer,
-    PreparationSerializer,
 )
 from .decorators import ajax_login_required, is_owner, is_parent_owner
 from django.urls import reverse
@@ -399,6 +396,7 @@ def duplicate_node(node: Node, author: User) -> Node:
     return new_node
 
 
+#Called when a node is added from the sidebar (duplicated)
 @login_required
 @ajax_login_required
 @is_owner("strategyPk")
@@ -437,13 +435,13 @@ def duplicate_strategy(strategy: Strategy, author: User) -> Strategy:
         )
     return new_strategy
 
-
+#Called when a strategy is added from the sidebar (duplicated)
 @require_POST
 @ajax_login_required
 @is_owner("workflowPk")
 def add_strategy(request: HttpRequest) -> HttpResponse:
     strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
-    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
 
     try:
         for link in StrategyWorkflow.objects.filter(workflow=workflow):
@@ -549,11 +547,11 @@ def duplicate_course(course: Course, author: User) -> Course:
         is_original=False,
         parent_course=course,
     )
-    for week in course.weeks.all():
-        WeekCourse.objects.create(
-            course=new_course,
-            week=duplicate_week(week, author),
-            rank=WeekCourse.objects.get(week=week, course=course).rank,
+    for strategy in course.strategies.all():
+        StrategyWorkflow.objects.create(
+            workflow=new_course,
+            strategy=duplicate_strategy(strategy, author),
+            rank=StrategyWorkflow.objects.get(strategy=strategy, workflow=workflow).rank,
         )
     return new_course
 
@@ -790,21 +788,15 @@ def add_component_to_program(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
-
+#Called to add components via a dialog form
 @require_POST
 @ajax_login_required
 @is_parent_owner
 def dialog_form_create(request: HttpRequest) -> HttpResponse:
-    print("creating")
     data = json.loads(request.POST.get("object"))
     model = json.loads(request.POST.get("objectType"))
     data["author"] = request.user.username
-    if model == "program":
-        del data["work_classification"], data["activity_classification"]
-        serializer = ProgramSerializer(data=data)
-        return save_serializer(serializer)
     parent_id = json.loads(request.POST.get("parentID"))
-    is_program_level = json.loads(request.POST.get("isProgramLevelComponent"))
     if model == "node":
         data["work_classification"] = int(data["work_classification"])
         data["activity_classification"] = int(data["activity_classification"])
@@ -844,141 +836,9 @@ def dialog_form_create(request: HttpRequest) -> HttpResponse:
             except ValidationError:
                 return JsonResponse({"action": "error"})
             return JsonResponse({"action": "posted"})
-    elif model == "activity":
+    else:
         del data["work_classification"], data["activity_classification"]
-        data["parent_activity"] = None
-        serializer = ActivitySerializer(data=data)
-        if parent_id:
-            week = Week.objects.get(id=parent_id)
-            if serializer.is_valid():
-                activity = serializer.save()
-            else:
-                return JsonResponse({"action": "error"})
-            try:
-                component = Component.objects.create(content_object=activity)
-                for link in ComponentWeek.objects.filter(week=week):
-                    link.rank += 1
-                    link.save()
-                ComponentWeek.objects.create(week=week, component=component)
-            except ValidationError:
-                return JsonResponse({"action": "error"})
-            return JsonResponse({"action": "posted"})
-    elif model == "assessment":
-        del data["work_classification"], data["activity_classification"]
-        data["parent_activity"] = None
-        serializer = AssessmentSerializer(data=data)
-        if parent_id:
-            if serializer.is_valid():
-                assessment = serializer.save()
-            else:
-                return JsonResponse({"action": "error"})
-            try:
-                if is_program_level:
-                    program = Program.objects.get(id=parent_id)
-                    component = Component.objects.create(
-                        content_object=assessment
-                    )
-                    for link in ComponentProgram.objects.filter(
-                        program=program
-                    ):
-                        link.rank += 1
-                        link.save()
-                    ComponentProgram.objects.create(
-                        program=program, component=component
-                    )
-                else:
-                    week = Week.objects.get(id=parent_id)
-                    component = Component.objects.create(
-                        content_object=assessment
-                    )
-                    for link in ComponentWeek.objects.filter(week=week):
-                        link.rank += 1
-                        link.save()
-                    ComponentWeek.objects.create(
-                        week=week, component=component
-                    )
-            except ValidationError:
-                return JsonResponse({"action": "error"})
-            return JsonResponse({"action": "posted"})
-    elif model == "artifact":
-        del data["work_classification"], data["activity_classification"]
-        data["parent_artifact"] = None
-        serializer = ArtifactSerializer(data=data)
-        if parent_id:
-            week = Week.objects.get(id=parent_id)
-            if serializer.is_valid():
-                artifact = serializer.save()
-            else:
-                return JsonResponse({"action": "error"})
-            try:
-                component = Component.objects.create(content_object=artifact)
-                for link in ComponentWeek.objects.filter(week=week):
-                    link.rank += 1
-                    link.save()
-                ComponentWeek.objects.create(week=week, component=component)
-            except ValidationError:
-                return JsonResponse({"action": "error"})
-            return JsonResponse({"action": "posted"})
-    elif model == "preparation":
-        del data["work_classification"], data["activity_classification"]
-        data["parent_preparation"] = None
-        serializer = PreparationSerializer(data=data)
-        if parent_id:
-            week = Week.objects.get(id=parent_id)
-            if serializer.is_valid():
-                preparation = serializer.save()
-            else:
-                return JsonResponse({"action": "error"})
-            try:
-                component = Component.objects.create(
-                    content_object=preparation
-                )
-                for link in ComponentWeek.objects.filter(week=week):
-                    link.rank += 1
-                    link.save()
-                ComponentWeek.objects.create(week=week, component=component)
-            except ValidationError:
-                return JsonResponse({"action": "error"})
-            return JsonResponse({"action": "posted"})
-    elif model == "week":
-        del data["work_classification"], data["activity_classification"]
-        data["parent_week"] = None
-        serializer = WeekSerializer(data=data)
-        if parent_id:
-            course = Course.objects.get(id=parent_id)
-            if serializer.is_valid():
-                week = serializer.save()
-            else:
-                return JsonResponse({"action": "error"})
-            try:
-                for link in WeekCourse.objects.filter(course=course):
-                    link.rank += 1
-                    link.save()
-                WeekCourse.objects.create(course=course, week=week)
-            except ValidationError:
-                return JsonResponse({"action": "error"})
-            return JsonResponse({"action": "posted"})
-    elif model == "course":
-        del data["work_classification"], data["activity_classification"]
-        data["parent_course"] = None
-        serializer = CourseSerializer(data=data)
-        if parent_id:
-            program = Program.objects.get(id=parent_id)
-            if serializer.is_valid():
-                course = serializer.save()
-            else:
-                return JsonResponse({"action": "error"})
-            try:
-                component = Component.objects.create(content_object=course)
-                for link in ComponentProgram.objects.filter(program=program):
-                    link.rank += 1
-                    link.save()
-                ComponentProgram.objects.create(
-                    program=program, component=component
-                )
-            except ValidationError:
-                return JsonResponse({"action": "error"})
-            return JsonResponse({"action": "posted"})
+        return save_serializer(serializer_lookups[model](data=data))
     return save_serializer(serializer)
 
 

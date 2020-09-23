@@ -19,9 +19,11 @@ class Column(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     
-    default_activity_columns = ["ooci", "ooc", "ici", "ics"]
-    default_course_columns = ["Preparation", "Lesson", "Artifact", "Assessment"]
-    default_program_columns = ["Category 1", "Category 2", "Category 3"]
+    default_columns = {
+        'activity':["ooci", "ooc", "ici", "ics"],
+        'course':["Preparation", "Lesson", "Artifact", "Assessment"],
+        'program':["Category 1", "Category 2", "Category 3"],
+    }
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -580,7 +582,7 @@ def switch_node_to_static(sender, instance, created, **kwargs):
 def create_default_activity_content(sender, instance, created, **kwargs):
     if created:
         # If the activity is newly created, add the default columns
-        cols = Column.default_activity_columns
+        cols = Column.default_columns['activity']
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
@@ -599,7 +601,7 @@ def create_default_activity_content(sender, instance, created, **kwargs):
 def create_default_course_content(sender, instance, created, **kwargs):
     if created:
         # If the activity is newly created, add the default columns
-        cols = Column.default_course_columns
+        cols = Column.default_columns['course']
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
@@ -618,7 +620,7 @@ def create_default_course_content(sender, instance, created, **kwargs):
 def create_default_program_content(sender, instance, created, **kwargs):
     if created:
         # If the activity is newly created, add the default columns
-        cols = Column.default_program_columns
+        cols = Column.default_columns['program']
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
@@ -667,10 +669,6 @@ model_lookups = {
     "column": Column,
     "strategy": Strategy,
     "activity": Activity,
-    "assessment": Assessment,
-    "preparation": Preparation,
-    "artifact": Artifact,
-    "week": Week,
     "course": Course,
     "program": Program,
     "workflow": Workflow,
@@ -680,10 +678,6 @@ model_keys = [
     "column",
     "strategy",
     "activity",
-    "assessment",
-    "preparation",
-    "artifact",
-    "week",
     "course",
     "program",
 ]
