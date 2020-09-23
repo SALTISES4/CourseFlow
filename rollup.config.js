@@ -48,5 +48,15 @@ export default [
       sourceMap: "inline"
     },
     plugins: plugins
+  },
+  {
+    input: "course_flow/static/course_flow/js/scripts-wf.js",
+    output: {
+      file: "course_flow/static/course_flow/js/scripts-wf.min.js",
+      name: "root",
+      format: "iife",
+      sourceMap: "inline"
+    },
+    plugins: plugins
   }
 ];

@@ -8,6 +8,17 @@
 <!-- -->
 {% block header %}{% endblock %}
 <!-- -->
+<script
+  src="{% static 'course_flow/js/scripts-wf.min.js' %}"
+  defer="true"
+  charset="utf-8"
+></script>
+<!--  -->
+<link
+  rel="stylesheet"
+  href="{% static 'course_flow/css/workflow_styles.css' %}"
+/>
+<!-- -->
 {% block body %}
 
 <svg id="container" width="1000" height="1000">
@@ -27,24 +38,6 @@
 <!-- -->
 {% block scripts %}
 
-<script>
-    
-class StrategyView extends Component{
-    
-}
-
-class WorkflowView extends Component{
-    render(){
-        
-    }
-}
-
-
-
-</script>
-
-
-
 <script nonce="{{request.csp_nonce}}">
 window.addEventListener("load", function(){
     
@@ -58,6 +51,7 @@ window.addEventListener("load", function(){
     
     let renderWorkflow = function(jsonData){
         console.log(jsonData);
+        renderWorkflowView($("#container").get()[0])
     }
     
     fetchThenRenderWorkflow();
