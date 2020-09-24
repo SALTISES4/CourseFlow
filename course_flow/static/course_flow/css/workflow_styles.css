@@ -1,0 +1,46 @@
+
+#site{
+    background:#EEEEEE;
+}
+
+.body-wrapper{
+    text-align:center;
+    top:100px;
+    width:100%;
+    height:calc(100% - 100px);
+    overflow:auto;
+    position:absolute;
+}
+
+.workflow-wrapper{
+    position:relative;
+    display:inline-block;
+    white-space:nowrap;
+    text-align:left;
+}
+
+.workflow-container{
+    position:relative;
+    background:white;
+    display:inline-block;
+    overflow:visible;
+    margin:40px;
+    margin-right:100px;
+    margin-left:100px;
+    background:white;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+}
+
+.strategy{
+    background:white;
+    min-height:10px;
+    padding:5px;
+    margin-top:5px;
+    box-sizing:border-box;
+}
+
+.column{
+    display:inline-block;
+    padding:5px;
+    width:160px;
+}

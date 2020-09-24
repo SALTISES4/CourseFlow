@@ -54,6 +54,14 @@
       defer="true"
     ></script>
     {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script
+      src="{% static 'course_flow/js/scripts-wf.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
     <!-- * CSS -->
     {% compress css %}
     <link
@@ -62,6 +70,13 @@
     />
     {% endcompress %}
     <!--  -->
+    {% compress css %}
+    <link
+      rel="stylesheet"
+      href="{% static 'course_flow/css/workflow_styles.css' %}"
+    />
+    {% endcompress %}
+    <!-- -->
     {% compress css %}
     <link
       rel="stylesheet"

@@ -1,4 +1,7 @@
+
 {% extends "course_flow/base.html" %}
+<!-- -->
+{% load static compress i18n %} {% get_current_language as LANGUAGE_CODE %}
 <!-- -->
 {% load static i18n %}
 <!-- -->
@@ -8,26 +11,9 @@
 <!-- -->
 {% block header %}{% endblock %}
 <!-- -->
-<script
-  src="{% static 'course_flow/js/scripts-wf.min.js' %}"
-  defer="true"
-  charset="utf-8"
-></script>
-<!--  -->
-<link
-  rel="stylesheet"
-  href="{% static 'course_flow/css/workflow_styles.css' %}"
-/>
-<!-- -->
 {% block body %}
 
-<svg id="container" width="1000" height="1000">
-  <defs>
-    <filter id="selection-shadow">
-      <feDropShadow dx="1" dy="1" stdDeviation="2" />
-    </filter>
-  </defs>
-</svg>
+<div id=container class="body-wrapper"></div>
 <div id="node-form-container"></div>
 
 {% endblock %}
@@ -51,7 +37,7 @@ window.addEventListener("load", function(){
     
     let renderWorkflow = function(jsonData){
         console.log(jsonData);
-        renderWorkflowView($("#container").get()[0])
+        workflow.renderWorkflowView(jsonData,$("#container").get()[0])
     }
     
     fetchThenRenderWorkflow();

@@ -53,7 +53,7 @@ export default [
     input: "course_flow/static/course_flow/js/scripts-wf.js",
     output: {
       file: "course_flow/static/course_flow/js/scripts-wf.min.js",
-      name: "root",
+      name: "workflow",
       format: "iife",
       sourceMap: "inline"
     },
