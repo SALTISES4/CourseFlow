@@ -1,12 +1,177 @@
-html {
-  height: 100%;
+body, html{
+    overflow:hidden;
+    margin:0px;
+    height:100%;
 }
-body {
-  background-color: #1976BC;
-  height: 100%;
+
+body{
+    background:#EEEEEE;
+}
+
+.topnav{
+    width:100%;
+    position: fixed;
+    z-index: 6;
+    top: 0;
+    left: 0;
+    color: #1976bc;
+    background: white;
+}
 
 
+.topnav::before{
+    content:'';
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    height:2px;
+    background:linear-gradient(to left,#46c443 0,#1976bc 100%) left bottom #fff no-repeat;
 }
+
+
+.titlebar{
+    background:rgb(25,118,188);
+    display:block;
+    height:50px;
+    width:100%;
+    color:white;
+    position:relative;
+}
+
+.title{
+    padding-left:20px;
+    position:absolute;
+    bottom:5px;
+}
+
+.title *{
+    font-family:initial;
+}
+
+.menubar{
+    display:flex;
+    justify-content: space-between;
+    width:100%;
+    font-family:'Open Sans',sans-serif;
+    overflow:hidden;
+    height:50px;
+}
+
+.mainmenu{
+    display:inline-block;
+}
+
+.topnavimage{
+    box-sizing: border-box;
+    display:inline-block;
+    padding:5px;
+    padding-bottom:0px;
+    height:46px;
+    padding-left:20px;
+    padding-right:40px;
+}
+
+.topnavimage *{
+    display:block;
+    height:100%;
+}
+
+
+/* A wrapper for each button in the menu */
+.topdropwrapper{
+    display:inline-block;
+    padding:0px;
+    bottom:0px;
+    vertical-align:top;
+}
+
+/* A button at the top of the menu that will open the div below it */
+.topdropbutton{
+    background:inherit;
+    color: rgb(25,118,188);
+    border:inherit;
+    font:inherit;
+    height:48px;
+    left:0;
+    bottom:0;
+    min-width:100px;
+    padding-left:20px;
+    padding-right:20px;
+    font-weight:600;
+}
+
+/* A tag at the top of the menu that does nothing*/
+.toplink{
+    left:0;
+    bottom:0;
+    padding-left:20px;
+    padding-right:20px;
+}
+
+
+/* The div that is created below the button */
+.topdropdiv{
+    display:none;
+    position:absolute;
+    border: 1px solid grey;
+    border-top: 1px solid black;
+    color: black;
+    background:white;
+    min-width:100px;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+}
+
+.topdropdiv a{
+    float:none;
+    display:block;
+    padding:4px;
+    padding-left:12px;
+    padding-right:12px;
+    text-align:left;
+    position:relative;
+    cursor:pointer;
+    white-space: nowrap;
+}
+
+.topdropdiv hr{
+    margin-left:12px;
+    margin-right:12px;
+}
+
+.topdroptitle{
+    pointer-events: none;
+}
+
+.topdropindent{
+    margin-left:12px;
+}
+
+.topdropdiv a div{
+    display:inline-block;
+}
+
+.shortcut{
+    color:gray;
+    text-align:right;
+    position:absolute;
+    right:12px;
+}
+
+.topdropwrapper:hover .topdropdiv{
+    display:block;
+}
+
+.topdropwrapper:hover .topdropbutton{
+    box-shadow:inset 0 0 0 99999px rgba(0,0,0,0.1);
+}
+
+.topdropdiv a:hover{
+    box-shadow:inset 0 0 0 99999px rgba(0,0,0,0.1);
+    color: rgb(25,118,188);
+}
+
+
 .action-icon{
   cursor: pointer;
 }
@@ -34,95 +199,6 @@ body {
 }
 #student-class-activity-section {
 
-}
-.topnav {
-    width: 100%;
-    position: fixed;
-    z-index: 3;
-    top: 0;
-    left: 0;
-    color: #1976bc;
-    background: white;
-}
-.title {
-    padding-left: 20px;
-    position: absolute;
-    bottom: 5px;
-}
-.titlebar {
-    background: rgb(25,118,188);
-    display: block;
-    height: 50px;
-    width: 100%;
-    color: white;
-    position: relative;
-}
-.menubar {
-    display: block;
-    height: 50px;
-    width: 100%;
-    font-family: 'Open Sans',sans-serif;
-}
-.topnavimage {
-    box-sizing: border-box;
-    display: inline-block;
-    padding: 5px;
-    height: 100%;
-    padding-left: 20px;
-    padding-right: 100px;
-}
-.topdropwrapper {
-    display: inline-block;
-    padding: 0px;
-    bottom: 0px;
-    vertical-align: top;
-}
-.topdropbutton {
-    background: inherit;
-    color: rgb(25,118,188);
-    border: inherit;
-    font: inherit;
-    height: 48px;
-    left: 0;
-    bottom: 0;
-    min-width: 100px;
-    padding-left: 20px;
-    padding-right: 20px;
-    font-weight: 600;
-}
-.topdropdiv {
-    display: none;
-    position: absolute;
-    border: 1px solid grey;
-    border-top: 1px solid black;
-    color: black;
-    background: white;
-    min-width: 100px;
-    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
-}
-.topdropdiv a {
-    float: none;
-    display: block;
-    padding: 4px;
-    padding-left: 12px;
-    padding-right: 12px;
-    text-align: left;
-    position: relative;
-    cursor: pointer;
-    white-space: nowrap;
-}
-.shortcut {
-    color: gray;
-    text-align: right;
-    position: absolute;
-    right: 12px;
-}
-.topdropdiv a div {
-    display: inline-block;
-}
-.topnavimage * {
-    display: block;
-    height: 100%;
 }
 
 
@@ -178,7 +254,6 @@ text {
 }
 h2:not(.mdc-dialog__header__title), p {
   font-family: "Montserrat", serif;
-  color: #F4F4F4;
 }
 h1 {
   font-family: "Montserrat", serif;

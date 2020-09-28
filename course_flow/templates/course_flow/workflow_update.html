@@ -27,9 +27,12 @@
 <script nonce="{{request.csp_nonce}}">
 window.addEventListener("load", function(){
     
+    var myjson;
+    
     let fetchThenRenderWorkflow = function(){
         $.getJSON('{% url "course_flow:workflow-detail" pk=object.pk %}',
             function(json){
+                myjson = json;
                 renderWorkflow(json);
             }
         );
