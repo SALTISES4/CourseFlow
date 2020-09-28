@@ -19,7 +19,7 @@
 /node_modules
 /sent_emails
 /static
-/dev_venv
+/*venv*/
 locust*
 logs
 mysql_scripts/
