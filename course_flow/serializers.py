@@ -901,7 +901,7 @@ class ProgramSerializer(WorkflowSerializer):
             "strategyworkflow_set",
             "outcomeworkflow_set",
             "is_original",
-            "parent_activity",
+            "parent_workflow",
         ]
         
     def create(self, validated_data):
@@ -929,7 +929,7 @@ class CourseSerializer(WorkflowSerializer):
             "columnworkflow_set",
             "discipline",
             "is_original",
-            "parent_activity",
+            "parent_workflow",
         ]
         
         
@@ -956,7 +956,7 @@ class ActivitySerializer(WorkflowSerializer):
             "strategyworkflow_set",
             "outcomeworkflow_set",
             "is_original",
-            "parent_activity",
+            "parent_workflow",
         ]
 
     def create(self, validated_data):
