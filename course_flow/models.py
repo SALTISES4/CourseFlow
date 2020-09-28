@@ -227,7 +227,7 @@ class Workflow(models.Model):
 
     static = models.BooleanField(default=False)
 
-    parent_activity = models.ForeignKey(
+    parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
     )
     is_original = models.BooleanField(default=True)
