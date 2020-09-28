@@ -519,7 +519,7 @@ def duplicate_activity(activity: Activity, author: User) -> Activity:
         description=activity.description,
         author=author,
         is_original=False,
-        parent_activity=activity,
+        parent_workflow=activity,
     )
     for strategy in activity.strategies.all():
         StrategyWorkflow.objects.create(
@@ -599,7 +599,7 @@ def duplicate_course(course: Course, author: User) -> Course:
         description=course.description,
         author=author,
         is_original=False,
-        parent_course=course,
+        parent_workflow=course,
     )
     for strategy in course.strategies.all():
         StrategyWorkflow.objects.create(

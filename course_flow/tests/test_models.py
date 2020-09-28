@@ -1163,10 +1163,10 @@ class ModelPostTest(TestCase):
         author = get_author()
         for object_type in ["activity", "course", "program"]:
             strategy = make_object("strategy", author)
-            wf = make_object(object_type, author)
+            workflow = make_object(object_type, author)
             response = self.client.post(
                 reverse("course_flow:add-strategy"),
-                {"workflowPk": wf.id, "strategyPk": strategy.id},
+                {"workflowPk": workflow.id, "strategyPk": strategy.id},
             )
             self.assertEqual(response.status_code, 401)
 
@@ -1175,21 +1175,21 @@ class ModelPostTest(TestCase):
         author = get_author()
         for object_type in ["activity", "course", "program"]:
             strategy = make_object("strategy", author)
-            wf = make_object(object_type, author)
+            workflow = make_object(object_type, author)
             response = self.client.post(
                 reverse("course_flow:add-strategy"),
-                {"workflowPk": wf.id, "strategyPk": strategy.id},
+                {"workflowPk": workflow.id, "strategyPk": strategy.id},
             )
             self.assertEqual(response.status_code, 401)
 
     def test_add_strategy_add_node(self):
         user = login(self)
         for object_type in ["activity", "course", "program"]:
-            wf = make_object(object_type, user)
+            workflow = make_object(object_type, user)
             #Check for the default strategy
             self.assertEqual(Strategy.objects.all().count(),1)
             #Check for the default columns
-            self.assertEqual(wf.columns.all().count(),len(Column.default_columns[object_type]))
+            self.assertEqual(workflow.columns.all().count(),len(Column.default_columns[object_type]))
             strategy = make_object("strategy", user)
             #Create a node outside the workflow
             node = make_object("node", user)
@@ -1222,17 +1222,17 @@ class ModelPostTest(TestCase):
             #Add the strategy through add-strategy
             response = self.client.post(
                 reverse("course_flow:add-strategy"),
-                {"workflowPk": wf.id, "strategyPk": strategy.id},
+                {"workflowPk": workflow.id, "strategyPk": strategy.id},
             )
             self.assertEqual(Strategy.objects.all().count(), 3)
             self.assertEqual(
-                StrategyWorkflow.objects.filter(workflow=wf).count(), 2
+                StrategyWorkflow.objects.filter(workflow=workflow).count(), 2
             )
             created_strategy = StrategyWorkflow.objects.get(
-                workflow=wf,rank=0
+                workflow=workflow,rank=0
             ).strategy
             self.assertEqual(
-                StrategyWorkflow.objects.get(workflow=wf,strategy=created_strategy).rank, 0
+                StrategyWorkflow.objects.get(workflow=workflow,strategy=created_strategy).rank, 0
             )
             self.assertNotEqual(created_strategy, strategy)
             self.assertEqual(created_strategy.title, strategy.title)
