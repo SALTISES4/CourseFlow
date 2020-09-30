@@ -3,30 +3,18 @@ from .models import (
     Workflow,
     Program,
     Course,
-    Preparation,
     Activity,
-    Assessment,
-    Artifact,
-    Strategy,
     Column,
     ColumnWorkflow,
     Node,
     NodeStrategy,
     StrategyWorkflow,
-    ComponentWeek,
-    Component,
-    Week,
     Discipline,
+    Strategy,
     Outcome,
     OutcomeNode,
-    OutcomeStrategy,
-    OutcomePreparation,
     OutcomeWorkflow,
-    OutcomeAssessment,
-    OutcomeArtifact,
-    OutcomeWeek,
     NodeCompletionStatus,
-    ComponentCompletionStatus,
     User,
 )
 
@@ -589,17 +577,9 @@ class ColumnSerializerShallow(serializers.ModelSerializer):
     
     column_type_display = serializers.CharField(source='get_column_type_display')
     
-    all_column_types = serializers.CharField(source='COLUMN_TYPES')
-    
-    """
-    column_type = serializers.SerializerMethodField()
-    def get_column_type(self,instance):
-        print(instance.get_column_type_display)
-        return {"type":instance.column_type,"name":instance.get_column_type_display()}
-    """
     class Meta:
         model = Column
-        fields = ["id", "title", "author", "created_on", "last_modified","column_type","column_type_display","all_column_types"]
+        fields = ["id", "title", "author", "created_on", "last_modified","column_type","column_type_display"]
 
     def create(self, validated_data):
         return Column.objects.create(

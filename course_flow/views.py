@@ -4,21 +4,14 @@ from .models import (
     Course,
     Column,
     ColumnWorkflow,
-    Preparation,
     Workflow,
     Activity,
-    Assessment,
-    Artifact,
     Strategy,
     Node,
     NodeStrategy,
     StrategyWorkflow,
-    ComponentWeek,
-    Component,
-    Week,
     Program,
     NodeCompletionStatus,
-    ComponentCompletionStatus,
 )
 from .serializers import (
     serializer_lookups,
@@ -617,55 +610,6 @@ def duplicate_activity_ajax(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted", "clone_pk": clone.pk})
-
-
-def duplicate_component(component: Component, author: User) -> Component:
-    if type(component.content_object) == Artifact:
-        new_component = Component.objects.create(
-            content_object=Artifact.objects.create(
-                title=component.content_object.title,
-                description=component.content_object.description,
-                author=author,
-                is_original=False,
-                parent_artifact=component.content_object,
-            )
-        )
-    elif type(component.content_object) == Preparation:
-        new_component = Component.objects.create(
-            content_object=Preparation.objects.create(
-                title=component.content_object.title,
-                description=component.content_object.description,
-                author=author,
-                is_original=False,
-                parent_preparation=component.content_object,
-            )
-        )
-    elif type(component.content_object) == Assessment:
-        new_component = Component.objects.create(
-            content_object=Assessment.objects.create(
-                title=component.content_object.title,
-                description=component.content_object.description,
-                author=author,
-                is_original=False,
-                parent_assessment=component.content_object,
-            )
-        )
-    elif type(component.content_object) == Activity:
-        new_component = Component.objects.create(
-            content_object=duplicate_activity(component.content_object, author)
-        )
-    return new_component
-
-
-def duplicate_week(week: Week, author: User) -> Week:
-    new_week = Week.objects.create(title=week.title, author=author)
-    for componentweek in ComponentWeek.objects.filter(week=week):
-        ComponentWeek.objects.create(
-            week=new_week,
-            component=duplicate_component(componentweek.component, author),
-            rank=componentweek.rank,
-        )
-    return new_week
 
 
 def duplicate_course(course: Course, author: User) -> Course:

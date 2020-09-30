@@ -79,8 +79,8 @@ class Outcome(models.Model):
 
 
 class Node(models.Model):
-    title = models.CharField(max_length=30)
-    description = models.TextField(max_length=400)
+    title = models.CharField(max_length=30, null=True)
+    description = models.TextField(max_length=400, null=True)
     author = models.ForeignKey(
         User,
         related_name="authored_nodes",
@@ -194,8 +194,8 @@ class OutcomeNode(models.Model):
 
 
 class Strategy(models.Model):
-    title = models.CharField(max_length=30)
-    description = models.TextField(max_length=400)
+    title = models.CharField(max_length=30, null=True)
+    description = models.TextField(max_length=400, null=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -246,8 +246,8 @@ class NodeStrategy(models.Model):
 class Workflow(models.Model):
     objects = InheritanceManager()
     
-    title = models.CharField(max_length=30)
-    description = models.TextField(max_length=400)
+    title = models.CharField(max_length=30, null=True)
+    description = models.TextField(max_length=400, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -380,176 +380,6 @@ class StrategyWorkflow(models.Model):
         verbose_name_plural = "Strategy-Workflow Links"
 
 
-class Preparation(models.Model):
-    title = models.CharField(max_length=30)
-    description = models.TextField(max_length=400)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-
-    parent_preparation = models.ForeignKey(
-        "Preparation", on_delete=models.SET_NULL, null=True
-    )
-    is_original = models.BooleanField(default=True)
-
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomePreparation", blank=True
-    )
-
-    def __str__(self):
-        return self.title
-
-
-class OutcomePreparation(models.Model):
-    preparation = models.ForeignKey(Preparation, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Preparation Link"
-        verbose_name_plural = "Outcome-Preparation Links"
-
-
-class Artifact(models.Model):
-    title = models.CharField(max_length=30)
-    description = models.TextField(max_length=400)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-
-    parent_artifact = models.ForeignKey(
-        "Artifact", on_delete=models.SET_NULL, null=True
-    )
-    is_original = models.BooleanField(default=True)
-
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeArtifact", blank=True
-    )
-
-    def __str__(self):
-        return self.title
-
-
-class OutcomeArtifact(models.Model):
-    artifact = models.ForeignKey(Artifact, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Artifact Link"
-        verbose_name_plural = "Outcome-Artifact Links"
-
-
-class Assessment(models.Model):
-    title = models.CharField(max_length=30)
-    description = models.TextField(max_length=400)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-
-    parent_assessment = models.ForeignKey(
-        "Assessment", on_delete=models.SET_NULL, null=True
-    )
-    is_original = models.BooleanField(default=True)
-
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeAssessment", blank=True
-    )
-
-    def __str__(self):
-        return self.title
-
-
-class OutcomeAssessment(models.Model):
-    assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Assessment Link"
-        verbose_name_plural = "Outcome-Assessment Links"
-
-
-class Week(models.Model):
-    title = models.CharField(max_length=30)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-    components = models.ManyToManyField(
-        "Component", through="ComponentWeek", blank=True
-    )
-
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeWeek", blank=True
-    )
-
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-    def __str__(self):
-        return self.title
-
-
-class OutcomeWeek(models.Model):
-    week = models.ForeignKey(Week, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Week Link"
-        verbose_name_plural = "Outcome-Week Links"
-
-
-class Component(models.Model):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey("content_type", "object_id")
-
-    students = models.ManyToManyField(
-        User,
-        related_name="assigned_componenets",
-        through="ComponentCompletionStatus",
-        blank=True,
-    )
-
-    def __str__(self):
-        return (
-            self.content_type.model_class()
-            .objects.get(id=self.object_id)
-            .title
-        )
-
-
-class ComponentCompletionStatus(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
-    component = models.ForeignKey(Component, on_delete=models.CASCADE)
-    is_completed = models.BooleanField(default=False)
-
-    class Meta:
-        verbose_name = "Component Completion Status"
-        verbose_name_plural = "Component Completion Statuses"
-
-
-class ComponentWeek(models.Model):
-    week = models.ForeignKey(Week, on_delete=models.CASCADE)
-    component = models.ForeignKey(Component, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Component-Week Link"
-        verbose_name_plural = "Component-Week Links"
-
-
 class Discipline(models.Model):
     title = models.CharField(
         _("Discipline name"),
@@ -583,29 +413,6 @@ def reorder_for_deleted_strategy_workflow(sender, instance, **kwargs):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
 
-
-@receiver(pre_delete, sender=ComponentWeek)
-def reorder_for_deleted_component_week(sender, instance, **kwargs):
-    for out_of_order_link in ComponentWeek.objects.filter(
-        week=instance.week, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
-
-
-
-@receiver(pre_delete, sender=Activity)
-@receiver(pre_delete, sender=Assessment)
-@receiver(pre_delete, sender=Artifact)
-@receiver(pre_delete, sender=Preparation)
-@receiver(pre_delete, sender=Course)
-def delete_attached_component(sender, instance, **kwargs):
-    Component.objects.filter(
-        content_type=ContentType.objects.get_for_model(instance),
-        object_id=instance.pk,
-    ).delete()
-
-
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
     instance.strategies.all().delete()
@@ -614,7 +421,6 @@ def delete_workflow_objects(sender, instance, **kwargs):
 @receiver(pre_delete, sender=Strategy)
 def delete_strategy_objects(sender, instance, **kwargs):
     instance.nodes.all().delete()
-
 
 @receiver(post_save, sender=NodeStrategy)
 def switch_node_to_static(sender, instance, created, **kwargs):
@@ -626,10 +432,9 @@ def switch_node_to_static(sender, instance, created, **kwargs):
             if activity.static:
                 instance.node.students.add(*list(activity.students.all()))
 
-
 @receiver(post_save, sender=Activity)
 def create_default_activity_content(sender, instance, created, **kwargs):
-    if created:
+    if created and instance.is_original:
         # If the activity is newly created, add the default columns
         cols = Column.default_columns['activity']
         for i, col in enumerate(cols):
@@ -648,32 +453,31 @@ def create_default_activity_content(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Course)
 def create_default_course_content(sender, instance, created, **kwargs):
-    if created:
+    if created and instance.is_original:
         # If the activity is newly created, add the default columns
         cols = Column.default_columns['course']
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
-                title=f"Default {col} column",
+                column_type=col,
                 author=instance.author,
             )
 
         instance.strategies.create(
             title="New Week",
-            description="default week",
             author=instance.author,
         )
         instance.save()
 
 @receiver(post_save, sender=Program)
 def create_default_program_content(sender, instance, created, **kwargs):
-    if created:
+    if created and instance.is_original:
         # If the activity is newly created, add the default columns
         cols = Column.default_columns['program']
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
-                title=f"Default {col} column",
+                column_type=col,
                 author=instance.author,
             )
 
@@ -692,25 +496,6 @@ def switch_strategy_to_static(sender, instance, created, **kwargs):
             for node in instance.strategy.nodes.all():
                 node.students.add(*list(instance.workflow.students.all()))
 
-
-@receiver(post_save, sender=ComponentWeek)
-def switch_component_to_static(sender, instance, created, **kwargs):
-    if created:
-        course = Course.objects.filter(weeks=instance.week).first()
-        if course:
-            if course.static:
-                if type(instance.component.content_object) != Activity:
-                    instance.component.students.add(
-                        *list(course.students.all())
-                    )
-                else:
-                    activity = instance.component.content_object
-                    activity.static = True
-                    activity.save()
-                    activity.students.add(*list(course.students.all()))
-                    for strategy in activity.strategies.all():
-                        for node in strategy.nodes.all():
-                            node.students.add(*list(course.students.all()))
 
 
 model_lookups = {
