@@ -2,30 +2,31 @@ import {h, Component, render} from "preact";
 
 
 export class ComponentJSON extends Component{
+    
     constructor(props){
         super(props);
-        this.json = props.json;
-        this.state = this.json;
+        console.log(props);
     }
     
-    setJSON(newstate){
-        mergeObjects(this.json,newstate);
-        this.setState(newstate);
+    componentDidMount(){
+        var setState=this.setState.bind(this);
+        
+        $.getJSON('/'+this.objectType+"/read/"+this.props.objectID,
+            function(json){
+                setState(json);
+            }
+        );
+    }
+    
+    setJSON(valuekey,newvalue){
+        var newstate = {};
+        newstate[valuekey]=newvalue;
+        console.log(this);
+        this.setState(newstate,
+            ()=>updateValue(this.props.objectID,this.objectType,this.state)
+        );
     }
 }
-
-
-function mergeObjects(target,source){
-    console.log(target);
-    console.log(source);
-    for(var prop in source){
-        console.log(prop);
-        if(typeof target[prop] === 'object' && target[prop]!=null)mergeObjects(target[prop],source[prop]);
-        else target[prop]=source[prop];
-    }
-}
-
-
 
 export function Text(props){
     return (
@@ -47,93 +48,152 @@ export class ClickEditText extends Component{
     }
 
     updateText(evt){
-        console.log(this);
-        console.log("Updating text");
-        console.log(evt.target.value);
         this.props.textUpdated(evt.target.value);
     }
 }
 
 export class NodeView extends ComponentJSON{
-    
-    render(){
-        return (
-            <div class="node">
-                <ClickEditText text={this.state.node.title}/>
-            </div>
-        );
+    constructor(props){
+        super(props);
+        this.objectType="node";
     }
     
-
+    render(){
+        if(this.state.id){
+            return (
+                <div class="node">
+                        <ClickEditText text={this.state.title} textUpdated={this.setJSON.bind(this,"title")}/>
+                        <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
+                </div>
+            );
+        }
+    }
 }
 
-export class ColumnView extends ComponentJSON{
-    
+export class NodeStrategyView extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="nodestrategy";
+    }
     
     render(){
-        return (
-            <div class="column">
-                {this.state.column.title}
-            </div>
-        );
+        if(this.state.id){
+            return (
+                <NodeView objectID={this.state.node}/>
+            );
+        }
     }
 }
 
 export class StrategyView extends ComponentJSON{
-    
+    constructor(props){
+        super(props);
+        this.objectType="strategy"
+    }
     
     render(){
-        console.log(this.state);
-        var nodes = this.state.strategy.nodestrategy_set.map((node)=>
-            <NodeView json={node}/>
-        );
-        return (
-            <div class="strategy">
-                {this.state.strategy.title}
-                <div>
-                    {nodes}
+        if(this.state.id){
+            var nodes = this.state.nodestrategy_set.map((nodestrategy)=>
+                <NodeStrategyView objectID={nodestrategy}/>
+            );
+            return (
+                <div class="strategy">
+                        <ClickEditText text={this.state.title} textUpdated={this.setJSON.bind(this,"title")}/>
+                        <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
+                    <div>
+                        {nodes}
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        }
+    }
+}
+
+export class ColumnView extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="column";
+    }
+    
+    render(){
+        if(this.state.id){
+            return (
+                <div class="column">
+                    {this.state.title}
+                </div>
+            );
+        }
+    }
+}
+
+export class ColumnWorkflowView extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="columnworkflow";
+    }
+    
+    render(){
+        if(this.state.id){
+            return (
+                <ColumnView objectID={this.state.column}/>
+            );
+        }
+    }
+}
+
+export class StrategyWorkflowView extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="strategyworkflow";
+    }
+    
+    render(){
+        console.log(this.state)
+        if(this.state.id){
+            return (
+                <StrategyView objectID={this.state.strategy}/>
+            );
+        }
     }
 }
 
 export class WorkflowView extends ComponentJSON{
     
-    titleChanged(title){
-        console.log("The new title is: "+title);
-        this.setState({title:title});
-        console.log(this.state);
+    constructor(props){
+        super(props);
+        this.objectType="course";
     }
     
     render(){
-        console.log(this.state)
-        var columns = this.state.columnworkflow_set.map((column)=>
-            <ColumnView json={column}/>
-        );
-        var strategies = this.state.strategyworkflow_set.map((strategy)=>
-            <StrategyView json={strategy}/>
-        );
-        
-        return (
-            <div id="workflow-wrapper" class="workflow-wrapper">
-                <div class = "workflow-container">
-                    <ClickEditText text={this.state.title} textUpdated={this.titleChanged.bind(this)}/>
-                    <Text text={"Created by "+this.state.author}/>
-                    <ClickEditText text={this.state.description}/>
-                    <div class="column-row">
-                        {columns}
-                    </div>
-                    <div class="strategy-block">
-                        {strategies}
+        console.log(this.state);
+        if(this.state.id){
+            var columnworkflows = this.state.columnworkflow_set.map((columnworkflow)=>
+                <ColumnWorkflowView objectID={columnworkflow}/>
+            );
+            var strategyworkflows = this.state.strategyworkflow_set.map((strategyworkflow)=>
+                <StrategyWorkflowView objectID={strategyworkflow}/>
+            );
+
+            return (
+                <div id="workflow-wrapper" class="workflow-wrapper">
+                    <div class = "workflow-container">
+                        <ClickEditText text={this.state.title} textUpdated={this.setJSON.bind(this,"title")}/>
+                        <Text text={"Created by "+this.state.author}/>
+                        <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
+                        <div class="column-row">
+                            {columnworkflows}
+                        </div>
+                        <div class="strategy-block">
+                            {strategyworkflows}
+                        </div>
                     </div>
                 </div>
-            </div>
-        );
+            );
+        }
     }
 }
 
-
 export function renderWorkflowView(workflow,container){
-    render(<WorkflowView json={workflow}/>,container)
+    console.log(workflow);
+    render(<WorkflowView objectID={workflow.id}/>,container)
 }

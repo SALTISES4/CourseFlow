@@ -39,7 +39,6 @@ window.addEventListener("load", function(){
     }
     
     let renderWorkflow = function(jsonData){
-        console.log(jsonData);
         workflow.renderWorkflowView(jsonData,$("#container").get()[0])
     }
     
@@ -48,6 +47,20 @@ window.addEventListener("load", function(){
 })
 
 
+function updateValue(objectID,objectType,json){
+    console.log("trying to update value:");
+    console.log(objectID);
+    console.log(objectType);
+    console.log(json);
+    $.post("{% url 'course_flow:update-value' %}", {
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify(objectType),
+        data:JSON.stringify(json)
+    }).done(function(data){
+        if(data.action == "posted") console.log("Success");
+        else console.log("Failed");
+    });
+}
 
 
 

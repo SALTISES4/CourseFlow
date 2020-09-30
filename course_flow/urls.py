@@ -10,6 +10,12 @@ router.register(r"activity/read", views.ActivityViewSet)
 router.register(r"course/read", views.CourseViewSet)
 router.register(r"program/read", views.ProgramViewSet)
 router.register(r"workflow/read", views.WorkflowViewSet)
+router.register(r"columnworkflow/read", views.ColumnWorkflowViewSet)
+router.register(r"column/read", views.ColumnViewSet)
+router.register(r"strategyworkflow/read", views.StrategyWorkflowViewSet)
+router.register(r"strategy/read", views.StrategyViewSet)
+router.register(r"nodestrategy/read", views.NodeStrategyViewSet)
+router.register(r"node/read", views.NodeViewSet)
 
 
 app_name = "course_flow"
@@ -31,6 +37,11 @@ def flow_patterns():
             r"^workflow/(?P<pk>[0-9]+)/update/$",
             views.WorkflowUpdateView.as_view(),
             name="workflow-update",
+        ),
+        url(
+            r"^updatevalue/$",
+            views.update_value,
+            name="update-value",
         ),
         url(
             r"^workflow/(?P<pk>[0-9]+)/$",

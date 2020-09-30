@@ -22,15 +22,23 @@ from .models import (
 )
 from .serializers import (
     serializer_lookups,
+    serializer_lookups_shallow,
     ActivitySerializer,
     CourseSerializer,
     StrategySerializer,
     NodeSerializer,
-    WeekLevelComponentSerializer,
     ProgramSerializer,
-    ProgramLevelComponentSerializer,
-    WeekSerializer,
     WorkflowSerializer,
+    WorkflowSerializerShallow,
+    CourseSerializerShallow,
+    ActivitySerializerShallow,
+    ProgramSerializerShallow,
+    StrategyWorkflowSerializerShallow,
+    StrategySerializerShallow,
+    NodeStrategySerializerShallow,
+    NodeSerializerShallow,
+    ColumnWorkflowSerializerShallow,
+    ColumnSerializerShallow
 )
 from .decorators import ajax_login_required, is_owner, is_parent_owner
 from django.urls import reverse
@@ -126,6 +134,7 @@ class WorkflowDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def get_object(self):
         wf = super().get_object()
+        print("getting workflow detailv view object")
         return Workflow.objects.get_subclass(pk=wf.pk)
     
     def test_func(self):
@@ -134,39 +143,58 @@ class WorkflowDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             in self.request.user.groups.all()
         )
 
-
-
 class WorkflowViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-
-    serializer_class = CourseSerializer
+    serializer_class = CourseSerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = Workflow.objects.select_subclasses()
 
+class StrategyWorkflowViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+    serializer_class = StrategyWorkflowSerializerShallow
+    renderer_classes = [JSONRenderer]
+    queryset = StrategyWorkflow.objects.all()
 
+class StrategyViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+    serializer_class = StrategySerializerShallow
+    renderer_classes = [JSONRenderer]
+    queryset = Strategy.objects.all()
 
+class NodeStrategyViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+    serializer_class = NodeStrategySerializerShallow
+    renderer_classes = [JSONRenderer]
+    queryset = NodeStrategy.objects.all()
 
+class NodeViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+    serializer_class = NodeSerializerShallow
+    renderer_classes = [JSONRenderer]
+    queryset = Node.objects.all()
 
+class ColumnWorkflowViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+    serializer_class = ColumnWorkflowSerializerShallow
+    renderer_classes = [JSONRenderer]
+    queryset = ColumnWorkflow.objects.all()
 
-
-
+class ColumnViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+    serializer_class = ColumnSerializerShallow
+    renderer_classes = [JSONRenderer]
+    queryset = Column.objects.all()
 
 class ActivityViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
 
-    serializer_class = ActivitySerializer
+    serializer_class = ActivitySerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = Activity.objects.all()
 
 
 class CourseViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
 
-    serializer_class = CourseSerializer
+    serializer_class = CourseSerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = Course.objects.all()
 
 
 class ProgramViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
 
-    serializer_class = ProgramSerializer
+    serializer_class = ProgramSerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = Program.objects.all()
 
@@ -404,6 +432,56 @@ def save_serializer(serializer) -> HttpResponse:
     else:
         return JsonResponse({"action": "error"})
 
+"""    
+#Called when a workflow value must be changed
+@require_POST
+@ajax_login_required
+@is_owner(False)
+def update_value(request: HttpRequest) -> HttpResponse:
+    try:
+        object_id = json.loads(request.POST.get("objectID"))
+        object_type = json.loads(request.POST.get("objectType"))
+        valuekey = json.loads(request.POST.get("valuekey"))
+        newvalue = json.loads(request.POST.get("newvalue"))
+        objects = model_lookups[object_type].objects
+        if hasattr(objects,"get_subclass"): object_to_update = objects.get_subclass(pk=object_id)
+        else: object_to_update = objects.get(pk=object_id)
+        print("Value has been changed")
+        print(newvalue)
+        setattr(object_to_update,valuekey,newvalue)
+        object_to_update.save()
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+"""   
+
+#Updates an object's information using its serializer
+@require_POST
+@ajax_login_required
+@is_owner(False)
+def update_value(request: HttpRequest) -> HttpResponse:
+    try:
+        object_id = json.loads(request.POST.get("objectID"))
+        print(object_id);
+        object_type = json.loads(request.POST.get("objectType"))
+        print(object_type)
+        print(request.POST.get("data"))
+        data = json.loads(request.POST.get("data"))
+        print("Value has been changed")
+        print(data)
+        objects = model_lookups[object_type].objects
+        if hasattr(objects,"get_subclass"): object_to_update = objects.get_subclass(pk=object_id)
+        else: object_to_update = objects.get(pk=object_id)
+        serializer = serializer_lookups_shallow[object_type](
+            object_to_update, data=data
+        )
+        return save_serializer(serializer)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+    
 
 @require_POST
 @ajax_login_required
