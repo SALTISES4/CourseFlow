@@ -38,7 +38,8 @@ from .serializers import (
     NodeStrategySerializerShallow,
     NodeSerializerShallow,
     ColumnWorkflowSerializerShallow,
-    ColumnSerializerShallow
+    ColumnSerializerShallow,
+    WorkflowSerializerFinder,
 )
 from .decorators import ajax_login_required, is_owner, is_parent_owner
 from django.urls import reverse
@@ -134,7 +135,6 @@ class WorkflowDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def get_object(self):
         wf = super().get_object()
-        print("getting workflow detailv view object")
         return Workflow.objects.get_subclass(pk=wf.pk)
     
     def test_func(self):
@@ -144,7 +144,7 @@ class WorkflowDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         )
 
 class WorkflowViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = CourseSerializerShallow
+    serializer_class = WorkflowSerializerFinder
     renderer_classes = [JSONRenderer]
     queryset = Workflow.objects.select_subclasses()
 
@@ -179,21 +179,18 @@ class ColumnViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Column.objects.all()
 
 class ActivityViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-
     serializer_class = ActivitySerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = Activity.objects.all()
 
 
 class CourseViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-
     serializer_class = CourseSerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = Course.objects.all()
 
 
 class ProgramViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-
     serializer_class = ProgramSerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = Program.objects.all()

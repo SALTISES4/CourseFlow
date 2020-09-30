@@ -14,21 +14,47 @@ User = get_user_model()
 
 
 class Column(models.Model):
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50,null=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    CUS_ACT = 0
+    OOCI=1
+    OOCS=2
+    ICI=3
+    ICS=4
+    CUS_CO=10
+    PREP=11
+    LESSON=12
+    ARTIFACT=13
+    ASSESS=14
+    CUS_PROG=20
+    
+    COLUMN_TYPES = (
+        (CUS_ACT,"Custom Activity Column"),
+        (OOCI,"Out of Class (Instructor)"),
+        (OOCS,"Out of Class (Students)"),
+        (ICI,"In Class (Instructor)"),
+        (ICS,"In Class (Students)"),
+        (CUS_CO,"Custom Course Column"),
+        (PREP,"Preparation"),
+        (LESSON,"Lesson"),
+        (ARTIFACT,"Artifact"),
+        (ASSESS,"Assessment"),
+        (CUS_PROG,"Custom Program Category"),
+    )
+    column_type = models.PositiveIntegerField(default=0,choices=COLUMN_TYPES)    
     
     default_columns = {
-        'activity':["ooci", "ooc", "ici", "ics"],
-        'course':["Preparation", "Lesson", "Artifact", "Assessment"],
-        'program':["Category 1", "Category 2", "Category 3"],
+        'activity':[1,2,3,4],
+        'course':[11,12,13,14],
+        'program':[20,20,20],
     }
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
-        return self.title
+        return str(self.column_type)
 
     class Meta:
         verbose_name = "Column"
@@ -245,6 +271,17 @@ class Workflow(models.Model):
     outcomes = models.ManyToManyField(
         Outcome, through="OutcomeWorkflow", blank=True
     )
+    
+    SUBCLASSES = ["activity","course","program"]
+    
+    @property
+    def type(self):
+        for subclass in SUBCLASSES:
+            try:
+                return self[subclass].type
+            except Workflow[subclass].RelatedObjectDoesNotExist:
+                pass
+        return "workflow"
 
     def __str__(self):
         return self.title
@@ -260,6 +297,10 @@ class Activity(Workflow):
     students = models.ManyToManyField(
         User, related_name="assigned_activities", blank=True
     )
+    
+    @property
+    def type(self):
+        return "activity";
 
     def __str__(self):
         return self.title
@@ -284,6 +325,10 @@ class Course(Workflow):
         User, related_name="assigned_courses", blank=True
     )
     
+    @property
+    def type(self):
+        return "course";
+    
     def __str__(self):
         return self.title
 
@@ -293,6 +338,10 @@ class Program(Workflow):
         on_delete=models.SET_NULL, 
         null=True
     )
+    
+    @property
+    def type(self):
+        return "program";
 
     def __str__(self):
         return self.title
@@ -586,7 +635,7 @@ def create_default_activity_content(sender, instance, created, **kwargs):
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
-                title=f"Default {col} column",
+                column_type=col,
                 author=instance.author,
             )
 

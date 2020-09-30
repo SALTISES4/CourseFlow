@@ -19,6 +19,7 @@ export class ComponentJSON extends Component{
     }
     
     setJSON(valuekey,newvalue){
+        if(this.state[valuekey]==newvalue)return;
         var newstate = {};
         newstate[valuekey]=newvalue;
         console.log(this);
@@ -117,9 +118,12 @@ export class ColumnView extends ComponentJSON{
     
     render(){
         if(this.state.id){
+            console.log(this.state);
+            var title = this.state.title;
+            if(!title)title=this.state.column_type_display;
             return (
                 <div class="column">
-                    {this.state.title}
+                    {title}
                 </div>
             );
         }
@@ -161,7 +165,7 @@ export class WorkflowView extends ComponentJSON{
     
     constructor(props){
         super(props);
-        this.objectType="course";
+        this.objectType=props.type;
     }
     
     render(){
@@ -195,5 +199,5 @@ export class WorkflowView extends ComponentJSON{
 
 export function renderWorkflowView(workflow,container){
     console.log(workflow);
-    render(<WorkflowView objectID={workflow.id}/>,container)
+    render(<WorkflowView objectID={workflow.id} type={workflow.type}/>,container)
 }

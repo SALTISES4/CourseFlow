@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import (
+    Workflow,
     Program,
     Course,
     Preparation,
@@ -222,7 +223,7 @@ class ColumnSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Column
-        fields = ["id", "title", "author", "created_on", "last_modified"]
+        fields = ["id", "title", "author", "created_on", "last_modified","column_type"]
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -585,10 +586,20 @@ class ColumnSerializerShallow(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
-
+    
+    column_type_display = serializers.CharField(source='get_column_type_display')
+    
+    all_column_types = serializers.CharField(source='COLUMN_TYPES')
+    
+    """
+    column_type = serializers.SerializerMethodField()
+    def get_column_type(self,instance):
+        print(instance.get_column_type_display)
+        return {"type":instance.column_type,"name":instance.get_column_type_display()}
+    """
     class Meta:
         model = Column
-        fields = ["id", "title", "author", "created_on", "last_modified"]
+        fields = ["id", "title", "author", "created_on", "last_modified","column_type","column_type_display","all_column_types"]
 
     def create(self, validated_data):
         return Column.objects.create(
@@ -679,7 +690,18 @@ class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
+class WorkflowSerializerFinder(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Workflow
+        fields = [
+            "id",
+            "type",
+        ]
+    
+    def update(self, instance, validated_data):
+        return instance
+    
 class WorkflowSerializerShallow(serializers.ModelSerializer):
     
     strategyworkflow_set = serializers.SerializerMethodField()
@@ -728,6 +750,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
+            "type",
         ]
         
     def create(self, validated_data):
@@ -756,6 +779,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "discipline",
             "is_original",
             "parent_workflow",
+            "type",
         ]
         
         
@@ -783,6 +807,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
+            "type",
         ]
 
     def create(self, validated_data):
