@@ -50,7 +50,7 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'user_feedback/js/scripts.min.js' %}"
+      src="{% static 'user_feedback/js/app.min.js' %}"
       defer="true"
     ></script>
     {% endcompress %}
@@ -68,6 +68,13 @@
       href="{% static 'course_flow/css/base_style.css' %}"
     />
     {% endcompress %}
+    <!--  -->
+    {% compress css %}
+    <link
+      rel="stylesheet"
+      href="{% static 'user_feedback/css/styles.min.css' %}"
+    />
+    {% endcompress %}
     <style nonce="{{ request.csp_nonce }}">
       #user-feedback-button {
         color: #1976bc;
@@ -76,7 +83,7 @@
       #home-icon {
         height: 32px;
       }
-      #user-feedback-container {
+      #user-feedback-app {
         bottom: 4px;
         display: inline;
         right: 8px;
@@ -129,7 +136,7 @@
           </button>
         </div>
         <div class="topdropwrapper">
-          <div id="user-feedback-container"></div>
+          <div id="user-feedback-app"></div>
         </div>
       </div>
     </div>

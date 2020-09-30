@@ -24,11 +24,11 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
 5.  Install node modules.
 
-        yarn install
+        yarn install | npm i
 
 6.  Build minified JS files.
 
-        yarn run gulp build-js
+        yarn run gulp build-js | ./node_modules/gulp/bin/gulp.js build-js
 
 7.  Migrate
 
