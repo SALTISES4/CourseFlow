@@ -237,6 +237,15 @@ class NodeStrategy(models.Model):
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+    
+    def getParent(self):
+        return self.strategy
+    def getChild(self):
+        return self.node
+    def getParentType(self):
+        return "strategy"
+    def getChildType(self):
+        return "node"
 
     class Meta:
         verbose_name = "Node-Strategy Link"
@@ -282,6 +291,16 @@ class Workflow(models.Model):
             except Workflow[subclass].RelatedObjectDoesNotExist:
                 pass
         return "workflow"
+    
+    def get_subclass(self):
+        subclass=self
+        try:subclass = self.activity
+        except AttributeError:pass
+        try:subclass = self.course
+        except AttributeError:pass
+        try:subclass = self.program
+        except AttributeError:pass
+        return subclass
 
     def __str__(self):
         return self.title
@@ -297,6 +316,8 @@ class Activity(Workflow):
     students = models.ManyToManyField(
         User, related_name="assigned_activities", blank=True
     )
+    
+    DEFAULT_CUSTOM_COLUMN=0
     
     @property
     def type(self):
@@ -325,6 +346,8 @@ class Course(Workflow):
         User, related_name="assigned_courses", blank=True
     )
     
+    DEFAULT_CUSTOM_COLUMN=10
+    
     @property
     def type(self):
         return "course";
@@ -339,6 +362,8 @@ class Program(Workflow):
         null=True
     )
     
+    DEFAULT_CUSTOM_COLUMN=20
+    
     @property
     def type(self):
         return "program";
@@ -352,7 +377,16 @@ class ColumnWorkflow(models.Model):
     column = models.ForeignKey(Column, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
-
+    
+    def getParentType(self):
+        return "workflow"
+    def getChildType(self):
+        return "column"
+    def getParent(self):
+        return self.workflow
+    def getChild(self):
+        return self.column
+    
     class Meta:
         verbose_name = "Column-Workflow Link"
         verbose_name_plural = "Column-Workflow Links"
@@ -374,7 +408,16 @@ class StrategyWorkflow(models.Model):
     strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
-
+    
+    def getParentType(self):
+        return "workflow"
+    def getChildType(self):
+        return "strategy"
+    def getParent(self):
+        return self.workflow
+    def getChild(self):
+        return self.strategy
+    
     class Meta:
         verbose_name = "Strategy-Workflow Link"
         verbose_name_plural = "Strategy-Workflow Links"
@@ -396,23 +439,6 @@ class Discipline(models.Model):
         verbose_name_plural = _("disciplines")
 
 
-@receiver(pre_delete, sender=NodeStrategy)
-def reorder_for_deleted_node_strategy(sender, instance, **kwargs):
-    for out_of_order_link in NodeStrategy.objects.filter(
-        strategy=instance.strategy, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
-
-
-@receiver(pre_delete, sender=StrategyWorkflow)
-def reorder_for_deleted_strategy_workflow(sender, instance, **kwargs):
-    for out_of_order_link in StrategyWorkflow.objects.filter(
-        workflow=instance.workflow, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
-
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
     instance.strategies.all().delete()
@@ -432,6 +458,64 @@ def switch_node_to_static(sender, instance, created, **kwargs):
             if activity.static:
                 instance.node.students.add(*list(activity.students.all()))
 
+"""
+Reorder Receivers
+"""
+@receiver(pre_delete, sender=NodeStrategy)
+def reorder_for_deleted_node_strategy(sender, instance, **kwargs):
+    for out_of_order_link in NodeStrategy.objects.filter(
+        strategy=instance.strategy, rank__gt=instance.rank
+    ):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+@receiver(pre_delete, sender=StrategyWorkflow)
+def reorder_for_deleted_strategy_workflow(sender, instance, **kwargs):
+    for out_of_order_link in StrategyWorkflow.objects.filter(
+        workflow=instance.workflow, rank__gt=instance.rank
+    ):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+@receiver(pre_delete, sender=ColumnWorkflow)
+def reorder_for_deleted_column_workflow(sender, instance, **kwargs):
+    for out_of_order_link in ColumnWorkflow.objects.filter(
+        workflow=instance.workflow, rank__gt=instance.rank
+    ):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+    
+@receiver(post_save, sender=NodeStrategy)
+def reorder_for_inserted_node_strategy(sender, instance, created, **kwargs):
+    if created:
+        for out_of_order_link in NodeStrategy.objects.filter(
+            strategy=instance.strategy, rank__gte=instance.rank
+        ).exclude(node=instance.node):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
+
+@receiver(post_save, sender=StrategyWorkflow)
+def reorder_for_inserted_strategy_workflow(sender, instance, created, **kwargs):
+    if created:
+        for out_of_order_link in StrategyWorkflow.objects.filter(
+            workflow=instance.workflow, rank__gte=instance.rank
+        ).exclude(strategy=instance.strategy):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
+
+@receiver(post_save, sender=ColumnWorkflow)
+def reorder_for_inserted_column_workflow(sender, instance, created, **kwargs):
+    if created:
+        for out_of_order_link in ColumnWorkflow.objects.filter(
+            workflow=instance.workflow, rank__gte=instance.rank
+        ).exclude(column=instance.column):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
+     
+            
+"""
+Default content creation receivers
+"""
 @receiver(post_save, sender=Activity)
 def create_default_activity_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
@@ -506,6 +590,9 @@ model_lookups = {
     "course": Course,
     "program": Program,
     "workflow": Workflow,
+    "nodestrategy":NodeStrategy,
+    "strategyworkflow":StrategyWorkflow,
+    "columnworkflow":ColumnWorkflow,
 }
 model_keys = [
     "node",
@@ -514,4 +601,7 @@ model_keys = [
     "activity",
     "course",
     "program",
+    "nodestrategy",
+    "strategyworkflow",
+    "columnworkflow"
 ]

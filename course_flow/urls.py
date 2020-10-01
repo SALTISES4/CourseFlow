@@ -44,6 +44,17 @@ def flow_patterns():
             name="update-value",
         ),
         url(
+            r"^delete-self/$",
+            views.delete_self,
+            name="delete-self",
+        ),
+        url(
+            r"^insert-sibling/$",
+            views.insert_sibling,
+            name="insert-sibling",
+        ),
+        url(r"^workflow/new-column", views.new_column, name="new-column"),
+        url(
             r"^workflow/(?P<pk>[0-9]+)/$",
             views.WorkflowDetailView.as_view(),
             name="workflow-detail-view",
@@ -133,16 +144,6 @@ def flow_patterns():
             r"^activity/add-strategy", views.add_strategy, name="add-strategy"
         ),
         url(
-            r"^course/add-component",
-            views.add_component_to_course,
-            name="add-component-to-course",
-        ),
-        url(
-            r"^program/add-component",
-            views.add_component_to_program,
-            name="add-component-to-program",
-        ),
-        url(
             r"^dialog-form/create",
             views.dialog_form_create,
             name="dialog-form-create",
@@ -188,19 +189,9 @@ def flow_patterns():
             name="get-node-completion-status",
         ),
         url(
-            r"^component/get-completion-status",
-            views.get_component_completion_status,
-            name="get-component-completion-status",
-        ),
-        url(
             r"^node/get-completion-count",
             views.get_node_completion_count,
             name="get-node-completion-count",
-        ),
-        url(
-            r"^component/get-completion-count",
-            views.get_component_completion_count,
-            name="get-component-completion-count",
         ),
     ] + router.urls
 

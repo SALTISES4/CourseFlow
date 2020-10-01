@@ -56,8 +56,11 @@ p{
     background: #e0e0e0e0;
 }
 
-.column{
+.column-workflow{
     display:inline-block;
+}
+
+.column{
     padding:5px;
     width:160px;
     white-space:normal;

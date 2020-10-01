@@ -779,19 +779,6 @@ def get_node_completion_status(request: HttpRequest) -> HttpResponse:
 
 
 @ajax_login_required
-def get_component_completion_status(request: HttpRequest) -> HttpResponse:
-
-    status = ComponentCompletionStatus.objects.get(
-        component=Component.objects.get(pk=request.GET.get("componentPk")),
-        student=request.user,
-    )
-
-    return JsonResponse(
-        {"action": "got", "completion_status": status.is_completed}
-    )
-
-
-@ajax_login_required
 def get_node_completion_count(request: HttpRequest) -> HttpResponse:
 
     statuses = NodeCompletionStatus.objects.filter(
@@ -801,20 +788,6 @@ def get_node_completion_count(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {"action": "got", "completion_status": statuses.count()}
     )
-
-
-@ajax_login_required
-def get_component_completion_count(request: HttpRequest) -> HttpResponse:
-
-    statuses = ComponentCompletionStatus.objects.filter(
-        component=Component.objects.get(pk=request.GET.get("componentPk")),
-        is_completed=True,
-    )
-
-    return JsonResponse(
-        {"action": "got", "completion_status": statuses.count()}
-    )
-
 
 @require_POST
 @ajax_login_required
@@ -840,26 +813,6 @@ def add_component_to_course(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
-
-@require_POST
-@ajax_login_required
-@is_owner("programPk")
-def add_component_to_program(request: HttpRequest) -> HttpResponse:
-    component = Component.objects.get(pk=request.POST.get("componentPk"))
-    program = Program.objects.get(pk=request.POST.get("programPk"))
-
-    try:
-        for link in ComponentProgram.objects.filter(program=program):
-            link.rank += 1
-            link.save()
-
-        ComponentProgram.objects.create(
-            program=program, component=component, rank=0
-        )
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
 
 #Called to add components via a dialog form
 @require_POST
@@ -960,3 +913,73 @@ def dialog_form_remove(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
+
+
+"""
+Creation methods
+"""
+@require_POST
+@ajax_login_required
+@is_owner("workflowPk")
+def new_column(request: HttpRequest) -> HttpResponse:
+    workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
+    column_type = request.POST.get("column_type")
+    try:
+        number_of_columns = workflow.columns.count()
+        if column_type is None: column_type = workflow.DEFAULT_CUSTOM_COLUMN
+        column = workflow.columns.create(
+            author=workflow.author,
+            column_type=column_type,
+            through_defaults={"rank":number_of_columns}
+        )
+    except ValidationError:
+        return JsonResponse({"action":"error"})
+    return JsonResponse({"action":"posted","objectID":column.id})
+
+#Add a new sibling to a through model
+@require_POST
+@ajax_login_required
+@is_owner(False)
+def insert_sibling(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+
+    try:
+        model = model_lookups[object_type].objects.get(id=object_id)
+        if object_type=="strategyworkflow":
+            newmodel = StrategyWorkflow.objects.create(
+                workflow=model.workflow,
+                strategy=Strategy.objects.create(author = model.workflow.get_subclass().author),
+                rank=model.rank+1
+            )
+        elif object_type=="nodestrategy":
+            newmodel = NodeStrategy.objects.create(
+                strategy=model.strategy,
+                node=Node.objects.create(author = model.workflow.get_subclass().author),
+                rank=model.rank+1
+            )
+        else:
+            raise ValidationError
+        
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted","objectID":newmodel.id})
+
+"""
+Delete methods
+"""
+@require_POST
+@ajax_login_required
+@is_owner(False)
+def delete_self(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+
+    try:
+        model_lookups[object_type].objects.get(id=object_id).delete()
+    except ProtectedError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+

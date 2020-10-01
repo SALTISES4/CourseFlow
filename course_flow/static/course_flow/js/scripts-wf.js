@@ -9,6 +9,10 @@ export class ComponentJSON extends Component{
     }
     
     componentDidMount(){
+        this.updateJSON();
+    }
+    
+    updateJSON(){
         var setState=this.setState.bind(this);
         
         $.getJSON('/'+this.objectType+"/read/"+this.props.objectID,
@@ -22,9 +26,20 @@ export class ComponentJSON extends Component{
         if(this.state[valuekey]==newvalue)return;
         var newstate = {};
         newstate[valuekey]=newvalue;
-        console.log(this);
         this.setState(newstate,
             ()=>updateValue(this.props.objectID,this.objectType,this.state)
+        );
+    }
+    
+    addDeleteSelf(object_id=this.state.id,objectType=this.objectType){
+        return (
+            <DeleteSelfButton handleClick={deleteSelf.bind(this,object_id,objectType,this.props.updateParent)}/>
+        );
+    }
+    
+    addInsertSibling(object_id=this.state.id,parent_id=this.props.parentID,objectType=this.objectType){
+        return(
+            <InsertSiblingButton handleClick={insertSibling.bind(this,object_id,objectType,parent_id,this.props.updateParent)}/>
         );
     }
 }
@@ -50,6 +65,43 @@ export class ClickEditText extends Component{
 
     updateText(evt){
         this.props.textUpdated(evt.target.value);
+    }
+}
+
+export class DeleteSelfButton extends Component{
+    constructor(props){
+        super(props);
+        this.handleClick = this.handleClick.bind(this);
+    }
+    
+    render(){
+        return (
+            <button class="delete-self-button" onClick={this.handleClick}>x</button>
+        )
+    }
+    
+    handleClick(evt){
+        console.log(evt);
+        this.props.handleClick(evt);
+    }
+}
+
+
+export class InsertSiblingButton extends Component{
+    constructor(props){
+        super(props);
+        this.handleClick = this.handleClick.bind(this);
+    }
+    
+    render(){
+        return (
+            <button class="insert-sibling-button" onClick={this.handleClick}>+</button>
+        )
+    }
+    
+    handleClick(evt){
+        console.log(evt);
+        this.props.handleClick(evt);
     }
 }
 
@@ -95,7 +147,7 @@ export class StrategyView extends ComponentJSON{
     render(){
         if(this.state.id){
             var nodes = this.state.nodestrategy_set.map((nodestrategy)=>
-                <NodeStrategyView objectID={nodestrategy}/>
+                <NodeStrategyView objectID={nodestrategy} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
             );
             return (
                 <div class="strategy">
@@ -139,7 +191,10 @@ export class ColumnWorkflowView extends ComponentJSON{
     render(){
         if(this.state.id){
             return (
-                <ColumnView objectID={this.state.column}/>
+                <div class="column-workflow">
+                    <ColumnView objectID={this.state.column}/>
+                    {this.addDeleteSelf(this.state.column,"column")}
+                </div>
             );
         }
     }
@@ -155,7 +210,11 @@ export class StrategyWorkflowView extends ComponentJSON{
         console.log(this.state)
         if(this.state.id){
             return (
-                <StrategyView objectID={this.state.strategy}/>
+                <div class="strategy-workflow">
+                    <StrategyView objectID={this.state.strategy}/>
+                    {this.addDeleteSelf(this.state.strategy,"strategy")}
+                    {this.addInsertSibling()}
+                </div>
             );
         }
     }
@@ -172,10 +231,10 @@ export class WorkflowView extends ComponentJSON{
         console.log(this.state);
         if(this.state.id){
             var columnworkflows = this.state.columnworkflow_set.map((columnworkflow)=>
-                <ColumnWorkflowView objectID={columnworkflow}/>
+                <ColumnWorkflowView objectID={columnworkflow} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
             );
             var strategyworkflows = this.state.strategyworkflow_set.map((strategyworkflow)=>
-                <StrategyWorkflowView objectID={strategyworkflow}/>
+                <StrategyWorkflowView objectID={strategyworkflow} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
             );
 
             return (
@@ -184,6 +243,7 @@ export class WorkflowView extends ComponentJSON{
                         <ClickEditText text={this.state.title} textUpdated={this.setJSON.bind(this,"title")}/>
                         <Text text={"Created by "+this.state.author}/>
                         <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
+                        <button onClick={()=>newColumn(this.state.id,0,this.updateJSON.bind(this))}>Add A Column</button>
                         <div class="column-row">
                             {columnworkflows}
                         </div>

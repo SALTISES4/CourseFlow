@@ -36,6 +36,7 @@ def is_owner(model):
     def wrapped_view(fct):
         @wraps(fct)
         def _wrapped_view(request, model=model, *args, **kwargs):
+            print(request.POST)
             if model:
                 if model[-2:] == "Pk":
                     id = json.loads(request.POST.get(model))
@@ -48,12 +49,18 @@ def is_owner(model):
             try:
                 objectType = model_lookups[model]
                 if hasattr(objectType.objects,"get_subclass"): 
-                    object = model_lookups[model].objects.get_subclass(id=id)
-                else: object = model_lookups[model].objects.get(id=id)
+                    object = objectType.objects.get_subclass(id=id)
+                else: object = objectType.objects.get(id=id)
             except:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 401
                 return response
+            print("checking if link")
+            if (not hasattr(object,"author")) and hasattr(object,"getParentType"):
+                print("this is a link")
+                parentobjects = model_lookups[object.getParentType()].objects
+                if hasattr(parentobjects,"get_subclass"):object=parentobjects.get_subclass(id=object.getParent().id)
+                else: object = object.getParent()
             if User.objects.get(id=request.user.id) == object.author:
                 return fct(request, *args, **kwargs)
             else:
