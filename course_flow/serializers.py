@@ -528,7 +528,6 @@ class NodeSerializerShallow(serializers.ModelSerializer):
             "author",
             "work_classification",
             "activity_classification",
-            "classification",
             "outcomenode_set",
             "is_original",
             "parent_node",
@@ -551,8 +550,8 @@ class NodeSerializerShallow(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
-        instance.classification = validated_data.get(
-            "classification", instance.classification
+        instance.node_type = validated_data.get(
+            "node_type", instance.node_type
         )
         instance.work_classification = validated_data.get(
             "work_classification", instance.work_classification

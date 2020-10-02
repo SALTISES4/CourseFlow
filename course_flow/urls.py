@@ -59,6 +59,7 @@ def flow_patterns():
             name="inserted-at",
         ),
         url(r"^workflow/new-column", views.new_column, name="new-column"),
+        url(r"^workflow/new-node", views.new_node, name="new-node"),
         url(
             r"^workflow/(?P<pk>[0-9]+)/$",
             views.WorkflowDetailView.as_view(),

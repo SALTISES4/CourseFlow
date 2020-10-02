@@ -38,7 +38,7 @@ p{
 
 .strategy{
     background:#efefef;
-    min-height:400px;
+    min-height:200px;
     padding:10px;
     margin-top:5px;
     box-sizing:border-box;
@@ -83,3 +83,14 @@ p{
     font-family:sans-serif;
 }
 
+.node-strategy{
+    width:100%;
+    display:block;
+    min-height:50px;
+    background:white;
+    margin-top:10px;
+}
+
+.node-block{
+    min-height:100px;
+}

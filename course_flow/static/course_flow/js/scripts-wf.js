@@ -1,27 +1,25 @@
 import {h, Component, render, createRef} from "preact";
 
-
 export class ComponentJSON extends Component{
     
     constructor(props){
         super(props);
-        console.log(props);
     }
     
     componentDidMount(){
-        this.updateJSON();
+        this.updateJSON({},this.postMountFunction.bind(this));
     }
     
-    updateJSON(){
-        console.log("fetching json for "+this.props.objectID)
+    updateJSON(data,postUpdateFunction){
         var setState=this.setState.bind(this);
         $.getJSON('/'+this.objectType+"/read/"+this.props.objectID,
             function(json){
-                console.log(json);
-                setState(json);
+                setState(json,postUpdateFunction);
             }
         );
     }
+    
+    postMountFunction(){}
     
     setJSON(valuekey,newvalue){
         //if(this.state[valuekey]==newvalue)return;
@@ -42,6 +40,35 @@ export class ComponentJSON extends Component{
         return(
             <InsertSiblingButton handleClick={insertSibling.bind(this,object_id,objectType,parent_id,this.props.updateParent)}/>
         );
+    }
+    
+    makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,refresh_trigger,axis=false,connectWith=""){
+        sortable_block.sortable({
+            revert:100,
+            containment:".workflow-container",
+            axis:axis,
+            cursor:"move",
+            cursorAt:{left:10,top:50},
+            connectWith:connectWith,
+            start:()=>{
+                $(draggable_selector).addClass("dragging");
+                sortable_block.sortable("refresh");
+            },
+            stop:(evt,ui)=>{
+                $(draggable_selector).removeClass("dragging");
+                $("#container").animate({
+                    scrollTop: $(ui.item[0]).offset().top-200
+                },20);
+                insertedAt(
+                    ui.item[0].id,
+                    draggable_type,
+                    parent_id,
+                    $(ui.item[0]).index(),
+                    ui.item[0].parentElement.id,
+                    ()=>$(draggable_selector).trigger(refresh_trigger)
+                );
+            }
+        });
     }
     
 }
@@ -133,15 +160,23 @@ export class NodeStrategyView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="nodestrategy";
+        this.maindiv = createRef();
     }
     
     render(){
         if(this.state.id){
             return (
-                <div> class="node-strategy"
+                <div class="node-strategy" id={this.state.id} ref={this.maindiv}>
                     <NodeView objectID={this.state.node}/>
                 </div>
             );
+        }
+    }
+    
+    
+    postMountFunction(){
+        if(this.maindiv.current){
+            $(this.maindiv.current).on("refresh-node-strategies",this.updateJSON.bind(this));
         }
     }
 }
@@ -150,6 +185,7 @@ export class StrategyView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="strategy"
+        this.maindiv = createRef();
     }
     
     render(){
@@ -161,12 +197,23 @@ export class StrategyView extends ComponentJSON{
                 <div class="strategy">
                         <ClickEditText text={this.state.title} defaultText={this.state.strategy_type_display+" "+(this.props.rank+1)} textUpdated={this.setJSON.bind(this,"title")}/>
                         <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
-                    <div>
-                        {nodes}
-                    </div>
+                        <button onClick={()=>newNode(this.state.id,this.updateJSON.bind(this))}>Add A Node</button>
+                        <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.maindiv}>
+                            {nodes}
+                        </div>
                 </div>
             );
         }
+    } 
+    
+    postMountFunction(){
+        this.makeSortable($(this.maindiv.current),
+                          this.props.objectID,
+                          "nodestrategy",
+                          ".node-strategy",
+                          "refresh-node-strategies",
+                          "y",
+                          ".node-block");
     }
 }
 
@@ -193,16 +240,23 @@ export class ColumnWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="columnworkflow";
+        this.maindiv = createRef();
     }
     
     render(){
         if(this.state.id){
             return (
-                <div class="column-workflow">
+                <div class="column-workflow" id={this.state.id} ref={this.maindiv}>
                     <ColumnView objectID={this.state.column}/>
                     {this.addDeleteSelf(this.state.column,"column")}
                 </div>
             );
+        }
+    }
+
+    postMountFunction(){
+        if(this.maindiv.current){
+            $(this.maindiv.current).on("refresh-column-workflows",this.updateJSON.bind(this));
         }
     }
 }
@@ -211,7 +265,6 @@ export class StrategyWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="strategyworkflow";
-        this.className="strategy-workflow";
         this.maindiv = createRef();
     }
     
@@ -227,7 +280,7 @@ export class StrategyWorkflowView extends ComponentJSON{
         }
     }
 
-    componentDidUpdate(){
+    postMountFunction(){
         if(this.maindiv.current){
             $(this.maindiv.current).on("refresh-strategy-workflows",this.updateJSON.bind(this));
         }
@@ -273,34 +326,25 @@ export class WorkflowView extends ComponentJSON{
         }
     }
     
-    componentDidUpdate(){
-        var strategyblock=$(".strategy-block");
-        var parent_id = this.props.objectID;
-        strategyblock.sortable({
-            revert:100,
-            containment:".workflow-container",
-            axis:"y",
-            cursor:"move",
-            cursorAt:{left:10,top:50},
-            start:()=>{
-                $(".strategy-workflow").addClass("dragging");
-                strategyblock.sortable("refresh");
-            },
-            stop:(evt,ui)=>{
-                $(".strategy-workflow").removeClass("dragging");
-                $("#container").animate({
-                    scrollTop: $(ui.item[0]).offset().top-200
-                },20);
-                insertedAt(ui.item[0].id,"strategyworkflow",parent_id,$(ui.item[0]).index(),()=>$(".strategy-workflow").trigger("refresh-strategy-workflows"));
-            }
-            
-            
-            
-        });
+    postMountFunction(){
+        this.makeSortable($(".strategy-block"),
+                          this.props.objectID,
+                          "strategyworkflow",
+                          ".strategy-workflow",
+                          "refresh-strategy-workflows",
+                          "y");
+        this.makeSortable($(".column-row"),
+                          this.props.objectID,
+                          "columnworkflow",
+                          ".column-workflow",
+                          "refresh-column-workflows",
+                          "x");
     }
+
+    
+    
 }
 
 export function renderWorkflowView(workflow,container){
-    console.log(workflow);
     render(<WorkflowView objectID={workflow.id} type={workflow.type}/>,container)
 }

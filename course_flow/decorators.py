@@ -119,6 +119,8 @@ def is_throughmodel_parent_owner(view_func):
             ]
             if hasattr(parentType.objects,"get_subclass"): 
                 parent = parentType.objects.get_subclass(id=parent_id)
+            else:
+                parent = parentType.objects.get(id=parent_id)
         except:
             response = JsonResponse({"login_url": settings.LOGIN_URL})
             response.status_code = 401

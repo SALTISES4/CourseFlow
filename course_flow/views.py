@@ -938,6 +938,25 @@ def new_column(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action":"error"})
     return JsonResponse({"action":"posted","objectID":column.id})
 
+@require_POST
+@ajax_login_required
+@is_owner("strategyPk")
+def new_node(request: HttpRequest) -> HttpResponse:
+    strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
+    try:
+        number_of_nodes = strategy.nodes.count()
+        workflow = StrategyWorkflow.objects.get(strategy=strategy).workflow
+        column = workflow.columnworkflow_set.all().get(rank=0).column
+        node = strategy.nodes.create(
+            author=strategy.author,
+            node_type=workflow.get_subclass().WORKFLOW_TYPE,
+            column=column,
+            through_defaults={"rank":number_of_nodes}
+        )
+    except ValidationError:
+        return JsonResponse({"action":"error"})
+    return JsonResponse({"action":"posted","objectID":node.id})
+
 #Add a new sibling to a through model
 @require_POST
 @ajax_login_required
@@ -997,32 +1016,63 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("parentID"))
     new_position = json.loads(request.POST.get("newPosition"))
+    new_parent_id = json.loads(request.POST.get("newParentID"))
     try:
         print(new_position)
         model=model_lookups[object_type].objects.get(id=object_id)
         old_position=model.rank
         print(old_position)
+        print(new_parent_id)
         delta = new_position-old_position
-        if delta != 0:
+        parentType = owned_throughmodels[owned_throughmodels.index(object_type)+1]
+        
+        parent = model_lookups[parentType].objects.get(id=parent_id)
+        new_parent = model_lookups[parentType].objects.get(id=new_parent_id)
+        print("The old parent ID was "+str(parent.id))
+        print("The new parent ID is "+str(new_parent.id))
+        
+        
+        if delta != 0 and parent.id==new_parent.id:
             sign = int(math.copysign(1,delta))
-            print("the old position was "+str(old_position))
-            print("the new position will be "+str(new_position))
-            print("the sign is "+str(sign))
-            parentType = owned_throughmodels[owned_throughmodels.index(object_type)+1]
-            print(model_lookups[object_type].objects.filter(**{parentType:getattr(model,parentType)}))
-            print(model_lookups[object_type].objects.filter(rank__gt=min(old_position+1,new_position),**{parentType:getattr(model,parentType)}))
             for out_of_order_link in model_lookups[object_type].objects.filter(
                 rank__gte=min(old_position+1,new_position),
                 rank__lte=max(new_position,old_position-1),
-                **{parentType:getattr(model,parentType)}
+                **{parentType:parent}
             ):
-                print("working on link with rank "+str(out_of_order_link.rank))
                 out_of_order_link.rank-=sign
-                print("now it has rank "+str(out_of_order_link.rank))
-                
                 out_of_order_link.save()
             model.rank=new_position
             model.save()
+        elif parent.id != new_parent.id:
+            if hasattr(parent,"get_subclass"):
+                if parent.get_subclass().author != new_parent.get_subclass().author:
+                    raise ValidationError
+            else:
+                if parent.author != new_parent.author:
+                    raise ValidationError
+            print("the old position was "+str(old_position))
+            print("the new position will be "+str(new_position))
+            for out_of_order_link in model_lookups[object_type].objects.filter(
+                rank__gt=old_position,
+                **{parentType:parent}
+            ):
+                print("working on link with rank "+str(out_of_order_link.rank))
+                out_of_order_link.rank-=1
+                print("now it has rank "+str(out_of_order_link.rank))
+                out_of_order_link.save()
+            for out_of_order_link in model_lookups[object_type].objects.filter(
+                rank__gte=new_position,
+                **{parentType:new_parent}
+            ):
+                print("working on link with rank "+str(out_of_order_link.rank))
+                out_of_order_link.rank+=1
+                print("now it has rank "+str(out_of_order_link.rank))
+                out_of_order_link.save()
+            model.rank=new_position
+            setattr(model,parentType,new_parent)
+            model.save()
+            print("The new parent has been set to "+str(getattr(model,parentType).id))
+            
     except ValidationError:
         return JsonResponse({"action": "error"})
 

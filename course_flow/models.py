@@ -151,7 +151,7 @@ class Node(models.Model):
         (COURSE_NODE, "Course Node"),
         (PROGRAM_NODE, "Program Node"),
     )
-    classification = models.PositiveIntegerField(choices=NODE_TYPES, default=0)
+    node_type = models.PositiveIntegerField(choices=NODE_TYPES, default=0)
 
     column = models.ForeignKey("Column", on_delete=models.PROTECT,null=True)
 
