@@ -44,6 +44,11 @@ p{
     box-sizing:border-box;
 }
 
+.strategy-workflow.dragging{
+    height:100px !important;
+    overflow:hidden;
+}
+
 .strategy-block{
     width:100%;
 }
@@ -52,7 +57,7 @@ p{
     margin-top:20px;
 }
 
-.strategy-block > div:nth-of-type(odd){
+.strategy-block > div:nth-of-type(odd) > .strategy{
     background: #e0e0e0e0;
 }
 
@@ -77,3 +82,4 @@ p{
     font-size:16px;
     font-family:sans-serif;
 }
+

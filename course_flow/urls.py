@@ -53,6 +53,11 @@ def flow_patterns():
             views.insert_sibling,
             name="insert-sibling",
         ),
+        url(
+            r"^inserted-at/$",
+            views.inserted_at,
+            name="inserted-at",
+        ),
         url(r"^workflow/new-column", views.new_column, name="new-column"),
         url(
             r"^workflow/(?P<pk>[0-9]+)/$",

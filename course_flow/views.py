@@ -34,7 +34,7 @@ from .serializers import (
     ColumnSerializerShallow,
     WorkflowSerializerFinder,
 )
-from .decorators import ajax_login_required, is_owner, is_parent_owner
+from .decorators import ajax_login_required, is_owner, is_parent_owner, is_throughmodel_parent_owner
 from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.views.generic import DetailView, UpdateView
@@ -54,6 +54,7 @@ from .forms import RegistrationForm
 from django.shortcuts import render, redirect
 from django.db.models import ProtectedError
 from django.core.exceptions import ValidationError
+import math
 
 
 def registration_view(request):
@@ -414,6 +415,7 @@ class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 def save_serializer(serializer) -> HttpResponse:
     if serializer:
+        print(serializer.is_valid())
         if serializer.is_valid():
             serializer.save()
             return JsonResponse({"action": "posted"})
@@ -939,7 +941,7 @@ def new_column(request: HttpRequest) -> HttpResponse:
 #Add a new sibling to a through model
 @require_POST
 @ajax_login_required
-@is_owner(False)
+@is_throughmodel_parent_owner
 def insert_sibling(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -949,13 +951,19 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
         if object_type=="strategyworkflow":
             newmodel = StrategyWorkflow.objects.create(
                 workflow=model.workflow,
-                strategy=Strategy.objects.create(author = model.workflow.get_subclass().author),
+                strategy=Strategy.objects.create(
+                    author = model.workflow.get_subclass().author,
+                    strategy_type=model.workflow.get_subclass().WORKFLOW_TYPE
+                ),
                 rank=model.rank+1
             )
         elif object_type=="nodestrategy":
             newmodel = NodeStrategy.objects.create(
                 strategy=model.strategy,
-                node=Node.objects.create(author = model.workflow.get_subclass().author),
+                node=Node.objects.create(
+                    author = model.strategy.author,
+                    node_type=model.strategy.strategy_type
+                ),
                 rank=model.rank+1
             )
         else:
@@ -965,6 +973,61 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted","objectID":newmodel.id})
+
+"""
+Reorder methods
+"""
+
+owned_throughmodels = [
+    "node",
+    "nodestrategy",
+    "strategy",
+    "strategyworkflow",
+    "workflow",
+    "columnworkflow",
+    "workflow"
+]
+
+#Insert a model via its throughmodel
+@require_POST
+@ajax_login_required
+@is_throughmodel_parent_owner
+def inserted_at(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    parent_id = json.loads(request.POST.get("parentID"))
+    new_position = json.loads(request.POST.get("newPosition"))
+    try:
+        print(new_position)
+        model=model_lookups[object_type].objects.get(id=object_id)
+        old_position=model.rank
+        print(old_position)
+        delta = new_position-old_position
+        if delta != 0:
+            sign = int(math.copysign(1,delta))
+            print("the old position was "+str(old_position))
+            print("the new position will be "+str(new_position))
+            print("the sign is "+str(sign))
+            parentType = owned_throughmodels[owned_throughmodels.index(object_type)+1]
+            print(model_lookups[object_type].objects.filter(**{parentType:getattr(model,parentType)}))
+            print(model_lookups[object_type].objects.filter(rank__gt=min(old_position+1,new_position),**{parentType:getattr(model,parentType)}))
+            for out_of_order_link in model_lookups[object_type].objects.filter(
+                rank__gte=min(old_position+1,new_position),
+                rank__lte=max(new_position,old_position-1),
+                **{parentType:getattr(model,parentType)}
+            ):
+                print("working on link with rank "+str(out_of_order_link.rank))
+                out_of_order_link.rank-=sign
+                print("now it has rank "+str(out_of_order_link.rank))
+                
+                out_of_order_link.save()
+            model.rank=new_position
+            model.save()
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
 
 """
 Delete methods

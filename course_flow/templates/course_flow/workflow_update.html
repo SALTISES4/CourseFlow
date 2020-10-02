@@ -57,7 +57,7 @@ function updateValue(objectID,objectType,json){
 }
     
     
-function newColumn(workflowPk,column_type,callBackFunction){
+function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("success")){
     $.post("{% url 'course_flow:new-column' %}", {
         workflowPk:workflowPk,
         column_type:column_type
@@ -68,7 +68,7 @@ function newColumn(workflowPk,column_type,callBackFunction){
 }
 
 //Causes the specified object to delete itself
-function deleteSelf(objectID,objectType,callBackFunction){
+function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
     //Temporary confirmation; add better comfirmation dialogue later
     if(window.confirm("Are you sure you want to delete this "+objectType+"?")){
         console.log(objectID);
@@ -84,12 +84,29 @@ function deleteSelf(objectID,objectType,callBackFunction){
 }
 
 //Causes the specified object to insert a sibling after itself
-function insertSibling(objectID,objectType,parentID,callBackFunction){
+function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
     console.log(objectID);
     console.log(objectType);
     $.post("{% url 'course_flow:insert-sibling' %}", {
         objectID:JSON.stringify(objectID),
-        objectType:JSON.stringify(objectType)
+        objectType:JSON.stringify(objectType),
+        parentID:JSON.stringify(parentID)
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
+    
+//Called when an object in a list is reordered
+function insertedAt(objectID,objectType,parentID,newPosition,callBackFunction=()=>console.log("success")){
+    console.log(objectID);
+    console.log(objectType);
+    console.log(parentID);
+    $.post("{% url 'course_flow:inserted-at' %}", {
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify(objectType),
+        parentID:JSON.stringify(parentID),
+        newPosition:JSON.stringify(newPosition),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");

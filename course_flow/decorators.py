@@ -29,6 +29,15 @@ owned_models = [
     "strategy",
     "workflow"
 ]
+owned_throughmodels = [
+    "node",
+    "nodestrategy",
+    "strategy",
+    "strategyworkflow",
+    "workflow",
+    "columnworkflow",
+    "workflow"
+]
 program_level_owned_models = ["assessment", "program", "course", "program"]
 
 
@@ -36,7 +45,6 @@ def is_owner(model):
     def wrapped_view(fct):
         @wraps(fct)
         def _wrapped_view(request, model=model, *args, **kwargs):
-            print(request.POST)
             if model:
                 if model[-2:] == "Pk":
                     id = json.loads(request.POST.get(model))
@@ -55,12 +63,6 @@ def is_owner(model):
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 401
                 return response
-            print("checking if link")
-            if (not hasattr(object,"author")) and hasattr(object,"getParentType"):
-                print("this is a link")
-                parentobjects = model_lookups[object.getParentType()].objects
-                if hasattr(parentobjects,"get_subclass"):object=parentobjects.get_subclass(id=object.getParent().id)
-                else: object = object.getParent()
             if User.objects.get(id=request.user.id) == object.author:
                 return fct(request, *args, **kwargs)
             else:
@@ -99,5 +101,38 @@ def is_parent_owner(view_func):
             response = JsonResponse({"login_url": settings.LOGIN_URL})
             response.status_code = 401
             return response
+
+    return _wrapped_view
+
+
+def is_throughmodel_parent_owner(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        id = json.loads(request.POST.get("objectID"))
+        model = json.loads(request.POST.get("objectType"))
+        parent_id = json.loads(request.POST.get("parentID"))
+        print(parent_id)
+        print(owned_throughmodels)
+        try:
+            parentType=model_lookups[
+                owned_throughmodels[owned_throughmodels.index(model)+1]
+            ]
+            if hasattr(parentType.objects,"get_subclass"): 
+                parent = parentType.objects.get_subclass(id=parent_id)
+        except:
+            response = JsonResponse({"login_url": settings.LOGIN_URL})
+            response.status_code = 401
+            return response
+        if (
+            User.objects.get(id=request.user.id) == parent.author
+        ):
+            return view_func(request, *args, **kwargs)
+        else:
+            response = JsonResponse({"login_url": settings.LOGIN_URL})
+            response.status_code = 401
+            return response    
+            
+            
+           
 
     return _wrapped_view

@@ -14,7 +14,7 @@ User = get_user_model()
 
 
 class Column(models.Model):
-    title = models.CharField(max_length=50,null=True)
+    title = models.CharField(max_length=50,null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -79,8 +79,8 @@ class Outcome(models.Model):
 
 
 class Node(models.Model):
-    title = models.CharField(max_length=30, null=True)
-    description = models.TextField(max_length=400, null=True)
+    title = models.CharField(max_length=30, null=True, blank=True)
+    description = models.TextField(max_length=400, null=True, blank=True)
     author = models.ForeignKey(
         User,
         related_name="authored_nodes",
@@ -143,15 +143,15 @@ class Node(models.Model):
     activity_classification = models.PositiveIntegerField(
         choices=ACTIVITY_TYPES, default=1
     )
-    OUT_CLASS = 0
-    IN_CLASS_INSTRUCTOR = 1
-    IN_CLASS_STUDENTS = 2
+    ACTIVITY_NODE = 0
+    COURSE_NODE = 1
+    PROGRAM_NODE = 2
     NODE_TYPES = (
-        (OUT_CLASS, "Out of Class"),
-        (IN_CLASS_INSTRUCTOR, "In Class (Instructor)"),
-        (IN_CLASS_STUDENTS, "In Class (Students)"),
+        (ACTIVITY_NODE, "Activity Node"),
+        (COURSE_NODE, "Course Node"),
+        (PROGRAM_NODE, "Program Node"),
     )
-    classification = models.PositiveIntegerField(choices=NODE_TYPES, default=1)
+    classification = models.PositiveIntegerField(choices=NODE_TYPES, default=0)
 
     column = models.ForeignKey("Column", on_delete=models.PROTECT,null=True)
 
@@ -194,8 +194,8 @@ class OutcomeNode(models.Model):
 
 
 class Strategy(models.Model):
-    title = models.CharField(max_length=30, null=True)
-    description = models.TextField(max_length=400, null=True)
+    title = models.CharField(max_length=30, null=True, blank=True)
+    description = models.TextField(max_length=400, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -212,9 +212,19 @@ class Strategy(models.Model):
     outcomes = models.ManyToManyField(
         Outcome, through="OutcomeStrategy", blank=True
     )
+    
+    PART=0
+    WEEK=1
+    TERM=2
+    STRATEGY_TYPES=(
+        (PART,"Part"),
+        (WEEK,"Week"),
+        (TERM,"Term"),
+    )
+    strategy_type = models.PositiveIntegerField(choices=STRATEGY_TYPES,default=0)
 
     def __str__(self):
-        return self.title
+        return self.strategy_type
 
     class Meta:
         verbose_name = "Strategy"
@@ -237,15 +247,6 @@ class NodeStrategy(models.Model):
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
-    
-    def getParent(self):
-        return self.strategy
-    def getChild(self):
-        return self.node
-    def getParentType(self):
-        return "strategy"
-    def getChildType(self):
-        return "node"
 
     class Meta:
         verbose_name = "Node-Strategy Link"
@@ -255,8 +256,8 @@ class NodeStrategy(models.Model):
 class Workflow(models.Model):
     objects = InheritanceManager()
     
-    title = models.CharField(max_length=30, null=True)
-    description = models.TextField(max_length=400, null=True)
+    title = models.CharField(max_length=30, null=True, blank=True)
+    description = models.TextField(max_length=400, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -318,6 +319,7 @@ class Activity(Workflow):
     )
     
     DEFAULT_CUSTOM_COLUMN=0
+    WORKFLOW_TYPE=0
     
     @property
     def type(self):
@@ -347,6 +349,7 @@ class Course(Workflow):
     )
     
     DEFAULT_CUSTOM_COLUMN=10
+    WORKFLOW_TYPE=1
     
     @property
     def type(self):
@@ -363,6 +366,7 @@ class Program(Workflow):
     )
     
     DEFAULT_CUSTOM_COLUMN=20
+    WORKFLOW_TYPE=2
     
     @property
     def type(self):
@@ -377,15 +381,6 @@ class ColumnWorkflow(models.Model):
     column = models.ForeignKey(Column, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
-    
-    def getParentType(self):
-        return "workflow"
-    def getChildType(self):
-        return "column"
-    def getParent(self):
-        return self.workflow
-    def getChild(self):
-        return self.column
     
     class Meta:
         verbose_name = "Column-Workflow Link"
@@ -408,15 +403,6 @@ class StrategyWorkflow(models.Model):
     strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
-    
-    def getParentType(self):
-        return "workflow"
-    def getChildType(self):
-        return "strategy"
-    def getParent(self):
-        return self.workflow
-    def getChild(self):
-        return self.strategy
     
     class Meta:
         verbose_name = "Strategy-Workflow Link"
@@ -511,8 +497,8 @@ def reorder_for_inserted_column_workflow(sender, instance, created, **kwargs):
         ).exclude(column=instance.column):
             out_of_order_link.rank += 1
             out_of_order_link.save()
-     
-            
+
+
 """
 Default content creation receivers
 """
@@ -529,8 +515,7 @@ def create_default_activity_content(sender, instance, created, **kwargs):
             )
 
         instance.strategies.create(
-            title="New Part",
-            description="default part",
+            strategy_type=Strategy.PART,
             author=instance.author,
         )
         instance.save()
@@ -548,7 +533,7 @@ def create_default_course_content(sender, instance, created, **kwargs):
             )
 
         instance.strategies.create(
-            title="New Week",
+            strategy_type=Strategy.WEEK,
             author=instance.author,
         )
         instance.save()
@@ -566,8 +551,7 @@ def create_default_program_content(sender, instance, created, **kwargs):
             )
 
         instance.strategies.create(
-            title="New Term",
-            description="default term",
+            strategy_type=Strategy.TERM,
             author=instance.author,
         )
         instance.save()

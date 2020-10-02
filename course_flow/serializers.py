@@ -512,6 +512,8 @@ class NodeSerializerShallow(serializers.ModelSerializer):
     )
 
     outcomenode_set = serializers.SerializerMethodField()
+    
+    node_type_display = serializers.CharField(source='get_node_type_display')
 
     class Meta:
         model = Node
@@ -530,6 +532,8 @@ class NodeSerializerShallow(serializers.ModelSerializer):
             "outcomenode_set",
             "is_original",
             "parent_node",
+            "node_type",
+            "node_type_display",
         ]
 
     def get_outcomenode_set(self, instance):
@@ -602,6 +606,8 @@ class StrategySerializerShallow(serializers.ModelSerializer):
     nodestrategy_set = serializers.SerializerMethodField()
     outcomestrategy_set = serializers.SerializerMethodField()
     num_children = serializers.SerializerMethodField(read_only=True)
+    
+    strategy_type_display = serializers.CharField(source='get_strategy_type_display')
 
     class Meta:
         model = Strategy
@@ -619,6 +625,8 @@ class StrategySerializerShallow(serializers.ModelSerializer):
             "is_original",
             "parent_strategy",
             "num_children",
+            "strategy_type",
+            "strategy_type_display",
         ]
 
     def get_num_children(self, instance):
