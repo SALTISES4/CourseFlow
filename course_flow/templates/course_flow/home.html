@@ -322,7 +322,7 @@
         <div class="mdc-card__action-icons">
           {% if user.pk is program.author.pk %}
           <!-- -->
-          <a href="{% url 'course_flow:program-update' pk=program.id %}">
+          <a href="{% url 'course_flow:workflow-update' pk=program.id %}">
             <!-- -->
             <img
               class="link-image"
@@ -367,7 +367,7 @@
         <div class="mdc-card__action-icons">
           {% if user.pk is course.author.pk %}
           <!-- -->
-          <a href="{% url 'course_flow:course-update' pk=course.id %}">
+          <a href="{% url 'course_flow:workflow-update' pk=course.id %}">
             <!-- -->
             <img
               class="link-image"

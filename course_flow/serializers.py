@@ -512,6 +512,7 @@ class NodeSerializerShallow(serializers.ModelSerializer):
     )
 
     outcomenode_set = serializers.SerializerMethodField()
+    columnworkflow = serializers.SerializerMethodField()
     
     node_type_display = serializers.CharField(source='get_node_type_display')
 
@@ -524,6 +525,7 @@ class NodeSerializerShallow(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "column",
+            "columnworkflow",
             "hash",
             "author",
             "work_classification",
@@ -534,6 +536,9 @@ class NodeSerializerShallow(serializers.ModelSerializer):
             "node_type",
             "node_type_display",
         ]
+        
+    def get_columnworkflow(self, instance):
+        return instance.column.columnworkflow_set.get(column=instance.column).id
 
     def get_outcomenode_set(self, instance):
         links = instance.outcomenode_set.all().order_by("rank")

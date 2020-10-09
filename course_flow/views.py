@@ -218,7 +218,7 @@ class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_success_url(self):
         return reverse(
-            "course_flow:program-update", kwargs={"pk": self.object.pk}
+            "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
 
 
@@ -299,7 +299,7 @@ class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_success_url(self):
         return reverse(
-            "course_flow:course-update", kwargs={"pk": self.object.pk}
+            "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
 
 
@@ -380,7 +380,7 @@ class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_success_url(self):
         return reverse(
-            "course_flow:activity-update", kwargs={"pk": self.object.pk}
+            "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
 
 
@@ -941,21 +941,30 @@ def new_column(request: HttpRequest) -> HttpResponse:
 @require_POST
 @ajax_login_required
 @is_owner("strategyPk")
+@is_owner("columnPk")
 def new_node(request: HttpRequest) -> HttpResponse:
-    strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
+    strategy_id = json.loads(request.POST.get("strategyPk"))
+    column_id = json.loads(request.POST.get("columnPk"))
+    position = json.loads(request.POST.get("position"))
+    strategy = Strategy.objects.get(pk=strategy_id)
+    column = Column.objects.get(pk=column_id)
+    print(position)
+    print(column_id)
     try:
-        number_of_nodes = strategy.nodes.count()
-        workflow = StrategyWorkflow.objects.get(strategy=strategy).workflow
-        column = workflow.columnworkflow_set.all().get(rank=0).column
-        node = strategy.nodes.create(
-            author=strategy.author,
-            node_type=workflow.get_subclass().WORKFLOW_TYPE,
-            column=column,
-            through_defaults={"rank":number_of_nodes}
+        if(position<0):
+            position=strategy.nodes.count()
+        node_strategy = NodeStrategy.objects.create(
+            strategy = strategy,
+            node = Node.objects.create(
+                author=strategy.author,
+                node_type=strategy.strategy_type,
+                column=column,
+            ),
+            rank=position,
         )
     except ValidationError:
         return JsonResponse({"action":"error"})
-    return JsonResponse({"action":"posted","objectID":node.id})
+    return JsonResponse({"action":"posted","objectID":node_strategy.node.id})
 
 #Add a new sibling to a through model
 @require_POST
@@ -981,7 +990,8 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
                 strategy=model.strategy,
                 node=Node.objects.create(
                     author = model.strategy.author,
-                    node_type=model.strategy.strategy_type
+                    column = model.node.column,
+                    node_type=model.node.node_type
                 ),
                 rank=model.rank+1
             )
@@ -1017,6 +1027,7 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     parent_id = json.loads(request.POST.get("parentID"))
     new_position = json.loads(request.POST.get("newPosition"))
     new_parent_id = json.loads(request.POST.get("newParentID"))
+    new_column_id = json.loads(request.POST.get("newColumnID"))
     try:
         print(new_position)
         model=model_lookups[object_type].objects.get(id=object_id)
@@ -1027,22 +1038,21 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
         parentType = owned_throughmodels[owned_throughmodels.index(object_type)+1]
         
         parent = model_lookups[parentType].objects.get(id=parent_id)
-        new_parent = model_lookups[parentType].objects.get(id=new_parent_id)
-        print("The old parent ID was "+str(parent.id))
-        print("The new parent ID is "+str(new_parent.id))
+        if not new_parent_id is None: new_parent = model_lookups[parentType].objects.get(id=new_parent_id)
         
         
-        if delta != 0 and parent.id==new_parent.id:
-            sign = int(math.copysign(1,delta))
-            for out_of_order_link in model_lookups[object_type].objects.filter(
-                rank__gte=min(old_position+1,new_position),
-                rank__lte=max(new_position,old_position-1),
-                **{parentType:parent}
-            ):
-                out_of_order_link.rank-=sign
-                out_of_order_link.save()
-            model.rank=new_position
-            model.save()
+        if new_parent_id is None or parent.id==new_parent.id:
+            if delta != 0:
+                sign = int(math.copysign(1,delta))
+                for out_of_order_link in model_lookups[object_type].objects.filter(
+                    rank__gte=min(old_position+1,new_position),
+                    rank__lte=max(new_position,old_position-1),
+                    **{parentType:parent}
+                ):
+                    out_of_order_link.rank-=sign
+                    out_of_order_link.save()
+                model.rank=new_position
+                model.save()
         elif parent.id != new_parent.id:
             if hasattr(parent,"get_subclass"):
                 if parent.get_subclass().author != new_parent.get_subclass().author:
@@ -1050,28 +1060,27 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
             else:
                 if parent.author != new_parent.author:
                     raise ValidationError
-            print("the old position was "+str(old_position))
-            print("the new position will be "+str(new_position))
             for out_of_order_link in model_lookups[object_type].objects.filter(
                 rank__gt=old_position,
                 **{parentType:parent}
             ):
-                print("working on link with rank "+str(out_of_order_link.rank))
                 out_of_order_link.rank-=1
-                print("now it has rank "+str(out_of_order_link.rank))
                 out_of_order_link.save()
             for out_of_order_link in model_lookups[object_type].objects.filter(
                 rank__gte=new_position,
                 **{parentType:new_parent}
             ):
-                print("working on link with rank "+str(out_of_order_link.rank))
                 out_of_order_link.rank+=1
-                print("now it has rank "+str(out_of_order_link.rank))
                 out_of_order_link.save()
             model.rank=new_position
             setattr(model,parentType,new_parent)
             model.save()
-            print("The new parent has been set to "+str(getattr(model,parentType).id))
+        if not new_column_id is None and int(new_column_id)>0 and object_type=="nodestrategy":
+            new_column = ColumnWorkflow.objects.get(id=new_column_id).column
+            print(new_column_id)
+            if(new_column.author==parent.author):
+                model.node.column=new_column
+                model.node.save()
             
     except ValidationError:
         return JsonResponse({"action": "error"})

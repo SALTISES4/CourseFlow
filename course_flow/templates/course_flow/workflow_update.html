@@ -14,6 +14,7 @@
 {% block body %}
 
 <div id=container class="body-wrapper"></div>
+<div id="node-bar-container" class="node-bar-container"></div>
 <div id="node-form-container"></div>
 
 {% endblock %}
@@ -32,6 +33,7 @@ window.addEventListener("load", function(){
         $.getJSON('{% url "course_flow:workflow-detail" pk=object.pk %}',
             function(json){
                 workflow.renderWorkflowView(json,$("#container").get()[0]);
+                workflow.renderNodeBar(json,$("#node-bar-container").get()[0]);
             }
         );
     }
@@ -64,10 +66,14 @@ function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("succ
 }
     
     
-function newNode(strategyPk,callBackFunction=()=>console.log("success")){
+function newNode(strategyPk,position=-1,column,callBackFunction=()=>console.log("success")){
     $.post("{% url 'course_flow:new-node' %}", {
-        strategyPk:strategyPk,
+        strategyPk:JSON.stringify(strategyPk),
+        position:JSON.stringify(position),
+        columnPk:JSON.stringify(column),        
     }).done(function(data){
+        console.log(data);
+        console.log(callBackFunction);
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
     });
@@ -89,6 +95,7 @@ function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("succes
 
 //Causes the specified object to insert a sibling after itself
 function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
+    
     $.post("{% url 'course_flow:insert-sibling' %}", {
         objectID:JSON.stringify(objectID),
         objectType:JSON.stringify(objectType),
@@ -100,18 +107,16 @@ function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console
 }
     
 //Called when an object in a list is reordered
-function insertedAt(objectID,objectType,parentID,newPosition,newParentIDString,callBackFunction=()=>console.log("success")){
-    console.log(objectID);
-    console.log(objectType);
-    console.log(parentID);
-    console.log(newParentIDString);
-    var newParentID = parseInt(newParentIDString);
+function insertedAt(objectID,objectType,parentID,newPosition,newParentID,newColumnID,callBackFunction=()=>console.log("success")){
+    
+    
     $.post("{% url 'course_flow:inserted-at' %}", {
         objectID:JSON.stringify(objectID),
         objectType:JSON.stringify(objectType),
         parentID:JSON.stringify(parentID),
         newPosition:JSON.stringify(newPosition),
         newParentID:JSON.stringify(newParentID),
+        newColumnID:JSON.stringify(newColumnID),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
