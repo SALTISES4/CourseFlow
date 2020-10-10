@@ -45,7 +45,7 @@ export class ComponentJSON extends Component{
         var newstate = {};
         newstate[valuekey]=newvalue;
         this.setState(newstate,
-            ()=>updateValue(this.props.objectID,this.objectType,this.state)
+            ()=>updateValue(this.props.objectID,this.objectType,newstate)
         );
     }
     
