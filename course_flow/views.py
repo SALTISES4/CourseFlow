@@ -106,7 +106,6 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     fields = ["title", "description"]
     template_name = "course_flow/workflow_update.html"
     
-    
     def get_queryset(self):
         return self.model.objects.select_subclasses()
     
@@ -415,7 +414,6 @@ class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 def save_serializer(serializer) -> HttpResponse:
     if serializer:
-        print(serializer.is_valid())
         if serializer.is_valid():
             serializer.save()
             return JsonResponse({"action": "posted"})
@@ -423,57 +421,6 @@ def save_serializer(serializer) -> HttpResponse:
             return JsonResponse({"action": "error"})
     else:
         return JsonResponse({"action": "error"})
-
-"""    
-#Called when a workflow value must be changed
-@require_POST
-@ajax_login_required
-@is_owner(False)
-def update_value(request: HttpRequest) -> HttpResponse:
-    try:
-        object_id = json.loads(request.POST.get("objectID"))
-        object_type = json.loads(request.POST.get("objectType"))
-        valuekey = json.loads(request.POST.get("valuekey"))
-        newvalue = json.loads(request.POST.get("newvalue"))
-        objects = model_lookups[object_type].objects
-        if hasattr(objects,"get_subclass"): object_to_update = objects.get_subclass(pk=object_id)
-        else: object_to_update = objects.get(pk=object_id)
-        print("Value has been changed")
-        print(newvalue)
-        setattr(object_to_update,valuekey,newvalue)
-        object_to_update.save()
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-"""   
-
-#Updates an object's information using its serializer
-@require_POST
-@ajax_login_required
-@is_owner(False)
-def update_value(request: HttpRequest) -> HttpResponse:
-    try:
-        object_id = json.loads(request.POST.get("objectID"))
-        print(object_id);
-        object_type = json.loads(request.POST.get("objectType"))
-        print(object_type)
-        print(request.POST.get("data"))
-        data = json.loads(request.POST.get("data"))
-        print("Value has been changed")
-        print(data)
-        objects = model_lookups[object_type].objects
-        if hasattr(objects,"get_subclass"): object_to_update = objects.get_subclass(pk=object_id)
-        else: object_to_update = objects.get(pk=object_id)
-        serializer = serializer_lookups_shallow[object_type](
-            object_to_update, data=data
-        )
-        return save_serializer(serializer)
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-    
 
 @require_POST
 @ajax_login_required
@@ -515,7 +462,8 @@ def duplicate_node(node: Node, author: User) -> Node:
         parent_node=node,
         work_classification=node.work_classification,
         activity_classification=node.activity_classification,
-        classification=node.classification,
+        column=node.column,
+        node_type=node.node_type,
     )
     return new_node
 
@@ -951,7 +899,7 @@ def new_node(request: HttpRequest) -> HttpResponse:
     print(position)
     print(column_id)
     try:
-        if(position<0):
+        if(position<0 or position>strategy.nodes.count()):
             position=strategy.nodes.count()
         node_strategy = NodeStrategy.objects.create(
             strategy = strategy,
@@ -1029,19 +977,25 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     new_parent_id = json.loads(request.POST.get("newParentID"))
     new_column_id = json.loads(request.POST.get("newColumnID"))
     try:
-        print(new_position)
         model=model_lookups[object_type].objects.get(id=object_id)
         old_position=model.rank
-        print(old_position)
-        print(new_parent_id)
-        delta = new_position-old_position
         parentType = owned_throughmodels[owned_throughmodels.index(object_type)+1]
         
         parent = model_lookups[parentType].objects.get(id=parent_id)
-        if not new_parent_id is None: new_parent = model_lookups[parentType].objects.get(id=new_parent_id)
+        if not new_parent_id is None: 
+            new_parent = model_lookups[parentType].objects.get(id=new_parent_id)
+        else: 
+            new_parent = parent
+        new_parent_count = model_lookups[object_type].objects.filter(
+            **{parentType:new_parent}
+        ).count()
+        if new_position<0:
+            new_position=0
+        if new_position>new_parent_count:
+            new_position=new_parent_count-1
+        delta = new_position-old_position
         
-        
-        if new_parent_id is None or parent.id==new_parent.id:
+        if parent.id==new_parent.id:
             if delta != 0:
                 sign = int(math.copysign(1,delta))
                 for out_of_order_link in model_lookups[object_type].objects.filter(
@@ -1087,6 +1041,33 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
+
+
+"""    
+Update Methods
+"""   
+
+#Updates an object's information using its serializer
+@require_POST
+@ajax_login_required
+@is_owner(False)
+def update_value(request: HttpRequest) -> HttpResponse:
+    try:
+        object_id = json.loads(request.POST.get("objectID"))
+        object_type = json.loads(request.POST.get("objectType"))
+        data = json.loads(request.POST.get("data"))
+        objects = model_lookups[object_type].objects
+        if hasattr(objects,"get_subclass"): object_to_update = objects.get_subclass(pk=object_id)
+        else: object_to_update = objects.get(pk=object_id)
+        serializer = serializer_lookups_shallow[object_type](
+            object_to_update, data=data,partial=True
+        )
+        return save_serializer(serializer)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+    
 
 """
 Delete methods

@@ -98,7 +98,7 @@ class ParentNodeSerializer(serializers.ModelSerializer):
             "author",
             "work_classification",
             "activity_classification",
-            "classification",
+            "column",
         ]
 
 
@@ -143,7 +143,7 @@ class NodeSerializer(serializers.ModelSerializer):
             "author",
             "work_classification",
             "activity_classification",
-            "classification",
+            "node_type",
             "outcomenode_set",
             "is_original",
             "parent_node",
@@ -163,9 +163,6 @@ class NodeSerializer(serializers.ModelSerializer):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
             "description", instance.description
-        )
-        instance.classification = validated_data.get(
-            "classification", instance.classification
         )
         instance.work_classification = validated_data.get(
             "work_classification", instance.work_classification
@@ -233,8 +230,6 @@ class StrategySerializer(serializers.ModelSerializer):
 
     nodestrategy_set = serializers.SerializerMethodField()
 
-    outcomestrategy_set = serializers.SerializerMethodField()
-
     parent_strategy = ParentStrategySerializer(allow_null=True)
 
     num_children = serializers.SerializerMethodField(read_only=True)
@@ -251,7 +246,6 @@ class StrategySerializer(serializers.ModelSerializer):
             "default",
             "author",
             "nodestrategy_set",
-            "outcomestrategy_set",
             "is_original",
             "parent_strategy",
             "num_children",
@@ -263,10 +257,6 @@ class StrategySerializer(serializers.ModelSerializer):
     def get_nodestrategy_set(self, instance):
         links = instance.nodestrategy_set.all().order_by("rank")
         return NodeStrategySerializer(links, many=True).data
-
-    def get_outcomestrategy_set(self, instance):
-        links = instance.outcomestrategy_set.all().order_by("rank")
-        return OutcomeStrategySerializer(links, many=True).data
 
     def create(self, validated_data):
         return Strategy.objects.create(
@@ -286,15 +276,6 @@ class StrategySerializer(serializers.ModelSerializer):
             )
             nodestrategy_serializer.is_valid()
             nodestrategy_serializer.save()
-        for outcomestrategy_data in self.initial_data.pop(
-            "outcomestrategy_set"
-        ):
-            outcomestrategy_serializer = OutcomeStrategySerializer(
-                OutcomeStrategy.objects.get(id=outcomestrategy_data["id"]),
-                data=outcomestrategy_data,
-            )
-            outcomestrategy_serializer.is_valid()
-            outcomestrategy_serializer.save()
         instance.save()
         return instance
 

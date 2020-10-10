@@ -111,8 +111,6 @@ def is_throughmodel_parent_owner(view_func):
         id = json.loads(request.POST.get("objectID"))
         model = json.loads(request.POST.get("objectType"))
         parent_id = json.loads(request.POST.get("parentID"))
-        print(parent_id)
-        print(owned_throughmodels)
         try:
             parentType=model_lookups[
                 owned_throughmodels[owned_throughmodels.index(model)+1]
