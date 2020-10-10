@@ -115,7 +115,6 @@ def is_throughmodel_parent_owner(view_func):
             parentType=model_lookups[
                 owned_throughmodels[owned_throughmodels.index(model)+1]
             ]
-            print(parentType)
             if hasattr(parentType.objects,"get_subclass"): 
                 parent = parentType.objects.get_subclass(id=parent_id)
             else:

@@ -72,8 +72,6 @@ function newNode(strategyPk,position=-1,column,callBackFunction=()=>console.log(
         position:JSON.stringify(position),
         columnPk:JSON.stringify(column),        
     }).done(function(data){
-        console.log(data);
-        console.log(callBackFunction);
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
     });

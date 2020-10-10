@@ -1252,7 +1252,6 @@ class ModelPostTest(TestCase):
                 )
                 self.assertEqual(response.status_code, 200)
                 to_move = NodeStrategy.objects.get(id=to_move.id)
-                print("new rank:"+str(to_move.rank))
                 self.assertEqual(to_move.rank,max(min(position,second_strategy.nodes.count()-1),0))
                 self.assertEqual(to_move.node.column.id,second_column.id)
                 self.assertEqual(to_move.strategy.id,second_strategy.id)

@@ -896,8 +896,6 @@ def new_node(request: HttpRequest) -> HttpResponse:
     position = json.loads(request.POST.get("position"))
     strategy = Strategy.objects.get(pk=strategy_id)
     column = Column.objects.get(pk=column_id)
-    print(position)
-    print(column_id)
     try:
         if(position<0 or position>strategy.nodes.count()):
             position=strategy.nodes.count()
@@ -1031,7 +1029,6 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
             model.save()
         if not new_column_id is None and int(new_column_id)>0 and object_type=="nodestrategy":
             new_column = ColumnWorkflow.objects.get(id=new_column_id).column
-            print(new_column_id)
             if(new_column.author==parent.author):
                 model.node.column=new_column
                 model.node.save()

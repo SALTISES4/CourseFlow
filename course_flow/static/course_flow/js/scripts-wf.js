@@ -29,8 +29,6 @@ export class ComponentJSON extends Component{
         try{
             $.getJSON('/'+this.objectType+"/read/"+this.props.objectID,
                 function(json){
-                    console.log("Fetch returned json:");
-                    console.log(json);
                     setState(json,postUpdateFunction);
                 }
             );
@@ -97,16 +95,12 @@ export class ComponentJSON extends Component{
             },
             //When the object is received by this list, ensure the state is updated
             receive:(evt,ui)=>{
-                console.log("firing receive");
-                console.log(ui);
-                console.log(evt);
                 var object_id = ui.item[0].id;
                 var new_position = $(ui.item[0]).index();
                 if(ui.item[0].classList.contains("node-bar-sortable"))this.newChild.bind(this)(draggable_type,parent_id,new_position,ui);
                 else this.childAdded.bind(this)(draggable_type,parseInt(object_id),new_position);
             },
             stop:(evt,ui)=>{
-                console.log("firing stop");
                 //Fetch information about the object that was moved
                 var object_id = ui.item[0].id;
                 var new_position = $(ui.item[0]).index();
@@ -165,8 +159,6 @@ export class ComponentJSON extends Component{
 
     //Add a new child from drag and drop nodebar, then update the JSON.
     newChild(draggable_type,parent_id,new_position,ui){
-        console.log(new_position);
-        console.log(parent_id);
         if(draggable_type=="nodestrategy")newNode(parent_id,new_position,ui.item[0].sortableData.column,this.updateJSON.bind(this));
         ui.item.remove()
     }
