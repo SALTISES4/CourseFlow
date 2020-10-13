@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models.signals import pre_delete, post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from model_utils.managers import InheritanceManager
 
 
 User = get_user_model()
@@ -18,7 +19,11 @@ class Column(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     
-    default_activity_columns = ["ooci", "ooc", "ici", "ics"]
+    default_columns = {
+        'activity':["ooci", "ooc", "ici", "ics"],
+        'course':["Preparation", "Lesson", "Artifact", "Assessment"],
+        'program':["Category 1", "Category 2", "Category 3"],
+    }
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -211,42 +216,49 @@ class NodeStrategy(models.Model):
         verbose_name = "Node-Strategy Link"
         verbose_name_plural = "Node-Strategy Links"
 
-
-class Activity(models.Model):
+        
+class Workflow(models.Model):
+    objects = InheritanceManager()
+    
     title = models.CharField(max_length=30)
     description = models.TextField(max_length=400)
-    author = models.ForeignKey(
-        User,
-        related_name="authored_activities",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
     static = models.BooleanField(default=False)
 
-    students = models.ManyToManyField(
-        User, related_name="assigned_activities", blank=True
-    )
-
     parent_activity = models.ForeignKey(
-        "Activity", on_delete=models.SET_NULL, null=True
+        "Workflow", on_delete=models.SET_NULL, null=True
     )
     is_original = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     strategies = models.ManyToManyField(
-        Strategy, through="StrategyActivity", blank=True
+        Strategy, through="StrategyWorkflow", blank=True
     )
 
     columns = models.ManyToManyField(
-        Column, through="ColumnActivity", blank=True
+        Column, through="ColumnWorkflow", blank=True
     )
 
     outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeActivity", blank=True
+        Outcome, through="OutcomeWorkflow", blank=True
+    )
+
+    def __str__(self):
+        return self.title
+
+class Activity(Workflow):
+    author = models.ForeignKey(
+        User,
+        related_name="authored_activities",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    
+    students = models.ManyToManyField(
+        User, related_name="assigned_activities", blank=True
     )
 
     def __str__(self):
@@ -256,38 +268,67 @@ class Activity(models.Model):
         verbose_name = "Activity"
         verbose_name_plural = "Activities"
 
+class Course(Workflow):
+    author = models.ForeignKey(
+        User,
+        related_name="authored_courses",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    
+    discipline = models.ForeignKey(
+        'Discipline', on_delete=models.SET_NULL, null=True
+    )
 
-class ColumnActivity(models.Model):
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    students = models.ManyToManyField(
+        User, related_name="assigned_courses", blank=True
+    )
+    
+    def __str__(self):
+        return self.title
+
+class Program(Workflow):
+    author = models.ForeignKey(
+        User, 
+        on_delete=models.SET_NULL, 
+        null=True
+    )
+
+    def __str__(self):
+        return self.title
+
+
+class ColumnWorkflow(models.Model):
+    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     column = models.ForeignKey(Column, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
     class Meta:
-        verbose_name = "Column-Activity Link"
-        verbose_name_plural = "Column-Activity Links"
+        verbose_name = "Column-Workflow Link"
+        verbose_name_plural = "Column-Workflow Links"
 
 
-class OutcomeActivity(models.Model):
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+class OutcomeWorkflow(models.Model):
+    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
     class Meta:
-        verbose_name = "Outcome-Activity Link"
-        verbose_name_plural = "Outcome-Activity Links"
+        verbose_name = "Outcome-Workflow Link"
+        verbose_name_plural = "Outcome-Workflow Links"
 
 
-class StrategyActivity(models.Model):
-    activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+class StrategyWorkflow(models.Model):
+    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
     class Meta:
-        verbose_name = "Strategy-Activity Link"
-        verbose_name_plural = "Strategy-Activity Links"
+        verbose_name = "Strategy-Workflow Link"
+        verbose_name_plural = "Strategy-Workflow Links"
 
 
 class Preparation(models.Model):
@@ -476,109 +517,6 @@ class Discipline(models.Model):
         verbose_name_plural = _("disciplines")
 
 
-class Course(models.Model):
-    title = models.CharField(max_length=30)
-    description = models.TextField(max_length=400)
-    author = models.ForeignKey(
-        User,
-        related_name="authored_courses",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
-    created_on = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-    discipline = models.ForeignKey(
-        Discipline, on_delete=models.SET_NULL, null=True
-    )
-
-    static = models.BooleanField(default=False)
-
-    students = models.ManyToManyField(
-        User, related_name="assigned_courses", blank=True
-    )
-
-    parent_course = models.ForeignKey(
-        "Course", on_delete=models.SET_NULL, null=True
-    )
-    is_original = models.BooleanField(default=True)
-
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-    weeks = models.ManyToManyField(Week, through="WeekCourse", blank=True)
-
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeCourse", blank=True
-    )
-
-    def __str__(self):
-        return self.title
-
-
-class WeekCourse(models.Model):
-    week = models.ForeignKey(Week, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Week-Course Link"
-        verbose_name_plural = "Week-Course Links"
-
-
-class OutcomeCourse(models.Model):
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Course Link"
-        verbose_name_plural = "Outcome-Course Links"
-
-
-class Program(models.Model):
-    title = models.CharField(max_length=30)
-    description = models.TextField(max_length=400)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-
-    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
-    components = models.ManyToManyField(
-        Component, through="ComponentProgram", blank=True
-    )
-
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeProgram", blank=True
-    )
-
-    def __str__(self):
-        return self.title
-
-
-class ComponentProgram(models.Model):
-    component = models.ForeignKey(Component, on_delete=models.CASCADE)
-    program = models.ForeignKey(Program, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Component-Program Link"
-        verbose_name_plural = "Component-Program Links"
-
-
-class OutcomeProgram(models.Model):
-    program = models.ForeignKey(Program, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Program Link"
-        verbose_name_plural = "Outcome-Program Links"
-
-
 @receiver(pre_delete, sender=NodeStrategy)
 def reorder_for_deleted_node_strategy(sender, instance, **kwargs):
     for out_of_order_link in NodeStrategy.objects.filter(
@@ -588,10 +526,10 @@ def reorder_for_deleted_node_strategy(sender, instance, **kwargs):
         out_of_order_link.save()
 
 
-@receiver(pre_delete, sender=StrategyActivity)
-def reorder_for_deleted_strategy_activity(sender, instance, **kwargs):
-    for out_of_order_link in StrategyActivity.objects.filter(
-        activity=instance.activity, rank__gt=instance.rank
+@receiver(pre_delete, sender=StrategyWorkflow)
+def reorder_for_deleted_strategy_workflow(sender, instance, **kwargs):
+    for out_of_order_link in StrategyWorkflow.objects.filter(
+        workflow=instance.workflow, rank__gt=instance.rank
     ):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
@@ -606,23 +544,6 @@ def reorder_for_deleted_component_week(sender, instance, **kwargs):
         out_of_order_link.save()
 
 
-@receiver(pre_delete, sender=WeekCourse)
-def reorder_for_deleted_week_course(sender, instance, **kwargs):
-    for out_of_order_link in WeekCourse.objects.filter(
-        course=instance.course, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
-
-
-@receiver(pre_delete, sender=ComponentProgram)
-def reorder_for_deleted_component_program(sender, instance, **kwargs):
-    for out_of_order_link in ComponentProgram.objects.filter(
-        program=instance.program, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
-
 
 @receiver(pre_delete, sender=Activity)
 @receiver(pre_delete, sender=Assessment)
@@ -636,20 +557,10 @@ def delete_attached_component(sender, instance, **kwargs):
     ).delete()
 
 
-@receiver(pre_delete, sender=Course)
-def delete_course_objects(sender, instance, **kwargs):
-    if instance.static:
-        for week in instance.weeks.all():
-            for component in week.components.all():
-                component.content_object.delete()
-    instance.weeks.all().delete()
-
-
-@receiver(pre_delete, sender=Activity)
-def delete_activity_objects(sender, instance, **kwargs):
+@receiver(pre_delete, sender=Workflow)
+def delete_workflow_objects(sender, instance, **kwargs):
     instance.strategies.all().delete()
     instance.columns.all().delete()
-
 
 @receiver(pre_delete, sender=Strategy)
 def delete_strategy_objects(sender, instance, **kwargs):
@@ -671,7 +582,7 @@ def switch_node_to_static(sender, instance, created, **kwargs):
 def create_default_activity_content(sender, instance, created, **kwargs):
     if created:
         # If the activity is newly created, add the default columns
-        cols = Column.default_activity_columns
+        cols = Column.default_columns['activity']
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
@@ -680,19 +591,57 @@ def create_default_activity_content(sender, instance, created, **kwargs):
             )
 
         instance.strategies.create(
-            title="New Strategy",
-            description="default strategy",
+            title="New Part",
+            description="default part",
+            author=instance.author,
+        )
+        instance.save()
+
+@receiver(post_save, sender=Course)
+def create_default_course_content(sender, instance, created, **kwargs):
+    if created:
+        # If the activity is newly created, add the default columns
+        cols = Column.default_columns['course']
+        for i, col in enumerate(cols):
+            instance.columns.create(
+                through_defaults={"rank": i},
+                title=f"Default {col} column",
+                author=instance.author,
+            )
+
+        instance.strategies.create(
+            title="New Week",
+            description="default week",
+            author=instance.author,
+        )
+        instance.save()
+
+@receiver(post_save, sender=Program)
+def create_default_program_content(sender, instance, created, **kwargs):
+    if created:
+        # If the activity is newly created, add the default columns
+        cols = Column.default_columns['program']
+        for i, col in enumerate(cols):
+            instance.columns.create(
+                through_defaults={"rank": i},
+                title=f"Default {col} column",
+                author=instance.author,
+            )
+
+        instance.strategies.create(
+            title="New Term",
+            description="default term",
             author=instance.author,
         )
         instance.save()
 
 
-@receiver(post_save, sender=StrategyActivity)
+@receiver(post_save, sender=StrategyWorkflow)
 def switch_strategy_to_static(sender, instance, created, **kwargs):
     if created:
-        if instance.activity.static:
+        if instance.workflow.static:
             for node in instance.strategy.nodes.all():
-                node.students.add(*list(instance.activity.students.all()))
+                node.students.add(*list(instance.workflow.students.all()))
 
 
 @receiver(post_save, sender=ComponentWeek)
@@ -720,22 +669,15 @@ model_lookups = {
     "column": Column,
     "strategy": Strategy,
     "activity": Activity,
-    "assessment": Assessment,
-    "preparation": Preparation,
-    "artifact": Artifact,
-    "week": Week,
     "course": Course,
     "program": Program,
+    "workflow": Workflow,
 }
 model_keys = [
     "node",
     "column",
     "strategy",
     "activity",
-    "assessment",
-    "preparation",
-    "artifact",
-    "week",
     "course",
     "program",
 ]

@@ -13,16 +13,15 @@ from .models import (
     Course,
     Program,
     NodeStrategy,
-    StrategyActivity,
-    ColumnActivity,
+    StrategyWorkflow,
+    ColumnWorkflow,
     ComponentWeek,
-    WeekCourse,
-    ComponentProgram,
+    Workflow,
 )
 
 admin.site.register(Node)
 admin.site.register(Column)
-admin.site.register(ColumnActivity)
+admin.site.register(ColumnWorkflow)
 admin.site.register(Strategy)
 admin.site.register(Activity)
 admin.site.register(Preparation)
@@ -33,7 +32,6 @@ admin.site.register(Week)
 admin.site.register(Course)
 admin.site.register(Program)
 admin.site.register(NodeStrategy)
-admin.site.register(StrategyActivity)
+admin.site.register(StrategyWorkflow)
 admin.site.register(ComponentWeek)
-admin.site.register(WeekCourse)
-admin.site.register(ComponentProgram)
+admin.site.register(Workflow)

@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import (
     Program,
-    ComponentProgram,
     Course,
     Preparation,
     Activity,
@@ -9,12 +8,11 @@ from .models import (
     Artifact,
     Strategy,
     Column,
-    ColumnActivity,
+    ColumnWorkflow,
     Node,
     NodeStrategy,
-    StrategyActivity,
+    StrategyWorkflow,
     ComponentWeek,
-    WeekCourse,
     Component,
     Week,
     Discipline,
@@ -22,12 +20,10 @@ from .models import (
     OutcomeNode,
     OutcomeStrategy,
     OutcomePreparation,
-    OutcomeActivity,
+    OutcomeWorkflow,
     OutcomeAssessment,
     OutcomeArtifact,
     OutcomeWeek,
-    OutcomeCourse,
-    OutcomeProgram,
     NodeCompletionStatus,
     ComponentCompletionStatus,
     User,
@@ -331,13 +327,13 @@ class StrategySerializer(serializers.ModelSerializer):
         return instance
 
 
-class StrategyActivitySerializer(serializers.ModelSerializer):
+class StrategyWorkflowSerializer(serializers.ModelSerializer):
 
     strategy = StrategySerializer()
 
     class Meta:
-        model = StrategyActivity
-        fields = ["activity", "strategy", "added_on", "rank", "id"]
+        model = StrategyWorkflow
+        fields = ["workflow", "strategy", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
@@ -351,12 +347,12 @@ class StrategyActivitySerializer(serializers.ModelSerializer):
         return instance
 
 
-class ColumnActivitySerializer(serializers.ModelSerializer):
+class ColumnWorkflowSerializer(serializers.ModelSerializer):
     column = ColumnSerializer()
 
     class Meta:
-        model = ColumnActivity
-        fields = ["activity", "column", "added_on", "rank", "id"]
+        model = ColumnWorkflow
+        fields = ["workflow", "column", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
@@ -370,13 +366,13 @@ class ColumnActivitySerializer(serializers.ModelSerializer):
         return instance
 
 
-class OutcomeActivitySerializer(serializers.ModelSerializer):
+class OutcomeWorkflowSerializer(serializers.ModelSerializer):
 
     outcome = OutcomeSerializer()
 
     class Meta:
-        model = OutcomeActivity
-        fields = ["activity", "outcome", "added_on", "rank", "id"]
+        model = OutcomeWorkflow
+        fields = ["workflow", "outcome", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
@@ -390,127 +386,12 @@ class OutcomeActivitySerializer(serializers.ModelSerializer):
         return instance
 
 
-class ActivitySerializer(serializers.ModelSerializer):
-
-    author = serializers.SlugRelatedField(
-        read_only=True, slug_field="username"
-    )
-
-    strategyactivity_set = serializers.SerializerMethodField()
-
-    columnactivity_set = serializers.SerializerMethodField()
-
-    outcomeactivity_set = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Activity
-        fields = [
-            "id",
-            "title",
-            "description",
-            "author",
-            "created_on",
-            "last_modified",
-            "hash",
-            "columnactivity_set",
-            "strategyactivity_set",
-            "outcomeactivity_set",
-            "is_original",
-            "parent_activity",
-        ]
-
-    def get_columnactivity_set(self, instance):
-        links = instance.columnactivity_set.all().order_by("rank")
-        return ColumnActivitySerializer(links, many=True).data
-
-    def get_strategyactivity_set(self, instance):
-        links = instance.strategyactivity_set.all().order_by("rank")
-        return StrategyActivitySerializer(links, many=True).data
-
-    def get_outcomeactivity_set(self, instance):
-        links = instance.outcomeactivity_set.all().order_by("rank")
-        return OutcomeActivitySerializer(links, many=True).data
-
-    def create(self, validated_data):
-        if User.objects.filter(username=self.initial_data["author"]).exists():
-            author = User.objects.get(username=self.initial_data["author"])
-        else:
-            author = None
-        activity = Activity.objects.create(author=author, **validated_data)
-
-        """
-        do not update the following code, this will only be used for default strategy creation
-        """
-        if "strategyactivity_set" in self.initial_data.keys():
-            Strategy.objects.filter(default=True).update(default=False)
-            for strategyactivity_data in self.initial_data.pop(
-                "strategyactivity_set"
-            ):
-                strategy_data = strategyactivity_data.pop("strategy")
-                null_author = strategy_data.pop("author")
-                nodestrategy_set = strategy_data.pop("nodestrategy_set")
-                outcomestategy_set = strategy_data.pop("outcomestrategy_set")
-                strategy = Strategy.objects.create(
-                    author=author, **strategy_data
-                )
-                link = StrategyActivity.objects.create(
-                    strategy=strategy,
-                    activity=activity,
-                    rank=strategyactivity_data["rank"],
-                )
-                for nodestrategy_data in nodestrategy_set:
-                    node_data = nodestrategy_data.pop("node")
-                    null_author = node_data.pop("author")
-                    outcomenode_set = node_data.pop("outcomenode_set")
-                    node = Node.objects.create(author=author, **node_data)
-                    link = NodeStrategy.objects.create(
-                        node=node,
-                        strategy=strategy,
-                        rank=nodestrategy_data["rank"],
-                    )
-        return activity
-
-    def update(self, instance, validated_data):
-
-        instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description
-        )
-        for strategyactivity_data in self.initial_data.pop(
-            "strategyactivity_set"
-        ):
-            strategyactivity_serializer = StrategyActivitySerializer(
-                StrategyActivity.objects.get(id=strategyactivity_data["id"]),
-                data=strategyactivity_data,
-            )
-            strategyactivity_serializer.is_valid()
-            strategyactivity_serializer.save()
-        for outcomeactivity_data in self.initial_data.pop(
-            "outcomeactivity_set"
-        ):
-            outcomeactivity_serializer = OutcomeActivitySerializer(
-                OutcomeActivity.objects.get(id=outcomeactivity_data["id"]),
-                data=outcomeactivity_data,
-            )
-            outcomeactivity_serializer.is_valid()
-            outcomeactivity_serializer.save()
-        for columnactivity_data in self.initial_data.pop("columnactivity_set"):
-            columnactivity_serializer = ColumnActivitySerializer(
-                ColumnActivity.objects.get(id=columnactivity_data["id"]),
-                data=columnactivity_data,
-            )
-            columnactivity_serializer.is_valid()
-            columnactivity_serializer.save()
-        instance.save()
-        return instance
-
-
 class OutcomePreparationSerializer(serializers.ModelSerializer):
 
     outcome = OutcomeSerializer()
 
     class Meta:
-        model = OutcomeActivity
+        model = OutcomePreparation
         fields = ["preparation", "outcome", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
@@ -898,111 +779,6 @@ class DisciplineSerializer(serializers.ModelSerializer):
         fields = ["id", "title"]
 
 
-class WeekCourseSerializer(serializers.ModelSerializer):
-
-    week = WeekSerializer()
-
-    class Meta:
-        model = WeekCourse
-        fields = ["course", "week", "added_on", "rank", "id"]
-
-    def update(self, instance, validated_data):
-        instance.rank = validated_data.get("rank", instance.rank)
-        week_data = self.initial_data.pop("week")
-        week_serializer = WeekSerializer(
-            Week.objects.get(id=week_data["id"]), week_data
-        )
-        week_serializer.is_valid()
-        week_serializer.save()
-        instance.save()
-        return instance
-
-
-class OutcomeCourseSerializer(serializers.ModelSerializer):
-
-    outcome = OutcomeSerializer()
-
-    class Meta:
-        model = OutcomeCourse
-        fields = ["course", "outcome", "added_on", "rank", "id"]
-
-    def update(self, instance, validated_data):
-        instance.rank = validated_data.get("rank", instance.title)
-        outcome_data = self.initial_data.pop("outcome")
-        outcome_serializer = OutcomeSerializer(
-            Outcome.objects.get(id=outcome_data["id"]), outcome_data
-        )
-        outcome_serializer.is_valid()
-        outcome_serializer.save()
-        instance.save()
-        return instance
-
-
-class CourseSerializer(serializers.ModelSerializer):
-
-    weekcourse_set = serializers.SerializerMethodField()
-
-    author = serializers.SlugRelatedField(
-        read_only=True, slug_field="username"
-    )
-
-    discipline = DisciplineSerializer(read_only=True)
-
-    outcomecourse_set = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Course
-        fields = [
-            "id",
-            "title",
-            "description",
-            "author",
-            "created_on",
-            "last_modified",
-            "hash",
-            "weekcourse_set",
-            "outcomecourse_set",
-            "discipline",
-            "is_original",
-            "parent_course",
-        ]
-
-    def get_weekcourse_set(self, instance):
-        links = instance.weekcourse_set.all().order_by("rank")
-        return WeekCourseSerializer(links, many=True).data
-
-    def get_outcomecourse_set(self, instance):
-        links = instance.outcomecourse_set.all().order_by("rank")
-        return OutcomeCourseSerializer(links, many=True).data
-
-    def create(self, validated_data):
-        return Course.objects.create(
-            author=User.objects.get(username=self.initial_data["author"]),
-            **validated_data
-        )
-
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description
-        )
-        for weekcourse_data in self.initial_data.pop("weekcourse_set"):
-            weekcourse_serializer = WeekCourseSerializer(
-                WeekCourse.objects.get(id=weekcourse_data["id"]),
-                data=weekcourse_data,
-            )
-            weekcourse_serializer.is_valid()
-            weekcourse_serializer.save()
-        for outcomecourse_data in self.initial_data.pop("outcomecourse_set"):
-            outcomecourse_serializer = OutcomeCourseSerializer(
-                OutcomeCourse.objects.get(id=outcomecourse_data["id"]),
-                data=outcomecourse_data,
-            )
-            outcomecourse_serializer.is_valid()
-            outcomecourse_serializer.save()
-        instance.save()
-        return instance
-
 
 class ProgramLevelComponentSerializer(serializers.ModelSerializer):
 
@@ -1056,56 +832,60 @@ class ProgramLevelComponentSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
-class ComponentProgramSerializer(serializers.ModelSerializer):
-
-    component = ProgramLevelComponentSerializer()
-
-    class Meta:
-        model = ComponentProgram
-        fields = ["program", "component", "added_on", "rank", "id"]
-
-    def update(self, instance, validated_data):
-        instance.rank = validated_data.get("rank", instance.rank)
-        component_data = self.initial_data.pop("component")
-        component_serializer = ProgramLevelComponentSerializer(
-            Component.objects.get(id=component_data["id"]), component_data
-        )
-        component_serializer.is_valid()
-        component_serializer.save()
-        instance.save()
-        return instance
-
-
-class OutcomeProgramSerializer(serializers.ModelSerializer):
-
-    outcome = OutcomeSerializer()
-
-    class Meta:
-        model = OutcomeProgram
-        fields = ["course", "outcome", "added_on", "rank", "id"]
-
-    def update(self, instance, validated_data):
-        instance.rank = validated_data.get("rank", instance.title)
-        outcome_data = self.initial_data.pop("outcome")
-        outcome_serializer = OutcomeSerializer(
-            Outcome.objects.get(id=outcome_data["id"]), outcome_data
-        )
-        outcome_serializer.is_valid()
-        outcome_serializer.save()
-        instance.save()
-        return instance
-
-
-class ProgramSerializer(serializers.ModelSerializer):
-
-    componentprogram_set = serializers.SerializerMethodField()
-
+class WorkflowSerializer(serializers.ModelSerializer):
+    
+    strategyworkflow_set = serializers.SerializerMethodField()
+    outcomeworkflow_set = serializers.SerializerMethodField()
+    columnworkflow_set = serializers.SerializerMethodField()
+    
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
+    
+    def get_strategyworkflow_set(self, instance):
+        links = instance.strategyworkflow_set.all().order_by("rank")
+        return StrategyWorkflowSerializer(links, many=True).data
+    
+    def get_columnworkflow_set(self, instance):
+        links = instance.columnworkflow_set.all().order_by("rank")
+        return ColumnWorkflowSerializer(links, many=True).data
 
-    outcomeprogram_set = serializers.SerializerMethodField()
+    def get_outcomeworkflow_set(self, instance):
+        links = instance.outcomeworkflow_set.all().order_by("rank")
+        return OutcomeWorkflowSerializer(links, many=True).data
+    
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.description = validated_data.get(
+            "description", instance.description
+        )
+        for strategyworkflow_data in self.initial_data.pop("strategyworkflow_set"):
+            strategyworkflow_serializer = StrategyWorkflowSerializer(
+                StrategyWorkflow.objects.get(id=strategyworkflow_data["id"]),
+                data=strategyworkflow_data,
+            )
+            strategyworkflow_serializer.is_valid()
+            strategyworkflow_serializer.save()
+        for columnworkflow_data in self.initial_data.pop("columnworkflow_set"):
+            columnworkflow_serializer = ColumnWorkflowSerializer(
+                ColumnWorkflow.objects.get(id=columnworkflow_data["id"]),
+                data=columnworkflow_data,
+            )
+            columnworkflow_serializer.is_valid()
+            columnworkflow_serializer.save()
+        for outcomeworkflow_data in self.initial_data.pop("outcomeworkflow_set"):
+            outcomeworkflow_serializer = OutcomeWorkflowSerializer(
+                OutcomeWorkflow.objects.get(id=outcomeworkflow_data["id"]),
+                data=outcomeworkflow_data,
+            )
+            outcomeworkflow_serializer.is_valid()
+            outcomeworkflow_serializer.save()
+        instance.save()
+        return instance
+    
+    
+class ProgramSerializer(WorkflowSerializer):
 
     class Meta:
         model = Program
@@ -1117,47 +897,108 @@ class ProgramSerializer(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "hash",
-            "componentprogram_set",
-            "outcomeprogram_set",
+            "columnworkflow_set",
+            "strategyworkflow_set",
+            "outcomeworkflow_set",
+            "is_original",
+            "parent_activity",
         ]
-
-    def get_componentprogram_set(self, instance):
-        links = instance.componentprogram_set.all().order_by("rank")
-        return ComponentProgramSerializer(links, many=True).data
-
-    def get_outcomeprogram_set(self, instance):
-        links = instance.outcomeprogram_set.all().order_by("rank")
-        return OutcomeProgramSerializer(links, many=True).data
-
+        
     def create(self, validated_data):
         return Program.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
 
-    def update(self, instance, validated_data):
-        instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description
+class CourseSerializer(WorkflowSerializer):
+    
+    discipline = DisciplineSerializer(read_only=True)
+    
+    class Meta:
+        model = Course
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "created_on",
+            "last_modified",
+            "hash",
+            "strategyworkflow_set",
+            "outcomeworkflow_set",
+            "columnworkflow_set",
+            "discipline",
+            "is_original",
+            "parent_activity",
+        ]
+        
+        
+    def create(self, validated_data):
+        return Course.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
         )
-        for componentprogram_data in self.initial_data.pop(
-            "componentprogram_set"
-        ):
-            componentprogram_serializer = ComponentProgramSerializer(
-                ComponentProgram.objects.get(id=componentprogram_data["id"]),
-                data=componentprogram_data,
-            )
-            componentprogram_serializer.is_valid()
-            componentprogram_serializer.save()
-        for outcomeprogram_data in self.initial_data.pop("outcomeprogram_set"):
-            outcomeprogram_serializer = OutcomeProgramSerializer(
-                OutcomeProgram.objects.get(id=outcomeprogram_data["id"]),
-                data=outcomeprogram_data,
-            )
-            outcomeprogram_serializer.is_valid()
-            outcomeprogram_serializer.save()
-        instance.save()
-        return instance
+    
+
+class ActivitySerializer(WorkflowSerializer):
+
+    class Meta:
+        model = Activity
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "created_on",
+            "last_modified",
+            "hash",
+            "columnworkflow_set",
+            "strategyworkflow_set",
+            "outcomeworkflow_set",
+            "is_original",
+            "parent_activity",
+        ]
+
+    def create(self, validated_data):
+        if User.objects.filter(username=self.initial_data["author"]).exists():
+            author = User.objects.get(username=self.initial_data["author"])
+        else:
+            author = None
+        activity = Activity.objects.create(author=author, **validated_data)
+
+        """
+        do not update the following code, this will only be used for default strategy creation
+        
+        if "strategyactivity_set" in self.initial_data.keys():
+            Strategy.objects.filter(default=True).update(default=False)
+            for strategyactivity_data in self.initial_data.pop(
+                "strategyactivity_set"
+            ):
+                strategy_data = strategyactivity_data.pop("strategy")
+                null_author = strategy_data.pop("author")
+                nodestrategy_set = strategy_data.pop("nodestrategy_set")
+                outcomestategy_set = strategy_data.pop("outcomestrategy_set")
+                strategy = Strategy.objects.create(
+                    author=author, **strategy_data
+                )
+                link = StrategyActivity.objects.create(
+                    strategy=strategy,
+                    activity=activity,
+                    rank=strategyactivity_data["rank"],
+                )
+                for nodestrategy_data in nodestrategy_set:
+                    node_data = nodestrategy_data.pop("node")
+                    null_author = node_data.pop("author")
+                    outcomenode_set = node_data.pop("outcomenode_set")
+                    node = Node.objects.create(author=author, **node_data)
+                    link = NodeStrategy.objects.create(
+                        node=node,
+                        strategy=strategy,
+                        rank=nodestrategy_data["rank"],
+                    )
+        """
+        return activity
+
 
 
 serializer_lookups = {
@@ -1165,10 +1006,6 @@ serializer_lookups = {
     "strategy": StrategySerializer,
     "column": ColumnSerializer,
     "activity": ActivitySerializer,
-    "assessment": AssessmentSerializer,
-    "preparation": PreparationSerializer,
-    "artifact": ArtifactSerializer,
-    "week": WeekSerializer,
     "course": CourseSerializer,
     "program": ProgramSerializer,
 }
