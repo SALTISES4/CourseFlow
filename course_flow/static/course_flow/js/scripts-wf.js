@@ -233,6 +233,214 @@ export class InsertSiblingButton extends Component{
     }
 }
 
+function avgArray(arr1,arr2){
+    var arr3=[];
+    for(var i=0;i<arr1.length;i++){
+        arr3.push((arr1[i]+arr2[i])/2);
+    }
+    return arr3;
+}
+
+function addArray(arr1,arr2){
+    var arr3=[];
+    for(var i=0;i<arr1.length;i++){
+        arr3.push((arr1[i]+arr2[i]));
+    }
+    return arr3;
+}
+
+
+function subArray(arr1,arr2){
+    var arr3=[];
+    for(var i=0;i<arr1.length;i++){
+        arr3.push((arr1[i]-arr2[i]));
+    }
+    return arr3;
+}
+
+//A proprer modulo function
+function mod(n,m){
+    return ((n%m)+m)%m;
+}
+
+//Debouncing wrapper
+function debounce(f, t) {
+  return function (args) {
+    let previousCall = this.lastCall;
+    this.lastCall = Date.now();
+    if (previousCall && ((this.lastCall - previousCall) <= t)) {
+      clearTimeout(this.lastCallTimer);
+    }
+    console.log("in debounce");
+    this.lastCallTimer = setTimeout(() => f(args), t);
+  }
+}
+
+//Basic component to represent a NodeLink
+export class NodeLinkView extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="nodelink";
+    }
+    
+    checkValid(v1,v2,d){
+        console.log("checking whether valid");
+        console.log(v1);
+        console.log(v2);
+        console.log(d);
+        var vd = addArray(v2,d);
+        console.log(Math.sign(v1[0]*vd[0])>=0&&Math.sign(v1[1]*vd[1])>=0)
+        return (Math.sign(v1[0]*vd[0])>=0&&Math.sign(v1[1]*vd[1])>=0);
+        
+        
+        return (Math.sign(v1[0])*Math.sign(vd[0]))
+    }
+    
+    getDirection(v1,v2){
+        console.log("Getting the direction");
+        var dir = Math.sign(v1[0]*v2[1]-v1[1]*v2[0]);
+        console.log(v1);
+        console.log(v2);
+        console.log("dir = "+dir);
+        if(dir==0)return 1;
+        return dir;
+    }
+    
+    //Ignore for now
+    walkAround(){
+            var source_point_found=false;
+            var source_point=0;
+            var target_point_found=false;
+            var target_point=0;
+            
+            for(var i=source_port;i<source_port+4;i++){
+                source_points.push([w1/2*(-1)**(Math.floor(i/2)),h1/2*(-1)**Math.floor((i+3)/2)]);
+            }
+            for(var i=target_port;i<target_port+4;i++){
+                target_points.push([w2/2*(-1)**(Math.floor(i/2)),h2/2*(-1)**Math.floor((i+3)/2)]);
+            }
+            console.log(source_points);
+            console.log(target_points);
+            var target_point_array=[target_points[0]];
+            var source_point_array=[source_points[0]];
+            var counter=0;
+            do{
+                counter++;
+                if(counter==10)break;
+                source_point_found = this.checkValid(
+                    source_points[source_point],
+                    target_points[target_point],
+                    d1
+                );
+                target_point_found = this.checkValid(
+                    target_points[target_point],
+                    source_points[source_point],
+                    d2
+                );
+                if(!source_point_found){
+                    console.log("source has not been found. Getting the direction.");
+                    source_point=mod(source_point+
+                        this.getDirection(
+                        source_points[source_point],
+                        addArray(target_points[target_point],d1))
+                    ,5);
+                    console.log(source_point);
+                    var thispoint = source_points[source_point];
+                    source_point_array.push([thispoint[0]+Math.sign(thispoint[0])*10,thispoint[1]+Math.sign(thispoint[1])*10]);
+                }else if(!target_point_found){
+                    console.log("target has not been found. Getting the direction.");
+                    target_point=mod(target_point+
+                        this.getDirection(
+                        target_points[target_point],
+                        addArray(source_points[source_point],d2))
+                    ,5);
+                    console.log(target_point);
+                    var thispoint = target_points[target_point];
+                    target_point_array.push([thispoint[0]+Math.sign(thispoint[0])*10,thispoint[1]+Math.sign(thispoint[1])*10]);
+                }
+            }while(!(source_point_found&&target_point_found))
+    }
+    
+    getPath(source_point_array,target_point_array,parent_rect,c1,c2){
+        var path="M";
+        for(var i=0;i<source_point_array.length;i++){
+            if(i>0)path+=" L";
+            var thispoint = addArray(c1,source_point_array[i]);
+            path+=parseInt(thispoint[0]-parent_rect.left)+" "+parseInt(thispoint[1]-parent_rect.top)
+        }
+        for(var i=target_point_array.length-1;i>=0;i--){
+            path+=" L";
+            var thispoint = addArray(c2,target_point_array[i]);
+            path+=parseInt(thispoint[0]-parent_rect.left)+" "+parseInt(thispoint[1]-parent_rect.top)
+        }
+        return path;
+    }
+        
+    rerender(){
+        console.log("in rerender function");
+        console.log("context is:");
+        console.log(this);
+        this.forceUpdate();
+    }
+        
+    render(){
+        console.log("rendering link");
+        if(this.state.id){
+            const source_port = 2;
+            const target_port = 0;
+            var sourcenode = $("#"+this.state.source_node+".node");
+            var targetnode = $("#"+this.state.target_node+".node");
+            var parent_rect = $(".workflow-canvas").offset();
+            var source_rect = sourcenode.offset();
+            source_rect.width=sourcenode.width();
+            source_rect.height=sourcenode.height();
+            var target_rect = targetnode.offset();
+            target_rect.width=targetnode.width();
+            target_rect.height=targetnode.height();
+            const w1 = source_rect.width;
+            const h1 = source_rect.height;
+            const w2 = target_rect.width;
+            const h2 = target_rect.height;
+            const c1 = [source_rect.left+w1/2,source_rect.top+h1/2];
+            const c2 = [target_rect.left+w2/2,target_rect.top+h2/2];
+            const d1 = subArray(c2,c1);
+            const d2 = subArray(c1,c2);
+            
+            const source_points = [[w1/2*(source_port%2)*(-1)**(Math.floor(source_port/2)),h1/2*((source_port+1)%2)*(-1)**(Math.floor((source_port+2)/2))]];
+            const target_points = [[w1/2*(target_port%2)*(-1)**(Math.floor(target_port/2)),h1/2*((target_port+1)%2)*(-1)**(Math.floor((target_port+2)/2))]];
+            
+            /*
+            var l = Math.min(source_rect.left,target_rect.left)-10-parent_rect.left;
+            var r = Math.max(source_rect.left,target_rect.left)+10+source_rect.width;
+            var t = Math.min(source_rect.top,target_rect.top)-10-parent_rect.top;
+            var b = Math.max(source_rect.top,target_rect.top)+10+source_rect.height;
+            */
+            
+            var path = this.getPath(source_points,target_points,parent_rect,c1,c2);
+            
+            
+            
+            
+            return (
+                <svg class="dummysvg">
+                    <path stroke="red" stroke-width="3" d={path} ref={this.maindiv}/>
+                </svg>
+            );
+        }
+    }
+    
+    postMountFunction(){
+        var targetnode = $("#"+this.state.target_node+".node");
+        targetnode.on("node-rendered",debounce(this.rerender.bind(this)));
+    }
+        
+    componentDidUpdate(){
+        if(this.maindiv.current){
+            $(".workflow-canvas").append(this.maindiv.current);
+        }
+    }
+}
+
 //Basic component to represent a Node
 export class NodeView extends ComponentJSON{
     constructor(props){
@@ -242,14 +450,22 @@ export class NodeView extends ComponentJSON{
     
     render(){
         if(this.state.id){
+            var node_links = this.state.outgoing_links.map((link)=>
+                <NodeLinkView key={link} objectID={link} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
+            );
             //Note the use of columnworkflow rather than column to determine the css rule that gets applied. This is because the horizontal displacement is based on the rank of the column, which is a property of the columnworkflow rather than of the column itself
             return (
-                <div class={"node column-"+this.state.columnworkflow} ref={this.maindiv}>
+                <div class={"node column-"+this.state.columnworkflow}  id={this.state.id} ref={this.maindiv}>
                         <ClickEditText text={this.state.title} defaultText="New Node" textUpdated={this.setJSON.bind(this,"title")}/>
                         <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
+                        {node_links}
                 </div>
             );
         }
+    }
+    
+    componentDidUpdate(){
+        if(this.maindiv.current)$(this.maindiv.current).trigger("node-rendered");
     }
 }
 
@@ -462,6 +678,7 @@ export class WorkflowView extends ComponentJSON{
                         <div class="strategy-block">
                             {strategyworkflows}
                         </div>
+                    <svg class="workflow-canvas" width="100%" height="100%"></svg>
                     </div>
                 </div>
             );

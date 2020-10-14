@@ -8,6 +8,7 @@ from .models import (
     Activity,
     Strategy,
     Node,
+    NodeLink,
     NodeStrategy,
     StrategyWorkflow,
     Program,
@@ -29,12 +30,18 @@ from .serializers import (
     StrategyWorkflowSerializerShallow,
     StrategySerializerShallow,
     NodeStrategySerializerShallow,
+    NodeLinkSerializerShallow,
     NodeSerializerShallow,
     ColumnWorkflowSerializerShallow,
     ColumnSerializerShallow,
     WorkflowSerializerFinder,
 )
-from .decorators import ajax_login_required, is_owner, is_parent_owner, is_throughmodel_parent_owner
+from .decorators import (
+    ajax_login_required,
+    is_owner,
+    is_parent_owner,
+    is_throughmodel_parent_owner,
+)
 from django.urls import reverse
 from django.views.generic.edit import CreateView
 from django.views.generic import DetailView, UpdateView
@@ -105,14 +112,14 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Workflow
     fields = ["title", "description"]
     template_name = "course_flow/workflow_update.html"
-    
+
     def get_queryset(self):
         return self.model.objects.select_subclasses()
-    
+
     def get_object(self):
         wf = super().get_object()
         return Workflow.objects.get_subclass(pk=wf.pk)
-    
+
     def test_func(self):
         return self.get_object().author == self.request.user
 
@@ -129,47 +136,63 @@ class WorkflowDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     def get_object(self):
         wf = super().get_object()
         return Workflow.objects.get_subclass(pk=wf.pk)
-    
+
     def test_func(self):
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
             in self.request.user.groups.all()
         )
 
+
 class WorkflowViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = WorkflowSerializerFinder
     renderer_classes = [JSONRenderer]
     queryset = Workflow.objects.select_subclasses()
 
-class StrategyWorkflowViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+
+class StrategyWorkflowViewSet(
+    LoginRequiredMixin, viewsets.ReadOnlyModelViewSet
+):
     serializer_class = StrategyWorkflowSerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = StrategyWorkflow.objects.all()
+
 
 class StrategyViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = StrategySerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = Strategy.objects.all()
 
+
 class NodeStrategyViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = NodeStrategySerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = NodeStrategy.objects.all()
+
 
 class NodeViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = NodeSerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = Node.objects.all()
 
+
+class NodeLinkViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+    serializer_class = NodeLinkSerializerShallow
+    renderer_classes = [JSONRenderer]
+    queryset = NodeLink.objects.all()
+
+
 class ColumnWorkflowViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = ColumnWorkflowSerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = ColumnWorkflow.objects.all()
 
+
 class ColumnViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = ColumnSerializerShallow
     renderer_classes = [JSONRenderer]
     queryset = Column.objects.all()
+
 
 class ActivityViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = ActivitySerializerShallow
@@ -411,7 +434,6 @@ class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         )
 
 
-
 def save_serializer(serializer) -> HttpResponse:
     if serializer:
         if serializer.is_valid():
@@ -421,6 +443,7 @@ def save_serializer(serializer) -> HttpResponse:
             return JsonResponse({"action": "error"})
     else:
         return JsonResponse({"action": "error"})
+
 
 @require_POST
 @ajax_login_required
@@ -468,7 +491,7 @@ def duplicate_node(node: Node, author: User) -> Node:
     return new_node
 
 
-#Called when a node is added from the sidebar (duplicated)
+# Called when a node is added from the sidebar (duplicated)
 @login_required
 @ajax_login_required
 @is_owner("strategyPk")
@@ -507,7 +530,8 @@ def duplicate_strategy(strategy: Strategy, author: User) -> Strategy:
         )
     return new_strategy
 
-#Called when a strategy is added from the sidebar (duplicated)
+
+# Called when a strategy is added from the sidebar (duplicated)
 @require_POST
 @ajax_login_required
 @is_owner("workflowPk")
@@ -574,7 +598,9 @@ def duplicate_course(course: Course, author: User) -> Course:
         StrategyWorkflow.objects.create(
             workflow=new_course,
             strategy=duplicate_strategy(strategy, author),
-            rank=StrategyWorkflow.objects.get(strategy=strategy, workflow=workflow).rank,
+            rank=StrategyWorkflow.objects.get(
+                strategy=strategy, workflow=workflow
+            ).rank,
         )
     return new_course
 
@@ -739,6 +765,7 @@ def get_node_completion_count(request: HttpRequest) -> HttpResponse:
         {"action": "got", "completion_status": statuses.count()}
     )
 
+
 @require_POST
 @ajax_login_required
 @is_owner("weekPk")
@@ -764,7 +791,7 @@ def add_component_to_course(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-#Called to add components via a dialog form
+# Called to add components via a dialog form
 @require_POST
 @ajax_login_required
 @is_parent_owner
@@ -868,6 +895,8 @@ def dialog_form_remove(request: HttpRequest) -> HttpResponse:
 """
 Creation methods
 """
+
+
 @require_POST
 @ajax_login_required
 @is_owner("workflowPk")
@@ -876,15 +905,17 @@ def new_column(request: HttpRequest) -> HttpResponse:
     column_type = request.POST.get("column_type")
     try:
         number_of_columns = workflow.columns.count()
-        if column_type is None: column_type = workflow.DEFAULT_CUSTOM_COLUMN
+        if column_type is None:
+            column_type = workflow.DEFAULT_CUSTOM_COLUMN
         column = workflow.columns.create(
             author=workflow.author,
             column_type=column_type,
-            through_defaults={"rank":number_of_columns}
+            through_defaults={"rank": number_of_columns},
         )
     except ValidationError:
-        return JsonResponse({"action":"error"})
-    return JsonResponse({"action":"posted","objectID":column.id})
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "objectID": column.id})
+
 
 @require_POST
 @ajax_login_required
@@ -897,11 +928,11 @@ def new_node(request: HttpRequest) -> HttpResponse:
     strategy = Strategy.objects.get(pk=strategy_id)
     column = Column.objects.get(pk=column_id)
     try:
-        if(position<0 or position>strategy.nodes.count()):
-            position=strategy.nodes.count()
+        if position < 0 or position > strategy.nodes.count():
+            position = strategy.nodes.count()
         node_strategy = NodeStrategy.objects.create(
-            strategy = strategy,
-            node = Node.objects.create(
+            strategy=strategy,
+            node=Node.objects.create(
                 author=strategy.author,
                 node_type=strategy.strategy_type,
                 column=column,
@@ -909,10 +940,13 @@ def new_node(request: HttpRequest) -> HttpResponse:
             rank=position,
         )
     except ValidationError:
-        return JsonResponse({"action":"error"})
-    return JsonResponse({"action":"posted","objectID":node_strategy.node.id})
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {"action": "posted", "objectID": node_strategy.node.id}
+    )
 
-#Add a new sibling to a through model
+
+# Add a new sibling to a through model
 @require_POST
 @ajax_login_required
 @is_throughmodel_parent_owner
@@ -922,32 +956,33 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
 
     try:
         model = model_lookups[object_type].objects.get(id=object_id)
-        if object_type=="strategyworkflow":
+        if object_type == "strategyworkflow":
             newmodel = StrategyWorkflow.objects.create(
                 workflow=model.workflow,
                 strategy=Strategy.objects.create(
-                    author = model.workflow.get_subclass().author,
-                    strategy_type=model.workflow.get_subclass().WORKFLOW_TYPE
+                    author=model.workflow.get_subclass().author,
+                    strategy_type=model.workflow.get_subclass().WORKFLOW_TYPE,
                 ),
-                rank=model.rank+1
+                rank=model.rank + 1,
             )
-        elif object_type=="nodestrategy":
+        elif object_type == "nodestrategy":
             newmodel = NodeStrategy.objects.create(
                 strategy=model.strategy,
                 node=Node.objects.create(
-                    author = model.strategy.author,
-                    column = model.node.column,
-                    node_type=model.node.node_type
+                    author=model.strategy.author,
+                    column=model.node.column,
+                    node_type=model.node.node_type,
                 ),
-                rank=model.rank+1
+                rank=model.rank + 1,
             )
         else:
             raise ValidationError
-        
+
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted","objectID":newmodel.id})
+    return JsonResponse({"action": "posted", "objectID": newmodel.id})
+
 
 """
 Reorder methods
@@ -960,10 +995,10 @@ owned_throughmodels = [
     "strategyworkflow",
     "workflow",
     "columnworkflow",
-    "workflow"
+    "workflow",
 ]
 
-#Insert a model via its throughmodel
+# Insert a model via its throughmodel
 @require_POST
 @ajax_login_required
 @is_throughmodel_parent_owner
@@ -975,76 +1010,88 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     new_parent_id = json.loads(request.POST.get("newParentID"))
     new_column_id = json.loads(request.POST.get("newColumnID"))
     try:
-        model=model_lookups[object_type].objects.get(id=object_id)
-        old_position=model.rank
-        parentType = owned_throughmodels[owned_throughmodels.index(object_type)+1]
-        
+        model = model_lookups[object_type].objects.get(id=object_id)
+        old_position = model.rank
+        parentType = owned_throughmodels[
+            owned_throughmodels.index(object_type) + 1
+        ]
+
         parent = model_lookups[parentType].objects.get(id=parent_id)
-        if not new_parent_id is None: 
-            new_parent = model_lookups[parentType].objects.get(id=new_parent_id)
-        else: 
+        if not new_parent_id is None:
+            new_parent = model_lookups[parentType].objects.get(
+                id=new_parent_id
+            )
+        else:
             new_parent = parent
-        new_parent_count = model_lookups[object_type].objects.filter(
-            **{parentType:new_parent}
-        ).count()
-        if new_position<0:
-            new_position=0
-        if new_position>new_parent_count:
-            new_position=new_parent_count-1
-        delta = new_position-old_position
-        
-        if parent.id==new_parent.id:
+        new_parent_count = (
+            model_lookups[object_type]
+            .objects.filter(**{parentType: new_parent})
+            .count()
+        )
+        if new_position < 0:
+            new_position = 0
+        if new_position > new_parent_count:
+            new_position = new_parent_count - 1
+        delta = new_position - old_position
+
+        if parent.id == new_parent.id:
             if delta != 0:
-                sign = int(math.copysign(1,delta))
-                for out_of_order_link in model_lookups[object_type].objects.filter(
-                    rank__gte=min(old_position+1,new_position),
-                    rank__lte=max(new_position,old_position-1),
-                    **{parentType:parent}
+                sign = int(math.copysign(1, delta))
+                for out_of_order_link in model_lookups[
+                    object_type
+                ].objects.filter(
+                    rank__gte=min(old_position + 1, new_position),
+                    rank__lte=max(new_position, old_position - 1),
+                    **{parentType: parent}
                 ):
-                    out_of_order_link.rank-=sign
+                    out_of_order_link.rank -= sign
                     out_of_order_link.save()
-                model.rank=new_position
+                model.rank = new_position
                 model.save()
         elif parent.id != new_parent.id:
-            if hasattr(parent,"get_subclass"):
-                if parent.get_subclass().author != new_parent.get_subclass().author:
+            if hasattr(parent, "get_subclass"):
+                if (
+                    parent.get_subclass().author
+                    != new_parent.get_subclass().author
+                ):
                     raise ValidationError
             else:
                 if parent.author != new_parent.author:
                     raise ValidationError
             for out_of_order_link in model_lookups[object_type].objects.filter(
-                rank__gt=old_position,
-                **{parentType:parent}
+                rank__gt=old_position, **{parentType: parent}
             ):
-                out_of_order_link.rank-=1
+                out_of_order_link.rank -= 1
                 out_of_order_link.save()
             for out_of_order_link in model_lookups[object_type].objects.filter(
-                rank__gte=new_position,
-                **{parentType:new_parent}
+                rank__gte=new_position, **{parentType: new_parent}
             ):
-                out_of_order_link.rank+=1
+                out_of_order_link.rank += 1
                 out_of_order_link.save()
-            model.rank=new_position
-            setattr(model,parentType,new_parent)
+            model.rank = new_position
+            setattr(model, parentType, new_parent)
             model.save()
-        if not new_column_id is None and int(new_column_id)>0 and object_type=="nodestrategy":
+        if (
+            not new_column_id is None
+            and int(new_column_id) > 0
+            and object_type == "nodestrategy"
+        ):
             new_column = ColumnWorkflow.objects.get(id=new_column_id).column
-            if(new_column.author==parent.author):
-                model.node.column=new_column
+            if new_column.author == parent.author:
+                model.node.column = new_column
                 model.node.save()
-            
+
     except ValidationError:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
 
 
-
 """    
 Update Methods
-"""   
+"""
 
-#Updates an object's information using its serializer
+# Updates an object's information using its serializer
 @require_POST
 @ajax_login_required
 @is_owner(False)
@@ -1054,21 +1101,25 @@ def update_value(request: HttpRequest) -> HttpResponse:
         object_type = json.loads(request.POST.get("objectType"))
         data = json.loads(request.POST.get("data"))
         objects = model_lookups[object_type].objects
-        if hasattr(objects,"get_subclass"): object_to_update = objects.get_subclass(pk=object_id)
-        else: object_to_update = objects.get(pk=object_id)
+        if hasattr(objects, "get_subclass"):
+            object_to_update = objects.get_subclass(pk=object_id)
+        else:
+            object_to_update = objects.get(pk=object_id)
         serializer = serializer_lookups_shallow[object_type](
-            object_to_update, data=data,partial=True
+            object_to_update, data=data, partial=True
         )
         return save_serializer(serializer)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
-    
+
 
 """
 Delete methods
 """
+
+
 @require_POST
 @ajax_login_required
 @is_owner(False)
@@ -1082,4 +1133,3 @@ def delete_self(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
-

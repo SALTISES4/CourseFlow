@@ -11,12 +11,14 @@ from .models import (
     StrategyWorkflow,
     Discipline,
     Strategy,
+    NodeLink,
     Outcome,
     OutcomeNode,
     OutcomeWorkflow,
     NodeCompletionStatus,
     User,
 )
+
 
 def linkIDMap(link):
     return link.id
@@ -208,7 +210,14 @@ class ColumnSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Column
-        fields = ["id", "title", "author", "created_on", "last_modified","column_type"]
+        fields = [
+            "id",
+            "title",
+            "author",
+            "created_on",
+            "last_modified",
+            "column_type",
+        ]
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -344,20 +353,21 @@ class DisciplineSerializer(serializers.ModelSerializer):
         model = Discipline
         fields = ["id", "title"]
 
+
 class WorkflowSerializer(serializers.ModelSerializer):
-    
+
     strategyworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
-    
+
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
-    
+
     def get_strategyworkflow_set(self, instance):
         links = instance.strategyworkflow_set.all().order_by("rank")
         return StrategyWorkflowSerializer(links, many=True).data
-    
+
     def get_columnworkflow_set(self, instance):
         links = instance.columnworkflow_set.all().order_by("rank")
         return ColumnWorkflowSerializer(links, many=True).data
@@ -365,14 +375,15 @@ class WorkflowSerializer(serializers.ModelSerializer):
     def get_outcomeworkflow_set(self, instance):
         links = instance.outcomeworkflow_set.all().order_by("rank")
         return OutcomeWorkflowSerializer(links, many=True).data
-    
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
             "description", instance.description
         )
-        for strategyworkflow_data in self.initial_data.pop("strategyworkflow_set"):
+        for strategyworkflow_data in self.initial_data.pop(
+            "strategyworkflow_set"
+        ):
             strategyworkflow_serializer = StrategyWorkflowSerializer(
                 StrategyWorkflow.objects.get(id=strategyworkflow_data["id"]),
                 data=strategyworkflow_data,
@@ -386,7 +397,9 @@ class WorkflowSerializer(serializers.ModelSerializer):
             )
             columnworkflow_serializer.is_valid()
             columnworkflow_serializer.save()
-        for outcomeworkflow_data in self.initial_data.pop("outcomeworkflow_set"):
+        for outcomeworkflow_data in self.initial_data.pop(
+            "outcomeworkflow_set"
+        ):
             outcomeworkflow_serializer = OutcomeWorkflowSerializer(
                 OutcomeWorkflow.objects.get(id=outcomeworkflow_data["id"]),
                 data=outcomeworkflow_data,
@@ -395,10 +408,9 @@ class WorkflowSerializer(serializers.ModelSerializer):
             outcomeworkflow_serializer.save()
         instance.save()
         return instance
-    
-    
-class ProgramSerializer(WorkflowSerializer):
 
+
+class ProgramSerializer(WorkflowSerializer):
     class Meta:
         model = Program
         fields = [
@@ -415,17 +427,18 @@ class ProgramSerializer(WorkflowSerializer):
             "is_original",
             "parent_workflow",
         ]
-        
+
     def create(self, validated_data):
         return Program.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
 
+
 class CourseSerializer(WorkflowSerializer):
-    
+
     discipline = DisciplineSerializer(read_only=True)
-    
+
     class Meta:
         model = Course
         fields = [
@@ -443,17 +456,15 @@ class CourseSerializer(WorkflowSerializer):
             "is_original",
             "parent_workflow",
         ]
-        
-        
+
     def create(self, validated_data):
         return Course.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
-    
+
 
 class ActivitySerializer(WorkflowSerializer):
-
     class Meta:
         model = Activity
         fields = [
@@ -478,13 +489,39 @@ class ActivitySerializer(WorkflowSerializer):
             author = None
         activity = Activity.objects.create(author=author, **validated_data)
 
-        
         return activity
 
-    
-    
-    
-    
+
+class NodeLinkSerializerShallow(serializers.ModelSerializer):
+
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field="username"
+    )
+
+    class Meta:
+        model = NodeLink
+        fields = [
+            "id",
+            "title",
+            "source_node",
+            "target_node",
+            "created_on",
+            "last_modified",
+            "hash",
+            "author",
+        ]
+
+    def create(self, validated_data):
+        return Node.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.save()
+        return instance
+
 
 class NodeSerializerShallow(serializers.ModelSerializer):
 
@@ -494,8 +531,9 @@ class NodeSerializerShallow(serializers.ModelSerializer):
 
     outcomenode_set = serializers.SerializerMethodField()
     columnworkflow = serializers.SerializerMethodField()
-    
-    node_type_display = serializers.CharField(source='get_node_type_display')
+    outgoing_links = serializers.SerializerMethodField()
+
+    node_type_display = serializers.CharField(source="get_node_type_display")
 
     class Meta:
         model = Node
@@ -512,32 +550,36 @@ class NodeSerializerShallow(serializers.ModelSerializer):
             "work_classification",
             "activity_classification",
             "outcomenode_set",
+            "outgoing_links",
             "is_original",
             "parent_node",
             "node_type",
             "node_type_display",
         ]
-        
+
     def get_columnworkflow(self, instance):
-        return instance.column.columnworkflow_set.get(column=instance.column).id
+        return instance.column.columnworkflow_set.get(
+            column=instance.column
+        ).id
 
     def get_outcomenode_set(self, instance):
         links = instance.outcomenode_set.all().order_by("rank")
-        return list(map(linkIDMap,links))
+        return list(map(linkIDMap, links))
+
+    def get_outgoing_links(self, instance):
+        links = instance.outgoing_links.all()
+        return list(map(linkIDMap, links))
 
     def create(self, validated_data):
         return Node.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
-    
+
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
             "description", instance.description
-        )
-        instance.node_type = validated_data.get(
-            "node_type", instance.node_type
         )
         instance.work_classification = validated_data.get(
             "work_classification", instance.work_classification
@@ -548,8 +590,8 @@ class NodeSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class NodeStrategySerializerShallow(serializers.ModelSerializer):
 
+class NodeStrategySerializerShallow(serializers.ModelSerializer):
     class Meta:
         model = NodeStrategy
         fields = ["strategy", "node", "added_on", "rank", "id"]
@@ -559,23 +601,34 @@ class NodeStrategySerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class ColumnSerializerShallow(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
-    
-    column_type_display = serializers.CharField(source='get_column_type_display')
-    
+
+    column_type_display = serializers.CharField(
+        source="get_column_type_display"
+    )
+
     class Meta:
         model = Column
-        fields = ["id", "title", "author", "created_on", "last_modified","column_type","column_type_display"]
+        fields = [
+            "id",
+            "title",
+            "author",
+            "created_on",
+            "last_modified",
+            "column_type",
+            "column_type_display",
+        ]
 
     def create(self, validated_data):
         return Column.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
-    
+
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.save()
@@ -587,12 +640,13 @@ class StrategySerializerShallow(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
-    
+
     nodestrategy_set = serializers.SerializerMethodField()
-    outcomestrategy_set = serializers.SerializerMethodField()
     num_children = serializers.SerializerMethodField(read_only=True)
-    
-    strategy_type_display = serializers.CharField(source='get_strategy_type_display')
+
+    strategy_type_display = serializers.CharField(
+        source="get_strategy_type_display"
+    )
 
     class Meta:
         model = Strategy
@@ -606,7 +660,6 @@ class StrategySerializerShallow(serializers.ModelSerializer):
             "default",
             "author",
             "nodestrategy_set",
-            "outcomestrategy_set",
             "is_original",
             "parent_strategy",
             "num_children",
@@ -619,18 +672,14 @@ class StrategySerializerShallow(serializers.ModelSerializer):
 
     def get_nodestrategy_set(self, instance):
         links = instance.nodestrategy_set.all().order_by("rank")
-        return list(map(linkIDMap,links))
-
-    def get_outcomestrategy_set(self, instance):
-        links = instance.outcomestrategy_set.all().order_by("rank")
-        return list(map(linkIDMap,links))
+        return list(map(linkIDMap, links))
 
     def create(self, validated_data):
         return Strategy.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
-    
+
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
@@ -641,7 +690,6 @@ class StrategySerializerShallow(serializers.ModelSerializer):
 
 
 class StrategyWorkflowSerializerShallow(serializers.ModelSerializer):
-
     class Meta:
         model = StrategyWorkflow
         fields = ["workflow", "strategy", "added_on", "rank", "id"]
@@ -651,52 +699,49 @@ class StrategyWorkflowSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
-class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
 
+class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
     class Meta:
         model = ColumnWorkflow
         fields = ["workflow", "column", "added_on", "rank", "id"]
-        
-    
+
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
         return instance
 
+
 class WorkflowSerializerFinder(serializers.ModelSerializer):
-    
     class Meta:
         model = Workflow
-        fields = [
-            "id",
-            "type",
-        ]
-    
+        fields = ["id", "type"]
+
     def update(self, instance, validated_data):
         return instance
-    
+
+
 class WorkflowSerializerShallow(serializers.ModelSerializer):
-    
+
     strategyworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
-    
+
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
-    
+
     def get_strategyworkflow_set(self, instance):
         links = instance.strategyworkflow_set.all().order_by("rank")
-        return list(map(linkIDMap,links))
-    
+        return list(map(linkIDMap, links))
+
     def get_columnworkflow_set(self, instance):
         links = instance.columnworkflow_set.all().order_by("rank")
-        return list(map(linkIDMap,links))
+        return list(map(linkIDMap, links))
 
     def get_outcomeworkflow_set(self, instance):
         links = instance.outcomeworkflow_set.all().order_by("rank")
-        return list(map(linkIDMap,links))
-    
+        return list(map(linkIDMap, links))
+
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
@@ -704,10 +749,9 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
         )
         instance.save()
         return instance
-    
-    
-class ProgramSerializerShallow(WorkflowSerializerShallow):
 
+
+class ProgramSerializerShallow(WorkflowSerializerShallow):
     class Meta:
         model = Program
         fields = [
@@ -725,17 +769,18 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "parent_workflow",
             "type",
         ]
-        
+
     def create(self, validated_data):
         return Program.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
 
+
 class CourseSerializerShallow(WorkflowSerializerShallow):
-    
+
     discipline = DisciplineSerializer(read_only=True)
-    
+
     class Meta:
         model = Course
         fields = [
@@ -754,17 +799,15 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "parent_workflow",
             "type",
         ]
-        
-        
+
     def create(self, validated_data):
         return Course.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
-    
+
 
 class ActivitySerializerShallow(WorkflowSerializerShallow):
-
     class Meta:
         model = Activity
         fields = [
@@ -790,9 +833,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             author = None
         activity = Activity.objects.create(author=author, **validated_data)
 
-        
         return activity
-    
 
 
 serializer_lookups = {
@@ -807,12 +848,12 @@ serializer_lookups = {
 
 serializer_lookups_shallow = {
     "node": NodeSerializerShallow,
-    "nodestrategy":NodeStrategySerializerShallow,
+    "nodestrategy": NodeStrategySerializerShallow,
     "strategy": StrategySerializerShallow,
-    "strategyworkflow":StrategyWorkflowSerializerShallow,
+    "strategyworkflow": StrategyWorkflowSerializerShallow,
     "column": ColumnSerializerShallow,
-    "columnworkflow":ColumnWorkflowSerializerShallow,
-    "workflow":WorkflowSerializerShallow,
+    "columnworkflow": ColumnWorkflowSerializerShallow,
+    "workflow": WorkflowSerializerShallow,
     "activity": ActivitySerializerShallow,
     "course": CourseSerializerShallow,
     "program": ProgramSerializerShallow,

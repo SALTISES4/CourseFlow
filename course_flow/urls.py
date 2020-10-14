@@ -16,6 +16,7 @@ router.register(r"strategyworkflow/read", views.StrategyWorkflowViewSet)
 router.register(r"strategy/read", views.StrategyViewSet)
 router.register(r"nodestrategy/read", views.NodeStrategyViewSet)
 router.register(r"node/read", views.NodeViewSet)
+router.register(r"nodelink/read", views.NodeLinkViewSet)
 
 
 app_name = "course_flow"
@@ -38,26 +39,10 @@ def flow_patterns():
             views.WorkflowUpdateView.as_view(),
             name="workflow-update",
         ),
-        url(
-            r"^updatevalue/$",
-            views.update_value,
-            name="update-value",
-        ),
-        url(
-            r"^delete-self/$",
-            views.delete_self,
-            name="delete-self",
-        ),
-        url(
-            r"^insert-sibling/$",
-            views.insert_sibling,
-            name="insert-sibling",
-        ),
-        url(
-            r"^inserted-at/$",
-            views.inserted_at,
-            name="inserted-at",
-        ),
+        url(r"^updatevalue/$", views.update_value, name="update-value"),
+        url(r"^delete-self/$", views.delete_self, name="delete-self"),
+        url(r"^insert-sibling/$", views.insert_sibling, name="insert-sibling"),
+        url(r"^inserted-at/$", views.inserted_at, name="inserted-at"),
         url(r"^workflow/new-column", views.new_column, name="new-column"),
         url(r"^workflow/new-node", views.new_node, name="new-node"),
         url(
