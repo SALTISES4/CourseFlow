@@ -70,6 +70,27 @@ class NodeLink(models.Model):
     target_node = models.ForeignKey(
         "Node", on_delete=models.CASCADE, related_name="incoming_links"
     )
+    NORTH=0
+    EAST=1
+    SOUTH=2
+    WEST=3
+    SOURCE_PORTS = (
+        (EAST,"e"),
+        (SOUTH,"s"),
+        (WEST,"w")
+    )
+    TARGET_PORTS = (
+        (NORTH,"n"),
+        (EAST,"e"),
+        (WEST,"w")
+    )
+    source_port = models.PositiveIntegerField(
+        choices=SOURCE_PORTS, default=2
+    )
+    target_port = models.PositiveIntegerField(
+        choices=TARGET_PORTS, default=0
+    )
+    
     dashed = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -114,6 +135,7 @@ class Node(models.Model):
         "Node", on_delete=models.SET_NULL, null=True
     )
     is_original = models.BooleanField(default=True)
+    has_autolink = models.BooleanField(default=False)
 
     INDIVIDUAL = 1
     GROUPS = 2
@@ -538,6 +560,13 @@ def reorder_for_inserted_column_workflow(sender, instance, created, **kwargs):
 Default content creation receivers
 """
 
+@receiver(post_save, sender=Node)
+def create_default_node_content(sender, instance, created, **kwargs):
+    if created and instance.is_original:
+        # If this is an activity-level node, set the autolinks to true
+        if instance.node_type==instance.ACTIVITY_NODE:
+            instance.has_autolink=True
+            instance.save()
 
 @receiver(post_save, sender=Activity)
 def create_default_activity_content(sender, instance, created, **kwargs):

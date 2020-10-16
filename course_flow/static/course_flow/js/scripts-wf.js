@@ -2,7 +2,70 @@ import {h, Component, render, createRef} from "preact";
 
 const columnwidth = 200
 var columns;
+const node_ports={
+    source:{
+        e:[1,0.6],
+        w:[0,0.6],
+        s:[0.5,1]
+    },
+    target:{
+        n:[0.5,0],
+        e:[1,0.4],
+        w:[0,0.4]
+    }
+}
+const port_keys=["n","e","s","w"];
 
+//A utility function to trigger an event on each element. This is used to avoid .trigger, which bubbles (we will be careful to only trigger events on the elements that need them)
+export function triggerHandlerEach(trigger,eventname){
+    return trigger.each((i,element)=>{$(element).triggerHandler(eventname);});
+}
+
+//A proprer modulo function
+function mod(n,m){
+    return ((n%m)+m)%m;
+}
+
+//Debouncing object
+class Debouncer{
+    constructor(){}
+    
+    debounce(f, t) {
+      return function (args) {
+        let previousCall = this.lastCall;
+        this.lastCall = Date.now();
+        if (previousCall && ((this.lastCall - previousCall) <= t)) {
+          clearTimeout(this.lastCallTimer);
+        }
+        this.lastCallTimer = setTimeout(() => f(args), t);
+      }
+    }
+}
+
+function avgArray(arr1,arr2){
+    var arr3=[];
+    for(var i=0;i<arr1.length;i++){
+        arr3.push((arr1[i]+arr2[i])/2);
+    }
+    return arr3;
+}
+
+function addArray(arr1,arr2){
+    var arr3=[];
+    for(var i=0;i<arr1.length;i++){
+        arr3.push((arr1[i]+arr2[i]));
+    }
+    return arr3;
+}
+
+
+function subArray(arr1,arr2){
+    var arr3=[];
+    for(var i=0;i<arr1.length;i++){
+        arr3.push((arr1[i]-arr2[i]));
+    }
+    return arr3;
+}
 
 //Extends the preact component to add a few features that are used in a large number of components
 export class ComponentJSON extends Component{
@@ -88,10 +151,20 @@ export class ComponentJSON extends Component{
                 sort.containment[3]+=sort.currentItem[0].offsetTop;
                 
             },
+            //Tell the dragging object that we are dragging it
+            sort:(e,ui)=>{
+                //$(ui.item[0]).triggerHandler("dragging");
+            },
+            //Whenever the DOM changes, we tell the siblings
+            change:(e,ui)=>{
+                triggerHandlerEach($(sortable_block).children(draggable_selector),"sorted");
+            },
             //When the object is removed from this list, ensure the state is updated.
             remove:(evt,ui)=>{
                 var object_id = ui.item[0].id;
                 this.childRemoved.bind(this)(draggable_type,parseInt(object_id));
+                triggerHandlerEach($(sortable_block).children(draggable_selector),"sibling-removed");
+                triggerHandlerEach($(draggable_selector).not($(sortable_block).children()),"cousin-removed");
             },
             //When the object is received by this list, ensure the state is updated
             receive:(evt,ui)=>{
@@ -99,6 +172,9 @@ export class ComponentJSON extends Component{
                 var new_position = $(ui.item[0]).index();
                 if(ui.item[0].classList.contains("node-bar-sortable"))this.newChild.bind(this)(draggable_type,parent_id,new_position,ui);
                 else this.childAdded.bind(this)(draggable_type,parseInt(object_id),new_position);
+                $(sortable_block).children(draggable_selector).triggerHandler("sibling-added");
+                triggerHandlerEach($(draggable_selector).not($(sortable_block).children()),"cousin-added");
+                
             },
             stop:(evt,ui)=>{
                 //Fetch information about the object that was moved
@@ -134,7 +210,7 @@ export class ComponentJSON extends Component{
                     new_position,
                     new_parent_id,
                     newColumnID,
-                    ()=>$(draggable_selector).trigger(draggable_type+"-reordered")
+                    ()=>{triggerHandlerEach($(draggable_selector),"sorted");}
                 );
             }
         });
@@ -233,56 +309,118 @@ export class InsertSiblingButton extends Component{
     }
 }
 
-function avgArray(arr1,arr2){
-    var arr3=[];
-    for(var i=0;i<arr1.length;i++){
-        arr3.push((arr1[i]+arr2[i])/2);
-    }
-    return arr3;
+//Get translate from an svg transform
+function getSVGTranslation(transform){
+    var translate = transform.substring(transform.indexOf("translate(")+10, transform.indexOf(")")).split(",");
+    return translate;
 }
 
-function addArray(arr1,arr2){
-    var arr3=[];
-    for(var i=0;i<arr1.length;i++){
-        arr3.push((arr1[i]+arr2[i]));
-    }
-    return arr3;
+//Get the offset from the canvas of a specific jquery object
+function getCanvasOffset(node_dom){
+    var node_offset = node_dom.offset();
+    var canvas_offset = $(".workflow-canvas").offset();
+    node_offset.left-=canvas_offset.left;
+    node_offset.top-=canvas_offset.top;
+    return node_offset;
 }
 
-
-function subArray(arr1,arr2){
-    var arr3=[];
-    for(var i=0;i<arr1.length;i++){
-        arr3.push((arr1[i]-arr2[i]));
-    }
-    return arr3;
-}
-
-//A proprer modulo function
-function mod(n,m){
-    return ((n%m)+m)%m;
-}
-
-//Debouncing wrapper
-function debounce(f, t) {
-  return function (args) {
-    let previousCall = this.lastCall;
-    this.lastCall = Date.now();
-    if (previousCall && ((this.lastCall - previousCall) <= t)) {
-      clearTimeout(this.lastCallTimer);
-    }
-    console.log("in debounce");
-    this.lastCallTimer = setTimeout(() => f(args), t);
-  }
-}
-
-//Basic component to represent a NodeLink
-export class NodeLinkView extends ComponentJSON{
-    constructor(props){
-        super(props);
-        this.objectType="nodelink";
+export class NodeLinkSVG{
+    constructor(namespace,source,target,source_port=2,target_port=0){
+        this.svg = d3.select(".workflow-canvas").append("path").attr("stroke","red").attr("stroke-width","3px");
+        this.source=source;
+        this.target=target;
+        this.source_port=source_port;
+        this.target_port=target_port;
+        this.debouncer = new Debouncer();
+        this.source_node = $("#"+source+".node");
+        this.source_port_handle = d3.select(
+            "g.port-"+source+" circle[data-port-type='source'][data-port='"+port_keys[source_port]+"']"
+        );
+        this.source_node.on("dragging sibling-added sibling-removed sorted",this.rerender.bind(this));
+        if(this.target){
+            this.setTarget(this.target);
+        }else{
+            this.findAutoTarget();
+        }
+        if(this.target_node)this.drawSVG();
+        this.eventNameSpace=namespace;
     }
     
+    setTarget(target){
+        if(target){
+            if(this.target_node&&target==this.target_node.attr("id"))return;
+            
+            if(this.target_node)this.target_node.off(this.getRerenderEvents());
+            this.target_node = $("#"+target+".node");
+            this.target_port_handle = d3.select(
+                "g.port-"+target+" circle[data-port-type='target'][data-port='"+port_keys[this.target_port]+"']"
+            );
+            this.target_node.on(this.getRerenderEvents(),this.rerender.bind(this));
+            if(this.target)this.target=target;
+        }else{
+            if(this.target_node)this.target_node.off(this.getRerenderEvents());
+            this.target_node==null;
+            this.target_port_handle==null;
+        }
+    }
+    
+    getRerenderEvents(){
+        return "dragging."+this.eventNameSpace+
+                " sibling-added."+this.eventNameSpace+
+                " sibling-removed."+this.eventNameSpace+
+                " sorted."+this.eventNameSpace;
+    }
+    
+    findAutoTarget(){
+        var ns = this.source_node.closest(".node-strategy");
+        var next_ns = ns.next();
+        var target;
+        if(next_ns.length>0){
+            target = next_ns.find(".node").attr("id");
+        }else{
+            var sw = ns.closest(".strategy-workflow");
+            var next_sw = sw.next();
+            if(next_sw.length>0){
+                target = next_sw.find(".node").attr("id");
+            }
+        }
+        this.setTarget(target);
+    }
+    
+    rerender(){
+        if(!this.target)this.findAutoTarget();
+        if(this.target_node)this.drawSVG();
+    }
+     
+    drawSVG(){
+        const source_transform=getSVGTranslation(this.source_port_handle.select(function(){return this.parentNode}).attr("transform"));
+        const target_transform=getSVGTranslation(this.target_port_handle.select(function(){return this.parentNode}).attr("transform"));
+        const source_points=[[parseInt(this.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.source_port_handle.attr("cy"))+parseInt(source_transform[1])]];
+        const target_points=[[parseInt(this.target_port_handle.attr("cx"))+parseInt(target_transform.[0]),parseInt(this.target_port_handle.attr("cy"))+parseInt(target_transform[1])]];
+        
+        var path = this.getPath(source_points,target_points);
+        this.svg.attr("d",path);
+        
+        /*
+        var parent_rect = $(".workflow-canvas").offset();
+        const w1 = this.sourcenode.width();
+        const h1 = this.sourcenode.height();
+        const w2 = this.targetnode.width();
+        const h2 = this.targetnode.height();
+        var source_rect = this.sourcenode.offset();
+        var target_rect = this.targetnode.offset();
+        const c1 = [source_rect.left+w1/2,source_rect.top+h1/2];
+        const c2 = [target_rect.left+w2/2,target_rect.top+h2/2];
+        //const d1 = subArray(c2,c1);
+        //const d2 = subArray(c1,c2);
+
+        const source_points = [[w1/2*(source_port%2)*(-1)**(Math.floor(source_port/2)),h1/2*((source_port+1)%2)*(-1)**(Math.floor((source_port+2)/2))]];
+        const target_points = [[w1/2*(target_port%2)*(-1)**(Math.floor(target_port/2)),h1/2*((target_port+1)%2)*(-1)**(Math.floor((target_port+2)/2))]];*/
+         
+    }
+    
+     
+    /*
     checkValid(v1,v2,d){
         console.log("checking whether valid");
         console.log(v1);
@@ -304,9 +442,9 @@ export class NodeLinkView extends ComponentJSON{
         console.log("dir = "+dir);
         if(dir==0)return 1;
         return dir;
-    }
+    }*/
     
-    //Ignore for now
+    /*Ignore for now
     walkAround(){
             var source_point_found=false;
             var source_point=0;
@@ -359,86 +497,40 @@ export class NodeLinkView extends ComponentJSON{
                     target_point_array.push([thispoint[0]+Math.sign(thispoint[0])*10,thispoint[1]+Math.sign(thispoint[1])*10]);
                 }
             }while(!(source_point_found&&target_point_found))
-    }
+    }*/
     
-    getPath(source_point_array,target_point_array,parent_rect,c1,c2){
+    getPath(source_point_array,target_point_array){
         var path="M";
         for(var i=0;i<source_point_array.length;i++){
             if(i>0)path+=" L";
-            var thispoint = addArray(c1,source_point_array[i]);
-            path+=parseInt(thispoint[0]-parent_rect.left)+" "+parseInt(thispoint[1]-parent_rect.top)
+            var thispoint = source_point_array[i];
+            path+=thispoint[0]+" "+thispoint[1];
         }
         for(var i=target_point_array.length-1;i>=0;i--){
             path+=" L";
-            var thispoint = addArray(c2,target_point_array[i]);
-            path+=parseInt(thispoint[0]-parent_rect.left)+" "+parseInt(thispoint[1]-parent_rect.top)
+            var thispoint = target_point_array[i];
+            path+=thispoint[0]+" "+thispoint[1];
         }
         return path;
     }
-        
-    rerender(){
-        console.log("in rerender function");
-        console.log("context is:");
-        console.log(this);
-        this.forceUpdate();
+}
+
+//Basic component to represent a NodeLink
+export class NodeLinkView extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="nodelink";
     }
-        
+    
+    
     render(){
-        console.log("rendering link");
-        if(this.state.id){
-            const source_port = 2;
-            const target_port = 0;
-            var sourcenode = $("#"+this.state.source_node+".node");
-            var targetnode = $("#"+this.state.target_node+".node");
-            var parent_rect = $(".workflow-canvas").offset();
-            var source_rect = sourcenode.offset();
-            source_rect.width=sourcenode.width();
-            source_rect.height=sourcenode.height();
-            var target_rect = targetnode.offset();
-            target_rect.width=targetnode.width();
-            target_rect.height=targetnode.height();
-            const w1 = source_rect.width;
-            const h1 = source_rect.height;
-            const w2 = target_rect.width;
-            const h2 = target_rect.height;
-            const c1 = [source_rect.left+w1/2,source_rect.top+h1/2];
-            const c2 = [target_rect.left+w2/2,target_rect.top+h2/2];
-            const d1 = subArray(c2,c1);
-            const d2 = subArray(c1,c2);
-            
-            const source_points = [[w1/2*(source_port%2)*(-1)**(Math.floor(source_port/2)),h1/2*((source_port+1)%2)*(-1)**(Math.floor((source_port+2)/2))]];
-            const target_points = [[w1/2*(target_port%2)*(-1)**(Math.floor(target_port/2)),h1/2*((target_port+1)%2)*(-1)**(Math.floor((target_port+2)/2))]];
-            
-            /*
-            var l = Math.min(source_rect.left,target_rect.left)-10-parent_rect.left;
-            var r = Math.max(source_rect.left,target_rect.left)+10+source_rect.width;
-            var t = Math.min(source_rect.top,target_rect.top)-10-parent_rect.top;
-            var b = Math.max(source_rect.top,target_rect.top)+10+source_rect.height;
-            */
-            
-            var path = this.getPath(source_points,target_points,parent_rect,c1,c2);
-            
-            
-            
-            
-            return (
-                <svg class="dummysvg">
-                    <path stroke="red" stroke-width="3" d={path} ref={this.maindiv}/>
-                </svg>
-            );
-        }
     }
     
     postMountFunction(){
-        var targetnode = $("#"+this.state.target_node+".node");
-        targetnode.on("node-rendered",debounce(this.rerender.bind(this)));
+        this.svg = new NodeLinkSVG("nodelink"+this.state.id,this.state.source_node,this.state.target_node,this.state.source_port,this.state.target_port);
     }
         
-    componentDidUpdate(){
-        if(this.maindiv.current){
-            $(".workflow-canvas").append(this.maindiv.current);
-        }
-    }
+       
 }
 
 //Basic component to represent a Node
@@ -446,6 +538,10 @@ export class NodeView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="node";
+        var nodesvg = d3.select(".workflow-canvas").append("g").attr("stroke","black").attr("fill","white").attr("stroke-width",2).attr("class",'node-ports port-'+props.objectID);
+        for(var port_type in node_ports)for(var port in node_ports[port_type]){
+            nodesvg.append("circle").attr("data-port-type",port_type).attr("data-port",port).attr("r",5);
+        }
     }
     
     render(){
@@ -464,8 +560,38 @@ export class NodeView extends ComponentJSON{
         }
     }
     
-    componentDidUpdate(){
-        if(this.maindiv.current)$(this.maindiv.current).trigger("node-rendered");
+    updatePorts(){
+        var node = $(this.maindiv.current);
+        var node_offset = getCanvasOffset(node);
+        d3.select('g.port-'+this.props.objectID)
+            .attr("transform","translate("+node_offset.left+","+node_offset.top+")");
+    }
+
+    placePorts(){
+        var node = $(this.maindiv.current);
+        var node_dimensions={width:node.width(),height:node.height()};
+        d3.selectAll(
+            'g.port-'+this.props.objectID+" circle"
+        ).datum(node_dimensions).each(function(d){
+            var myd3 = d3.select(this);
+            var port_position = node_ports[myd3.attr("data-port-type")][myd3.attr("data-port")];
+            myd3.attr(
+                "cx",port_position[0]*d.width
+            ).attr(
+                "cy",port_position[1]*d.height
+            );
+        });
+        this.updatePorts();
+        
+        
+    }
+
+    postMountFunction(){
+        if(this.maindiv.current){
+            this.placePorts();
+            $(this.maindiv.current).on("sorted",this.updatePorts.bind(this));
+            if(this.state.has_autolink)this.svg = new NodeLinkSVG("nodeautolink"+this.state.id,this.state.id);
+        }
     }
 }
 
@@ -486,11 +612,16 @@ export class NodeStrategyView extends ComponentJSON{
         }
     }
     
+    passEventToChild(evt){
+        $(this.maindiv.current).children(".node").triggerHandler(evt.type)
+    }
     
     postMountFunction(){
         if(this.maindiv.current){
             //Add an event listener to check for reorderings of node-strategies, updating the rank if needed
-            $(this.maindiv.current).on("nodestrategy-reordered",this.updateRank.bind(this));
+            var node_strategy=this;
+            $(this.maindiv.current).on("sorted sibling-added sibling-removed",this.updateRank.bind(this));
+            $(this.maindiv.current).on("sibling-added sibling-removed cousin-added cousin-removed sorted dragging",(evt)=>{node_strategy.passEventToChild(evt)});
         }
     }
 
@@ -534,7 +665,7 @@ export class StrategyView extends ComponentJSON{
                           "nodestrategy",
                           ".node-strategy",
                           false,
-                          [200,1],
+                          [200,10],
                           ".node-block",
                           ".node");
     }
@@ -584,11 +715,17 @@ export class ColumnWorkflowView extends ComponentJSON{
         )
     }
 
+    passEventToChild(evt){
+        $(this.maindiv.current).children(".column").triggerHandler(evt.type)
+    }
+    
     postMountFunction(){
         if(this.maindiv.current){
-            $(".column-workflow").trigger("columnworkflow-reordered");
+            $(".column-workflow").trigger("sibling-added");
             //add event listener to check for reordering of columnworkflows, updating hte rank
-            $(this.maindiv.current).on("columnworkflow-reordered",this.updateRank.bind(this));
+            var column_workflow=this;
+            $(this.maindiv.current).on("sorted sibling-added sibling-removed",this.updateRank.bind(this));
+            $(this.maindiv.current).on("sibling-added sibling-removed cousin-added cousin-removed sorted dragging",(evt)=>{column_workflow.passEventToChild(evt)});
         }
     }
 
@@ -628,12 +765,18 @@ export class StrategyWorkflowView extends ComponentJSON{
         }
     }
 
+    passEventToChild(evt){
+        $(this.maindiv.current).children(".strategy").triggerHandler(evt.type)
+    }
+
     postMountFunction(){
         if(this.maindiv.current){
             //Trigger the reordering event, which will make all other strategyworkflows update their indices in their states. This is critical for when a new strategy is inserted, because the DOM has not fully updated until this post-mount function is called. Note this event also gets fired a bunch of times on the initial load, but the strategies don't get re-rendered because setState is only called if the index has changed.
-            $(".strategy-workflow").trigger("strategyworkflow-reordered");
+            $(".strategy-workflow").trigger("sibling-added");
             //Add an eventlistener to listen for reordering events
-            $(this.maindiv.current).on("strategyworkflow-reordered",this.updateRank.bind(this));
+            var strategy_workflow=this;
+            $(this.maindiv.current).on("sorted sibling-added sibling-removed",this.updateRank.bind(this));
+            $(this.maindiv.current).on("sibling-added sibling-removed cousin-added cousin-removed sorted dragging",(evt)=>{strategy_workflow.passEventToChild(evt)});
         }
     }
 

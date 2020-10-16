@@ -497,6 +497,7 @@ class NodeLinkSerializerShallow(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
+    
 
     class Meta:
         model = NodeLink
@@ -505,6 +506,8 @@ class NodeLinkSerializerShallow(serializers.ModelSerializer):
             "title",
             "source_node",
             "target_node",
+            "source_port",
+            "target_port",
             "created_on",
             "last_modified",
             "hash",
@@ -555,6 +558,7 @@ class NodeSerializerShallow(serializers.ModelSerializer):
             "parent_node",
             "node_type",
             "node_type_display",
+            "has_autolink"
         ]
 
     def get_columnworkflow(self, instance):

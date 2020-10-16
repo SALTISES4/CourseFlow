@@ -157,13 +157,6 @@ p{
     height:100%;
 }
 
-.dummysvg{
-    position:absolute;
-    width:0px;
-    height:0px;
-    display:none;
-}
-
 .node-bar-column-workflow{
     width:100%;
     display:block;
