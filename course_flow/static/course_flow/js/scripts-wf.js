@@ -136,6 +136,7 @@ export class ComponentJSON extends Component{
             handle:handle,
             tolerance:"pointer",
             start:(e,ui)=>{
+                $(".workflow-canvas").addClass("dragging");
                 $(draggable_selector).addClass("dragging");
                 //Calls a refresh of the sortable in case adding the draggable class resized the object (which it does in many cases)
                 sortable_block.sortable("refresh");
@@ -153,7 +154,7 @@ export class ComponentJSON extends Component{
             },
             //Tell the dragging object that we are dragging it
             sort:(e,ui)=>{
-                //$(ui.item[0]).triggerHandler("dragging");
+                $(ui.item[0]).triggerHandler("dragging");
             },
             //Whenever the DOM changes, we tell the siblings
             change:(e,ui)=>{
@@ -210,7 +211,10 @@ export class ComponentJSON extends Component{
                     new_position,
                     new_parent_id,
                     newColumnID,
-                    ()=>{triggerHandlerEach($(draggable_selector),"sorted");}
+                    ()=>{
+                        triggerHandlerEach($(draggable_selector),"sorted");
+                        $(".workflow-canvas").removeClass("dragging");
+                    }
                 );
             }
         });
@@ -336,7 +340,7 @@ export class NodeLinkSVG{
         this.source_port_handle = d3.select(
             "g.port-"+source+" circle[data-port-type='source'][data-port='"+port_keys[source_port]+"']"
         );
-        this.source_node.on("dragging sibling-added sibling-removed sorted",this.rerender.bind(this));
+        this.source_node.on("dragging sibling-added sibling-removed sorted dragging",this.rerender.bind(this));
         if(this.target){
             this.setTarget(this.target);
         }else{
@@ -368,7 +372,8 @@ export class NodeLinkSVG{
         return "dragging."+this.eventNameSpace+
                 " sibling-added."+this.eventNameSpace+
                 " sibling-removed."+this.eventNameSpace+
-                " sorted."+this.eventNameSpace;
+                " sorted."+this.eventNameSpace+
+                " dragging."+this.eventNameSpace;
     }
     
     findAutoTarget(){
@@ -384,12 +389,14 @@ export class NodeLinkSVG{
                 target = next_sw.find(".node").attr("id");
             }
         }
+        console.log(target);
         this.setTarget(target);
     }
     
     rerender(){
         if(!this.target)this.findAutoTarget();
         if(this.target_node)this.drawSVG();
+        else this.hideSVG();
     }
      
     drawSVG(){
@@ -417,6 +424,11 @@ export class NodeLinkSVG{
         const source_points = [[w1/2*(source_port%2)*(-1)**(Math.floor(source_port/2)),h1/2*((source_port+1)%2)*(-1)**(Math.floor((source_port+2)/2))]];
         const target_points = [[w1/2*(target_port%2)*(-1)**(Math.floor(target_port/2)),h1/2*((target_port+1)%2)*(-1)**(Math.floor((target_port+2)/2))]];*/
          
+    }
+    
+    hideSVG(){
+        console.log("hide svg");
+        this.svg.attr("d","");
     }
     
      
@@ -649,7 +661,7 @@ export class StrategyView extends ComponentJSON{
                 <div class="strategy">
                         <ClickEditText text={this.state.title} defaultText={this.state.strategy_type_display+" "+(this.props.rank+1)} textUpdated={this.setJSON.bind(this,"title")}/>
                         <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
-                        <button onClick={()=>newNode(this.state.id,-1,columns[columns.length-1],this.updateJSON.bind(this))}>Add A Node</button>
+                        <button onClick={()=>newNode(this.state.id,-1,-1,this.updateJSON.bind(this))}>Add A Node</button>
                         <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.maindiv}>
                             {nodes}
                         </div>

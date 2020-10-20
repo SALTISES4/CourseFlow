@@ -920,14 +920,15 @@ def new_column(request: HttpRequest) -> HttpResponse:
 @require_POST
 @ajax_login_required
 @is_owner("strategyPk")
-@is_owner("columnPk")
 def new_node(request: HttpRequest) -> HttpResponse:
     strategy_id = json.loads(request.POST.get("strategyPk"))
     column_id = json.loads(request.POST.get("columnPk"))
     position = json.loads(request.POST.get("position"))
     strategy = Strategy.objects.get(pk=strategy_id)
-    column = Column.objects.get(pk=column_id)
+    if column_id>=0:column = Column.objects.get(pk=column_id)
+    else:column=ColumnWorkflow.objects.filter(workflow=StrategyWorkflow.objects.get(strategy=strategy).workflow).first().column
     try:
+        if column.author != strategy.author: raise ValidationError
         if position < 0 or position > strategy.nodes.count():
             position = strategy.nodes.count()
         node_strategy = NodeStrategy.objects.create(

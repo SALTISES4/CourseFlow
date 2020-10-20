@@ -129,6 +129,10 @@ p{
     pointer-events:none;
 }
 
+.workflow-canvas.dragging{
+    opacity:0;
+}
+
 .node input{
     width:100px;
 }
