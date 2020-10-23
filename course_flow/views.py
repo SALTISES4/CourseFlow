@@ -117,8 +117,8 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return self.model.objects.select_subclasses()
 
     def get_object(self):
-        wf = super().get_object()
-        return Workflow.objects.get_subclass(pk=wf.pk)
+        workflow = super().get_object()
+        return Workflow.objects.get_subclass(pk=workflow.pk)
 
     def test_func(self):
         return self.get_object().author == self.request.user
@@ -127,6 +127,18 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return reverse(
             "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
         )
+    
+    def get_context_data(self, **kwargs):
+        context = super(UpdateView, self).get_context_data(**kwargs)
+        workflow = self.get_object()
+        context["column_count"]=workflow.columns.count()
+        context["strategy_count"]=workflow.strategies.count()
+        nodes = Node.objects.filter(strategy__in=workflow.strategies.all())
+        print(nodes)
+        context["node_count"] = nodes.count()
+        context["node_link_count"] = NodeLink.objects.filter(source_node__in=nodes).count()
+        
+        return context
 
 
 class WorkflowDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -947,6 +959,33 @@ def new_node(request: HttpRequest) -> HttpResponse:
     )
 
 
+
+@require_POST
+@ajax_login_required
+@is_owner("nodePk")
+def new_node_link(request: HttpRequest) -> HttpResponse:
+    node_id = json.loads(request.POST.get("nodePk"))
+    target_id = json.loads(request.POST.get("targetID"))
+    source_port = json.loads(request.POST.get("sourcePort"))
+    target_port = json.loads(request.POST.get("targetPort"))
+    node = Node.objects.get(pk=node_id)
+    target = Node.objects.get(pk=target_id)
+    try:
+        if target.author != node.author: raise ValidationError
+        node_link = NodeLink.objects.create(
+            author=node.author,
+            source_node=node,
+            target_node=target,
+            source_port=source_port,
+            target_port=target_port
+        )
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {"action": "posted", "objectID": node_link.id}
+    )
+
+
 # Add a new sibling to a through model
 @require_POST
 @ajax_login_required
@@ -1127,7 +1166,7 @@ Delete methods
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-
+    print("delete")
     try:
         model_lookups[object_type].objects.get(id=object_id).delete()
     except ProtectedError:

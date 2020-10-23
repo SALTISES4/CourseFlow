@@ -14,7 +14,6 @@
 {% block body %}
 
 <div id=container class="body-wrapper"></div>
-<div id="node-bar-container" class="node-bar-container"></div>
 <div id="node-form-container"></div>
 
 {% endblock %}
@@ -26,14 +25,36 @@
 {% block scripts %}
 
 <script nonce="{{request.csp_nonce}}">
+var selection_manager;
+var initial_loading = true;
+var items_to_load = {
+    column:{{column_count}},
+    strategy:{{strategy_count}},
+    node:{{node_count}},
+    nodelink:{{node_link_count}},
+};
+console.log(items_to_load);
+$(document).on("component-loaded",(evt,objectType)=>{
+    if(objectType&&items_to_load[objectType]){
+        items_to_load[objectType]--;
+        for(prop in items_to_load){
+            if(items_to_load[prop]>0)return;
+        }
+        initial_loading=false;
+        console.log("finished initial loading");
+        $(document).triggerHandler("render-ports");
+        $(document).triggerHandler("render-links");
+    }
+});
+    
 window.addEventListener("load", function(){
+    selection_manager = new workflow.SelectionManager();
     
     
     let fetchThenRenderWorkflow = function(){
         $.getJSON('{% url "course_flow:workflow-detail" pk=object.pk %}',
             function(json){
                 workflow.renderWorkflowView(json,$("#container").get()[0]);
-                workflow.renderNodeBar(json,$("#node-bar-container").get()[0]);
             }
         );
     }
@@ -76,10 +97,26 @@ function newNode(strategyPk,position=-1,column,callBackFunction=()=>console.log(
         else console.log("Failed");
     });
 }
+  
+function newNodeLink(source_node,target_node,source_port,target_port,callBackFunction=()=>console.log("success")){
+    $.post("{% url 'course_flow:new-node-link' %}", {
+        nodePk:JSON.stringify(source_node),
+        targetID:JSON.stringify(target_node),
+        sourcePort:JSON.stringify(source_port),
+        targetPort:JSON.stringify(target_port),
+        
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}  
 
 //Causes the specified object to delete itself
 function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
     //Temporary confirmation; add better comfirmation dialogue later
+    console.log(objectID);
+    console.log(objectType);
+    
     if(window.confirm("Are you sure you want to delete this "+objectType+"?")){
         $.post("{% url 'course_flow:delete-self' %}", {
             objectID:JSON.stringify(objectID),

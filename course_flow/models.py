@@ -54,7 +54,7 @@ class Column(models.Model):
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
-        return str(self.column_type)
+        return self.get_column_type_display()
 
     class Meta:
         verbose_name = "Column"
@@ -211,7 +211,8 @@ class Node(models.Model):
     )
 
     def __str__(self):
-        return self.title
+        if self.title is not None: return self.title
+        else: return self.get_node_type_display()
 
 
 class NodeCompletionStatus(models.Model):
@@ -264,7 +265,7 @@ class Strategy(models.Model):
     )
 
     def __str__(self):
-        return self.strategy_type
+        return self.get_strategy_type_display()
 
     class Meta:
         verbose_name = "Strategy"
@@ -350,7 +351,8 @@ class Workflow(models.Model):
         return subclass
 
     def __str__(self):
-        return self.title
+        if self.title is not None: return self.title
+        else: return self.type()
 
 
 class Activity(Workflow):
@@ -373,7 +375,8 @@ class Activity(Workflow):
         return "activity"
 
     def __str__(self):
-        return self.title
+        if self.title is not None:return self.title
+        else: return self.type()
 
     class Meta:
         verbose_name = "Activity"
@@ -404,7 +407,8 @@ class Course(Workflow):
         return "course"
 
     def __str__(self):
-        return self.title
+        if self.title is not None:return self.title
+        else: return self.type()
 
 
 class Program(Workflow):
@@ -418,7 +422,8 @@ class Program(Workflow):
         return "program"
 
     def __str__(self):
-        return self.title
+        if self.title is not None:return self.title
+        else: return self.type()
 
 
 class ColumnWorkflow(models.Model):
@@ -631,6 +636,7 @@ def switch_strategy_to_static(sender, instance, created, **kwargs):
 
 
 model_lookups = {
+    "nodelink": NodeLink,
     "node": Node,
     "column": Column,
     "strategy": Strategy,
@@ -643,6 +649,7 @@ model_lookups = {
     "columnworkflow": ColumnWorkflow,
 }
 model_keys = [
+    "nodelink",
     "node",
     "column",
     "strategy",

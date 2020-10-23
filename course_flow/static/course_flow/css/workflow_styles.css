@@ -87,7 +87,7 @@ p{
     background:white;
     position:sticky;
     top:0px;
-    z-index:1;
+    z-index:2;
     font-size:16px;
     font-family:sans-serif;
 }
@@ -129,7 +129,11 @@ p{
     pointer-events:none;
 }
 
-.workflow-canvas.dragging{
+.workflow-canvas circle, .workflow-canvas path{
+    pointer-events:auto;
+}
+
+.workflow-canvas.dragging-strategyworkflow{
     opacity:0;
 }
 
@@ -137,20 +141,27 @@ p{
     width:100px;
 }
 
-.node-bar-container{
+.right-panel-container{
     position:fixed;
     overflow:hidden;
     right:8px;
     top:102px;
     float:right;
-    z-index:4;
     box-shadow: -1px 0px 3px -1px;
     width:240px;
     bottom:0px;
     background:white;
 }
 
-.node-bar-workflow{
+.node-bar-container{
+    z-index:4;
+}
+
+.edit-bar-container{
+    z-index:5;
+}
+
+.right-panel-inner{
     display:inline;
     overflow-x:hidden;
     overflow-y:auto;
@@ -177,6 +188,10 @@ p{
     border:1px solid black;
     padding:10px;
     box-sizing:border-box;
+}
+
+.selected{
+    outline: 3px dotted lime;
 }
 
 

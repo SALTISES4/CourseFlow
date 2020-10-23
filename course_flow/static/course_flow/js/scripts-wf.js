@@ -16,6 +16,24 @@ const node_ports={
 }
 const port_keys=["n","e","s","w"];
 
+export class SelectionManager{
+    constructor(){
+        this.currentSelection;
+        $(document).on("click",this.changeSelection.bind(this))
+    }
+    
+    changeSelection(evt,newSelection){
+        evt.stopPropagation();
+        if(this.currentSelection)this.currentSelection.setState({selected:false});
+        this.currentSelection=newSelection;
+        if(this.currentSelection){
+            this.currentSelection.setState({selected:true});
+            $("#node-bar-container").css("display","none");
+        }else $("#node-bar-container").css("display","revert");
+    }
+
+}
+
 //A utility function to trigger an event on each element. This is used to avoid .trigger, which bubbles (we will be careful to only trigger events on the elements that need them)
 export function triggerHandlerEach(trigger,eventname){
     return trigger.each((i,element)=>{$(element).triggerHandler(eventname);});
@@ -24,6 +42,21 @@ export function triggerHandlerEach(trigger,eventname){
 //A proprer modulo function
 function mod(n,m){
     return ((n%m)+m)%m;
+}
+
+//Get translate from an svg transform
+function getSVGTranslation(transform){
+    var translate = transform.substring(transform.indexOf("translate(")+10, transform.indexOf(")")).split(",");
+    return translate;
+}
+
+//Get the offset from the canvas of a specific jquery object
+function getCanvasOffset(node_dom){
+    var node_offset = node_dom.offset();
+    var canvas_offset = $(".workflow-canvas").offset();
+    node_offset.left-=canvas_offset.left;
+    node_offset.top-=canvas_offset.top;
+    return node_offset;
 }
 
 //Debouncing object
@@ -81,6 +114,7 @@ export class ComponentJSON extends Component{
         const callBackFunction=function(){
             if(this.maindiv.current)this.maindiv.current.react=this;
             this.postMountFunction();
+            if(initial_loading)$(document).triggerHandler("component-loaded",this.objectType);
         }
         this.updateJSON({},callBackFunction.bind(this));
             
@@ -112,6 +146,7 @@ export class ComponentJSON extends Component{
     
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDeleteSelf(object_id=this.state.id,objectType=this.objectType,callBackFunction){
+        console.log(this.props.updateParent);
         return (
             <DeleteSelfButton handleClick={deleteSelf.bind(this,object_id,objectType,()=>{this.props.updateParent({},callBackFunction);})}/>
         );
@@ -124,6 +159,34 @@ export class ComponentJSON extends Component{
         );
     }
     
+    //Makes the item selectable
+    addEditable(){
+        if(this.state.selected){
+            var type=this.objectType;
+            return(
+                <div class="right-panel-container edit-bar-container">
+                    <div class="right-panel-inner">
+                        <h3>Edit:</h3>
+                        {["node","strategy","column"].indexOf(type)>=0 &&
+                            <div>
+                                <h4>Title:</h4>
+                                <input value={this.state.title}/>
+                            </div>
+                        }
+                        {["node","strategy"].indexOf(type)>=0 &&
+                            <div>
+                                <h4>Description:</h4>
+                                <input value={this.state.description}/>
+                            </div>
+                        }
+                        {this.addDeleteSelf()}
+                    </div>
+                </div>
+            )
+        }
+    }
+    
+    
     //Makes a sortable object, with a large number of options.
     makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false){
         sortable_block.sortable({
@@ -135,8 +198,10 @@ export class ComponentJSON extends Component{
             connectWith:connectWith,
             handle:handle,
             tolerance:"pointer",
+            distance:10,
             start:(e,ui)=>{
-                $(".workflow-canvas").addClass("dragging");
+                sortable_block.data("last_order",sortable_block.sortable("toArray"));
+                $(".workflow-canvas").addClass("dragging-"+draggable_type);
                 $(draggable_selector).addClass("dragging");
                 //Calls a refresh of the sortable in case adding the draggable class resized the object (which it does in many cases)
                 sortable_block.sortable("refresh");
@@ -154,11 +219,16 @@ export class ComponentJSON extends Component{
             },
             //Tell the dragging object that we are dragging it
             sort:(e,ui)=>{
-                $(ui.item[0]).triggerHandler("dragging");
-            },
-            //Whenever the DOM changes, we tell the siblings
-            change:(e,ui)=>{
-                triggerHandlerEach($(sortable_block).children(draggable_selector),"sorted");
+                ui.item.triggerHandler("dragging");
+                //figure out if the order has changed
+                if(ui.item.index(":not(ui-sortable-placeholder)")!=ui.placeholder.index(":not(ui-sortable-helper)")){
+                    //move the item if needed
+                    var old_siblings;
+                    if(ui.item.parent()!=ui.placeholder.parent())old_siblings=ui.item.siblings(draggable_selector);
+                    ui.item.insertAfter(ui.placeholder); 
+                    if(old_siblings)triggerHandlerEach(old_siblings,"sorted");
+                    triggerHandlerEach(ui.item.siblings(draggable_selector),"sorted");
+                }
             },
             //When the object is removed from this list, ensure the state is updated.
             remove:(evt,ui)=>{
@@ -170,24 +240,24 @@ export class ComponentJSON extends Component{
             //When the object is received by this list, ensure the state is updated
             receive:(evt,ui)=>{
                 var object_id = ui.item[0].id;
-                var new_position = $(ui.item[0]).index();
+                var new_position = ui.item.index();
                 if(ui.item[0].classList.contains("node-bar-sortable"))this.newChild.bind(this)(draggable_type,parent_id,new_position,ui);
                 else this.childAdded.bind(this)(draggable_type,parseInt(object_id),new_position);
-                $(sortable_block).children(draggable_selector).triggerHandler("sibling-added");
-                triggerHandlerEach($(draggable_selector).not($(sortable_block).children()),"cousin-added");
+                sortable_block.children(draggable_selector).triggerHandler("sibling-added");
+                triggerHandlerEach($(draggable_selector).not(sortable_block.children()),"cousin-added");
                 
             },
             stop:(evt,ui)=>{
                 //Fetch information about the object that was moved
-                var object_id = ui.item[0].id;
-                var new_position = $(ui.item[0]).index();
+                var object_id = ui.item.attr("id");
+                var new_position = ui.item.index();
                 var new_parent_id = parseInt(ui.item[0].parentElement.id);
                 //If the object was moved within this list, ensure state update
                 if(!new_parent_id||new_parent_id==parent_id)this.childAdded.bind(this)(draggable_type,parseInt(object_id),new_position);
                 $(draggable_selector).removeClass("dragging");
                 //Automatic scroll, useful when moving weeks that shrink significantly to make sure the dropped item is kept in focus. This should be updated to only scroll if the item ends up outside the viewport, and to scroll the minimum amount to keep it within.
                 $("#container").animate({
-                    scrollTop: $(ui.item[0]).offset().top-200
+                    scrollTop: ui.item.offset().top-200
                 },20);
                 //Calculate the horizontal displacement, used for changing columns
                 var delta_x = Math.round((ui.position.left-ui.originalPosition.left)/columnwidth);
@@ -213,7 +283,7 @@ export class ComponentJSON extends Component{
                     newColumnID,
                     ()=>{
                         triggerHandlerEach($(draggable_selector),"sorted");
-                        $(".workflow-canvas").removeClass("dragging");
+                        $(".workflow-canvas").removeClass("dragging-"+draggable_type);
                     }
                 );
             }
@@ -244,6 +314,7 @@ export class ComponentJSON extends Component{
     }
     
 }
+
 
 //Basic (uneditable) text
 export function Text(props){
@@ -313,24 +384,11 @@ export class InsertSiblingButton extends Component{
     }
 }
 
-//Get translate from an svg transform
-function getSVGTranslation(transform){
-    var translate = transform.substring(transform.indexOf("translate(")+10, transform.indexOf(")")).split(",");
-    return translate;
-}
-
-//Get the offset from the canvas of a specific jquery object
-function getCanvasOffset(node_dom){
-    var node_offset = node_dom.offset();
-    var canvas_offset = $(".workflow-canvas").offset();
-    node_offset.left-=canvas_offset.left;
-    node_offset.top-=canvas_offset.top;
-    return node_offset;
-}
 
 export class NodeLinkSVG{
-    constructor(namespace,source,target,source_port=2,target_port=0){
+    constructor(namespace,source,target,source_port=2,target_port=0,selector){
         this.svg = d3.select(".workflow-canvas").append("path").attr("stroke","red").attr("stroke-width","3px");
+        if(selector)this.svg.on("click",function(){selection_manager.changeSelection(event,selector)});
         this.source=source;
         this.target=target;
         this.source_port=source_port;
@@ -340,7 +398,7 @@ export class NodeLinkSVG{
         this.source_port_handle = d3.select(
             "g.port-"+source+" circle[data-port-type='source'][data-port='"+port_keys[source_port]+"']"
         );
-        this.source_node.on("dragging sibling-added sibling-removed sorted dragging",this.rerender.bind(this));
+        this.source_node.on(this.getRerenderEvents(),this.rerender.bind(this));
         if(this.target){
             this.setTarget(this.target);
         }else{
@@ -363,7 +421,7 @@ export class NodeLinkSVG{
             if(this.target)this.target=target;
         }else{
             if(this.target_node)this.target_node.off(this.getRerenderEvents());
-            this.target_node==null;
+            this.target_node=null;
             this.target_port_handle==null;
         }
     }
@@ -373,23 +431,24 @@ export class NodeLinkSVG{
                 " sibling-added."+this.eventNameSpace+
                 " sibling-removed."+this.eventNameSpace+
                 " sorted."+this.eventNameSpace+
-                " dragging."+this.eventNameSpace;
+                " parent-moved."+this.eventNameSpace;
     }
     
     findAutoTarget(){
         var ns = this.source_node.closest(".node-strategy");
-        var next_ns = ns.next();
+        var next_ns = ns.nextAll(":not(.ui-sortable-placeholder)").first();
         var target;
         if(next_ns.length>0){
             target = next_ns.find(".node").attr("id");
         }else{
             var sw = ns.closest(".strategy-workflow");
             var next_sw = sw.next();
-            if(next_sw.length>0){
+            while(next_sw.length>0){
                 target = next_sw.find(".node").attr("id");
+                if(target)break;
+                next_sw = next_sw.next();
             }
         }
-        console.log(target);
         this.setTarget(target);
     }
     
@@ -398,7 +457,7 @@ export class NodeLinkSVG{
         if(this.target_node)this.drawSVG();
         else this.hideSVG();
     }
-     
+    
     drawSVG(){
         const source_transform=getSVGTranslation(this.source_port_handle.select(function(){return this.parentNode}).attr("transform"));
         const target_transform=getSVGTranslation(this.target_port_handle.select(function(){return this.parentNode}).attr("transform"));
@@ -427,11 +486,9 @@ export class NodeLinkSVG{
     }
     
     hideSVG(){
-        console.log("hide svg");
         this.svg.attr("d","");
     }
     
-     
     /*
     checkValid(v1,v2,d){
         console.log("checking whether valid");
@@ -536,10 +593,29 @@ export class NodeLinkView extends ComponentJSON{
     
     
     render(){
+        if(this.state.id){
+            return(
+                <div>
+                    {this.addEditable()}
+                </div>
+            );
+        }
     }
     
     postMountFunction(){
-        this.svg = new NodeLinkSVG("nodelink"+this.state.id,this.state.source_node,this.state.target_node,this.state.source_port,this.state.target_port);
+        if(initial_loading){
+            $(document).on("render-links",this.createNodeLinkSVG.bind(this))
+        }else{
+            this.createNodeLinkSVG();
+        }
+    }
+    
+    createNodeLinkSVG(){
+        this.svg = new NodeLinkSVG("nodelink"+this.state.id,this.state.source_node,this.state.target_node,this.state.source_port,this.state.target_port,this);
+    }
+    
+    componentDidUnmount(){
+        if(this.svg)d3.select(this.svg).delete()
     }
         
        
@@ -552,7 +628,7 @@ export class NodeView extends ComponentJSON{
         this.objectType="node";
         var nodesvg = d3.select(".workflow-canvas").append("g").attr("stroke","black").attr("fill","white").attr("stroke-width",2).attr("class",'node-ports port-'+props.objectID);
         for(var port_type in node_ports)for(var port in node_ports[port_type]){
-            nodesvg.append("circle").attr("data-port-type",port_type).attr("data-port",port).attr("r",5);
+            nodesvg.append("circle").attr("data-port-type",port_type).attr("data-port",port).attr("data-node-id",props.objectID).attr("r",5);
         }
     }
     
@@ -563,9 +639,11 @@ export class NodeView extends ComponentJSON{
             );
             //Note the use of columnworkflow rather than column to determine the css rule that gets applied. This is because the horizontal displacement is based on the rank of the column, which is a property of the columnworkflow rather than of the column itself
             return (
-                <div class={"node column-"+this.state.columnworkflow}  id={this.state.id} ref={this.maindiv}>
+                <div class={
+                    "node column-"+this.state.columnworkflow+((this.state.selected && " selected")||"")} id={this.state.id} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
                         <ClickEditText text={this.state.title} defaultText="New Node" textUpdated={this.setJSON.bind(this,"title")}/>
                         <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
+                        {this.addEditable()}
                         {node_links}
                 </div>
             );
@@ -580,7 +658,9 @@ export class NodeView extends ComponentJSON{
     }
 
     placePorts(){
+        console.log("placing ports");
         var node = $(this.maindiv.current);
+        var thisComponent = this;
         var node_dimensions={width:node.width(),height:node.height()};
         d3.selectAll(
             'g.port-'+this.props.objectID+" circle"
@@ -593,18 +673,65 @@ export class NodeView extends ComponentJSON{
                 "cy",port_position[1]*d.height
             );
         });
+        d3.selectAll(
+            'g.port-'+this.props.objectID+" circle[data-port-type='source']"
+        ).call(d3.drag().on("start",function(d){
+            var canvas_offset = $(".workflow-canvas").offset();
+            d3.select(".node-link-creator").remove();
+            d3.select(".workflow-canvas").append("line").attr("class","node-link-creator").attr("x1",event.x-canvas_offset.left).attr("y1",event.y-canvas_offset.top).attr("x2",event.x-canvas_offset.left).attr("y2",event.y-canvas_offset.top).attr("stroke","red").attr("stroke-width","2");
+        }).on("drag",function(d){
+            var canvas_offset = $(".workflow-canvas").offset();
+            d3.select(".node-link-creator").attr("x2",event.x-canvas_offset.left).attr("y2",event.y-canvas_offset.top);
+        }).on("end",function(d){
+            var target = d3.select(event.target);
+            if(target.attr("data-port-type")=="target"){
+                thisComponent.nodeLinkAdded(target.attr("data-node-id"),d3.select(this).attr("data-port"),target.attr("data-port"));
+            }
+            d3.select(".node-link-creator").remove();
+        }))
         this.updatePorts();
         
         
     }
 
-    postMountFunction(){
-        if(this.maindiv.current){
-            this.placePorts();
-            $(this.maindiv.current).on("sorted",this.updatePorts.bind(this));
-            if(this.state.has_autolink)this.svg = new NodeLinkSVG("nodeautolink"+this.state.id,this.state.id);
+    createNodeLinkSVG(){
+        if(this.state.has_autolink)this.svg = new NodeLinkSVG("nodeautolink"+this.state.id,this.state.id);
+    }
+
+    nodeLinkAdded(target_id,source_port,target_port){
+        if(target_id!=this.props.objectID){
+            try{
+                newNodeLink(this.props.objectID,target_id,port_keys.indexOf(source_port),port_keys.indexOf(target_port),this.updateJSON.bind(this));
+            }catch(err){}
         }
     }
+
+
+    postMountFunction(){
+        if(this.maindiv.current){
+            if(initial_loading){
+                console.log("in initial loading");
+                $(document).on("render-ports",this.placePorts.bind(this));
+                $(document).on("render-links",this.createNodeLinkSVG.bind(this));
+            }else{
+                console.log("mounted a node");
+                console.log(this.state.title);
+                console.log(this.maindiv.current.parentElement.parentElement.parentElement.firstElementChild.value);
+                this.placePorts();
+                this.createNodeLinkSVG();
+            }
+            $(this.maindiv.current).on("parent-moved sorted dragging",this.updatePorts.bind(this));
+        }
+    }
+
+    componentDidUnmount(){
+        console.log("unmounted");
+        d3.selectAll(
+            'g.port-'+this.props.objectID+" circle"
+        ).delete();
+        if(this.svg)d3.select(this.svg).delete()
+    }
+
 }
 
 //Basic component to represent a NodeStrategy
@@ -618,7 +745,7 @@ export class NodeStrategyView extends ComponentJSON{
         if(this.state.id){
             return (
                 <div class="node-strategy" id={this.state.id} ref={this.maindiv}>
-                    <NodeView objectID={this.state.node}/>
+                    <NodeView updateParent={this.props.updateParent} objectID={this.state.node}/>
                 </div>
             );
         }
@@ -632,14 +759,14 @@ export class NodeStrategyView extends ComponentJSON{
         if(this.maindiv.current){
             //Add an event listener to check for reorderings of node-strategies, updating the rank if needed
             var node_strategy=this;
-            $(this.maindiv.current).on("sorted sibling-added sibling-removed",this.updateRank.bind(this));
-            $(this.maindiv.current).on("sibling-added sibling-removed cousin-added cousin-removed sorted dragging",(evt)=>{node_strategy.passEventToChild(evt)});
+            $(this.maindiv.current).on("sorted dragging sibling-added sibling-removed",this.updateRank.bind(this));
+            $(this.maindiv.current).on("parent-moved sibling-added sibling-removed cousin-added cousin-removed sorted dragging",(evt)=>{node_strategy.passEventToChild(evt)});
         }
     }
 
     //Updates the rank in the state if needed
     updateRank(){
-        var index = $(this.maindiv.current).index();
+        var index = $(this.maindiv.current).index(".node-strategy:not(.ui-sortable-placeholder)");
         if(this.state.rank!=index)this.setState({rank:index});
     }
 }
@@ -648,31 +775,35 @@ export class NodeStrategyView extends ComponentJSON{
 export class StrategyView extends ComponentJSON{
     constructor(props){
         super(props);
-        this.objectType="strategy"
-        
+        this.objectType="strategy";
+        this.node_block = createRef();
     }
     
     render(){
+        console.log(this);
         if(this.state.id){
             var nodes = this.state.nodestrategy_set.map((nodestrategy)=>
                 <NodeStrategyView key={nodestrategy} objectID={nodestrategy} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
             );
             return (
-                <div class="strategy">
+                <div class={"strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
                         <ClickEditText text={this.state.title} defaultText={this.state.strategy_type_display+" "+(this.props.rank+1)} textUpdated={this.setJSON.bind(this,"title")}/>
                         <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
                         <button onClick={()=>newNode(this.state.id,-1,-1,this.updateJSON.bind(this))}>Add A Node</button>
-                        <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.maindiv}>
+                        <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                             {nodes}
                         </div>
+                        {this.addEditable()}
                 </div>
             );
         }
     }
     
     postMountFunction(){
+        //Trigger the reordering event, which will make all other strategyworkflows update their indices in their states. This is critical for when a new strategy is inserted, because the DOM has not fully updated until this post-mount function is called.
+        if(!initial_loading)triggerHandlerEach($(".strategy-workflow").not($(this.maindiv.current).parent()),"sibling-added");
         //Makes the nodestrategies in the node block sortable, linking them with other node blocks
-        this.makeSortable($(this.maindiv.current),
+        this.makeSortable($(this.node_block.current),
                           this.props.objectID,
                           "nodestrategy",
                           ".node-strategy",
@@ -680,6 +811,7 @@ export class StrategyView extends ComponentJSON{
                           [200,10],
                           ".node-block",
                           ".node");
+        $(this.maindiv.current).on("sorted sibling-added sibling-removed",()=>{triggerHandlerEach($(this.node_block.current).children(),"parent-moved")});
     }
     
 }
@@ -696,8 +828,9 @@ export class ColumnView extends ComponentJSON{
             var title = this.state.title;
             if(!title)title=this.state.column_type_display;
             return (
-                <div class="column">
+                <div class={"column"+((this.state.selected && " selected")||"")} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
                     {title}
+                    {this.addEditable()}
                 </div>
             );
         }
@@ -718,8 +851,8 @@ export class ColumnWorkflowView extends ComponentJSON{
             this.updateCSS()
             return (
                 <div class={"column-workflow column-"+this.state.id} id={this.state.id} ref={this.maindiv}>
-                    <ColumnView objectID={this.state.column}/>
-                    {this.addDeleteSelf(this.state.column,"column",()=>$(".column-workflow").trigger("columnworkflow-reordered"))}
+                    <ColumnView objectID={this.state.column} updateParent={this.props.updateParent}/>
+                    {this.addDeleteSelf(this.state.column,"column",()=>triggerHandlerEach($(".column-workflow"),"sibling-removed"))}
                 </div>
             );
         }else return(
@@ -736,7 +869,7 @@ export class ColumnWorkflowView extends ComponentJSON{
             $(".column-workflow").trigger("sibling-added");
             //add event listener to check for reordering of columnworkflows, updating hte rank
             var column_workflow=this;
-            $(this.maindiv.current).on("sorted sibling-added sibling-removed",this.updateRank.bind(this));
+            $(this.maindiv.current).on("dragging sorted sibling-added sibling-removed",this.updateRank.bind(this));
             $(this.maindiv.current).on("sibling-added sibling-removed cousin-added cousin-removed sorted dragging",(evt)=>{column_workflow.passEventToChild(evt)});
         }
     }
@@ -748,8 +881,10 @@ export class ColumnWorkflowView extends ComponentJSON{
     
     updateRank(){
         //Updates the rank. Note this will call a re-rendering, which will itself call updateCSS()
-        var index = $(this.maindiv.current).index();
-        if(this.state.rank!=index)this.setState({rank:index});
+        var index = $(this.maindiv.current).index(".column-workflow:not(.ui-sortable-placeholder)");
+        if(this.state.rank!=index){
+            this.setState({rank:index},()=>{triggerHandlerEach($(".column-"+this.props.objectID+":not(.column-workflow):not(.column)"),"parent-moved")});
+        }
     }
     
     //Used to calculate the distance of the column from the left, based on the current rank
@@ -769,8 +904,8 @@ export class StrategyWorkflowView extends ComponentJSON{
         if(this.state.id){
             return (
                 <div class="strategy-workflow" id={this.state.id} ref={this.maindiv}>
-                    <StrategyView objectID={this.state.strategy} rank={this.state.rank}/>
-                    {this.addDeleteSelf(this.state.strategy,"strategy",()=>$(".strategy-workflow").trigger("strategyworkflow-reordered"))}
+                    <StrategyView objectID={this.state.strategy} rank={this.state.rank} updateParent={this.props.updateParent}/>
+                    {this.addDeleteSelf(this.state.strategy,"strategy",()=>triggerHandlerEach($(".strategy-workflow"),"sibling-removed"))}
                     {this.addInsertSibling(this.state.id,this.props.parentID,"strategyworkflow")}
                 </div>
             );
@@ -783,18 +918,16 @@ export class StrategyWorkflowView extends ComponentJSON{
 
     postMountFunction(){
         if(this.maindiv.current){
-            //Trigger the reordering event, which will make all other strategyworkflows update their indices in their states. This is critical for when a new strategy is inserted, because the DOM has not fully updated until this post-mount function is called. Note this event also gets fired a bunch of times on the initial load, but the strategies don't get re-rendered because setState is only called if the index has changed.
-            $(".strategy-workflow").trigger("sibling-added");
             //Add an eventlistener to listen for reordering events
             var strategy_workflow=this;
-            $(this.maindiv.current).on("sorted sibling-added sibling-removed",this.updateRank.bind(this));
+            $(this.maindiv.current).on("dragging sorted sibling-added sibling-removed",this.updateRank.bind(this));
             $(this.maindiv.current).on("sibling-added sibling-removed cousin-added cousin-removed sorted dragging",(evt)=>{strategy_workflow.passEventToChild(evt)});
         }
     }
 
     //Updates the rank based on the index
     updateRank(){
-        var index = $(this.maindiv.current).index();
+        var index = $(this.maindiv.current).index(".strategy-workflow:not(.ui-sortable-placeholder)");
         if(this.state.rank!=index)this.setState({rank:index});
     }
 
@@ -809,6 +942,7 @@ export class WorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType=props.type;
+        this.nodebar = createRef();
     }
     
     render(){
@@ -818,6 +952,12 @@ export class WorkflowView extends ComponentJSON{
             );
             var strategyworkflows = this.state.strategyworkflow_set.map((strategyworkflow)=>
                 <StrategyWorkflowView key={strategyworkflow} objectID={strategyworkflow} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
+            );
+            var nodebarcolumnworkflows = this.state.columnworkflow_set.map((columnworkflow)=>
+                <NodeBarColumnWorkflowView key={columnworkflow} objectID={columnworkflow}/>
+            );
+            var nodebarstrategyworkflows = this.state.strategyworkflow_set.map((strategyworkflow)=>
+                <NodeBarStrategyWorkflowView key={strategyworkflow} objectID={strategyworkflow}/>
             );
 
             return (
@@ -833,7 +973,17 @@ export class WorkflowView extends ComponentJSON{
                         <div class="strategy-block">
                             {strategyworkflows}
                         </div>
-                    <svg class="workflow-canvas" width="100%" height="100%"></svg>
+                        <svg class="workflow-canvas" width="100%" height="100%" ref={this.nodebar}></svg>
+                    </div>
+                    <div id="node-bar-container" class="node-bar-container right-panel-container">
+                        <div id="node-bar-workflow" class="right-panel-inner">
+                            <div class="node-bar-column-block">
+                                {nodebarcolumnworkflows}
+                            </div>
+                            <div class="node-bar-strategy-block">
+                                {nodebarstrategyworkflows}
+                            </div>
+                        </div>
                     </div>
                 </div>
             );
@@ -852,6 +1002,10 @@ export class WorkflowView extends ComponentJSON{
                           "columnworkflow",
                           ".column-workflow",
                           "x");
+        
+        $(this.nodebar.current).resizable({
+            containment:"body",
+        });
     }
     
     //Keeps the column ordering updated
@@ -860,42 +1014,6 @@ export class WorkflowView extends ComponentJSON{
             columns=this.state.columnworkflow_set;
         }
     }   
-}
-
-//Class to represent the nodebar for a workflow
-export class NodeBarWorkflowView extends ComponentJSON{
-    constructor(props){
-        super(props);
-        this.objectType=props.type;
-    }
-    
-    render(){
-        if(this.state.id){
-            var columnworkflows = this.state.columnworkflow_set.map((columnworkflow)=>
-                <NodeBarColumnWorkflowView key={columnworkflow} objectID={columnworkflow}/>
-            );
-            var strategyworkflows = this.state.strategyworkflow_set.map((strategyworkflow)=>
-                <NodeBarStrategyWorkflowView key={strategyworkflow} objectID={strategyworkflow}/>
-            );
-            
-            return(
-                <div id="node-bar-workflow" class="node-bar-workflow" ref={this.maindiv}>
-                    <div class="node-bar-column-block">
-                        {columnworkflows}
-                    </div>
-                    <div class="node-bar-strategy-block">
-                        {strategyworkflows}
-                    </div>
-                </div>
-            );
-        }
-    }
-    
-    postMountFunction(){
-        $(this.maindiv.current.parentElement).resizable({
-            containment:"body",
-        });
-    }
 }
 
 //Class to represent the nodebar's "columns" (used to drag nodes into the strategies)
@@ -972,7 +1090,4 @@ export class NodeBarStrategyWorkflowView extends ComponentJSON{
 export function renderWorkflowView(workflow,container){
     render(<WorkflowView objectID={workflow.id} type={workflow.type}/>,container);
 }
-           
-export function renderNodeBar(workflow,container){
-    render(<NodeBarWorkflowView objectID={workflow.id} type={workflow.type}/>,container);
-}
+

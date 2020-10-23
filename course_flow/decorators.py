@@ -25,6 +25,7 @@ def ajax_login_required(view_func):
 
 
 owned_models = [
+    "nodelink",
     "node",
     "strategy",
     "workflow"
