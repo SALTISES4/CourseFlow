@@ -27,12 +27,14 @@
 <script nonce="{{request.csp_nonce}}">
 var selection_manager;
 var initial_loading = true;
+var ports_rendered = false;
 var items_to_load = {
     column:{{column_count}},
     strategy:{{strategy_count}},
     node:{{node_count}},
     nodelink:{{node_link_count}},
 };
+var ports_to_render = {{node_count}};
 console.log(items_to_load);
 $(document).on("component-loaded",(evt,objectType)=>{
     if(objectType&&items_to_load[objectType]){
@@ -43,9 +45,17 @@ $(document).on("component-loaded",(evt,objectType)=>{
         initial_loading=false;
         console.log("finished initial loading");
         $(document).triggerHandler("render-ports");
-        $(document).triggerHandler("render-links");
     }
 });
+    
+$(document).on("ports-rendered",(evt)=>{
+    ports_to_render--;
+    if(ports_to_render>0)return;
+    ports_rendered=true;
+    console.log("ports rendered");
+    $(document).triggerHandler("render-links");
+})
+
     
 window.addEventListener("load", function(){
     selection_manager = new workflow.SelectionManager();

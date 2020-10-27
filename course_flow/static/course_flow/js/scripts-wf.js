@@ -1,4 +1,5 @@
 import {h, Component, render, createRef} from "preact";
+import {createPortal} from "preact/compat";
 
 const columnwidth = 200
 var columns;
@@ -145,10 +146,9 @@ export class ComponentJSON extends Component{
     }
     
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-    addDeleteSelf(object_id=this.state.id,objectType=this.objectType,callBackFunction){
-        console.log(this.props.updateParent);
+    addDeleteSelf(object_id=this.state.id,objectType=this.objectType,callBackFunction=()=>{triggerHandlerEach($(this.objectClass),"sibling-removed")}){
         return (
-            <DeleteSelfButton handleClick={deleteSelf.bind(this,object_id,objectType,()=>{this.props.updateParent({},callBackFunction);})}/>
+            <DeleteSelfButton handleClick={deleteSelf.bind(this,object_id,objectType,()=>{if(this.maindiv.current)$(this.maindiv.current).triggerHandler("deleted");this.props.updateParent({},callBackFunction);})}/>
         );
     }
     
@@ -219,9 +219,8 @@ export class ComponentJSON extends Component{
             },
             //Tell the dragging object that we are dragging it
             sort:(e,ui)=>{
-                ui.item.triggerHandler("dragging");
                 //figure out if the order has changed
-                if(ui.item.index(":not(ui-sortable-placeholder)")!=ui.placeholder.index(":not(ui-sortable-helper)")){
+                if(ui.placeholder.parent()!=ui.item.parent()||ui.item.index(":not(ui-sortable-placeholder)")!=ui.placeholder.index(":not(ui-sortable-helper)")){
                     //move the item if needed
                     var old_siblings;
                     if(ui.item.parent()!=ui.placeholder.parent())old_siblings=ui.item.siblings(draggable_selector);
@@ -229,22 +228,18 @@ export class ComponentJSON extends Component{
                     if(old_siblings)triggerHandlerEach(old_siblings,"sorted");
                     triggerHandlerEach(ui.item.siblings(draggable_selector),"sorted");
                 }
+                ui.item.triggerHandler("dragging");
             },
             //When the object is removed from this list, ensure the state is updated.
             remove:(evt,ui)=>{
                 var object_id = ui.item[0].id;
                 this.childRemoved.bind(this)(draggable_type,parseInt(object_id));
-                triggerHandlerEach($(sortable_block).children(draggable_selector),"sibling-removed");
-                triggerHandlerEach($(draggable_selector).not($(sortable_block).children()),"cousin-removed");
             },
             //When the object is received by this list, ensure the state is updated
             receive:(evt,ui)=>{
                 var object_id = ui.item[0].id;
                 var new_position = ui.item.index();
                 if(ui.item[0].classList.contains("node-bar-sortable"))this.newChild.bind(this)(draggable_type,parent_id,new_position,ui);
-                else this.childAdded.bind(this)(draggable_type,parseInt(object_id),new_position);
-                sortable_block.children(draggable_selector).triggerHandler("sibling-added");
-                triggerHandlerEach($(draggable_selector).not(sortable_block.children()),"cousin-added");
                 
             },
             stop:(evt,ui)=>{
@@ -385,7 +380,7 @@ export class InsertSiblingButton extends Component{
 }
 
 
-export class NodeLinkSVG{
+export class NodeLinkSVGBackup{
     constructor(namespace,source,target,source_port=2,target_port=0,selector){
         this.svg = d3.select(".workflow-canvas").append("path").attr("stroke","red").attr("stroke-width","3px");
         if(selector)this.svg.on("click",function(){selection_manager.changeSelection(event,selector)});
@@ -408,23 +403,6 @@ export class NodeLinkSVG{
         this.eventNameSpace=namespace;
     }
     
-    setTarget(target){
-        if(target){
-            if(this.target_node&&target==this.target_node.attr("id"))return;
-            
-            if(this.target_node)this.target_node.off(this.getRerenderEvents());
-            this.target_node = $("#"+target+".node");
-            this.target_port_handle = d3.select(
-                "g.port-"+target+" circle[data-port-type='target'][data-port='"+port_keys[this.target_port]+"']"
-            );
-            this.target_node.on(this.getRerenderEvents(),this.rerender.bind(this));
-            if(this.target)this.target=target;
-        }else{
-            if(this.target_node)this.target_node.off(this.getRerenderEvents());
-            this.target_node=null;
-            this.target_port_handle==null;
-        }
-    }
     
     getRerenderEvents(){
         return "dragging."+this.eventNameSpace+
@@ -434,23 +412,7 @@ export class NodeLinkSVG{
                 " parent-moved."+this.eventNameSpace;
     }
     
-    findAutoTarget(){
-        var ns = this.source_node.closest(".node-strategy");
-        var next_ns = ns.nextAll(":not(.ui-sortable-placeholder)").first();
-        var target;
-        if(next_ns.length>0){
-            target = next_ns.find(".node").attr("id");
-        }else{
-            var sw = ns.closest(".strategy-workflow");
-            var next_sw = sw.next();
-            while(next_sw.length>0){
-                target = next_sw.find(".node").attr("id");
-                if(target)break;
-                next_sw = next_sw.next();
-            }
-        }
-        this.setTarget(target);
-    }
+    
     
     rerender(){
         if(!this.target)this.findAutoTarget();
@@ -459,7 +421,8 @@ export class NodeLinkSVG{
     }
     
     drawSVG(){
-        const source_transform=getSVGTranslation(this.source_port_handle.select(function(){return this.parentNode}).attr("transform"));
+        const source_transform=getSVGTranslation(this.source_port_handle.select(function(){
+            return this.parentNode}).attr("transform"));
         const target_transform=getSVGTranslation(this.target_port_handle.select(function(){return this.parentNode}).attr("transform"));
         const source_points=[[parseInt(this.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.source_port_handle.attr("cy"))+parseInt(source_transform[1])]];
         const target_points=[[parseInt(this.target_port_handle.attr("cx"))+parseInt(target_transform.[0]),parseInt(this.target_port_handle.attr("cy"))+parseInt(target_transform[1])]];
@@ -568,6 +531,154 @@ export class NodeLinkSVG{
             }while(!(source_point_found&&target_point_found))
     }*/
     
+    
+}
+
+//Basic component to represent a NodeLink
+export class NodeLinkView extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="nodelink";
+        this.objectClass=".node-link";
+        this.rerenderEvents = "ports-rendered."+this.eventNameSpace;
+        this.updateParentEvents = "deleted."+this.eventNameSpace;
+    }
+    
+    
+    render(){
+        if(this.state.id){
+            if(initial_loading){
+                $(document).on("render-links",this.rerender.bind(this))
+            }else if(ports_rendered){
+                if(!this.source_node||this.source_node.length==0||this.target_node.length==0){
+                    this.source_node = $("#"+this.state.source_node+".node");
+                    this.source_port_handle = d3.select(
+                        "g.port-"+this.state.source_node+" circle[data-port-type='source'][data-port='"+port_keys[this.state.source_port]+"']"
+                    );
+                    this.target_node = $("#"+this.state.target_node+".node");
+                    this.target_port_handle = d3.select(
+                        "g.port-"+this.state.target_node+" circle[data-port-type='target'][data-port='"+port_keys[this.state.target_port]+"']"
+                    );
+                    this.target_node.on(this.rerenderEvents,this.rerender.bind(this));
+                    this.target_node.on(this.updateParentEvents,this.props.updateParent);
+                }
+                var selector=this;
+                return(
+                    <div>
+                        {createPortal(
+                            <NodeLinkSVG source_port_handle={this.source_port_handle} target_port_handle={this.target_port_handle} clickFunction={(evt)=>selection_manager.changeSelection(evt,selector)} selected={this.state.selected}/>
+                            ,$(".workflow-canvas")[0])}
+                        {this.addEditable()}
+                    </div>
+                );
+            }
+        }
+    }
+    
+    
+    rerender(){
+        this.setState({});
+    }
+
+    componentDidUnmount(){
+        if(this.target_node&&this.target_node.length>0){
+            this.target_node.off(this.rerenderEvents);
+            this.target_node.off(this.updateParentEvents);
+        }
+    }
+}
+
+export class AutoLinkView extends Component{
+    constructor(props){
+        super(props);
+        this.eventNameSpace="autolink"+props.source;
+        this.rerenderEvents = "ports-rendered."+this.eventNameSpace;
+    }
+    
+    render(){
+        if(initial_loading){
+            $(document).on("render-links",this.rerender.bind(this))
+        }else if(ports_rendered){
+            if(!this.source_node||this.source_node.length==0){
+                this.source_node = $("#"+this.props.source+".node");
+                this.source_port_handle = d3.select(
+                    "g.port-"+this.props.source+" circle[data-port-type='source'][data-port='s']"
+                );
+            }
+            this.findAutoTarget();
+            if(!this.target_node)return;
+            return(
+                <div>
+                    {createPortal(
+                        <NodeLinkSVG source_port_handle={this.source_port_handle} target_port_handle={this.target_port_handle}/>
+                        ,$(".workflow-canvas")[0])}
+                </div>
+            );
+        }
+    }
+
+    findAutoTarget(){
+        var ns = this.source_node.closest(".node-strategy");
+        if(ns.next(".node-bar-column").length>0){this.setTarget(null);return;}
+        var next_ns = ns.nextAll(".node-strategy:not(.ui-sortable-placeholder)").first();
+        var target;
+        if(next_ns.length>0){
+            target = next_ns.find(".node").attr("id");
+        }else{
+            var sw = ns.closest(".strategy-workflow");
+            var next_sw = sw.next();
+            while(next_sw.length>0){
+                target = next_sw.find(".node-strategy:not(ui-sortable-placeholder) .node").attr("id");
+                if(target)break;
+                next_sw = next_sw.next();
+            }
+        }
+        this.setTarget(target);
+    }
+
+    rerender(){
+        this.setState({});
+    }
+
+    setTarget(target){
+        if(target){
+            if(this.target_node&&target==this.target_node.attr("id"))return;
+            if(this.target_node)this.target_node.off(this.rerenderEvents);
+            this.target_node = $("#"+target+".node");
+            this.target_port_handle = d3.select(
+                "g.port-"+target+" circle[data-port-type='target'][data-port='n']"
+            );
+            this.target_node.on(this.rerenderEvents,this.rerender.bind(this));
+            this.target=target;
+        }else{
+            if(this.target_node)this.target_node.off(this.rerenderEvents);
+            this.target_node=null;
+            this.target_port_handle==null;
+            this.target=null;
+        }
+    }
+
+    
+}
+
+
+export class NodeLinkSVG extends Component{
+    render(){
+        
+        const source_transform=getSVGTranslation(this.props.source_port_handle.select(function(){
+            return this.parentNode}).attr("transform"));
+        const target_transform=getSVGTranslation(this.props.target_port_handle.select(function(){
+            return this.parentNode}).attr("transform"));
+        const source_points=[[parseInt(this.props.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.props.source_port_handle.attr("cy"))+parseInt(source_transform[1])]];
+        const target_points=[[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform.[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])]];
+
+        var path = this.getPath(source_points,target_points);
+
+        return (
+            <path stroke="red" stroke-width="3px" d={path} onClick={this.props.clickFunction} class={"nodelink"+((this.props.selected && " selected")||"")}/>
+        );
+    }
+    
     getPath(source_point_array,target_point_array){
         var path="M";
         for(var i=0;i<source_point_array.length;i++){
@@ -584,97 +695,43 @@ export class NodeLinkSVG{
     }
 }
 
-//Basic component to represent a NodeLink
-export class NodeLinkView extends ComponentJSON{
-    constructor(props){
-        super(props);
-        this.objectType="nodelink";
-    }
+export class NodePorts extends Component{
     
     
     render(){
-        if(this.state.id){
-            return(
-                <div>
-                    {this.addEditable()}
-                </div>
-            );
+        var ports = [];
+        var node_dimensions;
+        if(this.props.node_dimensions){
+            node_dimensions=this.props.node_dimensions;
+            this.positioned = true;
         }
-    }
-    
-    postMountFunction(){
-        if(initial_loading){
-            $(document).on("render-links",this.createNodeLinkSVG.bind(this))
-        }else{
-            this.createNodeLinkSVG();
-        }
-    }
-    
-    createNodeLinkSVG(){
-        this.svg = new NodeLinkSVG("nodelink"+this.state.id,this.state.source_node,this.state.target_node,this.state.source_port,this.state.target_port,this);
-    }
-    
-    componentDidUnmount(){
-        if(this.svg)d3.select(this.svg).delete()
-    }
-        
-       
-}
-
-//Basic component to represent a Node
-export class NodeView extends ComponentJSON{
-    constructor(props){
-        super(props);
-        this.objectType="node";
-        var nodesvg = d3.select(".workflow-canvas").append("g").attr("stroke","black").attr("fill","white").attr("stroke-width",2).attr("class",'node-ports port-'+props.objectID);
+        else node_dimensions={width:0,height:0};
         for(var port_type in node_ports)for(var port in node_ports[port_type]){
-            nodesvg.append("circle").attr("data-port-type",port_type).attr("data-port",port).attr("data-node-id",props.objectID).attr("r",5);
+            ports.push(
+                <circle data-port-type={port_type} data-port={port} data-node-id={this.props.nodeID} r="5" key={port_type+port} 
+                cx={node_ports[port_type][port][0]*node_dimensions.width} 
+                cy={node_ports[port_type][port][1]*node_dimensions.height}/>
+            )
         }
+        var transform;
+        if(this.props.node_offset)transform = "translate("+this.props.node_offset.left+","+this.props.node_offset.top+")"
+        else transform = "translate(0,0)";
+        return(
+            <g class={'node-ports port-'+this.props.nodeID} stroke="black" stroke-width="2" fill="white" transform={transform}>
+                {ports}
+            </g>
+        )
     }
     
-    render(){
-        if(this.state.id){
-            var node_links = this.state.outgoing_links.map((link)=>
-                <NodeLinkView key={link} objectID={link} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
-            );
-            //Note the use of columnworkflow rather than column to determine the css rule that gets applied. This is because the horizontal displacement is based on the rank of the column, which is a property of the columnworkflow rather than of the column itself
-            return (
-                <div class={
-                    "node column-"+this.state.columnworkflow+((this.state.selected && " selected")||"")} id={this.state.id} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
-                        <ClickEditText text={this.state.title} defaultText="New Node" textUpdated={this.setJSON.bind(this,"title")}/>
-                        <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
-                        {this.addEditable()}
-                        {node_links}
-                </div>
-            );
-        }
+    componentDidUpdate(){
+        if(!ports_rendered&&this.positioned)$(document).triggerHandler("ports-rendered");
+        else if(ports_rendered&&this.positioned)$("#"+this.props.nodeID+".node").triggerHandler("ports-rendered");
     }
     
-    updatePorts(){
-        var node = $(this.maindiv.current);
-        var node_offset = getCanvasOffset(node);
-        d3.select('g.port-'+this.props.objectID)
-            .attr("transform","translate("+node_offset.left+","+node_offset.top+")");
-    }
-
-    placePorts(){
-        console.log("placing ports");
-        var node = $(this.maindiv.current);
-        var thisComponent = this;
-        var node_dimensions={width:node.width(),height:node.height()};
+    componentDidMount(){
+        var thisComponent=this;
         d3.selectAll(
-            'g.port-'+this.props.objectID+" circle"
-        ).datum(node_dimensions).each(function(d){
-            var myd3 = d3.select(this);
-            var port_position = node_ports[myd3.attr("data-port-type")][myd3.attr("data-port")];
-            myd3.attr(
-                "cx",port_position[0]*d.width
-            ).attr(
-                "cy",port_position[1]*d.height
-            );
-        });
-        d3.selectAll(
-            'g.port-'+this.props.objectID+" circle[data-port-type='source']"
+            'g.port-'+this.props.nodeID+" circle[data-port-type='source']"
         ).call(d3.drag().on("start",function(d){
             var canvas_offset = $(".workflow-canvas").offset();
             d3.select(".node-link-creator").remove();
@@ -685,13 +742,51 @@ export class NodeView extends ComponentJSON{
         }).on("end",function(d){
             var target = d3.select(event.target);
             if(target.attr("data-port-type")=="target"){
-                thisComponent.nodeLinkAdded(target.attr("data-node-id"),d3.select(this).attr("data-port"),target.attr("data-port"));
+                thisComponent.props.nodeLinkAdded(target.attr("data-node-id"),d3.select(this).attr("data-port"),target.attr("data-port"));
             }
             d3.select(".node-link-creator").remove();
-        }))
-        this.updatePorts();
-        
-        
+        }));
+    }
+}
+
+
+//Basic component to represent a Node
+export class NodeView extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="node";
+        this.objectClass=".node";
+    }
+    
+    render(){
+        if(this.state.id){
+            var node_links = this.state.outgoing_links.map((link)=>
+                <NodeLinkView key={link} objectID={link} parentID={this.state.id} updateParent={()=>{console.log("update parent");this.updateJSON.bind(this)();}}/>
+            );
+            var node_offset;
+            //Note the use of columnworkflow rather than column to determine the css rule that gets applied. This is because the horizontal displacement is based on the rank of the column, which is a property of the columnworkflow rather than of the column itself
+            return (
+                <div class={
+                    "node column-"+this.state.columnworkflow+((this.state.selected && " selected")||"")} id={this.state.id} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
+                        <ClickEditText text={this.state.title} defaultText="New Node" textUpdated={this.setJSON.bind(this,"title")}/>
+                        <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
+                        {this.addEditable()}
+                        {createPortal(
+                            <NodePorts nodeID={this.props.objectID} nodeLinkAdded={this.nodeLinkAdded.bind(this)} node_offset={this.state.node_offset} node_dimensions={this.state.node_dimensions} updateParent={this.updateJSON.bind(this)}/>
+                        ,$(".workflow-canvas")[0])}
+                        {node_links}
+                        <AutoLinkView source={this.props.objectID} node_offset={this.state.node_offset} node_dimensions={this.state.node_dimensions}/>
+                </div>
+            );
+        }
+    }
+    
+    updatePorts(){
+        var node = $(this.maindiv.current);
+        var node_offset = getCanvasOffset(node);
+        var node_dimensions={width:node.width(),height:node.height()};
+        if(node.closest(".strategy-workflow").hasClass("dragging")||this.state.node_offset==node_offset&&this.state.node_dimensions==node_dimensions)return;
+        this.setState({node_offset:node_offset,node_dimensions:node_dimensions});
     }
 
     createNodeLinkSVG(){
@@ -710,26 +805,13 @@ export class NodeView extends ComponentJSON{
     postMountFunction(){
         if(this.maindiv.current){
             if(initial_loading){
-                console.log("in initial loading");
-                $(document).on("render-ports",this.placePorts.bind(this));
-                $(document).on("render-links",this.createNodeLinkSVG.bind(this));
+                $(document).on("render-ports",this.updatePorts.bind(this));
             }else{
-                console.log("mounted a node");
-                console.log(this.state.title);
-                console.log(this.maindiv.current.parentElement.parentElement.parentElement.firstElementChild.value);
-                this.placePorts();
-                this.createNodeLinkSVG();
+                this.updatePorts();
+                triggerHandlerEach($(".strategy-workflow").not($(this.maindiv.current).parent()),"sibling-added");
             }
-            $(this.maindiv.current).on("parent-moved sorted dragging",this.updatePorts.bind(this));
+            $(this.maindiv.current).on("parent-moved sorted dragging sibling-added sibling-removed cousin-added cousin-removed",this.updatePorts.bind(this));
         }
-    }
-
-    componentDidUnmount(){
-        console.log("unmounted");
-        d3.selectAll(
-            'g.port-'+this.props.objectID+" circle"
-        ).delete();
-        if(this.svg)d3.select(this.svg).delete()
     }
 
 }
@@ -739,6 +821,7 @@ export class NodeStrategyView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="nodestrategy";
+        this.objectClass=".node-strategy";
     }
     
     render(){
@@ -776,11 +859,11 @@ export class StrategyView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="strategy";
+        this.objectClass=".strategy";
         this.node_block = createRef();
     }
     
     render(){
-        console.log(this);
         if(this.state.id){
             var nodes = this.state.nodestrategy_set.map((nodestrategy)=>
                 <NodeStrategyView key={nodestrategy} objectID={nodestrategy} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
@@ -808,7 +891,7 @@ export class StrategyView extends ComponentJSON{
                           "nodestrategy",
                           ".node-strategy",
                           false,
-                          [200,10],
+                          [200,1],
                           ".node-block",
                           ".node");
         $(this.maindiv.current).on("sorted sibling-added sibling-removed",()=>{triggerHandlerEach($(this.node_block.current).children(),"parent-moved")});
@@ -821,6 +904,7 @@ export class ColumnView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="column";
+        this.objectClass=".column";
     }
     
     render(){
@@ -842,6 +926,7 @@ export class ColumnWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="columnworkflow";
+        this.objectClass=".column-workflow";
         //We add a style to the header to represent the column
         $("<style>").prop("type","text/css").prop("id","column-"+this.props.objectID+"-CSS").appendTo("head");
     }
@@ -898,6 +983,7 @@ export class StrategyWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="strategyworkflow";
+        this.objectClass=".strategy-workflow";
     }
     
     render(){
@@ -973,9 +1059,9 @@ export class WorkflowView extends ComponentJSON{
                         <div class="strategy-block">
                             {strategyworkflows}
                         </div>
-                        <svg class="workflow-canvas" width="100%" height="100%" ref={this.nodebar}></svg>
+                        <svg class="workflow-canvas" width="100%" height="100%"></svg>
                     </div>
-                    <div id="node-bar-container" class="node-bar-container right-panel-container">
+                    <div id="node-bar-container" ref={this.nodebar} class="node-bar-container right-panel-container">
                         <div id="node-bar-workflow" class="right-panel-inner">
                             <div class="node-bar-column-block">
                                 {nodebarcolumnworkflows}
@@ -1021,6 +1107,7 @@ export class NodeBarColumnWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="columnworkflow";
+        this.objectClass=".column-workflow";
     }
     
     render(){
@@ -1042,6 +1129,18 @@ export class NodeBarColumnWorkflowView extends ComponentJSON{
                     return div.clone().appendTo(document.body);
                 },
                 containment:".workflow-container",
+                sort:(event,ui)=>{
+                    if(ui.placeholder.parent(".node-block").length==0)return;
+                    //figure out if the order has changed
+                    if(ui.placeholder.parent()!=ui.helper.parent()||ui.helper.index(":not(ui-sortable-placeholder)")!=ui.placeholder.index(":not(ui-sortable-helper)")){
+                        //move the item if needed
+                        var old_siblings;
+                        if(ui.helper.parent()!=ui.placeholder.parent())old_siblings=ui.helper.siblings(".node-strategy");
+                        ui.helper.insertAfter(ui.placeholder); 
+                        if(old_siblings)triggerHandlerEach(old_siblings,"sorted");
+                        triggerHandlerEach(ui.helper.siblings(".node-strategy"),"sorted");
+                    }
+                },
                 start:(event,ui)=>{
                     ui.item[0].sortableData={column:this.state.column};
                 },
@@ -1061,6 +1160,7 @@ export class NodeBarColumnView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="column";
+        this.objectClass=".column";
     }
     
     render(){
@@ -1080,6 +1180,7 @@ export class NodeBarStrategyWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="strategyworkflow";
+        this.objectClass=".strategy-workflow";
     }
     
     render(){
