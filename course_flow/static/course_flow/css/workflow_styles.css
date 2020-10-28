@@ -117,11 +117,6 @@ p{
     white-space:normal;
 }
 
-.nodelink{
-    position:absolute;
-    pointer-events:none;
-}
-
 .workflow-canvas{
     position:absolute;
     left:0px;
@@ -129,7 +124,7 @@ p{
     pointer-events:none;
 }
 
-.workflow-canvas circle, .workflow-canvas path{
+.workflow-canvas circle, .workflow-canvas path.nodelink{
     pointer-events:auto;
 }
 

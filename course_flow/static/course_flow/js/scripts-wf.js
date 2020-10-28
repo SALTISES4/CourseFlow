@@ -1,5 +1,8 @@
 import {h, Component, render, createRef} from "preact";
 import {createPortal} from "preact/compat";
+import {Decimal} from 'decimal.js/decimal';
+let amount = new Decimal(0.00);
+import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 
 const columnwidth = 200
 var columns;
@@ -16,6 +19,13 @@ const node_ports={
     }
 }
 const port_keys=["n","e","s","w"];
+const port_direction=[
+    [0,-1],
+    [1,0],
+    [0,1],
+    [-1,0]
+]
+const port_padding=10;
 
 export class SelectionManager{
     constructor(){
@@ -40,7 +50,7 @@ export function triggerHandlerEach(trigger,eventname){
     return trigger.each((i,element)=>{$(element).triggerHandler(eventname);});
 }
 
-//A proprer modulo function
+//A proplser modulo function
 function mod(n,m){
     return ((n%m)+m)%m;
 }
@@ -379,161 +389,6 @@ export class InsertSiblingButton extends Component{
     }
 }
 
-
-export class NodeLinkSVGBackup{
-    constructor(namespace,source,target,source_port=2,target_port=0,selector){
-        this.svg = d3.select(".workflow-canvas").append("path").attr("stroke","red").attr("stroke-width","3px");
-        if(selector)this.svg.on("click",function(){selection_manager.changeSelection(event,selector)});
-        this.source=source;
-        this.target=target;
-        this.source_port=source_port;
-        this.target_port=target_port;
-        this.debouncer = new Debouncer();
-        this.source_node = $("#"+source+".node");
-        this.source_port_handle = d3.select(
-            "g.port-"+source+" circle[data-port-type='source'][data-port='"+port_keys[source_port]+"']"
-        );
-        this.source_node.on(this.getRerenderEvents(),this.rerender.bind(this));
-        if(this.target){
-            this.setTarget(this.target);
-        }else{
-            this.findAutoTarget();
-        }
-        if(this.target_node)this.drawSVG();
-        this.eventNameSpace=namespace;
-    }
-    
-    
-    getRerenderEvents(){
-        return "dragging."+this.eventNameSpace+
-                " sibling-added."+this.eventNameSpace+
-                " sibling-removed."+this.eventNameSpace+
-                " sorted."+this.eventNameSpace+
-                " parent-moved."+this.eventNameSpace;
-    }
-    
-    
-    
-    rerender(){
-        if(!this.target)this.findAutoTarget();
-        if(this.target_node)this.drawSVG();
-        else this.hideSVG();
-    }
-    
-    drawSVG(){
-        const source_transform=getSVGTranslation(this.source_port_handle.select(function(){
-            return this.parentNode}).attr("transform"));
-        const target_transform=getSVGTranslation(this.target_port_handle.select(function(){return this.parentNode}).attr("transform"));
-        const source_points=[[parseInt(this.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.source_port_handle.attr("cy"))+parseInt(source_transform[1])]];
-        const target_points=[[parseInt(this.target_port_handle.attr("cx"))+parseInt(target_transform.[0]),parseInt(this.target_port_handle.attr("cy"))+parseInt(target_transform[1])]];
-        
-        var path = this.getPath(source_points,target_points);
-        this.svg.attr("d",path);
-        
-        /*
-        var parent_rect = $(".workflow-canvas").offset();
-        const w1 = this.sourcenode.width();
-        const h1 = this.sourcenode.height();
-        const w2 = this.targetnode.width();
-        const h2 = this.targetnode.height();
-        var source_rect = this.sourcenode.offset();
-        var target_rect = this.targetnode.offset();
-        const c1 = [source_rect.left+w1/2,source_rect.top+h1/2];
-        const c2 = [target_rect.left+w2/2,target_rect.top+h2/2];
-        //const d1 = subArray(c2,c1);
-        //const d2 = subArray(c1,c2);
-
-        const source_points = [[w1/2*(source_port%2)*(-1)**(Math.floor(source_port/2)),h1/2*((source_port+1)%2)*(-1)**(Math.floor((source_port+2)/2))]];
-        const target_points = [[w1/2*(target_port%2)*(-1)**(Math.floor(target_port/2)),h1/2*((target_port+1)%2)*(-1)**(Math.floor((target_port+2)/2))]];*/
-         
-    }
-    
-    hideSVG(){
-        this.svg.attr("d","");
-    }
-    
-    /*
-    checkValid(v1,v2,d){
-        console.log("checking whether valid");
-        console.log(v1);
-        console.log(v2);
-        console.log(d);
-        var vd = addArray(v2,d);
-        console.log(Math.sign(v1[0]*vd[0])>=0&&Math.sign(v1[1]*vd[1])>=0)
-        return (Math.sign(v1[0]*vd[0])>=0&&Math.sign(v1[1]*vd[1])>=0);
-        
-        
-        return (Math.sign(v1[0])*Math.sign(vd[0]))
-    }
-    
-    getDirection(v1,v2){
-        console.log("Getting the direction");
-        var dir = Math.sign(v1[0]*v2[1]-v1[1]*v2[0]);
-        console.log(v1);
-        console.log(v2);
-        console.log("dir = "+dir);
-        if(dir==0)return 1;
-        return dir;
-    }*/
-    
-    /*Ignore for now
-    walkAround(){
-            var source_point_found=false;
-            var source_point=0;
-            var target_point_found=false;
-            var target_point=0;
-            
-            for(var i=source_port;i<source_port+4;i++){
-                source_points.push([w1/2*(-1)**(Math.floor(i/2)),h1/2*(-1)**Math.floor((i+3)/2)]);
-            }
-            for(var i=target_port;i<target_port+4;i++){
-                target_points.push([w2/2*(-1)**(Math.floor(i/2)),h2/2*(-1)**Math.floor((i+3)/2)]);
-            }
-            console.log(source_points);
-            console.log(target_points);
-            var target_point_array=[target_points[0]];
-            var source_point_array=[source_points[0]];
-            var counter=0;
-            do{
-                counter++;
-                if(counter==10)break;
-                source_point_found = this.checkValid(
-                    source_points[source_point],
-                    target_points[target_point],
-                    d1
-                );
-                target_point_found = this.checkValid(
-                    target_points[target_point],
-                    source_points[source_point],
-                    d2
-                );
-                if(!source_point_found){
-                    console.log("source has not been found. Getting the direction.");
-                    source_point=mod(source_point+
-                        this.getDirection(
-                        source_points[source_point],
-                        addArray(target_points[target_point],d1))
-                    ,5);
-                    console.log(source_point);
-                    var thispoint = source_points[source_point];
-                    source_point_array.push([thispoint[0]+Math.sign(thispoint[0])*10,thispoint[1]+Math.sign(thispoint[1])*10]);
-                }else if(!target_point_found){
-                    console.log("target has not been found. Getting the direction.");
-                    target_point=mod(target_point+
-                        this.getDirection(
-                        target_points[target_point],
-                        addArray(source_points[source_point],d2))
-                    ,5);
-                    console.log(target_point);
-                    var thispoint = target_points[target_point];
-                    target_point_array.push([thispoint[0]+Math.sign(thispoint[0])*10,thispoint[1]+Math.sign(thispoint[1])*10]);
-                }
-            }while(!(source_point_found&&target_point_found))
-    }*/
-    
-    
-}
-
 //Basic component to represent a NodeLink
 export class NodeLinkView extends ComponentJSON{
     constructor(props){
@@ -562,11 +417,12 @@ export class NodeLinkView extends ComponentJSON{
                     this.target_node.on(this.rerenderEvents,this.rerender.bind(this));
                     this.target_node.on(this.updateParentEvents,this.props.updateParent);
                 }
+                var target_dims = {width:this.target_node.width(),height:this.target_node.height()};
                 var selector=this;
                 return(
                     <div>
                         {createPortal(
-                            <NodeLinkSVG source_port_handle={this.source_port_handle} target_port_handle={this.target_port_handle} clickFunction={(evt)=>selection_manager.changeSelection(evt,selector)} selected={this.state.selected}/>
+                            <NodeLinkSVG source_port_handle={this.source_port_handle} source_port={this.state.source_port} target_port_handle={this.target_port_handle} target_port={this.state.target_port} clickFunction={(evt)=>selection_manager.changeSelection(evt,selector)} selected={this.state.selected} source_dimensions={this.props.node_dimensions} target_dimensions={target_dims}/>
                             ,$(".workflow-canvas")[0])}
                         {this.addEditable()}
                     </div>
@@ -607,10 +463,11 @@ export class AutoLinkView extends Component{
             }
             this.findAutoTarget();
             if(!this.target_node)return;
+            var target_dims = {width:this.target_node.width(),height:this.target_node.height()};
             return(
                 <div>
                     {createPortal(
-                        <NodeLinkSVG source_port_handle={this.source_port_handle} target_port_handle={this.target_port_handle}/>
+                        <NodeLinkSVG source_port_handle={this.source_port_handle} source_port="2" target_port_handle={this.target_port_handle} target_port="0" source_dimensions={this.props.node_dimensions} target_dimensions={target_dims}/>
                         ,$(".workflow-canvas")[0])}
                 </div>
             );
@@ -661,6 +518,108 @@ export class AutoLinkView extends Component{
     
 }
 
+export class PathGenerator{
+    constructor(source_point,source_port,target_point,target_port,source_dims,target_dims){
+        this.point_arrays={source:[source_point],target:[target_point]};
+        this.last_point={source:source_point,target:target_point};
+        this.direction = {source:port_direction[source_port],target:port_direction[target_port]};
+        this.hasTicked = {source:false,target:false};
+        this.node_dims = {source:source_dims,target:target_dims};
+        this.findcounter=0;
+    }
+    
+    findPath(){
+        try{
+            this.findNextPoint();
+        }catch(err){console.log("error calculating path")};
+        return this.joinArrays();
+    }
+    
+    findNextPoint(){
+        if(this.findcounter>8)return;
+        this.findcounter++;
+        //Determine which case we have:
+        if(mathdot(this.direction["source"],mathsubtract(this.last_point["target"],this.last_point["source"]))<0){
+            this.tickPerpendicular("source");
+            this.findNextPoint();
+        }else if(mathdot(this.direction["target"],mathsubtract(this.last_point["source"],this.last_point["target"]))<0){
+            this.tickPerpendicular("target");
+            this.findNextPoint();
+        }
+    }
+    
+    addPoint(point,port="source"){
+        this.point_arrays[port].push(point);
+        this.last_point[port]=point;
+    }
+    
+    addDelta(delta,port="source"){
+        this.addPoint(mathadd(delta,this.last_point[port]),port);
+    }
+    
+    padOut(port){
+        this.addDelta(mathmultiply(port_padding,this.direction[port]),port);
+    }
+        
+    tickPerpendicular(port="source"){
+        let otherport = "target";
+        if(port=="target")otherport="source";
+        this.padOut(port);
+        var new_direction = mathmultiply(
+            mathmatrix(
+                [mathmultiply([1,0],this.direction[port][1]**2),
+                 mathmultiply([0,1],this.direction[port][0]**2)]
+            ),
+            mathsubtract(this.last_point[otherport],this.last_point[port])
+        )._data;
+        let norm = mathnorm(new_direction);
+        if(norm==0)throw "Non-numeric";
+        this.direction[port]=mathmultiply(1.0/mathnorm(new_direction),new_direction);
+        this.addDelta(
+            mathmultiply(
+                this.getNodeOutline(this.direction[port],port),this.direction[port]
+            ),
+            port
+        );
+    }
+    
+    getNodeOutline(direction,port){
+        if(this.hasTicked[port]){
+            return Math.abs(mathdot(direction,this.node_dims[port]));
+        }else{
+            this.hasTicked[port]=true;
+            return Math.abs(mathdot(direction,this.node_dims[port])/2);
+        }
+    }
+
+    joinArrays(){
+        var joined = this.point_arrays["source"].slice();
+        //We have remaining either a corner or both point towards each other
+        if(mathdot(this.direction["source"],this.direction["target"])==0){
+            joined.push(
+                [this.direction["source"][0]**2*this.last_point["target"][0]+
+                 this.direction["target"][0]**2*this.last_point["source"][0],
+                 this.direction["source"][1]**2*this.last_point["target"][1]+
+                 this.direction["target"][1]**2*this.last_point["source"][1]]
+            )
+        }else{
+            let diff = mathsubtract(this.last_point["target"],this.last_point["source"]);
+            let mid1=[this.direction["source"][0]*diff[0]/2,this.direction["source"][1]*diff[1]/2]
+            let mid2=[-this.direction["source"][0]*diff[0]/2,-this.direction["source"][1]*diff[1]/2]
+            joined.push(
+                mathadd(this.last_point["source"],mid1)
+            )
+            joined.push(
+                mathadd(this.last_point["target"],mid2)
+            )
+        }
+        for(var i=this.point_arrays["target"].length-1;i>=0;i--){
+            joined.push(this.point_arrays["target"][i]);
+        }
+        return joined;
+    }
+}
+
 
 export class NodeLinkSVG extends Component{
     render(){
@@ -669,26 +628,34 @@ export class NodeLinkSVG extends Component{
             return this.parentNode}).attr("transform"));
         const target_transform=getSVGTranslation(this.props.target_port_handle.select(function(){
             return this.parentNode}).attr("transform"));
-        const source_points=[[parseInt(this.props.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.props.source_port_handle.attr("cy"))+parseInt(source_transform[1])]];
-        const target_points=[[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform.[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])]];
+        const source_point=[parseInt(this.props.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.props.source_port_handle.attr("cy"))+parseInt(source_transform[1])];
+        const target_point=[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform.[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])];
 
-        var path = this.getPath(source_points,target_points);
+        var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
+        var path=(this.getPath(path_array));
 
         return (
-            <path stroke="red" stroke-width="3px" d={path} onClick={this.props.clickFunction} class={"nodelink"+((this.props.selected && " selected")||"")}/>
+            <g fill="none" stroke="black">
+                <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"+((this.props.selected && " selected")||"")}/>
+                <path stroke-width="2px" d={path} marker-end="url(#arrow)"/>
+            </g>
         );
     }
     
-    getPath(source_point_array,target_point_array){
+    getPathArray(source_point,source_port,target_point,target_port){
+        var source_dims = [this.props.source_dimensions.width,this.props.source_dimensions.height];
+        var target_dims = [this.props.target_dimensions.width,this.props.target_dimensions.height];
+        var path_generator = new PathGenerator(source_point,source_port,target_point,target_port,source_dims,target_dims);
+        return path_generator.findPath();
+    }
+
+    
+    
+    getPath(path_array){
         var path="M";
-        for(var i=0;i<source_point_array.length;i++){
+        for(var i=0;i<path_array.length;i++){
             if(i>0)path+=" L";
-            var thispoint = source_point_array[i];
-            path+=thispoint[0]+" "+thispoint[1];
-        }
-        for(var i=target_point_array.length-1;i>=0;i--){
-            path+=" L";
-            var thispoint = target_point_array[i];
+            var thispoint = path_array[i];
             path+=thispoint[0]+" "+thispoint[1];
         }
         return path;
@@ -761,7 +728,7 @@ export class NodeView extends ComponentJSON{
     render(){
         if(this.state.id){
             var node_links = this.state.outgoing_links.map((link)=>
-                <NodeLinkView key={link} objectID={link} parentID={this.state.id} updateParent={()=>{console.log("update parent");this.updateJSON.bind(this)();}}/>
+                <NodeLinkView key={link} objectID={link} parentID={this.state.id} updateParent={()=>{console.log("update parent");this.updateJSON.bind(this)();}} node_dimensions={this.state.node_dimensions}/>
             );
             var node_offset;
             //Note the use of columnworkflow rather than column to determine the css rule that gets applied. This is because the horizontal displacement is based on the rank of the column, which is a property of the columnworkflow rather than of the column itself
@@ -787,10 +754,6 @@ export class NodeView extends ComponentJSON{
         var node_dimensions={width:node.width(),height:node.height()};
         if(node.closest(".strategy-workflow").hasClass("dragging")||this.state.node_offset==node_offset&&this.state.node_dimensions==node_dimensions)return;
         this.setState({node_offset:node_offset,node_dimensions:node_dimensions});
-    }
-
-    createNodeLinkSVG(){
-        if(this.state.has_autolink)this.svg = new NodeLinkSVG("nodeautolink"+this.state.id,this.state.id);
     }
 
     nodeLinkAdded(target_id,source_port,target_port){
@@ -1059,7 +1022,15 @@ export class WorkflowView extends ComponentJSON{
                         <div class="strategy-block">
                             {strategyworkflows}
                         </div>
-                        <svg class="workflow-canvas" width="100%" height="100%"></svg>
+                        <svg class="workflow-canvas" width="100%" height="100%">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5"
+                                    markerWidth="6" markerHeight="6"
+                                    orient="auto-start-reverse">
+                                  <path d="M 0 0 L 10 5 L 0 10 z" />
+                                </marker>
+                            </defs>
+                        </svg>
                     </div>
                     <div id="node-bar-container" ref={this.nodebar} class="node-bar-container right-panel-container">
                         <div id="node-bar-workflow" class="right-panel-inner">
