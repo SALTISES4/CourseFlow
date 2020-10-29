@@ -39,7 +39,7 @@ class WorkflowProject(models.Model):
 
         
 class Column(models.Model):
-    title = models.CharField(max_length=50, blank=True)
+    title = models.CharField(max_length=50, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -87,7 +87,7 @@ class Column(models.Model):
 
 
 class NodeLink(models.Model):
-    title = models.CharField(max_length=100, blank=True)
+    title = models.CharField(max_length=100, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     source_node = models.ForeignKey(
         "Node", on_delete=models.CASCADE, related_name="outgoing_links"
@@ -145,8 +145,8 @@ class Outcome(models.Model):
 
 
 class Node(models.Model):
-    title = models.CharField(max_length=30, blank=True)
-    description = models.TextField(max_length=400, blank=True)
+    title = models.CharField(max_length=30, null=True, blank=True)
+    description = models.TextField(max_length=400, null=True, blank=True)
     author = models.ForeignKey(
         User,
         related_name="authored_nodes",
@@ -262,8 +262,8 @@ class OutcomeNode(models.Model):
 
 
 class Strategy(models.Model):
-    title = models.CharField(max_length=30, blank=True)
-    description = models.TextField(max_length=400, blank=True)
+    title = models.CharField(max_length=30, null=True, blank=True)
+    description = models.TextField(max_length=400, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -322,8 +322,8 @@ class NodeStrategy(models.Model):
 class Workflow(models.Model):
     objects = InheritanceManager()
 
-    title = models.CharField(max_length=30, blank=True)
-    description = models.TextField(max_length=400, blank=True)
+    title = models.CharField(max_length=30, null=True, blank=True)
+    description = models.TextField(max_length=400, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
