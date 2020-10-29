@@ -181,8 +181,8 @@ export class PathGenerator{
         }else{
             //double corner
             let diff = mathsubtract(this.last_point["target"],this.last_point["source"]);
-            let mid1=[this.direction["source"][0]*diff[0]/2,this.direction["source"][1]*diff[1]/2]
-            let mid2=[-this.direction["source"][0]*diff[0]/2,-this.direction["source"][1]*diff[1]/2]
+            let mid1=[this.direction["source"][0]**2*diff[0]/2,this.direction["source"][1]**2*diff[1]/2]
+            let mid2=[-(this.direction["source"][0]**2)*diff[0]/2,-(this.direction["source"][1]**2)*diff[1]/2]
             joined.push(
                 mathadd(this.last_point["source"],mid1)
             )
@@ -336,7 +336,7 @@ export class ComponentJSON extends Component{
                 var object_id = ui.item[0].id;
                 var new_position = ui.item.index();
                 if(ui.item[0].classList.contains("node-bar-sortable"))this.newChild.bind(this)(draggable_type,parent_id,new_position,ui);
-                
+                else this.childAdded.bind(this)(draggable_type,parseInt(object_id),new_position);
             },
             stop:(evt,ui)=>{
                 //Fetch information about the object that was moved
@@ -344,7 +344,7 @@ export class ComponentJSON extends Component{
                 var new_position = ui.item.index();
                 var new_parent_id = parseInt(ui.item[0].parentElement.id);
                 //If the object was moved within this list, ensure state update
-                if(!new_parent_id||new_parent_id==parent_id)this.childAdded.bind(this)(draggable_type,parseInt(object_id),new_position);
+                if(new_parent_id==parent_id)this.childAdded.bind(this)(draggable_type,parseInt(object_id),new_position);
                 $(draggable_selector).removeClass("dragging");
                 //Automatic scroll, useful when moving weeks that shrink significantly to make sure the dropped item is kept in focus. This should be updated to only scroll if the item ends up outside the viewport, and to scroll the minimum amount to keep it within.
                 $("#container").animate({
@@ -491,7 +491,7 @@ export class NodeLinkView extends ComponentJSON{
             if(initial_loading){
                 $(document).on("render-links",this.rerender.bind(this))
             }else if(ports_rendered){
-                if(!this.source_node||this.source_node.length==0||this.target_node.length==0){
+                if(!this.source_node||!this.source_node.width()||!this.target_node.width()){
                     this.source_node = $("#"+this.state.source_node+".node");
                     this.source_port_handle = d3.select(
                         "g.port-"+this.state.source_node+" circle[data-port-type='source'][data-port='"+port_keys[this.state.source_port]+"']"
@@ -504,6 +504,7 @@ export class NodeLinkView extends ComponentJSON{
                     this.target_node.on(this.updateParentEvents,this.props.updateParent);
                 }
                 var target_dims = {width:this.target_node.width(),height:this.target_node.height()};
+                if(!this.props.node_dimensions||!target_dims.width||!this.props.node_dimensions.width)return;;
                 var selector=this;
                 return(
                     <div>
@@ -710,7 +711,10 @@ export class NodeView extends ComponentJSON{
     render(){
         if(this.state.id){
             var node_links = this.state.outgoing_links.map((link)=>
-                <NodeLinkView key={link} objectID={link} parentID={this.state.id} updateParent={()=>{console.log("update parent");this.updateJSON.bind(this)();}} node_dimensions={this.state.node_dimensions}/>
+                <NodeLinkView key={link} objectID={link} parentID={this.state.id} updateParent={this.updateJSON.bind(this)} node_dimensions={this.state.node_dimensions}/>
+            );
+            var auto_link;
+            if(this.state.has_autolink) auto_link = (<AutoLinkView source={this.props.objectID} node_offset={this.state.node_offset} node_dimensions={this.state.node_dimensions}/>
             );
             var node_offset;
             //Note the use of columnworkflow rather than column to determine the css rule that gets applied. This is because the horizontal displacement is based on the rank of the column, which is a property of the columnworkflow rather than of the column itself
@@ -724,7 +728,7 @@ export class NodeView extends ComponentJSON{
                             <NodePorts nodeID={this.props.objectID} nodeLinkAdded={this.nodeLinkAdded.bind(this)} node_offset={this.state.node_offset} node_dimensions={this.state.node_dimensions} updateParent={this.updateJSON.bind(this)}/>
                         ,$(".workflow-canvas")[0])}
                         {node_links}
-                        <AutoLinkView source={this.props.objectID} node_offset={this.state.node_offset} node_dimensions={this.state.node_dimensions}/>
+                        {auto_link}
                 </div>
             );
         }

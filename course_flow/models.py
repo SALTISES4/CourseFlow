@@ -14,34 +14,34 @@ User = get_user_model()
 
 
 class Column(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
+    title = models.CharField(max_length=50, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
-    CUS_ACT = 0
-    OOCI = 1
-    OOCS = 2
-    ICI = 3
-    ICS = 4
-    CUS_CO = 10
-    PREP = 11
+    CUSTOM_ACTIVITY = 0
+    OUT_OF_CLASS_INSTRUCTOR = 1
+    OUT_OF_CLASS_STUDENT = 2
+    IN_CLASS_INSTRUCTOR = 3
+    IN_CLASS_STUDENT = 4
+    CUSTOM_COURSE = 10
+    PREPARATION = 11
     LESSON = 12
     ARTIFACT = 13
-    ASSESS = 14
-    CUS_PROG = 20
+    ASSESSMENT = 14
+    CUSTOM_PROGRAM = 20
 
     COLUMN_TYPES = (
-        (CUS_ACT, "Custom Activity Column"),
-        (OOCI, "Out of Class (Instructor)"),
-        (OOCS, "Out of Class (Students)"),
-        (ICI, "In Class (Instructor)"),
-        (ICS, "In Class (Students)"),
-        (CUS_CO, "Custom Course Column"),
-        (PREP, "Preparation"),
+        (CUSTOM_ACTIVITY, "Custom Activity Column"),
+        (OUT_OF_CLASS_INSTRUCTOR, "Out of Class (Instructor)"),
+        (OUT_OF_CLASS_STUDENT, "Out of Class (Students)"),
+        (IN_CLASS_INSTRUCTOR, "In Class (Instructor)"),
+        (IN_CLASS_STUDENT, "In Class (Students)"),
+        (CUSTOM_COURSE, "Custom Course Column"),
+        (PREPARATION, "Preparation"),
         (LESSON, "Lesson"),
         (ARTIFACT, "Artifact"),
-        (ASSESS, "Assessment"),
-        (CUS_PROG, "Custom Program Category"),
+        (ASSESSMENT, "Assessment"),
+        (CUSTOM_PROGRAM, "Custom Program Category"),
     )
     column_type = models.PositiveIntegerField(default=0, choices=COLUMN_TYPES)
 
@@ -62,7 +62,7 @@ class Column(models.Model):
 
 
 class NodeLink(models.Model):
-    title = models.CharField(max_length=100, null=True, blank=True)
+    title = models.CharField(max_length=100, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     source_node = models.ForeignKey(
         "Node", on_delete=models.CASCADE, related_name="outgoing_links"
@@ -120,8 +120,8 @@ class Outcome(models.Model):
 
 
 class Node(models.Model):
-    title = models.CharField(max_length=30, null=True, blank=True)
-    description = models.TextField(max_length=400, null=True, blank=True)
+    title = models.CharField(max_length=30, blank=True)
+    description = models.TextField(max_length=400, blank=True)
     author = models.ForeignKey(
         User,
         related_name="authored_nodes",
@@ -237,8 +237,8 @@ class OutcomeNode(models.Model):
 
 
 class Strategy(models.Model):
-    title = models.CharField(max_length=30, null=True, blank=True)
-    description = models.TextField(max_length=400, null=True, blank=True)
+    title = models.CharField(max_length=30, blank=True)
+    description = models.TextField(max_length=400, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -297,8 +297,8 @@ class NodeStrategy(models.Model):
 class Workflow(models.Model):
     objects = InheritanceManager()
 
-    title = models.CharField(max_length=30, null=True, blank=True)
-    description = models.TextField(max_length=400, null=True, blank=True)
+    title = models.CharField(max_length=30, blank=True)
+    description = models.TextField(max_length=400, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -327,10 +327,10 @@ class Workflow(models.Model):
 
     @property
     def type(self):
-        for subclass in SUBCLASSES:
+        for subclass in self.SUBCLASSES:
             try:
-                return self[subclass].type
-            except Workflow[subclass].RelatedObjectDoesNotExist:
+                return getattr(self,subclass).type
+            except AttributeError:
                 pass
         return "workflow"
 
@@ -568,6 +568,7 @@ Default content creation receivers
 @receiver(post_save, sender=Node)
 def create_default_node_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
+        print(instance.node_type)
         # If this is an activity-level node, set the autolinks to true
         if instance.node_type==instance.ACTIVITY_NODE:
             instance.has_autolink=True

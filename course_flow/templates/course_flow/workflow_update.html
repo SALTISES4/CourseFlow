@@ -64,6 +64,7 @@ window.addEventListener("load", function(){
     let fetchThenRenderWorkflow = function(){
         $.getJSON('{% url "course_flow:workflow-detail" pk=object.pk %}',
             function(json){
+                console.log(json);
                 workflow.renderWorkflowView(json,$("#container").get()[0]);
             }
         );
