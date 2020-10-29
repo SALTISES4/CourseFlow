@@ -12,7 +12,32 @@ from model_utils.managers import InheritanceManager
 
 User = get_user_model()
 
+class Project(models.Model):
+    title = models.CharField(max_length=50, null=True, blank=True)
+    description = models.CharField(max_length=400, null=True, blank=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+    
+    workflows= models.ManyToManyField(
+        "Workflow", through="WorkflowProject", blank=True
+    )
+    
+    class Meta:
+        verbose_name = "Project"
+        verbose_name_plural = "Projects"
+    
+class WorkflowProject(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    workflow = models.ForeignKey("Workflow", on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Workflow-Project Link"
+        verbose_name_plural = "Workflow-Project Links"
+
+        
 class Column(models.Model):
     title = models.CharField(max_length=50, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)

@@ -1,6 +1,7 @@
 from .models import (
     model_lookups,
     User,
+    Project,
     Course,
     Column,
     ColumnWorkflow,
@@ -89,24 +90,50 @@ def registration_view(request):
 @login_required
 def home_view(request):
     context = {
-        "programs": Program.objects.exclude(author=request.user),
-        "courses": Course.objects.exclude(author=request.user, static=True),
-        "activities": Activity.objects.exclude(
-            author=request.user, static=True
-        ),
-        "owned_programs": Program.objects.filter(author=request.user),
-        "owned_courses": Course.objects.filter(
-            author=request.user, static=False
-        ),
-        "owned_activities": Activity.objects.filter(
-            author=request.user, static=False
-        ),
-        "owned_static_courses": Course.objects.filter(
-            author=request.user, static=True
-        ),
+        "projects": Project.objects.exclude(author=request.user),
+        "owned_projects": Project.objects.filter(author=request.user)
     }
     return render(request, "course_flow/home.html", context)
 
+
+class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Project
+    template_name = "course_flow/project_update.html"
+    
+    def test_func(self):
+        return self.get_object().author == self.request.user
+    
+    
+    def get_context_data(self, **kwargs):
+        context = {
+            "programs": Program.objects.exclude(author=request.user),
+            "courses": Course.objects.exclude(author=request.user, static=True),
+            "activities": Activity.objects.exclude(
+                author=request.user, static=True
+            ),
+            "owned_programs": Program.objects.filter(
+                author=request.user
+            ).exclude(project=project),
+            "owned_courses": Course.objects.filter(
+                author=request.user, static=False
+            ).exclude(project=project),
+            "owned_activities": Activity.objects.filter(
+                author=request.user, static=False
+            ).exclude(project=project),
+            "project_programs":Program.objects.filter(
+                author=request.user,project=project
+            ),
+            "project_courses":Course.objects.filter(
+                author=request.user,project=project, static=False
+            ),
+            "project_static_courses": Course.objects.filter(
+                author=request.user, project=project, static=True
+            ),
+            "project_activities":Activity.objects.filter(
+                author=request.user,project=project, static=False
+            )
+        }
+        return context
 
 class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Workflow
@@ -134,7 +161,6 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context["column_count"]=workflow.columns.count()
         context["strategy_count"]=workflow.strategies.count()
         nodes = Node.objects.filter(strategy__in=workflow.strategies.all())
-        print(nodes)
         context["node_count"] = nodes.count()
         context["node_link_count"] = NodeLink.objects.filter(source_node__in=nodes).count()
         

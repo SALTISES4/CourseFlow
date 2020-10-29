@@ -9,11 +9,6 @@ p{
 
 .body-wrapper{
     text-align:center;
-    top:100px;
-    width:100%;
-    height:calc(100% - 100px);
-    overflow:auto;
-    position:absolute;
 }
 
 .workflow-wrapper{

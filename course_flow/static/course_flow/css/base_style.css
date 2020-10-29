@@ -244,13 +244,10 @@ text {
 }
 .sub-container {
  width: 40%;
- position: absolute;
-}
-#user-content-container {
-  left: 10%;
-}
-#total-content-container {
-  right: 0;
+ margin-left:9%;
+ height:100%;
+ vertical-align:top;
+ display:inline-block;
 }
 h2:not(.mdc-dialog__header__title), p {
   font-family: "Montserrat", serif;
@@ -258,4 +255,13 @@ h2:not(.mdc-dialog__header__title), p {
 h1 {
   font-family: "Montserrat", serif;
   color: #F4F4F4;
+}
+
+
+.body-wrapper{
+    top:100px;
+    width:100%;
+    height:calc(100% - 100px);
+    overflow:auto;
+    position:absolute;
 }

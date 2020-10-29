@@ -35,6 +35,11 @@ def flow_patterns():
         url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
         url(r"home/$", views.home_view, name="home"),
         url(
+            r"^project/(?P<pk>[0-9]+)/update/$",
+            views.ProjectUpdateView.as_view(),
+            name="project-update",
+        ),
+        url(
             r"^workflow/(?P<pk>[0-9]+)/update/$",
             views.WorkflowUpdateView.as_view(),
             name="workflow-update",

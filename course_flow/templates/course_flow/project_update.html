@@ -1,0 +1,455 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block header %}
+<style nonce="{{ request.csp_nonce }}">
+  body {
+    background-color: #1976bc;
+  }
+  .create-button {
+    transform: translateY(10px);
+  }
+  img.link-image {
+    height: 35px;
+  }
+  .mdc-card {
+    background-color: white;
+    margin-bottom: 10px;
+    padding: 20px 20px 12px;
+    border-radius: 10px;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+      0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+    max-width: 400px;
+  }
+  .mdc-typography--title {
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 1.25rem;
+    line-height: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: inherit;
+    text-transform: inherit;
+    font-weight: bold;
+  }
+  .mdc-typography--caption {
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-decoration: inherit;
+    text-transform: inherit;
+  }
+  .mdc-typography--body1 {
+    font-size: 16px;
+    letter-spacing: 0em;
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-decoration: inherit;
+    text-transform: inherit;
+  }
+  .mdc-card__actions {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 52px;
+    padding: 8px;
+  }
+  .mdc-card__action-buttons,
+  .mdc-card__action-icons {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  .mdc-card__action-icons {
+    margin-left: auto;
+    margin-right: 0;
+  }
+  .mdc-card__action-icons,
+  .mdc-typography--caption,
+  .mdc-typography--body1,
+  .mdc-typography--title {
+    color: #1976bc;
+  }
+</style>
+{% endblock %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<div id="content-container" class="body-wrapper">
+  <div id="user-content-container" class="sub-container">
+    <h2>
+      Your Programs
+      <a href="{% url 'course_flow:program-create' %}"
+        ><img
+          class="create-button link-image"
+          src="{% static 'course_flow/img/add-square-button.svg' %}"
+      /></a>
+    </h2>
+    <br />
+    {% for program in owned_programs %}
+
+    <div class="mdc-card" id="card">
+      <div class="mdc-typography--title">{{ program.title }}</div>
+      <div class="mdc-typography--caption">
+        {% if program.author %}Created by {{ program.author.username }}
+        <!-- -->
+        {% endif %}
+      </div>
+      <div class="mdc-typography--body1">{{ program.description }}</div>
+      <div class="mdc-card__actions">
+        <div class="mdc-card__action-buttons">
+          <div class="mdc-typography--caption caption">
+            <div>Published on {{ program.created_on }}</div>
+          </div>
+        </div>
+        <div class="mdc-card__action-icons">
+          {% if user.pk is program.author.pk %}
+          <!-- -->
+          <a href="{% url 'course_flow:workflow-update' pk=program.id %}">
+            <!-- -->
+            <img
+              class="link-image"
+              src="{% static 'course_flow/img/pencil-blue.svg' %}"
+            />
+          </a>
+          <!-- -->
+          {% else %}
+          <!-- -->
+          <a href="{% url 'course_flow:program-detail-view' pk=program.id %}"
+            ><img
+              class="link-image"
+              src="{% static 'course_flow/img/pageview-24px.svg' %}"
+          /></a>
+          <!-- -->
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>{% trans "You haven't created a program yet" %}</p>
+    {% endfor %}
+    <!-- -->
+    <h2>
+      Your Courses
+      <a href="{% url 'course_flow:course-create' %}"
+        ><img
+          class="create-button link-image"
+          src="{% static 'course_flow/img/add-square-button.svg' %}"
+      /></a>
+    </h2>
+    <br />
+    {% for course in owned_courses %}
+
+    <div class="mdc-card" id="card">
+      <div class="mdc-typography--title">{{ course.title }}</div>
+      <div class="mdc-typography--caption">
+        {% if course.author %}Created by {{ course.author.username }}{% endif %}
+      </div>
+      <div class="mdc-typography--body1">{{ course.description }}</div>
+      <div class="mdc-card__actions">
+        <div class="mdc-card__action-buttons">
+          <div class="mdc-typography--caption caption">
+            <div>Published on {{ course.created_on }}</div>
+          </div>
+        </div>
+        <div class="mdc-card__action-icons">
+          {% if user.pk is course.author.pk %}
+          <!-- -->
+          <a href="{% url 'course_flow:workflow-update' pk=course.id %}">
+            <!-- -->
+            <img
+              class="link-image"
+              src="{% static 'course_flow/img/pencil-blue.svg' %}"
+            />
+          </a>
+          <!-- -->
+          {% else %}
+          <!-- -->
+          <a href="{% url 'course_flow:course-detail-view' pk=course.id %}"
+            ><img
+              class="link-image"
+              src="{% static 'course_flow/img/pageview-24px.svg' %}"
+          /></a>
+          <!-- -->
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>{% trans "You haven't created a course yet." %}</p>
+    {% endfor %}
+    <!-- -->
+    <h2>
+      Your Live Courses
+    </h2>
+    <br />
+    <!-- -->
+    {% for course in owned_static_courses %}
+
+    <div class="mdc-card" id="card">
+      <div class="mdc-typography--title">{{ course.title }}</div>
+      <div class="mdc-typography--caption">
+        {% if course.author %}Created by {{ course.author.username }}{% endif %}
+      </div>
+      <div class="mdc-typography--body1">{{ course.description }}</div>
+      <div class="mdc-card__actions">
+        <div class="mdc-card__action-buttons">
+          <div class="mdc-typography--caption caption">
+            <div>Published on {{ course.created_on }}</div>
+          </div>
+        </div>
+        <div class="mdc-card__action-icons">
+          <!-- -->
+          <a
+            href="{% url 'course_flow:static-course-detail-view' pk=course.id %}"
+          >
+            <!-- -->
+            <img
+              class="link-image"
+              src="{% static 'course_flow/img/pageview-24px.svg' %}"
+            />
+          </a>
+          <!-- -->
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>{% trans "You haven't connnected a course to a group yet." %}</p>
+    {% endfor %}
+    <!-- -->
+    <h2>
+      Your Activities
+      <a href="{% url 'course_flow:activity-create' %}"
+        ><img
+          class="create-button link-image"
+          src="{% static 'course_flow/img/add-square-button.svg' %}"
+      /></a>
+    </h2>
+    <br />
+    {% for activity in owned_activities %}
+
+    <div class="mdc-card" id="card">
+      <div class="mdc-typography--title">{{ activity.title }}</div>
+      <div class="mdc-typography--caption">
+        {% if activity.author %}Created by {{ activity.author.username }}
+        <!-- -->
+        {% endif %}
+      </div>
+      <div class="mdc-typography--body1">{{ activity.description }}</div>
+      <div class="mdc-card__actions">
+        <div class="mdc-card__action-buttons">
+          <div class="mdc-typography--caption caption">
+            <div>Published on {{ activity.created_on }}</div>
+          </div>
+        </div>
+        <div class="mdc-card__action-icons">
+          {% if user.pk is activity.author.pk %}
+          <!-- -->
+          <a href="{% url 'course_flow:workflow-update' pk=activity.id %}">
+            <!-- -->
+            <img
+              class="link-image"
+              src="{% static 'course_flow/img/pencil-blue.svg' %}"
+            />
+          </a>
+          <!-- -->
+          {% else %}
+          <!-- -->
+          <a href="{% url 'course_flow:activity-detail-view' pk=activity.id %}"
+            ><img
+              class="link-image"
+              src="{% static 'course_flow/img/pageview-24px.svg' %}"
+          /></a>
+          <!-- -->
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>{% trans "You haven't created an activity yet." %}</p>
+    {% endfor %}
+  </div>
+  <div id="total-content-container" class="sub-container">
+    <h2>
+      All Programs
+    </h2>
+    <br />
+    {% for program in programs %}
+
+    <div class="mdc-card" id="card">
+      <div class="mdc-typography--title">{{ program.title }}</div>
+      <div class="mdc-typography--caption">
+        {% if program.author %}Created by {{ program.author.username }}
+        <!-- -->
+        {% endif %}
+      </div>
+      <div class="mdc-typography--body1">{{ program.description }}</div>
+      <div class="mdc-card__actions">
+        <div class="mdc-card__action-buttons">
+          <div class="mdc-typography--caption caption">
+            <div>Published on {{ program.created_on }}</div>
+          </div>
+        </div>
+        <div class="mdc-card__action-icons">
+          {% if user.pk is program.author.pk %}
+          <!-- -->
+          <a href="{% url 'course_flow:workflow-update' pk=program.id %}">
+            <!-- -->
+            <img
+              class="link-image"
+              src="{% static 'course_flow/img/pencil-blue.svg' %}"
+            />
+          </a>
+          <!-- -->
+          {% else %}
+          <!-- -->
+          <a href="{% url 'course_flow:program-detail-view' pk=program.id %}"
+            ><img
+              class="link-image"
+              src="{% static 'course_flow/img/pageview-24px.svg' %}"
+          /></a>
+          <!-- -->
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>{% trans "Nobody else has created a program yet." %}</p>
+    {% endfor %}
+    <!-- -->
+    <h2>
+      All Courses
+    </h2>
+    <br />
+    {% for course in courses %}
+
+    <div class="mdc-card" id="card">
+      <div class="mdc-typography--title">{{ course.title }}</div>
+      <div class="mdc-typography--caption">
+        {% if course.author %}Created by {{ course.author.username }}{% endif %}
+      </div>
+      <div class="mdc-typography--body1">{{ course.description }}</div>
+      <div class="mdc-card__actions">
+        <div class="mdc-card__action-buttons">
+          <div class="mdc-typography--caption caption">
+            <div>Published on {{ course.created_on }}</div>
+          </div>
+        </div>
+        <div class="mdc-card__action-icons">
+          {% if user.pk is course.author.pk %}
+          <!-- -->
+          <a href="{% url 'course_flow:workflow-update' pk=course.id %}">
+            <!-- -->
+            <img
+              class="link-image"
+              src="{% static 'course_flow/img/pencil-blue.svg' %}"
+            />
+          </a>
+          <!-- -->
+          {% else %}
+          <!-- -->
+          <a
+            href="{% url 'course_flow:static-course-detail-view' pk=course.id %}"
+            ><img
+              class="link-image"
+              src="{% static 'course_flow/img/pageview-24px.svg' %}"
+          /></a>
+          <!-- -->
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>{% trans "Nobody else has created a course yet." %}</p>
+    {% endfor %}
+    <!-- -->
+    <h2>
+      All Activities
+    </h2>
+    <br />
+    {% for activity in activities %}
+
+    <div class="mdc-card" id="card">
+      <div class="mdc-typography--title">{{ activity.title }}</div>
+      <div class="mdc-typography--caption">
+        {% if activity.author %}Created by {{ activity.author.username }}
+        <!-- -->
+        {% endif %}
+      </div>
+      <div class="mdc-typography--body1">{{ activity.description }}</div>
+      <div class="mdc-card__actions">
+        <div class="mdc-card__action-buttons">
+          <div class="mdc-typography--caption caption">
+            <div>Published on {{ activity.created_on }}</div>
+          </div>
+        </div>
+        <div class="mdc-card__action-icons">
+          {% if user.pk is activity.author.pk %}
+          <!-- -->
+          <a href="{% url 'course_flow:activity-update' pk=activity.id %}">
+            <!-- -->
+            <img
+              class="link-image"
+              src="{% static 'course_flow/img/pencil-blue.svg' %}"
+            />
+          </a>
+          <!-- -->
+          {% else %}
+          <!-- -->
+          <a href="{% url 'course_flow:activity-detail-view' pk=activity.id %}"
+            ><img
+              class="link-image"
+              src="{% static 'course_flow/img/pageview-24px.svg' %}"
+          /></a>
+          <!-- -->
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p>{% trans "Nobody else has created an activity yet." %}</p>
+    {% endfor %}
+  </div>
+</div>
+<!-- -->
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %}
+<script nonce="{{ request.csp_nonce }}">
+  window.addEventListener("load", function() {
+    userFeedback.injectDialog(
+      "{% trans 'Let us know how we can improve your experience!' %}",
+      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
+      "{% trans 'Thanks for your feedback!' %}",
+      "{% trans 'Sorry, please try again later!' %}",
+      "{% url 'user_feedback:post' %}"
+    );
+  });
+</script>
+{% endblock %}
