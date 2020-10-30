@@ -14,6 +14,7 @@ from .models import (
     StrategyWorkflow,
     Program,
     NodeCompletionStatus,
+    WorkflowProject,
 )
 from .serializers import (
     serializer_lookups,
@@ -96,43 +97,76 @@ def home_view(request):
     return render(request, "course_flow/home.html", context)
 
 
+
+class ProjectCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Project
+    fields = ["title", "description"]
+    template_name = "course_flow/project_create.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super(ProjectCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "course_flow:project-update", kwargs={"pk": self.object.pk}
+        )
+    
+    
+class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Project
+    template_name = "course_flow/project_detail.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
+
+
 class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Project
+    fields = ["title", "description"]
     template_name = "course_flow/project_update.html"
     
     def test_func(self):
         return self.get_object().author == self.request.user
     
-    
     def get_context_data(self, **kwargs):
-        context = {
-            "programs": Program.objects.exclude(author=request.user),
-            "courses": Course.objects.exclude(author=request.user, static=True),
-            "activities": Activity.objects.exclude(
-                author=request.user, static=True
-            ),
-            "owned_programs": Program.objects.filter(
-                author=request.user
-            ).exclude(project=project),
-            "owned_courses": Course.objects.filter(
-                author=request.user, static=False
-            ).exclude(project=project),
-            "owned_activities": Activity.objects.filter(
-                author=request.user, static=False
-            ).exclude(project=project),
-            "project_programs":Program.objects.filter(
-                author=request.user,project=project
-            ),
-            "project_courses":Course.objects.filter(
-                author=request.user,project=project, static=False
-            ),
-            "project_static_courses": Course.objects.filter(
-                author=request.user, project=project, static=True
-            ),
-            "project_activities":Activity.objects.filter(
-                author=request.user,project=project, static=False
+        context = super(UpdateView, self).get_context_data(**kwargs)
+        project = self.object
+        context["programs"]=Program.objects.exclude(author=self.request.user)
+        context["courses"]=Course.objects.exclude(author=self.request.user).exclude(static=True)
+        context["activities"]=Activity.objects.exclude(
+                author=self.request.user
+            ).exclude(static=True)
+        context["owned_programs"]= Program.objects.filter(
+                author=self.request.user
+            ).exclude(project=project)
+        context["owned_courses"]= Course.objects.filter(
+                author=self.request.user, static=False
+            ).exclude(project=project)
+        context["owned_activities"]= Activity.objects.filter(
+                author=self.request.user, static=False
+            ).exclude(project=project)
+        context["project_programs"]= Program.objects.filter(
+                author=self.request.user,project=project
             )
-        }
+        context["project_courses"]=Course.objects.filter(
+                author=self.request.user,project=project, static=False
+            )
+        context["project_static_courses"]= Course.objects.filter(
+                author=self.request.user, project=project, static=True
+            )
+        context["project_activities"]= Activity.objects.filter(
+                author=self.request.user,project=project, static=False
+            )
         return context
 
 class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -267,14 +301,21 @@ class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "course_flow/program_create.html"
 
     def test_func(self):
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
+            in self.request.user.groups.all() and
+            project.author == self.request.user
         )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super(ProgramCreateView, self).form_valid(form)
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
+        response = super(CreateView, self).form_valid(form)
+        WorkflowProject.objects.create(
+            project=project,workflow=form.instance
+        )
+        return response
 
     def get_success_url(self):
         return reverse(
@@ -348,14 +389,21 @@ class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "course_flow/course_create.html"
 
     def test_func(self):
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
+            in self.request.user.groups.all() and
+            project.author == self.request.user
         )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super(CourseCreateView, self).form_valid(form)
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
+        response = super(CreateView, self).form_valid(form)
+        WorkflowProject.objects.create(
+            project=project,workflow=form.instance
+        )
+        return response
 
     def get_success_url(self):
         return reverse(
@@ -429,14 +477,21 @@ class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "course_flow/activity_create.html"
 
     def test_func(self):
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
+            in self.request.user.groups.all() and
+            project.author == self.request.user
         )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super(ActivityCreateView, self).form_valid(form)
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
+        response = super(CreateView, self).form_valid(form)
+        WorkflowProject.objects.create(
+            project=project,workflow=form.instance
+        )
+        return response
 
     def get_success_url(self):
         return reverse(

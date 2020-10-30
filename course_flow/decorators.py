@@ -28,7 +28,8 @@ owned_models = [
     "nodelink",
     "node",
     "strategy",
-    "workflow"
+    "workflow",
+    "project"
 ]
 owned_throughmodels = [
     "node",
@@ -37,7 +38,9 @@ owned_throughmodels = [
     "strategyworkflow",
     "workflow",
     "columnworkflow",
-    "workflow"
+    "workflow",
+    "workflowproject",
+    "project"
 ]
 program_level_owned_models = ["assessment", "program", "course", "program"]
 
