@@ -535,6 +535,7 @@ class NodeSerializerShallow(serializers.ModelSerializer):
     outcomenode_set = serializers.SerializerMethodField()
     columnworkflow = serializers.SerializerMethodField()
     outgoing_links = serializers.SerializerMethodField()
+    linked_workflow_title = serializers.SerializerMethodField()
 
     node_type_display = serializers.CharField(source="get_node_type_display")
 
@@ -558,7 +559,10 @@ class NodeSerializerShallow(serializers.ModelSerializer):
             "parent_node",
             "node_type",
             "node_type_display",
-            "has_autolink"
+            "has_autolink",
+            "represents_workflow",
+            "linked_workflow",
+            "linked_workflow_title"
         ]
 
     def get_columnworkflow(self, instance):
@@ -573,6 +577,10 @@ class NodeSerializerShallow(serializers.ModelSerializer):
     def get_outgoing_links(self, instance):
         links = instance.outgoing_links.all()
         return list(map(linkIDMap, links))
+    
+    def get_linked_workflow_title(self, instance):
+        if(instance.linked_workflow is not None):
+            return instance.linked_workflow.title
 
     def create(self, validated_data):
         return Node.objects.create(
@@ -590,6 +598,9 @@ class NodeSerializerShallow(serializers.ModelSerializer):
         )
         instance.activity_classification = validated_data.get(
             "activity_classification", instance.activity_classification
+        )
+        instance.represents_workflow = validated_data.get(
+            "represents_workflow", instance.represents_workflow
         )
         instance.save()
         return instance

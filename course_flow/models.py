@@ -70,6 +70,11 @@ class Column(models.Model):
     )
     column_type = models.PositiveIntegerField(default=0, choices=COLUMN_TYPES)
 
+    is_original=models.BooleanField(default=False)
+    parent_column=models.ForeignKey(
+        "Column", on_delete=models.SET_NULL, null=True
+    )
+    
     default_columns = {
         "activity": [1, 2, 3, 4],
         "course": [11, 12, 13, 14],
@@ -120,6 +125,11 @@ class NodeLink(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    is_original=models.BooleanField(default=False)
+    parent_nodelink=models.ForeignKey(
+        "NodeLink", on_delete=models.SET_NULL, null=True
+    )
+    
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     class Meta:
@@ -219,6 +229,9 @@ class Node(models.Model):
         (PROGRAM_NODE, "Program Node"),
     )
     node_type = models.PositiveIntegerField(choices=NODE_TYPES, default=0)
+    
+    represents_workflow = models.BooleanField(default=False)
+    linked_workflow = models.ForeignKey("Workflow", on_delete=models.SET_NULL, null=True)
 
     column = models.ForeignKey("Column", on_delete=models.PROTECT, null=True)
 
@@ -328,6 +341,8 @@ class Workflow(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     static = models.BooleanField(default=False)
+    
+    published = models.BooleanField(default=False)
 
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True

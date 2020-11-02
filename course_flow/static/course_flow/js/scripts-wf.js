@@ -236,6 +236,7 @@ export class ComponentJSON extends Component{
     setJSON(valuekey,newvalue){
         var newstate = {};
         newstate[valuekey]=newvalue;
+        console.log(newstate);
         this.setState(newstate,
             ()=>updateValue(this.props.objectID,this.objectType,newstate)
         );
@@ -259,6 +260,7 @@ export class ComponentJSON extends Component{
     addEditable(){
         if(this.state.selected){
             var type=this.objectType;
+            console.log(this.state);
             return(
                 <div class="right-panel-container edit-bar-container">
                     <div class="right-panel-inner">
@@ -273,6 +275,15 @@ export class ComponentJSON extends Component{
                             <div>
                                 <h4>Description:</h4>
                                 <input value={this.state.description}/>
+                            </div>
+                        }
+                        {type=="node" && this.state.node_type!="activity_node" &&
+                            <div>
+                                <h4>Linked Workflow:</h4>
+                                <div>{this.state.linked_workflow_title}</div>
+                                <button onClick={()=>{getLinkedWorkflowMenu(this.state,this.updateJSON.bind(this))}}>
+                                    Change
+                                </button>
                             </div>
                         }
                         {this.addDeleteSelf()}
@@ -1146,6 +1157,125 @@ export class NodeBarStrategyWorkflowView extends ComponentJSON{
 }
 
 export function renderWorkflowView(workflow,container){
-    render(<WorkflowView objectID={workflow.id} type={workflow.type}/>,container);
+    render(
+        <WorkflowView objectID={workflow.id} type={workflow.type}/>,
+        container
+    );
 }
 
+export function renderMessageBox(data,type,updateFunction){
+    console.log(data);
+    console.log(container);
+    console.log(type);
+    render(
+        <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
+        $("#popup-container").get()[0]
+    );
+}
+
+export function closeMessageBox(){
+    render(null,$("#popup-container").get()[0]);
+}
+
+export class MessageBox extends Component{
+    render(){
+        console.log("rendering workflows menu");
+        console.log(this.props.message_type);
+        var menu;
+        if(this.props.message_type=="linked_workflow_menu")menu=(
+            <WorkflowsMenu type={this.props.message_type} data={this.props.message_data} actionFunction={this.props.actionFunction}/>
+        );
+        return(
+            <div class="screen-barrier" onClick={(evt)=>evt.stopImmediatePropagation()}>
+                <div class="message-box">
+                    {menu}
+                </div>
+            </div>
+        );
+    }
+}
+
+export class WorkflowsMenu extends Component{
+    render(){
+        console.log("rendering workflows menu");
+        var project_workflows = this.props.data.project_workflows.map((project_workflow)=>
+                <WorkflowForMenu key={project_workflow.id} type={this.props.type} owned={true} in_project={true} workflow_data={project_workflow} selected={(this.state.selected==project_workflow.id)} selectAction={this.workflowSelected.bind(this,project_workflow.id,"project")}/>
+            );
+        var other_workflows = this.props.data.other_workflows.map((other_workflow)=>
+                <WorkflowForMenu key={other_workflow} type={this.props.type} owned={true} in_project={true} workflow_data={other_workflow} selected={(this.state.selected==other_workflow.id)} selectAction={this.workflowSelected.bind(this,other_workflow.id,"other")}/>
+            );
+        var published_workflows = this.props.data.published_workflows.map((published_workflow)=>
+                <WorkflowForMenu key={published_workflow} type={this.props.type} owned={true} in_project={false} workflow_data={published_workflow} selected={(this.state.selected==published_workflow.id)} selectAction={this.workflowSelected.bind(this,published_workflow.id,"published")}/>
+            );
+        
+        return(
+            <div>
+                <div class="sub-container">
+                    <h2>From this project:</h2>
+                    {project_workflows}
+                </div>
+                <div class="sub-container">
+                    <h2>From your other projects:</h2>
+                    {other_workflows}
+                    <h2>From other published projects:</h2>
+                    {published_workflows}
+                </div>
+                <div class="action-bar">
+                    {this.getActions()}
+                </div>
+            </div>
+        );
+    }
+    
+    workflowSelected(selected_id,selected_type){
+        this.setState({selected:selected_id,selected_type:selected_type});
+    }
+
+    getActions(){
+        var actions = [];
+        if(this.props.type=="linked_workflow_menu"){
+            var text="link to node";
+            if(this.state.selected && this.state.selected_type!="project")text="copy to current project and "+text;
+            actions.push(
+                <button disabled={!this.state.selected} onClick={()=>{
+                    setLinkedWorkflow(this.props.data.node_id,this.state.selected,this.props.actionFunction)
+                    closeMessageBox();
+                }}>
+                    {text}
+                </button>
+            );
+            actions.push(
+                <button onClick={()=>{this.props.actionFunction("linked_workflow",null);closeMessageBox();}}>
+                    set to none
+                </button>
+            );
+            actions.push(
+                <button onClick={closeMessageBox}>
+                    cancel
+                </button>
+            );
+        }
+        return actions;
+    }
+}
+
+export class WorkflowForMenu extends Component{
+    render(){
+        var data = this.props.workflow_data;
+        var css_class = "workflow-for-menu";
+        if(this.props.selected)css_class+=" selected";
+        return(
+            <div class={css_class} onClick={this.props.selectAction}>
+                <div class="workflow-title">
+                    {data.title}
+                </div>
+                <div class="workflow-created">
+                    { "Created"+(data.author && " by "+data.author)+" on "+data.created_on}
+                </div>
+                <div class="activity-description">
+                    {data.description}
+                </div>
+            </div>
+        );
+    }
+}

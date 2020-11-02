@@ -569,20 +569,6 @@ def update_program_json(request: HttpRequest) -> HttpResponse:
     return save_serializer(serializer)
 
 
-def duplicate_node(node: Node, author: User) -> Node:
-    new_node = Node.objects.create(
-        title=node.title,
-        description=node.description,
-        author=author,
-        is_original=False,
-        parent_node=node,
-        work_classification=node.work_classification,
-        activity_classification=node.activity_classification,
-        column=node.column,
-        node_type=node.node_type,
-    )
-    return new_node
-
 
 # Called when a node is added from the sidebar (duplicated)
 @login_required
@@ -605,23 +591,6 @@ def add_node(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
-
-
-def duplicate_strategy(strategy: Strategy, author: User) -> Strategy:
-    new_strategy = Strategy.objects.create(
-        title=strategy.title,
-        description=strategy.description,
-        author=author,
-        is_original=False,
-        parent_strategy=strategy,
-    )
-    for node in strategy.nodes.all():
-        NodeStrategy.objects.create(
-            strategy=new_strategy,
-            node=duplicate_node(node, author),
-            rank=NodeStrategy.objects.get(node=node, strategy=strategy).rank,
-        )
-    return new_strategy
 
 
 # Called when a strategy is added from the sidebar (duplicated)
@@ -984,6 +953,181 @@ def dialog_form_remove(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
+"""
+Contextual information methods
+"""
+@require_POST
+@ajax_login_required
+@is_owner("nodePk")
+def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
+    node = Node.objects.get(pk=request.POST.get("nodePk"))
+    try:
+        project = node.strategy_set.first().workflow_set.first().project_set.first()
+        if node.node_type==Node.COURSE_NODE:
+            workflows = Activity.objects.filter(author=request.user,project=project, static=False)
+            workflows_other = Activity.objects.filter(author=request.user, static=False).exclude(project=project)
+            workflows_pub = Activity.objects.exclude(author=request.user).exclude(static=True)
+            SerializerClass = ActivitySerializerShallow
+        if node.node_type==Node.PROGRAM_NODE:
+            workflows = Course.objects.filter(author=request.user,project=project, static=False)
+            workflows_other = Course.objects.filter(author=request.user, static=False).exclude(project=project)
+            workflows_pub = Course.objects.exclude(author=request.user).exclude(static=True)
+            SerializerClass = CourseSerializerShallow
+        project_workflows = []
+        other_workflows = []
+        published_workflows=[]
+        project_workflows=(
+            SerializerClass(workflows, many=True).data
+        )
+        other_workflows=(
+            SerializerClass(workflows_other, many=True).data
+        )
+        published_workflows=(
+            SerializerClass(workflows_pub, many=True).data
+        )
+    except AttributeError:
+        return JsonResponse({"action":"error"})
+    return JsonResponse({"action":"posted","project_workflows":project_workflows,"other_workflows":other_workflows,"published_workflows":published_workflows,"node_id":node.id})
+    
+"""
+Duplication methods
+"""
+
+
+def duplicate_nodelink(nodelink: NodeLink, author: User, source_node: Node, target_node: Node) -> NodeLink:
+    new_nodelink = NodeLink.objects.create(
+        title=nodelink.title,
+        author = author,
+        source_node = source_node,
+        target_node = target_node,
+        source_port = nodelink.source_port,
+        target_port = nodelink.target_port,
+        dashed=nodelink.dashed,
+        is_original=False,
+        parent_nodelink=nodelink,
+    )
+    
+    return new_nodelink
+
+def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
+    if(new_workflow is not None):
+        for new_column in new_workflow.columns.all():
+            print(new_column)
+            print(node.column)
+            if new_column==node.column or new_column.parent_column==node.column:
+                column=new_column
+                break
+    else:
+        column = node.column
+    new_node = Node.objects.create(
+        title = node.title,
+        description = node.description,
+        author=author,
+        node_type=node.node_type,
+        column=column,
+        work_classification = node.work_classification,
+        activity_classification = node.activity_classification,
+        has_autolink=node.has_autolink,
+        represents_workflow = node.represents_workflow,
+        is_original=False,
+        parent_node=node,
+    )
+    if node.linked_workflow is not None:
+        set_linked_workflow(new_node,node.linked_workflow)
+        
+    return new_node
+    
+
+def duplicate_strategy(strategy:Strategy, author: User, new_workflow: Workflow) -> Strategy:
+    new_strategy = Strategy.objects.create(
+        title=strategy.title,
+        description = strategy.description,
+        author = author,
+        is_original=False,
+        parent_strategy=strategy,
+        strategy_type=strategy.strategy_type
+    )
+    
+    for node in strategy.nodes.all():
+        NodeStrategy.objects.create(
+            node=duplicate_node(node, author, new_workflow),
+            strategy=new_strategy,
+            rank=NodeStrategy.objects.get(
+                node=node,strategy=strategy
+            ).rank
+        )
+        
+    return new_strategy
+
+
+def duplicate_column(column: Column, author: User) -> Column:
+    new_column = Column.objects.create(
+        title=column.title,
+        author = author,
+        is_original=False,
+        parent_column = column,
+        column_type = column.column_type
+    )
+    
+    return new_column
+
+def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
+    model = model_lookups[workflow.type]
+    
+    new_workflow = model.objects.create(
+        title=workflow.title,
+        description=workflow.description,
+        author=author,
+        is_original=False,
+        parent_workflow=workflow
+    )
+    
+    for column in workflow.columns.all():
+        ColumnWorkflow.objects.create(
+            column=duplicate_column(column, author),
+            workflow=new_workflow,
+            rank=ColumnWorkflow.objects.get(
+                column=column, workflow=workflow
+            ).rank,
+        )
+    for strategy in workflow.strategies.all():
+        StrategyWorkflow.objects.create(
+            strategy=duplicate_strategy(strategy, author, new_workflow),
+            workflow=new_workflow,
+            rank=StrategyWorkflow.objects.get(
+                strategy=strategy, workflow=workflow
+            ).rank,
+        )
+        
+    #Handle all the nodelinks. These need to be handled here because they potentially span strategies
+    for strategy in new_workflow.strategies.all():
+        for node in strategy.nodes.all():
+            for node_link in NodeLink.objects.filter(source_node=node.parent_node):
+                for strategy2 in new_workflow.strategies.all():
+                    if strategy2.nodes.filter(parent_node==node_link.target_node).count()>0:
+                        duplicate_nodelink(
+                            nodelink,
+                            author,
+                            node,
+                            strategy2.nodes.get(parent_node==node_link.target_node)
+                        )
+                    
+    
+    return new_workflow
+
+
+@require_POST
+@ajax_login_required
+def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
+    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    try:
+        clone = duplicate_workflow(course, request.user)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted", "clone_pk": workflow.pk})
+   
+
 
 """
 Creation methods
@@ -1236,10 +1380,42 @@ def update_value(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
+def set_linked_workflow(node: Node,workflow):
+    project = node.strategy_set.first().workflow_set.first().project_set.first()
+    if project.author==node.author or project.published:
+        print(workflow)
+        print(workflow.author)
+        print(WorkflowProject.objects.get(workflow=workflow))
+        if WorkflowProject.objects.get(workflow=workflow).project==project:
+            node.linked_workflow=workflow
+            node.save()
+        else:
+            if(workflow.author==node.author or WorkflowProject.objects.get(workflow=workflow).published):
+                new_workflow = duplicate_workflow(workflow,node.author)
+                WorkflowProject.objects.create(workflow=new_workflow,project=project)
+                node.linked_workflow=new_workflow
+                node.save()
+
+# Sets the linked workflow for a node, adding it to the project if different
+@require_POST
+@ajax_login_required
+@is_owner("nodePk")
+def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
+    try:
+        node_id = json.loads(request.POST.get("nodePk"))
+        workflow_id = json.loads(request.POST.get("workflowPk"))
+        node = Node.objects.get(pk=node_id)
+        workflow = Workflow.objects.get_subclass(pk=workflow_id)
+        set_linked_workflow(node,workflow)
+
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
 """
 Delete methods
 """
-
 
 @require_POST
 @ajax_login_required

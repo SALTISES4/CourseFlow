@@ -13,8 +13,8 @@
 <!-- -->
 {% block body %}
 
-<div id=container class="body-wrapper"></div>
-<div id="node-form-container"></div>
+<div id=container class="body-wrapper"><div id="popup-container"></div></div>
+
 
 {% endblock %}
 <!-- -->
@@ -74,7 +74,30 @@ window.addEventListener("load", function(){
     
 })
 
+function getLinkedWorkflowMenu(nodeData,updateFunction){
+    $.post("{% url 'course_flow:get-possible-linked-workflows' %}",{
+        nodePk:JSON.stringify(nodeData.id),
+    },(data)=>openLinkedWorkflowMenu(data,updateFunction));
+}
 
+function openLinkedWorkflowMenu(response,updateFunction){
+    console.log(response);
+    if(response.action=="posted"){
+        workflow.renderMessageBox(response,"linked_workflow_menu",updateFunction);
+    }else alert("Failed to find the parent project. Is this workflow in a project?");
+}
+
+function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>console.log("success")){
+    console.log(node_id)
+    $.post("{% url 'course_flow:set-linked-workflow' %}", {
+        nodePk:node_id,
+        workflowPk:workflow_id,
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
+    
 function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
     $.post("{% url 'course_flow:update-value' %}", {
         objectID:JSON.stringify(objectID),
@@ -86,7 +109,7 @@ function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("
     });
 }
     
-    
+//Add a new column to the workflow 
 function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("success")){
     $.post("{% url 'course_flow:new-column' %}", {
         workflowPk:workflowPk,
@@ -97,7 +120,7 @@ function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("succ
     });
 }
     
-    
+//Add a new node to a strategy
 function newNode(strategyPk,position=-1,column,callBackFunction=()=>console.log("success")){
     $.post("{% url 'course_flow:new-node' %}", {
         strategyPk:JSON.stringify(strategyPk),
@@ -109,6 +132,7 @@ function newNode(strategyPk,position=-1,column,callBackFunction=()=>console.log(
     });
 }
   
+//Create a nodelink from the source to the target, at the given ports
 function newNodeLink(source_node,target_node,source_port,target_port,callBackFunction=()=>console.log("success")){
     $.post("{% url 'course_flow:new-node-link' %}", {
         nodePk:JSON.stringify(source_node),

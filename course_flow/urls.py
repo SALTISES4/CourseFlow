@@ -44,13 +44,33 @@ def flow_patterns():
             views.WorkflowUpdateView.as_view(),
             name="workflow-update",
         ),
-        url(r"^workflow/updatevalue/$", views.update_value, name="update-value"),
+        url(
+            r"^workflow/updatevalue/$", views.update_value, name="update-value"
+        ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
-        url(r"^workflow/insert-sibling/$", views.insert_sibling, name="insert-sibling"),
+        url(
+            r"^workflow/insert-sibling/$",
+            views.insert_sibling,
+            name="insert-sibling",
+        ),
         url(r"^workflow/inserted-at/$", views.inserted_at, name="inserted-at"),
         url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
-        url(r"^workflow/node-link/new", views.new_node_link, name="new-node-link"),
+        url(
+            r"^workflow/node/set-linked-workflow/$",
+            views.set_linked_workflow_ajax,
+            name="set-linked-workflow",
+        ),
+        url(
+            r"^workflow/node-link/new",
+            views.new_node_link,
+            name="new-node-link",
+        ),
+        url(
+            r"^workflow/get-possible-linked-workflows/",
+            views.get_possible_linked_workflows,
+            name="get-possible-linked-workflows",
+        ),
         url(
             r"^workflow/(?P<pk>[0-9]+)/$",
             views.WorkflowDetailView.as_view(),
