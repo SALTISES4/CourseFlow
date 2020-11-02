@@ -1403,8 +1403,12 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
         node_id = json.loads(request.POST.get("nodePk"))
         workflow_id = json.loads(request.POST.get("workflowPk"))
         node = Node.objects.get(pk=node_id)
-        workflow = Workflow.objects.get_subclass(pk=workflow_id)
-        set_linked_workflow(node,workflow)
+        if(workflow_id==-1):
+            node.linked_workflow = None
+            node.save()
+        else:
+            workflow = Workflow.objects.get_subclass(pk=workflow_id)
+            set_linked_workflow(node,workflow)
 
     except ValidationError:
         return JsonResponse({"action": "error"})

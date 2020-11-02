@@ -1245,7 +1245,10 @@ export class WorkflowsMenu extends Component{
                 </button>
             );
             actions.push(
-                <button onClick={()=>{this.props.actionFunction("linked_workflow",null);closeMessageBox();}}>
+                <button onClick={()=>{
+                    setLinkedWorkflow(this.props.data.node_id,-1,this.props.actionFunction)
+                    closeMessageBox();
+                }}>
                     set to none
                 </button>
             );
