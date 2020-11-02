@@ -100,27 +100,15 @@ class NodeLink(models.Model):
     target_node = models.ForeignKey(
         "Node", on_delete=models.CASCADE, related_name="incoming_links"
     )
-    NORTH=0
-    EAST=1
-    SOUTH=2
-    WEST=3
-    SOURCE_PORTS = (
-        (EAST,"e"),
-        (SOUTH,"s"),
-        (WEST,"w")
-    )
-    TARGET_PORTS = (
-        (NORTH,"n"),
-        (EAST,"e"),
-        (WEST,"w")
-    )
-    source_port = models.PositiveIntegerField(
-        choices=SOURCE_PORTS, default=2
-    )
-    target_port = models.PositiveIntegerField(
-        choices=TARGET_PORTS, default=0
-    )
-    
+    NORTH = 0
+    EAST = 1
+    SOUTH = 2
+    WEST = 3
+    SOURCE_PORTS = ((EAST, "e"), (SOUTH, "s"), (WEST, "w"))
+    TARGET_PORTS = ((NORTH, "n"), (EAST, "e"), (WEST, "w"))
+    source_port = models.PositiveIntegerField(choices=SOURCE_PORTS, default=2)
+    target_port = models.PositiveIntegerField(choices=TARGET_PORTS, default=0)
+
     dashed = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -249,8 +237,10 @@ class Node(models.Model):
     )
 
     def __str__(self):
-        if self.title is not None: return self.title
-        else: return self.get_node_type_display()
+        if self.title is not None:
+            return self.title
+        else:
+            return self.get_node_type_display()
 
 
 class NodeCompletionStatus(models.Model):
@@ -369,7 +359,7 @@ class Workflow(models.Model):
     def type(self):
         for subclass in self.SUBCLASSES:
             try:
-                return getattr(self,subclass).type
+                return getattr(self, subclass).type
             except AttributeError:
                 pass
         return "workflow"
@@ -391,8 +381,10 @@ class Workflow(models.Model):
         return subclass
 
     def __str__(self):
-        if self.title is not None: return self.title
-        else: return self.type()
+        if self.title is not None:
+            return self.title
+        else:
+            return self.type()
 
 
 class Activity(Workflow):
@@ -415,8 +407,10 @@ class Activity(Workflow):
         return "activity"
 
     def __str__(self):
-        if self.title is not None:return self.title
-        else: return self.type()
+        if self.title is not None:
+            return self.title
+        else:
+            return self.type()
 
     class Meta:
         verbose_name = "Activity"
@@ -447,8 +441,10 @@ class Course(Workflow):
         return "course"
 
     def __str__(self):
-        if self.title is not None:return self.title
-        else: return self.type()
+        if self.title is not None:
+            return self.title
+        else:
+            return self.type()
 
 
 class Program(Workflow):
@@ -462,8 +458,10 @@ class Program(Workflow):
         return "program"
 
     def __str__(self):
-        if self.title is not None:return self.title
-        else: return self.type()
+        if self.title is not None:
+            return self.title
+        else:
+            return self.type()
 
 
 class ColumnWorkflow(models.Model):
@@ -605,14 +603,16 @@ def reorder_for_inserted_column_workflow(sender, instance, created, **kwargs):
 Default content creation receivers
 """
 
+
 @receiver(post_save, sender=Node)
 def create_default_node_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
         print(instance.node_type)
         # If this is an activity-level node, set the autolinks to true
-        if instance.node_type==instance.ACTIVITY_NODE:
-            instance.has_autolink=True
+        if instance.node_type == instance.ACTIVITY_NODE:
+            instance.has_autolink = True
             instance.save()
+
 
 @receiver(post_save, sender=Activity)
 def create_default_activity_content(sender, instance, created, **kwargs):
@@ -674,30 +674,3 @@ def switch_strategy_to_static(sender, instance, created, **kwargs):
         if instance.workflow.static:
             for node in instance.strategy.nodes.all():
                 node.students.add(*list(instance.workflow.students.all()))
-
-
-model_lookups = {
-    "nodelink": NodeLink,
-    "node": Node,
-    "column": Column,
-    "strategy": Strategy,
-    "activity": Activity,
-    "course": Course,
-    "program": Program,
-    "workflow": Workflow,
-    "nodestrategy": NodeStrategy,
-    "strategyworkflow": StrategyWorkflow,
-    "columnworkflow": ColumnWorkflow,
-}
-model_keys = [
-    "nodelink",
-    "node",
-    "column",
-    "strategy",
-    "activity",
-    "course",
-    "program",
-    "nodestrategy",
-    "strategyworkflow",
-    "columnworkflow",
-]

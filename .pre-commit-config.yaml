@@ -5,14 +5,21 @@ repos:
     rev: 18.9b0
     hooks:
       - id: black
-
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.0.0
     hooks:
       - id: flake8
-
-  - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
-    rev: v1.1.0
+  - repo: local
     hooks:
-      - id: python-safety-dependencies-check
+      - id: safety
+        name: safety
+        entry: safety check
+        language: system
         always_run: true
+        exclude: ".*"
+      - id: npm-audit
+        name: npm-audit
+        language: system
+        entry: npm audit
+        always_run: true
+        exclude: ".*"

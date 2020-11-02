@@ -5,44 +5,42 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow', '0014_auto_20201001_1817'),
-    ]
+    dependencies = [("course_flow", "0014_auto_20201001_1817")]
 
     operations = [
         migrations.AlterField(
-            model_name='column',
-            name='title',
+            model_name="column",
+            name="title",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AlterField(
-            model_name='node',
-            name='description',
+            model_name="node",
+            name="description",
             field=models.TextField(blank=True, max_length=400, null=True),
         ),
         migrations.AlterField(
-            model_name='node',
-            name='title',
+            model_name="node",
+            name="title",
             field=models.CharField(blank=True, max_length=30, null=True),
         ),
         migrations.AlterField(
-            model_name='strategy',
-            name='description',
+            model_name="strategy",
+            name="description",
             field=models.TextField(blank=True, max_length=400, null=True),
         ),
         migrations.AlterField(
-            model_name='strategy',
-            name='title',
+            model_name="strategy",
+            name="title",
             field=models.CharField(blank=True, max_length=30, null=True),
         ),
         migrations.AlterField(
-            model_name='workflow',
-            name='description',
+            model_name="workflow",
+            name="description",
             field=models.TextField(blank=True, max_length=400, null=True),
         ),
         migrations.AlterField(
-            model_name='workflow',
-            name='title',
+            model_name="workflow",
+            name="title",
             field=models.CharField(blank=True, max_length=30, null=True),
         ),
     ]
