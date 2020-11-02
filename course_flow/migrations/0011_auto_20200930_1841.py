@@ -5,19 +5,32 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow', '0010_auto_20200928_1734'),
-    ]
+    dependencies = [("course_flow", "0010_auto_20200928_1734")]
 
     operations = [
         migrations.AddField(
-            model_name='column',
-            name='column_type',
-            field=models.PositiveIntegerField(choices=[(0, 'Custom Activity Column'), (1, 'Out of Class (Instructor)'), (2, 'Out of Class (Students)'), (3, 'In Class (Instructor)'), (4, 'In Class (Students)'), (10, 'Custom Course Column'), (11, 'Preparation'), (12, 'Lesson'), (13, 'Artifact'), (14, 'Assessment'), (20, 'Custom Course Category')], default=0),
+            model_name="column",
+            name="column_type",
+            field=models.PositiveIntegerField(
+                choices=[
+                    (0, "Custom Activity Column"),
+                    (1, "Out of Class (Instructor)"),
+                    (2, "Out of Class (Students)"),
+                    (3, "In Class (Instructor)"),
+                    (4, "In Class (Students)"),
+                    (10, "Custom Course Column"),
+                    (11, "Preparation"),
+                    (12, "Lesson"),
+                    (13, "Artifact"),
+                    (14, "Assessment"),
+                    (20, "Custom Course Category"),
+                ],
+                default=0,
+            ),
         ),
         migrations.AlterField(
-            model_name='column',
-            name='title',
+            model_name="column",
+            name="title",
             field=models.CharField(max_length=50, null=True),
         ),
     ]

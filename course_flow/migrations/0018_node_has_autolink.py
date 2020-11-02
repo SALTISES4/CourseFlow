@@ -5,14 +5,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow', '0017_nodelink'),
-    ]
+    dependencies = [("course_flow", "0017_nodelink")]
 
     operations = [
         migrations.AddField(
-            model_name='node',
-            name='has_autolink',
+            model_name="node",
+            name="has_autolink",
             field=models.BooleanField(default=False),
-        ),
+        )
     ]

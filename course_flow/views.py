@@ -1,5 +1,4 @@
 from .models import (
-    model_lookups,
     User,
     Course,
     Column,
@@ -60,8 +59,9 @@ from django.contrib.auth.models import Group
 from .forms import RegistrationForm
 from django.shortcuts import render, redirect
 from django.db.models import ProtectedError
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 import math
+from .utils import *
 
 
 def registration_view(request):
@@ -127,17 +127,19 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return reverse(
             "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
         )
-    
+
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         workflow = self.get_object()
-        context["column_count"]=workflow.columns.count()
-        context["strategy_count"]=workflow.strategies.count()
+        context["column_count"] = workflow.columns.count()
+        context["strategy_count"] = workflow.strategies.count()
         nodes = Node.objects.filter(strategy__in=workflow.strategies.all())
         print(nodes)
         context["node_count"] = nodes.count()
-        context["node_link_count"] = NodeLink.objects.filter(source_node__in=nodes).count()
-        
+        context["node_link_count"] = NodeLink.objects.filter(
+            source_node__in=nodes
+        ).count()
+
         return context
 
 
@@ -865,7 +867,7 @@ def dialog_form_update(request: HttpRequest) -> HttpResponse:
     model = json.loads(request.POST.get("objectType"))
 
     serializer = serializer_lookups[model](
-        model_lookups[model].objects.get(id=data["id"]), data=data
+        get_model_from_str(object_type).objects.get(id=data["id"]), data=data
     )
 
     return save_serializer(serializer)
@@ -879,7 +881,7 @@ def dialog_form_delete(request: HttpRequest) -> HttpResponse:
     model = json.loads(request.POST.get("objectType"))
 
     try:
-        model_lookups[model].objects.get(id=id).delete()
+        get_model_from_str(object_type).objects.get(id=id).delete()
     except ProtectedError:
         return JsonResponse({"action": "error"})
 
@@ -937,10 +939,21 @@ def new_node(request: HttpRequest) -> HttpResponse:
     column_id = json.loads(request.POST.get("columnPk"))
     position = json.loads(request.POST.get("position"))
     strategy = Strategy.objects.get(pk=strategy_id)
-    if column_id>=0:column = Column.objects.get(pk=column_id)
-    else:column=ColumnWorkflow.objects.filter(workflow=StrategyWorkflow.objects.get(strategy=strategy).workflow).first().column
+    if column_id >= 0:
+        column = Column.objects.get(pk=column_id)
+    else:
+        column = (
+            ColumnWorkflow.objects.filter(
+                workflow=StrategyWorkflow.objects.get(
+                    strategy=strategy
+                ).workflow
+            )
+            .first()
+            .column
+        )
     try:
-        if column.author != strategy.author: raise ValidationError
+        if column.author != strategy.author:
+            raise ValidationError
         if position < 0 or position > strategy.nodes.count():
             position = strategy.nodes.count()
         node_strategy = NodeStrategy.objects.create(
@@ -959,7 +972,6 @@ def new_node(request: HttpRequest) -> HttpResponse:
     )
 
 
-
 @require_POST
 @ajax_login_required
 @is_owner("nodePk")
@@ -971,19 +983,18 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=node_id)
     target = Node.objects.get(pk=target_id)
     try:
-        if target.author != node.author: raise ValidationError
+        if target.author != node.author:
+            raise ValidationError
         node_link = NodeLink.objects.create(
             author=node.author,
             source_node=node,
             target_node=target,
             source_port=source_port,
-            target_port=target_port
+            target_port=target_port,
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {"action": "posted", "objectID": node_link.id}
-    )
+    return JsonResponse({"action": "posted", "objectID": node_link.id})
 
 
 # Add a new sibling to a through model
@@ -995,7 +1006,7 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
 
     try:
-        model = model_lookups[object_type].objects.get(id=object_id)
+        model = get_model_from_str(object_type).objects.get(id=object_id)
         if object_type == "strategyworkflow":
             newmodel = StrategyWorkflow.objects.create(
                 workflow=model.workflow,
@@ -1028,16 +1039,6 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
 Reorder methods
 """
 
-owned_throughmodels = [
-    "node",
-    "nodestrategy",
-    "strategy",
-    "strategyworkflow",
-    "workflow",
-    "columnworkflow",
-    "workflow",
-]
-
 # Insert a model via its throughmodel
 @require_POST
 @ajax_login_required
@@ -1050,24 +1051,23 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     new_parent_id = json.loads(request.POST.get("newParentID"))
     new_column_id = json.loads(request.POST.get("newColumnID"))
     try:
-        model = model_lookups[object_type].objects.get(id=object_id)
+        model_type = get_model_from_str(object_type)
+        model = model_type.objects.get(id=object_id)
         old_position = model.rank
-        parentType = owned_throughmodels[
-            owned_throughmodels.index(object_type) + 1
-        ]
 
-        parent = model_lookups[parentType].objects.get(id=parent_id)
+        parentType = get_parent_model_str(object_type)
+
+        parent = get_model_from_str(parentType).objects.get(id=parent_id)
+
         if not new_parent_id is None:
-            new_parent = model_lookups[parentType].objects.get(
+            new_parent = get_model_from_str(parentType).objects.get(
                 id=new_parent_id
             )
         else:
             new_parent = parent
-        new_parent_count = (
-            model_lookups[object_type]
-            .objects.filter(**{parentType: new_parent})
-            .count()
-        )
+        new_parent_count = model_type.objects.filter(
+            **{parentType: new_parent}
+        ).count()
         if new_position < 0:
             new_position = 0
         if new_position > new_parent_count:
@@ -1077,9 +1077,7 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
         if parent.id == new_parent.id:
             if delta != 0:
                 sign = int(math.copysign(1, delta))
-                for out_of_order_link in model_lookups[
-                    object_type
-                ].objects.filter(
+                for out_of_order_link in model_type.objects.filter(
                     rank__gte=min(old_position + 1, new_position),
                     rank__lte=max(new_position, old_position - 1),
                     **{parentType: parent}
@@ -1098,12 +1096,12 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
             else:
                 if parent.author != new_parent.author:
                     raise ValidationError
-            for out_of_order_link in model_lookups[object_type].objects.filter(
+            for out_of_order_link in model_type.objects.filter(
                 rank__gt=old_position, **{parentType: parent}
             ):
                 out_of_order_link.rank -= 1
                 out_of_order_link.save()
-            for out_of_order_link in model_lookups[object_type].objects.filter(
+            for out_of_order_link in model_type.objects.filter(
                 rank__gte=new_position, **{parentType: new_parent}
             ):
                 out_of_order_link.rank += 1
@@ -1127,7 +1125,7 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-"""    
+"""
 Update Methods
 """
 
@@ -1140,7 +1138,7 @@ def update_value(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("objectID"))
         object_type = json.loads(request.POST.get("objectType"))
         data = json.loads(request.POST.get("data"))
-        objects = model_lookups[object_type].objects
+        objects = get_model_from_str(object_type).objects
         if hasattr(objects, "get_subclass"):
             object_to_update = objects.get_subclass(pk=object_id)
         else:
@@ -1166,10 +1164,10 @@ Delete methods
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-    print("delete")
+
     try:
-        model_lookups[object_type].objects.get(id=object_id).delete()
-    except ProtectedError:
+        get_model_from_str(object_type).objects.get(id=object_id).delete()
+    except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})

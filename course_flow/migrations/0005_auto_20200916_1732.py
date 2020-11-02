@@ -10,47 +10,95 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('course_flow', '0004_component_students'),
+        ("course_flow", "0004_component_students"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Column',
+            name="Column",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=50)),
-                ('created_on', models.DateTimeField(auto_now_add=True)),
-                ('last_modified', models.DateTimeField(auto_now=True)),
-                ('hash', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('author', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=50)),
+                ("created_on", models.DateTimeField(auto_now_add=True)),
+                ("last_modified", models.DateTimeField(auto_now=True)),
+                (
+                    "hash",
+                    models.UUIDField(
+                        default=uuid.uuid4, editable=False, unique=True
+                    ),
+                ),
+                (
+                    "author",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Column',
-                'verbose_name_plural': 'Columns',
+                "verbose_name": "Column",
+                "verbose_name_plural": "Columns",
             },
         ),
         migrations.CreateModel(
-            name='ColumnActivity',
+            name="ColumnActivity",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('added_on', models.DateTimeField(auto_now_add=True)),
-                ('rank', models.PositiveIntegerField(default=0)),
-                ('activity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow.Activity')),
-                ('column', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow.Column')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("added_on", models.DateTimeField(auto_now_add=True)),
+                ("rank", models.PositiveIntegerField(default=0)),
+                (
+                    "activity",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow.Activity",
+                    ),
+                ),
+                (
+                    "column",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow.Column",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Column-Activity Link',
-                'verbose_name_plural': 'Column-Activity Links',
+                "verbose_name": "Column-Activity Link",
+                "verbose_name_plural": "Column-Activity Links",
             },
         ),
         migrations.AddField(
-            model_name='activity',
-            name='columns',
-            field=models.ManyToManyField(blank=True, through='course_flow.ColumnActivity', to='course_flow.Column'),
+            model_name="activity",
+            name="columns",
+            field=models.ManyToManyField(
+                blank=True,
+                through="course_flow.ColumnActivity",
+                to="course_flow.Column",
+            ),
         ),
         migrations.AddField(
-            model_name='node',
-            name='column',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='course_flow.Column'),
+            model_name="node",
+            name="column",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.PROTECT,
+                to="course_flow.Column",
+            ),
         ),
     ]
