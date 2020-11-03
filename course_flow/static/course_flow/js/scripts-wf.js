@@ -19,6 +19,7 @@ const node_ports={
     }
 }
 const port_keys=["n","e","s","w"];
+const node_keys=["activity","course","program"];
 const port_direction=[
     [0,-1],
     [1,0],
@@ -68,6 +69,15 @@ function getCanvasOffset(node_dom){
     node_offset.left-=canvas_offset.left;
     node_offset.top-=canvas_offset.top;
     return node_offset;
+}
+
+//Check if the mouse event is within a box with the given padding around the element
+export function mouseOutsidePadding(evt,elem,padding){
+    if(elem.length==0) return true;
+    let offset = elem.offset();
+    let width = elem.width();
+    let height = elem.height();
+    return (evt.pageX<offset.left-padding || evt.pageY<offset.top-padding || evt.pageX>offset.left+width+padding || evt.pageY>offset.top+height+padding);
 }
 
 //Debouncing object
@@ -250,7 +260,7 @@ export class ComponentJSON extends Component{
     }
     
     //Adds a button that inserts a sibling below the item. The callback function unfortunately does NOT seem to be called after the item is added to the DOM
-    addInsertSibling(object_id=this.state.id,parent_id=this.props.parentID,objectType=this.objectType,callBackFunction){
+    addInsertSibling(object_id=this.state.id,objectType=this.objectType,parent_id=this.props.parentID,callBackFunction=()=>{triggerHandlerEach($(this.objectClass),"sibling-added")}){
         return(
             <InsertSiblingButton handleClick={insertSibling.bind(this,object_id,objectType,parent_id,()=>{this.props.updateParent({},callBackFunction);})}/>
         );
@@ -277,7 +287,7 @@ export class ComponentJSON extends Component{
                                 <input value={this.state.description}/>
                             </div>
                         }
-                        {type=="node" && this.state.node_type!="activity_node" &&
+                        {type=="node" && this.state.node_type!=0 &&
                             <div>
                                 <h4>Linked Workflow:</h4>
                                 <div>{this.state.linked_workflow_title}</div>
@@ -447,6 +457,27 @@ export class ClickEditText extends Component{
         if(newtext=="")newtext=null;
         this.props.textUpdated(evt.target.value);
     }
+}
+
+
+//Text that can be passed a default value
+export class TitleText extends Component{
+    constructor(props){
+        super(props);
+    }
+    
+    render(){
+        var text = this.props.text;
+        if((this.props.text==null || this.props.text=="") && this.props.defaultText!=null){
+            text=(
+                <span class="default=text">{this.props.defaultText}</span>
+            );
+        }
+        return (
+            <div>{text}</div>
+        )
+    }
+
 }
 
 //A button which causes an item to delete itself.
@@ -669,7 +700,7 @@ export class NodePorts extends Component{
         else node_dimensions={width:0,height:0};
         for(var port_type in node_ports)for(var port in node_ports[port_type]){
             ports.push(
-                <circle data-port-type={port_type} data-port={port} data-node-id={this.props.nodeID} r="5" key={port_type+port} 
+                <circle data-port-type={port_type} data-port={port} data-node-id={this.props.nodeID} r="6" key={port_type+port} 
                 cx={node_ports[port_type][port][0]*node_dimensions.width} 
                 cy={node_ports[port_type][port][1]*node_dimensions.height}/>
             )
@@ -694,6 +725,7 @@ export class NodePorts extends Component{
         d3.selectAll(
             'g.port-'+this.props.nodeID+" circle[data-port-type='source']"
         ).call(d3.drag().on("start",function(d){
+            $(".workflow-canvas").addClass("creating-node-link");
             var canvas_offset = $(".workflow-canvas").offset();
             d3.select(".node-link-creator").remove();
             d3.select(".workflow-canvas").append("line").attr("class","node-link-creator").attr("x1",event.x-canvas_offset.left).attr("y1",event.y-canvas_offset.top).attr("x2",event.x-canvas_offset.left).attr("y2",event.y-canvas_offset.top).attr("stroke","red").attr("stroke-width","2");
@@ -701,6 +733,7 @@ export class NodePorts extends Component{
             var canvas_offset = $(".workflow-canvas").offset();
             d3.select(".node-link-creator").attr("x2",event.x-canvas_offset.left).attr("y2",event.y-canvas_offset.top);
         }).on("end",function(d){
+            $(".workflow-canvas").removeClass("creating-node-link");
             var target = d3.select(event.target);
             if(target.attr("data-port-type")=="target"){
                 thisComponent.props.nodeLinkAdded(target.attr("data-node-id"),d3.select(this).attr("data-port"),target.attr("data-port"));
@@ -717,6 +750,9 @@ export class NodeView extends ComponentJSON{
         super(props);
         this.objectType="node";
         this.objectClass=".node";
+        this.state={
+            is_dropped:false
+        }
     }
     
     render(){
@@ -731,18 +767,41 @@ export class NodeView extends ComponentJSON{
             //Note the use of columnworkflow rather than column to determine the css rule that gets applied. This is because the horizontal displacement is based on the rank of the column, which is a property of the columnworkflow rather than of the column itself
             return (
                 <div class={
-                    "node column-"+this.state.columnworkflow+((this.state.selected && " selected")||"")} id={this.state.id} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
-                        <ClickEditText text={this.state.title} defaultText="New Node" textUpdated={this.setJSON.bind(this,"title")}/>
-                        <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
-                        {this.addEditable()}
-                        {createPortal(
-                            <NodePorts nodeID={this.props.objectID} nodeLinkAdded={this.nodeLinkAdded.bind(this)} node_offset={this.state.node_offset} node_dimensions={this.state.node_dimensions} updateParent={this.updateJSON.bind(this)}/>
-                        ,$(".workflow-canvas")[0])}
-                        {node_links}
-                        {auto_link}
+                "node column-"+this.state.columnworkflow+((this.state.selected && " selected")||"")+((this.state.is_dropped && " dropped")||"")+" "+node_keys[this.state.node_type]} id={this.state.id} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
+                    <div class = "node-top-row">
+                        <div class = "node-icon">
+                            
+                        </div>
+                        <div class = "node-title">
+                            <TitleText text={this.state.title} defaultText="New Node"/>
+                        </div>
+                        <div class = "node-icon">
+                            
+                        </div>
+                    </div>
+                    <div class = "node-details">
+                        <TitleText text={this.state.description} defaultText="Click to edit"/>
+                    </div>
+                    <div class = "node-drop-row" onClick={this.toggleDrop.bind(this)}>
+                        
+                    </div>  
+                    <div class="mouseover-actions">
+                        {this.addInsertSibling()}
+                        {this.addDeleteSelf()}
+                    </div>
+                    {this.addEditable()}
+                    {createPortal(
+                        <NodePorts nodeID={this.props.objectID} nodeLinkAdded={this.nodeLinkAdded.bind(this)} node_offset={this.state.node_offset} node_dimensions={this.state.node_dimensions} updateParent={this.updateJSON.bind(this)}/>
+                    ,$(".workflow-canvas")[0])}
+                    {node_links}
+                    {auto_link}
                 </div>
             );
         }
+    }
+    
+    toggleDrop(){
+        this.setState({is_dropped:!this.state.is_dropped},()=>triggerHandlerEach($(".node-strategy"),"sorted"));
     }
     
     updatePorts(){
@@ -771,7 +830,22 @@ export class NodeView extends ComponentJSON{
                 triggerHandlerEach($(".strategy-workflow").not($(this.maindiv.current).parent()),"sibling-added");
             }
             $(this.maindiv.current).on("parent-moved sorted dragging sibling-added sibling-removed cousin-added cousin-removed",this.updatePorts.bind(this));
+            $(this.maindiv.current).on("mouseenter",this.mouseIn.bind(this));
         }
+    }
+
+    mouseIn(evt){
+        if(evt.which==1)return;
+        $("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
+        d3.selectAll(".node-ports").raise();
+        var mycomponent = this;
+        
+        $(document).on("mousemove",function(evt){
+            if(!mycomponent||!mycomponent.maindiv||mouseOutsidePadding(evt,$(mycomponent.maindiv.current),20)){
+                $("circle[data-node-id='"+mycomponent.props.objectID+"'][data-port-type='source']").removeClass("mouseover");
+                $(document).off(evt);
+            }
+        });
     }
 
 }
@@ -788,7 +862,7 @@ export class NodeStrategyView extends ComponentJSON{
         if(this.state.id){
             return (
                 <div class="node-strategy" id={this.state.id} ref={this.maindiv}>
-                    <NodeView updateParent={this.props.updateParent} objectID={this.state.node}/>
+                    <NodeView updateParent={this.props.updateParent} objectID={this.state.node} parentID={this.props.parentID}/>
                 </div>
             );
         }
@@ -828,13 +902,19 @@ export class StrategyView extends ComponentJSON{
             var nodes = this.state.nodestrategy_set.map((nodestrategy)=>
                 <NodeStrategyView key={nodestrategy} objectID={nodestrategy} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
             );
+            var new_node;
+            if(this.state.nodestrategy_set.length==0)new_node = (
+                <button onClick={()=>newNode(this.state.id,-1,-1,this.updateJSON.bind(this))}>Add A Node</button>
+            );
             return (
                 <div class={"strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
-                        <ClickEditText text={this.state.title} defaultText={this.state.strategy_type_display+" "+(this.props.rank+1)} textUpdated={this.setJSON.bind(this,"title")}/>
-                        <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
-                        <button onClick={()=>newNode(this.state.id,-1,-1,this.updateJSON.bind(this))}>Add A Node</button>
+                        <TitleText text={this.state.title} defaultText={this.state.strategy_type_display+" "+(this.props.rank+1)}/>
                         <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                             {nodes}
+                        </div>
+                        <div class="mouseover-actions">
+                            {this.addInsertSibling()}
+                            {this.addDeleteSelf()}
                         </div>
                         {this.addEditable()}
                 </div>
@@ -896,7 +976,7 @@ export class ColumnWorkflowView extends ComponentJSON{
             this.updateCSS()
             return (
                 <div class={"column-workflow column-"+this.state.id} id={this.state.id} ref={this.maindiv}>
-                    <ColumnView objectID={this.state.column} updateParent={this.props.updateParent}/>
+                    <ColumnView objectID={this.state.column} updateParent={this.props.updateParent} parentID={this.props.parentID}/>
                     {this.addDeleteSelf(this.state.column,"column",()=>triggerHandlerEach($(".column-workflow"),"sibling-removed"))}
                 </div>
             );
@@ -950,9 +1030,7 @@ export class StrategyWorkflowView extends ComponentJSON{
         if(this.state.id){
             return (
                 <div class="strategy-workflow" id={this.state.id} ref={this.maindiv}>
-                    <StrategyView objectID={this.state.strategy} rank={this.state.rank} updateParent={this.props.updateParent}/>
-                    {this.addDeleteSelf(this.state.strategy,"strategy",()=>triggerHandlerEach($(".strategy-workflow"),"sibling-removed"))}
-                    {this.addInsertSibling(this.state.id,this.props.parentID,"strategyworkflow")}
+                    <StrategyView objectID={this.state.strategy} rank={this.state.rank} updateParent={this.props.updateParent} parentID={this.props.parentID}/>
                 </div>
             );
         }
@@ -1009,9 +1087,11 @@ export class WorkflowView extends ComponentJSON{
             return (
                 <div id="workflow-wrapper" class="workflow-wrapper">
                     <div class = "workflow-container">
-                        <ClickEditText text={this.state.title} textUpdated={this.setJSON.bind(this,"title")}/>
-                        <Text text={"Created by "+this.state.author}/>
-                        <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
+                        <div class="workflow-details">
+                            <ClickEditText text={this.state.title} textUpdated={this.setJSON.bind(this,"title")}/>
+                            <Text text={"Created by "+this.state.author}/>
+                            <ClickEditText text={this.state.description} textUpdated={this.setJSON.bind(this,"description")}/>
+                        </div>
                         <button onClick={()=>newColumn(this.state.id,0,this.updateJSON.bind(this))}>Add A Column</button>
                         <div class="column-row">
                             {columnworkflows}
@@ -1022,7 +1102,7 @@ export class WorkflowView extends ComponentJSON{
                         <svg class="workflow-canvas" width="100%" height="100%">
                             <defs>
                                 <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5"
-                                    markerWidth="6" markerHeight="6"
+                                    markerWidth="4" markerHeight="4"
                                     orient="auto-start-reverse">
                                   <path d="M 0 0 L 10 5 L 0 10 z" />
                                 </marker>
@@ -1209,12 +1289,12 @@ export class WorkflowsMenu extends Component{
             );
         
         return(
-            <div>
-                <div class="sub-container">
+            <div class="message-wrap">
+                <div class="message-panel">
                     <h2>From this project:</h2>
                     {project_workflows}
                 </div>
-                <div class="sub-container">
+                <div class="message-panel">
                     <h2>From your other projects:</h2>
                     {other_workflows}
                     <h2>From other published projects:</h2>

@@ -149,8 +149,6 @@ function newNodeLink(source_node,target_node,source_port,target_port,callBackFun
 //Causes the specified object to delete itself
 function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
     //Temporary confirmation; add better comfirmation dialogue later
-    console.log(objectID);
-    console.log(objectType);
     
     if(window.confirm("Are you sure you want to delete this "+objectType+"?")){
         $.post("{% url 'course_flow:delete-self' %}", {
@@ -167,9 +165,9 @@ function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("succes
 function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
     
     $.post("{% url 'course_flow:insert-sibling' %}", {
+        parentID:JSON.stringify(parentID),
         objectID:JSON.stringify(objectID),
         objectType:JSON.stringify(objectType),
-        parentID:JSON.stringify(parentID)
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");

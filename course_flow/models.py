@@ -18,6 +18,8 @@ class Project(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=False)
+    
     
     workflows= models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
@@ -43,6 +45,7 @@ class Column(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=False)
     CUSTOM_ACTIVITY = 0
     OUT_OF_CLASS_INSTRUCTOR = 1
     OUT_OF_CLASS_STUDENT = 2
@@ -100,6 +103,7 @@ class NodeLink(models.Model):
     target_node = models.ForeignKey(
         "Node", on_delete=models.CASCADE, related_name="incoming_links"
     )
+    published = models.BooleanField(default=False)
     NORTH = 0
     EAST = 1
     SOUTH = 2
@@ -131,6 +135,7 @@ class Outcome(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=False)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -153,6 +158,7 @@ class Node(models.Model):
     )
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=False)
 
     parent_node = models.ForeignKey(
         "Node", on_delete=models.SET_NULL, null=True
@@ -275,6 +281,7 @@ class Strategy(models.Model):
         "Strategy", on_delete=models.SET_NULL, null=True
     )
     is_original = models.BooleanField(default=True)
+    published = models.BooleanField(default=False)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 

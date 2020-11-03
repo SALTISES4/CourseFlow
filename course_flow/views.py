@@ -1074,7 +1074,7 @@ def duplicate_column(column: Column, author: User) -> Column:
     return new_column
 
 def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
-    model = model_lookups[workflow.type]
+    model = get_model_from_str(workflow.type)
     
     new_workflow = model.objects.create(
         title=workflow.title,
@@ -1225,31 +1225,37 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
 # Add a new sibling to a through model
 @require_POST
 @ajax_login_required
-@is_throughmodel_parent_owner
+@is_parent_owner
 def insert_sibling(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
+    parent_id = json.loads(request.POST.get("parentID"))
 
     try:
-        model = get_model_from_str(object_type).objects.get(id=object_id)
-        if object_type == "strategyworkflow":
+        if object_type == "strategy":
+            model=Strategy.objects.get(id=object_id)
+            parent=Workflow.objects.get(id=parent_id)
+            through=StrategyWorkflow.objects.get(strategy=model,workflow=parent)
             newmodel = StrategyWorkflow.objects.create(
-                workflow=model.workflow,
+                workflow=parent,
                 strategy=Strategy.objects.create(
-                    author=model.workflow.get_subclass().author,
-                    strategy_type=model.workflow.get_subclass().WORKFLOW_TYPE,
+                    author=model.author,
+                    strategy_type=model.strategy_type,
                 ),
-                rank=model.rank + 1,
+                rank=through.rank + 1,
             )
-        elif object_type == "nodestrategy":
+        elif object_type == "node":
+            model=Node.objects.get(id=object_id)
+            parent=Strategy.objects.get(id=parent_id)
+            through=NodeStrategy.objects.get(node=model,strategy=parent)
             newmodel = NodeStrategy.objects.create(
-                strategy=model.strategy,
+                strategy=parent,
                 node=Node.objects.create(
-                    author=model.strategy.author,
-                    column=model.node.column,
-                    node_type=model.node.node_type,
+                    author=model.author,
+                    column=model.column,
+                    node_type=model.node_type,
                 ),
-                rank=model.rank + 1,
+                rank=through.rank + 1,
             )
         else:
             raise ValidationError
