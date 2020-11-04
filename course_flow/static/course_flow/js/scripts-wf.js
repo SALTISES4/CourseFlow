@@ -916,13 +916,15 @@ export class StrategyView extends ComponentJSON{
             );
             return (
                 <div class={"strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
+                        <div class="mouseover-container-bypass">
+                            <div class="mouseover-actions">
+                                {this.addInsertSibling()}
+                                {this.addDeleteSelf()}
+                            </div>
+                        </div>
                         <TitleText text={this.state.title} defaultText={this.state.strategy_type_display+" "+(this.props.rank+1)}/>
                         <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                             {nodes}
-                        </div>
-                        <div class="mouseover-actions">
-                            {this.addInsertSibling()}
-                            {this.addDeleteSelf()}
                         </div>
                         {this.addEditable()}
                 </div>

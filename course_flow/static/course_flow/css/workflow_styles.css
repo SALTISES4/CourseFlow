@@ -38,7 +38,7 @@ p{
     padding:10px;
     margin-top:5px;
     box-sizing:border-box;
-    position:relative;
+/*    position:relative;*/
 }
 
 .strategy-workflow.dragging{
@@ -179,6 +179,17 @@ p{
     background:white;
 }
 
+/*This is used to get around the issue that we can't make the strategy itself relatively positioned (messes up jquery sortable*/
+.mouseover-container-bypass{
+    position:relative;
+    padding:0;
+    margin:0;
+    top:0px;
+    width:100%;
+    height:0px;
+    overflow:visible;
+}
+
 .action-button{
     width:20px;
     height:20px;
@@ -191,9 +202,10 @@ p{
 }
 
 
-div:hover > .mouseover-actions{
+div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseover-actions{
     visibility:visible;
 }
+
 
 .dragging .mouseover-actions{
     visibility:hidden !important;
