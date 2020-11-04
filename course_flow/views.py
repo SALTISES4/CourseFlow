@@ -1257,6 +1257,19 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
                 ),
                 rank=through.rank + 1,
             )
+        elif object_type == "column":
+            print("column");
+            model=Column.objects.get(id=object_id)
+            parent=Workflow.objects.get(id=parent_id)
+            through=ColumnWorkflow.objects.get(column=model,workflow=parent)
+            newmodel = ColumnWorkflow.objects.create(
+                workflow=parent,
+                column=Column.objects.create(
+                    author=model.author,
+                    column_type=math.floor(model.column_type/10)*10
+                ),
+                rank=through.rank + 1,
+            )
         else:
             raise ValidationError
 

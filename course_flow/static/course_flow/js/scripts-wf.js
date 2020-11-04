@@ -253,14 +253,14 @@ export class ComponentJSON extends Component{
     }
     
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-    addDeleteSelf(object_id=this.state.id,objectType=this.objectType,callBackFunction=()=>{triggerHandlerEach($(this.objectClass),"sibling-removed")}){
+    addDeleteSelf(object_id=this.state.id,objectType=this.objectType,callBackFunction=()=>{triggerHandlerEach($(this.parentClass),"sibling-removed")}){
         return (
             <DeleteSelfButton handleClick={deleteSelf.bind(this,object_id,objectType,()=>{if(this.maindiv.current)$(this.maindiv.current).triggerHandler("deleted");this.props.updateParent({},callBackFunction);})}/>
         );
     }
     
     //Adds a button that inserts a sibling below the item. The callback function unfortunately does NOT seem to be called after the item is added to the DOM
-    addInsertSibling(object_id=this.state.id,objectType=this.objectType,parent_id=this.props.parentID,callBackFunction=()=>{triggerHandlerEach($(this.objectClass),"sibling-added")}){
+    addInsertSibling(object_id=this.state.id,objectType=this.objectType,parent_id=this.props.parentID,callBackFunction=()=>{triggerHandlerEach($(this.parentClass),"sibling-added")}){
         return(
             <InsertSiblingButton handleClick={insertSibling.bind(this,object_id,objectType,parent_id,()=>{this.props.updateParent({},callBackFunction);})}/>
         );
@@ -489,7 +489,9 @@ export class DeleteSelfButton extends Component{
     
     render(){
         return (
-            <button class="delete-self-button" onClick={this.handleClick}>x</button>
+            <div class="delete-self-button action-button" onClick={this.handleClick}>
+                <img src={iconpath+"delrect.svg"}/>
+            </div>
         )
     }
     
@@ -508,7 +510,9 @@ export class InsertSiblingButton extends Component{
     
     render(){
         return (
-            <button class="insert-sibling-button" onClick={this.handleClick}>+</button>
+            <div class="insert-sibling-button action-button" onClick={this.handleClick}>
+                <img src={iconpath+"add.svg"}/>
+            </div>
         )
     }
     
@@ -523,6 +527,7 @@ export class NodeLinkView extends ComponentJSON{
         super(props);
         this.objectType="nodelink";
         this.objectClass=".node-link";
+        this.parentClass=".node";
         this.rerenderEvents = "ports-rendered."+this.eventNameSpace;
         this.updateParentEvents = "deleted."+this.eventNameSpace;
     }
@@ -750,6 +755,7 @@ export class NodeView extends ComponentJSON{
         super(props);
         this.objectType="node";
         this.objectClass=".node";
+        this.parentClass=".node-strategy"
         this.state={
             is_dropped:false
         }
@@ -856,6 +862,7 @@ export class NodeStrategyView extends ComponentJSON{
         super(props);
         this.objectType="nodestrategy";
         this.objectClass=".node-strategy";
+        this.parentClass=".strategy";
     }
     
     render(){
@@ -894,6 +901,7 @@ export class StrategyView extends ComponentJSON{
         super(props);
         this.objectType="strategy";
         this.objectClass=".strategy";
+        this.parentClass=".strategy-workflow"
         this.node_block = createRef();
     }
     
@@ -945,6 +953,7 @@ export class ColumnView extends ComponentJSON{
         super(props);
         this.objectType="column";
         this.objectClass=".column";
+        this.parentClass=".column-workflow"
     }
     
     render(){
@@ -954,6 +963,10 @@ export class ColumnView extends ComponentJSON{
             return (
                 <div class={"column"+((this.state.selected && " selected")||"")} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
                     {title}
+                    <div class="mouseover-actions">
+                        {this.addInsertSibling()}
+                        {this.addDeleteSelf()}
+                    </div>
                     {this.addEditable()}
                 </div>
             );
@@ -967,6 +980,7 @@ export class ColumnWorkflowView extends ComponentJSON{
         super(props);
         this.objectType="columnworkflow";
         this.objectClass=".column-workflow";
+        this.parentClass=".workflow";
         //We add a style to the header to represent the column
         $("<style>").prop("type","text/css").prop("id","column-"+this.props.objectID+"-CSS").appendTo("head");
     }
@@ -977,7 +991,6 @@ export class ColumnWorkflowView extends ComponentJSON{
             return (
                 <div class={"column-workflow column-"+this.state.id} id={this.state.id} ref={this.maindiv}>
                     <ColumnView objectID={this.state.column} updateParent={this.props.updateParent} parentID={this.props.parentID}/>
-                    {this.addDeleteSelf(this.state.column,"column",()=>triggerHandlerEach($(".column-workflow"),"sibling-removed"))}
                 </div>
             );
         }else return(
@@ -991,13 +1004,14 @@ export class ColumnWorkflowView extends ComponentJSON{
     
     postMountFunction(){
         if(this.maindiv.current){
-            $(".column-workflow").trigger("sibling-added");
+            triggerHandlerEach($(".column-workflow"),"sibling-added");
             //add event listener to check for reordering of columnworkflows, updating hte rank
             var column_workflow=this;
             $(this.maindiv.current).on("dragging sorted sibling-added sibling-removed",this.updateRank.bind(this));
             $(this.maindiv.current).on("sibling-added sibling-removed cousin-added cousin-removed sorted dragging",(evt)=>{column_workflow.passEventToChild(evt)});
         }
     }
+    
 
     //Updates the css rule for the column. This gets called whenever the state changes (through the re-render), so that when the rank changes the css rule gets updated
     updateCSS(){
@@ -1024,6 +1038,7 @@ export class StrategyWorkflowView extends ComponentJSON{
         super(props);
         this.objectType="strategyworkflow";
         this.objectClass=".strategy-workflow";
+        this.parentClass=".workflow";
     }
     
     render(){
@@ -1054,6 +1069,7 @@ export class StrategyWorkflowView extends ComponentJSON{
         var index = $(this.maindiv.current).index(".strategy-workflow:not(.ui-sortable-placeholder)");
         if(this.state.rank!=index)this.setState({rank:index});
     }
+    
 
 
 
@@ -1156,6 +1172,7 @@ export class NodeBarColumnWorkflowView extends ComponentJSON{
         super(props);
         this.objectType="columnworkflow";
         this.objectClass=".column-workflow";
+        this.parentClass=".workflow";
     }
     
     render(){
@@ -1209,6 +1226,7 @@ export class NodeBarColumnView extends ComponentJSON{
         super(props);
         this.objectType="column";
         this.objectClass=".column";
+        this.parentClass=".column-workflow";
     }
     
     render(){
@@ -1229,6 +1247,7 @@ export class NodeBarStrategyWorkflowView extends ComponentJSON{
         super(props);
         this.objectType="strategyworkflow";
         this.objectClass=".strategy-workflow";
+        this.parentClass=".workflow";
     }
     
     render(){

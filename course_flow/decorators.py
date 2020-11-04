@@ -30,7 +30,10 @@ owned_models = [
     "node",
     "strategy",
     "workflow",
-    "project"
+    "project",
+    "column",
+    "workflow",
+    "project",
 ]
 
 owned_throughmodels = [
@@ -39,6 +42,8 @@ owned_throughmodels = [
     "strategy",
     "strategyworkflow",
     "workflow",
+    "workflowproject",
+    "project",
     "columnworkflow",
     "workflow",
     "workflowproject",

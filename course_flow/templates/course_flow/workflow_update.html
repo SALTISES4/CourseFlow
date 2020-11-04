@@ -25,6 +25,7 @@
 {% block scripts %}
 
 <script nonce="{{request.csp_nonce}}">
+const iconpath = "{% static 'course_flow/img/images_svg/' %}"
 var selection_manager;
 var initial_loading = true;
 var ports_rendered = false;
@@ -163,7 +164,8 @@ function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("succes
 
 //Causes the specified object to insert a sibling after itself
 function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
-    
+    console.log(objectID);
+    console.log(parentID);
     $.post("{% url 'course_flow:insert-sibling' %}", {
         parentID:JSON.stringify(parentID),
         objectID:JSON.stringify(objectID),
