@@ -371,20 +371,25 @@ export class ComponentJSON extends Component{
                 $("#container").animate({
                     scrollTop: ui.item.offset().top-200
                 },20);
-                //Calculate the horizontal displacement, used for changing columns
-                var delta_x = Math.round((ui.position.left-ui.originalPosition.left)/columnwidth);
                 var newColumnID=-1;
-                //If this is a node, figure out which column it has been moved into and update the state. This is unfortunately a case that's very difficult to do without using our escape hatch to access the react component from the div
-                if(draggable_type=="nodestrategy"&&delta_x){
-                    var child = ui.item.children(".node");
-                    var columnID=child[0].react.state.columnworkflow;
-                    try{
-                        newColumnID=columns[columns.indexOf(columnID)+delta_x];
-                        if(newColumnID){
-                            child[0].react.setState({columnworkflow:newColumnID})
-                        }
-                    }catch(err){console.log("could not change column")}
+                //Check if the parent strategy is a term
+                if(draggable_type=="nodestrategy"){
+                    //Calculate the horizontal displacement, used for changing columns
+                    var delta_x = Math.round((ui.position.left-ui.originalPosition.left)/columnwidth);
+                    //If this is a node, figure out which column it has been moved into and update the state. This is unfortunately a case that's very difficult to do without using our escape hatch to access the react component from the div
+                    if(delta_x){
+                        var child = ui.item.children(".node");
+                        var columnID=child[0].react.state.columnworkflow;
+                        try{
+                            newColumnID=columns[columns.indexOf(columnID)+delta_x];
+                            if(newColumnID){
+                                child[0].react.setState({columnworkflow:newColumnID})
+                            }
+                        }catch(err){console.log("could not change column")}
+                        console.log(columnID);
+                    }
                 }
+                
                 //Call the update to the server, with a callback function that triggers an event signifying a change of order
                 insertedAt(
                     object_id,
@@ -949,6 +954,67 @@ export class StrategyView extends ComponentJSON{
     
 }
 
+//Component to represent a Term
+export class TermView extends StrategyView{
+    render(){
+        if(this.state.id){
+            console.log(this.state);
+            var node_blocks = [];
+            console.log(columns);
+            for(var i=0;i<columns.length;i++){
+                let col=columns[i];
+                console.log(col);
+                console.log(this.state.nodestrategy_set);
+                console.log(this.state.nodestrategy_set[col]);
+                node_blocks.push(
+                    <div class={"node-block term column-"+col} id={this.props.objectID+"-node-block-column-"+col} >
+                        {this.state.nodestrategy_set[col].map(
+                            (nodestrategy)=>
+                                <NodeStrategyView key={nodestrategy} objectID={nodestrategy} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
+                            )
+                        }
+                    </div>
+        
+                )
+            }
+            return (
+                <div class={"strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
+                        <div class="mouseover-container-bypass">
+                            <div class="mouseover-actions">
+                                {this.addInsertSibling()}
+                                {this.addDeleteSelf()}
+                            </div>
+                        </div>
+                        <TitleText text={this.state.title} defaultText={this.state.strategy_type_display+" "+(this.props.rank+1)}/>
+                        <div class="node-block" ref={this.node_block}>
+                            {node_blocks}
+                        </div>
+                        {this.addEditable()}
+                </div>
+            );
+        }
+    }
+    
+    postMountFunction(){
+        //Trigger the reordering event, which will make all other strategyworkflows update their indices in their states. This is critical for when a new strategy is inserted, because the DOM has not fully updated until this post-mount function is called.
+        if(!initial_loading)triggerHandlerEach($(".strategy-workflow").not($(this.maindiv.current).parent()),"sibling-added");
+        var mycomponent=this;
+        //Makes the nodestrategies in the node block sortable, linking them with other node blocks
+        $(this.node_block.current).children(".term").each(function(index, element){
+            mycomponent.makeSortable($(element),
+                          mycomponent.props.objectID,
+                          "nodestrategy",
+                          ".node-strategy",
+                          false,
+                          [200,1],
+                          ".node-block.term",
+                          ".node");
+        });
+        $(this.maindiv.current).on("sorted sibling-added sibling-removed",()=>{triggerHandlerEach($(this.node_block.current).children(),"parent-moved")});
+    }
+}
+
+
 //Basic component to represent a column
 export class ColumnView extends ComponentJSON{
     constructor(props){
@@ -1045,9 +1111,17 @@ export class StrategyWorkflowView extends ComponentJSON{
     
     render(){
         if(this.state.id){
+            console.log(this.state);
+            var strategy;
+            if(this.state.strategy_type==2)strategy = (
+                    <TermView objectID={this.state.strategy} rank={this.state.rank} updateParent={this.props.updateParent} parentID={this.props.parentID}/>
+            );
+            else strategy = (
+                <StrategyView objectID={this.state.strategy} rank={this.state.rank} updateParent={this.props.updateParent} parentID={this.props.parentID}/>
+            );
             return (
                 <div class="strategy-workflow" id={this.state.id} ref={this.maindiv}>
-                    <StrategyView objectID={this.state.strategy} rank={this.state.rank} updateParent={this.props.updateParent} parentID={this.props.parentID}/>
+                    {strategy}
                 </div>
             );
         }

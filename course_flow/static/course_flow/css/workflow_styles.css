@@ -104,6 +104,15 @@ p{
     min-height:100px;
 }
 
+.node-block.term{
+    width:200px;
+    display:inline-block;
+    vertical-align: top;
+}
+
+.term .node{
+    left:0px !important;
+}
 
 .node{
     width:200px;

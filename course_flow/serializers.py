@@ -685,9 +685,23 @@ class StrategySerializerShallow(serializers.ModelSerializer):
         return instance.strategy_set.count()
 
     def get_nodestrategy_set(self, instance):
-        links = instance.nodestrategy_set.all().order_by("rank")
-        return list(map(linkIDMap, links))
+        if(instance.strategy_type==Strategy.TERM):
+            links_by_column={}
+            column_workflows =ColumnWorkflow.objects.filter(
+                workflow=instance.workflow_set.first()
+            ).order_by("rank")
+            for column_workflow in column_workflows:
+                links = instance.nodestrategy_set.filter(
+                    node__column=column_workflow.column
+                ).order_by("rank")
+                links_by_column[column_workflow.id]=list(map(linkIDMap,links))
+            return links_by_column
+        else:
+            links = instance.nodestrategy_set.all().order_by("rank")
+            return list(map(linkIDMap, links))
 
+    
+    
     def create(self, validated_data):
         return Strategy.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
@@ -701,17 +715,23 @@ class StrategySerializerShallow(serializers.ModelSerializer):
         )
         instance.save()
         return instance
-
+    
 
 class StrategyWorkflowSerializerShallow(serializers.ModelSerializer):
+    
+    strategy_type = serializers.SerializerMethodField()
+    
     class Meta:
         model = StrategyWorkflow
-        fields = ["workflow", "strategy", "added_on", "rank", "id"]
+        fields = ["workflow", "strategy", "added_on", "rank", "id","strategy_type"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
         return instance
+    
+    def get_strategy_type(self,instance):
+        return instance.strategy.strategy_type
 
 
 class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
