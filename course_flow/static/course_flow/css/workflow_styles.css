@@ -67,6 +67,7 @@ p{
 
 .column-workflow{
     display:inline-block;
+    vertical-align:top;
 }
 
 .column{

@@ -967,7 +967,7 @@ export class TermView extends StrategyView{
                 console.log(this.state.nodestrategy_set);
                 console.log(this.state.nodestrategy_set[col]);
                 node_blocks.push(
-                    <div class={"node-block term column-"+col} id={this.props.objectID+"-node-block-column-"+col} >
+                    <div class={"node-block term column-"+col} id={this.props.objectID+"-node-block-column-"+col} key={col} >
                         {this.state.nodestrategy_set[col].map(
                             (nodestrategy)=>
                                 <NodeStrategyView key={nodestrategy} objectID={nodestrategy} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
@@ -978,7 +978,7 @@ export class TermView extends StrategyView{
                 )
             }
             return (
-                <div class={"strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
+                <div class={"term strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
                         <div class="mouseover-container-bypass">
                             <div class="mouseover-actions">
                                 {this.addInsertSibling()}
@@ -1010,7 +1010,21 @@ export class TermView extends StrategyView{
                           ".node-block.term",
                           ".node");
         });
-        $(this.maindiv.current).on("sorted sibling-added sibling-removed",()=>{triggerHandlerEach($(this.node_block.current).children(),"parent-moved")});
+        $(this.maindiv.current).on("sorted sibling-added sibling-removed",()=>{triggerHandlerEach($(this.node_block.current).children().children(),"parent-moved")});
+        $(this.maindiv.current).on("columns-changed",()=>{console.log("triggering state refresh");this.setState({columns:columns});})
+    }
+
+    componentDidUpdate(){
+        $(this.node_block.current).children(".term").not(".ui-sortable").each(function(index, element){
+            mycomponent.makeSortable($(element),
+                          mycomponent.props.objectID,
+                          "nodestrategy",
+                          ".node-strategy",
+                          false,
+                          [200,1],
+                          ".node-block.term",
+                          ".node");
+        });
     }
 }
 
@@ -1087,6 +1101,8 @@ export class ColumnWorkflowView extends ComponentJSON{
     }
     
     updateRank(){
+        console.log("updating rank of columnworkflow");
+        if(!initial_loading)triggerHandlerEach($(".strategy.term"),"columns-changed");
         //Updates the rank. Note this will call a re-rendering, which will itself call updateCSS()
         var index = $(this.maindiv.current).index(".column-workflow:not(.ui-sortable-placeholder)");
         if(this.state.rank!=index){
