@@ -269,19 +269,19 @@ class ColumnViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class ActivityViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = ActivitySerializerShallow
+    serializer_class = ActivitySerializer
     renderer_classes = [JSONRenderer]
     queryset = Activity.objects.all()
 
 
 class CourseViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = CourseSerializerShallow
+    serializer_class = CourseSerializer
     renderer_classes = [JSONRenderer]
     queryset = Course.objects.all()
 
 
 class ProgramViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = ProgramSerializerShallow
+    serializer_class = ProgramSerializer
     renderer_classes = [JSONRenderer]
     queryset = Program.objects.all()
 

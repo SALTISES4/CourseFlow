@@ -1179,6 +1179,7 @@ export class WorkflowView extends ComponentJSON{
     
     render(){
         if(this.state.id){
+        console.log(this.state);
             var columnworkflows = this.state.columnworkflow_set.map((columnworkflow)=>
                 <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
             );

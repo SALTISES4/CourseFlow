@@ -25,7 +25,12 @@
 {% block scripts %}
 
 <script nonce="{{request.csp_nonce}}">
-const iconpath = "{% static 'course_flow/img/images_svg/' %}"
+const workflow_paths = {
+    activity:'{% url "course_flow:activity-detail" pk=object.pk %}',
+    course:'{% url "course_flow:course-detail" pk=object.pk %}',
+    program:'{% url "course_flow:program-detail" pk=object.pk %}'
+}
+const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 var selection_manager;
 var initial_loading = true;
 var ports_rendered = false;
@@ -48,7 +53,7 @@ $(document).on("component-loaded",(evt,objectType)=>{
         $(document).triggerHandler("render-ports");
     }
 });
-    
+
 $(document).on("ports-rendered",(evt)=>{
     ports_to_render--;
     if(ports_to_render>0)return;
@@ -59,14 +64,14 @@ $(document).on("ports-rendered",(evt)=>{
 
     
 window.addEventListener("load", function(){
-    selection_manager = new workflow.SelectionManager();
+    selection_manager = new workflow_redux.SelectionManager();
     
     
     let fetchThenRenderWorkflow = function(){
-        $.getJSON('{% url "course_flow:workflow-detail" pk=object.pk %}',
+        $.getJSON(workflow_paths['{{ object.type }}'],
             function(json){
                 console.log(json);
-                workflow.renderWorkflowView(json,$("#container").get()[0]);
+                workflow_redux.renderWorkflowView(json,$("#container").get()[0]);
             }
         );
     }
@@ -84,7 +89,7 @@ function getLinkedWorkflowMenu(nodeData,updateFunction){
 function openLinkedWorkflowMenu(response,updateFunction){
     console.log(response);
     if(response.action=="posted"){
-        workflow.renderMessageBox(response,"linked_workflow_menu",updateFunction);
+        workflow_redux.renderMessageBox(response,"linked_workflow_menu",updateFunction);
     }else alert("Failed to find the parent project. Is this workflow in a project?");
 }
 

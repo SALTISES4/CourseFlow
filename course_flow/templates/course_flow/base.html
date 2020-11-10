@@ -39,6 +39,16 @@
       defer="true"
       charset="utf-8"
     ></script>
+      <script>
+      // HACK(keanulee): The Redux package assumes `process` exists - mock it here before
+      // the module is loaded.
+      window.process = {
+        env: {
+          NODE_ENV: 'production'
+        }
+      };
+    </script>
+
 
     <!-- Internal resources -->
     {% compress js %}
@@ -59,6 +69,13 @@
     {% compress js %}
     <script
       src="{% static 'course_flow/js/scripts-wf.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
+    {% compress js %}
+    <script
+      src="{% static 'course_flow/js/scripts-wf-redux.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
