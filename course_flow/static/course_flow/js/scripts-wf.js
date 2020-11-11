@@ -1,7 +1,6 @@
 import {h, Component, render, createRef} from "preact";
 import {createPortal} from "preact/compat";
-import {Decimal} from 'decimal.js/decimal';
-let amount = new Decimal(0.00);
+
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 
 const columnwidth = 200
@@ -32,7 +31,7 @@ export class SelectionManager{
         this.currentSelection;
         $(document).on("click",this.changeSelection.bind(this))
     }
-    
+
     changeSelection(evt,newSelection){
         evt.stopPropagation();
         if(this.currentSelection)this.currentSelection.setState({selected:false});
@@ -73,7 +72,7 @@ function getCanvasOffset(node_dom){
 //Debouncing object
 class Debouncer{
     constructor(){}
-    
+
     debounce(f, t) {
       return function (args) {
         let previousCall = this.lastCall;
@@ -96,7 +95,7 @@ export class PathGenerator{
         this.node_dims = {source:source_dims,target:target_dims};
         this.findcounter=0;
     }
-    
+
     //finds and returns the path
     findPath(){
         try{
@@ -104,7 +103,7 @@ export class PathGenerator{
         }catch(err){console.log("error calculating path")};
         return this.joinArrays();
     }
-    
+
     //Recursively checks to see whether we need to move around a node, if not, we just need to join the arrays
     findNextPoint(){
         if(this.findcounter>8)return;
@@ -118,21 +117,21 @@ export class PathGenerator{
             this.findNextPoint();
         }
     }
-    
+
     addPoint(point,port="source"){
         this.point_arrays[port].push(point);
         this.last_point[port]=point;
     }
-    
+
     addDelta(delta,port="source"){
         this.addPoint(mathadd(delta,this.last_point[port]),port);
     }
-    
+
     //Pads out away from the node edge
     padOut(port){
         this.addDelta(mathmultiply(port_padding,this.direction[port]),port);
     }
-    
+
     //Turns perpendicular to move around the edge of the node
     tickPerpendicular(port="source"){
         let otherport = "target";
@@ -155,7 +154,7 @@ export class PathGenerator{
             port
         );
     }
-    
+
     //Determines how far we need to move in order to move around the edge of the node
     getNodeOutline(direction,port){
         if(this.hasTicked[port]){
@@ -199,13 +198,13 @@ export class PathGenerator{
 
 //Extends the preact component to add a few features that are used in a large number of components
 export class ComponentJSON extends Component{
-    
+
     //The constructor, by default, creates a reference to "maindiv", which will usually be the root div of the component
     constructor(props){
         super(props);
         this.maindiv = createRef();
     }
-    
+
     //Once the component mounts, it loads the JSON then calls anything in the post-mount function. If the maindiv reference has been defined, we add a backwards reference to this from it, giving us an escape hatch for tricky situations where the state must be altered.
     componentDidMount(){
         const callBackFunction=function(){
@@ -214,9 +213,9 @@ export class ComponentJSON extends Component{
             if(initial_loading)$(document).triggerHandler("component-loaded",this.objectType);
         }
         this.updateJSON({},callBackFunction.bind(this));
-            
+
     }
-    
+
     //Updates the JSON by fetching the json and setting the state, with an option call a function after the state has been set with the new JSON data.
     updateJSON(data,postUpdateFunction){
         var setState=this.setState.bind(this);
@@ -228,10 +227,10 @@ export class ComponentJSON extends Component{
             );
         }catch(err){}
     }
-    
-    //Anything that should happen after the 
+
+    //Anything that should happen after the
     postMountFunction(){}
-    
+
     //Directly sets the state, including a call to updateValue to update the value on the server. This should only be used to set things that are not foreign keys/many to many relationships, i.e. only text, integers, booleans, etc. Once the state is set
     setJSON(valuekey,newvalue){
         var newstate = {};
@@ -240,21 +239,21 @@ export class ComponentJSON extends Component{
             ()=>updateValue(this.props.objectID,this.objectType,newstate)
         );
     }
-    
+
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDeleteSelf(object_id=this.state.id,objectType=this.objectType,callBackFunction=()=>{triggerHandlerEach($(this.objectClass),"sibling-removed")}){
         return (
             <DeleteSelfButton handleClick={deleteSelf.bind(this,object_id,objectType,()=>{if(this.maindiv.current)$(this.maindiv.current).triggerHandler("deleted");this.props.updateParent({},callBackFunction);})}/>
         );
     }
-    
+
     //Adds a button that inserts a sibling below the item. The callback function unfortunately does NOT seem to be called after the item is added to the DOM
     addInsertSibling(object_id=this.state.id,parent_id=this.props.parentID,objectType=this.objectType,callBackFunction){
         return(
             <InsertSiblingButton handleClick={insertSibling.bind(this,object_id,objectType,parent_id,()=>{this.props.updateParent({},callBackFunction);})}/>
         );
     }
-    
+
     //Makes the item selectable
     addEditable(){
         if(this.state.selected){
@@ -281,8 +280,8 @@ export class ComponentJSON extends Component{
             )
         }
     }
-    
-    
+
+
     //Makes a sortable object, with a large number of options.
     makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false){
         sortable_block.sortable({
@@ -311,7 +310,7 @@ export class ComponentJSON extends Component{
                 }
                 //Fix the vertical containment. This is especially necessary when the item resizes.
                 sort.containment[3]+=sort.currentItem[0].offsetTop;
-                
+
             },
             //Tell the dragging object that we are dragging it
             sort:(e,ui)=>{
@@ -320,7 +319,7 @@ export class ComponentJSON extends Component{
                     //move the item if needed
                     var old_siblings;
                     if(ui.item.parent()!=ui.placeholder.parent())old_siblings=ui.item.siblings(draggable_selector);
-                    ui.item.insertAfter(ui.placeholder); 
+                    ui.item.insertAfter(ui.placeholder);
                     if(old_siblings)triggerHandlerEach(old_siblings,"sorted");
                     triggerHandlerEach(ui.item.siblings(draggable_selector),"sorted");
                 }
@@ -388,7 +387,7 @@ export class ComponentJSON extends Component{
             if(array.indexOf(object_id)>=0)array.splice(array.indexOf(object_id),1);
         }catch(err){}
     }
-    
+
     //Add a child to the state. This is done to keep the state current with the layout. Note we do NOT use setState; it's not necessary (the dom already matches this new state after the drop occurs) and it would create a race condition with the reorder event fired at the end of the sorting.
     childAdded(object_type,object_id,new_position){
         try{
@@ -403,7 +402,7 @@ export class ComponentJSON extends Component{
         if(draggable_type=="nodestrategy")newNode(parent_id,new_position,ui.item[0].sortableData.column,this.updateJSON.bind(this));
         ui.item.remove()
     }
-    
+
 }
 
 
@@ -414,13 +413,13 @@ export function Text(props){
     )
 }
 
-//Editable text which calls the textUpdated function passed to it when focus is lost from the input. 
+//Editable text which calls the textUpdated function passed to it when focus is lost from the input.
 export class ClickEditText extends Component{
     constructor(props){
         super(props);
         this.updateText = this.updateText.bind(this);
     }
-    
+
     render(){
         var text = this.props.text;
         if((this.props.text==null || this.props.text=="") && this.props.defaultText!=null)text=this.props.defaultText;
@@ -444,13 +443,13 @@ export class DeleteSelfButton extends Component{
         super(props);
         this.handleClick = this.handleClick.bind(this);
     }
-    
+
     render(){
         return (
             <button class="delete-self-button" onClick={this.handleClick}>x</button>
         )
     }
-    
+
     handleClick(evt){
         this.props.handleClick(evt);
     }
@@ -463,13 +462,13 @@ export class InsertSiblingButton extends Component{
         super(props);
         this.handleClick = this.handleClick.bind(this);
     }
-    
+
     render(){
         return (
             <button class="insert-sibling-button" onClick={this.handleClick}>+</button>
         )
     }
-    
+
     handleClick(evt){
         this.props.handleClick(evt);
     }
@@ -484,8 +483,8 @@ export class NodeLinkView extends ComponentJSON{
         this.rerenderEvents = "ports-rendered."+this.eventNameSpace;
         this.updateParentEvents = "deleted."+this.eventNameSpace;
     }
-    
-    
+
+
     render(){
         if(this.state.id){
             if(initial_loading){
@@ -517,8 +516,8 @@ export class NodeLinkView extends ComponentJSON{
             }
         }
     }
-    
-    
+
+
     rerender(){
         this.setState({});
     }
@@ -537,7 +536,7 @@ export class AutoLinkView extends Component{
         this.eventNameSpace="autolink"+props.source;
         this.rerenderEvents = "ports-rendered."+this.eventNameSpace;
     }
-    
+
     render(){
         if(initial_loading){
             $(document).on("render-links",this.rerender.bind(this))
@@ -602,13 +601,13 @@ export class AutoLinkView extends Component{
         }
     }
 
-    
+
 }
 
 
 export class NodeLinkSVG extends Component{
     render(){
-        
+
         const source_transform=getSVGTranslation(this.props.source_port_handle.select(function(){
             return this.parentNode}).attr("transform"));
         const target_transform=getSVGTranslation(this.props.target_port_handle.select(function(){
@@ -626,7 +625,7 @@ export class NodeLinkSVG extends Component{
             </g>
         );
     }
-    
+
     getPathArray(source_point,source_port,target_point,target_port){
         var source_dims = [this.props.source_dimensions.width,this.props.source_dimensions.height];
         var target_dims = [this.props.target_dimensions.width,this.props.target_dimensions.height];
@@ -646,8 +645,8 @@ export class NodeLinkSVG extends Component{
 }
 
 export class NodePorts extends Component{
-    
-    
+
+
     render(){
         var ports = [];
         var node_dimensions;
@@ -658,8 +657,8 @@ export class NodePorts extends Component{
         else node_dimensions={width:0,height:0};
         for(var port_type in node_ports)for(var port in node_ports[port_type]){
             ports.push(
-                <circle data-port-type={port_type} data-port={port} data-node-id={this.props.nodeID} r="5" key={port_type+port} 
-                cx={node_ports[port_type][port][0]*node_dimensions.width} 
+                <circle data-port-type={port_type} data-port={port} data-node-id={this.props.nodeID} r="5" key={port_type+port}
+                cx={node_ports[port_type][port][0]*node_dimensions.width}
                 cy={node_ports[port_type][port][1]*node_dimensions.height}/>
             )
         }
@@ -672,12 +671,12 @@ export class NodePorts extends Component{
             </g>
         )
     }
-    
+
     componentDidUpdate(){
         if(!ports_rendered&&this.positioned)$(document).triggerHandler("ports-rendered");
         else if(ports_rendered&&this.positioned)$("#"+this.props.nodeID+".node").triggerHandler("ports-rendered");
     }
-    
+
     componentDidMount(){
         var thisComponent=this;
         d3.selectAll(
@@ -707,7 +706,7 @@ export class NodeView extends ComponentJSON{
         this.objectType="node";
         this.objectClass=".node";
     }
-    
+
     render(){
         if(this.state.id){
             var node_links = this.state.outgoing_links.map((link)=>
@@ -733,7 +732,7 @@ export class NodeView extends ComponentJSON{
             );
         }
     }
-    
+
     updatePorts(){
         var node = $(this.maindiv.current);
         var node_offset = getCanvasOffset(node);
@@ -772,7 +771,7 @@ export class NodeStrategyView extends ComponentJSON{
         this.objectType="nodestrategy";
         this.objectClass=".node-strategy";
     }
-    
+
     render(){
         if(this.state.id){
             return (
@@ -782,11 +781,11 @@ export class NodeStrategyView extends ComponentJSON{
             );
         }
     }
-    
+
     passEventToChild(evt){
         $(this.maindiv.current).children(".node").triggerHandler(evt.type)
     }
-    
+
     postMountFunction(){
         if(this.maindiv.current){
             //Add an event listener to check for reorderings of node-strategies, updating the rank if needed
@@ -811,7 +810,7 @@ export class StrategyView extends ComponentJSON{
         this.objectClass=".strategy";
         this.node_block = createRef();
     }
-    
+
     render(){
         if(this.state.id){
             var nodes = this.state.nodestrategy_set.map((nodestrategy)=>
@@ -830,7 +829,7 @@ export class StrategyView extends ComponentJSON{
             );
         }
     }
-    
+
     postMountFunction(){
         //Trigger the reordering event, which will make all other strategyworkflows update their indices in their states. This is critical for when a new strategy is inserted, because the DOM has not fully updated until this post-mount function is called.
         if(!initial_loading)triggerHandlerEach($(".strategy-workflow").not($(this.maindiv.current).parent()),"sibling-added");
@@ -845,7 +844,7 @@ export class StrategyView extends ComponentJSON{
                           ".node");
         $(this.maindiv.current).on("sorted sibling-added sibling-removed",()=>{triggerHandlerEach($(this.node_block.current).children(),"parent-moved")});
     }
-    
+
 }
 
 //Basic component to represent a column
@@ -855,7 +854,7 @@ export class ColumnView extends ComponentJSON{
         this.objectType="column";
         this.objectClass=".column";
     }
-    
+
     render(){
         if(this.state.id){
             var title = this.state.title;
@@ -879,7 +878,7 @@ export class ColumnWorkflowView extends ComponentJSON{
         //We add a style to the header to represent the column
         $("<style>").prop("type","text/css").prop("id","column-"+this.props.objectID+"-CSS").appendTo("head");
     }
-    
+
     render(){
         if(this.state.id){
             this.updateCSS()
@@ -897,7 +896,7 @@ export class ColumnWorkflowView extends ComponentJSON{
     passEventToChild(evt){
         $(this.maindiv.current).children(".column").triggerHandler(evt.type)
     }
-    
+
     postMountFunction(){
         if(this.maindiv.current){
             $(".column-workflow").trigger("sibling-added");
@@ -912,7 +911,7 @@ export class ColumnWorkflowView extends ComponentJSON{
     updateCSS(){
         $("#column-"+this.props.objectID+"-CSS").html(".column-"+this.props.objectID+"{left:"+this.calcDistance()+"px}");
     }
-    
+
     updateRank(){
         //Updates the rank. Note this will call a re-rendering, which will itself call updateCSS()
         var index = $(this.maindiv.current).index(".column-workflow:not(.ui-sortable-placeholder)");
@@ -920,7 +919,7 @@ export class ColumnWorkflowView extends ComponentJSON{
             this.setState({rank:index},()=>{triggerHandlerEach($(".column-"+this.props.objectID+":not(.column-workflow):not(.column)"),"parent-moved")});
         }
     }
-    
+
     //Used to calculate the distance of the column from the left, based on the current rank
     calcDistance(){
         return columnwidth*this.state.rank
@@ -934,7 +933,7 @@ export class StrategyWorkflowView extends ComponentJSON{
         this.objectType="strategyworkflow";
         this.objectClass=".strategy-workflow";
     }
-    
+
     render(){
         if(this.state.id){
             return (
@@ -968,18 +967,18 @@ export class StrategyWorkflowView extends ComponentJSON{
 
 
 
-    
+
 }
 
 //Basic component representing the workflow
 export class WorkflowView extends ComponentJSON{
-    
+
     constructor(props){
         super(props);
         this.objectType=props.type;
         this.nodebar = createRef();
     }
-    
+
     render(){
         if(this.state.id){
             var columnworkflows = this.state.columnworkflow_set.map((columnworkflow)=>
@@ -1032,7 +1031,7 @@ export class WorkflowView extends ComponentJSON{
             );
         }
     }
-    
+
     //Makes both the strategy-block and the column-row sortable
     postMountFunction(){
         this.makeSortable($(".strategy-block"),
@@ -1045,18 +1044,18 @@ export class WorkflowView extends ComponentJSON{
                           "columnworkflow",
                           ".column-workflow",
                           "x");
-        
+
         $(this.nodebar.current).resizable({
             containment:"body",
         });
     }
-    
+
     //Keeps the column ordering updated
     componentDidUpdate(){
         if(this.state){
             columns=this.state.columnworkflow_set;
         }
-    }   
+    }
 }
 
 //Class to represent the nodebar's "columns" (used to drag nodes into the strategies)
@@ -1066,7 +1065,7 @@ export class NodeBarColumnWorkflowView extends ComponentJSON{
         this.objectType="columnworkflow";
         this.objectClass=".column-workflow";
     }
-    
+
     render(){
         if(this.state.id){
             return(
@@ -1076,7 +1075,7 @@ export class NodeBarColumnWorkflowView extends ComponentJSON{
             );
         }
     }
-    
+
     postMountFunction(){
         if(this.maindiv.current){
             $(this.maindiv.current).sortable({
@@ -1093,7 +1092,7 @@ export class NodeBarColumnWorkflowView extends ComponentJSON{
                         //move the item if needed
                         var old_siblings;
                         if(ui.helper.parent()!=ui.placeholder.parent())old_siblings=ui.helper.siblings(".node-strategy");
-                        ui.helper.insertAfter(ui.placeholder); 
+                        ui.helper.insertAfter(ui.placeholder);
                         if(old_siblings)triggerHandlerEach(old_siblings,"sorted");
                         triggerHandlerEach(ui.helper.siblings(".node-strategy"),"sorted");
                     }
@@ -1105,12 +1104,12 @@ export class NodeBarColumnWorkflowView extends ComponentJSON{
                     if(ui.item[0].parentElement&&ui.item[0].parentElement.classList.contains("node-bar-column-workflow")){
                         ui.item.remove();
                     }
-                    
+
                 }
             });
         }
     }
-    
+
 }
 
 export class NodeBarColumnView extends ComponentJSON{
@@ -1119,7 +1118,7 @@ export class NodeBarColumnView extends ComponentJSON{
         this.objectType="column";
         this.objectClass=".column";
     }
-    
+
     render(){
         if(this.state){
             var title = this.state.title;
@@ -1139,13 +1138,12 @@ export class NodeBarStrategyWorkflowView extends ComponentJSON{
         this.objectType="strategyworkflow";
         this.objectClass=".strategy-workflow";
     }
-    
+
     render(){
-        
+
     }
 }
 
 export function renderWorkflowView(workflow,container){
     render(<WorkflowView objectID={workflow.id} type={workflow.type}/>,container);
 }
-
