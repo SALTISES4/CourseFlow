@@ -59,16 +59,6 @@ export default [
     plugins: plugins
   },
   {
-    input: "course_flow/static/course_flow/js/scripts-wf.js",
-    output: {
-      file: "course_flow/static/course_flow/js/scripts-wf.min.js",
-      name: "workflow",
-      format: "iife",
-      sourceMap: "inline"
-    },
-    plugins: plugins
-  },
-  {
     input: "course_flow/static/course_flow/js/scripts-wf-redux.js",
     output: {
       file: "course_flow/static/course_flow/js/scripts-wf-redux.min.js",
