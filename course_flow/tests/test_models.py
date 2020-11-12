@@ -17,7 +17,11 @@ from course_flow.models import (
     ColumnWorkflow,
 )
 
-from course_flow.utils import *
+from course_flow.utils import (
+    get_model_from_str,
+    get_parent_model_str,
+    get_parent_model,
+)
 
 from course_flow.serializers import serializer_lookups
 from rest_framework.renderers import JSONRenderer

@@ -61,7 +61,7 @@ from django.shortcuts import render, redirect
 from django.db.models import ProtectedError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 import math
-from .utils import *
+from .utils import get_model_from_str, get_parent_model_str, get_parent_model
 
 
 def registration_view(request):
@@ -867,7 +867,7 @@ def dialog_form_update(request: HttpRequest) -> HttpResponse:
     model = json.loads(request.POST.get("objectType"))
 
     serializer = serializer_lookups[model](
-        get_model_from_str(object_type).objects.get(id=data["id"]), data=data
+        get_model_from_str(model).objects.get(id=data["id"]), data=data
     )
 
     return save_serializer(serializer)
