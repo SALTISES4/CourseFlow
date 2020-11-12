@@ -881,7 +881,7 @@ def dialog_form_delete(request: HttpRequest) -> HttpResponse:
     model = json.loads(request.POST.get("objectType"))
 
     try:
-        get_model_from_str(object_type).objects.get(id=id).delete()
+        get_model_from_str(model).objects.get(id=id).delete()
     except ProtectedError:
         return JsonResponse({"action": "error"})
 
