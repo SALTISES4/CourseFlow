@@ -47,7 +47,7 @@ p{
 }
 
 .strategy-workflow.dragging .node-block{
-    visibility:hidden;
+    display:none;
 }
 
 .strategy-block{
@@ -93,12 +93,12 @@ p{
     width:100%;
     display:block;
     min-height:50px;
-    margin-top:30px;
+    padding-top:30px;
     position:relative;
 }
 
-.node-strategy.dragging .node{
-    position:relative;
+.node-strategy.dragging.ui-sortable-helper .node{
+    position:static;
 }
 
 .node-block{
@@ -113,6 +113,13 @@ p{
 
 .term .node{
     left:0px !important;
+}
+
+.node-ghost{
+    width:200px;
+    min-height:50px;
+    border:1px dashed black;
+    position:absolute;
 }
 
 .node{

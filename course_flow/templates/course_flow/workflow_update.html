@@ -32,7 +32,8 @@ const workflow_paths = {
 }
 const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 var selection_manager;
-var initial_loading = true;
+
+/*var initial_loading = true;
 var ports_rendered = false;
 var items_to_load = {
     column:{{column_count}},
@@ -60,23 +61,17 @@ $(document).on("ports-rendered",(evt)=>{
     ports_rendered=true;
     console.log("ports rendered");
     $(document).triggerHandler("render-links");
-})
+})*/
+
+initial_data = {{data_flat|safe}}
 
     
 window.addEventListener("load", function(){
     selection_manager = new workflow_redux.SelectionManager();
     
     
-    let fetchThenRenderWorkflow = function(){
-        $.getJSON(workflow_paths['{{ object.type }}'],
-            function(json){
-                console.log(json);
-                workflow_redux.renderWorkflowView(json,$("#container").get()[0]);
-            }
-        );
-    }
+    workflow_redux.renderWorkflowView($("#container").get()[0]);
     
-    fetchThenRenderWorkflow();
     
 })
 

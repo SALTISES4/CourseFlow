@@ -191,15 +191,36 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        workflow = self.get_object()
-        context["column_count"] = workflow.columns.count()
-        context["strategy_count"] = workflow.strategies.count()
-        nodes = Node.objects.filter(strategy__in=workflow.strategies.all())
-        context["node_count"] = nodes.count()
-        context["node_link_count"] = NodeLink.objects.filter(
-            source_node__in=nodes
-        ).count()
+        workflow=self.get_object()
+        SerializerClass = serializer_lookups_shallow[workflow.type]
+        columnworkflows = workflow.columnworkflow_set.all()
+        strategyworkflows = workflow.strategyworkflow_set.all()
+        columns = workflow.columns.all()
+        strategies = workflow.strategies.all()
+        nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
+        nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
 
+        data_flat = {
+            "workflow":SerializerClass(workflow).data,
+            "columnworkflow":ColumnWorkflowSerializerShallow(columnworkflows,many=True).data,
+            "column":ColumnSerializerShallow(columns,many=True).data,
+            "strategyworkflow":StrategyWorkflowSerializerShallow(strategyworkflows,many=True).data,
+            "strategy":StrategySerializerShallow(strategies,many=True).data,
+            "nodestrategy":NodeStrategySerializerShallow(nodestrategies,many=True).data,
+            "node":NodeSerializerShallow(nodes,many=True).data,
+
+        }
+        
+        context["data_flat"]=JSONRenderer().render(data_flat).decode("utf-8")
+        #context = super(UpdateView, self).get_context_data(**kwargs)
+        #workflow = self.get_object()
+        #context["column_count"] = workflow.columns.count()
+        #context["strategy_count"] = workflow.strategies.count()
+        #nodes = Node.objects.filter(strategy__in=workflow.strategies.all())
+        #context["node_count"] = nodes.count()
+        #context["node_link_count"] = NodeLink.objects.filter(
+        #    source_node__in=nodes
+        #).count()
         return context
 
 
@@ -991,6 +1012,35 @@ def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action":"error"})
     return JsonResponse({"action":"posted","project_workflows":project_workflows,"other_workflows":other_workflows,"published_workflows":published_workflows,"node_id":node.id})
     
+
+@require_POST
+@ajax_login_required
+def get_flat_workflow(request: HttpRequest) -> HttpResponse:
+    workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
+    try:
+        SerializerClass = serializer_lookups_shallow[workflow.type]
+        columnworkflows = workflow.columnworkflow_set.all()
+        strategyworkflows = workflow.strategyworkflow_set.all()
+        columns = workflow.columns.all()
+        strategies = workflow.strategies.all()
+        nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
+        nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
+
+        response = {
+            "workflow":SerializerClass(workflow).data,
+            "columnworkflows":ColumnWorkflowSerializerShallow(columnworkflows,many=True).data,
+            "columns":ColumnSerializerShallow(columns,many=True).data,
+            "strategyworkflows":StrategyWorkflowSerializerShallow(strategyworkflows,many=True).data,
+            "strategies":StrategySerializerShallow(strategies,many=True).data,
+            "nodestrategies":NodeStrategySerializerShallow(nodestrategies,many=True).data,
+            "nodes":NodeSerializerShallow(nodes,many=True).data,
+
+        }
+        
+    except AttributeError:
+         return JsonResponse({"action":"error"})
+    return JsonResponse(response)    
+
 """
 Duplication methods
 """
