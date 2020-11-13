@@ -2,8 +2,6 @@ import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as Redux from "redux";
 import * as React from "react";
-//import * as preactContext from 'preact-context';
-//import {createPortal} from "preact/compat";
 import {Decimal} from 'decimal.js/decimal';
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
@@ -61,10 +59,13 @@ const deleteSelfAction = (id,parentID,objectType) => {
     }
 }
 
-const insertBelowAction = (id,objectType) => {
+const insertBelowAction = (response_data,objectType) => {
+    console.log("insert below action created");
+    console.log(objectType+"/insertBelow");
+    console.log(response_data);
     return {
         type: objectType+"/insertBelow",
-        payload:{id:id}
+        payload:response_data
     }
 }
 
@@ -79,6 +80,14 @@ const moveNodeStrategy = (id,new_position,new_parent) => {
     return {
         type: 'nodestrategy/movedTo',
         payload:{id:id,new_index:new_position,new_parent:new_parent}
+    }
+}
+
+
+const changeField = (id,objectType,field,value) => {
+    return {
+        type: objectType+'/changeField',
+        payload:{id:id,field:field,value:value}
     }
 }
 
@@ -124,6 +133,12 @@ function workflowReducer(state={},action){
                 return new_state;
             }
             return state;
+        case 'strategy/insertBelow':
+            new_state = {...state}
+            var new_strategyworkflow_set = state.strategyworkflow_set.slice();
+            new_strategyworkflow_set.splice(new_strategyworkflow_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
+            new_state.strategyworkflow_set = new_strategyworkflow_set;
+            return new_state;
         case 'column/deleteSelf':
             if(state.columnworkflow_set.indexOf(action.payload.parent_id)>=0){
                 var new_state = {...state};
@@ -132,6 +147,16 @@ function workflowReducer(state={},action){
                 return new_state;
             }
             return state;
+        case 'column/insertBelow':
+            new_state = {...state}
+            var new_columnworkflow_set = state.columnworkflow_set.slice();
+            new_columnworkflow_set.splice(new_columnworkflow_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
+            new_state.columnworkflow_set = new_columnworkflow_set;
+            return new_state;
+        case 'workflow/changeField':
+            var new_state = {...state};
+            new_state[action.payload.field]=action.payload.value;
+            return new_state;
         default:
             return state;
     }
@@ -148,6 +173,10 @@ function columnworkflowReducer(state={},action){
                 }
             }
             return state;
+        case 'column/insertBelow':
+            new_state = state.slice();
+            new_state.push(action.payload.new_through);
+            return new_state;
         default:
             return state;
     }
@@ -160,6 +189,21 @@ function columnReducer(state={},action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
+                    deleteSelf(action.payload.id,"column");
+                    return new_state;
+                }
+            }
+            return state;
+        case 'column/insertBelow':
+            new_state = state.slice();
+            new_state.push(action.payload.new_model);
+            return new_state;
+        case 'column/changeField':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]};
+                    new_state[i][action.payload.field]=action.payload.value;
                     return new_state;
                 }
             }
@@ -180,6 +224,10 @@ function strategyworkflowReducer(state={},action){
                 }
             }
             return state;
+        case 'strategy/insertBelow':
+            new_state = state.slice();
+            new_state.push(action.payload.new_through);
+            return new_state;
         default:
             return state;
     }
@@ -234,11 +282,40 @@ function strategyReducer(state={},action){
                 }
             }
             return state;
+        case 'node/insertBelow':
+            console.log("altering the strategy");
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.parentID){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]}
+                    var new_nodestrategy_set = state[i].nodestrategy_set.slice();
+                    new_nodestrategy_set.splice(new_nodestrategy_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
+                    new_state[i].nodestrategy_set = new_nodestrategy_set;
+                    console.log(new_state);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'strategy/insertBelow':
+            new_state = state.slice();
+            new_state.push(action.payload.new_model);
+            return new_state;
         case 'strategy/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
+                    deleteSelf(action.payload.id,"strategy");
+                    return new_state;
+                }
+            }
+            return state;
+        case 'strategy/changeField':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]};
+                    new_state[i][action.payload.field]=action.payload.value;
                     return new_state;
                 }
             }
@@ -263,11 +340,16 @@ function nodestrategyReducer(state={},action){
                 }
             }
             return state;
+        case 'node/insertBelow':
+            new_state = state.slice();
+            new_state.push(action.payload.new_through);
+            return new_state;
         default:
             return state;
     }
 }
 function nodeReducer(state={},action){
+    console.log(action);
     switch(action.type){
         case 'node/movedColumnBy':
             console.log("handling column change");
@@ -302,6 +384,21 @@ function nodeReducer(state={},action){
                     var new_state = state.slice();
                     new_state.splice(i,1);
                     console.log(new_state);
+                    deleteSelf(action.payload.id,"node")
+                    return new_state;
+                }
+            }
+            return state;
+        case 'node/insertBelow':
+            new_state = state.slice();
+            new_state.push(action.payload.new_model);
+            return new_state;
+        case 'node/changeField':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]};
+                    new_state[i][action.payload.field]=action.payload.value;
                     return new_state;
                 }
             }
@@ -484,14 +581,26 @@ export class ComponentJSON extends Component{
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDeleteSelf(data){
         return (
-            <ActionButton button_icon="delrect.svg" button_class="delete-self-button" handleClick={this.props.dispatch.bind(this,deleteSelfAction(data.id,this.props.parentID,this.objectType))}/>
+            <ActionButton button_icon="delrect.svg" button_class="delete-self-button" handleClick={()=>{
+                //Temporary confirmation; add better comfirmation dialogue later
+                if(window.confirm("Are you sure you want to delete this "+this.objectType+"?")){
+                    this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType))
+                }
+            }}/>
         );
     }
     
     //Adds a button that inserts a sibling below the item. The callback function unfortunately does NOT seem to be called after the item is added to the DOM
     addInsertSibling(data){
+        var props = this.props;
+        var type = this.objectType;
         return(
-            <ActionButton button_icon="add.svg" button_class="insert-sibling-button" handleClick={this.props.dispatch.bind(this,insertBelowAction(data.id,this.props.parentID,this.objectType))}/>
+            <ActionButton button_icon="add.svg" button_class="insert-sibling-button" handleClick={()=>insertSibling(data.id,this.objectType,this.props.parentID,
+                (response_data)=>{
+                    let action = insertBelowAction(response_data,type);
+                    props.dispatch(action);
+                }
+            )}/>
         );
     }
     
@@ -500,20 +609,21 @@ export class ComponentJSON extends Component{
         if(this.state.selected){
             var type=this.objectType;
             console.log(this.state);
-            return(
-                <div class="right-panel-container edit-bar-container">
+            console.log(data);
+            return reactDom.createPortal(
+                <div class="right-panel-container edit-bar-container" onClick={(evt)=>{evt.stopPropagation()}}>
                     <div class="right-panel-inner">
                         <h3>Edit:</h3>
                         {["node","strategy","column"].indexOf(type)>=0 &&
                             <div>
                                 <h4>Title:</h4>
-                                <input value={data.title}/>
+                                <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
                             </div>
                         }
-                        {["node","strategy"].indexOf(type)>=0 &&
+                        {["node"].indexOf(type)>=0 &&
                             <div>
                                 <h4>Description:</h4>
-                                <input value={data.description}/>
+                                <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
                             </div>
                         }
                         {type=="node" && data.node_type!=0 &&
@@ -528,8 +638,12 @@ export class ComponentJSON extends Component{
                         {this.addDeleteSelf(data)}
                     </div>
                 </div>
-            )
+            ,$("#container")[0])
         }
+    }
+    
+    inputChanged(field,evt){
+        this.props.dispatch(changeField(this.props.data.id,this.objectType,field,evt.target.value));
     }
 }
 
@@ -655,7 +769,7 @@ export class NodeStrategyView extends ComponentJSON{
         console.log(data);
         return (
             <div class="node-strategy" id={data.id} ref={this.maindiv}>
-                <NodeViewConnected objectID={data.node} parentID={data.id}/>
+                <NodeViewConnected objectID={data.node} parentID={this.props.parentID} throughParentID={data.id}/>
             </div>
         );
     }
@@ -685,16 +799,20 @@ export class StrategyView extends ComponentJSON{
         var nodes = data.nodestrategy_set.map((nodestrategy)=>
             <NodeStrategyViewConnected key={nodestrategy} objectID={nodestrategy} parentID={data.id}/>
         );
+        if(nodes.length==0)nodes.push(
+            <div class="node-strategy" style={{height:"100%"}}></div>
+        );
         return (
             <div class={"strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
-                
+                <div class="mouseover-container-bypass">
+                    <div class="mouseover-actions">
+                        {this.addInsertSibling(data)}
+                        {this.addDeleteSelf(data)}
+                    </div>
+                </div>
                 <TitleText text={data.title} defaultText={data.strategy_type_display+" "+(this.props.rank+1)}/>
                 <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                     {nodes}
-                </div>
-                <div class="mouseover-actions">
-                    {this.addInsertSibling(data)}
-                    {this.addDeleteSelf(data)}
                 </div>
                 {this.addEditable(data)}
             </div>
@@ -760,10 +878,10 @@ export class StrategyWorkflowView extends ComponentJSON{
         console.log(data);
         var strategy;
         if(this.state.strategy_type==2)strategy = (
-                <TermViewConnected objectID={data.strategy} rank={this.props.order.indexOf(data.id)} parentID={data.id}/>
+                <TermViewConnected objectID={data.strategy} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id}/>
         );
         else strategy = (
-            <StrategyViewConnected objectID={data.strategy} rank={this.props.order.indexOf(data.id)} parentID={data.id}/>
+            <StrategyViewConnected objectID={data.strategy} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id}/>
         );
         return (
             <div class="strategy-workflow" id={data.id} ref={this.maindiv}>
@@ -831,7 +949,7 @@ export class ColumnWorkflowView extends ComponentJSON{
         console.log(this.props);
         return (
             <div class={"column-workflow column-"+data.id} ref={this.maindiv} id={data.id}>
-                <ColumnViewConnected objectID={data.column} parentID={data.id}/>
+                <ColumnViewConnected objectID={data.column} parentID={this.props.parentID} throughParentID={data.id}/>
             </div>
         )
     }

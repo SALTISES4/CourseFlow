@@ -1286,47 +1286,56 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
             model=Strategy.objects.get(id=object_id)
             parent=Workflow.objects.get(id=parent_id)
             through=StrategyWorkflow.objects.get(strategy=model,workflow=parent)
-            newmodel = StrategyWorkflow.objects.create(
+            newmodel = Strategy.objects.create(
+                author=model.author,
+                strategy_type=model.strategy_type,
+            )
+            newthroughmodel = StrategyWorkflow.objects.create(
                 workflow=parent,
-                strategy=Strategy.objects.create(
-                    author=model.author,
-                    strategy_type=model.strategy_type,
-                ),
+                strategy=newmodel,
                 rank=through.rank + 1,
             )
+            new_model_serialized=StrategySerializerShallow(newmodel).data
+            new_through_serialized=StrategyWorkflowSerializerShallow(newthroughmodel).data
         elif object_type == "node":
             model=Node.objects.get(id=object_id)
             parent=Strategy.objects.get(id=parent_id)
             through=NodeStrategy.objects.get(node=model,strategy=parent)
-            newmodel = NodeStrategy.objects.create(
+            newmodel = Node.objects.create(
+                author=model.author,
+                column=model.column,
+                node_type=model.node_type,
+            )
+            newthroughmodel = NodeStrategy.objects.create(
                 strategy=parent,
-                node=Node.objects.create(
-                    author=model.author,
-                    column=model.column,
-                    node_type=model.node_type,
-                ),
+                node=newmodel,
                 rank=through.rank + 1,
             )
+            new_model_serialized=NodeSerializerShallow(newmodel).data
+            new_through_serialized=NodeStrategySerializerShallow(newthroughmodel).data
         elif object_type == "column":
             print("column");
             model=Column.objects.get(id=object_id)
             parent=Workflow.objects.get(id=parent_id)
             through=ColumnWorkflow.objects.get(column=model,workflow=parent)
-            newmodel = ColumnWorkflow.objects.create(
+            newmodel =Column.objects.create(
+                author=model.author,
+                column_type=math.floor(model.column_type/10)*10
+            )
+            newthroughmodel = ColumnWorkflow.objects.create(
                 workflow=parent,
-                column=Column.objects.create(
-                    author=model.author,
-                    column_type=math.floor(model.column_type/10)*10
-                ),
+                column=newmodel,
                 rank=through.rank + 1,
             )
+            new_model_serialized=ColumnSerializerShallow(newmodel).data
+            new_through_serialized=ColumnWorkflowSerializerShallow(newthroughmodel).data
         else:
             raise ValidationError
 
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "objectID": newmodel.id})
+    return JsonResponse({"action": "posted", "new_model": new_model_serialized,"new_through":new_through_serialized,"parentID":parent_id,"siblingID":through.id})
 
 
 """
