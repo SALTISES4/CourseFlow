@@ -199,6 +199,8 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         strategies = workflow.strategies.all()
         nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
         nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
+        column_choices = [{'type':choice[0],'name':choice[1]} for choice in Column._meta.get_field('column_type').choices]
+        
 
         data_flat = {
             "workflow":SerializerClass(workflow).data,
@@ -212,15 +214,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         }
         
         context["data_flat"]=JSONRenderer().render(data_flat).decode("utf-8")
-        #context = super(UpdateView, self).get_context_data(**kwargs)
-        #workflow = self.get_object()
-        #context["column_count"] = workflow.columns.count()
-        #context["strategy_count"] = workflow.strategies.count()
-        #nodes = Node.objects.filter(strategy__in=workflow.strategies.all())
-        #context["node_count"] = nodes.count()
-        #context["node_link_count"] = NodeLink.objects.filter(
-        #    source_node__in=nodes
-        #).count()
+        context["column_choices"]=JSONRenderer().render(column_choices).decode("utf-8")
         return context
 
 
@@ -1212,38 +1206,52 @@ def new_column(request: HttpRequest) -> HttpResponse:
 def new_node(request: HttpRequest) -> HttpResponse:
     strategy_id = json.loads(request.POST.get("strategyPk"))
     column_id = json.loads(request.POST.get("columnPk"))
+    column_type = json.loads(request.POST.get("columnType"))
     position = json.loads(request.POST.get("position"))
     strategy = Strategy.objects.get(pk=strategy_id)
-    if column_id >= 0:
-        column = Column.objects.get(pk=column_id)
-    else:
-        column = (
-            ColumnWorkflow.objects.filter(
+    print("ADDING NODE")
+    print(column_id)
+    try:
+        if column_id is not None and column_id >= 0:
+            column = Column.objects.get(pk=column_id)
+            columnworkflow = ColumnWorkflow.objects.get(column=column)
+        elif column_type is not None and column_type >=0:
+            column = Column.objects.create(
+                column_type=column_type,
+                author = strategy.author
+            )
+            columnworkflow = ColumnWorkflow.objects.create(
+                column=column,
+                workflow=strategy.workflow_set.first(),
+                rank=strategy.workflow_set.first().columns.count()
+            )
+        else:
+            columnworkflow = ColumnWorkflow.objects.filter(
                 workflow=StrategyWorkflow.objects.get(
                     strategy=strategy
                 ).workflow
+            ).first()
+            column = (
+                columnworkflow.column
             )
-            .first()
-            .column
-        )
-    try:
         if column.author != strategy.author:
             raise ValidationError
         if position < 0 or position > strategy.nodes.count():
             position = strategy.nodes.count()
+        node = Node.objects.create(
+            author=strategy.author,
+            node_type=strategy.strategy_type,
+            column=column,
+        )
         node_strategy = NodeStrategy.objects.create(
             strategy=strategy,
-            node=Node.objects.create(
-                author=strategy.author,
-                node_type=strategy.strategy_type,
-                column=column,
-            ),
+            node=node,
             rank=position,
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
-        {"action": "posted", "objectID": node_strategy.node.id}
+        {"action": "posted", "new_model": NodeSerializerShallow(node).data,"new_through":NodeStrategySerializerShallow(node_strategy).data,"index":position,"parentID":strategy_id,"columnworkflow":ColumnWorkflowSerializerShallow(columnworkflow).data,"column":ColumnSerializerShallow(column).data}
     )
 
 
@@ -1352,7 +1360,6 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     parent_id = json.loads(request.POST.get("parentID"))
     new_position = json.loads(request.POST.get("newPosition"))
     new_parent_id = json.loads(request.POST.get("newParentID"))
-    new_column_id = json.loads(request.POST.get("newColumnID"))
     try:
         model_type = get_model_from_str(object_type)
         model = model_type.objects.get(id=object_id)
@@ -1412,16 +1419,26 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
             model.rank = new_position
             setattr(model, parentType, new_parent)
             model.save()
-        if (
-            not new_column_id is None
-            and int(new_column_id) > 0
-            and object_type == "nodestrategy"
-        ):
-            new_column = ColumnWorkflow.objects.get(id=new_column_id).column
-            if new_column.author == parent.author:
-                model.node.column = new_column
-                model.node.save()
 
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
+
+# Change a node's column
+@require_POST
+@ajax_login_required
+@is_owner("nodePk")
+def change_column(request: HttpRequest) -> HttpResponse:
+    node_id = json.loads(request.POST.get("nodePk"))
+    new_column_id = json.loads(request.POST.get("columnID"))
+    try:
+        node = Node.objects.get(id=node_id)
+        new_column = ColumnWorkflow.objects.get(id=new_column_id).column
+        if new_column.author == node.author:
+            node.column = new_column
+            node.save()
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -1505,7 +1522,8 @@ def delete_self(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
 
     try:
-        get_model_from_str(object_type).objects.get(id=object_id).delete()
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        model.delete()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
 

@@ -641,6 +641,7 @@ class ColumnSerializerShallow(serializers.ModelSerializer):
             "last_modified",
             "column_type",
             "column_type_display",
+            "visible",
         ]
 
     def create(self, validated_data):
@@ -687,20 +688,8 @@ class StrategySerializerShallow(serializers.ModelSerializer):
 
 
     def get_nodestrategy_set(self, instance):
-        if(instance.strategy_type==Strategy.TERM):
-            links_by_column={}
-            column_workflows =ColumnWorkflow.objects.filter(
-                workflow=instance.workflow_set.first()
-            ).order_by("rank")
-            for column_workflow in column_workflows:
-                links = instance.nodestrategy_set.filter(
-                    node__column=column_workflow.column
-                ).order_by("rank")
-                links_by_column[column_workflow.id]=list(map(linkIDMap,links))
-            return links_by_column
-        else:
-            links = instance.nodestrategy_set.all().order_by("rank")
-            return list(map(linkIDMap, links))
+        links = instance.nodestrategy_set.all().order_by("rank")
+        return list(map(linkIDMap, links))
 
     
     
@@ -804,6 +793,8 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "is_original",
             "parent_workflow",
             "type",
+            "DEFAULT_COLUMNS",
+            "DEFAULT_CUSTOM_COLUMN",
         ]
 
     def create(self, validated_data):
@@ -834,6 +825,8 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "is_original",
             "parent_workflow",
             "type",
+            "DEFAULT_COLUMNS",
+            "DEFAULT_CUSTOM_COLUMN",
         ]
 
     def create(self, validated_data):
@@ -860,6 +853,8 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "is_original",
             "parent_workflow",
             "type",
+            "DEFAULT_COLUMNS",
+            "DEFAULT_CUSTOM_COLUMN",
         ]
 
     def create(self, validated_data):

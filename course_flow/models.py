@@ -46,6 +46,7 @@ class Column(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
+    visible = models.BooleanField(default=True)
     CUSTOM_ACTIVITY = 0
     OUT_OF_CLASS_INSTRUCTOR = 1
     OUT_OF_CLASS_STUDENT = 2
@@ -78,11 +79,6 @@ class Column(models.Model):
         "Column", on_delete=models.SET_NULL, null=True
     )
     
-    default_columns = {
-        "activity": [1, 2, 3, 4],
-        "course": [11, 12, 13, 14],
-        "program": [20, 20, 20],
-    }
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -361,7 +357,7 @@ class Workflow(models.Model):
     )
 
     SUBCLASSES = ["activity", "course", "program"]
-
+    
     @property
     def type(self):
         for subclass in self.SUBCLASSES:
@@ -407,6 +403,7 @@ class Activity(Workflow):
     )
 
     DEFAULT_CUSTOM_COLUMN = 0
+    DEFAULT_COLUMNS = [1, 2, 3, 4]
     WORKFLOW_TYPE = 0
 
     @property
@@ -441,6 +438,7 @@ class Course(Workflow):
     )
 
     DEFAULT_CUSTOM_COLUMN = 10
+    DEFAULT_COLUMNS = [11, 12, 13, 14]
     WORKFLOW_TYPE = 1
 
     @property
@@ -458,6 +456,7 @@ class Program(Workflow):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     DEFAULT_CUSTOM_COLUMN = 20
+    DEFAULT_COLUMNS = [20, 20, 20]
     WORKFLOW_TYPE = 2
 
     @property
@@ -625,7 +624,7 @@ def create_default_node_content(sender, instance, created, **kwargs):
 def create_default_activity_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
         # If the activity is newly created, add the default columns
-        cols = Column.default_columns["activity"]
+        cols = instance.DEFAULT_COLUMNS
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
@@ -643,7 +642,7 @@ def create_default_activity_content(sender, instance, created, **kwargs):
 def create_default_course_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
         # If the activity is newly created, add the default columns
-        cols = Column.default_columns["course"]
+        cols = instance.DEFAULT_COLUMNS
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
@@ -661,7 +660,7 @@ def create_default_course_content(sender, instance, created, **kwargs):
 def create_default_program_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
         # If the activity is newly created, add the default columns
-        cols = Column.default_columns["program"]
+        cols = instance.DEFAULT_COLUMNS
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},

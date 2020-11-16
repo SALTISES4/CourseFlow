@@ -309,6 +309,10 @@ circle.mouseover{
     box-sizing:border-box;
 }
 
+.new-node-drop-over{
+    border-bottom:2px solid lime;
+}
+
 .workflow-wrapper .selected{
     outline: 3px dotted lime;
 }

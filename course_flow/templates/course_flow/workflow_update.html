@@ -64,6 +64,8 @@ $(document).on("ports-rendered",(evt)=>{
 })*/
 
 initial_data = {{data_flat|safe}}
+column_choices = {{column_choices|safe}}
+console.log(column_choices);
 
     
 window.addEventListener("load", function(){
@@ -122,11 +124,14 @@ function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("succ
 }
     
 //Add a new node to a strategy
-function newNode(strategyPk,position=-1,column,callBackFunction=()=>console.log("success")){
+function newNode(strategyPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){
+    console.log(strategyPk);
+    console.log("column: "+column);
     $.post("{% url 'course_flow:new-node' %}", {
         strategyPk:JSON.stringify(strategyPk),
         position:JSON.stringify(position),
-        columnPk:JSON.stringify(column),        
+        columnPk:JSON.stringify(column),
+        columnType:JSON.stringify(column_type),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
@@ -172,10 +177,10 @@ function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console
         else console.log("Failed");
     });
 }
+
     
 //Called when an object in a list is reordered
-function insertedAt(objectID,objectType,parentID,newPosition,newParentID,newColumnID,callBackFunction=()=>console.log("success")){
-    
+function insertedAt(objectID,objectType,parentID,newPosition,newParentID=null,callBackFunction=()=>console.log("success")){
     
     $.post("{% url 'course_flow:inserted-at' %}", {
         objectID:JSON.stringify(objectID),
@@ -183,13 +188,24 @@ function insertedAt(objectID,objectType,parentID,newPosition,newParentID,newColu
         parentID:JSON.stringify(parentID),
         newPosition:JSON.stringify(newPosition),
         newParentID:JSON.stringify(newParentID),
-        newColumnID:JSON.stringify(newColumnID),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
     });
 }
-
+ 
+//Called when a node should have its column changed
+function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
+    
+    
+    $.post("{% url 'course_flow:change-column' %}", {
+        nodePk:JSON.stringify(objectID),
+        columnID:JSON.stringify(columnID),
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
 
 
 

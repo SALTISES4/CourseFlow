@@ -60,11 +60,17 @@ const deleteSelfAction = (id,parentID,objectType) => {
 }
 
 const insertBelowAction = (response_data,objectType) => {
-    console.log("insert below action created");
-    console.log(objectType+"/insertBelow");
-    console.log(response_data);
     return {
         type: objectType+"/insertBelow",
+        payload:response_data
+    }
+}
+
+
+const newNodeAction = (response_data) => {
+    console.log("creating new node action");
+    return {
+        type: "node/newNode",
         payload:response_data
     }
 }
@@ -76,10 +82,10 @@ const columnChangeNodeStrategy = (id,delta_x,columnworkflows) => {
     }
 }
 
-const moveNodeStrategy = (id,new_position,new_parent) => {
+const moveNodeStrategy = (id,new_position,new_parent,nodes_by_column) => {
     return {
         type: 'nodestrategy/movedTo',
-        payload:{id:id,new_index:new_position,new_parent:new_parent}
+        payload:{id:id,new_index:new_position,new_parent:new_parent,nodes_by_column:nodes_by_column}
     }
 }
 
@@ -96,17 +102,12 @@ function workflowReducer(state={},action){
         case 'columnworkflow/movedTo':
             var new_columnworkflow_set = state.columnworkflow_set.slice();
             for(var i=0;i<new_columnworkflow_set.length;i++){
-                console.log("id comparison:");
-                console.log(new_columnworkflow_set[i]);
-                console.log(action.payload.id);
-                console.log(action.payload.new_index);
                 if(new_columnworkflow_set[i]==action.payload.id){
-                    console.log("FOUND IT");
                     new_columnworkflow_set.splice(action.payload.new_index,0,new_columnworkflow_set.splice(i,1)[0]);
                     break;
                 }
             }
-            console.log(new_columnworkflow_set);
+            insertedAt(action.payload.id,"columnworkflow",state.id,action.payload.new_index);
             return {
                 ...state,
                 columnworkflow_set:new_columnworkflow_set
@@ -115,12 +116,11 @@ function workflowReducer(state={},action){
             var new_strategyworkflow_set = state.strategyworkflow_set.slice();
             for(var i=0;i<new_strategyworkflow_set.length;i++){
                 if(new_strategyworkflow_set[i]==action.payload.id){
-                    console.log("FOUND IT");
                     new_strategyworkflow_set.splice(action.payload.new_index,0,new_strategyworkflow_set.splice(i,1)[0]);
                     break;
                 }
             }
-            console.log(new_strategyworkflow_set);
+            insertedAt(action.payload.id,"strategyworkflow",state.id,action.payload.new_index);
             return {
                 ...state,
                 strategyworkflow_set:new_strategyworkflow_set
@@ -147,6 +147,13 @@ function workflowReducer(state={},action){
                 return new_state;
             }
             return state;
+        case 'node/newNode':
+            if(state.columnworkflow_set.indexOf(action.payload.columnworkflow.id)>=0)return state;
+            new_state = {...state}
+            var new_columnworkflow_set = state.columnworkflow_set.slice();
+            new_columnworkflow_set.push(action.payload.columnworkflow.id);
+            new_state.columnworkflow_set = new_columnworkflow_set;
+            return new_state;
         case 'column/insertBelow':
             new_state = {...state}
             var new_columnworkflow_set = state.columnworkflow_set.slice();
@@ -173,6 +180,13 @@ function columnworkflowReducer(state={},action){
                 }
             }
             return state;
+        case 'node/newNode':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.columnworkflow.id)return state;
+            }
+            new_state = state.slice();
+            new_state.push(action.payload.columnworkflow);
+            return new_state;
         case 'column/insertBelow':
             new_state = state.slice();
             new_state.push(action.payload.new_through);
@@ -194,6 +208,13 @@ function columnReducer(state={},action){
                 }
             }
             return state;
+        case 'node/newNode':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.column.id)return state;
+            }
+            new_state = state.slice();
+            new_state.push(action.payload.column);
+            return new_state;
         case 'column/insertBelow':
             new_state = state.slice();
             new_state.push(action.payload.new_model);
@@ -235,11 +256,9 @@ function strategyworkflowReducer(state={},action){
 function strategyReducer(state={},action){
     switch(action.type){
         case 'nodestrategy/movedTo':
-            console.log(action);
             let old_parent,old_parent_index,new_parent,new_parent_index;
-            console.log(state);
             for(var i=0;i<state.length;i++){
-                if(state[i].nodestrategy_set.indexOf(parseInt(action.payload.id))>=0){
+                if(state[i].nodestrategy_set.indexOf(action.payload.id)>=0){
                     old_parent_index=i;
                     old_parent={...state[i]};
                 }
@@ -248,48 +267,63 @@ function strategyReducer(state={},action){
                     new_parent={...state[i]};
                 }
             }
+            var new_index = action.payload.new_index;
+            //Correction for if we are in a term:
+            if(action.payload.nodes_by_column){
+                for(var col in action.payload.nodes_by_column){
+                    if(action.payload.nodes_by_column[col].indexOf(action.payload.id)>=0){
+                        let previous = action.payload.nodes_by_column[col][new_index];
+                        new_index = new_parent.nodestrategy_set.indexOf(previous);
+                    }
+                }
+            }
+            
+            
             var new_state = state.slice();
-            console.log(old_parent.nodestrategy_set);
-            console.log(new_parent.nodestrategy_set);
             old_parent.nodestrategy_set= old_parent.nodestrategy_set.slice();
             old_parent.nodestrategy_set.splice(old_parent.nodestrategy_set.indexOf(action.payload.id),1);
             if(old_parent_index==new_parent_index){
-                old_parent.nodestrategy_set.splice(action.payload.new_index,0,action.payload.id);
+                old_parent.nodestrategy_set.splice(new_index,0,action.payload.id);
             }else{
                 new_parent.nodestrategy_set = new_parent.nodestrategy_set.slice();
-                new_parent.nodestrategy_set.splice(action.payload.new_index,0,action.payload.id);
+                new_parent.nodestrategy_set.splice(new_index,0,action.payload.id);
                 new_state.splice(new_parent_index,1,new_parent);
                 
             }
             new_state.splice(old_parent_index,1,old_parent);
-            console.log(old_parent.nodestrategy_set);
-            console.log(new_parent.nodestrategy_set);
-            console.log(new_state);
-            
+            insertedAt(action.payload.id,"nodestrategy",old_parent.id,new_index,new_parent.id);
             return new_state;
         case 'node/deleteSelf':
-            console.log("NODE DELETING SELF");
             for(var i=0;i<state.length;i++){
-                console.log(state[i]);
                 if(state[i].nodestrategy_set.indexOf(action.payload.parent_id)>=0){
                     var new_state=state.slice();
                     new_state[i] = {...new_state[i]};
                     new_state[i].nodestrategy_set = state[i].nodestrategy_set.slice();
-                    console.log(new_state[i].nodestrategy_set);
                     new_state[i].nodestrategy_set.splice(new_state[i].nodestrategy_set.indexOf(action.payload.parent_id),1);
-                    console.log(new_state[i].nodestrategy_set);
                     return new_state;
                 }
             }
             return state;
         case 'node/insertBelow':
-            console.log("altering the strategy");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parentID){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]}
                     var new_nodestrategy_set = state[i].nodestrategy_set.slice();
                     new_nodestrategy_set.splice(new_nodestrategy_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
+                    new_state[i].nodestrategy_set = new_nodestrategy_set;
+                    return new_state;
+                }
+            }
+            return state;
+        case 'node/newNode':
+            console.log("creating node in strat");
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.parentID){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]}
+                    var new_nodestrategy_set = state[i].nodestrategy_set.slice();
+                    new_nodestrategy_set.splice(action.payload.index,0,action.payload.new_through.id);
                     new_state[i].nodestrategy_set = new_nodestrategy_set;
                     console.log(new_state);
                     return new_state;
@@ -329,18 +363,17 @@ function strategyReducer(state={},action){
 function nodestrategyReducer(state={},action){
     switch(action.type){
         case 'node/deleteSelf':
-            console.log("NODE DELETING SELF");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parent_id){
-                    console.log(state);
                     var new_state=state.slice();
                     new_state.splice(i,1);
-                    console.log(new_state);
                     return new_state;
                 }
             }
             return state;
         case 'node/insertBelow':
+        case 'node/newNode':
+            console.log("creating node in ns");
             new_state = state.slice();
             new_state.push(action.payload.new_through);
             return new_state;
@@ -349,47 +382,40 @@ function nodestrategyReducer(state={},action){
     }
 }
 function nodeReducer(state={},action){
-    console.log(action);
     switch(action.type){
         case 'node/movedColumnBy':
-            console.log("handling column change");
             var new_state = state.slice();
-            console.log(new_state);
             for(var i=0;i<state.length;i++){
-                console.log(i);
-                console.log(action.payload.id);
-                console.log(state[i].id);
                 if(state[i].id==action.payload.id){
                     try{
                         let columns = action.payload.columnworkflows;
                         let new_columnworkflow = columns[columns.indexOf(state[i].columnworkflow)+action.payload.delta_x];
-                        console.log(new_columnworkflow);
                         var new_nodedata = {
                             ...state[i],
                             columnworkflow:new_columnworkflow,
                         };
-                        console.log(state[i]);
-                        console.log(new_nodedata);
                         new_state.splice(i,1,new_nodedata);
+                        columnChanged(action.payload.id,new_columnworkflow);
                     }catch(err){console.log("couldn't find new column");return state;}
                     return new_state;
                 }
             }
+            return state;
+        case 'node/dropped':
+            return state;
         case 'node/deleteSelf':
-            console.log("NODE DELETING SELF");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
-                    console.log(action.payload.id);
-                    console.log(state);
                     var new_state = state.slice();
                     new_state.splice(i,1);
-                    console.log(new_state);
                     deleteSelf(action.payload.id,"node")
                     return new_state;
                 }
             }
             return state;
         case 'node/insertBelow':
+        case 'node/newNode':
+            console.log("creating node in node");
             new_state = state.slice();
             new_state.push(action.payload.new_model);
             return new_state;
@@ -438,6 +464,24 @@ const getStrategyByID = (state,id)=>{
         if(strategy.id==id)return {data:strategy,column_order:state.workflow.columnworkflow_set};
     }
 }
+const getTermByID = (state,id)=>{
+    for(var i in state.strategy){
+        var strategy = state.strategy[i];
+        if(strategy.id==id){
+            var nodestrategies = strategy.nodestrategy_set;
+            var nodes_by_column = {};
+            for(var j=0;j<state.workflow.columnworkflow_set.length;j++){
+                nodes_by_column[state.workflow.columnworkflow_set[j]]=[];
+            }
+            for(var j=0;j<nodestrategies.length;j++){
+                let node_strategy = getNodeStrategyByID(state,nodestrategies[j]).data;
+                let node = getNodeByID(state,node_strategy.node).data;
+                nodes_by_column[node.columnworkflow].push(nodestrategies[j]);
+            }
+            return {data:strategy,column_order:state.workflow.columnworkflow_set,nodes_by_column:nodes_by_column};
+        }
+    }
+}
 const getStrategyWorkflowByID = (state,id)=>{
     for(var i in state.strategyworkflow){
         var strategyworkflow = state.strategyworkflow[i];
@@ -462,6 +506,7 @@ export class ComponentJSON extends Component{
     constructor(props){
         super(props);
         this.state={};
+        this.maindiv = createRef();
     }
     
     componentDidMount(){
@@ -471,6 +516,7 @@ export class ComponentJSON extends Component{
     postMountFunction(){};
     
     makeSortableNode(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false){
+        var props = this.props;
         sortable_block.draggable({
             containment:".workflow-container",
             axis:axis,
@@ -492,9 +538,6 @@ export class ComponentJSON extends Component{
                 
             },
             drag:(e,ui)=>{
-                console.log("dragging");
-                console.log(ui.helper.offset());
-                console.log($("#"+$(e.target).attr("id")+draggable_selector).children(handle).first().offset());
                 
                 var delta_x= Math.round((ui.helper.offset().left-$("#"+$(e.target).attr("id")+draggable_selector).children(handle).first().offset().left)/columnwidth);
                 if(delta_x!=0){
@@ -514,17 +557,34 @@ export class ComponentJSON extends Component{
             tolerance:"pointer",
             droppable:".node-ghost",
             over:(e,ui)=>{
-                console.log("Dragging over!");
-                console.log(e);
-                console.log(ui);
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 var new_index = drop_item.prevAll().length;
                 var new_parent_id = parseInt(drop_item.parent().attr("id")); 
-                console.log(drag_item.attr("id"));
-                console.log(new_index);
-                console.log(new_parent_id);
-                this.sortableMovedFunction(parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id);
+                
+                if(!drag_item.hasClass("new-node")){
+                    this.sortableMovedFunction(parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id);
+                }else{
+                    $(".new-node-drop-over").removeClass("new-node-drop-over");
+                    drop_item.addClass("new-node-drop-over");
+                }
+            },
+            drop:(e,ui)=>{
+                $(".new-node-drop-over").removeClass("new-node-drop-over");
+                var drop_item = $(e.target);
+                var drag_item = ui.draggable;
+                var new_index = drop_item.prevAll().length+1;
+                console.log(drop_item);
+                console.log(drag_item);
+                if(drag_item.hasClass("new-node")){
+                    console.log(drag_item[0].dataDraggable);
+                    newNode(this.props.objectID,new_index,drag_item[0].dataDraggable.column,drag_item[0].dataDraggable.column_type,
+                        (response_data)=>{
+                            let action = newNodeAction(response_data);
+                            props.dispatch(action);
+                        }
+                    );
+                }
             }
         });
         
@@ -552,12 +612,10 @@ export class ComponentJSON extends Component{
             },
             //Tell the dragging object that we are dragging it
             sort:(e,ui)=>{
-                console.log(ui.item.attr("id"));
                 //figure out if the order has changed
                 var placeholder_index = ui.placeholder.prevAll().not(".ui-sortable-helper").length;
                 if(ui.placeholder.parent()[0]!=ui.item.parent()[0]||ui.item.prevAll().not(".ui-sortable-placeholder").length!=placeholder_index){
                     var new_parent_id = parseInt(ui.placeholder.parent().attr("id"));
-                    console.log("AN ITEM WAS MOVED IN A SORTABLE")
                     this.sortableMovedFunction(parseInt(ui.item.attr("id")),placeholder_index,draggable_type,new_parent_id);
                 }
                 
@@ -608,8 +666,6 @@ export class ComponentJSON extends Component{
     addEditable(data){
         if(this.state.selected){
             var type=this.objectType;
-            console.log(this.state);
-            console.log(data);
             return reactDom.createPortal(
                 <div class="right-panel-container edit-bar-container" onClick={(evt)=>{evt.stopPropagation()}}>
                     <div class="right-panel-inner">
@@ -703,7 +759,6 @@ export class NodeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(columnwidth*this.props.column_order.indexOf(data.columnworkflow)+"px");
         return (
             <div 
                 style={
@@ -766,7 +821,6 @@ export class NodeStrategyView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(data);
         return (
             <div class="node-strategy" id={data.id} ref={this.maindiv}>
                 <NodeViewConnected objectID={data.node} parentID={this.props.parentID} throughParentID={data.id}/>
@@ -795,7 +849,6 @@ export class StrategyView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(data);
         var nodes = data.nodestrategy_set.map((nodestrategy)=>
             <NodeStrategyViewConnected key={nodestrategy} objectID={nodestrategy} parentID={data.id}/>
         );
@@ -829,7 +882,7 @@ export class StrategyView extends ComponentJSON{
 
     makeDragAndDrop(){
         //Makes the nodestrategies in the node block draggable
-        this.makeSortableNode($(this.node_block.current).children(".node-strategy").not("ui-draggable"),
+        this.makeSortableNode($(this.node_block.current).children(".node-strategy").not(".ui-draggable"),
           this.props.objectID,
           "nodestrategy",
           ".node-strategy",
@@ -840,7 +893,7 @@ export class StrategyView extends ComponentJSON{
     }
 
     stopSortFunction(id,new_position,type,new_parent){
-        this.props.dispatch(moveNodeStrategy(id,new_position,new_parent))
+        this.props.dispatch(moveNodeStrategy(id,new_position,new_parent,this.props.nodes_by_column))
     }
     
     sortableColumnChangedFunction(id,delta_x){
@@ -850,7 +903,7 @@ export class StrategyView extends ComponentJSON{
     }
     
     sortableMovedFunction(id,new_position,type,new_parent){
-        this.props.dispatch(moveNodeStrategy(id,new_position,new_parent))
+        this.props.dispatch(moveNodeStrategy(id,new_position,new_parent,this.props.nodes_by_column))
     }
 
 }
@@ -864,6 +917,70 @@ export const StrategyViewConnected = connect(
 )(StrategyView)
 
 
+//Basic component to represent a Strategy
+export class TermView extends StrategyView{
+    
+    render(){
+        let data = this.props.data;
+        var node_blocks = [];
+        for(var i=0;i<this.props.column_order.length;i++){
+            let col=this.props.column_order[i];
+            let nodestrategies = [];
+            for(var j=0;j<data.nodestrategy_set.length;j++){
+                let nodestrategy = data.nodestrategy_set[j];
+                if(this.props.nodes_by_column[col].indexOf(nodestrategy)>=0){
+                    nodestrategies.push(
+                        <NodeStrategyViewConnected key={nodestrategy} objectID={nodestrategy} parentID={data.id}/>
+                    );
+                }
+            }
+            if(nodestrategies.length==0)nodestrategies.push(
+                <div class="node-strategy" style={{height:"100%"}}></div>
+            )
+            node_blocks.push(
+                <div class={"node-block term column-"+col} id={this.props.objectID+"-node-block-column-"+col} key={col} >
+                    {nodestrategies}
+                </div>
+            );
+        }
+        return (
+            <div class={"strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
+                <div class="mouseover-container-bypass">
+                    <div class="mouseover-actions">
+                        {this.addInsertSibling(data)}
+                        {this.addDeleteSelf(data)}
+                    </div>
+                </div>
+                <TitleText text={data.title} defaultText={data.strategy_type_display+" "+(this.props.rank+1)}/>
+                <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
+                    {node_blocks}
+                </div>
+                {this.addEditable(data)}
+            </div>
+        );
+    }
+
+    makeDragAndDrop(){
+        //Makes the nodestrategies in the node block draggable
+        this.makeSortableNode($(this.node_block.current).children().children(".node-strategy").not(".ui-draggable"),
+          this.props.objectID,
+          "nodestrategy",
+          ".node-strategy",
+          false,
+          [200,1],
+          ".node-block",
+          ".node");
+    }
+}
+const mapTermStateToProps = (state,own_props)=>(
+    getTermByID(state,own_props.objectID)
+)
+const mapTermDispatchToProps = {};
+export const TermViewConnected = connect(
+    mapTermStateToProps,
+    null
+)(TermView)
+
 
 //Basic strategyworkflow component
 export class StrategyWorkflowView extends ComponentJSON{
@@ -875,9 +992,8 @@ export class StrategyWorkflowView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(data);
         var strategy;
-        if(this.state.strategy_type==2)strategy = (
+        if(data.strategy_type==2)strategy = (
                 <TermViewConnected objectID={data.strategy} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id}/>
         );
         else strategy = (
@@ -911,7 +1027,6 @@ export class ColumnView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(data);
         var title = data.title;
         if(!title)title=data.column_type_display;
         return (
@@ -945,8 +1060,6 @@ export class ColumnWorkflowView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(data);
-        console.log(this.props);
         return (
             <div class={"column-workflow column-"+data.id} ref={this.maindiv} id={data.id}>
                 <ColumnViewConnected objectID={data.column} parentID={this.props.parentID} throughParentID={data.id}/>
@@ -972,8 +1085,6 @@ export class WorkflowView extends ComponentJSON{
     }
     
     render(){
-        console.log("RENDERING WF");
-        console.log(this.props.data);
         let data = this.props.data;
         var columnworkflows = data.columnworkflow_set.map((columnworkflow)=>
             <ColumnWorkflowViewConnected key={columnworkflow} objectID={columnworkflow} parentID={data.id}/>
@@ -992,7 +1103,19 @@ export class WorkflowView extends ComponentJSON{
                         <div class="strategy-block">
                             {strategyworkflows}
                         </div>
+                        <svg class="workflow-canvas" width="100%" height="100%">
+                            <defs>
+                                <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5"
+                                    markerWidth="4" markerHeight="4"
+                                    orient="auto-start-reverse">
+                                  <path d="M 0 0 L 10 5 L 0 10 z" />
+                                </marker>
+                            </defs>
+                        </svg>
                     </div>
+                    {reactDom.createPortal(
+                        <NodeBarConnected/>
+                    ,$("#container")[0])}
                 </div>
             </div>
         );
@@ -1031,6 +1154,170 @@ export const WorkflowViewConnected = connect(
     mapWorkflowStateToProps,
     null
 )(WorkflowView)
+
+export class NodeBar extends ComponentJSON{
+    render(){
+        let data = this.props.data;
+        console.log(this.props.data);
+        var nodebarcolumnworkflows = data.columnworkflow_set.map((columnworkflow)=>
+            <NodeBarColumnWorkflowConnected key={columnworkflow} objectID={columnworkflow}/>
+        );
+        console.log(this.props);
+        var columns_present = this.props.columns.map(col=>col.column_type);
+        console.log(columns_present);
+        console.log(data.DEFAULT_COLUMNS);
+        for(var i=0;i<data.DEFAULT_COLUMNS.length;i++){
+            if(columns_present.indexOf(data.DEFAULT_COLUMNS[i])<0){
+                nodebarcolumnworkflows.push(
+                    <NodeBarColumnWorkflowConnected key={"default"+i} columnType={data.DEFAULT_COLUMNS[i]}/>
+                )
+            }
+        }
+        nodebarcolumnworkflows.push(
+            <NodeBarColumnWorkflowConnected key={"default"+i} columnType={data.DEFAULT_CUSTOM_COLUMN}/>
+        )
+        
+        
+        var nodebarstrategyworkflows = data.strategyworkflow_set.map((strategyworkflow)=>
+            <NodeBarStrategyWorkflowConnected key={strategyworkflow} objectID={strategyworkflow}/>
+        );
+        
+        return(
+            <div id="node-bar-container" ref={this.nodebar} class="node-bar-container right-panel-container">
+                <div id="node-bar-workflow" class="right-panel-inner">
+                    <div class="node-bar-column-block">
+                        {nodebarcolumnworkflows}
+                    </div>
+                    <div class="node-bar-strategy-block">
+                        {nodebarstrategyworkflows}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+}
+const mapNodeBarStateToProps = state=>({
+    data:state.workflow,
+    columns:state.column
+})
+export const NodeBarConnected = connect(
+    mapNodeBarStateToProps,
+    null
+)(NodeBar)
+
+export class NodeBarColumnWorkflow extends ComponentJSON{
+    render(){
+        console.log(this.props.data);
+        let data = this.props.data;
+        if(data)return(
+            <div class="node-bar-column-workflow" ref={this.maindiv}>
+                <NodeBarColumnConnected objectID={data.column} parentID={data.id}/>
+            </div>
+        );
+        else return(
+            <div class="node-bar-column-workflow" ref={this.maindiv}>
+                <NodeBarColumnCreator columnType={this.props.columnType}/>
+            </div>
+        );
+    }
+}
+export const NodeBarColumnWorkflowConnected = connect(
+    mapColumnWorkflowStateToProps,
+    null
+)(NodeBarColumnWorkflow)
+
+export class NodeBarColumn extends ComponentJSON{
+    render(){
+        let data = this.props.data;
+        var title;
+        if(data)title = data.title;
+        if(!title)title=data.column_type_display;
+        return(
+            <div class="new-node node-bar-column node-bar-sortable" ref={this.maindiv}>
+                {title}
+            </div>
+        );
+    }
+    
+    makeDraggable(){
+        let draggable_selector = "node-strategy"
+        let draggable_type = "nodestrategy"
+        console.log(this.maindiv);
+        $(this.maindiv.current).draggable({
+            helper:(e,item)=>{
+                var helper = $(document.createElement('div'));
+                helper.addClass("node-ghost");
+                helper.appendTo(document.body);
+                return helper;
+            },
+            containment:".workflow-container",
+            cursor:"move",
+            cursorAt:{top:20,left:100},
+            distance:10,
+            start:(e,ui)=>{
+                $(".workflow-canvas").addClass("dragging-"+draggable_type);
+                $(draggable_selector).addClass("dragging");
+            },
+            stop:(e,ui)=>{
+                $(".workflow-canvas").removeClass("dragging-"+draggable_type);
+                $(draggable_selector).removeClass("dragging");
+            }
+        });
+    }
+    
+    postMountFunction(){
+        this.makeDraggable();
+        $(this.maindiv.current)[0].dataDraggable={column:this.props.data.id,column_type:null}
+    }
+    
+    
+    
+}
+export const NodeBarColumnConnected = connect(
+    mapColumnStateToProps,
+    null
+)(NodeBarColumn)
+
+export class NodeBarColumnCreator extends NodeBarColumn{
+    render(){
+        var title="New ";
+        for(var i=0;i<column_choices.length;i++){
+            if(column_choices[i].type==this.props.columnType){
+                title+=column_choices[i].name;
+                break;
+            }
+        }
+        return(
+            <div class="new-node node-bar-column node-bar-sortable" ref={this.maindiv}>
+                {title}
+            </div>
+        );
+    }
+    
+    
+    postMountFunction(){
+        this.makeDraggable();
+        $(this.maindiv.current)[0].dataDraggable={column:null,column_type:this.props.columnType}
+    }
+}
+
+
+
+
+
+
+export class NodeBarStrategyWorkflow extends ComponentJSON{
+    render(){
+        let data = this.props.data;
+        return null;
+    }
+}
+export const NodeBarStrategyWorkflowConnected = connect(
+    mapStrategyWorkflowStateToProps,
+    null
+)(NodeBarStrategyWorkflow)
+
+
 
 
 export function renderWorkflowView(container){

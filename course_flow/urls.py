@@ -54,6 +54,7 @@ def flow_patterns():
             name="insert-sibling",
         ),
         url(r"^workflow/inserted-at/$", views.inserted_at, name="inserted-at"),
+        url(r"^node/change-column/$", views.change_column, name="change-column"),
         url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
         url(
