@@ -51,7 +51,7 @@ export function triggerHandlerEach(trigger,eventname){
     return trigger.each((i,element)=>{$(element).triggerHandler(eventname);});
 }
 
-//A proplser modulo function
+//A proper modulo function
 function mod(n,m){
     return ((n%m)+m)%m;
 }
@@ -653,8 +653,6 @@ export class AutoLinkView extends Component{
             this.target=null;
         }
     }
-
-    
 }
 
 

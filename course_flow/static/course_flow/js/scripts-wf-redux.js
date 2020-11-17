@@ -11,6 +11,50 @@ import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as m
 
 const node_keys=["activity","course","program"];
 const columnwidth = 200
+const node_ports={
+    source:{
+        e:[1,0.6],
+        w:[0,0.6],
+        s:[0.5,1]
+    },
+    target:{
+        n:[0.5,0],
+        e:[1,0.4],
+        w:[0,0.4]
+    }
+}
+const port_keys=["n","e","s","w"];
+const port_direction=[
+    [0,-1],
+    [1,0],
+    [0,1],
+    [-1,0]
+]
+const port_padding=10;
+
+//Get translate from an svg transform
+function getSVGTranslation(transform){
+    var translate = transform.substring(transform.indexOf("translate(")+10, transform.indexOf(")")).split(",");
+    return translate;
+}
+
+//Get the offset from the canvas of a specific jquery object
+function getCanvasOffset(node_dom){
+    var node_offset = node_dom.offset();
+    var canvas_offset = $(".workflow-canvas").offset();
+    node_offset.left-=canvas_offset.left;
+    node_offset.top-=canvas_offset.top;
+    return node_offset;
+}
+
+//Check if the mouse event is within a box with the given padding around the element
+function mouseOutsidePadding(evt,elem,padding){
+    if(elem.length==0) return true;
+    let offset = elem.offset();
+    let width = elem.width();
+    let height = elem.height();
+    return (evt.pageX<offset.left-padding || evt.pageY<offset.top-padding || evt.pageX>offset.left+width+padding || evt.pageY>offset.top+height+padding);
+}
 
 
 //A utility function to trigger an event on each element. This is used to avoid .trigger, which bubbles (we will be careful to only trigger events on the elements that need them)
@@ -35,6 +79,117 @@ export class SelectionManager{
         }else $("#node-bar-container").css("display","revert");
     }
 
+}
+
+//Creates paths between two ports
+export class PathGenerator{
+    constructor(source_point,source_port,target_point,target_port,source_dims,target_dims){
+        this.point_arrays={source:[source_point],target:[target_point]};
+        this.last_point={source:source_point,target:target_point};
+        this.direction = {source:port_direction[source_port],target:port_direction[target_port]};
+        this.hasTicked = {source:false,target:false};
+        this.node_dims = {source:source_dims,target:target_dims};
+        this.findcounter=0;
+    }
+    
+    //finds and returns the path
+    findPath(){
+        try{
+            this.findNextPoint();
+        }catch(err){console.log("error calculating path")};
+        return this.joinArrays();
+    }
+    
+    //Recursively checks to see whether we need to move around a node, if not, we just need to join the arrays
+    findNextPoint(){
+        if(this.findcounter>8)return;
+        this.findcounter++;
+        //Determine which case we have:
+        if(mathdot(this.direction["source"],mathsubtract(this.last_point["target"],this.last_point["source"]))<0){
+            this.tickPerpendicular("source");
+            this.findNextPoint();
+        }else if(mathdot(this.direction["target"],mathsubtract(this.last_point["source"],this.last_point["target"]))<0){
+            this.tickPerpendicular("target");
+            this.findNextPoint();
+        }
+    }
+    
+    addPoint(point,port="source"){
+        this.point_arrays[port].push(point);
+        this.last_point[port]=point;
+    }
+    
+    addDelta(delta,port="source"){
+        this.addPoint(mathadd(delta,this.last_point[port]),port);
+    }
+    
+    //Pads out away from the node edge
+    padOut(port){
+        this.addDelta(mathmultiply(port_padding,this.direction[port]),port);
+    }
+    
+    //Turns perpendicular to move around the edge of the node
+    tickPerpendicular(port="source"){
+        let otherport = "target";
+        if(port=="target")otherport="source";
+        this.padOut(port);
+        var new_direction = mathmultiply(
+            mathmatrix(
+                [mathmultiply([1,0],this.direction[port][1]**2),
+                 mathmultiply([0,1],this.direction[port][0]**2)]
+            ),
+            mathsubtract(this.last_point[otherport],this.last_point[port])
+        )._data;
+        let norm = mathnorm(new_direction);
+        if(norm==0)throw "Non-numeric";
+        this.direction[port]=mathmultiply(1.0/mathnorm(new_direction),new_direction);
+        this.addDelta(
+            mathmultiply(
+                this.getNodeOutline(this.direction[port],port),this.direction[port]
+            ),
+            port
+        );
+    }
+    
+    //Determines how far we need to move in order to move around the edge of the node
+    getNodeOutline(direction,port){
+        if(this.hasTicked[port]){
+            return Math.abs(mathdot(direction,this.node_dims[port]));
+        }else{
+            this.hasTicked[port]=true;
+            return Math.abs(mathdot(direction,this.node_dims[port])/2);
+        }
+    }
+
+    //joins the two arrays, either as a corner or a double corner
+    joinArrays(){
+        var joined = this.point_arrays["source"].slice();
+        //We have remaining either a corner or both point towards each other
+        if(mathdot(this.direction["source"],this.direction["target"])==0){
+            //corner
+            joined.push(
+                [this.direction["source"][0]**2*this.last_point["target"][0]+
+                 this.direction["target"][0]**2*this.last_point["source"][0],
+                 this.direction["source"][1]**2*this.last_point["target"][1]+
+                 this.direction["target"][1]**2*this.last_point["source"][1]]
+            )
+        }else{
+            //double corner
+            let diff = mathsubtract(this.last_point["target"],this.last_point["source"]);
+            let mid1=[this.direction["source"][0]**2*diff[0]/2,this.direction["source"][1]**2*diff[1]/2]
+            let mid2=[-(this.direction["source"][0]**2)*diff[0]/2,-(this.direction["source"][1]**2)*diff[1]/2]
+            joined.push(
+                mathadd(this.last_point["source"],mid1)
+            )
+            joined.push(
+                mathadd(this.last_point["target"],mid2)
+            )
+        }
+        for(var i=this.point_arrays["target"].length-1;i>=0;i--){
+            joined.push(this.point_arrays["target"][i]);
+        }
+        return joined;
+    }
 }
 
 
@@ -66,9 +221,14 @@ const insertBelowAction = (response_data,objectType) => {
     }
 }
 
+const setLinkedWorkflowAction = (response_data) => {
+    return {
+        type: "node/setLinkedWorkflow",
+        payload:response_data
+    }
+}
 
 const newNodeAction = (response_data) => {
-    console.log("creating new node action");
     return {
         type: "node/newNode",
         payload:response_data
@@ -89,6 +249,12 @@ const moveNodeStrategy = (id,new_position,new_parent,nodes_by_column) => {
     }
 }
 
+const newNodeLinkAction = (response_data) => {
+    return {
+        type: 'nodelink/newNodeLink',
+        payload:response_data
+    }
+}
 
 const changeField = (id,objectType,field,value) => {
     return {
@@ -163,6 +329,9 @@ function workflowReducer(state={},action){
         case 'workflow/changeField':
             var new_state = {...state};
             new_state[action.payload.field]=action.payload.value;
+            let json = {};
+            json[action.payload.field]=action.payload.value;
+            updateValue(action.payload.id,"workflow",json);
             return new_state;
         default:
             return state;
@@ -225,6 +394,9 @@ function columnReducer(state={},action){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]};
                     new_state[i][action.payload.field]=action.payload.value;
+                    let json = {};
+                    json[action.payload.field]=action.payload.value;
+                    updateValue(action.payload.id,"column",json);
                     return new_state;
                 }
             }
@@ -291,7 +463,7 @@ function strategyReducer(state={},action){
                 
             }
             new_state.splice(old_parent_index,1,old_parent);
-            insertedAt(action.payload.id,"nodestrategy",old_parent.id,new_index,new_parent.id);
+            insertedAt(action.payload.id,"nodestrategy",new_parent.id,new_index);
             return new_state;
         case 'node/deleteSelf':
             for(var i=0;i<state.length;i++){
@@ -317,7 +489,6 @@ function strategyReducer(state={},action){
             }
             return state;
         case 'node/newNode':
-            console.log("creating node in strat");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parentID){
                     var new_state = state.slice();
@@ -325,7 +496,6 @@ function strategyReducer(state={},action){
                     var new_nodestrategy_set = state[i].nodestrategy_set.slice();
                     new_nodestrategy_set.splice(action.payload.index,0,action.payload.new_through.id);
                     new_state[i].nodestrategy_set = new_nodestrategy_set;
-                    console.log(new_state);
                     return new_state;
                 }
             }
@@ -350,6 +520,9 @@ function strategyReducer(state={},action){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]};
                     new_state[i][action.payload.field]=action.payload.value;
+                    let json = {};
+                    json[action.payload.field]=action.payload.value;
+                    updateValue(action.payload.id,"strategy",json);
                     return new_state;
                 }
             }
@@ -358,8 +531,6 @@ function strategyReducer(state={},action){
             return state;
     }
 }
-
-
 function nodestrategyReducer(state={},action){
     switch(action.type){
         case 'node/deleteSelf':
@@ -401,14 +572,23 @@ function nodeReducer(state={},action){
                 }
             }
             return state;
-        case 'node/dropped':
-            return state;
         case 'node/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
                     deleteSelf(action.payload.id,"node")
+                    return new_state;
+                }
+            }
+            return state;
+        case 'nodelink/deleteSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].outgoing_links.indexOf(action.payload.id)>=0){
+                    var new_state=state.slice();
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].outgoing_links = state[i].outgoing_links.slice();
+                    new_state[i].outgoing_links.splice(new_state[i].outgoing_links.indexOf(action.payload.id),1);
                     return new_state;
                 }
             }
@@ -420,11 +600,66 @@ function nodeReducer(state={},action){
             new_state.push(action.payload.new_model);
             return new_state;
         case 'node/changeField':
+            console.log("field changed");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]};
                     new_state[i][action.payload.field]=action.payload.value;
+                    let json = {};
+                    json[action.payload.field]=action.payload.value;
+                    updateValue(action.payload.id,"node",json);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'node/setLinkedWorkflow':
+            console.log("setting the linked workflow");
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]};
+                    new_state[i].linked_workflow=action.payload.linked_workflow;
+                    new_state[i].linked_workflow_title = action.payload.linked_workflow_title;
+                    return new_state;
+                }
+            }
+            return state;
+        case 'nodelink/newNodeLink':
+            console.log("creating nodelink in node");
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.new_model.source_node){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]}
+                    var new_outgoing_links = state[i].outgoing_links.slice();
+                    new_outgoing_links.push(action.payload.new_model.id);
+                    new_state[i].outgoing_links = new_outgoing_links;
+                    console.log(new_state);
+                    return new_state;
+                }
+            }
+            return state;
+        default:
+            return state;
+    }
+}
+function nodelinkReducer(state={},action){
+    switch(action.type){
+        case 'node/insertBelow':
+        case 'node/newNode':
+        case 'node/deleteSelf':
+            return state;
+        case 'nodelink/newNodeLink':
+            console.log("creating node link");
+            new_state = state.slice();
+            new_state.push(action.payload.new_model);
+            return new_state;
+        case 'nodelink/deleteSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state.splice(i,1);
+                    deleteSelf(action.payload.id,"nodelink")
                     return new_state;
                 }
             }
@@ -442,6 +677,7 @@ const rootReducer = Redux.combineReducers({
     strategy:strategyReducer,
     nodestrategy:nodestrategyReducer,
     node:nodeReducer,
+    nodelink:nodelinkReducer,
 });
 
 const store = createStore(rootReducer,initial_data);
@@ -500,6 +736,12 @@ const getNodeStrategyByID = (state,id)=>{
         if(nodestrategy.id==id)return {data:nodestrategy,order:getStrategyByID(state,nodestrategy.strategy).nodestrategy_set};
     }
 }
+const getNodeLinkByID = (state,id)=>{
+    for(var i in state.nodelink){
+        var nodelink = state.nodelink[i];
+        if(nodelink.id==id)return {data:nodelink};
+    }
+}
 
 //Extends the react component to add a few features that are used in a large number of components
 export class ComponentJSON extends Component{
@@ -511,6 +753,7 @@ export class ComponentJSON extends Component{
     
     componentDidMount(){
         this.postMountFunction();
+        if(initial_loading)$(document).triggerHandler("component-loaded",this.objectType);
     }
     
     postMountFunction(){};
@@ -547,6 +790,7 @@ export class ComponentJSON extends Component{
             stop:(e,ui)=>{
                 $(".workflow-canvas").removeClass("dragging-"+draggable_type);
                 $(draggable_selector).removeClass("dragging");
+                $(document).triggerHandler(draggable_type+"-dropped");
             
             }
             
@@ -574,10 +818,7 @@ export class ComponentJSON extends Component{
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 var new_index = drop_item.prevAll().length+1;
-                console.log(drop_item);
-                console.log(drag_item);
                 if(drag_item.hasClass("new-node")){
-                    console.log(drag_item[0].dataDraggable);
                     newNode(this.props.objectID,new_index,drag_item[0].dataDraggable.column,drag_item[0].dataDraggable.column_type,
                         (response_data)=>{
                             let action = newNodeAction(response_data);
@@ -622,16 +863,18 @@ export class ComponentJSON extends Component{
                 ui.item.triggerHandler("dragging");
             },
             stop:(evt,ui)=>{
+                $(".workflow-canvas").removeClass("dragging-"+draggable_type);
+                $(draggable_selector).removeClass("dragging");
                 var object_id = parseInt(ui.item.attr("id"));
                 var new_position = ui.item.prevAll().length;
                 var new_parent_id = parseInt(ui.item.parent().attr("id"));
                 $(draggable_selector).removeClass("dragging");
-                //sortable_block.sortable("cancel");
-                this.stopSortFunction(object_id,new_position,draggable_type,new_parent_id);
                 //Automatic scroll, useful when moving weeks that shrink significantly to make sure the dropped item is kept in focus. This should be updated to only scroll if the item ends up outside the viewport, and to scroll the minimum amount to keep it within.
                 $("#container").animate({
                     scrollTop: ui.item.offset().top-200
                 },20);
+                $(document).triggerHandler(draggable_type+"-dropped");
+                this.stopSortFunction();
             }
         });
     }
@@ -666,6 +909,7 @@ export class ComponentJSON extends Component{
     addEditable(data){
         if(this.state.selected){
             var type=this.objectType;
+            var props = this.props;
             return reactDom.createPortal(
                 <div class="right-panel-container edit-bar-container" onClick={(evt)=>{evt.stopPropagation()}}>
                     <div class="right-panel-inner">
@@ -686,7 +930,10 @@ export class ComponentJSON extends Component{
                             <div>
                                 <h4>Linked Workflow:</h4>
                                 <div>{data.linked_workflow_title}</div>
-                                <button onClick={()=>{getLinkedWorkflowMenu(data)}}>
+                                <button onClick={()=>{getLinkedWorkflowMenu(data,(response_data)=>{
+                                    let action = setLinkedWorkflowAction(response_data);
+                                    props.dispatch(action);
+                                })}}>
                                     Change
                                 </button>
                             </div>
@@ -745,6 +992,273 @@ export class TitleText extends Component{
 
 }
 
+export class NodeLinkSVG extends Component{
+    render(){
+        
+        console.log("rendering svg");
+        console.log(this.props.source_port_handle);
+        console.log(getSVGTranslation(this.props.source_port_handle.select(function(){
+            return this.parentNode}).attr("transform")));
+        
+        const source_transform=getSVGTranslation(this.props.source_port_handle.select(function(){
+            return this.parentNode}).attr("transform"));
+        const target_transform=getSVGTranslation(this.props.target_port_handle.select(function(){
+            return this.parentNode}).attr("transform"));
+        const source_point=[parseInt(this.props.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.props.source_port_handle.attr("cy"))+parseInt(source_transform[1])];
+        const target_point=[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform.[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])];
+
+        var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
+        var path=(this.getPath(path_array));
+
+        return (
+            <g fill="none" stroke="black">
+                <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"+((this.props.selected && " selected")||"")}/>
+                <path stroke-width="2px" d={path} marker-end="url(#arrow)"/>
+            </g>
+        );
+    }
+    
+    getPathArray(source_point,source_port,target_point,target_port){
+        var source_dims = [this.props.source_dimensions.width,this.props.source_dimensions.height];
+        var target_dims = [this.props.target_dimensions.width,this.props.target_dimensions.height];
+        var path_generator = new PathGenerator(source_point,source_port,target_point,target_port,source_dims,target_dims);
+        return path_generator.findPath();
+    }
+
+    getPath(path_array){
+        var path="M";
+        for(var i=0;i<path_array.length;i++){
+            if(i>0)path+=" L";
+            var thispoint = path_array[i];
+            path+=thispoint[0]+" "+thispoint[1];
+        }
+        return path;
+    }
+}
+//Basic component to represent a NodeLink
+export class NodeLinkView extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="nodelink";
+        this.objectClass=".node-link";
+        this.rerenderEvents = "ports-rendered."+this.props.data.id;
+    }
+    
+    render(){
+        let data = this.props.data;
+        if(!this.source_node||!this.source_node.width()||!this.target_node||!this.target_node.width()){
+            this.source_node = $(this.props.node_div.current);
+            this.source_port_handle = d3.select(
+                "g.port-"+data.source_node+" circle[data-port-type='source'][data-port='"+port_keys[data.source_port]+"']"
+            );
+            this.target_node = $("#"+data.target_node+".node");
+            this.target_port_handle = d3.select(
+                "g.port-"+data.target_node+" circle[data-port-type='target'][data-port='"+port_keys[data.target_port]+"']"
+            );
+            this.source_node.on(this.rerenderEvents,this.rerender.bind(this));
+            this.target_node.on(this.rerenderEvents,this.rerender.bind(this));
+        }
+        
+        console.log(this.source_node);
+        console.log(this.source_node.length);
+        console.log(this.target_node);
+        console.log(this.target_node.length);
+        var source_dims = {width:this.source_node.width(),height:this.source_node.height()};
+        var target_dims = {width:this.target_node.width(),height:this.target_node.height()};
+        console.log("found the dimensions");
+        if(!source_dims.width||!target_dims.width)return null;
+        var selector=this;
+        console.log("creating portal");
+        return(
+            <div>
+                {reactDom.createPortal(
+                    <NodeLinkSVG source_port_handle={this.source_port_handle} source_port={data.source_port} target_port_handle={this.target_port_handle} target_port={data.target_port} clickFunction={(evt)=>selection_manager.changeSelection(evt,selector)} selected={this.state.selected} source_dimensions={source_dims} target_dimensions={target_dims}/>
+                    ,$(".workflow-canvas")[0])}
+                {this.addEditable(data)}
+            </div>
+        );
+    }
+    
+    
+    rerender(){
+        this.setState({});
+    }
+
+    componentDidUnmount(){
+        if(this.target_node&&this.target_node.length>0){
+            this.source_node.off(this.rerenderEvents);
+            this.target_node.off(this.rerenderEvents);
+        }
+    }
+}
+const mapNodeLinkStateToProps = (state,own_props)=>(
+    getNodeLinkByID(state,own_props.objectID)
+)
+const mapNodeLinkDispatchToProps = {};
+export const NodeLinkViewConnected = connect(
+    mapNodeLinkStateToProps,
+    null
+)(NodeLinkView)
+
+export class AutoLinkView extends Component{
+    constructor(props){
+        super(props);
+        this.eventNameSpace="autolink"+props.nodeID;
+        this.rerenderEvents = "ports-rendered."+this.eventNameSpace;
+    }
+    
+    render(){
+        console.log("rendering autolink");
+        if(!this.source_node||this.source_node.length==0){
+            this.source_node = $(this.props.node_div.current);
+            this.source_port_handle = d3.select(
+                "g.port-"+this.props.nodeID+" circle[data-port-type='source'][data-port='s']"
+            );
+            this.source_node.on(this.rerenderEvents,this.rerender.bind(this));
+        }
+        if(this.target_node&&this.target_node.parent().parent().length==0)this.target_node=null;
+        this.findAutoTarget();
+        console.log(this.target_node);
+        if(!this.target_node)return null;
+        var source_dims = {width:this.source_node.width(),height:this.source_node.height()};
+        var target_dims = {width:this.target_node.width(),height:this.target_node.height()};
+        return(
+            <div>
+                {reactDom.createPortal(
+                    <NodeLinkSVG source_port_handle={this.source_port_handle} source_port="2" target_port_handle={this.target_port_handle} target_port="0" source_dimensions={source_dims} target_dimensions={target_dims}/>
+                    ,$(".workflow-canvas")[0])}
+            </div>
+        );
+    }
+
+    findAutoTarget(){
+        var ns = this.source_node.closest(".node-strategy");
+        var next_ns = ns.nextAll(".node-strategy:not(.ui-sortable-placeholder)").first();
+        var target;
+        if(next_ns.length>0){
+            target = next_ns.find(".node").attr("id");
+        }else{
+            var sw = ns.closest(".strategy-workflow");
+            var next_sw = sw.next();
+            while(next_sw.length>0){
+                target = next_sw.find(".node-strategy:not(ui-sortable-placeholder) .node").attr("id");
+                if(target)break;
+                next_sw = next_sw.next();
+            }
+        }
+        this.setTarget(target);
+    }
+
+    rerender(){
+        this.setState({});
+    }
+
+    setTarget(target){
+        if(target){
+            if(this.target_node&&target==this.target_node.attr("id"))return;
+            if(this.target_node)this.target_node.off(this.rerenderEvents);
+            this.target_node = $(".strategy #"+target+".node");
+            this.target_port_handle = d3.select(
+                "g.port-"+target+" circle[data-port-type='target'][data-port='n']"
+            );
+            this.target_node.on(this.rerenderEvents,this.rerender.bind(this));
+            this.target=target;
+        }else{
+            if(this.target_node)this.target_node.off(this.rerenderEvents);
+            this.target_node=null;
+            this.target_port_handle=null;
+            this.target=null;
+        }
+    } 
+
+    /*componentDidUnmount(){
+        if(this.target_node&&this.target_node.length>0){
+            this.source_node.off(this.rerenderEvents);
+            this.target_node.off(this.rerenderEvents);
+        }
+    }*/
+}
+
+
+//The ports used to connect links for the nodes
+export class NodePorts extends Component{
+    constructor(props){
+        super(props);
+        this.state={};
+    }
+    
+    render(){
+        var ports = [];
+        var node_dimensions;
+        if(this.state.node_dimensions){
+            node_dimensions=this.state.node_dimensions;
+            this.positioned = true;
+        }
+        else node_dimensions={width:0,height:0};
+        for(var port_type in node_ports)for(var port in node_ports[port_type]){
+            ports.push(
+                <circle data-port-type={port_type} data-port={port} data-node-id={this.props.nodeID} r="6" key={port_type+port} 
+                cx={node_ports[port_type][port][0]*node_dimensions.width} 
+                cy={node_ports[port_type][port][1]*node_dimensions.height}/>
+            )
+        }
+        var transform;
+        if(this.state.node_offset)transform = "translate("+this.state.node_offset.left+","+this.state.node_offset.top+")"
+        else transform = "translate(0,0)";
+        return(
+            <g class={'node-ports port-'+this.props.nodeID} stroke="black" stroke-width="2" fill="white" transform={transform}>
+                {ports}
+            </g>
+        )
+    }
+    
+    componentDidMount(){
+        console.log("ports mounted");
+        var thisComponent=this;
+        d3.selectAll(
+            'g.port-'+this.props.nodeID+" circle[data-port-type='source']"
+        ).call(d3.drag().on("start",function(d){
+            $(".workflow-canvas").addClass("creating-node-link");
+            var canvas_offset = $(".workflow-canvas").offset();
+            d3.select(".node-link-creator").remove();
+            d3.select(".workflow-canvas").append("line").attr("class","node-link-creator").attr("x1",event.x-canvas_offset.left).attr("y1",event.y-canvas_offset.top).attr("x2",event.x-canvas_offset.left).attr("y2",event.y-canvas_offset.top).attr("stroke","red").attr("stroke-width","2");
+        }).on("drag",function(d){
+            var canvas_offset = $(".workflow-canvas").offset();
+            d3.select(".node-link-creator").attr("x2",event.x-canvas_offset.left).attr("y2",event.y-canvas_offset.top);
+        }).on("end",function(d){
+            $(".workflow-canvas").removeClass("creating-node-link");
+            var target = d3.select(event.target);
+            if(target.attr("data-port-type")=="target"){
+                thisComponent.nodeLinkAdded(target.attr("data-node-id"),d3.select(this).attr("data-port"),target.attr("data-port"));
+            }
+            d3.select(".node-link-creator").remove();
+        }));
+        this.updatePorts();
+        $(this.props.node_div.current).on("component-updated",this.updatePorts.bind(this));
+        $(document).triggerHandler("ports-rendered");
+    }
+    
+    updatePorts(){
+        if(!this.props.node_div.current)return;
+        var node = $(this.props.node_div.current);
+        var node_offset = getCanvasOffset(node);
+        var node_dimensions={width:node.width(),height:node.height()};
+        //if(node.closest(".strategy-workflow").hasClass("dragging")||this.state.node_offset==node_offset&&this.state.node_dimensions==node_dimensions)return;
+        this.setState({node_offset:node_offset,node_dimensions:node_dimensions});
+    }
+    
+    componentDidUpdate(){
+        $(this.props.node_div.current).triggerHandler("ports-rendered");
+    }
+    
+    nodeLinkAdded(target,source_port,target_port){
+        var props=this.props;
+        newNodeLink(this.props.nodeID,target,port_keys.indexOf(source_port),port_keys.indexOf(target_port),(response_data)=>{
+            let action = newNodeLinkAction(response_data);
+            props.dispatch(action);
+        });
+    }
+}
 
 //Basic component to represent a Node
 export class NodeView extends ComponentJSON{
@@ -753,12 +1267,32 @@ export class NodeView extends ComponentJSON{
         this.objectType="node";
         this.objectClass=".node";
         this.state={
-            is_dropped:false
+            is_dropped:false,
+            initial_render:true
         }
     }
     
     render(){
         let data = this.props.data;
+        var nodePorts;
+        var node_links;
+        var auto_link;
+        console.log("rendering node");
+        console.log(data);
+        console.log(this.maindiv);
+        if(!this.state.initial_render)nodePorts = reactDom.createPortal(
+                <NodePorts nodeID={this.props.objectID} node_div={this.maindiv} dispatch={this.props.dispatch}/>
+            ,$(".workflow-canvas")[0]
+        );
+        if(ports_rendered&&!this.state.port_render){
+            node_links = data.outgoing_links.map((link)=>
+                <NodeLinkViewConnected key={link} objectID={link} node_div={this.maindiv}/>
+            );
+            if(data.has_autolink)auto_link = (
+                <AutoLinkView nodeID={this.props.objectID} node_div={this.maindiv}/>
+            );
+        }
+        
         return (
             <div 
                 style={
@@ -792,13 +1326,47 @@ export class NodeView extends ComponentJSON{
                     {this.addInsertSibling(data)}
                     {this.addDeleteSelf(data)}
                 </div>
-                {this.addEditable(data)} 
+                {this.addEditable(data)}
+                {nodePorts}
+                {node_links}
+                {auto_link}
             </div>
         );
+
+
+    }
+    
+    postMountFunction(){
+        $(this.maindiv.current).on("mouseenter",this.mouseIn.bind(this));
+        $(document).on("render-ports render-links",()=>{this.setState({})});
+        if(this.state.initial_render)this.setState({initial_render:false,port_render:true});
+    }
+
+    componentDidUpdate(){
+        this.updatePorts();
+        if(this.state.port_render)this.setState({initial_render:false,port_render:false});
+    }
+
+    updatePorts(){
+        $(this.maindiv.current).triggerHandler("component-updated");
     }
     
     toggleDrop(){
-        this.setState({is_dropped:!this.state.is_dropped},()=>triggerHandlerEach($(".node"),"refresh-links"));
+        this.setState({is_dropped:!this.state.is_dropped},()=>triggerHandlerEach($(".node"),"component-updated"));
+    }
+
+    mouseIn(evt){
+        if(evt.which==1)return;
+        $("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
+        d3.selectAll(".node-ports").raise();
+        var mycomponent = this;
+        
+        $(document).on("mousemove",function(evt){
+            if(!mycomponent||!mycomponent.maindiv||mouseOutsidePadding(evt,$(mycomponent.maindiv.current),20)){
+                $("circle[data-node-id='"+mycomponent.props.objectID+"'][data-port-type='source']").removeClass("mouseover");
+                $(document).off(evt);
+            }
+        });
     }
 }
 const mapNodeStateToProps = (state,own_props)=>(
@@ -878,6 +1446,7 @@ export class StrategyView extends ComponentJSON{
 
     componentDidUpdate(){
         this.makeDragAndDrop();
+        triggerHandlerEach($(this.maindiv.current).find(".node"),"component-updated");
     }
 
     makeDragAndDrop(){
@@ -893,7 +1462,7 @@ export class StrategyView extends ComponentJSON{
     }
 
     stopSortFunction(id,new_position,type,new_parent){
-        this.props.dispatch(moveNodeStrategy(id,new_position,new_parent,this.props.nodes_by_column))
+        //this.props.dispatch(moveNodeStrategy(id,new_position,new_parent,this.props.nodes_by_column))
     }
     
     sortableColumnChangedFunction(id,delta_x){
@@ -1133,11 +1702,11 @@ export class WorkflowView extends ComponentJSON{
           ".strategy-workflow",
           "y");
     }
+
     
     
-    stopSortFunction(id,new_position,type){
-        if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position))
-        if(type=="strategyworkflow")this.props.dispatch(moveStrategyWorkflow(id,new_position))
+    stopSortFunction(){
+        triggerHandlerEach($(".strategy .node"),"component-updated");
     }
     
     
@@ -1158,14 +1727,10 @@ export const WorkflowViewConnected = connect(
 export class NodeBar extends ComponentJSON{
     render(){
         let data = this.props.data;
-        console.log(this.props.data);
         var nodebarcolumnworkflows = data.columnworkflow_set.map((columnworkflow)=>
             <NodeBarColumnWorkflowConnected key={columnworkflow} objectID={columnworkflow}/>
         );
-        console.log(this.props);
         var columns_present = this.props.columns.map(col=>col.column_type);
-        console.log(columns_present);
-        console.log(data.DEFAULT_COLUMNS);
         for(var i=0;i<data.DEFAULT_COLUMNS.length;i++){
             if(columns_present.indexOf(data.DEFAULT_COLUMNS[i])<0){
                 nodebarcolumnworkflows.push(
@@ -1207,7 +1772,6 @@ export const NodeBarConnected = connect(
 
 export class NodeBarColumnWorkflow extends ComponentJSON{
     render(){
-        console.log(this.props.data);
         let data = this.props.data;
         if(data)return(
             <div class="node-bar-column-workflow" ref={this.maindiv}>
@@ -1242,7 +1806,6 @@ export class NodeBarColumn extends ComponentJSON{
     makeDraggable(){
         let draggable_selector = "node-strategy"
         let draggable_type = "nodestrategy"
-        console.log(this.maindiv);
         $(this.maindiv.current).draggable({
             helper:(e,item)=>{
                 var helper = $(document.createElement('div'));
@@ -1329,6 +1892,125 @@ export function renderWorkflowView(container){
     );
 }
 
+
+export function renderMessageBox(data,type,updateFunction){
+    reactDom.render(
+        <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
+        $("#popup-container")[0]
+    );
+}
+
+export function closeMessageBox(){
+    reactDom.render(null,$("#popup-container")[0]);
+}
+
+export class MessageBox extends Component{
+    render(){
+        var menu;
+        if(this.props.message_type=="linked_workflow_menu")menu=(
+            <WorkflowsMenu type={this.props.message_type} data={this.props.message_data} actionFunction={this.props.actionFunction}/>
+        );
+        return(
+            <div class="screen-barrier" onClick={(evt)=>evt.stopPropagation()}>
+                <div class="message-box">
+                    {menu}
+                </div>
+            </div>
+        );
+    }
+}
+
+export class WorkflowsMenu extends Component{
+    constructor(props){
+        super(props);
+        this.state={};
+    }
+    
+    render(){
+        var project_workflows = this.props.data.project_workflows.map((project_workflow)=>
+                <WorkflowForMenu key={project_workflow.id} type={this.props.type} owned={true} in_project={true} workflow_data={project_workflow} selected={(this.state.selected==project_workflow.id)} selectAction={this.workflowSelected.bind(this,project_workflow.id,"project")}/>
+            );
+        var other_workflows = this.props.data.other_workflows.map((other_workflow)=>
+                <WorkflowForMenu key={other_workflow} type={this.props.type} owned={true} in_project={true} workflow_data={other_workflow} selected={(this.state.selected==other_workflow.id)} selectAction={this.workflowSelected.bind(this,other_workflow.id,"other")}/>
+            );
+        var published_workflows = this.props.data.published_workflows.map((published_workflow)=>
+                <WorkflowForMenu key={published_workflow} type={this.props.type} owned={true} in_project={false} workflow_data={published_workflow} selected={(this.state.selected==published_workflow.id)} selectAction={this.workflowSelected.bind(this,published_workflow.id,"published")}/>
+            );
+        
+        return(
+            <div class="message-wrap">
+                <div class="message-panel">
+                    <h2>From this project:</h2>
+                    {project_workflows}
+                </div>
+                <div class="message-panel">
+                    <h2>From your other projects:</h2>
+                    {other_workflows}
+                    <h2>From other published projects:</h2>
+                    {published_workflows}
+                </div>
+                <div class="action-bar">
+                    {this.getActions()}
+                </div>
+            </div>
+        );
+    }
+    
+    workflowSelected(selected_id,selected_type){
+        this.setState({selected:selected_id,selected_type:selected_type});
+    }
+
+    getActions(){
+        var actions = [];
+        if(this.props.type=="linked_workflow_menu"){
+            var text="link to node";
+            if(this.state.selected && this.state.selected_type!="project")text="copy to current project and "+text;
+            actions.push(
+                <button disabled={!this.state.selected} onClick={()=>{
+                    setLinkedWorkflow(this.props.data.node_id,this.state.selected,this.props.actionFunction)
+                    closeMessageBox();
+                }}>
+                    {text}
+                </button>
+            );
+            actions.push(
+                <button onClick={()=>{
+                    setLinkedWorkflow(this.props.data.node_id,-1,this.props.actionFunction)
+                    closeMessageBox();
+                }}>
+                    set to none
+                </button>
+            );
+            actions.push(
+                <button onClick={closeMessageBox}>
+                    cancel
+                </button>
+            );
+        }
+        return actions;
+    }
+}
+
+export class WorkflowForMenu extends Component{
+    render(){
+        var data = this.props.workflow_data;
+        var css_class = "workflow-for-menu";
+        if(this.props.selected)css_class+=" selected";
+        return(
+            <div class={css_class} onClick={this.props.selectAction}>
+                <div class="workflow-title">
+                    {data.title}
+                </div>
+                <div class="workflow-created">
+                    { "Created"+(data.author && " by "+data.author)+" on "+data.created_on}
+                </div>
+                <div class="activity-description">
+                    {data.description}
+                </div>
+            </div>
+        );
+    }
+}
 
 
 

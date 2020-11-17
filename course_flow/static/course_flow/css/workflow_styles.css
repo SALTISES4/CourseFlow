@@ -7,6 +7,10 @@ p{
     color:black;
 }
 
+:focus{
+    outline:none;
+}
+
 .workflow-wrapper{
     position:relative;
     display:inline-block;

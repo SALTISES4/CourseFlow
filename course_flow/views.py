@@ -199,6 +199,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         strategies = workflow.strategies.all()
         nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
         nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
+        nodelinks = NodeLink.objects.filter(source_node__in=nodes)
         column_choices = [{'type':choice[0],'name':choice[1]} for choice in Column._meta.get_field('column_type').choices]
         
 
@@ -209,6 +210,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             "strategyworkflow":StrategyWorkflowSerializerShallow(strategyworkflows,many=True).data,
             "strategy":StrategySerializerShallow(strategies,many=True).data,
             "nodestrategy":NodeStrategySerializerShallow(nodestrategies,many=True).data,
+            "nodelink":NodeLinkSerializerShallow(nodelinks,many=True).data,
             "node":NodeSerializerShallow(nodes,many=True).data,
 
         }
@@ -1277,7 +1279,7 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "objectID": node_link.id})
+    return JsonResponse({"action": "posted", "new_model": NodeLinkSerializerShallow(node_link).data})
 
 
 # Add a new sibling to a through model
@@ -1359,7 +1361,6 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("parentID"))
     new_position = json.loads(request.POST.get("newPosition"))
-    new_parent_id = json.loads(request.POST.get("newParentID"))
     try:
         model_type = get_model_from_str(object_type)
         model = model_type.objects.get(id=object_id)
@@ -1367,14 +1368,13 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 
         parentType = get_parent_model_str(object_type)
 
-        parent = get_model_from_str(parentType).objects.get(id=parent_id)
+        new_parent = get_model_from_str(parentType).objects.get(id=parent_id)
+        
+        if object_type=="nodestrategy":
+            parent = model.strategy
+        else: 
+            parent = new_parent
 
-        if not new_parent_id is None:
-            new_parent = get_model_from_str(parentType).objects.get(
-                id=new_parent_id
-            )
-        else:
-            new_parent = parent
         new_parent_count = model_type.objects.filter(
             **{parentType: new_parent}
         ).count()
@@ -1501,14 +1501,18 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
         if(workflow_id==-1):
             node.linked_workflow = None
             node.save()
+            linked_workflow=None
+            linked_workflow_title=None
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
             set_linked_workflow(node,workflow)
+            linked_workflow=node.linked_workflow.id
+            linked_workflow_title=node.linked_workflow.title
 
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"action": "posted","id":node_id,"linked_workflow":linked_workflow,"linked_workflow_title":linked_workflow_title})
 
 """
 Delete methods
