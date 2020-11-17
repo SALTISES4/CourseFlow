@@ -174,6 +174,10 @@ export class PathGenerator{
                  this.direction["target"][1]**2*this.last_point["source"][1]]
             )
         }else{
+            if(this.hasTicked.source==false&&this.hasTicked.target==false){
+                this.padOut("target");
+                this.padOut("source");
+            }
             //double corner
             let diff = mathsubtract(this.last_point["target"],this.last_point["source"]);
             let mid1=[this.direction["source"][0]**2*diff[0]/2,this.direction["source"][1]**2*diff[1]/2]
