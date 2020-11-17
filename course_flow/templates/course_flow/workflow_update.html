@@ -13,8 +13,8 @@
 <!-- -->
 {% block body %}
 
-<div id=container class="body-wrapper"></div>
-<div id="node-form-container"></div>
+<div id=container class="body-wrapper"></div><div id="popup-container"></div>
+
 
 {% endblock %}
 <!-- -->
@@ -25,8 +25,15 @@
 {% block scripts %}
 
 <script nonce="{{request.csp_nonce}}">
+const workflow_paths = {
+    activity:'{% url "course_flow:activity-detail" pk=object.pk %}',
+    course:'{% url "course_flow:course-detail" pk=object.pk %}',
+    program:'{% url "course_flow:program-detail" pk=object.pk %}'
+}
+const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 var selection_manager;
-var initial_loading = true;
+
+/*var initial_loading = true;
 var ports_rendered = false;
 var items_to_load = {
     column:{{column_count}},
@@ -47,46 +54,109 @@ $(document).on("component-loaded",(evt,objectType)=>{
         $(document).triggerHandler("render-ports");
     }
 });
-    
+
 $(document).on("ports-rendered",(evt)=>{
     ports_to_render--;
     if(ports_to_render>0)return;
     ports_rendered=true;
     console.log("ports rendered");
     $(document).triggerHandler("render-links");
-})
+})*/
+initial_data = {{data_flat|safe}}
+column_choices = {{column_choices|safe}}
+console.log(initial_data);
+    
+var initial_loading = true;
+var ports_rendered = false;
+var items_to_load = {
+    column:initial_data.column.length,
+    strategy:initial_data.strategy.length,
+    node:initial_data.node.length,
+};
+var ports_to_render = initial_data.node.length;
+$(document).on("component-loaded",(evt,objectType)=>{
+    console.log(items_to_load)
+    if(objectType&&items_to_load[objectType]){
+        items_to_load[objectType]--;
+        for(prop in items_to_load){
+            if(items_to_load[prop]>0)return;
+        }
+        initial_loading=false;
+        console.log("finished initial loading");
+        $(document).triggerHandler("render-ports");
+    }
+});
 
+$(document).on("ports-rendered",(evt)=>{
+    console.log(ports_to_render);
+    ports_to_render--;
+    if(ports_to_render>0)return;
+    ports_rendered=true;
+    console.log("ports rendered");
+    $(document).triggerHandler("render-links");
+});
     
 window.addEventListener("load", function(){
-    selection_manager = new workflow.SelectionManager();
+    selection_manager = new workflow_redux.SelectionManager();
     
     
-    let fetchThenRenderWorkflow = function(){
-        $.getJSON('{% url "course_flow:workflow-detail" pk=object.pk %}',
-            function(json){
-                console.log(json);
-                workflow.renderWorkflowView(json,$("#container").get()[0]);
-            }
-        );
-    }
+    workflow_redux.renderWorkflowView($("#container").get()[0]);
     
-    fetchThenRenderWorkflow();
     
 })
 
+function getLinkedWorkflowMenu(nodeData,updateFunction){
+    $.post("{% url 'course_flow:get-possible-linked-workflows' %}",{
+        nodePk:JSON.stringify(nodeData.id),
+    },(data)=>openLinkedWorkflowMenu(data,updateFunction));
+}
 
-function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
-    $.post("{% url 'course_flow:update-value' %}", {
-        objectID:JSON.stringify(objectID),
-        objectType:JSON.stringify(objectType),
-        data:JSON.stringify(json)
+function openLinkedWorkflowMenu(response,updateFunction){
+    console.log(response);
+    if(response.action=="posted"){
+        workflow_redux.renderMessageBox(response,"linked_workflow_menu",updateFunction);
+    }else alert("Failed to find the parent project. Is this workflow in a project?");
+}
+
+function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>console.log("success")){
+    console.log(node_id)
+    $.post("{% url 'course_flow:set-linked-workflow' %}", {
+        nodePk:node_id,
+        workflowPk:workflow_id,
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
     });
 }
+
+function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
+    var t = 2000;
+    let previousCall = this.lastUpdateCall;
+    console.log("Calling update value");
+    this.lastUpdateCall = {time:Date.now(),id:objectID,type:objectType,field:Object.keys(json)[0]};
+    console.log(this.lastUpdateCall);
     
+    if(previousCall && ((this.lastUpdateCall.time-previousCall.time)<=t)){
+        clearTimeout(this.lastUpdateCallTimer);
+    }
+    if(previousCall && (previousCall.id!=this.lastUpdateCall.id || previousCall.type!=this.lastUpdateCall.type ||previousCall.field!=this.lastUpdateCall.field)){
+       this.lastUpdateCallFunction();
+    }
+    this.lastUpdateCallFunction = ()=>{
+        console.log("posting updated value");
+        $.post("{% url 'course_flow:update-value' %}", {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            data:JSON.stringify(json)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+    this.lastUpdateCallTimer = setTimeout(lastUpdateCallFunction,t);
+}
     
+//Add a new column to the workflow 
 function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("success")){
     $.post("{% url 'course_flow:new-column' %}", {
         workflowPk:workflowPk,
@@ -97,18 +167,22 @@ function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("succ
     });
 }
     
-    
-function newNode(strategyPk,position=-1,column,callBackFunction=()=>console.log("success")){
+//Add a new node to a strategy
+function newNode(strategyPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){
+    console.log(strategyPk);
+    console.log("column: "+column);
     $.post("{% url 'course_flow:new-node' %}", {
         strategyPk:JSON.stringify(strategyPk),
         position:JSON.stringify(position),
-        columnPk:JSON.stringify(column),        
+        columnPk:JSON.stringify(column),
+        columnType:JSON.stringify(column_type),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
     });
 }
   
+//Create a nodelink from the source to the target, at the given ports
 function newNodeLink(source_node,target_node,source_port,target_port,callBackFunction=()=>console.log("success")){
     $.post("{% url 'course_flow:new-node-link' %}", {
         nodePk:JSON.stringify(source_node),
@@ -124,51 +198,63 @@ function newNodeLink(source_node,target_node,source_port,target_port,callBackFun
 
 //Causes the specified object to delete itself
 function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
-    //Temporary confirmation; add better comfirmation dialogue later
-    console.log(objectID);
-    console.log(objectType);
-    
-    if(window.confirm("Are you sure you want to delete this "+objectType+"?")){
-        $.post("{% url 'course_flow:delete-self' %}", {
-            objectID:JSON.stringify(objectID),
-            objectType:JSON.stringify(objectType)
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
-        });
-    }
+    $.post("{% url 'course_flow:delete-self' %}", {
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify(objectType)
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
 }
 
 //Causes the specified object to insert a sibling after itself
 function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
-    
+    console.log(objectID);
+    console.log(parentID);
     $.post("{% url 'course_flow:insert-sibling' %}", {
-        objectID:JSON.stringify(objectID),
-        objectType:JSON.stringify(objectType),
-        parentID:JSON.stringify(parentID)
-    }).done(function(data){
-        if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
-    });
-}
-    
-//Called when an object in a list is reordered
-function insertedAt(objectID,objectType,parentID,newPosition,newParentID,newColumnID,callBackFunction=()=>console.log("success")){
-    
-    
-    $.post("{% url 'course_flow:inserted-at' %}", {
-        objectID:JSON.stringify(objectID),
-        objectType:JSON.stringify(objectType),
         parentID:JSON.stringify(parentID),
-        newPosition:JSON.stringify(newPosition),
-        newParentID:JSON.stringify(newParentID),
-        newColumnID:JSON.stringify(newColumnID),
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify(objectType),
     }).done(function(data){
+        console.log(callBackFunction);
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
     });
 }
 
+    
+//Called when an object in a list is reordered
+function insertedAt(objectID,objectType,parentID,newPosition,callBackFunction=()=>console.log("success")){
+    
+    $(document).off(objectType+"-dropped.insert");
+    $(document).on(objectType+"-dropped.insert",()=>{
+        $.post("{% url 'course_flow:inserted-at' %}", {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            parentID:JSON.stringify(parentID),
+            newPosition:JSON.stringify(newPosition),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    });
+}
+ 
+//Called when a node should have its column changed
+function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
+    
+    $(document).off("nodestrategy-dropped.columnchange");
+    $(document).on("nodestrategy-dropped.columnchange",()=>{
+    
+        $.post("{% url 'course_flow:change-column' %}", {
+            nodePk:JSON.stringify(objectID),
+            columnID:JSON.stringify(columnID),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    });
+}
 
 
 

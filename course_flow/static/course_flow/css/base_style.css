@@ -243,14 +243,19 @@ text {
   font-size: 16px;
 }
 .sub-container {
- width: 40%;
- position: absolute;
-}
-#user-content-container {
-  left: 10%;
-}
-#total-content-container {
-  right: 0;
+    text-align:left;
+    padding:20px;
+    width: 40%;
+    margin:40px;
+    margin:40px;
+    margin-left:5%;
+    margin-right:0;
+    padding-bottom:50px;
+    vertical-align:top;
+    display:inline-block;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+    background:white;
+    overflow:visible;
 }
 h2:not(.mdc-dialog__header__title), p {
   font-family: "Montserrat", serif;
@@ -259,3 +264,96 @@ h1 {
   font-family: "Montserrat", serif;
   color: #F4F4F4;
 }
+
+
+.body-wrapper{
+    top:100px;
+    width:100%;
+    height:calc(100% - 100px);
+    overflow:auto;
+    position:absolute;
+}
+
+  .create-button {
+    transform: translateY(10px);
+  }
+  img.link-image {
+    height: 35px;
+  }
+  .mdc-card {
+    background-color: white;
+    margin-bottom: 10px;
+    padding: 20px 20px 12px;
+    border-radius: 10px;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+      0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+    max-width: 400px;
+    border: 2px solid #1976bc;
+  }
+  .mdc-typography--title {
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 1.25rem;
+    line-height: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: inherit;
+    text-transform: inherit;
+    font-weight: bold;
+  }
+  .mdc-typography--caption {
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-decoration: inherit;
+    text-transform: inherit;
+  }
+  .mdc-typography--body1 {
+    font-size: 16px;
+    letter-spacing: 0em;
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-decoration: inherit;
+    text-transform: inherit;
+  }
+  .mdc-card__actions {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 52px;
+    padding: 8px;
+  }
+  .mdc-card__action-buttons,
+  .mdc-card__action-icons {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  .mdc-card__action-icons {
+    margin-left: auto;
+    margin-right: 0;
+  }
+  .mdc-card__action-icons,
+  .mdc-typography--caption,
+  .mdc-typography--body1,
+  .mdc-typography--title {
+    color: #1976bc;
+  }

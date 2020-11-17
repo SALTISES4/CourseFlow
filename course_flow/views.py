@@ -1,5 +1,6 @@
 from .models import (
     User,
+    Project,
     Course,
     Column,
     ColumnWorkflow,
@@ -12,6 +13,7 @@ from .models import (
     StrategyWorkflow,
     Program,
     NodeCompletionStatus,
+    WorkflowProject,
 )
 from .serializers import (
     serializer_lookups,
@@ -89,24 +91,83 @@ def registration_view(request):
 @login_required
 def home_view(request):
     context = {
-        "programs": Program.objects.exclude(author=request.user),
-        "courses": Course.objects.exclude(author=request.user, static=True),
-        "activities": Activity.objects.exclude(
-            author=request.user, static=True
-        ),
-        "owned_programs": Program.objects.filter(author=request.user),
-        "owned_courses": Course.objects.filter(
-            author=request.user, static=False
-        ),
-        "owned_activities": Activity.objects.filter(
-            author=request.user, static=False
-        ),
-        "owned_static_courses": Course.objects.filter(
-            author=request.user, static=True
-        ),
+        "projects": Project.objects.exclude(author=request.user),
+        "owned_projects": Project.objects.filter(author=request.user)
     }
     return render(request, "course_flow/home.html", context)
 
+
+
+class ProjectCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Project
+    fields = ["title", "description"]
+    template_name = "course_flow/project_create.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super(ProjectCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "course_flow:project-update", kwargs={"pk": self.object.pk}
+        )
+    
+    
+class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = Project
+    template_name = "course_flow/project_detail.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
+
+
+class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Project
+    fields = ["title", "description"]
+    template_name = "course_flow/project_update.html"
+    
+    def test_func(self):
+        return self.get_object().author == self.request.user
+    
+    def get_context_data(self, **kwargs):
+        context = super(UpdateView, self).get_context_data(**kwargs)
+        project = self.object
+        context["programs"]=Program.objects.exclude(author=self.request.user)
+        context["courses"]=Course.objects.exclude(author=self.request.user).exclude(static=True)
+        context["activities"]=Activity.objects.exclude(
+                author=self.request.user
+            ).exclude(static=True)
+        context["owned_programs"]= Program.objects.filter(
+                author=self.request.user
+            ).exclude(project=project)
+        context["owned_courses"]= Course.objects.filter(
+                author=self.request.user, static=False
+            ).exclude(project=project)
+        context["owned_activities"]= Activity.objects.filter(
+                author=self.request.user, static=False
+            ).exclude(project=project)
+        context["project_programs"]= Program.objects.filter(
+                author=self.request.user,project=project
+            )
+        context["project_courses"]=Course.objects.filter(
+                author=self.request.user,project=project, static=False
+            )
+        context["project_static_courses"]= Course.objects.filter(
+                author=self.request.user, project=project, static=True
+            )
+        context["project_activities"]= Activity.objects.filter(
+                author=self.request.user,project=project, static=False
+            )
+        return context
 
 class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Workflow
@@ -130,16 +191,32 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        workflow = self.get_object()
-        context["column_count"] = workflow.columns.count()
-        context["strategy_count"] = workflow.strategies.count()
-        nodes = Node.objects.filter(strategy__in=workflow.strategies.all())
-        print(nodes)
-        context["node_count"] = nodes.count()
-        context["node_link_count"] = NodeLink.objects.filter(
-            source_node__in=nodes
-        ).count()
+        workflow=self.get_object()
+        SerializerClass = serializer_lookups_shallow[workflow.type]
+        columnworkflows = workflow.columnworkflow_set.all()
+        strategyworkflows = workflow.strategyworkflow_set.all()
+        columns = workflow.columns.all()
+        strategies = workflow.strategies.all()
+        nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
+        nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
+        nodelinks = NodeLink.objects.filter(source_node__in=nodes)
+        column_choices = [{'type':choice[0],'name':choice[1]} for choice in Column._meta.get_field('column_type').choices]
+        
 
+        data_flat = {
+            "workflow":SerializerClass(workflow).data,
+            "columnworkflow":ColumnWorkflowSerializerShallow(columnworkflows,many=True).data,
+            "column":ColumnSerializerShallow(columns,many=True).data,
+            "strategyworkflow":StrategyWorkflowSerializerShallow(strategyworkflows,many=True).data,
+            "strategy":StrategySerializerShallow(strategies,many=True).data,
+            "nodestrategy":NodeStrategySerializerShallow(nodestrategies,many=True).data,
+            "nodelink":NodeLinkSerializerShallow(nodelinks,many=True).data,
+            "node":NodeSerializerShallow(nodes,many=True).data,
+
+        }
+        
+        context["data_flat"]=JSONRenderer().render(data_flat).decode("utf-8")
+        context["column_choices"]=JSONRenderer().render(column_choices).decode("utf-8")
         return context
 
 
@@ -209,19 +286,19 @@ class ColumnViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class ActivityViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = ActivitySerializerShallow
+    serializer_class = ActivitySerializer
     renderer_classes = [JSONRenderer]
     queryset = Activity.objects.all()
 
 
 class CourseViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = CourseSerializerShallow
+    serializer_class = CourseSerializer
     renderer_classes = [JSONRenderer]
     queryset = Course.objects.all()
 
 
 class ProgramViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = ProgramSerializerShallow
+    serializer_class = ProgramSerializer
     renderer_classes = [JSONRenderer]
     queryset = Program.objects.all()
 
@@ -243,14 +320,21 @@ class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "course_flow/program_create.html"
 
     def test_func(self):
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
+            in self.request.user.groups.all() and
+            project.author == self.request.user
         )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super(ProgramCreateView, self).form_valid(form)
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
+        response = super(CreateView, self).form_valid(form)
+        WorkflowProject.objects.create(
+            project=project,workflow=form.instance
+        )
+        return response
 
     def get_success_url(self):
         return reverse(
@@ -324,14 +408,21 @@ class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "course_flow/course_create.html"
 
     def test_func(self):
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
+            in self.request.user.groups.all() and
+            project.author == self.request.user
         )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super(CourseCreateView, self).form_valid(form)
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
+        response = super(CreateView, self).form_valid(form)
+        WorkflowProject.objects.create(
+            project=project,workflow=form.instance
+        )
+        return response
 
     def get_success_url(self):
         return reverse(
@@ -405,14 +496,21 @@ class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "course_flow/activity_create.html"
 
     def test_func(self):
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
+            in self.request.user.groups.all() and
+            project.author == self.request.user
         )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super(ActivityCreateView, self).form_valid(form)
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
+        response = super(CreateView, self).form_valid(form)
+        WorkflowProject.objects.create(
+            project=project,workflow=form.instance
+        )
+        return response
 
     def get_success_url(self):
         return reverse(
@@ -490,20 +588,6 @@ def update_program_json(request: HttpRequest) -> HttpResponse:
     return save_serializer(serializer)
 
 
-def duplicate_node(node: Node, author: User) -> Node:
-    new_node = Node.objects.create(
-        title=node.title,
-        description=node.description,
-        author=author,
-        is_original=False,
-        parent_node=node,
-        work_classification=node.work_classification,
-        activity_classification=node.activity_classification,
-        column=node.column,
-        node_type=node.node_type,
-    )
-    return new_node
-
 
 # Called when a node is added from the sidebar (duplicated)
 @login_required
@@ -526,23 +610,6 @@ def add_node(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
-
-
-def duplicate_strategy(strategy: Strategy, author: User) -> Strategy:
-    new_strategy = Strategy.objects.create(
-        title=strategy.title,
-        description=strategy.description,
-        author=author,
-        is_original=False,
-        parent_strategy=strategy,
-    )
-    for node in strategy.nodes.all():
-        NodeStrategy.objects.create(
-            strategy=new_strategy,
-            node=duplicate_node(node, author),
-            rank=NodeStrategy.objects.get(node=node, strategy=strategy).rank,
-        )
-    return new_strategy
 
 
 # Called when a strategy is added from the sidebar (duplicated)
@@ -905,6 +972,210 @@ def dialog_form_remove(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
+"""
+Contextual information methods
+"""
+@require_POST
+@ajax_login_required
+@is_owner("nodePk")
+def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
+    node = Node.objects.get(pk=request.POST.get("nodePk"))
+    try:
+        project = node.strategy_set.first().workflow_set.first().project_set.first()
+        if node.node_type==Node.COURSE_NODE:
+            workflows = Activity.objects.filter(author=request.user,project=project, static=False)
+            workflows_other = Activity.objects.filter(author=request.user, static=False).exclude(project=project)
+            workflows_pub = Activity.objects.exclude(author=request.user).exclude(static=True)
+            SerializerClass = ActivitySerializerShallow
+        if node.node_type==Node.PROGRAM_NODE:
+            workflows = Course.objects.filter(author=request.user,project=project, static=False)
+            workflows_other = Course.objects.filter(author=request.user, static=False).exclude(project=project)
+            workflows_pub = Course.objects.exclude(author=request.user).exclude(static=True)
+            SerializerClass = CourseSerializerShallow
+        project_workflows = []
+        other_workflows = []
+        published_workflows=[]
+        project_workflows=(
+            SerializerClass(workflows, many=True).data
+        )
+        other_workflows=(
+            SerializerClass(workflows_other, many=True).data
+        )
+        published_workflows=(
+            SerializerClass(workflows_pub, many=True).data
+        )
+    except AttributeError:
+        return JsonResponse({"action":"error"})
+    return JsonResponse({"action":"posted","project_workflows":project_workflows,"other_workflows":other_workflows,"published_workflows":published_workflows,"node_id":node.id})
+    
+
+@require_POST
+@ajax_login_required
+def get_flat_workflow(request: HttpRequest) -> HttpResponse:
+    workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
+    try:
+        SerializerClass = serializer_lookups_shallow[workflow.type]
+        columnworkflows = workflow.columnworkflow_set.all()
+        strategyworkflows = workflow.strategyworkflow_set.all()
+        columns = workflow.columns.all()
+        strategies = workflow.strategies.all()
+        nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
+        nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
+
+        response = {
+            "workflow":SerializerClass(workflow).data,
+            "columnworkflows":ColumnWorkflowSerializerShallow(columnworkflows,many=True).data,
+            "columns":ColumnSerializerShallow(columns,many=True).data,
+            "strategyworkflows":StrategyWorkflowSerializerShallow(strategyworkflows,many=True).data,
+            "strategies":StrategySerializerShallow(strategies,many=True).data,
+            "nodestrategies":NodeStrategySerializerShallow(nodestrategies,many=True).data,
+            "nodes":NodeSerializerShallow(nodes,many=True).data,
+
+        }
+        
+    except AttributeError:
+         return JsonResponse({"action":"error"})
+    return JsonResponse(response)    
+
+"""
+Duplication methods
+"""
+
+
+def duplicate_nodelink(nodelink: NodeLink, author: User, source_node: Node, target_node: Node) -> NodeLink:
+    new_nodelink = NodeLink.objects.create(
+        title=nodelink.title,
+        author = author,
+        source_node = source_node,
+        target_node = target_node,
+        source_port = nodelink.source_port,
+        target_port = nodelink.target_port,
+        dashed=nodelink.dashed,
+        is_original=False,
+        parent_nodelink=nodelink,
+    )
+    
+    return new_nodelink
+
+def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
+    if(new_workflow is not None):
+        for new_column in new_workflow.columns.all():
+            print(new_column)
+            print(node.column)
+            if new_column==node.column or new_column.parent_column==node.column:
+                column=new_column
+                break
+    else:
+        column = node.column
+    new_node = Node.objects.create(
+        title = node.title,
+        description = node.description,
+        author=author,
+        node_type=node.node_type,
+        column=column,
+        work_classification = node.work_classification,
+        activity_classification = node.activity_classification,
+        has_autolink=node.has_autolink,
+        represents_workflow = node.represents_workflow,
+        is_original=False,
+        parent_node=node,
+    )
+    if node.linked_workflow is not None:
+        set_linked_workflow(new_node,node.linked_workflow)
+        
+    return new_node
+    
+
+def duplicate_strategy(strategy:Strategy, author: User, new_workflow: Workflow) -> Strategy:
+    new_strategy = Strategy.objects.create(
+        title=strategy.title,
+        description = strategy.description,
+        author = author,
+        is_original=False,
+        parent_strategy=strategy,
+        strategy_type=strategy.strategy_type
+    )
+    
+    for node in strategy.nodes.all():
+        NodeStrategy.objects.create(
+            node=duplicate_node(node, author, new_workflow),
+            strategy=new_strategy,
+            rank=NodeStrategy.objects.get(
+                node=node,strategy=strategy
+            ).rank
+        )
+        
+    return new_strategy
+
+
+def duplicate_column(column: Column, author: User) -> Column:
+    new_column = Column.objects.create(
+        title=column.title,
+        author = author,
+        is_original=False,
+        parent_column = column,
+        column_type = column.column_type
+    )
+    
+    return new_column
+
+def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
+    model = get_model_from_str(workflow.type)
+    
+    new_workflow = model.objects.create(
+        title=workflow.title,
+        description=workflow.description,
+        author=author,
+        is_original=False,
+        parent_workflow=workflow
+    )
+    
+    for column in workflow.columns.all():
+        ColumnWorkflow.objects.create(
+            column=duplicate_column(column, author),
+            workflow=new_workflow,
+            rank=ColumnWorkflow.objects.get(
+                column=column, workflow=workflow
+            ).rank,
+        )
+    for strategy in workflow.strategies.all():
+        StrategyWorkflow.objects.create(
+            strategy=duplicate_strategy(strategy, author, new_workflow),
+            workflow=new_workflow,
+            rank=StrategyWorkflow.objects.get(
+                strategy=strategy, workflow=workflow
+            ).rank,
+        )
+        
+    #Handle all the nodelinks. These need to be handled here because they potentially span strategies
+    for strategy in new_workflow.strategies.all():
+        for node in strategy.nodes.all():
+            for node_link in NodeLink.objects.filter(source_node=node.parent_node):
+                for strategy2 in new_workflow.strategies.all():
+                    if strategy2.nodes.filter(parent_node==node_link.target_node).count()>0:
+                        duplicate_nodelink(
+                            nodelink,
+                            author,
+                            node,
+                            strategy2.nodes.get(parent_node==node_link.target_node)
+                        )
+                    
+    
+    return new_workflow
+
+
+@require_POST
+@ajax_login_required
+def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
+    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    try:
+        clone = duplicate_workflow(course, request.user)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted", "clone_pk": workflow.pk})
+   
+
 
 """
 Creation methods
@@ -937,38 +1208,52 @@ def new_column(request: HttpRequest) -> HttpResponse:
 def new_node(request: HttpRequest) -> HttpResponse:
     strategy_id = json.loads(request.POST.get("strategyPk"))
     column_id = json.loads(request.POST.get("columnPk"))
+    column_type = json.loads(request.POST.get("columnType"))
     position = json.loads(request.POST.get("position"))
     strategy = Strategy.objects.get(pk=strategy_id)
-    if column_id >= 0:
-        column = Column.objects.get(pk=column_id)
-    else:
-        column = (
-            ColumnWorkflow.objects.filter(
+    print("ADDING NODE")
+    print(column_id)
+    try:
+        if column_id is not None and column_id >= 0:
+            column = Column.objects.get(pk=column_id)
+            columnworkflow = ColumnWorkflow.objects.get(column=column)
+        elif column_type is not None and column_type >=0:
+            column = Column.objects.create(
+                column_type=column_type,
+                author = strategy.author
+            )
+            columnworkflow = ColumnWorkflow.objects.create(
+                column=column,
+                workflow=strategy.workflow_set.first(),
+                rank=strategy.workflow_set.first().columns.count()
+            )
+        else:
+            columnworkflow = ColumnWorkflow.objects.filter(
                 workflow=StrategyWorkflow.objects.get(
                     strategy=strategy
                 ).workflow
+            ).first()
+            column = (
+                columnworkflow.column
             )
-            .first()
-            .column
-        )
-    try:
         if column.author != strategy.author:
             raise ValidationError
         if position < 0 or position > strategy.nodes.count():
             position = strategy.nodes.count()
+        node = Node.objects.create(
+            author=strategy.author,
+            node_type=strategy.strategy_type,
+            column=column,
+        )
         node_strategy = NodeStrategy.objects.create(
             strategy=strategy,
-            node=Node.objects.create(
-                author=strategy.author,
-                node_type=strategy.strategy_type,
-                column=column,
-            ),
+            node=node,
             rank=position,
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
-        {"action": "posted", "objectID": node_strategy.node.id}
+        {"action": "posted", "new_model": NodeSerializerShallow(node).data,"new_through":NodeStrategySerializerShallow(node_strategy).data,"index":position,"parentID":strategy_id,"columnworkflow":ColumnWorkflowSerializerShallow(columnworkflow).data,"column":ColumnSerializerShallow(column).data}
     )
 
 
@@ -994,45 +1279,73 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "objectID": node_link.id})
+    return JsonResponse({"action": "posted", "new_model": NodeLinkSerializerShallow(node_link).data})
 
 
 # Add a new sibling to a through model
 @require_POST
 @ajax_login_required
-@is_throughmodel_parent_owner
+@is_parent_owner
 def insert_sibling(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
+    parent_id = json.loads(request.POST.get("parentID"))
 
     try:
-        model = get_model_from_str(object_type).objects.get(id=object_id)
-        if object_type == "strategyworkflow":
-            newmodel = StrategyWorkflow.objects.create(
-                workflow=model.workflow,
-                strategy=Strategy.objects.create(
-                    author=model.workflow.get_subclass().author,
-                    strategy_type=model.workflow.get_subclass().WORKFLOW_TYPE,
-                ),
-                rank=model.rank + 1,
+        if object_type == "strategy":
+            model=Strategy.objects.get(id=object_id)
+            parent=Workflow.objects.get(id=parent_id)
+            through=StrategyWorkflow.objects.get(strategy=model,workflow=parent)
+            newmodel = Strategy.objects.create(
+                author=model.author,
+                strategy_type=model.strategy_type,
             )
-        elif object_type == "nodestrategy":
-            newmodel = NodeStrategy.objects.create(
-                strategy=model.strategy,
-                node=Node.objects.create(
-                    author=model.strategy.author,
-                    column=model.node.column,
-                    node_type=model.node.node_type,
-                ),
-                rank=model.rank + 1,
+            newthroughmodel = StrategyWorkflow.objects.create(
+                workflow=parent,
+                strategy=newmodel,
+                rank=through.rank + 1,
             )
+            new_model_serialized=StrategySerializerShallow(newmodel).data
+            new_through_serialized=StrategyWorkflowSerializerShallow(newthroughmodel).data
+        elif object_type == "node":
+            model=Node.objects.get(id=object_id)
+            parent=Strategy.objects.get(id=parent_id)
+            through=NodeStrategy.objects.get(node=model,strategy=parent)
+            newmodel = Node.objects.create(
+                author=model.author,
+                column=model.column,
+                node_type=model.node_type,
+            )
+            newthroughmodel = NodeStrategy.objects.create(
+                strategy=parent,
+                node=newmodel,
+                rank=through.rank + 1,
+            )
+            new_model_serialized=NodeSerializerShallow(newmodel).data
+            new_through_serialized=NodeStrategySerializerShallow(newthroughmodel).data
+        elif object_type == "column":
+            print("column");
+            model=Column.objects.get(id=object_id)
+            parent=Workflow.objects.get(id=parent_id)
+            through=ColumnWorkflow.objects.get(column=model,workflow=parent)
+            newmodel =Column.objects.create(
+                author=model.author,
+                column_type=math.floor(model.column_type/10)*10
+            )
+            newthroughmodel = ColumnWorkflow.objects.create(
+                workflow=parent,
+                column=newmodel,
+                rank=through.rank + 1,
+            )
+            new_model_serialized=ColumnSerializerShallow(newmodel).data
+            new_through_serialized=ColumnWorkflowSerializerShallow(newthroughmodel).data
         else:
             raise ValidationError
 
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "objectID": newmodel.id})
+    return JsonResponse({"action": "posted", "new_model": new_model_serialized,"new_through":new_through_serialized,"parentID":parent_id,"siblingID":through.id})
 
 
 """
@@ -1048,8 +1361,6 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("parentID"))
     new_position = json.loads(request.POST.get("newPosition"))
-    new_parent_id = json.loads(request.POST.get("newParentID"))
-    new_column_id = json.loads(request.POST.get("newColumnID"))
     try:
         model_type = get_model_from_str(object_type)
         model = model_type.objects.get(id=object_id)
@@ -1057,14 +1368,13 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 
         parentType = get_parent_model_str(object_type)
 
-        parent = get_model_from_str(parentType).objects.get(id=parent_id)
+        new_parent = get_model_from_str(parentType).objects.get(id=parent_id)
+        
+        if object_type=="nodestrategy":
+            parent = model.strategy
+        else: 
+            parent = new_parent
 
-        if not new_parent_id is None:
-            new_parent = get_model_from_str(parentType).objects.get(
-                id=new_parent_id
-            )
-        else:
-            new_parent = parent
         new_parent_count = model_type.objects.filter(
             **{parentType: new_parent}
         ).count()
@@ -1109,16 +1419,26 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
             model.rank = new_position
             setattr(model, parentType, new_parent)
             model.save()
-        if (
-            not new_column_id is None
-            and int(new_column_id) > 0
-            and object_type == "nodestrategy"
-        ):
-            new_column = ColumnWorkflow.objects.get(id=new_column_id).column
-            if new_column.author == parent.author:
-                model.node.column = new_column
-                model.node.save()
 
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
+
+# Change a node's column
+@require_POST
+@ajax_login_required
+@is_owner("nodePk")
+def change_column(request: HttpRequest) -> HttpResponse:
+    node_id = json.loads(request.POST.get("nodePk"))
+    new_column_id = json.loads(request.POST.get("columnID"))
+    try:
+        node = Node.objects.get(id=node_id)
+        new_column = ColumnWorkflow.objects.get(id=new_column_id).column
+        if new_column.author == node.author:
+            node.column = new_column
+            node.save()
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -1153,10 +1473,50 @@ def update_value(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
+def set_linked_workflow(node: Node,workflow):
+    project = node.strategy_set.first().workflow_set.first().project_set.first()
+    if project.author==node.author or project.published:
+        print(workflow)
+        print(workflow.author)
+        print(WorkflowProject.objects.get(workflow=workflow))
+        if WorkflowProject.objects.get(workflow=workflow).project==project:
+            node.linked_workflow=workflow
+            node.save()
+        else:
+            if(workflow.author==node.author or WorkflowProject.objects.get(workflow=workflow).published):
+                new_workflow = duplicate_workflow(workflow,node.author)
+                WorkflowProject.objects.create(workflow=new_workflow,project=project)
+                node.linked_workflow=new_workflow
+                node.save()
+
+# Sets the linked workflow for a node, adding it to the project if different
+@require_POST
+@ajax_login_required
+@is_owner("nodePk")
+def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
+    try:
+        node_id = json.loads(request.POST.get("nodePk"))
+        workflow_id = json.loads(request.POST.get("workflowPk"))
+        node = Node.objects.get(pk=node_id)
+        if(workflow_id==-1):
+            node.linked_workflow = None
+            node.save()
+            linked_workflow=None
+            linked_workflow_title=None
+        else:
+            workflow = Workflow.objects.get_subclass(pk=workflow_id)
+            set_linked_workflow(node,workflow)
+            linked_workflow=node.linked_workflow.id
+            linked_workflow_title=node.linked_workflow.title
+
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted","id":node_id,"linked_workflow":linked_workflow,"linked_workflow_title":linked_workflow_title})
+
 """
 Delete methods
 """
-
 
 @require_POST
 @ajax_login_required
@@ -1166,7 +1526,8 @@ def delete_self(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
 
     try:
-        get_model_from_str(object_type).objects.get(id=object_id).delete()
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        model.delete()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
 

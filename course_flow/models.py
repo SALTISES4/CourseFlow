@@ -12,12 +12,41 @@ from model_utils.managers import InheritanceManager
 
 User = get_user_model()
 
+class Project(models.Model):
+    title = models.CharField(max_length=50, null=True, blank=True)
+    description = models.CharField(max_length=400, null=True, blank=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=False)
+    
+    
+    workflows= models.ManyToManyField(
+        "Workflow", through="WorkflowProject", blank=True
+    )
+    
+    class Meta:
+        verbose_name = "Project"
+        verbose_name_plural = "Projects"
+    
+class WorkflowProject(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    workflow = models.ForeignKey("Workflow", on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Workflow-Project Link"
+        verbose_name_plural = "Workflow-Project Links"
+
+        
 class Column(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=False)
+    visible = models.BooleanField(default=True)
     CUSTOM_ACTIVITY = 0
     OUT_OF_CLASS_INSTRUCTOR = 1
     OUT_OF_CLASS_STUDENT = 2
@@ -45,11 +74,11 @@ class Column(models.Model):
     )
     column_type = models.PositiveIntegerField(default=0, choices=COLUMN_TYPES)
 
-    default_columns = {
-        "activity": [1, 2, 3, 4],
-        "course": [11, 12, 13, 14],
-        "program": [20, 20, 20],
-    }
+    is_original=models.BooleanField(default=False)
+    parent_column=models.ForeignKey(
+        "Column", on_delete=models.SET_NULL, null=True
+    )
+    
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -70,6 +99,7 @@ class NodeLink(models.Model):
     target_node = models.ForeignKey(
         "Node", on_delete=models.CASCADE, related_name="incoming_links"
     )
+    published = models.BooleanField(default=False)
     NORTH = 0
     EAST = 1
     SOUTH = 2
@@ -83,6 +113,11 @@ class NodeLink(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
+    is_original=models.BooleanField(default=False)
+    parent_nodelink=models.ForeignKey(
+        "NodeLink", on_delete=models.SET_NULL, null=True
+    )
+    
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     class Meta:
@@ -96,6 +131,7 @@ class Outcome(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=False)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -118,6 +154,7 @@ class Node(models.Model):
     )
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    published = models.BooleanField(default=False)
 
     parent_node = models.ForeignKey(
         "Node", on_delete=models.SET_NULL, null=True
@@ -182,6 +219,9 @@ class Node(models.Model):
         (PROGRAM_NODE, "Program Node"),
     )
     node_type = models.PositiveIntegerField(choices=NODE_TYPES, default=0)
+    
+    represents_workflow = models.BooleanField(default=False)
+    linked_workflow = models.ForeignKey("Workflow", on_delete=models.SET_NULL, null=True)
 
     column = models.ForeignKey("Column", on_delete=models.PROTECT, null=True)
 
@@ -237,6 +277,7 @@ class Strategy(models.Model):
         "Strategy", on_delete=models.SET_NULL, null=True
     )
     is_original = models.BooleanField(default=True)
+    published = models.BooleanField(default=False)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -293,6 +334,8 @@ class Workflow(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     static = models.BooleanField(default=False)
+    
+    published = models.BooleanField(default=False)
 
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
@@ -314,7 +357,7 @@ class Workflow(models.Model):
     )
 
     SUBCLASSES = ["activity", "course", "program"]
-
+    
     @property
     def type(self):
         for subclass in self.SUBCLASSES:
@@ -360,6 +403,7 @@ class Activity(Workflow):
     )
 
     DEFAULT_CUSTOM_COLUMN = 0
+    DEFAULT_COLUMNS = [1, 2, 3, 4]
     WORKFLOW_TYPE = 0
 
     @property
@@ -394,6 +438,7 @@ class Course(Workflow):
     )
 
     DEFAULT_CUSTOM_COLUMN = 10
+    DEFAULT_COLUMNS = [11, 12, 13, 14]
     WORKFLOW_TYPE = 1
 
     @property
@@ -411,6 +456,7 @@ class Program(Workflow):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     DEFAULT_CUSTOM_COLUMN = 20
+    DEFAULT_COLUMNS = [20, 20, 20]
     WORKFLOW_TYPE = 2
 
     @property
@@ -578,7 +624,7 @@ def create_default_node_content(sender, instance, created, **kwargs):
 def create_default_activity_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
         # If the activity is newly created, add the default columns
-        cols = Column.default_columns["activity"]
+        cols = instance.DEFAULT_COLUMNS
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
@@ -596,7 +642,7 @@ def create_default_activity_content(sender, instance, created, **kwargs):
 def create_default_course_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
         # If the activity is newly created, add the default columns
-        cols = Column.default_columns["course"]
+        cols = instance.DEFAULT_COLUMNS
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},
@@ -614,7 +660,7 @@ def create_default_course_content(sender, instance, created, **kwargs):
 def create_default_program_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
         # If the activity is newly created, add the default columns
-        cols = Column.default_columns["program"]
+        cols = instance.DEFAULT_COLUMNS
         for i, col in enumerate(cols):
             instance.columns.create(
                 through_defaults={"rank": i},

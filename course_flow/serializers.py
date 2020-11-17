@@ -121,6 +121,39 @@ class ParentStrategySerializer(serializers.ModelSerializer):
             "author",
         ]
 
+class NodeLinkSerializer(serializers.ModelSerializer):
+    
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field="username"
+    )
+
+    class Meta:
+        model = NodeLink
+        fields = [
+            "id",
+            "title",
+            "source_node",
+            "target_node",
+            "source_port",
+            "target_port",
+            "created_on",
+            "last_modified",
+            "hash",
+            "author",
+        ]
+
+    def create(self, validated_data):
+        return Node.objects.create(
+            author=User.objects.get(username=self.initial_data["author"]),
+            **validated_data
+        )
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.save()
+        return instance
+    
+    
 
 class NodeSerializer(serializers.ModelSerializer):
 
@@ -129,8 +162,11 @@ class NodeSerializer(serializers.ModelSerializer):
     )
 
     outcomenode_set = serializers.SerializerMethodField()
+    columnworkflow = serializers.SerializerMethodField()
+    outgoing_links = serializers.SerializerMethodField()
+    linked_workflow_title = serializers.SerializerMethodField()
 
-    parent_node = ParentNodeSerializer(allow_null=True)
+    node_type_display = serializers.CharField(source="get_node_type_display")
 
     class Meta:
         model = Node
@@ -141,20 +177,41 @@ class NodeSerializer(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "column",
+            "columnworkflow",
             "hash",
             "author",
             "work_classification",
             "activity_classification",
             "node_type",
             "outcomenode_set",
+            "outgoing_links",
             "is_original",
             "parent_node",
+            "node_type",
+            "node_type_display",
+            "has_autolink",
+            "represents_workflow",
+            "linked_workflow",
+            "linked_workflow_title"
         ]
 
+    def get_columnworkflow(self, instance):
+        return instance.column.columnworkflow_set.get(
+            column=instance.column
+        ).id
+    
     def get_outcomenode_set(self, instance):
         links = instance.outcomenode_set.all().order_by("rank")
         return OutcomeNodeSerializer(links, many=True).data
 
+    def get_outgoing_links(self, instance):
+        links = instance.outgoing_links.all()
+        return NodeLinkSerializer(links, many=True).data
+    
+    def get_linked_workflow_title(self, instance):
+        if(instance.linked_workflow is not None):
+            return instance.linked_workflow.title
+        
     def create(self, validated_data):
         return Node.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
@@ -172,13 +229,6 @@ class NodeSerializer(serializers.ModelSerializer):
         instance.activity_classification = validated_data.get(
             "activity_classification", instance.activity_classification
         )
-        for outcomenode_data in self.initial_data.pop("outcomenode_set"):
-            outcomenode_serializer = OutcomeNodeSerializer(
-                OutcomeNode.objects.get(id=outcomenode_data["id"]),
-                data=outcomenode_data,
-            )
-            outcomenode_serializer.is_valid()
-            outcomenode_serializer.save()
         instance.save()
         return instance
 
@@ -193,12 +243,6 @@ class NodeStrategySerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.rank = validated_data["rank"]
-        node_data = self.initial_data.pop("node")
-        node_serializer = NodeSerializer(
-            Node.objects.get(id=node_data["id"]), node_data
-        )
-        node_serializer.is_valid()
-        node_serializer.save()
         instance.save()
         return instance
 
@@ -206,6 +250,10 @@ class NodeStrategySerializer(serializers.ModelSerializer):
 class ColumnSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
+    )
+    
+    column_type_display = serializers.CharField(
+        source="get_column_type_display"
     )
 
     class Meta:
@@ -217,6 +265,7 @@ class ColumnSerializer(serializers.ModelSerializer):
             "created_on",
             "last_modified",
             "column_type",
+            "column_type_display",
         ]
 
     def update(self, instance, validated_data):
@@ -238,11 +287,10 @@ class StrategySerializer(serializers.ModelSerializer):
     )
 
     nodestrategy_set = serializers.SerializerMethodField()
-
-    parent_strategy = ParentStrategySerializer(allow_null=True)
-
-    num_children = serializers.SerializerMethodField(read_only=True)
-
+    strategy_type_display = serializers.CharField(
+        source="get_strategy_type_display"
+    )
+    
     class Meta:
         model = Strategy
         fields = [
@@ -257,11 +305,9 @@ class StrategySerializer(serializers.ModelSerializer):
             "nodestrategy_set",
             "is_original",
             "parent_strategy",
-            "num_children",
+            "strategy_type",
+            "strategy_type_display",
         ]
-
-    def get_num_children(self, instance):
-        return instance.strategy_set.count()
 
     def get_nodestrategy_set(self, instance):
         links = instance.nodestrategy_set.all().order_by("rank")
@@ -278,13 +324,6 @@ class StrategySerializer(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
-        for nodestrategy_data in self.initial_data.pop("nodestrategy_set"):
-            nodestrategy_serializer = NodeStrategySerializer(
-                NodeStrategy.objects.get(id=nodestrategy_data["id"]),
-                data=nodestrategy_data,
-            )
-            nodestrategy_serializer.is_valid()
-            nodestrategy_serializer.save()
         instance.save()
         return instance
 
@@ -299,14 +338,9 @@ class StrategyWorkflowSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
-        strategy_data = self.initial_data.pop("strategy")
-        strategy_serializer = StrategySerializer(
-            Strategy.objects.get(id=strategy_data["id"]), strategy_data
-        )
-        if strategy_serializer.is_valid():
-            strategy_serializer.save()
         instance.save()
         return instance
+    
 
 
 class ColumnWorkflowSerializer(serializers.ModelSerializer):
@@ -318,12 +352,6 @@ class ColumnWorkflowSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
-        column_data = self.initial_data.pop("column")
-        column_serializer = ColumnSerializer(
-            Column.objects.get(id=column_data["id"]), column_data
-        )
-        if column_serializer.is_valid():
-            column_serializer.save()
         instance.save()
         return instance
 
@@ -381,31 +409,6 @@ class WorkflowSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
-        for strategyworkflow_data in self.initial_data.pop(
-            "strategyworkflow_set"
-        ):
-            strategyworkflow_serializer = StrategyWorkflowSerializer(
-                StrategyWorkflow.objects.get(id=strategyworkflow_data["id"]),
-                data=strategyworkflow_data,
-            )
-            strategyworkflow_serializer.is_valid()
-            strategyworkflow_serializer.save()
-        for columnworkflow_data in self.initial_data.pop("columnworkflow_set"):
-            columnworkflow_serializer = ColumnWorkflowSerializer(
-                ColumnWorkflow.objects.get(id=columnworkflow_data["id"]),
-                data=columnworkflow_data,
-            )
-            columnworkflow_serializer.is_valid()
-            columnworkflow_serializer.save()
-        for outcomeworkflow_data in self.initial_data.pop(
-            "outcomeworkflow_set"
-        ):
-            outcomeworkflow_serializer = OutcomeWorkflowSerializer(
-                OutcomeWorkflow.objects.get(id=outcomeworkflow_data["id"]),
-                data=outcomeworkflow_data,
-            )
-            outcomeworkflow_serializer.is_valid()
-            outcomeworkflow_serializer.save()
         instance.save()
         return instance
 
@@ -426,6 +429,7 @@ class ProgramSerializer(WorkflowSerializer):
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
+            "type"
         ]
 
     def create(self, validated_data):
@@ -455,6 +459,7 @@ class CourseSerializer(WorkflowSerializer):
             "discipline",
             "is_original",
             "parent_workflow",
+            "type",
         ]
 
     def create(self, validated_data):
@@ -480,6 +485,7 @@ class ActivitySerializer(WorkflowSerializer):
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
+            "type",
         ]
 
     def create(self, validated_data):
@@ -534,6 +540,7 @@ class NodeSerializerShallow(serializers.ModelSerializer):
     outcomenode_set = serializers.SerializerMethodField()
     columnworkflow = serializers.SerializerMethodField()
     outgoing_links = serializers.SerializerMethodField()
+    linked_workflow_title = serializers.SerializerMethodField()
 
     node_type_display = serializers.CharField(source="get_node_type_display")
 
@@ -558,6 +565,9 @@ class NodeSerializerShallow(serializers.ModelSerializer):
             "node_type",
             "node_type_display",
             "has_autolink",
+            "represents_workflow",
+            "linked_workflow",
+            "linked_workflow_title"
         ]
 
     def get_columnworkflow(self, instance):
@@ -572,6 +582,10 @@ class NodeSerializerShallow(serializers.ModelSerializer):
     def get_outgoing_links(self, instance):
         links = instance.outgoing_links.all()
         return list(map(linkIDMap, links))
+    
+    def get_linked_workflow_title(self, instance):
+        if(instance.linked_workflow is not None):
+            return instance.linked_workflow.title
 
     def create(self, validated_data):
         return Node.objects.create(
@@ -589,6 +603,9 @@ class NodeSerializerShallow(serializers.ModelSerializer):
         )
         instance.activity_classification = validated_data.get(
             "activity_classification", instance.activity_classification
+        )
+        instance.represents_workflow = validated_data.get(
+            "represents_workflow", instance.represents_workflow
         )
         instance.save()
         return instance
@@ -624,6 +641,7 @@ class ColumnSerializerShallow(serializers.ModelSerializer):
             "last_modified",
             "column_type",
             "column_type_display",
+            "visible",
         ]
 
     def create(self, validated_data):
@@ -645,7 +663,6 @@ class StrategySerializerShallow(serializers.ModelSerializer):
     )
 
     nodestrategy_set = serializers.SerializerMethodField()
-    num_children = serializers.SerializerMethodField(read_only=True)
 
     strategy_type_display = serializers.CharField(
         source="get_strategy_type_display"
@@ -665,18 +682,17 @@ class StrategySerializerShallow(serializers.ModelSerializer):
             "nodestrategy_set",
             "is_original",
             "parent_strategy",
-            "num_children",
             "strategy_type",
             "strategy_type_display",
         ]
 
-    def get_num_children(self, instance):
-        return instance.strategy_set.count()
 
     def get_nodestrategy_set(self, instance):
         links = instance.nodestrategy_set.all().order_by("rank")
         return list(map(linkIDMap, links))
 
+    
+    
     def create(self, validated_data):
         return Strategy.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
@@ -690,17 +706,23 @@ class StrategySerializerShallow(serializers.ModelSerializer):
         )
         instance.save()
         return instance
-
+    
 
 class StrategyWorkflowSerializerShallow(serializers.ModelSerializer):
+    
+    strategy_type = serializers.SerializerMethodField()
+    
     class Meta:
         model = StrategyWorkflow
-        fields = ["workflow", "strategy", "added_on", "rank", "id"]
+        fields = ["workflow", "strategy", "added_on", "rank", "id","strategy_type"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
         return instance
+    
+    def get_strategy_type(self,instance):
+        return instance.strategy.strategy_type
 
 
 class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
@@ -771,6 +793,8 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "is_original",
             "parent_workflow",
             "type",
+            "DEFAULT_COLUMNS",
+            "DEFAULT_CUSTOM_COLUMN",
         ]
 
     def create(self, validated_data):
@@ -801,6 +825,8 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "is_original",
             "parent_workflow",
             "type",
+            "DEFAULT_COLUMNS",
+            "DEFAULT_CUSTOM_COLUMN",
         ]
 
     def create(self, validated_data):
@@ -827,6 +853,8 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "is_original",
             "parent_workflow",
             "type",
+            "DEFAULT_COLUMNS",
+            "DEFAULT_CUSTOM_COLUMN",
         ]
 
     def create(self, validated_data):

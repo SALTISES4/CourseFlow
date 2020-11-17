@@ -25,15 +25,29 @@ def ajax_login_required(view_func):
     return _wrapped_view
 
 
-owned_models = ["nodelink", "node", "strategy", "workflow"]
+owned_models = [
+    "nodelink",
+    "node",
+    "strategy",
+    "workflow",
+    "project",
+    "column",
+    "workflow",
+    "project",
+]
+
 owned_throughmodels = [
     "node",
     "nodestrategy",
     "strategy",
     "strategyworkflow",
     "workflow",
+    "workflowproject",
+    "project",
     "columnworkflow",
     "workflow",
+    "workflowproject",
+    "project"
 ]
 program_level_owned_models = ["assessment", "program", "course", "program"]
 
@@ -62,6 +76,40 @@ def is_owner(model):
                 response.status_code = 401
                 return response
             if User.objects.get(id=request.user.id) == object.author:
+                return fct(request, *args, **kwargs)
+            else:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view
+
+def is_owner_or_published(model):
+    def wrapped_view(fct):
+        @wraps(fct)
+        def _wrapped_view(request, model=model, *args, **kwargs):
+            if model:
+                if model[-2:] == "Pk":
+                    id = json.loads(request.POST.get(model))
+                    model = model[:-2]
+                else:
+                    id = json.loads(request.POST.get("json"))["id"]
+            else:
+                id = json.loads(request.POST.get("objectID"))
+                model = json.loads(request.POST.get("objectType"))
+            try:
+                object_type = get_model_from_str(model)
+                if hasattr(object_type.objects, "get_subclass"):
+                    object = object_type.objects.get_subclass(id=id)
+                else:
+                    object = object_type.objects.get(id=id)
+            except:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+            if User.objects.get(id=request.user.id) == object.author or object.published:
                 return fct(request, *args, **kwargs)
             else:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})

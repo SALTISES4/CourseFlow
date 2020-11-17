@@ -1,0 +1,44 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block header %}{% endblock %}
+<!-- -->
+{% block body %}
+<svg width="500" height="100">
+  <defs>
+    <filter id="selection-shadow">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" />
+    </filter>
+  </defs>
+</svg>
+<h1>
+  {% trans 'Create a project.' %}
+</h1>
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <input id="save-button" type="submit" value="Save" />
+</form>
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %}
+<script nonce="{{ request.csp_nonce }}">
+  window.addEventListener("load", function() {
+    userFeedback.injectDialog(
+      "{% trans 'Let us know how we can improve your experience!' %}",
+      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
+      "{% trans 'Thanks for your feedback!' %}",
+      "{% trans 'Sorry, please try again later!' %}",
+      "{% url 'user_feedback:post' %}"
+    );
+  });
+</script>
+{% endblock %}

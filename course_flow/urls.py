@@ -35,6 +35,11 @@ def flow_patterns():
         url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
         url(r"home/$", views.home_view, name="home"),
         url(
+            r"^project/(?P<pk>[0-9]+)/update/$",
+            views.ProjectUpdateView.as_view(),
+            name="project-update",
+        ),
+        url(
             r"^workflow/(?P<pk>[0-9]+)/update/$",
             views.WorkflowUpdateView.as_view(),
             name="workflow-update",
@@ -49,12 +54,28 @@ def flow_patterns():
             name="insert-sibling",
         ),
         url(r"^workflow/inserted-at/$", views.inserted_at, name="inserted-at"),
+        url(r"^node/change-column/$", views.change_column, name="change-column"),
         url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
+        url(
+            r"^workflow/node/set-linked-workflow/$",
+            views.set_linked_workflow_ajax,
+            name="set-linked-workflow",
+        ),
         url(
             r"^workflow/node-link/new",
             views.new_node_link,
             name="new-node-link",
+        ),
+        url(
+            r"^workflow/get-possible-linked-workflows/",
+            views.get_possible_linked_workflows,
+            name="get-possible-linked-workflows",
+        ),
+        url(
+            r"^workflow/get-flat-workflow/",
+            views.get_flat_workflow,
+            name="get-flat-workflow",
         ),
         url(
             r"^workflow/(?P<pk>[0-9]+)/$",
@@ -62,7 +83,17 @@ def flow_patterns():
             name="workflow-detail-view",
         ),
         url(
-            r"^program/create/$",
+            r"^project/create/$",
+            views.ProjectCreateView.as_view(),
+            name="project-create",
+        ),
+        url(
+            r"^project/(?P<pk>[0-9]+)/$",
+            views.ProjectDetailView.as_view(),
+            name="project-detail-view",
+        ),
+        url(
+            r"^program/(?P<projectPk>[0-9]+)/create/$",
             views.ProgramCreateView.as_view(),
             name="program-create",
         ),
@@ -77,7 +108,7 @@ def flow_patterns():
             name="program-update",
         ),
         url(
-            r"^course/create/$",
+            r"^course/(?P<projectPk>[0-9]+)/create/$",
             views.CourseCreateView.as_view(),
             name="course-create",
         ),
@@ -102,7 +133,7 @@ def flow_patterns():
             name="course-update",
         ),
         url(
-            r"^activity/create/$",
+            r"^activity/(?P<projectPk>[0-9]+)/create/$",
             views.ActivityCreateView.as_view(),
             name="activity-create",
         ),
