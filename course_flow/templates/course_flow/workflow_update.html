@@ -64,7 +64,11 @@ $(document).on("ports-rendered",(evt)=>{
 })*/
 initial_data = {{data_flat|safe}}
 column_choices = {{column_choices|safe}}
+context_choices = {{context_choices|safe}}
+task_choices = {{task_choices|safe}}
 console.log(initial_data);
+console.log(task_choices);
+console.log(context_choices);
     
 var initial_loading = true;
 var ports_rendered = false;

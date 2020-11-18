@@ -162,40 +162,44 @@ class Node(models.Model):
     is_original = models.BooleanField(default=True)
     has_autolink = models.BooleanField(default=False)
 
+    NONE = 0
     INDIVIDUAL = 1
     GROUPS = 2
     WHOLE_CLASS = 3
-    WORK_TYPES = (
+    CONTEXT_CHOICES = (
+        (NONE,"None"),
         (INDIVIDUAL, "Individual Work"),
         (GROUPS, "Work in Groups"),
         (WHOLE_CLASS, "Whole Class"),
     )
-    work_classification = models.PositiveIntegerField(
-        choices=WORK_TYPES, default=2
+    context_classification = models.PositiveIntegerField(
+        choices=CONTEXT_CHOICES, default=0
     )
     GATHER_INFO = 1
     DISCUSS = 2
-    SOLVE = 3
+    PROBLEM_SOLVE = 3
     ANALYZE = 4
-    EVAL_PAPERS = 5
-    EVAL_PEERS = 6
-    DEBATE = 7
-    GAME_ROLEPLAY = 8
-    CREATE_DESIGN = 9
-    REVISE = 10
-    READ = 11
-    WRITE = 12
-    PRESENT = 13
-    EXPERIMENT = 14
-    QUIZ_TEST = 15
-    OTHER = 16
-    ACTIVITY_TYPES = (
+    ASSESS_PEERS = 5
+    DEBATE = 6
+    GAME_ROLEPLAY = 7
+    CREATE_DESIGN = 8
+    REVISE = 9
+    READ = 10
+    WRITE = 11
+    PRESENT = 12
+    EXPERIMENT = 13
+    QUIZ_TEST = 14
+    INSTRUCTOR_RESOURCE_CURATION = 15
+    INSTRUCTOR_ORCHESTRATION = 16
+    INSTRUCTOR_EVALUATION = 17
+    OTHER = 18
+    TASK_CHOICES = (
+        (NONE,"None"),
         (GATHER_INFO, "Gather Information"),
         (DISCUSS, "Discuss"),
-        (SOLVE, "Solve"),
+        (PROBLEM_SOLVE, "Problem Solve"),
         (ANALYZE, "Analyze"),
-        (EVAL_PAPERS, "Assess/Review Papers"),
-        (EVAL_PEERS, "Evaluate Peers"),
+        (ASSESS_PEERS, "Assess/Review Peers"),
         (DEBATE, "Debate"),
         (GAME_ROLEPLAY, "Game/Roleplay"),
         (CREATE_DESIGN, "Create/Design"),
@@ -205,10 +209,13 @@ class Node(models.Model):
         (PRESENT, "Present"),
         (EXPERIMENT, "Experiment/Inquiry"),
         (QUIZ_TEST, "Quiz/Test"),
+        (INSTRUCTOR_RESOURCE_CURATION,"Instructor Resource Curation"),
+        (INSTRUCTOR_ORCHESTRATION,"Instructor Orchestration"),
+        (INSTRUCTOR_EVALUATION,"Instructor Evaluation"),
         (OTHER, "Other"),
     )
-    activity_classification = models.PositiveIntegerField(
-        choices=ACTIVITY_TYPES, default=1
+    task_classification = models.PositiveIntegerField(
+        choices=TASK_CHOICES, default=0
     )
     ACTIVITY_NODE = 0
     COURSE_NODE = 1
@@ -223,7 +230,7 @@ class Node(models.Model):
     represents_workflow = models.BooleanField(default=False)
     linked_workflow = models.ForeignKey("Workflow", on_delete=models.SET_NULL, null=True)
 
-    column = models.ForeignKey("Column", on_delete=models.PROTECT, null=True)
+    column = models.ForeignKey("Column", on_delete=models.DO_NOTHING, null=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -518,6 +525,9 @@ class Discipline(models.Model):
         verbose_name = _("discipline")
         verbose_name_plural = _("disciplines")
 
+"""
+Other receivers
+"""
 
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
@@ -540,6 +550,26 @@ def switch_node_to_static(sender, instance, created, **kwargs):
             if activity.static:
                 instance.node.students.add(*list(activity.students.all()))
 
+                
+@receiver(pre_delete,sender=Column)
+def move_nodes(sender, instance, **kwargs):
+    print("trying to move nodes")
+    columnworkflow = instance.columnworkflow_set.first()
+    workflow = columnworkflow.workflow
+    print(workflow.columnworkflow_set.all())
+    print(workflow.columnworkflow_set.all().order_by('rank'))
+    print(workflow.columnworkflow_set.all().exclude(column=instance).order_by('rank'))
+    
+    other_columns = workflow.columnworkflow_set.all().order_by('rank').exclude(column=instance)
+    print(other_columns)
+    if other_columns.count()>0:
+        new_column = other_columns.first().column
+        for node in Node.objects.filter(column=instance):
+            node.column = new_column
+            node.save()
+    else:
+        print("couldn't find a column")
+        
 
 """
 Reorder Receivers

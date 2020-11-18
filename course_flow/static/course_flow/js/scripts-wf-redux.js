@@ -5,7 +5,6 @@ import * as React from "react";
 import {Decimal} from 'decimal.js/decimal';
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
-let amount = new Decimal(0.00);
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 
 
@@ -31,6 +30,33 @@ const port_direction=[
     [-1,0]
 ]
 const port_padding=10;
+const task_keys = [
+    "",
+    "research",
+    "discuss",
+    "problem",
+    "analyze",
+    "peerreview",
+    "debate",
+    "play",
+    "create",
+    "practice",
+    "reading",
+    "write",
+    "present",
+    "experiment",
+    "quiz",
+    "curation",
+    "orchestration",
+    "instrevaluate",
+    "other"
+]
+const context_keys = [
+    "",
+    "solo",
+    "group",
+    "class"
+]
 
 //Get translate from an svg transform
 function getSVGTranslation(transform){
@@ -75,8 +101,7 @@ export class SelectionManager{
         this.currentSelection=newSelection;
         if(this.currentSelection){
             this.currentSelection.setState({selected:true});
-            $("#node-bar-container").css("display","none");
-        }else $("#node-bar-container").css("display","revert");
+        }
     }
 
 }
@@ -211,10 +236,10 @@ const moveStrategyWorkflow = (id,new_position) => {
     }
 }
 
-const deleteSelfAction = (id,parentID,objectType) => {
+const deleteSelfAction = (id,parentID,objectType,extra_data) => {
     return {
         type: objectType+"/deleteSelf",
-        payload:{id:id,parent_id:parentID}
+        payload:{id:id,parent_id:parentID,extra_data:extra_data}
     }
 }
 
@@ -558,6 +583,24 @@ function nodestrategyReducer(state={},action){
 }
 function nodeReducer(state={},action){
     switch(action.type){
+        case 'column/deleteSelf':
+            var new_state = state.slice();
+            var new_columnworkflow;
+            if(action.payload.extra_data){
+                new_columnworkflow = action.payload.extra_data[0];
+                if(new_columnworkflow==action.payload.parent_id)new_columnworkflow=action.payload.extra_data[1];
+            }
+            
+            for(var i=0;i<state.length;i++){
+                console.log(action.payload);
+                console.log(state[i]);
+                if(state[i].columnworkflow==action.payload.parent_id){
+                    console.log("column deleted, moving nodes");
+                    new_state[i]={...state[i]};
+                    new_state[i].columnworkflow=new_columnworkflow;
+                }
+            }
+            return new_state;
         case 'node/movedColumnBy':
             var new_state = state.slice();
             for(var i=0;i<state.length;i++){
@@ -689,7 +732,7 @@ const store = createStore(rootReducer,initial_data);
 const getColumnByID = (state,id)=>{
     for(var i in state.column){
         var column = state.column[i];
-        if(column.id==id)return {data:column};
+        if(column.id==id)return {data:column,sibling_count:state.workflow.columnworkflow_set.length,columnworkflows:state.workflow.columnworkflow_set};
     }
 }
 const getColumnWorkflowByID = (state,id)=>{
@@ -701,7 +744,7 @@ const getColumnWorkflowByID = (state,id)=>{
 const getStrategyByID = (state,id)=>{
     for(var i in state.strategy){
         var strategy = state.strategy[i];
-        if(strategy.id==id)return {data:strategy,column_order:state.workflow.columnworkflow_set};
+        if(strategy.id==id)return {data:strategy,column_order:state.workflow.columnworkflow_set,sibling_count:state.workflow.strategyworkflow_set.length};
     }
 }
 const getTermByID = (state,id)=>{
@@ -888,8 +931,12 @@ export class ComponentJSON extends Component{
         return (
             <ActionButton button_icon="delrect.svg" button_class="delete-self-button" handleClick={()=>{
                 //Temporary confirmation; add better comfirmation dialogue later
+                if((this.objectType=="strategy"||this.objectType=="column")&&this.props.sibling_count<2){
+                    alert("You cannot delete the last "+this.objectType);
+                    return;
+                }
                 if(window.confirm("Are you sure you want to delete this "+this.objectType+"?")){
-                    this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType))
+                    this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,this.props.columnworkflows));
                 }
             }}/>
         );
@@ -928,6 +975,26 @@ export class ComponentJSON extends Component{
                             <div>
                                 <h4>Description:</h4>
                                 <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
+                            </div>
+                        }
+                        {type=="node" &&
+                            <div>
+                                <h4>Context:</h4>
+                                <select value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
+                                    {context_choices.map((choice)=>
+                                        <option value={choice.type}>{choice.name}</option>
+                                    )}
+                                </select>
+                            </div>
+                        }
+                        {type=="node" &&
+                            <div>
+                                <h4>Task:</h4>
+                                <select value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
+                                    {task_choices.map((choice)=>
+                                        <option value={choice.type}>{choice.name}</option>
+                                    )}
+                                </select>
                             </div>
                         }
                         {type=="node" && data.node_type!=0 &&
@@ -1296,6 +1363,14 @@ export class NodeView extends ComponentJSON{
                 <AutoLinkView nodeID={this.props.objectID} node_div={this.maindiv}/>
             );
         }
+        var lefticon;
+        var righticon;
+        if(data.context_classification>0)lefticon=(
+            <img src={iconpath+context_keys[data.context_classification]+".svg"}/>
+        )
+        if(data.task_classification>0)righticon=(
+            <img src={iconpath+task_keys[data.task_classification]+".svg"}/>
+        )
         
         return (
             <div 
@@ -1311,13 +1386,13 @@ export class NodeView extends ComponentJSON{
             >
                 <div class = "node-top-row">
                     <div class = "node-icon">
-
+                        {lefticon}
                     </div>
                     <div class = "node-title">
                         <TitleText text={data.title} defaultText="New Node"/>
                     </div>
                     <div class = "node-icon">
-
+                        {righticon}
                     </div>
                 </div>
                 <div class = "node-details">
@@ -1707,8 +1782,6 @@ export class WorkflowView extends ComponentJSON{
           "y");
     }
 
-    
-    
     stopSortFunction(){
         triggerHandlerEach($(".strategy .node"),"component-updated");
     }
@@ -1868,11 +1941,6 @@ export class NodeBarColumnCreator extends NodeBarColumn{
     }
 }
 
-
-
-
-
-
 export class NodeBarStrategyWorkflow extends ComponentJSON{
     render(){
         let data = this.props.data;
@@ -1884,9 +1952,6 @@ export const NodeBarStrategyWorkflowConnected = connect(
     null
 )(NodeBarStrategyWorkflow)
 
-
-
-
 export function renderWorkflowView(container){
     reactDom.render(
         <Provider store = {store}>
@@ -1895,7 +1960,6 @@ export function renderWorkflowView(container){
         container
     );
 }
-
 
 export function renderMessageBox(data,type,updateFunction){
     reactDom.render(

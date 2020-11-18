@@ -201,6 +201,8 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
         column_choices = [{'type':choice[0],'name':choice[1]} for choice in Column._meta.get_field('column_type').choices]
+        context_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('context_classification').choices]
+        task_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('task_classification').choices]
         
 
         data_flat = {
@@ -217,6 +219,8 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         
         context["data_flat"]=JSONRenderer().render(data_flat).decode("utf-8")
         context["column_choices"]=JSONRenderer().render(column_choices).decode("utf-8")
+        context["context_choices"]=JSONRenderer().render(context_choices).decode("utf-8")
+        context["task_choices"]=JSONRenderer().render(task_choices).decode("utf-8")
         return context
 
 

@@ -556,8 +556,8 @@ class NodeSerializerShallow(serializers.ModelSerializer):
             "columnworkflow",
             "hash",
             "author",
-            "work_classification",
-            "activity_classification",
+            "context_classification",
+            "task_classification",
             "outcomenode_set",
             "outgoing_links",
             "is_original",
@@ -598,11 +598,11 @@ class NodeSerializerShallow(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
-        instance.work_classification = validated_data.get(
-            "work_classification", instance.work_classification
+        instance.task_classification = validated_data.get(
+            "task_classification", instance.task_classification
         )
-        instance.activity_classification = validated_data.get(
-            "activity_classification", instance.activity_classification
+        instance.context_classification = validated_data.get(
+            "context_classification", instance.context_classification
         )
         instance.represents_workflow = validated_data.get(
             "represents_workflow", instance.represents_workflow

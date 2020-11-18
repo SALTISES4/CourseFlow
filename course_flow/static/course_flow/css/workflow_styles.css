@@ -144,6 +144,13 @@ p{
 .node-icon{
     display:inline-block;
     width:15%;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.node-icon img{
+    width:24px;
+    vertical-align:middle;
 }
 
 .node.program .node-icon{
@@ -152,6 +159,7 @@ p{
 
 .node-title{
     display:inline-block;
+    overflow-x:hidden;
     width:70%;
     text-align: center;
     min-height:20px;
