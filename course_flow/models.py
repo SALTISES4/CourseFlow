@@ -161,6 +161,8 @@ class Node(models.Model):
     )
     is_original = models.BooleanField(default=True)
     has_autolink = models.BooleanField(default=False)
+    is_dropped = models.BooleanField(default=False)
+    
 
     NONE = 0
     INDIVIDUAL = 1
@@ -226,6 +228,34 @@ class Node(models.Model):
         (PROGRAM_NODE, "Program Node"),
     )
     node_type = models.PositiveIntegerField(choices=NODE_TYPES, default=0)
+    
+    
+    NO_UNITS=0
+    SECONDS=1
+    MINUTES=2
+    HOURS=3
+    DAYS=4
+    WEEKS=5
+    MONTHS=6
+    YEARS=7
+    CREDITS=8
+    UNIT_CHOICES = (
+        (NO_UNITS,""),
+        (SECONDS,"seconds"),
+        (MINUTES,"minutes"),
+        (HOURS,"hours"),
+        (DAYS,"days"),
+        (WEEKS,"weeks"),
+        (MONTHS,"months"),
+        (YEARS,"yrs"),
+        (CREDITS,"credits")
+    )
+    
+    #note: use charfield because some users like to put in ranges (i.e. 10-15 minutes)
+    time_required = models.CharField(max_length=30, null=True, blank=True)
+    time_units = models.PositiveIntegerField(default=0,choices=UNIT_CHOICES)
+    
+    
     
     represents_workflow = models.BooleanField(default=False)
     linked_workflow = models.ForeignKey("Workflow", on_delete=models.SET_NULL, null=True)

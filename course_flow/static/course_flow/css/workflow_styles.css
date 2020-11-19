@@ -83,6 +83,26 @@ p{
     vertical-align:top;
 }
 
+.column-line div{
+    display:inline-block;
+    vertical-align: middle;
+    width:calc(100% - 32px);
+    padding:2px;
+    box-sizing:border-box;
+}
+
+.column-line img{
+    display:inline-block;
+    width:32px;
+    vertical-align: middle;
+    padding:2px;
+    box-sizing:border-box;
+}
+
+.column-line{
+    min-height:32px;
+}
+
 .column-row{
     padding-left:30px;
     padding-right:30px;
@@ -136,6 +156,8 @@ p{
 }
 
 .node-top-row{
+    padding:5px;
+    box-sizing:border-box;
     background:white;
     margin-top:5px;
     width:100%;
@@ -143,13 +165,14 @@ p{
 
 .node-icon{
     display:inline-block;
-    width:15%;
+    width:24px;
+    height:24px;
     text-align: center;
     vertical-align: middle;
 }
 
 .node-icon img{
-    width:24px;
+    width:100%;
     vertical-align:middle;
 }
 
@@ -158,18 +181,22 @@ p{
 }
 
 .node-title{
+    padding-left:5px;
+    padding-right:5px;
     display:inline-block;
     overflow-x:hidden;
-    width:70%;
+    width:calc(100% - 48px);
     text-align: center;
     min-height:20px;
     font-weight:600;
     box-sizing:border-box;
     font-size:12px;
+    vertical-align:middle;
 }
 
 .node.program .node-title{
     width:100%;
+    text-align: left;
 }
 
 .node-details{
@@ -178,6 +205,7 @@ p{
     display:none;
     padding:5px;
     font-size:12px;
+    box-sizing:border-box;
 }
 
 .node-details default-text{
@@ -191,9 +219,53 @@ p{
 
 .node-drop-row{
     width:100%;
-    height:16px;
+    height:20px;
     background:white;
-    border-radius:5px;
+    border-radius:0 0 5px 5px;
+    overflow:hidden;
+}
+
+.node-drop-side{
+    display:inline-block;
+    vertical-align: middle;
+    height:100%;
+    width:40%;
+    padding:3px;
+    box-sizing:border-box;
+}
+
+.node-drop-left{
+    font-size:30px;
+    font-weight:600;
+    margin-top:-28px;
+}
+
+.node-drop-right{
+    line-height:100%;
+    text-align:right;
+    white-space:nowrap;
+}
+
+.node-drop-time{
+    height:100%;
+    font-size:12px;
+    text-align:right;
+    display:inline-block;
+    padding-right:3px;
+}
+
+.node-drop-middle{
+    display:inline-block;
+    vertical-align: middle;
+    text-align:center;
+    width:20%;
+    height:100%;
+}
+
+.node-drop-row img{
+    width:12px;
+    vertical-align:middle;
+    display:inline-block;
 }
 
 .mouseover-actions{
@@ -314,11 +386,15 @@ circle.mouseover{
 }
 
 .node-bar-column{
-    height:40px;
+    font-size:14px;
     width:100%;
-    border:1px solid black;
+    border:3px solid;
     padding:10px;
     box-sizing:border-box;
+}
+
+.new-column.node-bar-column{
+    border-style:dashed;
 }
 
 .new-node-drop-over{

@@ -541,6 +541,7 @@ class NodeSerializerShallow(serializers.ModelSerializer):
     columnworkflow = serializers.SerializerMethodField()
     outgoing_links = serializers.SerializerMethodField()
     linked_workflow_title = serializers.SerializerMethodField()
+    linked_workflow_description = serializers.SerializerMethodField()
 
     node_type_display = serializers.CharField(source="get_node_type_display")
 
@@ -567,7 +568,11 @@ class NodeSerializerShallow(serializers.ModelSerializer):
             "has_autolink",
             "represents_workflow",
             "linked_workflow",
-            "linked_workflow_title"
+            "linked_workflow_title",
+            "linked_workflow_description",
+            "time_units",
+            "time_required",
+            "is_dropped",
         ]
 
     def get_columnworkflow(self, instance):
@@ -586,6 +591,10 @@ class NodeSerializerShallow(serializers.ModelSerializer):
     def get_linked_workflow_title(self, instance):
         if(instance.linked_workflow is not None):
             return instance.linked_workflow.title
+        
+    def get_linked_workflow_description(self, instance):
+        if(instance.linked_workflow is not None):
+            return instance.linked_workflow.description
 
     def create(self, validated_data):
         return Node.objects.create(
@@ -606,6 +615,18 @@ class NodeSerializerShallow(serializers.ModelSerializer):
         )
         instance.represents_workflow = validated_data.get(
             "represents_workflow", instance.represents_workflow
+        )
+        instance.has_autolink = validated_data.get(
+            "has_autolink", instance.has_autolink
+        )
+        instance.time_required = validated_data.get(
+            "time_required", instance.time_required
+        )
+        instance.time_units = validated_data.get(
+            "time_units", instance.time_units
+        )
+        instance.is_dropped = validated_data.get(
+            "is_dropped", instance.is_dropped
         )
         instance.save()
         return instance

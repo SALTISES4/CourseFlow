@@ -203,6 +203,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         column_choices = [{'type':choice[0],'name':choice[1]} for choice in Column._meta.get_field('column_type').choices]
         context_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('context_classification').choices]
         task_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('task_classification').choices]
+        time_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('time_units').choices]
         
 
         data_flat = {
@@ -221,6 +222,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context["column_choices"]=JSONRenderer().render(column_choices).decode("utf-8")
         context["context_choices"]=JSONRenderer().render(context_choices).decode("utf-8")
         context["task_choices"]=JSONRenderer().render(task_choices).decode("utf-8")
+        context["time_choices"]=JSONRenderer().render(time_choices).decode("utf-8")
         return context
 
 
@@ -1504,19 +1506,22 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
         node = Node.objects.get(pk=node_id)
         if(workflow_id==-1):
             node.linked_workflow = None
+            node.represents_workflow = False
             node.save()
             linked_workflow=None
             linked_workflow_title=None
+            linked_workflow_description=None
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
             set_linked_workflow(node,workflow)
             linked_workflow=node.linked_workflow.id
             linked_workflow_title=node.linked_workflow.title
+            linked_workflow_description=node.linked_workflow_description
 
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted","id":node_id,"linked_workflow":linked_workflow,"linked_workflow_title":linked_workflow_title})
+    return JsonResponse({"action": "posted","id":node_id,"linked_workflow":linked_workflow,"linked_workflow_title":linked_workflow_title,"linked_workflow_description":linked_workflow_description})
 
 """
 Delete methods

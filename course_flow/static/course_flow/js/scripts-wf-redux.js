@@ -57,6 +57,19 @@ const context_keys = [
     "group",
     "class"
 ]
+const default_column_settings = {
+    0:{colour:"#6738ff",icon:"other"},
+    1:{colour:"#0b118a",icon:"ooci"},
+    2:{colour:"#114cd4",icon:"home"},
+    3:{colour:"#11b3d4",icon:"instruct"},
+    4:{colour:"#04d07d",icon:"students"},
+    10:{colour:"#6738ff",icon:"other"},
+    11:{colour:"#ad351d",icon:"homework"},
+    12:{colour:"#ed4a28",icon:"lesson"},
+    13:{colour:"#ed8934",icon:"artifact"},
+    14:{colour:"#f7ba2a",icon:"assessment"},
+    20:{colour:"#369934",icon:"other"}
+}
 
 //Get translate from an svg transform
 function getSVGTranslation(transform){
@@ -77,8 +90,8 @@ function getCanvasOffset(node_dom){
 function mouseOutsidePadding(evt,elem,padding){
     if(elem.length==0) return true;
     let offset = elem.offset();
-    let width = elem.width();
-    let height = elem.height();
+    let width = elem.outerWidth();
+    let height = elem.outerHeight();
     return (evt.pageX<offset.left-padding || evt.pageY<offset.top-padding || evt.pageX>offset.left+width+padding || evt.pageY>offset.top+height+padding);
 }
 
@@ -668,6 +681,7 @@ function nodeReducer(state={},action){
                     new_state[i] = {...state[i]};
                     new_state[i].linked_workflow=action.payload.linked_workflow;
                     new_state[i].linked_workflow_title = action.payload.linked_workflow_title;
+                    new_state[i].linked_workflow_description = action.payload.linked_workflow_description;
                     return new_state;
                 }
             }
@@ -959,19 +973,20 @@ export class ComponentJSON extends Component{
     //Makes the item selectable
     addEditable(data){
         if(this.state.selected){
+            console.log(data);
             var type=this.objectType;
             var props = this.props;
             return reactDom.createPortal(
                 <div class="right-panel-container edit-bar-container" onClick={(evt)=>{evt.stopPropagation()}}>
                     <div class="right-panel-inner">
                         <h3>Edit:</h3>
-                        {["node","strategy","column"].indexOf(type)>=0 &&
+                        {["node","strategy","column"].indexOf(type)>=0 && !data.represents_workflow &&
                             <div>
                                 <h4>Title:</h4>
                                 <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
                             </div>
                         }
-                        {["node"].indexOf(type)>=0 &&
+                        {["node"].indexOf(type)>=0 && !data.represents_workflow &&
                             <div>
                                 <h4>Description:</h4>
                                 <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
@@ -997,6 +1012,17 @@ export class ComponentJSON extends Component{
                                 </select>
                             </div>
                         }
+                        {type=="node" &&
+                            <div>
+                                <h4>Time:</h4>
+                                <input value={data.time_required} onChange={this.inputChanged.bind(this,"time_required")}/>
+                                <select value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
+                                    {time_choices.map((choice)=>
+                                        <option value={choice.type}>{choice.name}</option>
+                                    )}
+                                </select>
+                            </div>
+                        }
                         {type=="node" && data.node_type!=0 &&
                             <div>
                                 <h4>Linked Workflow:</h4>
@@ -1007,8 +1033,18 @@ export class ComponentJSON extends Component{
                                 })}}>
                                     Change
                                 </button>
+                                <input type="checkbox" name="respresents_workflow" checked={data.represents_workflow} onChange={this.checkboxChanged.bind(this,"represents_workflow")}/>
+                                <label for="repesents_workflow">Display data</label>
                             </div>
                         }
+                        {type=="node" && data.node_type!=2 &&
+                            <div>
+                                <h4>Other:</h4>
+                                <input type="checkbox" name="has_autolink" checked={data.has_autolink} onChange={this.checkboxChanged.bind(this,"has_autolink")}/>
+                                <label for="has_autolink">Draw arrow to next node</label>
+                            </div>
+                        }
+                        
                         {this.addDeleteSelf(data)}
                     </div>
                 </div>
@@ -1018,6 +1054,10 @@ export class ComponentJSON extends Component{
     
     inputChanged(field,evt){
         this.props.dispatch(changeField(this.props.data.id,this.objectType,field,evt.target.value));
+    }
+
+    checkboxChanged(field,evt){
+         this.props.dispatch(changeField(this.props.data.id,this.objectType,field,evt.target.checked));
     }
 }
 
@@ -1117,7 +1157,7 @@ export class NodeLinkView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        if(!this.source_node||!this.source_node.width()||!this.target_node||!this.target_node.width()){
+        if(!this.source_node||!this.source_node.outerWidth()||!this.target_node||!this.target_node.outerWidth()){
             this.source_node = $(this.props.node_div.current);
             this.source_port_handle = d3.select(
                 "g.port-"+data.source_node+" circle[data-port-type='source'][data-port='"+port_keys[data.source_port]+"']"
@@ -1134,8 +1174,8 @@ export class NodeLinkView extends ComponentJSON{
         console.log(this.source_node.length);
         console.log(this.target_node);
         console.log(this.target_node.length);
-        var source_dims = {width:this.source_node.width(),height:this.source_node.height()};
-        var target_dims = {width:this.target_node.width(),height:this.target_node.height()};
+        var source_dims = {width:this.source_node.outerWidth(),height:this.source_node.outerHeight()};
+        var target_dims = {width:this.target_node.outerWidth(),height:this.target_node.outerHeight()};
         console.log("found the dimensions");
         if(!source_dims.width||!target_dims.width)return null;
         var selector=this;
@@ -1191,8 +1231,8 @@ export class AutoLinkView extends Component{
         this.findAutoTarget();
         console.log(this.target_node);
         if(!this.target_node)return null;
-        var source_dims = {width:this.source_node.width(),height:this.source_node.height()};
-        var target_dims = {width:this.target_node.width(),height:this.target_node.height()};
+        var source_dims = {width:this.source_node.outerWidth(),height:this.source_node.outerHeight()};
+        var target_dims = {width:this.target_node.outerWidth(),height:this.target_node.outerHeight()};
         return(
             <div>
                 {reactDom.createPortal(
@@ -1313,7 +1353,7 @@ export class NodePorts extends Component{
         if(!this.props.node_div.current)return;
         var node = $(this.props.node_div.current);
         var node_offset = getCanvasOffset(node);
-        var node_dimensions={width:node.width(),height:node.height()};
+        var node_dimensions={width:node.outerWidth(),height:node.outerHeight()};
         //if(node.closest(".strategy-workflow").hasClass("dragging")||this.state.node_offset==node_offset&&this.state.node_dimensions==node_dimensions)return;
         this.setState({node_offset:node_offset,node_dimensions:node_dimensions});
     }
@@ -1338,7 +1378,6 @@ export class NodeView extends ComponentJSON{
         this.objectType="node";
         this.objectClass=".node";
         this.state={
-            is_dropped:false,
             initial_render:true
         }
     }
@@ -1363,14 +1402,28 @@ export class NodeView extends ComponentJSON{
                 <AutoLinkView nodeID={this.props.objectID} node_div={this.maindiv}/>
             );
         }
-        var lefticon;
-        var righticon;
+        let lefticon;
+        let righticon;
         if(data.context_classification>0)lefticon=(
             <img src={iconpath+context_keys[data.context_classification]+".svg"}/>
         )
         if(data.task_classification>0)righticon=(
             <img src={iconpath+task_keys[data.task_classification]+".svg"}/>
         )
+        let dropIcon;
+        if(data.is_dropped)dropIcon = "droptriangleup";
+        else dropIcon = "droptriangledown";
+        let linkIcon;
+        if(data.linked_workflow)linkIcon=(
+            <img src={iconpath+"wflink.svg"}/>
+        );
+        let dropText = "";
+        if(data.description&&data.description.replace(/(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,'')!='')dropText="...";
+        let titleText = data.title;
+        if(data.represents_workflow)titleText = data.linked_workflow_title;
+        let descriptionText = data.description;
+        if(data.represents_workflow)descriptionText = data.linked_workflow_description;
+        
         
         return (
             <div 
@@ -1378,7 +1431,7 @@ export class NodeView extends ComponentJSON{
                     {left:columnwidth*this.props.column_order.indexOf(data.columnworkflow)+"px"}
                 } 
                 class={
-                    "node column-"+data.columnworkflow+((this.state.selected && " selected")||"")+((this.state.is_dropped && " dropped")||"")+" "+node_keys[data.node_type]
+                    "node column-"+data.columnworkflow+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+node_keys[data.node_type]
                 } 
                 id={data.id} 
                 ref={this.maindiv} 
@@ -1389,17 +1442,22 @@ export class NodeView extends ComponentJSON{
                         {lefticon}
                     </div>
                     <div class = "node-title">
-                        <TitleText text={data.title} defaultText="New Node"/>
+                        <TitleText text={titleText} defaultText="New Node"/>
                     </div>
                     <div class = "node-icon">
                         {righticon}
                     </div>
                 </div>
                 <div class = "node-details">
-                    <TitleText text={data.description} defaultText="Click to edit"/>
+                    <TitleText text={descriptionText} defaultText="Click to edit"/>
                 </div>
                 <div class = "node-drop-row" onClick={this.toggleDrop.bind(this)}>
-
+                    <div class = "node-drop-side node-drop-left">{dropText}</div>
+                    <div class = "node-drop-middle"><img src={iconpath+dropIcon+".svg"}/></div>
+                    <div class = "node-drop-side node-drop-right">
+                        <div class="node-drop-time">{data.time_required && (data.time_required+" "+time_choices[data.time_units].name)}</div>
+                        {linkIcon}
+                    </div>
                 </div> 
                 <div class="mouseover-actions">
                     {this.addInsertSibling(data)}
@@ -1421,8 +1479,12 @@ export class NodeView extends ComponentJSON{
         if(this.state.initial_render)this.setState({initial_render:false,port_render:true});
     }
 
-    componentDidUpdate(){
-        this.updatePorts();
+    componentDidUpdate(prevProps){
+        console.log("component updated");
+        console.log(this.props.data);
+        console.log(prevProps.data);
+        if(this.props.data.is_dropped==prevProps.data.is_dropped)this.updatePorts();
+        else triggerHandlerEach($(".node"),"component-updated");
         if(this.state.port_render)this.setState({initial_render:false,port_render:false});
     }
 
@@ -1431,7 +1493,11 @@ export class NodeView extends ComponentJSON{
     }
     
     toggleDrop(){
-        this.setState({is_dropped:!this.state.is_dropped},()=>triggerHandlerEach($(".node"),"component-updated"));
+        console.log("drop toggled");
+        console.log(this.props.data);
+        console.log(!this.props.data.is_dropped);
+        console.log(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
+        this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
     }
 
     mouseIn(evt){
@@ -1671,15 +1737,21 @@ export class ColumnView extends ComponentJSON{
         super(props);
         this.objectType="column";
         this.objectClass=".column";
+        //We add a style to the header to represent the column
+        $("<style>").prop("type","text/css").prop("id","column-"+this.props.throughParentID+"-CSS").appendTo("head");
     }
     
     render(){
+        $("#column-"+this.props.throughParentID+"-CSS").html(".node.column-"+this.props.throughParentID+"{background:"+this.getColour()+"}\n\n .node-bar-column.column-"+this.props.throughParentID+"{border-color:"+this.getColour()+"}");
         let data = this.props.data;
         var title = data.title;
         if(!title)title=data.column_type_display;
         return (
             <div class={"column"+((this.state.selected && " selected")||"")} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
-                {title}
+                <div class="column-line">
+                    <img src={this.getIcon()}/>
+                    <div>{title}</div>
+                </div>
                 {this.addEditable(data)}
                 <div class="mouseover-actions">
                     {this.addInsertSibling(data)}
@@ -1687,6 +1759,14 @@ export class ColumnView extends ComponentJSON{
                 </div>
             </div>
         );
+    }
+    
+    getColour(){
+        return default_column_settings[this.props.data.column_type].colour;
+    }
+
+    getIcon(){
+        return iconpath+default_column_settings[this.props.data.column_type].icon+".svg";
     }
 }
 const mapColumnStateToProps = (state,own_props)=>(
@@ -1827,6 +1907,7 @@ export class NodeBar extends ComponentJSON{
         return(
             <div id="node-bar-container" ref={this.nodebar} class="node-bar-container right-panel-container">
                 <div id="node-bar-workflow" class="right-panel-inner">
+                    <h4>Nodes:</h4>
                     <div class="node-bar-column-block">
                         {nodebarcolumnworkflows}
                     </div>
@@ -1852,7 +1933,7 @@ export class NodeBarColumnWorkflow extends ComponentJSON{
         let data = this.props.data;
         if(data)return(
             <div class="node-bar-column-workflow" ref={this.maindiv}>
-                <NodeBarColumnConnected objectID={data.column} parentID={data.id}/>
+                <NodeBarColumnConnected objectID={data.column} throughParentID={data.id} parentID={this.props.parentID}/>
             </div>
         );
         else return(
@@ -1874,7 +1955,7 @@ export class NodeBarColumn extends ComponentJSON{
         if(data)title = data.title;
         if(!title)title=data.column_type_display;
         return(
-            <div class="new-node node-bar-column node-bar-sortable" ref={this.maindiv}>
+            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.throughParentID} ref={this.maindiv}>
                 {title}
             </div>
         );
@@ -1928,7 +2009,7 @@ export class NodeBarColumnCreator extends NodeBarColumn{
             }
         }
         return(
-            <div class="new-node node-bar-column node-bar-sortable" ref={this.maindiv}>
+            <div class="new-node new-column node-bar-column node-bar-sortable" ref={this.maindiv}>
                 {title}
             </div>
         );
