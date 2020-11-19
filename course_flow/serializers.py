@@ -767,6 +767,22 @@ class WorkflowSerializerFinder(serializers.ModelSerializer):
 
 
 class WorkflowSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = Workflow
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "created_on",
+            "last_modified",
+            "hash",
+            "columnworkflow_set",
+            "strategyworkflow_set",
+            "outcomeworkflow_set",
+            "is_original",
+            "parent_workflow",
+        ]
 
     strategyworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()

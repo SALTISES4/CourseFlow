@@ -24,11 +24,11 @@ p{
     background:white;
     display:inline-block;
     overflow:visible;
-    margin:40px;
+    margin:10px;
     margin-right:200px;
     background:white;
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
-    padding:20px;
+    padding:0px;
     user-select:none;
 }
 
@@ -36,18 +36,36 @@ p{
     padding:30px;
 }
 
+.workflow-details .workflow-for-menu{
+    max-width:800px;
+    color:black;
+    margin-left:10px;
+    border-color:black;
+    margin-bottom:30px;
+}
+
+.workflow-details .workflow-for-menu.selected{
+    background:white;
+    color:black;
+}
+
 .strategy{
-    background:#efefef;
+    background:white;
     min-height:200px;
     padding:10px;
     margin-top:5px;
     box-sizing:border-box;
-/*    position:relative;*/
+    border:2px solid white;
+    border-radius:5px;
 }
 
 .strategy-workflow.dragging{
     height:100px !important;
     overflow:hidden;
+    border-color:#1976bc;
+    border-style:solid;
+    border-width:2px;
+    border-radius:5px;
 }
 
 .strategy-workflow.dragging .node-block{
@@ -56,8 +74,8 @@ p{
 
 .strategy-block{
     width:100%;
-    padding-left:30px;
-    padding-right:30px;
+    padding-left:10px;
+    padding-right:10px;
     box-sizing:border-box;
 }
 
@@ -66,7 +84,7 @@ p{
 }
 
 .strategy-block > div:nth-of-type(odd) > .strategy{
-    background: #e0e0e0e0;
+/*    background: #e0e0e0e0;*/
 }
 
 .column-workflow{
@@ -81,6 +99,9 @@ p{
     white-space:normal;
     text-align:center;
     vertical-align:top;
+    box-sizing:border-box;
+    border:2px solid white;
+    border-radius:5px;
 }
 
 .column-line div{
@@ -104,8 +125,8 @@ p{
 }
 
 .column-row{
-    padding-left:30px;
-    padding-right:30px;
+    padding-left:10px;
+    padding-right:10px;
     background:white;
     position:sticky;
     top:0px;
@@ -401,8 +422,24 @@ circle.mouseover{
     border-bottom:2px solid lime;
 }
 
+.valid-drop{
+    outline:2px solid lime;
+}
+
 .workflow-wrapper .selected{
-    outline: 3px dotted lime;
+    border-color:#1976bc;
+    border-style:solid;
+}
+
+.workflow-wrapper .nodelink.selected{
+    stroke:#1976bc;
+    opacity:1;
+    stroke-width:5px;
+}
+
+.workflow-wrapper .node.selected{
+    border-width:2px;
+    margin:-1px;
 }
 
 .workflow-for-menu.selected{

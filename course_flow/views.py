@@ -1079,10 +1079,12 @@ def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
         author=author,
         node_type=node.node_type,
         column=column,
-        work_classification = node.work_classification,
-        activity_classification = node.activity_classification,
+        task_classification = node.task_classification,
+        context_classification = node.context_classification,
         has_autolink=node.has_autolink,
         represents_workflow = node.represents_workflow,
+        time_required = node.time_required,
+        time_units = node.time_units,
         is_original=False,
         parent_node=node,
     )
@@ -1353,6 +1355,59 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted", "new_model": new_model_serialized,"new_through":new_through_serialized,"parentID":parent_id,"siblingID":through.id})
 
+# Soft-duplicate the item
+@require_POST
+@ajax_login_required
+@is_parent_owner
+def duplicate_self(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    parent_id = json.loads(request.POST.get("parentID"))
+
+    try:
+        if object_type == "strategy":
+            model=Strategy.objects.get(id=object_id)
+            parent=Workflow.objects.get(id=parent_id)
+            through=StrategyWorkflow.objects.get(strategy=model,workflow=parent)
+            newmodel = duplicate_strategy(model,model.author,None)
+            newthroughmodel = StrategyWorkflow.objects.create(
+                workflow=parent,
+                strategy=newmodel,
+                rank=through.rank + 1,
+            )
+            new_model_serialized=StrategySerializerShallow(newmodel).data
+            new_through_serialized=StrategyWorkflowSerializerShallow(newthroughmodel).data
+        elif object_type == "node":
+            model=Node.objects.get(id=object_id)
+            parent=Strategy.objects.get(id=parent_id)
+            through=NodeStrategy.objects.get(node=model,strategy=parent)
+            newmodel = duplicate_node(model,model.author,None)
+            newthroughmodel = NodeStrategy.objects.create(
+                strategy=parent,
+                node=newmodel,
+                rank=through.rank + 1,
+            )
+            new_model_serialized=NodeSerializerShallow(newmodel).data
+            new_through_serialized=NodeStrategySerializerShallow(newthroughmodel).data
+        elif object_type == "column":
+            print("column");
+            model=Column.objects.get(id=object_id)
+            parent=Workflow.objects.get(id=parent_id)
+            through=ColumnWorkflow.objects.get(column=model,workflow=parent)
+            newmodel = duplicate_column(model,model.author)
+            newthroughmodel = ColumnWorkflow.objects.create(
+                workflow=parent,
+                column=newmodel,
+                rank=through.rank + 1,
+            )
+            new_model_serialized=ColumnSerializerShallow(newmodel).data
+            new_through_serialized=ColumnWorkflowSerializerShallow(newthroughmodel).data
+        else:
+            raise ValidationError
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted", "new_model": new_model_serialized,"new_through":new_through_serialized,"parentID":parent_id,"siblingID":through.id})
 
 """
 Reorder methods

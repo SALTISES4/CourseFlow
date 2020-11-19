@@ -586,7 +586,6 @@ function nodestrategyReducer(state={},action){
             return state;
         case 'node/insertBelow':
         case 'node/newNode':
-            console.log("creating node in ns");
             new_state = state.slice();
             new_state.push(action.payload.new_through);
             return new_state;
@@ -605,10 +604,7 @@ function nodeReducer(state={},action){
             }
             
             for(var i=0;i<state.length;i++){
-                console.log(action.payload);
-                console.log(state[i]);
                 if(state[i].columnworkflow==action.payload.parent_id){
-                    console.log("column deleted, moving nodes");
                     new_state[i]={...state[i]};
                     new_state[i].columnworkflow=new_columnworkflow;
                 }
@@ -655,12 +651,10 @@ function nodeReducer(state={},action){
             return state;
         case 'node/insertBelow':
         case 'node/newNode':
-            console.log("creating node in node");
             new_state = state.slice();
             new_state.push(action.payload.new_model);
             return new_state;
         case 'node/changeField':
-            console.log("field changed");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
@@ -674,7 +668,6 @@ function nodeReducer(state={},action){
             }
             return state;
         case 'node/setLinkedWorkflow':
-            console.log("setting the linked workflow");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
@@ -687,7 +680,6 @@ function nodeReducer(state={},action){
             }
             return state;
         case 'nodelink/newNodeLink':
-            console.log("creating nodelink in node");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.new_model.source_node){
                     var new_state = state.slice();
@@ -695,7 +687,6 @@ function nodeReducer(state={},action){
                     var new_outgoing_links = state[i].outgoing_links.slice();
                     new_outgoing_links.push(action.payload.new_model.id);
                     new_state[i].outgoing_links = new_outgoing_links;
-                    console.log(new_state);
                     return new_state;
                 }
             }
@@ -711,7 +702,6 @@ function nodelinkReducer(state={},action){
         case 'node/deleteSelf':
             return state;
         case 'nodelink/newNodeLink':
-            console.log("creating node link");
             new_state = state.slice();
             new_state.push(action.payload.new_model);
             return new_state;
@@ -864,14 +854,24 @@ export class ComponentJSON extends Component{
             over:(e,ui)=>{
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
+                var drag_helper = ui.helper;
                 var new_index = drop_item.prevAll().length;
                 var new_parent_id = parseInt(drop_item.parent().attr("id")); 
                 
                 if(!drag_item.hasClass("new-node")){
                     this.sortableMovedFunction(parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id);
                 }else{
-                    $(".new-node-drop-over").removeClass("new-node-drop-over");
+                    drag_helper.addClass("valid-drop");
                     drop_item.addClass("new-node-drop-over");
+                }
+            },
+            out:(e,ui)=>{
+                var drag_item = ui.draggable;
+                var drag_helper = ui.helper;
+                var drop_item = $(e.target);
+                if(drag_item.hasClass("new-node")){
+                    drag_helper.removeClass("valid-drop");
+                    drop_item.removeClass("new-node-drop-over");
                 }
             },
             drop:(e,ui)=>{
@@ -956,6 +956,19 @@ export class ComponentJSON extends Component{
         );
     }
     
+    //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+    addDuplicateSelf(data){
+        var props = this.props;
+        var type = this.objectType;
+        return (
+            <ActionButton button_icon="copy.svg" button_class="duplicate-self-button" handleClick={()=>duplicateSelf(data.id,this.objectType,this.props.parentID,
+                (response_data)=>{
+                    let action = insertBelowAction(response_data,type);
+                    props.dispatch(action);
+                }
+            )}/>
+        );
+    }
     //Adds a button that inserts a sibling below the item. The callback function unfortunately does NOT seem to be called after the item is added to the DOM
     addInsertSibling(data){
         var props = this.props;
@@ -973,20 +986,19 @@ export class ComponentJSON extends Component{
     //Makes the item selectable
     addEditable(data){
         if(this.state.selected){
-            console.log(data);
             var type=this.objectType;
             var props = this.props;
             return reactDom.createPortal(
                 <div class="right-panel-container edit-bar-container" onClick={(evt)=>{evt.stopPropagation()}}>
                     <div class="right-panel-inner">
-                        <h3>Edit:</h3>
-                        {["node","strategy","column"].indexOf(type)>=0 && !data.represents_workflow &&
+                        <h3>{"Edit "+type+":"}</h3>
+                        {["node","strategy","column","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
                             <div>
                                 <h4>Title:</h4>
                                 <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
                             </div>
                         }
-                        {["node"].indexOf(type)>=0 && !data.represents_workflow &&
+                        {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
                             <div>
                                 <h4>Description:</h4>
                                 <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
@@ -1045,7 +1057,7 @@ export class ComponentJSON extends Component{
                             </div>
                         }
                         
-                        {this.addDeleteSelf(data)}
+                        {type!="workflow" && this.addDeleteSelf(data)}
                     </div>
                 </div>
             ,$("#container")[0])
@@ -1107,26 +1119,25 @@ export class NodeLinkSVG extends Component{
     render(){
         
         console.log("rendering svg");
-        console.log(this.props.source_port_handle);
-        console.log(getSVGTranslation(this.props.source_port_handle.select(function(){
-            return this.parentNode}).attr("transform")));
-        
-        const source_transform=getSVGTranslation(this.props.source_port_handle.select(function(){
-            return this.parentNode}).attr("transform"));
-        const target_transform=getSVGTranslation(this.props.target_port_handle.select(function(){
-            return this.parentNode}).attr("transform"));
-        const source_point=[parseInt(this.props.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.props.source_port_handle.attr("cy"))+parseInt(source_transform[1])];
-        const target_point=[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform.[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])];
+        console.log(this.props.target_port_handle);
+        try{
+            const source_transform=getSVGTranslation(this.props.source_port_handle.select(function(){
+                return this.parentNode}).attr("transform"));
+            const target_transform=getSVGTranslation(this.props.target_port_handle.select(function(){
+                return this.parentNode}).attr("transform"));
+            const source_point=[parseInt(this.props.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.props.source_port_handle.attr("cy"))+parseInt(source_transform[1])];
+            const target_point=[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform.[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])];
 
-        var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
-        var path=(this.getPath(path_array));
+            var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
+            var path=(this.getPath(path_array));
 
-        return (
-            <g fill="none" stroke="black">
-                <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"+((this.props.selected && " selected")||"")}/>
-                <path stroke-width="2px" d={path} marker-end="url(#arrow)"/>
-            </g>
-        );
+            return (
+                <g fill="none" stroke="black">
+                    <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"+((this.props.selected && " selected")||"")}/>
+                    <path stroke-width="2px" d={path} marker-end="url(#arrow)"/>
+                </g>
+            );
+        }catch(err){return null;}
     }
     
     getPathArray(source_point,source_port,target_point,target_port){
@@ -1170,16 +1181,10 @@ export class NodeLinkView extends ComponentJSON{
             this.target_node.on(this.rerenderEvents,this.rerender.bind(this));
         }
         
-        console.log(this.source_node);
-        console.log(this.source_node.length);
-        console.log(this.target_node);
-        console.log(this.target_node.length);
         var source_dims = {width:this.source_node.outerWidth(),height:this.source_node.outerHeight()};
         var target_dims = {width:this.target_node.outerWidth(),height:this.target_node.outerHeight()};
-        console.log("found the dimensions");
         if(!source_dims.width||!target_dims.width)return null;
         var selector=this;
-        console.log("creating portal");
         return(
             <div>
                 {reactDom.createPortal(
@@ -1229,10 +1234,11 @@ export class AutoLinkView extends Component{
         }
         if(this.target_node&&this.target_node.parent().parent().length==0)this.target_node=null;
         this.findAutoTarget();
-        console.log(this.target_node);
         if(!this.target_node)return null;
+        console.log("found a target for an autolink");
         var source_dims = {width:this.source_node.outerWidth(),height:this.source_node.outerHeight()};
         var target_dims = {width:this.target_node.outerWidth(),height:this.target_node.outerHeight()};
+        console.log(target_dims);
         return(
             <div>
                 {reactDom.createPortal(
@@ -1260,13 +1266,24 @@ export class AutoLinkView extends Component{
         this.setTarget(target);
     }
 
-    rerender(){
+    rerender(evt){
+        console.log("rerender called for autolink");
+        console.log(evt);
         this.setState({});
     }
 
     setTarget(target){
         if(target){
-            if(this.target_node&&target==this.target_node.attr("id"))return;
+            console.log("setting the target");
+            console.log(this.target_port_handle);
+            if(this.target_node&&target==this.target_node.attr("id")){
+                if(!this.target_port_handle||this.target_port_handle.empty()){
+                    this.target_port_handle = d3.select(
+                        "g.port-"+target+" circle[data-port-type='target'][data-port='n']"
+                    );
+                }
+                return;
+            }
             if(this.target_node)this.target_node.off(this.rerenderEvents);
             this.target_node = $(".strategy #"+target+".node");
             this.target_port_handle = d3.select(
@@ -1346,6 +1363,7 @@ export class NodePorts extends Component{
         }));
         this.updatePorts();
         $(this.props.node_div.current).on("component-updated",this.updatePorts.bind(this));
+        //$(this.props.node_div.current).triggerHandler("ports-rendered");
         $(document).triggerHandler("ports-rendered");
     }
     
@@ -1359,6 +1377,7 @@ export class NodePorts extends Component{
     }
     
     componentDidUpdate(){
+        console.log("rendered ports");
         $(this.props.node_div.current).triggerHandler("ports-rendered");
     }
     
@@ -1388,8 +1407,6 @@ export class NodeView extends ComponentJSON{
         var node_links;
         var auto_link;
         console.log("rendering node");
-        console.log(data);
-        console.log(this.maindiv);
         if(!this.state.initial_render)nodePorts = reactDom.createPortal(
                 <NodePorts nodeID={this.props.objectID} node_div={this.maindiv} dispatch={this.props.dispatch}/>
             ,$(".workflow-canvas")[0]
@@ -1461,6 +1478,7 @@ export class NodeView extends ComponentJSON{
                 </div> 
                 <div class="mouseover-actions">
                     {this.addInsertSibling(data)}
+                    {this.addDuplicateSelf(data)}
                     {this.addDeleteSelf(data)}
                 </div>
                 {this.addEditable(data)}
@@ -1480,9 +1498,6 @@ export class NodeView extends ComponentJSON{
     }
 
     componentDidUpdate(prevProps){
-        console.log("component updated");
-        console.log(this.props.data);
-        console.log(prevProps.data);
         if(this.props.data.is_dropped==prevProps.data.is_dropped)this.updatePorts();
         else triggerHandlerEach($(".node"),"component-updated");
         if(this.state.port_render)this.setState({initial_render:false,port_render:false});
@@ -1493,10 +1508,6 @@ export class NodeView extends ComponentJSON{
     }
     
     toggleDrop(){
-        console.log("drop toggled");
-        console.log(this.props.data);
-        console.log(!this.props.data.is_dropped);
-        console.log(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
         this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
     }
 
@@ -1561,6 +1572,7 @@ export class StrategyView extends ComponentJSON{
     }
     
     render(){
+        console.log("rendering strategy");
         let data = this.props.data;
         var nodes = data.nodestrategy_set.map((nodestrategy)=>
             <NodeStrategyViewConnected key={nodestrategy} objectID={nodestrategy} parentID={data.id}/>
@@ -1573,6 +1585,7 @@ export class StrategyView extends ComponentJSON{
                 <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}
+                        {this.addDuplicateSelf(data)}
                         {this.addDeleteSelf(data)}
                     </div>
                 </div>
@@ -1662,6 +1675,7 @@ export class TermView extends StrategyView{
                 <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}
+                        {this.addDuplicateSelf(data)}
                         {this.addDeleteSelf(data)}
                     </div>
                 </div>
@@ -1755,6 +1769,7 @@ export class ColumnView extends ComponentJSON{
                 {this.addEditable(data)}
                 <div class="mouseover-actions">
                     {this.addInsertSibling(data)}
+                    {this.addDuplicateSelf(data)}
                     {this.addDeleteSelf(data)}
                 </div>
             </div>
@@ -1810,6 +1825,7 @@ export class WorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.nodebar = createRef();
+        this.objectType="workflow";
     }
     
     render(){
@@ -1820,11 +1836,14 @@ export class WorkflowView extends ComponentJSON{
         var strategyworkflows = data.strategyworkflow_set.map((strategyworkflow)=>
             <StrategyWorkflowViewConnected key={strategyworkflow} objectID={strategyworkflow} parentID={data.id}/>
         );
+        var selector = this;
         
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class = "workflow-container">
                     <div class="workflow-details">
+                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{selection_manager.changeSelection(evt,selector)}}/>
+                        {this.addEditable(data)}
                         <div class="column-row">
                             {columnworkflows}
                         </div>

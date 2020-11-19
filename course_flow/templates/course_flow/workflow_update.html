@@ -213,6 +213,20 @@ function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("succes
 }
 
 //Causes the specified object to insert a sibling after itself
+function duplicateSelf(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
+    console.log(objectID);
+    console.log(parentID);
+    $.post("{% url 'course_flow:duplicate-self' %}", {
+        parentID:JSON.stringify(parentID),
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify(objectType),
+    }).done(function(data){
+        console.log(callBackFunction);
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
+//Causes the specified object to insert a sibling after itself
 function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
     console.log(objectID);
     console.log(parentID);

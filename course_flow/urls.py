@@ -48,6 +48,7 @@ def flow_patterns():
             r"^workflow/updatevalue/$", views.update_value, name="update-value"
         ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
+        url(r"^workflow/duplicate-self/$", views.duplicate_self, name="duplicate-self"),
         url(
             r"^workflow/insert-sibling/$",
             views.insert_sibling,
