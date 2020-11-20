@@ -1377,6 +1377,8 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             )
             new_model_serialized=StrategySerializerShallow(newmodel).data
             new_through_serialized=StrategyWorkflowSerializerShallow(newthroughmodel).data
+            new_children_serialized=NodeSerializerShallow(newmodel.nodes,many=True).data
+            new_child_through_serialized=NodeStrategySerializerShallow(newmodel.nodestrategy_set,many=True).data
         elif object_type == "node":
             model=Node.objects.get(id=object_id)
             parent=Strategy.objects.get(id=parent_id)
@@ -1389,6 +1391,8 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             )
             new_model_serialized=NodeSerializerShallow(newmodel).data
             new_through_serialized=NodeStrategySerializerShallow(newthroughmodel).data
+            new_children_serialized=None
+            new_child_through_serialized=None
         elif object_type == "column":
             print("column");
             model=Column.objects.get(id=object_id)
@@ -1402,12 +1406,14 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             )
             new_model_serialized=ColumnSerializerShallow(newmodel).data
             new_through_serialized=ColumnWorkflowSerializerShallow(newthroughmodel).data
+            new_children_serialized=None
+            new_child_through_serialized=None
         else:
             raise ValidationError
     except ValidationError:
         return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted", "new_model": new_model_serialized,"new_through":new_through_serialized,"parentID":parent_id,"siblingID":through.id})
+    response = {"action": "posted", "new_model": new_model_serialized,"new_through":new_through_serialized,"parentID":parent_id,"siblingID":through.id,"children":new_children_serialized,"children_through":new_child_through_serialized}
+    return JsonResponse(response)
 
 """
 Reorder methods

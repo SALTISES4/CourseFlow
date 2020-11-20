@@ -168,11 +168,17 @@ class Node(models.Model):
     INDIVIDUAL = 1
     GROUPS = 2
     WHOLE_CLASS = 3
+    FORMATIVE = 101
+    SUMMATIVE = 102
+    COMPREHENSIVE = 103
     CONTEXT_CHOICES = (
         (NONE,"None"),
         (INDIVIDUAL, "Individual Work"),
         (GROUPS, "Work in Groups"),
         (WHOLE_CLASS, "Whole Class"),
+        (FORMATIVE, "Formative"),
+        (SUMMATIVE, "Summative"),
+        (COMPREHENSIVE, "Comprehensive"),
     )
     context_classification = models.PositiveIntegerField(
         choices=CONTEXT_CHOICES, default=0
@@ -195,6 +201,16 @@ class Node(models.Model):
     INSTRUCTOR_ORCHESTRATION = 16
     INSTRUCTOR_EVALUATION = 17
     OTHER = 18
+    JIGSAW = 101
+    PEER_INSTRUCTION = 102
+    CASE_STUDIES = 103
+    GALLERY_WALK = 104
+    REFLECTIVE_WRITING = 105
+    TWO_STAGE_EXAM = 106
+    TOOLKIT = 107
+    ONE_MINUTE_PAPER = 108
+    DISTRIBUTED_PROBLEM_SOLVING = 109
+    PEER_ASSESSMENT = 110
     TASK_CHOICES = (
         (NONE,"None"),
         (GATHER_INFO, "Gather Information"),
@@ -215,6 +231,16 @@ class Node(models.Model):
         (INSTRUCTOR_ORCHESTRATION,"Instructor Orchestration"),
         (INSTRUCTOR_EVALUATION,"Instructor Evaluation"),
         (OTHER, "Other"),
+        (JIGSAW,"Jigsaw"),
+        (PEER_INSTRUCTION,"Peer Instruction"),
+        (CASE_STUDIES,"Case Studies"),
+        (GALLERY_WALK,"Gallery Walk"),
+        (REFLECTIVE_WRITING,"Reflective Writing"),
+        (TWO_STAGE_EXAM,"Two-Stage Exam"),
+        (TOOLKIT,"Toolkit"),
+        (ONE_MINUTE_PAPER,"One Minute Paper"),
+        (DISTRIBUTED_PROBLEM_SOLVING,"Distributed Problem Solving"),
+        (PEER_ASSESSMENT,"Peer Assessment"),
     )
     task_classification = models.PositiveIntegerField(
         choices=TASK_CHOICES, default=0

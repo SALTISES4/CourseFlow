@@ -364,25 +364,57 @@ circle.mouseover{
     width:100px;
 }
 
-.right-panel-container{
+.side-bar{
     position:fixed;
-    overflow:hidden;
+    overflow:visible;
+    z-index:4;
     right:8px;
     top:102px;
+    bottom:0px;
+}
+
+.right-panel-container{
+    overflow:hidden;
     float:right;
     box-shadow: -1px 0px 3px -1px;
-    width:240px;
-    bottom:0px;
     background:white;
     text-align:left;
+    font-family:sans-serif;
+    height:100%;
+    width:240px;
+    display:inline-block;
 }
 
-.node-bar-container{
-    z-index:4;
+.side-bar .ui-tabs-nav{
+    margin:5px;
+    padding:0px;
+    display:inline-block;
+    margin-right:16px;
 }
 
-.edit-bar-container{
-    z-index:5;
+.side-bar .ui-tabs-tab{
+    text-align:center;
+    display:block;
+    height:40px;
+}
+
+.ui-tabs-tab a{
+    text-decoration:none;
+    color:lightgray;
+    filter:grayscale(100%);
+}
+
+.ui-tabs-tab a img{
+    width:32px;
+}
+
+
+.ui-tabs-tab.ui-tabs-active a{
+    filter:none;
+}
+
+.ui-tabs-tab.ui-state-disabled a{
+    visibility:hidden;
 }
 
 .right-panel-inner{
@@ -419,11 +451,11 @@ circle.mouseover{
 }
 
 .new-node-drop-over{
-    border-bottom:2px solid lime;
+    border-bottom:2px solid #1976bc;
 }
 
 .valid-drop{
-    outline:2px solid lime;
+    outline:2px solid #1976bc;
 }
 
 .workflow-wrapper .selected{

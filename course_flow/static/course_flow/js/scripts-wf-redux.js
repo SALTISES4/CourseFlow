@@ -30,33 +30,46 @@ const port_direction=[
     [-1,0]
 ]
 const port_padding=10;
-const task_keys = [
-    "",
-    "research",
-    "discuss",
-    "problem",
-    "analyze",
-    "peerreview",
-    "debate",
-    "play",
-    "create",
-    "practice",
-    "reading",
-    "write",
-    "present",
-    "experiment",
-    "quiz",
-    "curation",
-    "orchestration",
-    "instrevaluate",
-    "other"
-]
-const context_keys = [
-    "",
-    "solo",
-    "group",
-    "class"
-]
+const task_keys = {
+    0:"",
+    1:"research",
+    2:"discuss",
+    3:"problem",
+    4:"analyze",
+    5:"peerreview",
+    6:"debate",
+    7:"play",
+    8:"create",
+    9:"practice",
+    10:"reading",
+    11:"write",
+    12:"present",
+    13:"experiment",
+    14:"quiz",
+    15:"curation",
+    16:"orchestration",
+    17:"instrevaluate",
+    18:"other",
+    101:"jigsaw",
+    102:"peer-instruction",
+    103:"case-studies",
+    104:"gallery-walk",
+    105:"reflective-writing",
+    106:"two-stage-exam",
+    107:"toolkit",
+    108:"one-minute-paper",
+    109:"distributed-problem-solving",
+    110:"peer-assessment"
+}
+const context_keys = {
+    0:"",
+    1:"solo",
+    2:"group",
+    3:"class",
+    101:"exercise",
+    102:"test",
+    103:"exam"
+}
 const default_column_settings = {
     0:{colour:"#6738ff",icon:"other"},
     1:{colour:"#0b118a",icon:"ooci"},
@@ -113,7 +126,14 @@ export class SelectionManager{
         if(this.currentSelection)this.currentSelection.setState({selected:false});
         this.currentSelection=newSelection;
         if(this.currentSelection){
+            $("#sidebar").tabs("enable",0);
+            if($("#sidebar").tabs( "option", "active" )>0)$("#sidebar").tabs( "option", "active", 0 );
             this.currentSelection.setState({selected:true});
+        }else{
+            console.log("current tab:");
+            console.log($("#sidebar").tabs( "option", "active" ));
+            if($("#sidebar").tabs( "option", "active" )===0)$("#sidebar").tabs( "option", "active", 1 );
+            $("#sidebar").tabs("disable",0);
         }
     }
 
@@ -342,6 +362,7 @@ function workflowReducer(state={},action){
             }
             return state;
         case 'strategy/insertBelow':
+            console.log(action);
             new_state = {...state}
             var new_strategyworkflow_set = state.strategyworkflow_set.slice();
             new_strategyworkflow_set.splice(new_strategyworkflow_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
@@ -584,6 +605,12 @@ function nodestrategyReducer(state={},action){
                 }
             }
             return state;
+        case 'strategy/insertBelow':
+            new_state = state.slice();
+            for(var i=0;i<action.payload.children_through.length;i++){
+                new_state.push(action.payload.children_through[i]);
+            }
+            return new_state;
         case 'node/insertBelow':
         case 'node/newNode':
             new_state = state.slice();
@@ -649,6 +676,12 @@ function nodeReducer(state={},action){
                 }
             }
             return state;
+        case 'strategy/insertBelow':
+            new_state = state.slice();
+            for(var i=0;i<action.payload.children.length;i++){
+                new_state.push(action.payload.children[i]);
+            }
+            return new_state;
         case 'node/insertBelow':
         case 'node/newNode':
             new_state = state.slice();
@@ -988,79 +1021,78 @@ export class ComponentJSON extends Component{
         if(this.state.selected){
             var type=this.objectType;
             var props = this.props;
+            
             return reactDom.createPortal(
-                <div class="right-panel-container edit-bar-container" onClick={(evt)=>{evt.stopPropagation()}}>
-                    <div class="right-panel-inner">
-                        <h3>{"Edit "+type+":"}</h3>
-                        {["node","strategy","column","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
-                            <div>
-                                <h4>Title:</h4>
-                                <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
-                            </div>
-                        }
-                        {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
-                            <div>
-                                <h4>Description:</h4>
-                                <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
-                            </div>
-                        }
-                        {type=="node" &&
-                            <div>
-                                <h4>Context:</h4>
-                                <select value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
-                                    {context_choices.map((choice)=>
-                                        <option value={choice.type}>{choice.name}</option>
-                                    )}
-                                </select>
-                            </div>
-                        }
-                        {type=="node" &&
-                            <div>
-                                <h4>Task:</h4>
-                                <select value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
-                                    {task_choices.map((choice)=>
-                                        <option value={choice.type}>{choice.name}</option>
-                                    )}
-                                </select>
-                            </div>
-                        }
-                        {type=="node" &&
-                            <div>
-                                <h4>Time:</h4>
-                                <input value={data.time_required} onChange={this.inputChanged.bind(this,"time_required")}/>
-                                <select value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
-                                    {time_choices.map((choice)=>
-                                        <option value={choice.type}>{choice.name}</option>
-                                    )}
-                                </select>
-                            </div>
-                        }
-                        {type=="node" && data.node_type!=0 &&
-                            <div>
-                                <h4>Linked Workflow:</h4>
-                                <div>{data.linked_workflow_title}</div>
-                                <button onClick={()=>{getLinkedWorkflowMenu(data,(response_data)=>{
-                                    let action = setLinkedWorkflowAction(response_data);
-                                    props.dispatch(action);
-                                })}}>
-                                    Change
-                                </button>
-                                <input type="checkbox" name="respresents_workflow" checked={data.represents_workflow} onChange={this.checkboxChanged.bind(this,"represents_workflow")}/>
-                                <label for="repesents_workflow">Display data</label>
-                            </div>
-                        }
-                        {type=="node" && data.node_type!=2 &&
-                            <div>
-                                <h4>Other:</h4>
-                                <input type="checkbox" name="has_autolink" checked={data.has_autolink} onChange={this.checkboxChanged.bind(this,"has_autolink")}/>
-                                <label for="has_autolink">Draw arrow to next node</label>
-                            </div>
-                        }
-                        
-                        {type!="workflow" && this.addDeleteSelf(data)}
-                    </div>
+                <div class="right-panel-inner">
+                    <h3>{"Edit "+type+":"}</h3>
+                    {["node","strategy","column","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
+                        <div>
+                            <h4>Title:</h4>
+                            <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
+                        </div>
+                    }
+                    {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
+                        <div>
+                            <h4>Description:</h4>
+                            <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
+                        </div>
+                    }
+                    {type=="node" &&
+                        <div>
+                            <h4>Context:</h4>
+                            <select value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
+                                {context_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
+                                    <option value={choice.type}>{choice.name}</option>
+                                )}
+                            </select>
+                        </div>
+                    }
+                    {type=="node" &&
+                        <div>
+                            <h4>Task:</h4>
+                            <select value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
+                                {task_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
+                                    <option value={choice.type}>{choice.name}</option>
+                                )}
+                            </select>
+                        </div>
+                    }
+                    {type=="node" &&
+                        <div>
+                            <h4>Time:</h4>
+                            <input value={data.time_required} onChange={this.inputChanged.bind(this,"time_required")}/>
+                            <select value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
+                                {time_choices.map((choice)=>
+                                    <option value={choice.type}>{choice.name}</option>
+                                )}
+                            </select>
+                        </div>
+                    }
+                    {type=="node" && data.node_type!=0 &&
+                        <div>
+                            <h4>Linked Workflow:</h4>
+                            <div>{data.linked_workflow_title}</div>
+                            <button onClick={()=>{getLinkedWorkflowMenu(data,(response_data)=>{
+                                let action = setLinkedWorkflowAction(response_data);
+                                props.dispatch(action);
+                            })}}>
+                                Change
+                            </button>
+                            <input type="checkbox" name="respresents_workflow" checked={data.represents_workflow} onChange={this.checkboxChanged.bind(this,"represents_workflow")}/>
+                            <label for="repesents_workflow">Display data</label>
+                        </div>
+                    }
+                    {type=="node" && data.node_type!=2 &&
+                        <div>
+                            <h4>Other:</h4>
+                            <input type="checkbox" name="has_autolink" checked={data.has_autolink} onChange={this.checkboxChanged.bind(this,"has_autolink")}/>
+                            <label for="has_autolink">Draw arrow to next node</label>
+                        </div>
+                    }
+
+                    {type!="workflow" && this.addDeleteSelf(data)}
                 </div>
-            ,$("#container")[0])
+            ,$("#edit-menu")[0])
         }
     }
     
@@ -1824,7 +1856,6 @@ export class WorkflowView extends ComponentJSON{
     
     constructor(props){
         super(props);
-        this.nodebar = createRef();
         this.objectType="workflow";
     }
     
@@ -1922,20 +1953,19 @@ export class NodeBar extends ComponentJSON{
         var nodebarstrategyworkflows = data.strategyworkflow_set.map((strategyworkflow)=>
             <NodeBarStrategyWorkflowConnected key={strategyworkflow} objectID={strategyworkflow}/>
         );
-        
-        return(
-            <div id="node-bar-container" ref={this.nodebar} class="node-bar-container right-panel-container">
-                <div id="node-bar-workflow" class="right-panel-inner">
-                    <h4>Nodes:</h4>
-                    <div class="node-bar-column-block">
-                        {nodebarcolumnworkflows}
-                    </div>
-                    <div class="node-bar-strategy-block">
-                        {nodebarstrategyworkflows}
-                    </div>
+        console.log($("#node-bar"));
+        console.log($("#node-bar")[0]);
+        return reactDom.createPortal(
+            <div id="node-bar-workflow" class="right-panel-inner">
+                <h4>Nodes:</h4>
+                <div class="node-bar-column-block">
+                    {nodebarcolumnworkflows}
+                </div>
+                <div class="node-bar-strategy-block">
+                    {nodebarstrategyworkflows}
                 </div>
             </div>
-        );
+        ,$("#node-bar")[0]);
     }
 }
 const mapNodeBarStateToProps = state=>({
