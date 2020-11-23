@@ -36,6 +36,7 @@ from .serializers import (
     ColumnWorkflowSerializerShallow,
     ColumnSerializerShallow,
     WorkflowSerializerFinder,
+    ProjectSerializerShallow,
 )
 from .decorators import (
     ajax_login_required,
@@ -90,13 +91,11 @@ def registration_view(request):
 
 @login_required
 def home_view(request):
-    context = {
-        "projects": Project.objects.exclude(author=request.user),
-        "owned_projects": Project.objects.filter(author=request.user)
-    }
+    
+    
+    context = {"projects":JSONRenderer().render(ProjectSerializerShallow(Project.objects.exclude(author=request.user),many=True).data).decode("utf-8"),
+    "owned_projects": JSONRenderer().render(ProjectSerializerShallow(Project.objects.filter(author=request.user),many=True).data).decode("utf-8")}
     return render(request, "course_flow/home.html", context)
-
-
 
 class ProjectCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Project
@@ -141,32 +140,33 @@ class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         project = self.object
-        context["programs"]=Program.objects.exclude(author=self.request.user)
-        context["courses"]=Course.objects.exclude(author=self.request.user).exclude(static=True)
-        context["activities"]=Activity.objects.exclude(
-                author=self.request.user
-            ).exclude(static=True)
-        context["owned_programs"]= Program.objects.filter(
-                author=self.request.user
-            ).exclude(project=project)
-        context["owned_courses"]= Course.objects.filter(
-                author=self.request.user, static=False
-            ).exclude(project=project)
-        context["owned_activities"]= Activity.objects.filter(
-                author=self.request.user, static=False
-            ).exclude(project=project)
-        context["project_programs"]= Program.objects.filter(
-                author=self.request.user,project=project
-            )
-        context["project_courses"]=Course.objects.filter(
-                author=self.request.user,project=project, static=False
-            )
-        context["project_static_courses"]= Course.objects.filter(
-                author=self.request.user, project=project, static=True
-            )
-        context["project_activities"]= Activity.objects.filter(
-                author=self.request.user,project=project, static=False
-            )
+        data = {
+            "programs":ProgramSerializerShallow(Program.objects.exclude(author=self.request.user),many=True).data,
+            "courses":CourseSerializerShallow(Course.objects.exclude(author=self.request.user).exclude(static=True),many=True).data,
+            "activities":ActivitySerializerShallow(Activity.objects.exclude(
+                    author=self.request.user
+                ).exclude(static=True),many=True).data,
+            "owned_programs":ProgramSerializerShallow(Program.objects.filter(
+                    author=self.request.user
+                ).exclude(project=project),many=True).data,
+            "owned_courses":CourseSerializerShallow(Course.objects.filter(
+                    author=self.request.user, static=False
+                ).exclude(project=project),many=True).data,
+            "owned_activities":ActivitySerializerShallow(Activity.objects.filter(
+                    author=self.request.user, static=False
+                ).exclude(project=project),many=True).data,
+            "project_programs":ProgramSerializerShallow(Program.objects.filter(
+                    author=self.request.user,project=project
+                ),many=True).data,
+            "project_courses":CourseSerializerShallow(Course.objects.filter(
+                    author=self.request.user,project=project,
+                ),many=True).data,
+            "project_activities":ActivitySerializerShallow(Activity.objects.filter(
+                    author=self.request.user,project=project,
+                ),many=True).data
+        }
+        context["workflows"]=JSONRenderer().render(data).decode("utf-8")
+        
         return context
 
 class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -204,6 +204,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('context_classification').choices]
         task_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('task_classification').choices]
         time_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('time_units').choices]
+        parent_project_pk = WorkflowProject.objects.get(workflow=workflow).project.pk
         
 
         data_flat = {
@@ -213,8 +214,8 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             "strategyworkflow":StrategyWorkflowSerializerShallow(strategyworkflows,many=True).data,
             "strategy":StrategySerializerShallow(strategies,many=True).data,
             "nodestrategy":NodeStrategySerializerShallow(nodestrategies,many=True).data,
-            "nodelink":NodeLinkSerializerShallow(nodelinks,many=True).data,
             "node":NodeSerializerShallow(nodes,many=True).data,
+            "nodelink":NodeLinkSerializerShallow(nodelinks,many=True).data,
 
         }
         
@@ -223,6 +224,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context["context_choices"]=JSONRenderer().render(context_choices).decode("utf-8")
         context["task_choices"]=JSONRenderer().render(task_choices).decode("utf-8")
         context["time_choices"]=JSONRenderer().render(time_choices).decode("utf-8")
+        context["parent_project_pk"] = JSONRenderer().render(parent_project_pk).decode("utf-8")
         return context
 
 
@@ -1089,7 +1091,10 @@ def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
         parent_node=node,
     )
     if node.linked_workflow is not None:
-        set_linked_workflow(new_node,node.linked_workflow)
+        if new_workflow is not None:
+            set_linked_workflow(new_node,node.linked_workflow)
+        else: new_node.linked_workflow = node.linked_workflow
+    
         
     return new_node
     
@@ -1577,7 +1582,7 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             set_linked_workflow(node,workflow)
             linked_workflow=node.linked_workflow.id
             linked_workflow_title=node.linked_workflow.title
-            linked_workflow_description=node.linked_workflow_description
+            linked_workflow_description=node.linked_workflow.description
 
     except ValidationError:
         return JsonResponse({"action": "error"})

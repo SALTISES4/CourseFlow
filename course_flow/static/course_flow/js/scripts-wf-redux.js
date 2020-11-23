@@ -606,6 +606,7 @@ function nodestrategyReducer(state={},action){
             }
             return state;
         case 'strategy/insertBelow':
+            if(!action.payload.children_through)return state;
             new_state = state.slice();
             for(var i=0;i<action.payload.children_through.length;i++){
                 new_state.push(action.payload.children_through[i]);
@@ -660,7 +661,8 @@ function nodeReducer(state={},action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
-                    deleteSelf(action.payload.id,"node")
+                    deleteSelf(action.payload.id,"node",
+                    ()=>{triggerHandlerEach($(".strategy .node"),"component-updated")});
                     return new_state;
                 }
             }
@@ -677,6 +679,7 @@ function nodeReducer(state={},action){
             }
             return state;
         case 'strategy/insertBelow':
+            if(!action.payload.children)return state;
             new_state = state.slice();
             for(var i=0;i<action.payload.children.length;i++){
                 new_state.push(action.payload.children[i]);
@@ -764,7 +767,7 @@ const rootReducer = Redux.combineReducers({
     nodelink:nodelinkReducer,
 });
 
-const store = createStore(rootReducer,initial_data);
+var store;
 
 const getColumnByID = (state,id)=>{
     for(var i in state.column){
@@ -1037,7 +1040,7 @@ export class ComponentJSON extends Component{
                             <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
                         </div>
                     }
-                    {type=="node" &&
+                    {type=="node" && data.node_type<2 &&
                         <div>
                             <h4>Context:</h4>
                             <select value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
@@ -1047,7 +1050,7 @@ export class ComponentJSON extends Component{
                             </select>
                         </div>
                     }
-                    {type=="node" &&
+                    {type=="node" && data.node_type<2 &&
                         <div>
                             <h4>Task:</h4>
                             <select value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
@@ -1232,7 +1235,7 @@ export class NodeLinkView extends ComponentJSON{
         this.setState({});
     }
 
-    componentDidUnmount(){
+    componentWillUnmount(){
         if(this.target_node&&this.target_node.length>0){
             this.source_node.off(this.rerenderEvents);
             this.target_node.off(this.rerenderEvents);
@@ -1331,12 +1334,12 @@ export class AutoLinkView extends Component{
         }
     } 
 
-    /*componentDidUnmount(){
+    componentWillUnmount(){
         if(this.target_node&&this.target_node.length>0){
             this.source_node.off(this.rerenderEvents);
             this.target_node.off(this.rerenderEvents);
         }
-    }*/
+    }
 }
 
 
@@ -1535,6 +1538,7 @@ export class NodeView extends ComponentJSON{
         if(this.state.port_render)this.setState({initial_render:false,port_render:false});
     }
 
+    
     updatePorts(){
         $(this.maindiv.current).triggerHandler("component-updated");
     }
@@ -2083,6 +2087,7 @@ export const NodeBarStrategyWorkflowConnected = connect(
 )(NodeBarStrategyWorkflow)
 
 export function renderWorkflowView(container){
+    store = createStore(rootReducer,initial_data);
     reactDom.render(
         <Provider store = {store}>
             <WorkflowViewConnected/>
@@ -2097,6 +2102,8 @@ export function renderMessageBox(data,type,updateFunction){
         $("#popup-container")[0]
     );
 }
+
+
 
 export function closeMessageBox(){
     reactDom.render(null,$("#popup-container")[0]);
@@ -2129,10 +2136,10 @@ export class WorkflowsMenu extends Component{
                 <WorkflowForMenu key={project_workflow.id} type={this.props.type} owned={true} in_project={true} workflow_data={project_workflow} selected={(this.state.selected==project_workflow.id)} selectAction={this.workflowSelected.bind(this,project_workflow.id,"project")}/>
             );
         var other_workflows = this.props.data.other_workflows.map((other_workflow)=>
-                <WorkflowForMenu key={other_workflow} type={this.props.type} owned={true} in_project={true} workflow_data={other_workflow} selected={(this.state.selected==other_workflow.id)} selectAction={this.workflowSelected.bind(this,other_workflow.id,"other")}/>
+                <WorkflowForMenu key={other_workflow} type={this.props.type} owned={true} in_project={false} workflow_data={other_workflow} selected={(this.state.selected==other_workflow.id)} selectAction={this.workflowSelected.bind(this,other_workflow.id,"other")}/>
             );
         var published_workflows = this.props.data.published_workflows.map((published_workflow)=>
-                <WorkflowForMenu key={published_workflow} type={this.props.type} owned={true} in_project={false} workflow_data={published_workflow} selected={(this.state.selected==published_workflow.id)} selectAction={this.workflowSelected.bind(this,published_workflow.id,"published")}/>
+                <WorkflowForMenu key={published_workflow} type={this.props.type} owned={false} in_project={false} workflow_data={published_workflow} selected={(this.state.selected==published_workflow.id)} selectAction={this.workflowSelected.bind(this,published_workflow.id,"published")}/>
             );
         
         return(
@@ -2190,14 +2197,23 @@ export class WorkflowsMenu extends Component{
 }
 
 export class WorkflowForMenu extends Component{
+    constructor(props){
+        super(props);
+        this.state={};
+    }
+    
     render(){
         var data = this.props.workflow_data;
         var css_class = "workflow-for-menu";
         if(this.props.selected)css_class+=" selected";
+        if(this.state.hide)return null;
         return(
             <div class={css_class} onClick={this.props.selectAction}>
-                <div class="workflow-title">
-                    {data.title}
+                <div class="workflow-top-row">
+                    <div class="workflow-title">
+                        {data.title}
+                    </div>
+                    {this.getButtons()}
                 </div>
                 <div class="workflow-created">
                     { "Created"+(data.author && " by "+data.author)+" on "+data.created_on}
@@ -2208,8 +2224,169 @@ export class WorkflowForMenu extends Component{
             </div>
         );
     }
+    
+    getButtons(){
+        var buttons=[];
+        console.log(this.props.type);
+        if(this.props.type=="projectmenu"||this.props.type=="homemenu"){
+            if(this.props.owned){
+                buttons.push(
+                    <div onClick={(evt)=>{
+                        if(window.confirm("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone.")){
+                            deleteSelf(this.props.workflow_data.id,this.props.objectType);
+                            this.setState({hide:true});
+                        }
+                    }}>
+                        <img src={iconpath+'rubbish-bin-delete-button.svg'}/>
+                    </div>
+                );
+                buttons.push(
+                    <a href={update_path.replace("0",this.props.workflow_data.id)}>
+                        <img src={iconpath+'pencil-blue.svg'}/>
+                    </a>
+                );
+            }
+        }
+        return (
+            <div class="workflow-buttons">
+                {buttons}
+            </div>
+        );
+    }
 }
 
 
+export function renderHomeMenu(projects,owned_projects){
+    reactDom.render(
+        <HomeMenu projects={projects} owned_projects={owned_projects}/>,
+        $("#content-container")[0]
+    );
+}
 
+export class HomeMenu extends Component{
+    render(){
+        var owned_projects = this.props.owned_projects.map((project)=>
+                <WorkflowForMenu key={project.id} type={"homemenu"} owned={true} workflow_data={project} objectType={"project"}/>
+            );
+        var other_projects = this.props.projects.map((project)=>
+                <WorkflowForMenu key={project.id} type={"homemenu"} owned={false} workflow_data={project} objectType={"project"}/>
+            );
+        if(owned_projects.length==0)owned_projects="You have not yet created any projects";
+        if(other_projects.length==0)other_projects="Nobody else has published any projects";
+        return(
+            <div class="message-wrap">
+                <div class="message-panel">
+                    <h2>Your Projects:
+                          <a href={project_create_path}
+                            ><img
+                              class="create-button link-image"
+                              src={iconpath+"add-square-button.svg"}
+                          /></a>
+                    </h2>
+                    {owned_projects}
+                </div>
+                <div class="message-panel">
+                    <h2>All Published Projects:</h2>
+                    {other_projects}
+                </div>
+            </div>
+        );
+    }
+}
+
+export function renderProjectMenu(data){
+    reactDom.render(
+        <ProjectMenu data={data}/>,
+        $("#content-container")[0]
+    );
+}
+
+export class ProjectMenu extends Component{
+    render(){
+        var project_programs = this.props.data.project_programs.map((workflow)=>
+                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"program"}/>
+            );
+        var project_courses = this.props.data.project_courses.map((workflow)=>
+                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"course"}/>
+            );
+        var project_activities = this.props.data.project_activities.map((workflow)=>
+                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"activity"}/>
+            );
+        var owned_programs = this.props.data.owned_programs.map((workflow)=>
+                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"program"}/>
+            );
+        var owned_courses = this.props.data.owned_courses.map((workflow)=>
+                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"course"}/>
+            );
+        var owned_activities = this.props.data.owned_activities.map((workflow)=>
+                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"activity"}/>
+            );
+        var other_programs = this.props.data.programs.map((workflow)=>
+                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={false} workflow_data={workflow} objectType={"program"}/>
+            );
+        var other_courses = this.props.data.courses.map((workflow)=>
+                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={false} workflow_data={workflow} objectType={"course"}/>
+            );
+        var other_activities = this.props.data.activities.map((workflow)=>
+                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={false} workflow_data={workflow} objectType={"activity"}/>
+            );
+        if(project_programs.length==0)project_programs="There are no programs in this project";
+        if(project_courses.length==0)project_courses="There are no courses in this project";
+        if(project_activities.length==0)project_activities="There are no activities in this project";
+        if(owned_programs.length==0)owned_programs="You have no other programs";
+        if(owned_courses.length==0)owned_programs="You have no other courses";
+        if(owned_activities.length==0)owned_activities="You have no other activities";
+        if(other_programs.length==0)other_programs="Nobody else has published any programs";
+        if(other_courses.length==0)other_courses="Nobody else has published any courses";
+        if(other_activities.length==0)other_activities="Nobody else has published any activities";
+        
+        return(
+            <div class="message-wrap">
+                <div class="message-panel">
+                    <h2>From This Project:</h2>
+                    <h3>Programs:
+                          <a href={program_create_path}
+                            ><img
+                              class="create-button link-image"
+                              src={iconpath+"add-square-button.svg"}
+                          /></a>
+                    </h3>
+                    {project_programs}
+                    <h3>Courses:
+                          <a href={course_create_path}
+                            ><img
+                              class="create-button link-image"
+                              src={iconpath+"add-square-button.svg"}
+                          /></a>
+                    </h3>
+                    {project_courses}
+                    <h3>Activities:
+                          <a href={activity_create_path}
+                            ><img
+                              class="create-button link-image"
+                              src={iconpath+"add-square-button.svg"}
+                          /></a>
+                    </h3>
+                    {project_activities}
+                </div>
+                <div class="message-panel">
+                    <h2>From Your Other Projects:</h2>
+                    <h3>Programs:</h3>
+                    {owned_programs}
+                    <h3>Courses:</h3>
+                    {owned_courses}
+                    <h3>Activities:</h3>
+                    {owned_activities}
+                    <h2>From All Published Projects:</h2>
+                    <h3>Programs:</h3>
+                    {other_programs}
+                    <h3>Courses:</h3>
+                    {other_courses}
+                    <h3>Courses:</h3>
+                    {other_courses}
+                </div>
+            </div>
+        );
+    }
+}
 

@@ -37,7 +37,6 @@ p{
 }
 
 .workflow-details .workflow-for-menu{
-    max-width:800px;
     color:black;
     margin-left:10px;
     border-color:black;
@@ -505,6 +504,7 @@ circle.mouseover{
 }
 
 .workflow-for-menu{
+    max-width:400px;
     background-color:white;
     margin-bottom:8px;
     padding:10px;
@@ -526,7 +526,20 @@ circle.mouseover{
     font-weight:600;
     font-size:18px;
     margin-bottom:6px;
+    display:inline-block;
+    width:80%;
 }
+
+.workflow-buttons{
+    width:20%;
+    display:inline-block;
+    text-align:right;
+}
+
+.workflow-buttons > *{
+    display:inline-block;
+}
+
 
 .message-wrap{
     width:100%;

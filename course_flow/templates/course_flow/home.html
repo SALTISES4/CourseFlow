@@ -11,107 +11,7 @@
 <!-- -->
 {% block body %}
 <div id="content-container" class="body-wrapper">
-  <div id="user-content-container" class="sub-container">
-    <h2>
-      Your Projects
-      <a href="{% url 'course_flow:project-create' %}"
-        ><img
-          class="create-button link-image"
-          src="{% static 'course_flow/img/add-square-button.svg' %}"
-      /></a>
-    </h2>
-    <br />
-    {% for project in owned_projects %}
-
-    <div class="mdc-card" id="card">
-      <div class="mdc-typography--title">{{ project.title }}</div>
-      <div class="mdc-typography--caption">
-        {% if project.author %}Created by {{ project.author.username }}
-        <!-- -->
-        {% endif %}
-      </div>
-      <div class="mdc-typography--body1">{{ project.description }}</div>
-      <div class="mdc-card__actions">
-        <div class="mdc-card__action-buttons">
-          <div class="mdc-typography--caption caption">
-            <div>Published on {{ project.created_on }}</div>
-          </div>
-        </div>
-        <div class="mdc-card__action-icons">
-          {% if user.pk is project.author.pk %}
-          <!-- -->
-          <a href="{% url 'course_flow:project-update' pk=project.id %}">
-            <!-- -->
-            <img
-              class="link-image"
-              src="{% static 'course_flow/img/pencil-blue.svg' %}"
-            />
-          </a>
-          <!-- -->
-          {% else %}
-          <!-- -->
-          <a href="{% url 'course_flow:project-detail-view' pk=project.id %}"
-            ><img
-              class="link-image"
-              src="{% static 'course_flow/img/pageview-24px.svg' %}"
-          /></a>
-          <!-- -->
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    {% empty %}
-    <p>{% trans "You haven't created a project yet" %}</p>
-    {% endfor %}
-  </div>
-  <div id="total-content-container" class="sub-container">
-    <h2>
-      All Published Projects
-    </h2>
-    <br />
-    {% for project in projects %}
-
-    <div class="mdc-card" id="card">
-      <div class="mdc-typography--title">{{ project.title }}</div>
-      <div class="mdc-typography--caption">
-        {% if project.author %}Created by {{ project.author.username }}
-        <!-- -->
-        {% endif %}
-      </div>
-      <div class="mdc-typography--body1">{{ project.description }}</div>
-      <div class="mdc-card__actions">
-        <div class="mdc-card__action-buttons">
-          <div class="mdc-typography--caption caption">
-            <div>Published on {{ project.created_on }}</div>
-          </div>
-        </div>
-        <div class="mdc-card__action-icons">
-          {% if user.pk is project.author.pk %}
-          <!-- -->
-          <a href="{% url 'course_flow:project-update' pk=project.id %}">
-            <!-- -->
-            <img
-              class="link-image"
-              src="{% static 'course_flow/img/pencil-blue.svg' %}"
-            />
-          </a>
-          <!-- -->
-          {% else %}
-          <!-- -->
-          <a href="{% url 'course_flow:project-detail-view' pk=project.id %}"
-            ><img
-              class="link-image"
-              src="{% static 'course_flow/img/pageview-24px.svg' %}"
-          /></a>
-          <!-- -->
-          {% endif %}
-        </div>
-      </div>
-    </div>
-    {% empty %}
-    <p>{% trans "Nobody else has created a project yet." %}</p>
-    {% endfor %}
-  </div>
+    
 </div>
 <!-- -->
 {% endblock %}
@@ -132,4 +32,30 @@
     );
   });
 </script>
+
+<script nonce="{{request.csp_nonce}}">
+    
+    const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+    const update_path = "{% url 'course_flow:project-update' pk='0'%}";
+    const project_create_path = "{% url 'course_flow:project-create' %}";
+    const projects = {{projects|safe}}
+    const owned_projects = {{owned_projects|safe}}
+    window.addEventListener("load",function(){
+        workflow_redux.renderHomeMenu(projects,owned_projects);
+    });
+    
+    
+    //Causes the specified object to delete itself
+    function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
+        $.post("{% url 'course_flow:delete-self' %}", {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+</script>
+
+
 {% endblock %}

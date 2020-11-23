@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import (
+    Project,
     Workflow,
     Program,
     Course,
@@ -765,6 +766,38 @@ class WorkflowSerializerFinder(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         return instance
 
+
+class ProjectSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "created_on",
+            "last_modified",
+            "workflowproject_set",
+        ]
+
+    workflowproject_set = serializers.SerializerMethodField()
+
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field="username"
+    )
+
+    def get_workflowproject_set(self, instance):
+        links = instance.workflowproject_set.all().order_by("rank")
+        return list(map(linkIDMap, links))
+
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.description = validated_data.get(
+            "description", instance.description
+        )
+        instance.save()
+        return instance
 
 class WorkflowSerializerShallow(serializers.ModelSerializer):
     class Meta:
