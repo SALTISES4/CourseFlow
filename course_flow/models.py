@@ -609,15 +609,10 @@ def switch_node_to_static(sender, instance, created, **kwargs):
                 
 @receiver(pre_delete,sender=Column)
 def move_nodes(sender, instance, **kwargs):
-    print("trying to move nodes")
     columnworkflow = instance.columnworkflow_set.first()
     workflow = columnworkflow.workflow
-    print(workflow.columnworkflow_set.all())
-    print(workflow.columnworkflow_set.all().order_by('rank'))
-    print(workflow.columnworkflow_set.all().exclude(column=instance).order_by('rank'))
     
     other_columns = workflow.columnworkflow_set.all().order_by('rank').exclude(column=instance)
-    print(other_columns)
     if other_columns.count()>0:
         new_column = other_columns.first().column
         for node in Node.objects.filter(column=instance):
@@ -699,7 +694,6 @@ Default content creation receivers
 @receiver(post_save, sender=Node)
 def create_default_node_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
-        print(instance.node_type)
         # If this is an activity-level node, set the autolinks to true
         if instance.node_type == instance.ACTIVITY_NODE:
             instance.has_autolink = True

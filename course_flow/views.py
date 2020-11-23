@@ -855,130 +855,6 @@ def get_node_completion_count(request: HttpRequest) -> HttpResponse:
     )
 
 
-@require_POST
-@ajax_login_required
-@is_owner("weekPk")
-def add_component_to_course(request: HttpRequest) -> HttpResponse:
-    week = Week.objects.get(pk=request.POST.get("weekPk"))
-    component = Component.objects.get(pk=request.POST.get("componentPk"))
-
-    if ComponentWeek.objects.filter(week=week, component=component):
-        component = duplicate_component(component, request.user)
-        component_object = component.content_object
-        component_object.title += " (duplicate)"
-        component_object.save()
-
-    try:
-        for link in ComponentWeek.objects.filter(week=week):
-            link.rank += 1
-            link.save()
-
-        ComponentWeek.objects.create(week=week, component=component, rank=0)
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-
-
-# Called to add components via a dialog form
-@require_POST
-@ajax_login_required
-@is_parent_owner
-def dialog_form_create(request: HttpRequest) -> HttpResponse:
-    data = json.loads(request.POST.get("object"))
-    model = json.loads(request.POST.get("objectType"))
-    data["author"] = request.user.username
-    parent_id = json.loads(request.POST.get("parentID"))
-    if model == "node":
-        data["work_classification"] = int(data["work_classification"])
-        data["activity_classification"] = int(data["activity_classification"])
-        data["parent_node"] = None
-        serializer = NodeSerializer(data=data)
-        if parent_id:
-            strategy = Strategy.objects.get(id=parent_id)
-            if serializer.is_valid():
-                node = serializer.save()
-            else:
-                return JsonResponse({"action": "error"})
-            try:
-                for link in NodeStrategy.objects.filter(strategy=strategy):
-                    link.rank += 1
-                    link.save()
-                NodeStrategy.objects.create(strategy=strategy, node=node)
-            except ValidationError:
-                return JsonResponse({"action": "error"})
-            return JsonResponse({"action": "posted"})
-    elif model == "strategy":
-        del data["work_classification"], data["activity_classification"]
-        data["parent_strategy"] = None
-        serializer = StrategySerializer(data=data)
-        if parent_id:
-            workflow = Workflow.objects.get(id=parent_id)
-            if serializer.is_valid():
-                strategy = serializer.save()
-            else:
-                return JsonResponse({"action": "error"})
-            try:
-                for link in StrategyWorkflow.objects.filter(workflow=workflow):
-                    link.rank += 1
-                    link.save()
-                StrategyWorkflow.objects.create(
-                    workflow=workflow, strategy=strategy
-                )
-            except ValidationError:
-                return JsonResponse({"action": "error"})
-            return JsonResponse({"action": "posted"})
-    else:
-        del data["work_classification"], data["activity_classification"]
-        return save_serializer(serializer_lookups[model](data=data))
-    return save_serializer(serializer)
-
-
-@require_POST
-@ajax_login_required
-@is_owner(False)
-def dialog_form_update(request: HttpRequest) -> HttpResponse:
-    data = json.loads(request.POST.get("object"))
-    model = json.loads(request.POST.get("objectType"))
-
-    serializer = serializer_lookups[model](
-        get_model_from_str(model).objects.get(id=data["id"]), data=data
-    )
-
-    return save_serializer(serializer)
-
-
-@require_POST
-@ajax_login_required
-@is_owner(False)
-def dialog_form_delete(request: HttpRequest) -> HttpResponse:
-    id = json.loads(request.POST.get("objectID"))
-    model = json.loads(request.POST.get("objectType"))
-
-    try:
-        get_model_from_str(model).objects.get(id=id).delete()
-    except ProtectedError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-
-
-@require_POST
-@ajax_login_required
-@is_owner(False)
-def dialog_form_remove(request: HttpRequest) -> HttpResponse:
-    link_id = json.loads(request.POST.get("linkID"))
-    is_program_level = json.loads(request.POST.get("isProgramLevelComponent"))
-
-    try:
-        if is_program_level:
-            ComponentProgram.objects.get(id=link_id).delete()
-        else:
-            ComponentWeek.objects.get(id=link_id).delete()
-    except ProtectedError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
 
 """
 Contextual information methods
@@ -1049,7 +925,6 @@ def get_flat_workflow(request: HttpRequest) -> HttpResponse:
 Duplication methods
 """
 
-
 def duplicate_nodelink(nodelink: NodeLink, author: User, source_node: Node, target_node: Node) -> NodeLink:
     new_nodelink = NodeLink.objects.create(
         title=nodelink.title,
@@ -1068,8 +943,6 @@ def duplicate_nodelink(nodelink: NodeLink, author: User, source_node: Node, targ
 def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
     if(new_workflow is not None):
         for new_column in new_workflow.columns.all():
-            print(new_column)
-            print(node.column)
             if new_column==node.column or new_column.parent_column==node.column:
                 column=new_column
                 break
@@ -1224,8 +1097,6 @@ def new_node(request: HttpRequest) -> HttpResponse:
     column_type = json.loads(request.POST.get("columnType"))
     position = json.loads(request.POST.get("position"))
     strategy = Strategy.objects.get(pk=strategy_id)
-    print("ADDING NODE")
-    print(column_id)
     try:
         if column_id is not None and column_id >= 0:
             column = Column.objects.get(pk=column_id)
@@ -1337,7 +1208,6 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
             new_model_serialized=NodeSerializerShallow(newmodel).data
             new_through_serialized=NodeStrategySerializerShallow(newthroughmodel).data
         elif object_type == "column":
-            print("column");
             model=Column.objects.get(id=object_id)
             parent=Workflow.objects.get(id=parent_id)
             through=ColumnWorkflow.objects.get(column=model,workflow=parent)
@@ -1399,7 +1269,6 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             new_children_serialized=None
             new_child_through_serialized=None
         elif object_type == "column":
-            print("column");
             model=Column.objects.get(id=object_id)
             parent=Workflow.objects.get(id=parent_id)
             through=ColumnWorkflow.objects.get(column=model,workflow=parent)
@@ -1548,9 +1417,6 @@ def update_value(request: HttpRequest) -> HttpResponse:
 def set_linked_workflow(node: Node,workflow):
     project = node.strategy_set.first().workflow_set.first().project_set.first()
     if project.author==node.author or project.published:
-        print(workflow)
-        print(workflow.author)
-        print(WorkflowProject.objects.get(workflow=workflow))
         if WorkflowProject.objects.get(workflow=workflow).project==project:
             node.linked_workflow=workflow
             node.save()

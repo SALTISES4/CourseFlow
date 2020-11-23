@@ -178,26 +178,6 @@ def flow_patterns():
             r"^activity/add-strategy", views.add_strategy, name="add-strategy"
         ),
         url(
-            r"^dialog-form/create",
-            views.dialog_form_create,
-            name="dialog-form-create",
-        ),
-        url(
-            r"^dialog-form/update",
-            views.dialog_form_update,
-            name="dialog-form-update",
-        ),
-        url(
-            r"^dialog-form/delete",
-            views.dialog_form_delete,
-            name="dialog-form-delete",
-        ),
-        url(
-            r"^dialog-form/remove",
-            views.dialog_form_remove,
-            name="dialog-form-remove",
-        ),
-        url(
             r"^course/duplication",
             views.duplicate_course_ajax,
             name="course-duplication",

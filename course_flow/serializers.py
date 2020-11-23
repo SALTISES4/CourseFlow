@@ -99,8 +99,8 @@ class ParentNodeSerializer(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "author",
-            "work_classification",
-            "activity_classification",
+            "task_classification",
+            "context_classification",
             "column",
         ]
 
@@ -181,8 +181,8 @@ class NodeSerializer(serializers.ModelSerializer):
             "columnworkflow",
             "hash",
             "author",
-            "work_classification",
-            "activity_classification",
+            "task_classification",
+            "context_classification",
             "node_type",
             "outcomenode_set",
             "outgoing_links",
@@ -224,11 +224,11 @@ class NodeSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
-        instance.work_classification = validated_data.get(
-            "work_classification", instance.work_classification
+        instance.task_classification = validated_data.get(
+            "task_classification", instance.task_classification
         )
-        instance.activity_classification = validated_data.get(
-            "activity_classification", instance.activity_classification
+        instance.context_classification = validated_data.get(
+            "context_classification", instance.context_classification
         )
         instance.save()
         return instance
