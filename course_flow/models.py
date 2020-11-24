@@ -113,7 +113,7 @@ class NodeLink(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    is_original=models.BooleanField(default=False)
+    is_original=models.BooleanField(default=True)
     parent_nodelink=models.ForeignKey(
         "NodeLink", on_delete=models.SET_NULL, null=True
     )

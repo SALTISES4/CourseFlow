@@ -1038,12 +1038,12 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
         for node in strategy.nodes.all():
             for node_link in NodeLink.objects.filter(source_node=node.parent_node):
                 for strategy2 in new_workflow.strategies.all():
-                    if strategy2.nodes.filter(parent_node==node_link.target_node).count()>0:
+                    if strategy2.nodes.filter(parent_node=node_link.target_node).count()>0:
                         duplicate_nodelink(
-                            nodelink,
+                            node_link,
                             author,
                             node,
-                            strategy2.nodes.get(parent_node==node_link.target_node)
+                            strategy2.nodes.get(parent_node=node_link.target_node)
                         )
                     
     
@@ -1055,7 +1055,7 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
 def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
-        clone = duplicate_workflow(course, request.user)
+        clone = duplicate_workflow(workflow, request.user)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -1121,7 +1121,7 @@ def new_node(request: HttpRequest) -> HttpResponse:
                 columnworkflow.column
             )
         if column.author != strategy.author:
-            raise ValidationError
+            raise ValidationError("Column and strategy have different authors")
         if position < 0 or position > strategy.nodes.count():
             position = strategy.nodes.count()
         node = Node.objects.create(
@@ -1153,7 +1153,7 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
     target = Node.objects.get(pk=target_id)
     try:
         if target.author != node.author:
-            raise ValidationError
+            raise ValidationError("Nodes have different authors")
         node_link = NodeLink.objects.create(
             author=node.author,
             source_node=node,
@@ -1223,7 +1223,7 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
             new_model_serialized=ColumnSerializerShallow(newmodel).data
             new_through_serialized=ColumnWorkflowSerializerShallow(newthroughmodel).data
         else:
-            raise ValidationError
+            raise ValidationError("Uknown component type")
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -1283,7 +1283,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             new_children_serialized=None
             new_child_through_serialized=None
         else:
-            raise ValidationError
+            raise ValidationError("Uknown component type")
     except ValidationError:
         return JsonResponse({"action": "error"})
     response = {"action": "posted", "new_model": new_model_serialized,"new_through":new_through_serialized,"parentID":parent_id,"siblingID":through.id,"children":new_children_serialized,"children_through":new_child_through_serialized}
@@ -1343,10 +1343,10 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                     parent.get_subclass().author
                     != new_parent.get_subclass().author
                 ):
-                    raise ValidationError
+                    raise ValidationError("Authorship conflict")
             else:
                 if parent.author != new_parent.author:
-                    raise ValidationError
+                    raise ValidationError("Authorship conflict")
             for out_of_order_link in model_type.objects.filter(
                 rank__gt=old_position, **{parentType: parent}
             ):
@@ -1380,6 +1380,8 @@ def change_column(request: HttpRequest) -> HttpResponse:
         if new_column.author == node.author:
             node.column = new_column
             node.save()
+        else: 
+            raise ValidationError("Authorship conflict")
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -1421,11 +1423,16 @@ def set_linked_workflow(node: Node,workflow):
             node.linked_workflow=workflow
             node.save()
         else:
-            if(workflow.author==node.author or WorkflowProject.objects.get(workflow=workflow).published):
-                new_workflow = duplicate_workflow(workflow,node.author)
-                WorkflowProject.objects.create(workflow=new_workflow,project=project)
-                node.linked_workflow=new_workflow
-                node.save()
+            try:
+                if(workflow.author==node.author or WorkflowProject.objects.get(workflow=workflow).project.published):
+                    new_workflow = duplicate_workflow(workflow,node.author)
+                    WorkflowProject.objects.create(workflow=new_workflow,project=project)
+                    node.linked_workflow=new_workflow
+                    node.save()
+                else:
+                    raise ValidationError("Project unpublished")
+            except ValidationError:
+                pass
 
 # Sets the linked workflow for a node, adding it to the project if different
 @require_POST
@@ -1446,6 +1453,8 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
             set_linked_workflow(node,workflow)
+            if node.linked_workflow is None:
+                raise ValidationError("Project could not be found")
             linked_workflow=node.linked_workflow.id
             linked_workflow_title=node.linked_workflow.title
             linked_workflow_description=node.linked_workflow.description
