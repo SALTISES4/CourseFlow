@@ -1,0 +1,92 @@
+
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static compress i18n %} {% get_current_language as LANGUAGE_CODE %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block header %}{% endblock %}
+<!-- -->
+{% block body %}
+
+<div id=container class="body-wrapper"></div><div id="popup-container"></div>
+
+
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %}
+
+<script nonce="{{request.csp_nonce}}">
+const workflow_paths = {
+    activity:'{% url "course_flow:activity-detail" pk=object.pk %}',
+    course:'{% url "course_flow:course-detail" pk=object.pk %}',
+    program:'{% url "course_flow:program-detail" pk=object.pk %}'
+}
+const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+var selection_manager;
+
+$("#floatbar").append("<a href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+    
+initial_data = {{data_flat|safe}}
+column_choices = {{column_choices|safe}}
+context_choices = {{context_choices|safe}}
+task_choices = {{task_choices|safe}}
+time_choices = {{time_choices|safe}}
+const read_only = true;
+console.log(read_only);
+    
+var initial_loading = true;
+var ports_rendered = false;
+var items_to_load = {
+    column:initial_data.column.length,
+    strategy:initial_data.strategy.length,
+    node:initial_data.node.length,
+};
+var ports_to_render = initial_data.node.length;
+$(document).on("component-loaded",(evt,objectType)=>{
+    console.log(items_to_load)
+    if(objectType&&items_to_load[objectType]){
+        items_to_load[objectType]--;
+        for(prop in items_to_load){
+            if(items_to_load[prop]>0)return;
+        }
+        initial_loading=false;
+        console.log("finished initial loading");
+        $(document).triggerHandler("render-ports");
+    }
+});
+
+$(document).on("ports-rendered",(evt)=>{
+    console.log(ports_to_render);
+    ports_to_render--;
+    if(ports_to_render>0)return;
+    ports_rendered=true;
+    console.log("ports rendered");
+    $(document).triggerHandler("render-links");
+});
+    
+window.addEventListener("load", function(){
+    selection_manager = new workflow_redux.SelectionManager();
+    
+    
+    workflow_redux.renderWorkflowView($("#container").get()[0]);
+    
+    
+})
+
+
+
+
+
+
+</script>
+
+{% endblock %}

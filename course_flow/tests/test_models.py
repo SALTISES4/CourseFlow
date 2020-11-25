@@ -728,6 +728,45 @@ class ModelViewTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
+    def test_project_detail_view(self):
+        author = get_author()
+        project = Project.objects.create(author=author)
+        response = self.client.get(
+            reverse("course_flow:project-detail-view", args=str(project.pk))
+        )
+        self.assertEqual(response.status_code, 302)
+        login(self)
+        response = self.client.get(
+            reverse("course_flow:project-detail-view", args=str(project.pk))
+        )
+        self.assertEqual(response.status_code, 403)
+        project.published=True
+        project.save()
+        response = self.client.get(
+            reverse("course_flow:project-detail-view", args=str(project.pk))
+        )
+        self.assertEqual(response.status_code, 200)
+        
+    
+    def test_project_update_view(self):
+        author = get_author()
+        project = Project.objects.create(author=author)
+        response = self.client.get(
+            reverse("course_flow:project-update", args=str(project.pk))
+        )
+        self.assertEqual(response.status_code, 302)
+        login(self)
+        response = self.client.get(
+            reverse("course_flow:project-update", args=str(project.pk))
+        )
+        self.assertEqual(response.status_code, 403)
+        project.published=True
+        project.save()
+        response = self.client.get(
+            reverse("course_flow:project-update", args=str(project.pk))
+        )
+        self.assertEqual(response.status_code, 403)
+        
     def test_workflow_detail_view(self):
         author = get_author()
         for workflow_type in ["activity", "course", "program"]:
@@ -746,7 +785,14 @@ class ModelViewTest(TestCase):
             response = self.client.get(
                 reverse("course_flow:workflow-detail", args=str(workflow.pk))
             )
+            self.assertEqual(response.status_code, 403)
+            workflow.published=True
+            workflow.save()
+            response = self.client.get(
+                reverse("course_flow:workflow-detail", args=str(workflow.pk))
+            )
             self.assertEqual(response.status_code, 200)
+            
 
     def test_workflow_update_view(self):
         author = get_author()
@@ -822,121 +868,6 @@ class ModelViewTest(TestCase):
         response = self.client.get(reverse("course_flow:activity-create", args=[project2.id]))
         self.assertEqual(response.status_code, 200)
 
-
-    def test_json_update_permissions_no_login(self):
-        author = get_author()
-        for object_type in ["activity", "course", "program"]:
-            serializer_data = serializer_lookups[object_type](
-                make_object(object_type, author)
-            ).data
-            serializer_data["title"] = "updated test title 1"
-            serializer_data["description"] = "update test description 1"
-            response = self.client.post(
-                reverse("course_flow:update-" + object_type + "-json"),
-                {
-                    "json": JSONRenderer()
-                    .render(serializer_data)
-                    .decode("utf-8")
-                },
-            )
-            self.assertEqual(response.status_code, 401)
-
-    def test_json_update_permissions_no_authorship(self):
-        login(self)
-        author = get_author()
-        for object_type in ["activity", "course", "program"]:
-            serializer_data = serializer_lookups[object_type](
-                make_object(object_type, author)
-            ).data
-            serializer_data["title"] = "updated test title 1"
-            serializer_data["description"] = "update test description 1"
-            response = self.client.post(
-                reverse("course_flow:update-" + object_type + "-json"),
-                {
-                    "json": JSONRenderer()
-                    .render(serializer_data)
-                    .decode("utf-8")
-                },
-            )
-            self.assertEqual(response.status_code, 401)
-
-    def test_json_update(self):
-        user = login(self)
-        for object_type in ["activity", "course", "program"]:
-            serializer_data = serializer_lookups[object_type](
-                make_object(object_type, user)
-            ).data
-            serializer_data["title"] = "updated test title 1"
-            serializer_data["description"] = "update test description 1"
-            response = self.client.post(
-                reverse("course_flow:update-" + object_type + "-json"),
-                {
-                    "json": JSONRenderer()
-                    .render(serializer_data)
-                    .decode("utf-8")
-                },
-            )
-            self.assertEqual(response.status_code, 200)
-            serializer_data_refresh = serializer_lookups[object_type](
-                get_model_from_str(object_type).objects.get(
-                    id=serializer_data["id"]
-                )
-            ).data
-            self.assertEqual(
-                serializer_data["title"], serializer_data_refresh["title"]
-            )
-            self.assertEqual(
-                serializer_data["id"], serializer_data_refresh["id"]
-            )
-            self.assertEqual(
-                serializer_data["description"],
-                serializer_data_refresh["description"],
-            )
-
-    def test_add_node_permissions_no_login(self):
-        author = get_author()
-        strategy = make_object("strategy", author)
-        node = make_object("node", author)
-        response = self.client.post(
-            reverse("course_flow:add-node"),
-            {"strategyPk": strategy.id, "nodePk": node.id},
-        )
-        self.assertEqual(response.status_code, 302)
-
-    def test_add_node_permissions_no_authorship(self):
-        login(self)
-        author = get_author()
-        strategy = make_object("strategy", author)
-        node = make_object("node", author)
-        response = self.client.post(
-            reverse("course_flow:add-node"),
-            {"strategyPk": strategy.id, "nodePk": node.id},
-        )
-        self.assertEqual(response.status_code, 401)
-        
-
-    def test_add_strategy_permissions_no_login(self):
-        author = get_author()
-        for object_type in ["activity", "course", "program"]:
-            strategy = make_object("strategy", author)
-            workflow = make_object(object_type, author)
-            response = self.client.post(
-                reverse("course_flow:add-strategy"),
-                {"workflowPk": workflow.id, "strategyPk": strategy.id},
-            )
-            self.assertEqual(response.status_code, 401)
-
-    def test_add_strategy_no_authorship(self):
-        login(self)
-        author = get_author()
-        for object_type in ["activity", "course", "program"]:
-            strategy = make_object("strategy", author)
-            workflow = make_object(object_type, author)
-            response = self.client.post(
-                reverse("course_flow:add-strategy"),
-                {"workflowPk": workflow.id, "strategyPk": strategy.id},
-            )
-            self.assertEqual(response.status_code, 401)
 
     def test_add_node_new_column(self):
         user = login(self)
@@ -1752,6 +1683,27 @@ class ModelViewTest(TestCase):
         response = self.client.post(
             reverse("course_flow:duplicate-workflow"),
             {"workflowPk": activity.id},
+        )
+        self.assertEqual(response.status_code, 401)
+        
+        
+    def test_publish_permissions_no_login_no_authorship(self):
+        author = get_author()
+        project = make_object("project",author)
+        response = self.client.post(
+            reverse("course_flow:project-toggle-published"),
+            {"projectPk": project.id},
+        )
+        self.assertEqual(response.status_code, 401)
+        
+
+    def test_publish_permissions_no_authorship(self):
+        login(self)
+        author = get_author()
+        project = make_object("project",author)
+        response = self.client.post(
+            reverse("course_flow:project-toggle-published"),
+            {"projectPk": project.id},
         )
         self.assertEqual(response.status_code, 401)
         

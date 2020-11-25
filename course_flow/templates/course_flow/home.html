@@ -36,12 +36,17 @@
 <script nonce="{{request.csp_nonce}}">
     
     const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+    const detail_path = "{% url 'course_flow:project-detail-view' pk='0'%}";
     const update_path = "{% url 'course_flow:project-update' pk='0'%}";
-    const project_create_path = "{% url 'course_flow:project-create' %}";
-    const projects = {{projects|safe}}
-    const owned_projects = {{owned_projects|safe}}
+    const create_path = {
+        project:"{% url 'course_flow:project-create' %}",
+    }
+    const data_package = {{project_data_package|safe}}
+    console.log(data_package);
+    const user_id = {{ user.id }};
+    const read_only=false;
     window.addEventListener("load",function(){
-        workflow_redux.renderHomeMenu(projects,owned_projects);
+        workflow_redux.renderHomeMenu(data_package);
     });
     
     

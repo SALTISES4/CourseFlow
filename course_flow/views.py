@@ -67,6 +67,18 @@ import math
 from .utils import get_model_from_str, get_parent_model_str, get_parent_model
 
 
+class OwnerOrPublishedMixin(UserPassesTestMixin):
+    
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+            and (
+                self.get_object().author == self.request.user
+                or self.get_object().published
+            )
+        )
+
 def registration_view(request):
 
     if request.method == "POST":
@@ -89,12 +101,110 @@ def registration_view(request):
     )
 
 
+def get_project_data_package(user):
+    data_package = {
+        "owned_projects":{
+            "title":"Your Projects",
+            "sections":[{
+                "title":"Add a Project",
+                "object_type":"project",
+                "objects":ProjectSerializerShallow(
+                    Project.objects.filter(author=user),many=True
+                ).data,
+            }],
+            "add":True,
+        },
+        "other_projects":{
+            "title":"Published Projects",
+            "sections":[{
+                "title":"Published Projects",
+                "object_type":"project",
+                "objects":ProjectSerializerShallow(
+                    Project.objects.filter(published=True).exclude(author=user),many=True
+                ).data
+            }]
+        }
+    }
+    return data_package
+
+def get_workflow_data_package(user,project,type_filter):
+    data_package = {
+        "current_project":{
+            "title":"This Project",
+            "sections":[{
+                "title":"Programs",
+                "object_type":"program",
+                "objects":ProgramSerializerShallow(
+                    Program.objects.filter(project=project),many=True
+                ).data
+            },{
+                "title":"Courses",
+                "object_type":"course",
+                "objects":CourseSerializerShallow(
+                    Course.objects.filter(project=project),many=True
+                ).data
+            },{
+                "title":"Activities",
+                "object_type":"activity",
+                "objects":ActivitySerializerShallow(
+                    Activity.objects.filter(project=project),many=True
+                ).data
+            }],
+            "add":(project.author==user),
+        },
+        "other_projects":{
+            "title":"From Your Other Projects",
+            "sections":[{
+                "title":"Programs",
+                "object_type":"program",
+                "objects":ProgramSerializerShallow(
+                    Program.objects.filter(author=user).exclude(project=project),many=True
+                ).data
+            },{
+                "title":"Courses",
+                "object_type":"course",
+                "objects":CourseSerializerShallow(
+                    Course.objects.filter(author=user).exclude(project=project),many=True
+                ).data
+            },{
+                "title":"Activities",
+                "object_type":"activity",
+                "objects":ActivitySerializerShallow(
+                    Activity.objects.filter(author=user).exclude(project=project),many=True
+                ).data
+            }]
+        },
+        "all_published":{
+            "title":"All Published Workflows",
+            "sections":[{
+                "title":"Programs",
+                "object_type":"program",
+                "objects":ProgramSerializerShallow(
+                    Program.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
+                ).data
+            },{
+                "title":"Courses",
+                "object_type":"course",
+                "objects":CourseSerializerShallow(
+                    Course.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
+                ).data
+            },{
+                "title":"Activities",
+                "object_type":"activity",
+                "objects":ActivitySerializerShallow(
+                    Activity.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
+                ).data
+            }]
+        }
+    }
+    return data_package
+    
+
 @login_required
 def home_view(request):
-    
-    
-    context = {"projects":JSONRenderer().render(ProjectSerializerShallow(Project.objects.exclude(author=request.user),many=True).data).decode("utf-8"),
-    "owned_projects": JSONRenderer().render(ProjectSerializerShallow(Project.objects.filter(author=request.user),many=True).data).decode("utf-8")}
+    context = {
+        "project_data_package":JSONRenderer().render(get_project_data_package(request.user)).decode("utf-8")
+    }
     return render(request, "course_flow/home.html", context)
 
 class ProjectCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -118,20 +228,24 @@ class ProjectCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         )
     
     
-class ProjectDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class ProjectDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Project
+    fields = ["title", "description","published"]
     template_name = "course_flow/project_detail.html"
 
-    def test_func(self):
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-        )
+    
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        project = self.object
+        context["workflow_data_package"]=JSONRenderer().render(get_workflow_data_package(self.request.user,project,None)).decode("utf-8")
+        context["project_data"]=JSONRenderer().render(ProjectSerializerShallow(project).data).decode("utf-8")
+        
+        return context
 
 
 class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Project
-    fields = ["title", "description"]
+    fields = ["title", "description","published"]
     template_name = "course_flow/project_update.html"
     
     def test_func(self):
@@ -140,32 +254,8 @@ class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         project = self.object
-        data = {
-            "programs":ProgramSerializerShallow(Program.objects.exclude(author=self.request.user),many=True).data,
-            "courses":CourseSerializerShallow(Course.objects.exclude(author=self.request.user).exclude(static=True),many=True).data,
-            "activities":ActivitySerializerShallow(Activity.objects.exclude(
-                    author=self.request.user
-                ).exclude(static=True),many=True).data,
-            "owned_programs":ProgramSerializerShallow(Program.objects.filter(
-                    author=self.request.user
-                ).exclude(project=project),many=True).data,
-            "owned_courses":CourseSerializerShallow(Course.objects.filter(
-                    author=self.request.user, static=False
-                ).exclude(project=project),many=True).data,
-            "owned_activities":ActivitySerializerShallow(Activity.objects.filter(
-                    author=self.request.user, static=False
-                ).exclude(project=project),many=True).data,
-            "project_programs":ProgramSerializerShallow(Program.objects.filter(
-                    author=self.request.user,project=project
-                ),many=True).data,
-            "project_courses":CourseSerializerShallow(Course.objects.filter(
-                    author=self.request.user,project=project,
-                ),many=True).data,
-            "project_activities":ActivitySerializerShallow(Activity.objects.filter(
-                    author=self.request.user,project=project,
-                ),many=True).data
-        }
-        context["workflows"]=JSONRenderer().render(data).decode("utf-8")
+        context["workflow_data_package"]=JSONRenderer().render(get_workflow_data_package(self.request.user,project,None)).decode("utf-8")
+        context["project_data"]=JSONRenderer().render(ProjectSerializerShallow(project).data).decode("utf-8")
         
         return context
 
@@ -228,26 +318,69 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
 
-class WorkflowDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class WorkflowDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Workflow
+    fields = ["title", "description"]
     template_name = "course_flow/workflow_detail.html"
 
-    def get_object(self):
-        wf = super().get_object()
-        return Workflow.objects.get_subclass(pk=wf.pk)
+    def get_queryset(self):
+        return self.model.objects.select_subclasses()
 
-    def test_func(self):
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
+    def get_object(self):
+        workflow = super().get_object()
+        return Workflow.objects.get_subclass(pk=workflow.pk)
+
+
+    def get_success_url(self):
+        return reverse(
+            "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
         )
 
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        workflow=self.get_object()
+        SerializerClass = serializer_lookups_shallow[workflow.type]
+        columnworkflows = workflow.columnworkflow_set.all()
+        strategyworkflows = workflow.strategyworkflow_set.all()
+        columns = workflow.columns.all()
+        strategies = workflow.strategies.all()
+        nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
+        nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
+        nodelinks = NodeLink.objects.filter(source_node__in=nodes)
+        column_choices = [{'type':choice[0],'name':choice[1]} for choice in Column._meta.get_field('column_type').choices]
+        context_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('context_classification').choices]
+        task_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('task_classification').choices]
+        time_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('time_units').choices]
+        parent_project_pk = WorkflowProject.objects.get(workflow=workflow).project.pk
+        
 
-class WorkflowViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+        data_flat = {
+            "workflow":SerializerClass(workflow).data,
+            "columnworkflow":ColumnWorkflowSerializerShallow(columnworkflows,many=True).data,
+            "column":ColumnSerializerShallow(columns,many=True).data,
+            "strategyworkflow":StrategyWorkflowSerializerShallow(strategyworkflows,many=True).data,
+            "strategy":StrategySerializerShallow(strategies,many=True).data,
+            "nodestrategy":NodeStrategySerializerShallow(nodestrategies,many=True).data,
+            "node":NodeSerializerShallow(nodes,many=True).data,
+            "nodelink":NodeLinkSerializerShallow(nodelinks,many=True).data,
+
+        }
+        
+        context["data_flat"]=JSONRenderer().render(data_flat).decode("utf-8")
+        context["column_choices"]=JSONRenderer().render(column_choices).decode("utf-8")
+        context["context_choices"]=JSONRenderer().render(context_choices).decode("utf-8")
+        context["task_choices"]=JSONRenderer().render(task_choices).decode("utf-8")
+        context["time_choices"]=JSONRenderer().render(time_choices).decode("utf-8")
+        context["parent_project_pk"] = JSONRenderer().render(parent_project_pk).decode("utf-8")
+        return context
+
+
+
+class WorkflowViewSet(LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = WorkflowSerializerFinder
     renderer_classes = [JSONRenderer]
     queryset = Workflow.objects.select_subclasses()
-
+    
 
 class StrategyWorkflowViewSet(
     LoginRequiredMixin, viewsets.ReadOnlyModelViewSet
@@ -293,35 +426,30 @@ class ColumnViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Column.objects.all()
 
 
-class ActivityViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+class ActivityViewSet(LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = ActivitySerializer
     renderer_classes = [JSONRenderer]
     queryset = Activity.objects.all()
 
 
-class CourseViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+class CourseViewSet(LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseSerializer
     renderer_classes = [JSONRenderer]
     queryset = Course.objects.all()
 
 
-class ProgramViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+class ProgramViewSet(LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = ProgramSerializer
     renderer_classes = [JSONRenderer]
     queryset = Program.objects.all()
 
 
-class ProgramDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+
+class ProgramDetailView(LoginRequiredMixin,  OwnerOrPublishedMixin, DetailView):
     model = Program
     template_name = "course_flow/program_detail.html"
 
-    def test_func(self):
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-        )
-
-
+    
 class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Program
     fields = ["title", "description"]
@@ -342,6 +470,7 @@ class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         WorkflowProject.objects.create(
             project=project,workflow=form.instance
         )
+        form.instance.published = project.published
         return response
 
     def get_success_url(self):
@@ -350,54 +479,11 @@ class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         )
 
 
-class ProgramUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Program
-    fields = ["title", "description", "author"]
-    template_name = "course_flow/program_update.html"
 
-    def test_func(self):
-        return self.get_object().author == self.request.user
-
-    def get_context_data(self, **kwargs):
-        context = super(UpdateView, self).get_context_data(**kwargs)
-        component_set = set()
-        for course in Course.objects.filter(
-            author=self.request.user, static=False
-        ).order_by("-last_modified")[:10]:
-            component, created = Component.objects.get_or_create(
-                object_id=course.id,
-                content_type=ContentType.objects.get_for_model(Course),
-            )
-            component_set.add(component.pk)
-        context["owned_components"] = Component.objects.filter(
-            pk__in=component_set
-        )
-        context["owned_component_json"] = (
-            JSONRenderer()
-            .render(
-                ProgramLevelComponentSerializer(
-                    context["owned_components"], many=True
-                ).data
-            )
-            .decode("utf-8")
-        )
-        return context
-
-    def get_success_url(self):
-        return reverse(
-            "course_flow:course-detail", kwargs={"pk": self.object.pk}
-        )
-
-
-class CourseDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class CourseDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Course
     template_name = "course_flow/course_detail.html"
 
-    def test_func(self):
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-        )
 
 
 class StaticCourseDetailView(LoginRequiredMixin, DetailView):
@@ -430,6 +516,7 @@ class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         WorkflowProject.objects.create(
             project=project,workflow=form.instance
         )
+        form.instance.published = project.published
         return response
 
     def get_success_url(self):
@@ -438,54 +525,10 @@ class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         )
 
 
-class CourseUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Course
-    fields = ["title", "description", "author"]
-    template_name = "course_flow/course_update.html"
 
-    def test_func(self):
-        return self.get_object().author == self.request.user
-
-    def get_context_data(self, **kwargs):
-        context = super(UpdateView, self).get_context_data(**kwargs)
-        component_set = set()
-        for activity in Activity.objects.filter(
-            author=self.request.user, static=False
-        ).order_by("-last_modified")[:10]:
-            component, created = Component.objects.get_or_create(
-                object_id=activity.id,
-                content_type=ContentType.objects.get_for_model(Activity),
-            )
-            component_set.add(component.pk)
-        context["owned_components"] = Component.objects.filter(
-            pk__in=component_set
-        )
-        context["owned_component_json"] = (
-            JSONRenderer()
-            .render(
-                WeekLevelComponentSerializer(
-                    context["owned_components"], many=True
-                ).data
-            )
-            .decode("utf-8")
-        )
-        return context
-
-    def get_success_url(self):
-        return reverse(
-            "course_flow:course-detail", kwargs={"pk": self.object.pk}
-        )
-
-
-class ActivityDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class ActivityDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Activity
     template_name = "course_flow/activity_detail.html"
-
-    def test_func(self):
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-        )
 
 
 class StaticActivityDetailView(LoginRequiredMixin, DetailView):
@@ -518,6 +561,7 @@ class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         WorkflowProject.objects.create(
             project=project,workflow=form.instance
         )
+        form.instance.published = project.published
         return response
 
     def get_success_url(self):
@@ -526,32 +570,6 @@ class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         )
 
 
-class ActivityUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Activity
-    fields = ["title", "description", "author"]
-    template_name = "course_flow/activity_update.html"
-
-    def test_func(self):
-        return self.get_object().author == self.request.user
-
-    def get_context_data(self, **kwargs):
-        context = super(UpdateView, self).get_context_data(**kwargs)
-        default_strategy_quearyset = Strategy.objects.filter(
-            default=True
-        ).annotate(num_children=Count("strategy"))
-        context["default_strategy_json"] = (
-            JSONRenderer()
-            .render(
-                StrategySerializer(default_strategy_quearyset, many=True).data
-            )
-            .decode("utf-8")
-        )
-        return context
-
-    def get_success_url(self):
-        return reverse(
-            "course_flow:activity-detail", kwargs={"pk": self.object.pk}
-        )
 
 
 def save_serializer(serializer) -> HttpResponse:
@@ -1463,6 +1481,25 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted","id":node_id,"linked_workflow":linked_workflow,"linked_workflow_title":linked_workflow_title,"linked_workflow_description":linked_workflow_description})
+
+
+# Toggles whether or not a project is published
+@require_POST
+@ajax_login_required
+@is_owner("projectPk")
+def project_toggle_published(request: HttpRequest) -> HttpResponse:
+    try:
+        object_id = json.loads(request.POST.get("projectPk"))
+        project = Project.objects.get(id=object_id)
+        project.published = (not project.published)
+        project.save()
+        for workflow in project.workflows.all():
+            workflow.published = project.published
+            workflow.save()
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
 
 """
 Delete methods

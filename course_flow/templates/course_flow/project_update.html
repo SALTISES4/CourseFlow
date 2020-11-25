@@ -123,12 +123,20 @@
     
     const iconpath = "{% static 'course_flow/img/images_svg/' %}";
     const update_path = "{% url 'course_flow:workflow-update' pk='0'%}";
-    const program_create_path = "{% url 'course_flow:program-create' projectPk=object.pk %}";
-    const course_create_path = "{% url 'course_flow:course-create' projectPk=object.pk %}";
-    const activity_create_path = "{% url 'course_flow:activity-create' projectPk=object.pk %}";
-    const workflows = {{workflows|safe}}
+    const detail_path = "{% url 'course_flow:workflow-detail-view' pk='0'%}";
+    const create_path = {
+        activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
+        course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
+        program:"{% url 'course_flow:program-create' projectPk=object.pk %}"
+    }
+    const data_package = {{workflow_data_package|safe}};
+    const project_data= {{project_data|safe}};
+    console.log(data_package);
+    const project_title = "{{object.title|safe}}";
+    const user_id = {{ user.id }};
+    const read_only=false;
     window.addEventListener("load",function(){
-        workflow_redux.renderProjectMenu(workflows);
+        workflow_redux.renderProjectMenu(data_package,project_data);
     });
     
     
@@ -137,6 +145,16 @@
         $.post("{% url 'course_flow:delete-self' %}", {
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+    
+    //Publishes or unpublishes the project
+    function togglePublish(callBackFunction=()=>console.log("success")){
+        $.post("{% url 'course_flow:project-toggle-published' %}", {
+            projectPk:JSON.stringify({{object.pk|safe}})
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else console.log("Failed");

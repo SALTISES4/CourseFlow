@@ -397,13 +397,13 @@ circle.mouseover{
     height:40px;
 }
 
-.ui-tabs-tab a{
+.side-bar .ui-tabs-tab a{
     text-decoration:none;
     color:lightgray;
     filter:grayscale(100%);
 }
 
-.ui-tabs-tab a img{
+.side-bar .ui-tabs-tab a img{
     width:32px;
 }
 

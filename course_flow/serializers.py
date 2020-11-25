@@ -775,6 +775,8 @@ class ProjectSerializerShallow(serializers.ModelSerializer):
             "title",
             "description",
             "author",
+            "author_id",
+            "published",
             "created_on",
             "last_modified",
             "workflowproject_set",
@@ -800,6 +802,9 @@ class ProjectSerializerShallow(serializers.ModelSerializer):
         return instance
 
 class WorkflowSerializerShallow(serializers.ModelSerializer):
+    
+    author_id = serializers.SerializerMethodField()
+    
     class Meta:
         model = Workflow
         fields = [
@@ -824,6 +829,9 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
+    
+    def get_author_id(self,instance):
+        return instance.author.id
 
     def get_strategyworkflow_set(self, instance):
         links = instance.strategyworkflow_set.all().order_by("rank")
@@ -847,6 +855,9 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
 
 
 class ProgramSerializerShallow(WorkflowSerializerShallow):
+    
+    author_id = serializers.SerializerMethodField()
+    
     class Meta:
         model = Program
         fields = [
@@ -854,6 +865,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "title",
             "description",
             "author",
+            "author_id",
             "created_on",
             "last_modified",
             "hash",
@@ -866,6 +878,9 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
         ]
+        
+    def get_author_id(self,instance):
+        return instance.author.id
 
     def create(self, validated_data):
         return Program.objects.create(
@@ -877,6 +892,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
 class CourseSerializerShallow(WorkflowSerializerShallow):
 
     discipline = DisciplineSerializer(read_only=True)
+    author_id = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
@@ -885,6 +901,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "title",
             "description",
             "author",
+            "author_id",
             "created_on",
             "last_modified",
             "hash",
@@ -898,6 +915,9 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
         ]
+        
+    def get_author_id(self,instance):
+        return instance.author.id
 
     def create(self, validated_data):
         return Course.objects.create(
@@ -907,6 +927,9 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
 
 
 class ActivitySerializerShallow(WorkflowSerializerShallow):
+    
+    author_id = serializers.SerializerMethodField()
+    
     class Meta:
         model = Activity
         fields = [
@@ -914,6 +937,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "title",
             "description",
             "author",
+            "author_id",
             "created_on",
             "last_modified",
             "hash",
@@ -926,6 +950,9 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
         ]
+        
+    def get_author_id(self,instance):
+        return instance.author.id
 
     def create(self, validated_data):
         if User.objects.filter(username=self.initial_data["author"]).exists():

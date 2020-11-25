@@ -394,7 +394,7 @@ function workflowReducer(state={},action){
             new_state[action.payload.field]=action.payload.value;
             let json = {};
             json[action.payload.field]=action.payload.value;
-            updateValue(action.payload.id,"workflow",json);
+            if(!read_only)updateValue(action.payload.id,"workflow",json);
             return new_state;
         default:
             return state;
@@ -459,7 +459,7 @@ function columnReducer(state={},action){
                     new_state[i][action.payload.field]=action.payload.value;
                     let json = {};
                     json[action.payload.field]=action.payload.value;
-                    updateValue(action.payload.id,"column",json);
+                    if(!read_only)updateValue(action.payload.id,"column",json);
                     return new_state;
                 }
             }
@@ -585,7 +585,7 @@ function strategyReducer(state={},action){
                     new_state[i][action.payload.field]=action.payload.value;
                     let json = {};
                     json[action.payload.field]=action.payload.value;
-                    updateValue(action.payload.id,"strategy",json);
+                    if(!read_only)updateValue(action.payload.id,"strategy",json);
                     return new_state;
                 }
             }
@@ -698,7 +698,7 @@ function nodeReducer(state={},action){
                     new_state[i][action.payload.field]=action.payload.value;
                     let json = {};
                     json[action.payload.field]=action.payload.value;
-                    updateValue(action.payload.id,"node",json);
+                    if(!read_only)updateValue(action.payload.id,"node",json);
                     return new_state;
                 }
             }
@@ -846,6 +846,7 @@ export class ComponentJSON extends Component{
     postMountFunction(){};
     
     makeSortableNode(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false){
+        if(read_only)return;
         var props = this.props;
         sortable_block.draggable({
             containment:".workflow-container",
@@ -929,6 +930,7 @@ export class ComponentJSON extends Component{
     }
     
     makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false){
+        if(read_only)return;
         sortable_block.sortable({
             containment:".workflow-container",
             axis:axis,
@@ -1021,6 +1023,7 @@ export class ComponentJSON extends Component{
     
     //Makes the item selectable
     addEditable(data){
+        if(read_only)return null;
         if(this.state.selected){
             var type=this.objectType;
             var props = this.props;
@@ -1378,7 +1381,7 @@ export class NodePorts extends Component{
     componentDidMount(){
         console.log("ports mounted");
         var thisComponent=this;
-        d3.selectAll(
+        if(!read_only)d3.selectAll(
             'g.port-'+this.props.nodeID+" circle[data-port-type='source']"
         ).call(d3.drag().on("start",function(d){
             $(".workflow-canvas").addClass("creating-node-link");
@@ -1511,11 +1514,11 @@ export class NodeView extends ComponentJSON{
                         {linkIcon}
                     </div>
                 </div> 
-                <div class="mouseover-actions">
+                {!read_only && <div class="mouseover-actions">
                     {this.addInsertSibling(data)}
                     {this.addDuplicateSelf(data)}
                     {this.addDeleteSelf(data)}
-                </div>
+                </div>}
                 {this.addEditable(data)}
                 {nodePorts}
                 {node_links}
@@ -1618,13 +1621,14 @@ export class StrategyView extends ComponentJSON{
         );
         return (
             <div class={"strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
-                <div class="mouseover-container-bypass">
+                {!read_only && <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}
                         {this.addDuplicateSelf(data)}
                         {this.addDeleteSelf(data)}
                     </div>
                 </div>
+                }
                 <TitleText text={data.title} defaultText={data.strategy_type_display+" "+(this.props.rank+1)}/>
                 <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                     {nodes}
@@ -1708,13 +1712,14 @@ export class TermView extends StrategyView{
         }
         return (
             <div class={"strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
-                <div class="mouseover-container-bypass">
+                {!read_only && <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}
                         {this.addDuplicateSelf(data)}
                         {this.addDeleteSelf(data)}
                     </div>
                 </div>
+                }
                 <TitleText text={data.title} defaultText={data.strategy_type_display+" "+(this.props.rank+1)}/>
                 <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                     {node_blocks}
@@ -1803,11 +1808,11 @@ export class ColumnView extends ComponentJSON{
                     <div>{title}</div>
                 </div>
                 {this.addEditable(data)}
-                <div class="mouseover-actions">
+                {!read_only && <div class="mouseover-actions">
                     {this.addInsertSibling(data)}
                     {this.addDuplicateSelf(data)}
                     {this.addDeleteSelf(data)}
-                </div>
+                </div>}
             </div>
         );
     }
@@ -1895,7 +1900,7 @@ export class WorkflowView extends ComponentJSON{
                             </defs>
                         </svg>
                     </div>
-                    {reactDom.createPortal(
+                    {!read_only &&reactDom.createPortal(
                         <NodeBarConnected/>
                     ,$("#container")[0])}
                 </div>
@@ -2246,6 +2251,11 @@ export class WorkflowForMenu extends Component{
                     </a>
                 );
             }
+            buttons.push(
+                <a href={detail_path.replace("0",this.props.workflow_data.id)}>
+                    <img src={iconpath+'pageview-24px.svg'}/>
+                </a>
+            );
         }
         return (
             <div class="workflow-buttons">
@@ -2256,137 +2266,159 @@ export class WorkflowForMenu extends Component{
 }
 
 
-export function renderHomeMenu(projects,owned_projects){
+export function renderHomeMenu(data_package){
     reactDom.render(
-        <HomeMenu projects={projects} owned_projects={owned_projects}/>,
+        <HomeMenu data_package={data_package}/>,
         $("#content-container")[0]
     );
 }
 
-export class HomeMenu extends Component{
+
+export class MenuSection extends Component{
     render(){
-        var owned_projects = this.props.owned_projects.map((project)=>
-                <WorkflowForMenu key={project.id} type={"homemenu"} owned={true} workflow_data={project} objectType={"project"}/>
-            );
-        var other_projects = this.props.projects.map((project)=>
-                <WorkflowForMenu key={project.id} type={"homemenu"} owned={false} workflow_data={project} objectType={"project"}/>
-            );
-        if(owned_projects.length==0)owned_projects="You have not yet created any projects";
-        if(other_projects.length==0)other_projects="Nobody else has published any projects";
-        return(
-            <div class="message-wrap">
-                <div class="message-panel">
-                    <h2>Your Projects:
-                          <a href={project_create_path}
-                            ><img
-                              class="create-button link-image"
-                              src={iconpath+"add-square-button.svg"}
-                          /></a>
-                    </h2>
-                    {owned_projects}
-                </div>
-                <div class="message-panel">
-                    <h2>All Published Projects:</h2>
-                    {other_projects}
-                </div>
+        var objects = this.props.section_data.objects.map((object)=>
+            <WorkflowForMenu key={object.id} type={this.props.type} owned={(object.author_id==user_id)} workflow_data={object} objectType={this.props.section_data.object_type}/>                            
+        );
+        
+        
+        if(objects.length==0)objects="This category is currently empty."
+
+        return (
+            <div>
+                <h3>{this.props.section_data.title+":"}
+                {this.props.add &&
+                  <a href={create_path[this.props.section_data.object_type]}
+                    ><img
+                      class="create-button link-image"
+                      src={iconpath+"add-square-button.svg"}
+                  /></a>
+                }
+                </h3>
+                {objects}
+            </div>
+        );
+        
+    }
+}
+
+export class MenuTab extends Component{
+    render(){
+        var sections = this.props.data.sections.map((section)=>
+            <MenuSection type={this.props.type} section_data={section} add={this.props.data.add}/>
+        );
+        
+        return (
+            <div id={"tabs-"+this.props.identifier}>
+                <h2>{this.props.data.title}</h2>
+                {sections}
             </div>
         );
     }
 }
 
-export function renderProjectMenu(data){
+export class HomeMenu extends Component{
+    render(){
+        var tabs = [];
+        var tab_li = [];
+        var i = 0;
+        for(var prop in this.props.data_package){
+            tab_li.push(
+                <li><a href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
+            )
+            tabs.push(
+                <MenuTab data={this.props.data_package[prop]} type="homemenu" identifier={i}/>
+            )
+            i++;
+        }
+        return(
+            <div class="home-tabs" id="home-tabs">
+                <ul>
+                    {tab_li}
+                </ul>
+                {tabs}
+            </div>
+        );
+        
+    }
+    
+    componentDidMount(){
+        console.log("tabbing");
+        $("#home-tabs").tabs();
+    }
+}
+
+export function renderProjectMenu(data,project){
     reactDom.render(
-        <ProjectMenu data={data}/>,
+        <ProjectMenu data_package={data} project={project}/>,
         $("#content-container")[0]
     );
 }
 
 export class ProjectMenu extends Component{
+    constructor(props){
+        super(props);
+        console.log(props.project);
+        console.log(props.project.published);
+        this.state={published:props.project.published};
+    }
+    
     render(){
-        var project_programs = this.props.data.project_programs.map((workflow)=>
-                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"program"}/>
-            );
-        var project_courses = this.props.data.project_courses.map((workflow)=>
-                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"course"}/>
-            );
-        var project_activities = this.props.data.project_activities.map((workflow)=>
-                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"activity"}/>
-            );
-        var owned_programs = this.props.data.owned_programs.map((workflow)=>
-                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"program"}/>
-            );
-        var owned_courses = this.props.data.owned_courses.map((workflow)=>
-                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"course"}/>
-            );
-        var owned_activities = this.props.data.owned_activities.map((workflow)=>
-                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={true} workflow_data={workflow} objectType={"activity"}/>
-            );
-        var other_programs = this.props.data.programs.map((workflow)=>
-                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={false} workflow_data={workflow} objectType={"program"}/>
-            );
-        var other_courses = this.props.data.courses.map((workflow)=>
-                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={false} workflow_data={workflow} objectType={"course"}/>
-            );
-        var other_activities = this.props.data.activities.map((workflow)=>
-                <WorkflowForMenu key={workflow.id} type={"projectmenu"} owned={false} workflow_data={workflow} objectType={"activity"}/>
-            );
-        if(project_programs.length==0)project_programs="There are no programs in this project";
-        if(project_courses.length==0)project_courses="There are no courses in this project";
-        if(project_activities.length==0)project_activities="There are no activities in this project";
-        if(owned_programs.length==0)owned_programs="You have no other programs";
-        if(owned_courses.length==0)owned_programs="You have no other courses";
-        if(owned_activities.length==0)owned_activities="You have no other activities";
-        if(other_programs.length==0)other_programs="Nobody else has published any programs";
-        if(other_courses.length==0)other_courses="Nobody else has published any courses";
-        if(other_activities.length==0)other_activities="Nobody else has published any activities";
-        
+        var tabs = [];
+        var tab_li = [];
+        var i = 0;
+        for(var prop in this.props.data_package){
+            tab_li.push(
+                <li><a href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
+            )
+            tabs.push(
+                <MenuTab data={this.props.data_package[prop]} type="projectmenu" identifier={i}/>
+            )
+            i++;
+        }
         return(
-            <div class="message-wrap">
-                <div class="message-panel">
-                    <h2>From This Project:</h2>
-                    <h3>Programs:
-                          <a href={program_create_path}
-                            ><img
-                              class="create-button link-image"
-                              src={iconpath+"add-square-button.svg"}
-                          /></a>
-                    </h3>
-                    {project_programs}
-                    <h3>Courses:
-                          <a href={course_create_path}
-                            ><img
-                              class="create-button link-image"
-                              src={iconpath+"add-square-button.svg"}
-                          /></a>
-                    </h3>
-                    {project_courses}
-                    <h3>Activities:
-                          <a href={activity_create_path}
-                            ><img
-                              class="create-button link-image"
-                              src={iconpath+"add-square-button.svg"}
-                          /></a>
-                    </h3>
-                    {project_activities}
+            <div>
+                <div class="project-header">
+                    <h2>{this.props.project.title}</h2>
+                    <p>{this.props.project.description}</p>
+                    {this.state.published &&
+                        <p>{"This project has been published and is visibile to all"}</p>
+                    }
+                    {!this.state.published &&
+                        <p>{"This project has not been published, only you can see it"}</p>
+                    }
+                    <button class="publish-button" onClick={this.togglePublish.bind(this)}>
+                        {this.props.project.author_id==user_id && this.state.published &&
+                            "Unpublish"
+                        }
+                        {this.props.project.author_id==user_id && !this.state.published &&
+                            "Publish"
+                        }
+                    </button>
                 </div>
-                <div class="message-panel">
-                    <h2>From Your Other Projects:</h2>
-                    <h3>Programs:</h3>
-                    {owned_programs}
-                    <h3>Courses:</h3>
-                    {owned_courses}
-                    <h3>Activities:</h3>
-                    {owned_activities}
-                    <h2>From All Published Projects:</h2>
-                    <h3>Programs:</h3>
-                    {other_programs}
-                    <h3>Courses:</h3>
-                    {other_courses}
-                    <h3>Courses:</h3>
-                    {other_courses}
+                <div class="home-tabs" id="home-tabs">
+                    <ul>
+                        {tab_li}
+                    </ul>
+                    {tabs}
                 </div>
             </div>
         );
+    }
+    
+    componentDidMount(){
+        console.log("tabbing");
+        $("#home-tabs").tabs();
+    }
+                           
+    togglePublish(){
+        console.log(this.state.published);
+        if(!this.state.published && window.confirm("Are you sure you want to publish this project, making it fully visible to anyone with an account?")){
+            togglePublish();
+            this.setState({published:!this.state.published});
+        }else if(this.state.published && window.confirm("Are you sure you want to unpublish this project, rendering it hidden to all other users?")){
+            togglePublish();
+            this.setState({published:!this.state.published});
+        }
     }
 }
 

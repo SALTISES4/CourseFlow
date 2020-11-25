@@ -6,17 +6,10 @@ from rest_framework import routers
 from . import lti, views
 
 router = routers.SimpleRouter()
+router.register(r"workflow/read", views.WorkflowViewSet)
 router.register(r"activity/read", views.ActivityViewSet)
 router.register(r"course/read", views.CourseViewSet)
 router.register(r"program/read", views.ProgramViewSet)
-router.register(r"workflow/read", views.WorkflowViewSet)
-router.register(r"columnworkflow/read", views.ColumnWorkflowViewSet)
-router.register(r"column/read", views.ColumnViewSet)
-router.register(r"strategyworkflow/read", views.StrategyWorkflowViewSet)
-router.register(r"strategy/read", views.StrategyViewSet)
-router.register(r"nodestrategy/read", views.NodeStrategyViewSet)
-router.register(r"node/read", views.NodeViewSet)
-router.register(r"nodelink/read", views.NodeLinkViewSet)
 
 
 app_name = "course_flow"
@@ -46,6 +39,9 @@ def flow_patterns():
         ),
         url(
             r"^workflow/updatevalue/$", views.update_value, name="update-value"
+        ),
+        url(
+            r"^project/project-toggle-published/$", views.project_toggle_published, name="project-toggle-published"
         ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
         url(r"^workflow/duplicate-self/$", views.duplicate_self, name="duplicate-self"),
@@ -105,11 +101,6 @@ def flow_patterns():
             name="program-detail-view",
         ),
         url(
-            r"^program/(?P<pk>[0-9]+)/update/$",
-            views.ProgramUpdateView.as_view(),
-            name="program-update",
-        ),
-        url(
             r"^course/(?P<projectPk>[0-9]+)/create/$",
             views.CourseCreateView.as_view(),
             name="course-create",
@@ -118,21 +109,6 @@ def flow_patterns():
             r"^course/(?P<pk>[0-9]+)/$",
             views.CourseDetailView.as_view(),
             name="course-detail-view",
-        ),
-        url(
-            r"^course/(?P<pk>[0-9]+)/static/$",
-            views.StaticCourseDetailView.as_view(),
-            name="static-course-detail-view",
-        ),
-        url(
-            r"^course/(?P<pk>[0-9]+)/student/$",
-            views.StudentCourseDetailView.as_view(),
-            name="student-course-detail-view",
-        ),
-        url(
-            r"^course/(?P<pk>[0-9]+)/update/$",
-            views.CourseUpdateView.as_view(),
-            name="course-update",
         ),
         url(
             r"^activity/(?P<projectPk>[0-9]+)/create/$",
@@ -145,40 +121,6 @@ def flow_patterns():
             name="activity-detail-view",
         ),
         url(
-            r"^activity/(?P<pk>[0-9]+)/static/$",
-            views.StaticActivityDetailView.as_view(),
-            name="static-activity-detail-view",
-        ),
-        url(
-            r"^activity/(?P<pk>[0-9]+)/student/$",
-            views.StudentActivityDetailView.as_view(),
-            name="student-activity-detail-view",
-        ),
-        url(
-            r"^activity/(?P<pk>[0-9]+)/update/$",
-            views.ActivityUpdateView.as_view(),
-            name="activity-update",
-        ),
-        url(
-            r"^activity/update-json",
-            views.update_activity_json,
-            name="update-activity-json",
-        ),
-        url(
-            r"^course/update-json",
-            views.update_course_json,
-            name="update-course-json",
-        ),
-        url(
-            r"^program/update-json",
-            views.update_program_json,
-            name="update-program-json",
-        ),
-        url(r"^activity/add-node", views.add_node, name="add-node"),
-        url(
-            r"^activity/add-strategy", views.add_strategy, name="add-strategy"
-        ),
-        url(
             r"^course/duplication",
             views.duplicate_course_ajax,
             name="course-duplication",
@@ -187,26 +129,6 @@ def flow_patterns():
             r"^activity/duplication",
             views.duplicate_activity_ajax,
             name="activity-duplication",
-        ),
-        url(
-            r"^node/switch-completion-status",
-            views.switch_node_completion_status,
-            name="switch-node-completion-status",
-        ),
-        url(
-            r"^component/switch-completion-status",
-            views.switch_component_completion_status,
-            name="switch-component-completion-status",
-        ),
-        url(
-            r"^node/get-completion-status",
-            views.get_node_completion_status,
-            name="get-node-completion-status",
-        ),
-        url(
-            r"^node/get-completion-count",
-            views.get_node_completion_count,
-            name="get-node-completion-count",
         ),
     ] + router.urls
 
