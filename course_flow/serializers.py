@@ -985,4 +985,5 @@ serializer_lookups_shallow = {
     "activity": ActivitySerializerShallow,
     "course": CourseSerializerShallow,
     "program": ProgramSerializerShallow,
+    "project": ProjectSerializerShallow,
 }

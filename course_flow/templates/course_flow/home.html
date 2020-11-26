@@ -42,7 +42,6 @@
         project:"{% url 'course_flow:project-create' %}",
     }
     const data_package = {{project_data_package|safe}}
-    console.log(data_package);
     const user_id = {{ user.id }};
     const read_only=false;
     window.addEventListener("load",function(){

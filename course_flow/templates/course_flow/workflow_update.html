@@ -16,9 +16,9 @@
 <div id=container class="body-wrapper"></div><div id="popup-container"></div>
 <div id="sidebar" class="side-bar">
     <ul>
-        <li><a href="#edit-menu"><img src="{% static 'course_flow/img/images_svg/edit.svg' %}"/></a></li>
-        <li><a href="#node-bar"><img src="{% static 'course_flow/img/images_svg/nodebar.svg' %}"/></a></li>
-        <li><a href="#outcome-bar"><img src="{% static 'course_flow/img/images_svg/view.svg' %}"/></a></li>
+        <li><a href="#edit-menu"><img src="{% static 'course_flow/img/images_svg/pencil-blue.svg' %}"/></a></li>
+        <li><a href="#node-bar"><img src="{% static 'course_flow/img/images_svg/add-square-button.svg' %}"/></a></li>
+        <li><a href="#outcome-bar"><img src="{% static 'course_flow/img/images_svg/pageview-24px.svg' %}"/></a></li>
     </ul>
     <div id="edit-menu" class="right-panel-container"></div>
     <div id="node-bar" class="right-panel-container"></div>
@@ -55,6 +55,8 @@ context_choices = {{context_choices|safe}}
 task_choices = {{task_choices|safe}}
 time_choices = {{time_choices|safe}}
 const read_only=false;
+const user_id = {{ user.id }};
+const create_path=null;
     
 var initial_loading = true;
 var ports_rendered = false;
@@ -65,24 +67,20 @@ var items_to_load = {
 };
 var ports_to_render = initial_data.node.length;
 $(document).on("component-loaded",(evt,objectType)=>{
-    console.log(items_to_load)
     if(objectType&&items_to_load[objectType]){
         items_to_load[objectType]--;
         for(prop in items_to_load){
             if(items_to_load[prop]>0)return;
         }
         initial_loading=false;
-        console.log("finished initial loading");
         $(document).triggerHandler("render-ports");
     }
 });
 
 $(document).on("ports-rendered",(evt)=>{
-    console.log(ports_to_render);
     ports_to_render--;
     if(ports_to_render>0)return;
     ports_rendered=true;
-    console.log("ports rendered");
     $(document).triggerHandler("render-links");
 });
     
@@ -93,7 +91,7 @@ window.addEventListener("load", function(){
     workflow_redux.renderWorkflowView($("#container").get()[0]);
     
     
-})
+});
 
 function getLinkedWorkflowMenu(nodeData,updateFunction){
     $.post("{% url 'course_flow:get-possible-linked-workflows' %}",{
@@ -102,14 +100,12 @@ function getLinkedWorkflowMenu(nodeData,updateFunction){
 }
 
 function openLinkedWorkflowMenu(response,updateFunction){
-    console.log(response);
     if(response.action=="posted"){
         workflow_redux.renderMessageBox(response,"linked_workflow_menu",updateFunction);
     }else alert("Failed to find the parent project. Is this workflow in a project?");
 }
 
 function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>console.log("success")){
-    console.log(node_id)
     $.post("{% url 'course_flow:set-linked-workflow' %}", {
         nodePk:node_id,
         workflowPk:workflow_id,
@@ -122,9 +118,7 @@ function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>console.log
 function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
     var t = 1000;
     let previousCall = this.lastUpdateCall;
-    console.log("Calling update value");
     this.lastUpdateCall = {time:Date.now(),id:objectID,type:objectType,field:Object.keys(json)[0]};
-    console.log(this.lastUpdateCall);
     
     if(previousCall && ((this.lastUpdateCall.time-previousCall.time)<=t)){
         clearTimeout(this.lastUpdateCallTimer);
@@ -133,7 +127,6 @@ function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("
        this.lastUpdateCallFunction();
     }
     this.lastUpdateCallFunction = ()=>{
-        console.log("posting updated value");
         $.post("{% url 'course_flow:update-value' %}", {
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType),
@@ -159,8 +152,6 @@ function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("succ
     
 //Add a new node to a strategy
 function newNode(strategyPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){
-    console.log(strategyPk);
-    console.log("column: "+column);
     $.post("{% url 'course_flow:new-node' %}", {
         strategyPk:JSON.stringify(strategyPk),
         position:JSON.stringify(position),
@@ -199,28 +190,22 @@ function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("succes
 
 //Causes the specified object to insert a sibling after itself
 function duplicateSelf(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
-    console.log(objectID);
-    console.log(parentID);
     $.post("{% url 'course_flow:duplicate-self' %}", {
         parentID:JSON.stringify(parentID),
         objectID:JSON.stringify(objectID),
         objectType:JSON.stringify(objectType),
     }).done(function(data){
-        console.log(callBackFunction);
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
     });
 }
 //Causes the specified object to insert a sibling after itself
 function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
-    console.log(objectID);
-    console.log(parentID);
     $.post("{% url 'course_flow:insert-sibling' %}", {
         parentID:JSON.stringify(parentID),
         objectID:JSON.stringify(objectID),
         objectType:JSON.stringify(objectType),
     }).done(function(data){
-        console.log(callBackFunction);
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
     });

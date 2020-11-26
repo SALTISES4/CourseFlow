@@ -9,7 +9,8 @@ import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as m
 
 
 const node_keys=["activity","course","program"];
-const columnwidth = 200
+const columnwidth = 160
+const nodewidth = 200;
 const node_ports={
     source:{
         e:[1,0.6],
@@ -130,8 +131,6 @@ export class SelectionManager{
             if($("#sidebar").tabs( "option", "active" )>0)$("#sidebar").tabs( "option", "active", 0 );
             this.currentSelection.setState({selected:true});
         }else{
-            console.log("current tab:");
-            console.log($("#sidebar").tabs( "option", "active" ));
             if($("#sidebar").tabs( "option", "active" )===0)$("#sidebar").tabs( "option", "active", 1 );
             $("#sidebar").tabs("disable",0);
         }
@@ -362,7 +361,6 @@ function workflowReducer(state={},action){
             }
             return state;
         case 'strategy/insertBelow':
-            console.log(action);
             new_state = {...state}
             var new_strategyworkflow_set = state.strategyworkflow_set.slice();
             new_strategyworkflow_set.splice(new_strategyworkflow_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
@@ -644,7 +642,10 @@ function nodeReducer(state={},action){
                 if(state[i].id==action.payload.id){
                     try{
                         let columns = action.payload.columnworkflows;
-                        let new_columnworkflow = columns[columns.indexOf(state[i].columnworkflow)+action.payload.delta_x];
+                        let old_columnworkflow_index = columns.indexOf(state[i].columnworkflow);
+                        let new_columnworkflow_index = old_columnworkflow_index+action.payload.delta_x;
+                        if(new_columnworkflow_index<0 || new_columnworkflow_index>=columns.length)return state;
+                        let new_columnworkflow = columns[new_columnworkflow_index];
                         var new_nodedata = {
                             ...state[i],
                             columnworkflow:new_columnworkflow,
@@ -1156,8 +1157,6 @@ export class TitleText extends Component{
 export class NodeLinkSVG extends Component{
     render(){
         
-        console.log("rendering svg");
-        console.log(this.props.target_port_handle);
         try{
             const source_transform=getSVGTranslation(this.props.source_port_handle.select(function(){
                 return this.parentNode}).attr("transform"));
@@ -1172,7 +1171,7 @@ export class NodeLinkSVG extends Component{
             return (
                 <g fill="none" stroke="black">
                     <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"+((this.props.selected && " selected")||"")}/>
-                    <path stroke-width="2px" d={path} marker-end="url(#arrow)"/>
+                    <path opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
                 </g>
             );
         }catch(err){return null;}
@@ -1262,7 +1261,6 @@ export class AutoLinkView extends Component{
     }
     
     render(){
-        console.log("rendering autolink");
         if(!this.source_node||this.source_node.length==0){
             this.source_node = $(this.props.node_div.current);
             this.source_port_handle = d3.select(
@@ -1273,10 +1271,8 @@ export class AutoLinkView extends Component{
         if(this.target_node&&this.target_node.parent().parent().length==0)this.target_node=null;
         this.findAutoTarget();
         if(!this.target_node)return null;
-        console.log("found a target for an autolink");
         var source_dims = {width:this.source_node.outerWidth(),height:this.source_node.outerHeight()};
         var target_dims = {width:this.target_node.outerWidth(),height:this.target_node.outerHeight()};
-        console.log(target_dims);
         return(
             <div>
                 {reactDom.createPortal(
@@ -1305,15 +1301,11 @@ export class AutoLinkView extends Component{
     }
 
     rerender(evt){
-        console.log("rerender called for autolink");
-        console.log(evt);
         this.setState({});
     }
 
     setTarget(target){
         if(target){
-            console.log("setting the target");
-            console.log(this.target_port_handle);
             if(this.target_node&&target==this.target_node.attr("id")){
                 if(!this.target_port_handle||this.target_port_handle.empty()){
                     this.target_port_handle = d3.select(
@@ -1379,7 +1371,6 @@ export class NodePorts extends Component{
     }
     
     componentDidMount(){
-        console.log("ports mounted");
         var thisComponent=this;
         if(!read_only)d3.selectAll(
             'g.port-'+this.props.nodeID+" circle[data-port-type='source']"
@@ -1415,7 +1406,6 @@ export class NodePorts extends Component{
     }
     
     componentDidUpdate(){
-        console.log("rendered ports");
         $(this.props.node_div.current).triggerHandler("ports-rendered");
     }
     
@@ -1444,7 +1434,6 @@ export class NodeView extends ComponentJSON{
         var nodePorts;
         var node_links;
         var auto_link;
-        console.log("rendering node");
         if(!this.state.initial_render)nodePorts = reactDom.createPortal(
                 <NodePorts nodeID={this.props.objectID} node_div={this.maindiv} dispatch={this.props.dispatch}/>
             ,$(".workflow-canvas")[0]
@@ -1611,7 +1600,6 @@ export class StrategyView extends ComponentJSON{
     }
     
     render(){
-        console.log("rendering strategy");
         let data = this.props.data;
         var nodes = data.nodestrategy_set.map((nodestrategy)=>
             <NodeStrategyViewConnected key={nodestrategy} objectID={nodestrategy} parentID={data.id}/>
@@ -1962,8 +1950,6 @@ export class NodeBar extends ComponentJSON{
         var nodebarstrategyworkflows = data.strategyworkflow_set.map((strategyworkflow)=>
             <NodeBarStrategyWorkflowConnected key={strategyworkflow} objectID={strategyworkflow}/>
         );
-        console.log($("#node-bar"));
-        console.log($("#node-bar")[0]);
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
                 <h4>Nodes:</h4>
@@ -2029,7 +2015,6 @@ export class NodeBarColumn extends ComponentJSON{
                 helper.appendTo(document.body);
                 return helper;
             },
-            containment:".workflow-container",
             cursor:"move",
             cursorAt:{top:20,left:100},
             distance:10,
@@ -2120,6 +2105,9 @@ export class MessageBox extends Component{
         if(this.props.message_type=="linked_workflow_menu")menu=(
             <WorkflowsMenu type={this.props.message_type} data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
+        if(this.props.message_type=="project_edit_menu")menu=(
+            <ProjectEditMenu type={this.props.message_type} data={this.props.message_data} actionFunction={this.props.actionFunction}/>
+        );
         return(
             <div class="screen-barrier" onClick={(evt)=>evt.stopPropagation()}>
                 <div class="message-box">
@@ -2134,36 +2122,38 @@ export class WorkflowsMenu extends Component{
     constructor(props){
         super(props);
         this.state={};
+        this.project_workflows = props.data.data_package.current_project.sections[0].objects.map((object)=>object.id);
     }
     
     render(){
-        var project_workflows = this.props.data.project_workflows.map((project_workflow)=>
-                <WorkflowForMenu key={project_workflow.id} type={this.props.type} owned={true} in_project={true} workflow_data={project_workflow} selected={(this.state.selected==project_workflow.id)} selectAction={this.workflowSelected.bind(this,project_workflow.id,"project")}/>
-            );
-        var other_workflows = this.props.data.other_workflows.map((other_workflow)=>
-                <WorkflowForMenu key={other_workflow} type={this.props.type} owned={true} in_project={false} workflow_data={other_workflow} selected={(this.state.selected==other_workflow.id)} selectAction={this.workflowSelected.bind(this,other_workflow.id,"other")}/>
-            );
-        var published_workflows = this.props.data.published_workflows.map((published_workflow)=>
-                <WorkflowForMenu key={published_workflow} type={this.props.type} owned={false} in_project={false} workflow_data={published_workflow} selected={(this.state.selected==published_workflow.id)} selectAction={this.workflowSelected.bind(this,published_workflow.id,"published")}/>
-            );
+        var data_package = this.props.data.data_package;
         
+        var tabs = [];
+        var tab_li = [];
+        var i = 0;
+        for(var prop in data_package){
+            tab_li.push(
+                <li class="tab-header"><a href={"#tabs-"+i}>{data_package[prop].title}</a></li>
+            )
+            tabs.push(
+                <MenuTab data={data_package[prop]} type={this.props.type} identifier={i} selected_id={this.state.selected} selectAction={this.workflowSelected.bind(this)}/>
+            )
+            i++;
+        }
         return(
             <div class="message-wrap">
-                <div class="message-panel">
-                    <h2>From this project:</h2>
-                    {project_workflows}
-                </div>
-                <div class="message-panel">
-                    <h2>From your other projects:</h2>
-                    {other_workflows}
-                    <h2>From other published projects:</h2>
-                    {published_workflows}
+                <div class="home-tabs" id="home-tabs">
+                    <ul>
+                        {tab_li}
+                    </ul>
+                    {tabs}
                 </div>
                 <div class="action-bar">
                     {this.getActions()}
                 </div>
             </div>
         );
+        
     }
     
     workflowSelected(selected_id,selected_type){
@@ -2174,7 +2164,7 @@ export class WorkflowsMenu extends Component{
         var actions = [];
         if(this.props.type=="linked_workflow_menu"){
             var text="link to node";
-            if(this.state.selected && this.state.selected_type!="project")text="copy to current project and "+text;
+            if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text="copy to current project and "+text;
             actions.push(
                 <button disabled={!this.state.selected} onClick={()=>{
                     setLinkedWorkflow(this.props.data.node_id,this.state.selected,this.props.actionFunction)
@@ -2198,6 +2188,11 @@ export class WorkflowsMenu extends Component{
             );
         }
         return actions;
+    }
+    
+    componentDidMount(){
+        $("#home-tabs").tabs();
+        $(".tab-header").on("click",()=>{this.setState({selected:null})})
     }
 }
 
@@ -2232,7 +2227,6 @@ export class WorkflowForMenu extends Component{
     
     getButtons(){
         var buttons=[];
-        console.log(this.props.type);
         if(this.props.type=="projectmenu"||this.props.type=="homemenu"){
             if(this.props.owned){
                 buttons.push(
@@ -2277,7 +2271,7 @@ export function renderHomeMenu(data_package){
 export class MenuSection extends Component{
     render(){
         var objects = this.props.section_data.objects.map((object)=>
-            <WorkflowForMenu key={object.id} type={this.props.type} owned={(object.author_id==user_id)} workflow_data={object} objectType={this.props.section_data.object_type}/>                            
+            <WorkflowForMenu key={object.id} type={this.props.type} owned={(object.author_id==user_id)} workflow_data={object} objectType={this.props.section_data.object_type} selected={(this.props.selected_id==object.id)} selectAction={()=>{this.props.selectAction(object.id)}}/>                            
         );
         
         
@@ -2286,7 +2280,7 @@ export class MenuSection extends Component{
         return (
             <div>
                 <h3>{this.props.section_data.title+":"}
-                {this.props.add &&
+                {create_path && this.props.add &&
                   <a href={create_path[this.props.section_data.object_type]}
                     ><img
                       class="create-button link-image"
@@ -2304,7 +2298,7 @@ export class MenuSection extends Component{
 export class MenuTab extends Component{
     render(){
         var sections = this.props.data.sections.map((section)=>
-            <MenuSection type={this.props.type} section_data={section} add={this.props.data.add}/>
+            <MenuSection type={this.props.type} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} selectAction={this.props.selectAction}/>
         );
         
         return (
@@ -2342,7 +2336,6 @@ export class HomeMenu extends Component{
     }
     
     componentDidMount(){
-        console.log("tabbing");
         $("#home-tabs").tabs();
     }
 }
@@ -2357,9 +2350,7 @@ export function renderProjectMenu(data,project){
 export class ProjectMenu extends Component{
     constructor(props){
         super(props);
-        console.log(props.project);
-        console.log(props.project.published);
-        this.state={published:props.project.published};
+        this.state={title:props.project.title,description:props.project.description,published:props.project.published};
     }
     
     render(){
@@ -2378,22 +2369,18 @@ export class ProjectMenu extends Component{
         return(
             <div>
                 <div class="project-header">
-                    <h2>{this.props.project.title}</h2>
-                    <p>{this.props.project.description}</p>
+                    <h2>{this.state.title} {this.props.project.author_id==user_id  &&
+                        <a onClick ={ this.openEdit.bind(this)}>
+                            <img src={iconpath+'pencil-blue.svg'}/>
+                        </a>
+                    }</h2>
+                    <p>{this.state.description}</p>
                     {this.state.published &&
                         <p>{"This project has been published and is visibile to all"}</p>
                     }
                     {!this.state.published &&
                         <p>{"This project has not been published, only you can see it"}</p>
                     }
-                    <button class="publish-button" onClick={this.togglePublish.bind(this)}>
-                        {this.props.project.author_id==user_id && this.state.published &&
-                            "Unpublish"
-                        }
-                        {this.props.project.author_id==user_id && !this.state.published &&
-                            "Publish"
-                        }
-                    </button>
                 </div>
                 <div class="home-tabs" id="home-tabs">
                     <ul>
@@ -2405,20 +2392,90 @@ export class ProjectMenu extends Component{
         );
     }
     
+    openEdit(){
+        renderMessageBox({...this.state,id:this.props.project.id},"project_edit_menu",this.updateFunction.bind(this));
+    }
+    
     componentDidMount(){
-        console.log("tabbing");
         $("#home-tabs").tabs();
     }
-                           
-    togglePublish(){
-        console.log(this.state.published);
-        if(!this.state.published && window.confirm("Are you sure you want to publish this project, making it fully visible to anyone with an account?")){
-            togglePublish();
-            this.setState({published:!this.state.published});
-        }else if(this.state.published && window.confirm("Are you sure you want to unpublish this project, rendering it hidden to all other users?")){
-            togglePublish();
-            this.setState({published:!this.state.published});
+
+    updateFunction(new_state){
+        this.setState(new_state);
+    }
+}
+
+export class ProjectEditMenu extends Component{
+    constructor(props){
+        super(props);
+        this.state=props.data;
+    }
+    
+    render(){
+        var data = this.state;
+        
+        return(
+            <div class="message-wrap">
+                <h3>{"Edit Project:"}</h3>
+                <div>
+                    <h4>Title:</h4>
+                    <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
+                </div>
+                <div>
+                    <h4>Description:</h4>
+                    <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
+                </div>
+                <div>
+                    <h4>Published:</h4>
+                    <input type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
+                    <label for="published">Is Published (visible to all users)</label>
+                </div>
+                <div class="action-bar">
+                    {this.getActions()}
+                </div>
+            </div>
+        )
+    }
+    
+    
+    inputChanged(field,evt){
+        var new_state={}
+        new_state[field]=evt.target.value;
+        this.setState(new_state);
+    }
+
+    
+    checkboxChanged(field,evt){
+        if(field=="published"){
+            if(!this.state.published && !window.confirm("Are you sure you want to publish this project, making it fully visible to anyone with an account?")){
+                return;
+            }else if(this.state.published && !window.confirm("Are you sure you want to unpublish this project, rendering it hidden to all other users?")){
+                return;
+            }
         }
+        var new_state={}
+        new_state[field]=evt.target.checked;
+        this.setState(new_state);
+    }
+
+    getActions(){
+        var actions = [];
+        actions.push(
+            <button onClick={()=>{
+                updateValue(this.state.id,"project",this.state);
+                if(this.state.published!=this.props.data.published)togglePublish();
+                this.props.actionFunction(this.state);
+                closeMessageBox();
+            }}>
+                Save Changes
+            </button>
+        );
+        actions.push(
+            <button onClick={closeMessageBox}>
+                cancel
+            </button>
+        );
+        return actions;
     }
 }
 

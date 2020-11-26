@@ -128,73 +128,91 @@ def get_project_data_package(user):
     return data_package
 
 def get_workflow_data_package(user,project,type_filter):
+    this_project_sections = []
+    other_project_sections = []
+    all_published_sections = []
+    if(type_filter is None):
+        this_project_sections.append({
+            "title":"Programs",
+            "object_type":"program",
+            "objects":ProgramSerializerShallow(
+                Program.objects.filter(project=project),many=True
+            ).data
+        })
+        other_project_sections.append({
+            "title":"Programs",
+            "object_type":"program",
+            "objects":ProgramSerializerShallow(
+                Program.objects.filter(author=user).exclude(project=project),many=True
+            ).data
+        })
+        all_published_sections.append({
+            "title":"Programs",
+            "object_type":"program",
+            "objects":ProgramSerializerShallow(
+                Program.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
+            ).data
+        })
+    if(type_filter is None or type_filter==1):
+        this_project_sections.append({
+            "title":"Courses",
+            "object_type":"course",
+            "objects":CourseSerializerShallow(
+                Course.objects.filter(project=project),many=True
+            ).data
+        })
+        other_project_sections.append({
+            "title":"Courses",
+            "object_type":"course",
+            "objects":CourseSerializerShallow(
+                Course.objects.filter(author=user).exclude(project=project),many=True
+            ).data
+        })
+        all_published_sections.append({
+            "title":"Courses",
+            "object_type":"course",
+            "objects":CourseSerializerShallow(
+                Course.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
+            ).data
+        })
+            
+    
+    if(type_filter is None or type_filter==0):
+        this_project_sections.append({
+            "title":"Activities",
+            "object_type":"activity",
+            "objects":ActivitySerializerShallow(
+                Activity.objects.filter(project=project),many=True
+            ).data
+        })
+        other_project_sections.append({
+            "title":"Activities",
+            "object_type":"activity",
+            "objects":ActivitySerializerShallow(
+                Activity.objects.filter(author=user).exclude(project=project),many=True
+            ).data
+        })
+        all_published_sections.append({
+            "title":"Activities",
+            "object_type":"activity",
+            "objects":ActivitySerializerShallow(
+                Activity.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
+            ).data
+        })
+    
     data_package = {
         "current_project":{
             "title":"This Project",
-            "sections":[{
-                "title":"Programs",
-                "object_type":"program",
-                "objects":ProgramSerializerShallow(
-                    Program.objects.filter(project=project),many=True
-                ).data
-            },{
-                "title":"Courses",
-                "object_type":"course",
-                "objects":CourseSerializerShallow(
-                    Course.objects.filter(project=project),many=True
-                ).data
-            },{
-                "title":"Activities",
-                "object_type":"activity",
-                "objects":ActivitySerializerShallow(
-                    Activity.objects.filter(project=project),many=True
-                ).data
-            }],
+            "sections":this_project_sections,
             "add":(project.author==user),
         },
         "other_projects":{
             "title":"From Your Other Projects",
-            "sections":[{
-                "title":"Programs",
-                "object_type":"program",
-                "objects":ProgramSerializerShallow(
-                    Program.objects.filter(author=user).exclude(project=project),many=True
-                ).data
-            },{
-                "title":"Courses",
-                "object_type":"course",
-                "objects":CourseSerializerShallow(
-                    Course.objects.filter(author=user).exclude(project=project),many=True
-                ).data
-            },{
-                "title":"Activities",
-                "object_type":"activity",
-                "objects":ActivitySerializerShallow(
-                    Activity.objects.filter(author=user).exclude(project=project),many=True
-                ).data
-            }]
+            "sections":other_project_sections,
         },
         "all_published":{
             "title":"All Published Workflows",
-            "sections":[{
-                "title":"Programs",
-                "object_type":"program",
-                "objects":ProgramSerializerShallow(
-                    Program.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
-                ).data
-            },{
-                "title":"Courses",
-                "object_type":"course",
-                "objects":CourseSerializerShallow(
-                    Course.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
-                ).data
-            },{
-                "title":"Activities",
-                "object_type":"activity",
-                "objects":ActivitySerializerShallow(
-                    Activity.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
-                ).data
-            }]
+            "sections":all_published_sections,
         }
     }
     return data_package
@@ -884,31 +902,10 @@ def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
         project = node.strategy_set.first().workflow_set.first().project_set.first()
-        if node.node_type==Node.COURSE_NODE:
-            workflows = Activity.objects.filter(author=request.user,project=project, static=False)
-            workflows_other = Activity.objects.filter(author=request.user, static=False).exclude(project=project)
-            workflows_pub = Activity.objects.exclude(author=request.user).exclude(static=True)
-            SerializerClass = ActivitySerializerShallow
-        if node.node_type==Node.PROGRAM_NODE:
-            workflows = Course.objects.filter(author=request.user,project=project, static=False)
-            workflows_other = Course.objects.filter(author=request.user, static=False).exclude(project=project)
-            workflows_pub = Course.objects.exclude(author=request.user).exclude(static=True)
-            SerializerClass = CourseSerializerShallow
-        project_workflows = []
-        other_workflows = []
-        published_workflows=[]
-        project_workflows=(
-            SerializerClass(workflows, many=True).data
-        )
-        other_workflows=(
-            SerializerClass(workflows_other, many=True).data
-        )
-        published_workflows=(
-            SerializerClass(workflows_pub, many=True).data
-        )
+        data_package = get_workflow_data_package(request.user,project,node.node_type-1)
     except AttributeError:
         return JsonResponse({"action":"error"})
-    return JsonResponse({"action":"posted","project_workflows":project_workflows,"other_workflows":other_workflows,"published_workflows":published_workflows,"node_id":node.id})
+    return JsonResponse({"action":"posted","data_package":data_package,"node_id":node.id})
     
 
 @require_POST

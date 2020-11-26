@@ -94,7 +94,7 @@ p{
 .column{
     position:relative;
     padding:5px;
-    width:200px;
+    width:160px;
     white-space:normal;
     text-align:center;
     vertical-align:top;
@@ -124,13 +124,14 @@ p{
 }
 
 .column-row{
-    padding-left:10px;
-    padding-right:10px;
+    padding-left:40px;
+    padding-right:40px;
     background:white;
     position:sticky;
     top:0px;
     z-index:2;
     font-size:16px;
+    border:2px solid white;
 }
 
 .node-strategy{
@@ -150,17 +151,18 @@ p{
 }
 
 .node-block.term{
-    width:200px;
+    width:160px;
     display:inline-block;
     vertical-align: top;
 }
 
 .term .node{
-    left:0px !important;
+    left:10px !important;
+    width:140px;
 }
 
 .node-ghost{
-    width:200px;
+    width:160px;
     min-height:50px;
     border:1px dashed black;
     position:absolute;
@@ -367,8 +369,8 @@ circle.mouseover{
     position:fixed;
     overflow:visible;
     z-index:4;
-    right:8px;
-    top:102px;
+    right:16px;
+    top:100px;
     bottom:0px;
 }
 
@@ -382,25 +384,37 @@ circle.mouseover{
     height:100%;
     width:240px;
     display:inline-block;
+    position:relative;
 }
 
 .side-bar .ui-tabs-nav{
-    margin:5px;
+    margin:5px -2px 5px 5px; 
     padding:0px;
     display:inline-block;
-    margin-right:16px;
 }
 
 .side-bar .ui-tabs-tab{
     text-align:center;
     display:block;
-    height:40px;
+    height:32px;
+    background:white;
+    border-radius:3px;
+    border:1px solid lightgray;
+}
+
+.side-bar .ui-tabs-tab.ui-state-disabled{
+    visibility:hidden;
+    height:0px;
 }
 
 .side-bar .ui-tabs-tab a{
+    margin-right:4px;
+    display:block;
     text-decoration:none;
     color:lightgray;
     filter:grayscale(100%);
+    box-sizing:border-box;
+    height:100%;
 }
 
 .side-bar .ui-tabs-tab a img{
@@ -412,9 +426,6 @@ circle.mouseover{
     filter:none;
 }
 
-.ui-tabs-tab.ui-state-disabled a{
-    visibility:hidden;
-}
 
 .right-panel-inner{
     display:inline;
@@ -544,6 +555,9 @@ circle.mouseover{
 .message-wrap{
     width:100%;
     height:100%;
+    overflow-y:scroll;
+    padding:20px;
+    box-sizing:border-box;
 }
 
 .message-panel{

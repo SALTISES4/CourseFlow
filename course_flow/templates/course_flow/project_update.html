@@ -97,7 +97,7 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id="content-container" class="body-wrapper"></div>
+<div id="content-container" class="body-wrapper"></div><div id="popup-container"></div>
 <!-- -->
 {% endblock %}
 <!-- -->
@@ -155,6 +155,17 @@
     function togglePublish(callBackFunction=()=>console.log("success")){
         $.post("{% url 'course_flow:project-toggle-published' %}", {
             projectPk:JSON.stringify({{object.pk|safe}})
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+    
+    function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
+        $.post("{% url 'course_flow:update-value' %}", {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            data:JSON.stringify(json)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else console.log("Failed");

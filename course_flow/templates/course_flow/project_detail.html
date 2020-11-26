@@ -9,7 +9,7 @@
 {% block header %}{% endblock %}
 <!-- -->
 {% block body %}
-<div id="content-container" class="body-wrapper"></div>
+<div id="content-container" class="body-wrapper"></div><div id="popup-container"></div>
 {% endblock %}
 <!-- -->
 {% block foot %} {% endblock %}
@@ -42,7 +42,6 @@
     }
     const data_package = {{workflow_data_package|safe}}
     const project_data= {{project_data|safe}}
-    console.log(data_package);
     const project_title = "{{object.title|safe}}";
     const read_only=true;
     const user_id = {{ user.id }};
@@ -71,5 +70,15 @@
         });
     }
     
+    function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
+        $.post("{% url 'course_flow:update-value' %}", {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            data:JSON.stringify(json)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
 </script>
 {% endblock %}
