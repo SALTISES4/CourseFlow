@@ -740,14 +740,13 @@ class ModelViewTest(TestCase):
             reverse("course_flow:project-detail-view", args=str(project.pk))
         )
         self.assertEqual(response.status_code, 403)
-        project.published=True
+        project.published = True
         project.save()
         response = self.client.get(
             reverse("course_flow:project-detail-view", args=str(project.pk))
         )
         self.assertEqual(response.status_code, 200)
-        
-    
+
     def test_project_update_view(self):
         author = get_author()
         project = Project.objects.create(author=author)
@@ -760,19 +759,19 @@ class ModelViewTest(TestCase):
             reverse("course_flow:project-update", args=str(project.pk))
         )
         self.assertEqual(response.status_code, 403)
-        project.published=True
+        project.published = True
         project.save()
         response = self.client.get(
             reverse("course_flow:project-update", args=str(project.pk))
         )
         self.assertEqual(response.status_code, 403)
-        
+
     def test_workflow_detail_view(self):
         author = get_author()
         for workflow_type in ["activity", "course", "program"]:
             project = Project.objects.create(author=author)
             workflow = make_object(workflow_type, author)
-            WorkflowProject.objects.create(workflow=workflow,project=project)
+            WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
                 reverse("course_flow:workflow-detail", args=str(workflow.pk))
             )
@@ -781,25 +780,24 @@ class ModelViewTest(TestCase):
         for workflow_type in ["activity", "course", "program"]:
             project = Project.objects.create(author=author)
             workflow = make_object(workflow_type, author)
-            WorkflowProject.objects.create(workflow=workflow,project=project)
+            WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
                 reverse("course_flow:workflow-detail", args=str(workflow.pk))
             )
             self.assertEqual(response.status_code, 403)
-            workflow.published=True
+            workflow.published = True
             workflow.save()
             response = self.client.get(
                 reverse("course_flow:workflow-detail", args=str(workflow.pk))
             )
             self.assertEqual(response.status_code, 200)
-            
 
     def test_workflow_update_view(self):
         author = get_author()
         for workflow_type in ["activity", "course", "program"]:
             project = Project.objects.create(author=author)
             workflow = make_object(workflow_type, author)
-            WorkflowProject.objects.create(workflow=workflow,project=project)
+            WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
                 reverse("course_flow:workflow-update", args=str(workflow.pk))
             )
@@ -808,7 +806,7 @@ class ModelViewTest(TestCase):
         for workflow_type in ["activity", "course", "program"]:
             project = Project.objects.create(author=author)
             workflow = make_object(workflow_type, author)
-            WorkflowProject.objects.create(workflow=workflow,project=project)
+            WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
                 reverse("course_flow:workflow-update", args=str(workflow.pk))
             )
@@ -819,7 +817,7 @@ class ModelViewTest(TestCase):
         for workflow_type in ["activity", "course", "program"]:
             project = Project.objects.create(author=user)
             workflow = make_object(workflow_type, user)
-            WorkflowProject.objects.create(workflow=workflow,project=project)
+            WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
                 reverse("course_flow:workflow-update", args=str(workflow.pk))
             )
@@ -831,43 +829,60 @@ class ModelViewTest(TestCase):
         login(self)
         response = self.client.get(reverse("course_flow:project-create"))
         self.assertEqual(response.status_code, 200)
-        
+
     def test_program_create_view(self):
         author = get_author()
         project = Project.objects.create(author=author)
-        response = self.client.get(reverse("course_flow:program-create", args=[project.id]))
+        response = self.client.get(
+            reverse("course_flow:program-create", args=[project.id])
+        )
         self.assertEqual(response.status_code, 302)
         user = login(self)
-        response = self.client.get(reverse("course_flow:program-create", args=[project.id]))
+        response = self.client.get(
+            reverse("course_flow:program-create", args=[project.id])
+        )
         self.assertEqual(response.status_code, 403)
         project2 = Project.objects.create(author=user)
-        response = self.client.get(reverse("course_flow:program-create", args=[project2.id]))
+        response = self.client.get(
+            reverse("course_flow:program-create", args=[project2.id])
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_course_create_view(self):
         author = get_author()
         project = Project.objects.create(author=author)
-        response = self.client.get(reverse("course_flow:course-create", args=[project.id]))
+        response = self.client.get(
+            reverse("course_flow:course-create", args=[project.id])
+        )
         self.assertEqual(response.status_code, 302)
         user = login(self)
-        response = self.client.get(reverse("course_flow:course-create", args=[project.id]))
+        response = self.client.get(
+            reverse("course_flow:course-create", args=[project.id])
+        )
         self.assertEqual(response.status_code, 403)
         project2 = Project.objects.create(author=user)
-        response = self.client.get(reverse("course_flow:course-create", args=[project2.id]))
+        response = self.client.get(
+            reverse("course_flow:course-create", args=[project2.id])
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_activity_create_view(self):
         author = get_author()
         project = Project.objects.create(author=author)
-        response = self.client.get(reverse("course_flow:activity-create", args=[project.id]))
+        response = self.client.get(
+            reverse("course_flow:activity-create", args=[project.id])
+        )
         self.assertEqual(response.status_code, 302)
         user = login(self)
-        response = self.client.get(reverse("course_flow:activity-create", args=[project.id]))
+        response = self.client.get(
+            reverse("course_flow:activity-create", args=[project.id])
+        )
         self.assertEqual(response.status_code, 403)
         project2 = Project.objects.create(author=user)
-        response = self.client.get(reverse("course_flow:activity-create", args=[project2.id]))
+        response = self.client.get(
+            reverse("course_flow:activity-create", args=[project2.id])
+        )
         self.assertEqual(response.status_code, 200)
-
 
     def test_add_node_new_column(self):
         user = login(self)
@@ -875,8 +890,7 @@ class ModelViewTest(TestCase):
             workflow = make_object(object_type, user)
             # Check for the default columns
             self.assertEqual(
-                workflow.columns.all().count(),
-                len(workflow.DEFAULT_COLUMNS),
+                workflow.columns.all().count(), len(workflow.DEFAULT_COLUMNS)
             )
             # Get the base strategy and the first column
             base_strategy = StrategyWorkflow.objects.get(
@@ -891,21 +905,20 @@ class ModelViewTest(TestCase):
                 {
                     "strategyPk": str(base_strategy.id),
                     "columnPk": "null",
-                    "columnType":str(workflow.DEFAULT_CUSTOM_COLUMN),
+                    "columnType": str(workflow.DEFAULT_CUSTOM_COLUMN),
                     "position": 0,
                 },
             )
             # Check that a new column has been added
             self.assertEqual(
                 workflow.columns.all().count(),
-                len(workflow.DEFAULT_COLUMNS)+1,
+                len(workflow.DEFAULT_COLUMNS) + 1,
             )
             check_order(self, workflow.columnworkflow_set)
             Node.objects.all().delete()
             Strategy.objects.all().delete()
             Column.objects.all().delete()
-            
-    
+
     def test_add_strategy_column_node(self):
         user = login(self)
         for i, object_type in enumerate(["activity", "course", "program"]):
@@ -914,8 +927,7 @@ class ModelViewTest(TestCase):
             self.assertEqual(workflow.strategies.all().count(), 1)
             # Check for the default columns
             self.assertEqual(
-                workflow.columns.all().count(),
-                len(workflow.DEFAULT_COLUMNS),
+                workflow.columns.all().count(), len(workflow.DEFAULT_COLUMNS)
             )
             # Get the base strategy and the first column
             base_strategy = StrategyWorkflow.objects.get(
@@ -936,7 +948,7 @@ class ModelViewTest(TestCase):
                 {
                     "strategyPk": str(base_strategy.id),
                     "columnPk": str(first_column.id),
-                    "columnType":str(first_column.column_type),
+                    "columnType": str(first_column.column_type),
                     "position": 0,
                 },
             )
@@ -947,9 +959,7 @@ class ModelViewTest(TestCase):
             response = self.client.post(
                 reverse("course_flow:insert-sibling"),
                 {
-                    "objectID": str(
-                        first_node.id
-                    ),
+                    "objectID": str(first_node.id),
                     "objectType": JSONRenderer()
                     .render("node")
                     .decode("utf-8"),
@@ -1026,7 +1036,7 @@ class ModelViewTest(TestCase):
                     {
                         "strategyPk": str(base_strategy.id),
                         "columnPk": str(column.id),
-                        "columnType":str(column.column_type),
+                        "columnType": str(column.column_type),
                         "position": 0,
                     },
                 )
@@ -1152,125 +1162,111 @@ class ModelViewTest(TestCase):
                 workflow.strategies.count(), number_of_strategies - 1
             )
             check_order(self, workflow.strategyworkflow_set)
-            
+
             Node.objects.all().delete()
             Strategy.objects.all().delete()
             Column.objects.all().delete()
-        
+
     def test_linked_wf_no_login_no_authorship(self):
         author = get_author()
-        project = make_object("project",author)
-        activity = make_object("activity",author)
-        course = make_object("course",author)
-        WorkflowProject.objects.create(workflow=activity,project=project)
+        project = make_object("project", author)
+        activity = make_object("activity", author)
+        course = make_object("course", author)
+        WorkflowProject.objects.create(workflow=activity, project=project)
         strategy = course.strategies.create(author=author)
         node = strategy.nodes.create(author=author)
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
-            {
-                "nodePk": node.id,
-                "workflowPk":activity.id,
-            },
+            {"nodePk": node.id, "workflowPk": activity.id},
         )
         self.assertEqual(response.status_code, 401)
         login(self)
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
-            {
-                "nodePk": node.id,
-                "workflowPk":activity.id,
-            },
+            {"nodePk": node.id, "workflowPk": activity.id},
         )
         self.assertEqual(response.status_code, 401)
-    
-    #Test for linking a workflow. Nothing should change except for the node
+
+    # Test for linking a workflow. Nothing should change except for the node
     def test_linked_wf_same_project(self):
         author = login(self)
-        project = make_object("project",author)
-        activity = make_object("activity",author)
-        course = make_object("course",author)
-        WorkflowProject.objects.create(workflow=activity,project=project)
-        WorkflowProject.objects.create(workflow=course,project=project)
+        project = make_object("project", author)
+        activity = make_object("activity", author)
+        course = make_object("course", author)
+        WorkflowProject.objects.create(workflow=activity, project=project)
+        WorkflowProject.objects.create(workflow=course, project=project)
         strategy = course.strategies.create(author=author)
         node = strategy.nodes.create(author=author)
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
-            {
-                "nodePk": node.id,
-                "workflowPk":activity.id,
-            },
+            {"nodePk": node.id, "workflowPk": activity.id},
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Node.objects.get(id=node.id).linked_workflow.id,activity.id)
-        self.assertEqual(Activity.objects.all().count(),1)
-        
-    #Test for linking a workflow from another project. The workflow should be duplicated into the project
+        self.assertEqual(
+            Node.objects.get(id=node.id).linked_workflow.id, activity.id
+        )
+        self.assertEqual(Activity.objects.all().count(), 1)
+
+    # Test for linking a workflow from another project. The workflow should be duplicated into the project
     def test_linked_wf_same_author(self):
         author = login(self)
-        project = make_object("project",author)
-        project2 = make_object("project",author)
-        activity = make_object("activity",author)
-        course = make_object("course",author)
-        WorkflowProject.objects.create(workflow=activity,project=project2)
-        WorkflowProject.objects.create(workflow=course,project=project)
+        project = make_object("project", author)
+        project2 = make_object("project", author)
+        activity = make_object("activity", author)
+        course = make_object("course", author)
+        WorkflowProject.objects.create(workflow=activity, project=project2)
+        WorkflowProject.objects.create(workflow=course, project=project)
         activity.strategies.create(author=author)
         strategy = course.strategies.create(author=author)
         node = strategy.nodes.create(author=author)
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
-            {
-                "nodePk": node.id,
-                "workflowPk":activity.id,
-            },
+            {"nodePk": node.id, "workflowPk": activity.id},
         )
         self.assertEqual(response.status_code, 200)
         new_activity = Node.objects.get(id=node.id).linked_workflow
-        self.assertNotEqual(new_activity.id,activity.id)
-        self.assertEqual(new_activity.id,project.workflows.last().id)
-        self.assertEqual(Activity.objects.all().count(),2)
-        self.assertEqual(Strategy.objects.all().count(),6)
-        self.assertEqual(new_activity.parent_workflow.id,activity.id)
-        
-     #Test for linking a workflow from another project. The workflow should be duplicated into the project.
-    #We try first for an unpublished, then a published project
+        self.assertNotEqual(new_activity.id, activity.id)
+        self.assertEqual(new_activity.id, project.workflows.last().id)
+        self.assertEqual(Activity.objects.all().count(), 2)
+        self.assertEqual(Strategy.objects.all().count(), 6)
+        self.assertEqual(new_activity.parent_workflow.id, activity.id)
+
+    # Test for linking a workflow from another project. The workflow should be duplicated into the project.
+    # We try first for an unpublished, then a published project
     def test_linked_wf_same_author(self):
         author = get_author()
         user = login(self)
-        project = make_object("project",user)
-        project2 = make_object("project",author)
-        activity = make_object("activity",author)
-        course = make_object("course",user)
-        WorkflowProject.objects.create(workflow=activity,project=project2)
-        WorkflowProject.objects.create(workflow=course,project=project)
+        project = make_object("project", user)
+        project2 = make_object("project", author)
+        activity = make_object("activity", author)
+        course = make_object("course", user)
+        WorkflowProject.objects.create(workflow=activity, project=project2)
+        WorkflowProject.objects.create(workflow=course, project=project)
         activity.strategies.create(author=author)
         strategy = course.strategies.create(author=user)
         node = strategy.nodes.create(author=user)
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
-            {
-                "nodePk": node.id,
-                "workflowPk":activity.id,
-            },
+            {"nodePk": node.id, "workflowPk": activity.id},
         )
         self.assertEqual(Node.objects.get(id=node.id).linked_workflow, None)
-        project2.published=True
+        project2.published = True
         project2.save()
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
-            {
-                "nodePk": node.id,
-                "workflowPk":activity.id,
-            },
+            {"nodePk": node.id, "workflowPk": activity.id},
         )
         self.assertEqual(response.status_code, 200)
         new_activity = Node.objects.get(id=node.id).linked_workflow
-        self.assertEqual(new_activity.get_subclass().author,project.author)
-        self.assertNotEqual(activity.author,new_activity.get_subclass().author)
-        self.assertNotEqual(new_activity.id,activity.id)
-        self.assertEqual(new_activity.id,project.workflows.last().id)
-        self.assertEqual(Activity.objects.all().count(),2)
-        self.assertEqual(Strategy.objects.all().count(),6)  
-        self.assertEqual(new_activity.parent_workflow.id,activity.id) 
+        self.assertEqual(new_activity.get_subclass().author, project.author)
+        self.assertNotEqual(
+            activity.author, new_activity.get_subclass().author
+        )
+        self.assertNotEqual(new_activity.id, activity.id)
+        self.assertEqual(new_activity.id, project.workflows.last().id)
+        self.assertEqual(Activity.objects.all().count(), 2)
+        self.assertEqual(Strategy.objects.all().count(), 6)
+        self.assertEqual(new_activity.parent_workflow.id, activity.id)
 
     def test_delete_self_no_login_no_authorship(self):
         author = get_author()
@@ -1355,12 +1351,16 @@ class ModelViewTest(TestCase):
         author = get_author()
         strategy1 = make_object("strategy", author)
         node0 = strategy1.nodes.create(author=author)
-        node1 = strategy1.nodes.create(author=author, through_defaults={"rank": 1})
-        workflow1 = make_object("activity",author)
+        node1 = strategy1.nodes.create(
+            author=author, through_defaults={"rank": 1}
+        )
+        workflow1 = make_object("activity", author)
         column1 = make_object("column", author)
-        columnworkflow1 = ColumnWorkflow.objects.create(column=column1,workflow=workflow1)
-        node0.column=column1
-        node1.column=column1
+        columnworkflow1 = ColumnWorkflow.objects.create(
+            column=column1, workflow=workflow1
+        )
+        node0.column = column1
+        node1.column = column1
         node0.save()
         node1.save()
         to_move = NodeStrategy.objects.get(strategy=strategy1, rank=0)
@@ -1379,10 +1379,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 401)
         response = self.client.post(
             reverse("course_flow:change-column"),
-            {
-                "nodePk": to_move.node.id,
-                "columnID": columnworkflow1.id,
-            },
+            {"nodePk": to_move.node.id, "columnID": columnworkflow1.id},
         )
         self.assertEqual(response.status_code, 401)
         user = login(self)
@@ -1400,19 +1397,18 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 401)
         response = self.client.post(
             reverse("course_flow:change-column"),
-            {
-                "nodePk": to_move.node.id,
-                "columnID": columnworkflow1.id,
-            },
+            {"nodePk": to_move.node.id, "columnID": columnworkflow1.id},
         )
         self.assertEqual(response.status_code, 401)
         # Try to move from their stuff to your own
         strategy2 = make_object("strategy", user)
         node2 = strategy2.nodes.create(author=user)
-        workflow2 = make_object("activity",user)
+        workflow2 = make_object("activity", user)
         column2 = make_object("column", user)
-        columnworkflow2 = ColumnWorkflow.objects.create(column=column2,workflow=workflow2)
-        node2.column=column2
+        columnworkflow2 = ColumnWorkflow.objects.create(
+            column=column2, workflow=workflow2
+        )
+        node2.column = column2
         node2.save()
         response = self.client.post(
             reverse("course_flow:inserted-at"),
@@ -1425,25 +1421,25 @@ class ModelViewTest(TestCase):
                 "newPosition": 1,
             },
         )
-        self.assertEqual(NodeStrategy.objects.get(id=to_move.id).strategy.id,strategy1.id)
+        self.assertEqual(
+            NodeStrategy.objects.get(id=to_move.id).strategy.id, strategy2.id
+        )
         response = self.client.post(
             reverse("course_flow:change-column"),
-            {
-                "nodePk": to_move.id,
-                "columnID": columnworkflow2.id,
-            },
+            {"nodePk": to_move.id, "columnID": columnworkflow2.id},
         )
-        self.assertEqual(Node.objects.get(id=to_move.node.id).column.id,column1.id)
+        self.assertEqual(
+            Node.objects.get(id=to_move.node.id).column.id, column1.id
+        )
         # Try to move from your stuff to theirs
         to_move = NodeStrategy.objects.get(strategy=strategy2, rank=0)
         response = self.client.post(
             reverse("course_flow:change-column"),
-            {
-                "nodePk": to_move.node.id,
-                "columnID": columnworkflow1.id,
-            },
+            {"nodePk": to_move.node.id, "columnID": columnworkflow1.id},
         )
-        self.assertEqual(Node.objects.get(id=to_move.node.id).column.id, column2.id)
+        self.assertEqual(
+            Node.objects.get(id=to_move.node.id).column.id, column2.id
+        )
         response = self.client.post(
             reverse("course_flow:inserted-at"),
             {
@@ -1456,18 +1452,19 @@ class ModelViewTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 401)
-        #Finally, check to make sure these work when you own both
+        # Finally, check to make sure these work when you own both
         strategy2b = make_object("strategy", user)
         column2b = make_object("column", user)
-        columnworkflow2b = ColumnWorkflow.objects.create(column=column2b,workflow=workflow2)
+        columnworkflow2b = ColumnWorkflow.objects.create(
+            column=column2b, workflow=workflow2
+        )
         response = self.client.post(
             reverse("course_flow:change-column"),
-            {
-                "nodePk": to_move.node.id,
-                "columnID": columnworkflow2b.id,
-            },
+            {"nodePk": to_move.node.id, "columnID": columnworkflow2b.id},
         )
-        self.assertEqual(Node.objects.get(id=to_move.node.id).column.id, column2b.id)
+        self.assertEqual(
+            Node.objects.get(id=to_move.node.id).column.id, column2b.id
+        )
         response = self.client.post(
             reverse("course_flow:inserted-at"),
             {
@@ -1479,7 +1476,9 @@ class ModelViewTest(TestCase):
                 "newPosition": 0,
             },
         )
-        self.assertEqual(NodeStrategy.objects.get(id=to_move.id).strategy.id, strategy2b.id)
+        self.assertEqual(
+            NodeStrategy.objects.get(id=to_move.id).strategy.id, strategy2b.id
+        )
 
     def test_insert_sibling_no_login_no_authorship(self):
         author = get_author()
@@ -1536,18 +1535,21 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 401)
 
-
     def test_new_nodelink_permissions_no_login(self):
         author = get_author()
         node1 = make_object("node", author)
         node2 = make_object("node", author)
         response = self.client.post(
             reverse("course_flow:new-node-link"),
-            {"nodePk": node1.id, "targetID":node2.id,"sourcePort":2,"targetPort":0},
+            {
+                "nodePk": node1.id,
+                "targetID": node2.id,
+                "sourcePort": 2,
+                "targetPort": 0,
+            },
         )
         self.assertEqual(response.status_code, 401)
-        
-         
+
     def test_new_nodelink_permissions_no_authorship_second_node(self):
         myself = login(self)
         author = get_author()
@@ -1555,7 +1557,12 @@ class ModelViewTest(TestCase):
         node2 = make_object("node", author)
         response = self.client.post(
             reverse("course_flow:new-node-link"),
-            {"nodePk": node1.id, "targetID":node2.id,"sourcePort":2,"targetPort":0},
+            {
+                "nodePk": node1.id,
+                "targetID": node2.id,
+                "sourcePort": 2,
+                "targetPort": 0,
+            },
         )
         self.assertEqual(NodeLink.objects.all().count(), 0)
 
@@ -1566,148 +1573,193 @@ class ModelViewTest(TestCase):
         node2 = make_object("node", author)
         response = self.client.post(
             reverse("course_flow:new-node-link"),
-            {"nodePk": node1.id, "targetID":node2.id,"sourcePort":2,"targetPort":0},
+            {
+                "nodePk": node1.id,
+                "targetID": node2.id,
+                "sourcePort": 2,
+                "targetPort": 0,
+            },
         )
         self.assertEqual(response.status_code, 401)
-        
+
     def test_duplicate_self_permissions_no_login_no_authorship(self):
         author = get_author()
-        activity = make_object("activity",author)
+        activity = make_object("activity", author)
         strategy = StrategyWorkflow.objects.get(workflow=activity).strategy
-        node = strategy.nodes.create(author=author,title="test_title")
+        node = strategy.nodes.create(author=author, title="test_title")
         node.column = activity.columnworkflow_set.first().column
         node.save()
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
-            {"objectID": node.id, "objectType":JSONRenderer().render("node").decode("utf-8"),"parentID":strategy.id},
+            {
+                "objectID": node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "parentID": strategy.id,
+            },
         )
         self.assertEqual(response.status_code, 401)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
-            {"objectID": strategy.id, "objectType":JSONRenderer().render("strategy").decode("utf-8"),"parentID":activity.id},
+            {
+                "objectID": strategy.id,
+                "objectType": JSONRenderer()
+                .render("strategy")
+                .decode("utf-8"),
+                "parentID": activity.id,
+            },
         )
         self.assertEqual(response.status_code, 401)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
-            {"objectID": activity.columnworkflow_set.first().column.id, "objectType":JSONRenderer().render("column").decode("utf-8"),"parentID":activity.id},
+            {
+                "objectID": activity.columnworkflow_set.first().column.id,
+                "objectType": JSONRenderer().render("column").decode("utf-8"),
+                "parentID": activity.id,
+            },
         )
         self.assertEqual(response.status_code, 401)
-        
+
     def test_duplicate_self_permissions_no_authorship(self):
         author = get_author()
         login(self)
-        activity = make_object("activity",author)
+        activity = make_object("activity", author)
         strategy = StrategyWorkflow.objects.get(workflow=activity).strategy
-        node = strategy.nodes.create(author=author,title="test_title")
+        node = strategy.nodes.create(author=author, title="test_title")
         node.column = activity.columnworkflow_set.first().column
         node.save()
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
-            {"objectID": node.id, "objectType":JSONRenderer().render("node").decode("utf-8"),"parentID":strategy.id},
+            {
+                "objectID": node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "parentID": strategy.id,
+            },
         )
         self.assertEqual(response.status_code, 401)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
-            {"objectID": strategy.id, "objectType":JSONRenderer().render("strategy").decode("utf-8"),"parentID":activity.id},
+            {
+                "objectID": strategy.id,
+                "objectType": JSONRenderer()
+                .render("strategy")
+                .decode("utf-8"),
+                "parentID": activity.id,
+            },
         )
         self.assertEqual(response.status_code, 401)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
-            {"objectID": activity.columnworkflow_set.first().column.id, "objectType":JSONRenderer().render("column").decode("utf-8"),"parentID":activity.id},
+            {
+                "objectID": activity.columnworkflow_set.first().column.id,
+                "objectType": JSONRenderer().render("column").decode("utf-8"),
+                "parentID": activity.id,
+            },
         )
         self.assertEqual(response.status_code, 401)
-        
-        
+
     def test_duplicate_self(self):
         author = login(self)
-        activity = make_object("activity",author)
+        activity = make_object("activity", author)
         strategy = StrategyWorkflow.objects.get(workflow=activity).strategy
-        node = strategy.nodes.create(author=author,title="test_title")
+        node = strategy.nodes.create(author=author, title="test_title")
         node.column = activity.columnworkflow_set.first().column
         node.save()
-        node2 = strategy.nodes.create(author=author,title="test_title")
+        node2 = strategy.nodes.create(author=author, title="test_title")
         node2.column = activity.columnworkflow_set.first().column
         node2.save()
-        nodelink = NodeLink.objects.create(source_node=node,target_node=node2,source_port=2,target_port=0)
+        nodelink = NodeLink.objects.create(
+            source_node=node, target_node=node2, source_port=2, target_port=0
+        )
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
-            {"objectID": node.id, "objectType":JSONRenderer().render("node").decode("utf-8"),"parentID":strategy.id},
+            {
+                "objectID": node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "parentID": strategy.id,
+            },
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
-            {"objectID": strategy.id, "objectType":JSONRenderer().render("strategy").decode("utf-8"),"parentID":activity.id},
+            {
+                "objectID": strategy.id,
+                "objectType": JSONRenderer()
+                .render("strategy")
+                .decode("utf-8"),
+                "parentID": activity.id,
+            },
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
-            {"objectID": activity.columnworkflow_set.first().column.id, "objectType":JSONRenderer().render("column").decode("utf-8"),"parentID":activity.id},
+            {
+                "objectID": activity.columnworkflow_set.first().column.id,
+                "objectType": JSONRenderer().render("column").decode("utf-8"),
+                "parentID": activity.id,
+            },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Node.objects.all().count(),6)
-        self.assertEqual(NodeLink.objects.all().count(),1)
-         
+        self.assertEqual(Node.objects.all().count(), 6)
+        self.assertEqual(NodeLink.objects.all().count(), 1)
+
     def test_duplicate_activity(self):
         author = login(self)
-        activity = make_object("activity",author)
+        activity = make_object("activity", author)
         strategy = StrategyWorkflow.objects.get(workflow=activity).strategy
-        node = strategy.nodes.create(author=author,title="test_title")
+        node = strategy.nodes.create(author=author, title="test_title")
         node.column = activity.columnworkflow_set.first().column
         node.save()
-        node2 = strategy.nodes.create(author=author,title="test_title")
+        node2 = strategy.nodes.create(author=author, title="test_title")
         node2.column = activity.columnworkflow_set.first().column
         node2.save()
-        nodelink = NodeLink.objects.create(source_node=node,target_node=node2,source_port=2,target_port=0)
+        nodelink = NodeLink.objects.create(
+            source_node=node, target_node=node2, source_port=2, target_port=0
+        )
         response = self.client.post(
             reverse("course_flow:duplicate-workflow"),
             {"workflowPk": activity.id},
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Node.objects.all().count(),4)
-        self.assertEqual(NodeLink.objects.all().count(),2)
+        self.assertEqual(Node.objects.all().count(), 4)
+        self.assertEqual(NodeLink.objects.all().count(), 2)
         second_nodelink = NodeLink.objects.get(is_original=False)
-        self.assertEqual(second_nodelink.source_node.is_original,False)
-        self.assertEqual(second_nodelink.target_node.is_original,False)
-        
+        self.assertEqual(second_nodelink.source_node.is_original, False)
+        self.assertEqual(second_nodelink.target_node.is_original, False)
+
     def test_duplicate_activity_no_login(self):
         author = get_author()
-        activity = make_object("activity",author)
+        activity = make_object("activity", author)
         strategy = StrategyWorkflow.objects.get(workflow=activity).strategy
-        node = strategy.nodes.create(author=author,title="test_title")
+        node = strategy.nodes.create(author=author, title="test_title")
         node.column = activity.columnworkflow_set.first().column
         node.save()
-        node2 = strategy.nodes.create(author=author,title="test_title")
+        node2 = strategy.nodes.create(author=author, title="test_title")
         node2.column = activity.columnworkflow_set.first().column
         node2.save()
-        nodelink = NodeLink.objects.create(source_node=node,target_node=node2,source_port=2,target_port=0)
+        nodelink = NodeLink.objects.create(
+            source_node=node, target_node=node2, source_port=2, target_port=0
+        )
         response = self.client.post(
             reverse("course_flow:duplicate-workflow"),
             {"workflowPk": activity.id},
         )
         self.assertEqual(response.status_code, 401)
-        
-        
+
     def test_publish_permissions_no_login_no_authorship(self):
         author = get_author()
-        project = make_object("project",author)
+        project = make_object("project", author)
         response = self.client.post(
             reverse("course_flow:project-toggle-published"),
             {"projectPk": project.id},
         )
         self.assertEqual(response.status_code, 401)
-        
 
     def test_publish_permissions_no_authorship(self):
         login(self)
         author = get_author()
-        project = make_object("project",author)
+        project = make_object("project", author)
         response = self.client.post(
             reverse("course_flow:project-toggle-published"),
             {"projectPk": project.id},
         )
         self.assertEqual(response.status_code, 401)
-        
-        
-    
-        
-        

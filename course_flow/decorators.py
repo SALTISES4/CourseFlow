@@ -2,7 +2,7 @@ from functools import wraps
 from django.http import JsonResponse
 from django.conf import settings
 import json
-from .models import User, Strategy
+from .models import User, NodeStrategy, Strategy
 from .utils import *
 
 
@@ -186,7 +186,13 @@ def new_parent_authorship(view_func):
     def _wrapped_view(request, *args, **kwargs):
         if json.loads(request.POST.get("objectType")) == "nodestrategy":
 
+            object_id = json.loads(request.POST.get("objectID"))
             parent_id = json.loads(request.POST.get("parentID"))
+
+            old_parent_id = NodeStrategy.objects.get(id=object_id).strategy.id
+
+            if parent_id == old_parent_id:
+                return view_func(request, *args, **kwargs)
 
             parent = Strategy.objects.get(id=parent_id)
 
