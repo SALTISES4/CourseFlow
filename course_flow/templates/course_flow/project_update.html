@@ -1,0 +1,175 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block header %}
+<style nonce="{{ request.csp_nonce }}">
+  body {
+    background-color: #1976bc;
+  }
+  .create-button {
+    transform: translateY(10px);
+  }
+  img.link-image {
+    height: 35px;
+  }
+  .mdc-card {
+    background-color: white;
+    margin-bottom: 10px;
+    padding: 20px 20px 12px;
+    border-radius: 10px;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+      0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+    max-width: 400px;
+  }
+  .mdc-typography--title {
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 1.25rem;
+    line-height: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: inherit;
+    text-transform: inherit;
+    font-weight: bold;
+  }
+  .mdc-typography--caption {
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-decoration: inherit;
+    text-transform: inherit;
+  }
+  .mdc-typography--body1 {
+    font-size: 16px;
+    letter-spacing: 0em;
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-decoration: inherit;
+    text-transform: inherit;
+  }
+  .mdc-card__actions {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 52px;
+    padding: 8px;
+  }
+  .mdc-card__action-buttons,
+  .mdc-card__action-icons {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  .mdc-card__action-icons {
+    margin-left: auto;
+    margin-right: 0;
+  }
+  .mdc-card__action-icons,
+  .mdc-typography--caption,
+  .mdc-typography--body1,
+  .mdc-typography--title {
+    color: #1976bc;
+  }
+</style>
+{% endblock %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<div id="content-container" class="body-wrapper"></div><div id="popup-container"></div>
+<!-- -->
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %}
+<script nonce="{{ request.csp_nonce }}">
+  window.addEventListener("load", function() {
+    userFeedback.injectDialog(
+      "{% trans 'Let us know how we can improve your experience!' %}",
+      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
+      "{% trans 'Thanks for your feedback!' %}",
+      "{% trans 'Sorry, please try again later!' %}",
+      "{% url 'user_feedback:post' %}"
+    );
+  });
+</script>
+
+
+<script nonce="{{request.csp_nonce}}">
+    
+    const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+    const update_path = "{% url 'course_flow:workflow-update' pk='0'%}";
+    const detail_path = "{% url 'course_flow:workflow-detail-view' pk='0'%}";
+    const create_path = {
+        activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
+        course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
+        program:"{% url 'course_flow:program-create' projectPk=object.pk %}"
+    }
+    const data_package = {{workflow_data_package|safe}};
+    const project_data= {{project_data|safe}};
+    console.log(data_package);
+    const project_title = "{{object.title|safe}}";
+    const user_id = {{ user.id }};
+    const read_only=false;
+    window.addEventListener("load",function(){
+        workflow_redux.renderProjectMenu(data_package,project_data);
+    });
+    
+    
+    //Causes the specified object to delete itself
+    function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
+        $.post("{% url 'course_flow:delete-self' %}", {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+    
+    //Publishes or unpublishes the project
+    function togglePublish(callBackFunction=()=>console.log("success")){
+        $.post("{% url 'course_flow:project-toggle-published' %}", {
+            projectPk:JSON.stringify({{object.pk|safe}})
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+    
+    function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
+        $.post("{% url 'course_flow:update-value' %}", {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            data:JSON.stringify(json)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+</script>
+{% endblock %}

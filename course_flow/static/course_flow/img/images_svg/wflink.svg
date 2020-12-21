@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="31.935688mm"
+   height="31.306442mm"
+   viewBox="0 0 113.15795 110.92834"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="wflink.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend"
+       style="overflow:visible"
+       inkscape:isstock="true">
+      <path
+         id="path8265"
+         style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.625;stroke-linejoin:round;stroke-opacity:1"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="106.1476"
+     inkscape:cy="104.1418"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-283.42103,-421.18375)">
+    <path
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:9.7915411;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:5.80000067;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       d="m 385.86189,460.46041 c -0.0453,0.047 -22.59313,22.5934 -22.63912,22.639 -7.93097,7.8357 -20.71232,7.7588 -28.5484,-0.1719 -7.83604,-7.9308 -7.75967,-20.7121 0.17067,-28.5484 0.0357,-0.034 22.57331,-22.5722 22.60819,-22.6082 7.93784,-7.7303 20.63955,-7.6197 28.43257,0.2855 7.78156,7.8959 7.76943,20.556 -0.025,28.403 z"
+       id="path8790-4"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ssssscs"
+       inkscape:export-xdpi="227.16801"
+       inkscape:export-ydpi="227.16801" />
+    <path
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;baseline-shift:baseline;text-anchor:start;white-space:normal;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:4.89577055;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:5.80000067;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       d="m 321.25166,453.76361 c 0,0 -27.14099,28.7287 -27.17673,28.763 -0.0264,0.025 -0.0527,0.05 -0.0789,0.075 -10.75336,10.6258 -10.85722,28.1805 -0.23187,38.9343 10.62547,10.7538 28.17772,10.8594 38.93188,0.2342 l 0.008,0 c 0.5307,-0.5254 0.1191,-0.1187 0.28688,-0.2868 0.16781,-0.1678 0.41137,-0.4138 0.72192,-0.7243 0.6211,-0.621 1.50687,-1.5046 2.56742,-2.565 2.12108,-2.121 4.94495,-4.9451 7.76916,-7.7692 2.82422,-2.8241 5.64813,-5.6481 7.76917,-7.7693 1.06052,-1.0605 1.94625,-1.9461 2.56741,-2.5673 0.31058,-0.3106 0.55392,-0.5562 0.72194,-0.7243 0.084,-0.084 0.14892,-0.1465 0.19362,-0.1913 0.0277,-0.028 0.0926,-0.096 0.0837,-0.085 -0.006,0 -0.2158,0.2232 0.0526,-0.052 0.32088,-0.3314 0.60981,-0.6925 0.86298,-1.0781 9.552,-10.7114 9.16424,-28.2865 -0.87015,-37.6029 -10.0344,-9.3163 -10.64442,-4.7658 -10.64442,-4.7658 -1.13849,1.1966 -4.34332,3.6418 -7.24439,8.3344 l 7.4276,6.7374 c 5.02418,5.0979 5.0092,13.0244 -0.005,18.0723 l -0.0122,0.014 -0.0382,0.041 c -9e-5,10e-5 -0.003,-1e-4 -0.003,0 -0.0434,0.043 -0.10759,0.1078 -0.19124,0.1914 -0.16728,0.1673 -0.41155,0.4115 -0.72193,0.7218 -0.62079,0.6209 -1.5046,1.5046 -2.56503,2.5651 -2.12085,2.1209 -4.94501,4.945 -7.76916,7.7691 -2.82416,2.824 -5.65057,5.6483 -7.77156,7.7692 -1.0605,1.0604 -1.94406,1.9465 -2.56503,2.5674 -0.31048,0.3104 -0.55438,0.5545 -0.72193,0.7219 -0.16331,0.1633 -0.68947,0.6826 -0.23187,0.2295 -5.10778,5.0465 -13.11643,5.0001 -18.16313,-0.1077 -5.04673,-5.1078 -4.99737,-13.1163 0.11003,-18.163 0.18798,-0.1866 16.36838,-18.5338 16.36838,-18.5338 -1.87388,-10.0075 2.36087,-13.9787 0.56295,-20.7546 z"
+       id="path8812"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccscccscsccccccczsccccccccccscccsccc"
+       inkscape:export-xdpi="227.16801"
+       inkscape:export-ydpi="227.16801" />
+  </g>
+</svg>

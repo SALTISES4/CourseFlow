@@ -7,18 +7,24 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('course_flow', '0007_auto_20200916_2323'),
-    ]
+    dependencies = [("course_flow", "0007_auto_20200916_2323")]
 
     operations = [
         migrations.AlterModelOptions(
-            name='activity',
-            options={'verbose_name': 'Activity', 'verbose_name_plural': 'Activities'},
+            name="activity",
+            options={
+                "verbose_name": "Activity",
+                "verbose_name_plural": "Activities",
+            },
         ),
         migrations.AlterField(
-            model_name='activity',
-            name='author',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='authored_activities', to=settings.AUTH_USER_MODEL),
+            model_name="activity",
+            name="author",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="authored_activities",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

@@ -30,6 +30,7 @@
     <link rel="preload" href="https://d3js.org/d3.v5.min.js" as="script" />
     <!-- ** jquery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
     <!-- ** Polyfills for non-awesome browsers-->
     <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
     <!-- ** d3 -->
@@ -38,6 +39,16 @@
       defer="true"
       charset="utf-8"
     ></script>
+      <script>
+      // HACK(keanulee): The Redux package assumes `process` exists - mock it here before
+      // the module is loaded.
+      window.process = {
+        env: {
+          NODE_ENV: 'production'
+        }
+      };
+    </script>
+
 
     <!-- Internal resources -->
     {% compress js %}
@@ -54,6 +65,14 @@
       defer="true"
     ></script>
     {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script
+      src="{% static 'course_flow/js/scripts-wf-redux.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
     <!-- * CSS -->
     {% compress css %}
     <link
@@ -62,6 +81,13 @@
     />
     {% endcompress %}
     <!--  -->
+    {% compress css %}
+    <link
+      rel="stylesheet"
+      href="{% static 'course_flow/css/workflow_styles.css' %}"
+    />
+    {% endcompress %}
+    <!-- -->
     {% compress css %}
     <link
       rel="stylesheet"
@@ -82,18 +108,6 @@
         right: 8px;
         position: absolute;
       }
-      .topdropwrapper {
-        padding-top: 3px;
-      }
-      #username {
-        display: inline;
-        right: 40px;
-        position: absolute;
-      }
-      #username-container {
-        position: absolute;
-        right: 300px;
-      }
     </style>
     {% block header %}{% endblock %}
   </head>
@@ -109,27 +123,33 @@
         </div>
       </div>
       <div class="menubar">
-        <div class="topnavimage">
-          <a href="https://www.saltise.ca/"
-            ><img src="{% static 'course_flow/img/saltise_logo.svg'%}"
-          /></a>
+        <div class="mainmenu">
+            <div class="topnavimage">
+              <a href="https://www.saltise.ca/"
+                ><img src="{% static 'course_flow/img/saltise_logo.svg'%}"
+              /></a>
+            </div>
+            <div class="topdropwrapper">
+              <button class="topdropbutton">
+                <a id="home-icon-link" href="{% url 'course_flow:home' %}"
+                  ><img
+                    id="home-icon"
+                    src="{% static 'course_flow/img/home-24px.svg' %}"
+                /></a>
+              </button>
+            </div>
+            <div id="username-container" class="topdropwrapper">
+              <button id="username" class="topdropbutton">
+                {{ user.username }}
+              </button>
+            </div>
         </div>
-        <div class="topdropwrapper">
-          <button class="topdropbutton">
-            <a id="home-icon-link" href="{% url 'course_flow:home' %}"
-              ><img
-                id="home-icon"
-                src="{% static 'course_flow/img/home-24px.svg' %}"
-            /></a>
-          </button>
+        <div id="floatbar" class="floatbar">
         </div>
-        <div id="username-container" class="topdropwrapper">
-          <button id="username" class="topdropbutton">
-            {{ user.username }}
-          </button>
-        </div>
-        <div class="topdropwrapper">
-          <div id="user-feedback-container"></div>
+        <div id="viewbar" class="viewbar">
+            <div class="topdropwrapper">
+              <div id="user-feedback-container"></div>
+            </div>
         </div>
       </div>
     </div>

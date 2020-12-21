@@ -1,12 +1,288 @@
-html {
-  height: 100%;
+body, html{
+    overflow:hidden;
+    margin:0px;
+    height:100%;
 }
-body {
-  background-color: #1976BC;
-  height: 100%;
+
+body{
+    background:#EEEEEE;
+}
+
+.topnav{
+    width:100%;
+    position: fixed;
+    z-index: 6;
+    top: 0;
+    left: 0;
+    color: #1976bc;
+    background: white;
+}
 
 
+.topnav::before{
+    content:'';
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    height:2px;
+    background:linear-gradient(to left,#46c443 0,#1976bc 100%) left bottom #fff no-repeat;
 }
+
+
+.titlebar{
+    background:rgb(25,118,188);
+    display:block;
+    height:50px;
+    width:100%;
+    color:white;
+    position:relative;
+}
+
+.title{
+    padding-left:20px;
+    position:absolute;
+    bottom:5px;
+}
+
+.title *{
+    font-family:initial;
+}
+
+.menubar{
+    display:flex;
+    justify-content: space-between;
+    width:100%;
+    font-family:'Open Sans',sans-serif;
+    overflow:hidden;
+    height:50px;
+}
+
+.mainmenu{
+    display:inline-block;
+}
+
+.floatbar{
+    flex-shrink:99;
+    color:white;
+    height:50px;
+    overflow:hidden;
+    color:white;
+}
+
+.floatbardiv{
+    display:inline-block;
+    vertical-align:middle;
+    background:#1976bc;
+    margin:5px;
+    padding:5px;
+    height:36px;
+    box-sizing:border-box;
+    white-space:nowrap;
+    cursor:pointer;
+}
+
+.floatbar img{
+    display:inline-block;
+    vertical-align: middle;
+    width:24px;
+}
+
+.floatbar div{
+    display:inline-block;
+    vertical-align: middle;
+    padding-left:6px;
+    padding-right:6px;
+    color:white;
+}
+
+.viewbar{
+    display:inline-block;
+    height:100%;
+}
+
+.viewbar > div{
+    vertical-align: middle;
+    padding:5px;
+    padding-right:20px;
+    display:inline-block;
+    text-align:center;
+}
+
+.viewbar > div >img{
+    width:36px;
+    height:36px;
+}
+
+.topnavimage{
+    box-sizing: border-box;
+    display:inline-block;
+    padding:5px;
+    padding-bottom:0px;
+    height:46px;
+    padding-left:20px;
+    padding-right:40px;
+}
+
+.topnavimage *{
+    display:block;
+    height:100%;
+}
+
+
+/* A wrapper for each button in the menu */
+.topdropwrapper{
+    display:inline-block;
+    padding:0px;
+    bottom:0px;
+    vertical-align:top;
+}
+
+/* A button at the top of the menu that will open the div below it */
+.topdropbutton{
+    background:inherit;
+    color: rgb(25,118,188);
+    border:inherit;
+    font:inherit;
+    height:48px;
+    left:0;
+    bottom:0;
+    min-width:100px;
+    padding-left:20px;
+    padding-right:20px;
+    font-weight:600;
+}
+
+.topdropbutton > a{
+    display:block;
+}
+
+/* A tag at the top of the menu that does nothing*/
+.toplink{
+    left:0;
+    bottom:0;
+    padding-left:20px;
+    padding-right:20px;
+}
+
+
+/* The div that is created below the button */
+.topdropdiv{
+    display:none;
+    position:absolute;
+    border: 1px solid grey;
+    border-top: 1px solid black;
+    color: black;
+    background:white;
+    min-width:100px;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+}
+
+.topdropdiv a{
+    float:none;
+    display:block;
+    padding:4px;
+    padding-left:12px;
+    padding-right:12px;
+    text-align:left;
+    position:relative;
+    cursor:pointer;
+    white-space: nowrap;
+}
+
+.topdropdiv hr{
+    margin-left:12px;
+    margin-right:12px;
+}
+
+.topdroptitle{
+    pointer-events: none;
+}
+
+.topdropindent{
+    margin-left:12px;
+}
+
+.topdropdiv a div{
+    display:inline-block;
+}
+
+.shortcut{
+    color:gray;
+    text-align:right;
+    position:absolute;
+    right:12px;
+}
+
+.topdropwrapper:hover .topdropdiv{
+    display:block;
+}
+
+.topdropwrapper:hover .topdropbutton{
+    box-shadow:inset 0 0 0 99999px rgba(0,0,0,0.1);
+}
+
+.topdropdiv a:hover{
+    box-shadow:inset 0 0 0 99999px rgba(0,0,0,0.1);
+    color: rgb(25,118,188);
+}
+
+.home-tabs{
+    
+}
+
+.home-tabs .ui-tabs-nav{
+    padding:0px;
+    width:100%;
+    display:flex;
+    margin:0px;
+    border:1px solid lightgray;
+    overflow:hidden;
+}
+
+.home-tabs .ui-tabs-tab{
+    display:block;
+    flex-grow:1;
+    margin:3px 2px -2px 2px;
+    line-height:1.3;
+    font-size:20px;
+    font-weight:600;
+    list-style:none;
+    white-space:nowrap;
+    background:white;
+    border-radius:3px;
+    border:1px solid lightgray;
+}
+
+.home-tabs .ui-tabs-active{
+    background:#1976bc;
+}
+
+
+.home-tabs .ui-tabs-tab a{
+    color:black;
+    text-decoration: none;
+    width:100%;
+    padding:10px;
+    display:block;
+}
+
+.home-tabs .ui-tabs-active a{
+    color:white;
+}
+
+.home-tabs>div{
+    width:100%;
+    background:white;
+    padding:20px;
+    box-sizing: border-box;
+}
+
+.project-header{
+    padding:20px;
+    background:white;
+}
+
 .action-icon{
   cursor: pointer;
 }
@@ -34,95 +310,6 @@ body {
 }
 #student-class-activity-section {
 
-}
-.topnav {
-    width: 100%;
-    position: fixed;
-    z-index: 3;
-    top: 0;
-    left: 0;
-    color: #1976bc;
-    background: white;
-}
-.title {
-    padding-left: 20px;
-    position: absolute;
-    bottom: 5px;
-}
-.titlebar {
-    background: rgb(25,118,188);
-    display: block;
-    height: 50px;
-    width: 100%;
-    color: white;
-    position: relative;
-}
-.menubar {
-    display: block;
-    height: 50px;
-    width: 100%;
-    font-family: 'Open Sans',sans-serif;
-}
-.topnavimage {
-    box-sizing: border-box;
-    display: inline-block;
-    padding: 5px;
-    height: 100%;
-    padding-left: 20px;
-    padding-right: 100px;
-}
-.topdropwrapper {
-    display: inline-block;
-    padding: 0px;
-    bottom: 0px;
-    vertical-align: top;
-}
-.topdropbutton {
-    background: inherit;
-    color: rgb(25,118,188);
-    border: inherit;
-    font: inherit;
-    height: 48px;
-    left: 0;
-    bottom: 0;
-    min-width: 100px;
-    padding-left: 20px;
-    padding-right: 20px;
-    font-weight: 600;
-}
-.topdropdiv {
-    display: none;
-    position: absolute;
-    border: 1px solid grey;
-    border-top: 1px solid black;
-    color: black;
-    background: white;
-    min-width: 100px;
-    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
-}
-.topdropdiv a {
-    float: none;
-    display: block;
-    padding: 4px;
-    padding-left: 12px;
-    padding-right: 12px;
-    text-align: left;
-    position: relative;
-    cursor: pointer;
-    white-space: nowrap;
-}
-.shortcut {
-    color: gray;
-    text-align: right;
-    position: absolute;
-    right: 12px;
-}
-.topdropdiv a div {
-    display: inline-block;
-}
-.topnavimage * {
-    display: block;
-    height: 100%;
 }
 
 
@@ -167,20 +354,117 @@ text {
   font-size: 16px;
 }
 .sub-container {
- width: 40%;
- position: absolute;
-}
-#user-content-container {
-  left: 10%;
-}
-#total-content-container {
-  right: 0;
+    text-align:left;
+    padding:20px;
+    width: 40%;
+    margin:40px;
+    margin:40px;
+    margin-left:5%;
+    margin-right:0;
+    padding-bottom:50px;
+    vertical-align:top;
+    display:inline-block;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+    background:white;
+    overflow:visible;
 }
 h2:not(.mdc-dialog__header__title), p {
   font-family: "Montserrat", serif;
-  color: #F4F4F4;
 }
 h1 {
   font-family: "Montserrat", serif;
   color: #F4F4F4;
 }
+
+
+.body-wrapper{
+    top:100px;
+    width:100%;
+    height:calc(100% - 100px);
+    overflow:auto;
+    position:absolute;
+}
+
+  .create-button {
+    transform: translateY(10px);
+  }
+  img.link-image {
+    height: 35px;
+  }
+  .mdc-card {
+    background-color: white;
+    margin-bottom: 10px;
+    padding: 20px 20px 12px;
+    border-radius: 10px;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+      0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+    max-width: 400px;
+    border: 2px solid #1976bc;
+  }
+  .mdc-typography--title {
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 1.25rem;
+    line-height: 2rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: inherit;
+    text-transform: inherit;
+    font-weight: bold;
+  }
+  .mdc-typography--caption {
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-decoration: inherit;
+    text-transform: inherit;
+  }
+  .mdc-typography--body1 {
+    font-size: 16px;
+    letter-spacing: 0em;
+    font-family: "Montserrat", serif;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-decoration: inherit;
+    text-transform: inherit;
+  }
+  .mdc-card__actions {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 52px;
+    padding: 8px;
+  }
+  .mdc-card__action-buttons,
+  .mdc-card__action-icons {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-items: center;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  .mdc-card__action-icons {
+    margin-left: auto;
+    margin-right: 0;
+  }
+  .mdc-card__action-icons,
+  .mdc-typography--caption,
+  .mdc-typography--body1,
+  .mdc-typography--title {
+    color: #1976bc;
+  }

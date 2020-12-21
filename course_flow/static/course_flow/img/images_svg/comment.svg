@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="92.596413mm"
+   height="92.596413mm"
+   viewBox="0 0 328.09753 328.09752"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="comment.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="-44.45846"
+     inkscape:cy="-133.83735"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="72"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-235.95123,-299.742)">
+    <path
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:8;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 543.14723,454.35558 c -0.4604,42.18571 -62.1982,76.18325 -137.9249,75.95202 -14.5267,-0.0448 -28.5138,-1.34505 -41.6312,-3.71631 -2.5182,-0.45512 -26.2311,13.15097 -48.9046,21.90302 -25.5451,9.8604 -50.3476,14.99693 -53.0191,14.30176 -2.3487,-0.61117 24.8549,-10.25926 44.8767,-21.17823 18.6884,-10.19156 30.2927,-21.69656 28.2393,-22.39236 -39.7638,-13.47504 -66.2269,-37.89306 -65.9831,-65.70769 0.3698,-42.18609 62.0344,-76.22482 137.7616,-76.04412 75.7272,0.1807 136.866,34.51252 136.5869,76.69885"
+       id="path8146-9"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cscssscssc"/>
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;stroke:none;stroke-width:4;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect8237"
+       width="328.09753"
+       height="328.09753"
+       x="235.95123"
+       y="299.742"
+       inkscape:export-filename="C:\Users\Jeremie\Dropbox\saltise\WorkflowMaker\resources\data\comment48.png"
+       inkscape:export-xdpi="13.166818"
+       inkscape:export-ydpi="13.166818" />
+  </g>
+</svg>

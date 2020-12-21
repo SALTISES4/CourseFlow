@@ -1,0 +1,84 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block header %}{% endblock %}
+<!-- -->
+{% block body %}
+<div id="content-container" class="body-wrapper"></div><div id="popup-container"></div>
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %}
+<script nonce="{{ request.csp_nonce }}">
+  window.addEventListener("load", function() {
+    userFeedback.injectDialog(
+      "{% trans 'Let us know how we can improve your experience!' %}",
+      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
+      "{% trans 'Thanks for your feedback!' %}",
+      "{% trans 'Sorry, please try again later!' %}",
+      "{% url 'user_feedback:post' %}"
+    );
+  });
+</script>
+
+
+<script nonce="{{request.csp_nonce}}">
+    
+    const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+    const detail_path = "{% url 'course_flow:workflow-detail-view' pk='0'%}";
+    const update_path = "{% url 'course_flow:workflow-update' pk='0'%}";
+    const create_path = {
+        activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
+        course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
+        program:"{% url 'course_flow:program-create' projectPk=object.pk %}"
+    }
+    const data_package = {{workflow_data_package|safe}}
+    const project_data= {{project_data|safe}}
+    const project_title = "{{object.title|safe}}";
+    const read_only=true;
+    const user_id = {{ user.id }};
+    window.addEventListener("load",function(){
+        workflow_redux.renderProjectMenu(data_package,project_data);
+    });
+        
+    //Causes the specified object to delete itself
+    function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
+        $.post("{% url 'course_flow:delete-self' %}", {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+    
+    //Publishes or unpublishes the project
+    function togglePublish(callBackFunction=()=>console.log("success")){
+        $.post("{% url 'course_flow:project-toggle-published' %}", {
+            projectPk:JSON.stringify({{object.pk|safe}})
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+    
+    function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
+        $.post("{% url 'course_flow:update-value' %}", {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            data:JSON.stringify(json)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+</script>
+{% endblock %}

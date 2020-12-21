@@ -5,6 +5,8 @@ import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
 import { terser } from "rollup-plugin-terser";
 import postcss from "rollup-plugin-postcss";
+import react from 'react';
+import reactDom from 'react-dom';
 
 const plugins = [
   postcss({
@@ -18,7 +20,7 @@ const plugins = [
     exclude: ["node_modules/**"],
     plugins: [
       "@babel/plugin-proposal-class-properties",
-      ["@babel/plugin-transform-react-jsx", { pragma: "h" }]
+      ["@babel/plugin-transform-react-jsx"]
     ],
     presets: [
       "@babel/preset-flow",
@@ -34,7 +36,14 @@ const plugins = [
       ]
     ]
   }),
-  commonjs(),
+  commonjs({
+    include: 'node_modules/**',
+    namedExports:{
+      'node_modules/react-is/index.js':['isValidElementType','isContextConsumer'],
+      'react': Object.keys(react),
+      'react-dom':Object.keys(reactDom),
+    }
+  }),
   terser()
 ];
 
@@ -48,5 +57,15 @@ export default [
       sourceMap: "inline"
     },
     plugins: plugins
-  }
+  },
+  {
+    input: "course_flow/static/course_flow/js/scripts-wf-redux.js",
+    output: {
+      file: "course_flow/static/course_flow/js/scripts-wf-redux.min.js",
+      name: "workflow_redux",
+      format: "iife",
+      sourceMap: "inline"
+    },
+    plugins: plugins
+  },
 ];

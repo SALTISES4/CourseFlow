@@ -1,0 +1,584 @@
+
+#site{
+    background:#EEEEEE;
+}
+
+p{
+    color:black;
+}
+
+:focus{
+    outline:none;
+}
+
+.workflow-wrapper{
+    position:relative;
+    display:inline-block;
+    white-space:nowrap;
+    text-align:left;
+}
+
+.workflow-container{
+    font-family:sans-serif;
+    position:relative;
+    background:white;
+    display:inline-block;
+    overflow:visible;
+    margin:10px;
+    margin-right:200px;
+    background:white;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+    padding:0px;
+    user-select:none;
+}
+
+.workflow-details{
+    padding:30px;
+}
+
+.workflow-details .workflow-for-menu{
+    color:black;
+    margin-left:10px;
+    border-color:black;
+    margin-bottom:30px;
+}
+
+.workflow-details .workflow-for-menu.selected{
+    background:white;
+    color:black;
+}
+
+.strategy{
+    background:white;
+    min-height:200px;
+    padding:10px;
+    margin-top:5px;
+    box-sizing:border-box;
+    border:2px solid white;
+    border-radius:5px;
+}
+
+.strategy-workflow.dragging{
+    height:100px !important;
+    overflow:hidden;
+    border-color:#1976bc;
+    border-style:solid;
+    border-width:2px;
+    border-radius:5px;
+}
+
+.strategy-workflow.dragging .node-block{
+    display:none;
+}
+
+.strategy-block{
+    width:100%;
+    padding-left:10px;
+    padding-right:10px;
+    box-sizing:border-box;
+}
+
+.strategy:first-of-type{
+    margin-top:20px;
+}
+
+.strategy-block > div:nth-of-type(odd) > .strategy{
+/*    background: #e0e0e0e0;*/
+}
+
+.column-workflow{
+    display:inline-block;
+    vertical-align:top;
+}
+
+.column{
+    position:relative;
+    padding:5px;
+    width:160px;
+    white-space:normal;
+    text-align:center;
+    vertical-align:top;
+    box-sizing:border-box;
+    border:2px solid white;
+    border-radius:5px;
+}
+
+.column-line div{
+    display:inline-block;
+    vertical-align: middle;
+    width:calc(100% - 32px);
+    padding:2px;
+    box-sizing:border-box;
+}
+
+.column-line img{
+    display:inline-block;
+    width:32px;
+    vertical-align: middle;
+    padding:2px;
+    box-sizing:border-box;
+}
+
+.column-line{
+    min-height:32px;
+}
+
+.column-row{
+    padding-left:40px;
+    padding-right:40px;
+    background:white;
+    position:sticky;
+    top:0px;
+    z-index:2;
+    font-size:16px;
+    border:2px solid white;
+}
+
+.node-strategy{
+    width:100%;
+    display:block;
+    min-height:50px;
+    padding-top:30px;
+    position:relative;
+}
+
+.node-strategy.dragging.ui-sortable-helper .node{
+    position:static;
+}
+
+.node-block{
+    min-height:100px;
+}
+
+.node-block.term{
+    width:160px;
+    display:inline-block;
+    vertical-align: top;
+}
+
+.term .node{
+    left:10px !important;
+    width:140px;
+}
+
+.node-ghost{
+    width:160px;
+    min-height:50px;
+    border:1px dashed black;
+    position:absolute;
+}
+
+.node{
+    width:200px;
+    border:solid 1px black;
+    position:relative;
+    overflow:hidden;
+    white-space:normal;
+    border-radius:5px;
+}
+
+.node-top-row{
+    padding:5px;
+    box-sizing:border-box;
+    background:white;
+    margin-top:5px;
+    width:100%;
+}
+
+.node-icon{
+    display:inline-block;
+    width:24px;
+    height:24px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.node-icon img{
+    width:100%;
+    vertical-align:middle;
+}
+
+.node.program .node-icon{
+    width:0;
+}
+
+.node-title{
+    padding-left:5px;
+    padding-right:5px;
+    display:inline-block;
+    overflow-x:hidden;
+    width:calc(100% - 48px);
+    text-align: center;
+    min-height:20px;
+    font-weight:600;
+    box-sizing:border-box;
+    font-size:12px;
+    vertical-align:middle;
+}
+
+.node.program .node-title{
+    width:100%;
+    text-align: left;
+}
+
+.node-details{
+    width:100%;
+    background:white;
+    display:none;
+    padding:5px;
+    font-size:12px;
+    box-sizing:border-box;
+}
+
+.node-details default-text{
+    font-style:italic;
+    color:grey;
+}
+
+.node.dropped .node-details{
+    display:block
+}
+
+.node-drop-row{
+    width:100%;
+    height:20px;
+    background:white;
+    border-radius:0 0 5px 5px;
+    overflow:hidden;
+}
+
+.node-drop-side{
+    display:inline-block;
+    vertical-align: middle;
+    height:100%;
+    width:40%;
+    padding:3px;
+    box-sizing:border-box;
+}
+
+.node-drop-left{
+    font-size:30px;
+    font-weight:600;
+    margin-top:-28px;
+}
+
+.node-drop-right{
+    line-height:100%;
+    text-align:right;
+    white-space:nowrap;
+}
+
+.node-drop-time{
+    height:100%;
+    font-size:12px;
+    text-align:right;
+    display:inline-block;
+    padding-right:3px;
+}
+
+.node-drop-middle{
+    display:inline-block;
+    vertical-align: middle;
+    text-align:center;
+    width:20%;
+    height:100%;
+}
+
+.node-drop-row img{
+    width:12px;
+    vertical-align:middle;
+    display:inline-block;
+}
+
+.mouseover-actions{
+    visibility:hidden;
+    position:absolute;
+    top:-1px;
+    right:-1px;
+    border-radius:5px;
+    border:1px solid black;
+    padding:2px;
+    line-height:0px;
+    background:white;
+}
+
+/*This is used to get around the issue that we can't make the strategy itself relatively positioned (messes up jquery sortable*/
+.mouseover-container-bypass{
+    position:relative;
+    padding:0;
+    margin:0;
+    top:0px;
+    width:100%;
+    height:0px;
+    overflow:visible;
+}
+
+.action-button{
+    width:20px;
+    height:20px;
+    display:inline-block;
+}
+
+.action-button img{
+    width:100%;
+    height:100%;
+}
+
+
+div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseover-actions{
+    visibility:visible;
+}
+
+
+.dragging .mouseover-actions{
+    visibility:hidden !important;
+}
+
+.workflow-canvas{
+    position:absolute;
+    left:0px;
+    top:0px;
+    pointer-events:none;
+}
+
+.workflow-canvas circle, .workflow-canvas path.nodelink{
+    pointer-events:auto;
+}
+
+.workflow-canvas.creating-node-link circle[data-port-type='target']{
+    visibility:visible;
+}
+
+.workflow-canvas circle{
+    visibility:hidden;
+}
+
+circle.mouseover{
+    visibility:visible;
+}
+
+.workflow-canvas.dragging-strategyworkflow{
+    opacity:0;
+}
+
+.node input{
+    width:100px;
+}
+
+.side-bar{
+    position:fixed;
+    overflow:visible;
+    z-index:4;
+    right:16px;
+    top:100px;
+    bottom:0px;
+}
+
+.right-panel-container{
+    overflow:hidden;
+    float:right;
+    box-shadow: -1px 0px 3px -1px;
+    background:white;
+    text-align:left;
+    font-family:sans-serif;
+    height:100%;
+    width:240px;
+    display:inline-block;
+    position:relative;
+}
+
+.side-bar .ui-tabs-nav{
+    margin:5px -2px 5px 5px; 
+    padding:0px;
+    display:inline-block;
+}
+
+.side-bar .ui-tabs-tab{
+    text-align:center;
+    display:block;
+    height:32px;
+    background:white;
+    border-radius:3px;
+    border:1px solid lightgray;
+}
+
+.side-bar .ui-tabs-tab.ui-state-disabled{
+    visibility:hidden;
+    height:0px;
+}
+
+.side-bar .ui-tabs-tab a{
+    margin-right:4px;
+    display:block;
+    text-decoration:none;
+    color:lightgray;
+    filter:grayscale(100%);
+    box-sizing:border-box;
+    height:100%;
+}
+
+.side-bar .ui-tabs-tab a img{
+    width:32px;
+}
+
+
+.ui-tabs-tab.ui-tabs-active a{
+    filter:none;
+}
+
+
+.right-panel-inner{
+    display:inline;
+    overflow-x:hidden;
+    overflow-y:auto;
+    display:inline-block;
+    padding:20px;
+    box-sizing:border-box;
+    width:100%;
+    height:100%;
+}
+
+.node-bar-column-workflow{
+    width:100%;
+    display:block;
+    margin:2px;
+}
+
+.node-bar-column-workflow .ui-sortable-placeholder{
+    display:none;
+}
+
+.node-bar-column{
+    font-size:14px;
+    width:100%;
+    border:3px solid;
+    padding:10px;
+    box-sizing:border-box;
+}
+
+.new-column.node-bar-column{
+    border-style:dashed;
+}
+
+.new-node-drop-over{
+    border-bottom:2px solid #1976bc;
+}
+
+.valid-drop{
+    outline:2px solid #1976bc;
+}
+
+.workflow-wrapper .selected{
+    border-color:#1976bc;
+    border-style:solid;
+}
+
+.workflow-wrapper .nodelink.selected{
+    stroke:#1976bc;
+    opacity:1;
+    stroke-width:5px;
+}
+
+.workflow-wrapper .node.selected{
+    border-width:2px;
+    margin:-1px;
+}
+
+.workflow-for-menu.selected{
+    color:white;
+    background:#1976bc;
+}
+
+#popup-container{
+    position:absolute;
+    width:100%;
+    height:100%;
+    pointer-events:none;
+    z-index:10;
+}
+
+.screen-barrier{
+    width:100%;
+    height:100%;
+    background:rgba(100,100,100,0.5);
+    pointer-events:all;
+}
+
+.message-box{
+    background:white;
+    left:10%;
+    top:10%;
+    width:80%;
+    height:80%;
+    position:absolute;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+}
+
+.workflow-for-menu{
+    max-width:400px;
+    background-color:white;
+    margin-bottom:8px;
+    padding:10px;
+    color:#1976bc;
+    border-radius:10px;
+    border:2px solid #1976bc;
+}
+
+.workflow-description{
+    font-size:16px;
+}
+
+.workflow-created{
+    font-size:14px;
+    margin-bottom:6px;
+}
+
+.workflow-title{
+    font-weight:600;
+    font-size:18px;
+    margin-bottom:6px;
+    display:inline-block;
+    width:80%;
+}
+
+.workflow-buttons{
+    width:20%;
+    display:inline-block;
+    text-align:right;
+}
+
+.workflow-buttons > *{
+    display:inline-block;
+}
+
+
+.message-wrap{
+    width:100%;
+    height:100%;
+    overflow-y:scroll;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+.message-panel{
+    width:50%;
+    text-align:left;
+    box-sizing: border-box;
+    display:inline-block;
+    background:white;
+    height:100%;
+    padding:20px;
+    overflow:auto;
+    vertical-align:top;
+}
+
+.action-bar{
+    display:inline-block;
+    width:100%;
+    left:0%;
+    bottom:0%;
+    position:absolute;
+}
+
+
+

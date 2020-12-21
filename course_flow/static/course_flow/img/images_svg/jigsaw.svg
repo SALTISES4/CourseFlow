@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48.552628mm"
+   height="48.552628mm"
+   viewBox="0 0 172.03687 172.03687"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="jigsaw.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="-239.67674"
+     inkscape:cy="12.70731"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-166.83871,-192.05806)">
+    <rect
+       inkscape:export-filename="C:\Users\Admin\Dropbox\Website\Workflows\data\group24.png"
+       inkscape:export-ydpi="277.71463"
+       inkscape:export-xdpi="277.71463"
+       y="197.05806"
+       x="171.83871"
+       height="162.03687"
+       width="162.03687"
+       id="rect3195-0"
+       style="fill:#ffffff;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0" />
+    <path
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:6.54586792;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:5.80000067;stroke-opacity:1"
+       d="m 201.70442,231.38352 0,93.4057 25.09347,0.021 c -1.19509,-2.6409 -1.81063,-5.5072 -1.80519,-8.4059 0.0543,-11.2047 9.17833,-20.2456 20.38307,-20.1976 11.20467,0.048 20.25093,9.1663 20.20954,20.3712 l -10e-4,0.048 c -0.0218,2.823 -0.63233,5.6103 -1.79245,8.1838 l 21.85082,-0.021 0.002,-32.4179 c 3.13703,2.2923 6.91533,3.5404 10.80055,3.5679 10.22783,0.056 18.56633,-8.1865 18.62876,-18.4143 l 0.001,-0.045 c 0.0374,-10.228 -8.22041,-18.5516 -18.44844,-18.5952 -3.94765,-0.013 -7.79514,1.2422 -10.98156,3.5726 l -0.002,-31.074 -19.55277,0 -37.84355,0 z"
+       id="rect8283-9"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="C:\Users\Jeremie\Dropbox\saltise\WorkflowMaker\images\jigsaw24.png"
+       inkscape:export-xdpi="277.71463"
+       inkscape:export-ydpi="277.71463"
+       sodipodi:nodetypes="ccccccccccccccccccc" />
+  </g>
+</svg>
