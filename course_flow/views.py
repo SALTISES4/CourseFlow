@@ -43,6 +43,7 @@ from .decorators import (
     is_owner,
     is_parent_owner,
     is_throughmodel_parent_owner,
+    new_parent_authorship,
 )
 from django.urls import reverse
 from django.views.generic.edit import CreateView
@@ -68,16 +69,14 @@ from .utils import get_model_from_str, get_parent_model_str, get_parent_model
 
 
 class OwnerOrPublishedMixin(UserPassesTestMixin):
-    
     def test_func(self):
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-            and (
-                self.get_object().author == self.request.user
-                or self.get_object().published
-            )
+        return Group.objects.get(
+            name=settings.TEACHER_GROUP
+        ) in self.request.user.groups.all() and (
+            self.get_object().author == self.request.user
+            or self.get_object().published
         )
+
 
 def registration_view(request):
 
@@ -103,127 +102,173 @@ def registration_view(request):
 
 def get_project_data_package(user):
     data_package = {
-        "owned_projects":{
-            "title":"Your Projects",
-            "sections":[{
-                "title":"Add a Project",
-                "object_type":"project",
-                "objects":ProjectSerializerShallow(
-                    Project.objects.filter(author=user),many=True
-                ).data,
-            }],
-            "add":True,
+        "owned_projects": {
+            "title": "Your Projects",
+            "sections": [
+                {
+                    "title": "Add a Project",
+                    "object_type": "project",
+                    "objects": ProjectSerializerShallow(
+                        Project.objects.filter(author=user), many=True
+                    ).data,
+                }
+            ],
+            "add": True,
         },
-        "other_projects":{
-            "title":"Published Projects",
-            "sections":[{
-                "title":"Published Projects",
-                "object_type":"project",
-                "objects":ProjectSerializerShallow(
-                    Project.objects.filter(published=True).exclude(author=user),many=True
-                ).data
-            }]
-        }
+        "other_projects": {
+            "title": "Published Projects",
+            "sections": [
+                {
+                    "title": "Published Projects",
+                    "object_type": "project",
+                    "objects": ProjectSerializerShallow(
+                        Project.objects.filter(published=True).exclude(
+                            author=user
+                        ),
+                        many=True,
+                    ).data,
+                }
+            ],
+        },
     }
     return data_package
 
-def get_workflow_data_package(user,project,type_filter):
+
+def get_workflow_data_package(user, project, type_filter):
     this_project_sections = []
     other_project_sections = []
     all_published_sections = []
-    if(type_filter is None):
-        this_project_sections.append({
-            "title":"Programs",
-            "object_type":"program",
-            "objects":ProgramSerializerShallow(
-                Program.objects.filter(project=project),many=True
-            ).data
-        })
-        other_project_sections.append({
-            "title":"Programs",
-            "object_type":"program",
-            "objects":ProgramSerializerShallow(
-                Program.objects.filter(author=user).exclude(project=project),many=True
-            ).data
-        })
-        all_published_sections.append({
-            "title":"Programs",
-            "object_type":"program",
-            "objects":ProgramSerializerShallow(
-                Program.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
-            ).data
-        })
-    if(type_filter is None or type_filter==1):
-        this_project_sections.append({
-            "title":"Courses",
-            "object_type":"course",
-            "objects":CourseSerializerShallow(
-                Course.objects.filter(project=project),many=True
-            ).data
-        })
-        other_project_sections.append({
-            "title":"Courses",
-            "object_type":"course",
-            "objects":CourseSerializerShallow(
-                Course.objects.filter(author=user).exclude(project=project),many=True
-            ).data
-        })
-        all_published_sections.append({
-            "title":"Courses",
-            "object_type":"course",
-            "objects":CourseSerializerShallow(
-                Course.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
-            ).data
-        })
-            
-    
-    if(type_filter is None or type_filter==0):
-        this_project_sections.append({
-            "title":"Activities",
-            "object_type":"activity",
-            "objects":ActivitySerializerShallow(
-                Activity.objects.filter(project=project),many=True
-            ).data
-        })
-        other_project_sections.append({
-            "title":"Activities",
-            "object_type":"activity",
-            "objects":ActivitySerializerShallow(
-                Activity.objects.filter(author=user).exclude(project=project),many=True
-            ).data
-        })
-        all_published_sections.append({
-            "title":"Activities",
-            "object_type":"activity",
-            "objects":ActivitySerializerShallow(
-                Activity.objects.filter(published=True).exclude(author=user).exclude(project=project),many=True
-            ).data
-        })
-    
+    if type_filter is None:
+        this_project_sections.append(
+            {
+                "title": "Programs",
+                "object_type": "program",
+                "objects": ProgramSerializerShallow(
+                    Program.objects.filter(project=project), many=True
+                ).data,
+            }
+        )
+        other_project_sections.append(
+            {
+                "title": "Programs",
+                "object_type": "program",
+                "objects": ProgramSerializerShallow(
+                    Program.objects.filter(author=user).exclude(
+                        project=project
+                    ),
+                    many=True,
+                ).data,
+            }
+        )
+        all_published_sections.append(
+            {
+                "title": "Programs",
+                "object_type": "program",
+                "objects": ProgramSerializerShallow(
+                    Program.objects.filter(published=True)
+                    .exclude(author=user)
+                    .exclude(project=project),
+                    many=True,
+                ).data,
+            }
+        )
+    if type_filter is None or type_filter == 1:
+        this_project_sections.append(
+            {
+                "title": "Courses",
+                "object_type": "course",
+                "objects": CourseSerializerShallow(
+                    Course.objects.filter(project=project), many=True
+                ).data,
+            }
+        )
+        other_project_sections.append(
+            {
+                "title": "Courses",
+                "object_type": "course",
+                "objects": CourseSerializerShallow(
+                    Course.objects.filter(author=user).exclude(
+                        project=project
+                    ),
+                    many=True,
+                ).data,
+            }
+        )
+        all_published_sections.append(
+            {
+                "title": "Courses",
+                "object_type": "course",
+                "objects": CourseSerializerShallow(
+                    Course.objects.filter(published=True)
+                    .exclude(author=user)
+                    .exclude(project=project),
+                    many=True,
+                ).data,
+            }
+        )
+
+    if type_filter is None or type_filter == 0:
+        this_project_sections.append(
+            {
+                "title": "Activities",
+                "object_type": "activity",
+                "objects": ActivitySerializerShallow(
+                    Activity.objects.filter(project=project), many=True
+                ).data,
+            }
+        )
+        other_project_sections.append(
+            {
+                "title": "Activities",
+                "object_type": "activity",
+                "objects": ActivitySerializerShallow(
+                    Activity.objects.filter(author=user).exclude(
+                        project=project
+                    ),
+                    many=True,
+                ).data,
+            }
+        )
+        all_published_sections.append(
+            {
+                "title": "Activities",
+                "object_type": "activity",
+                "objects": ActivitySerializerShallow(
+                    Activity.objects.filter(published=True)
+                    .exclude(author=user)
+                    .exclude(project=project),
+                    many=True,
+                ).data,
+            }
+        )
+
     data_package = {
-        "current_project":{
-            "title":"This Project",
-            "sections":this_project_sections,
-            "add":(project.author==user),
+        "current_project": {
+            "title": "This Project",
+            "sections": this_project_sections,
+            "add": (project.author == user),
         },
-        "other_projects":{
-            "title":"From Your Other Projects",
-            "sections":other_project_sections,
+        "other_projects": {
+            "title": "From Your Other Projects",
+            "sections": other_project_sections,
         },
-        "all_published":{
-            "title":"All Published Workflows",
-            "sections":all_published_sections,
-        }
+        "all_published": {
+            "title": "All Published Workflows",
+            "sections": all_published_sections,
+        },
     }
     return data_package
-    
+
 
 @login_required
 def home_view(request):
     context = {
-        "project_data_package":JSONRenderer().render(get_project_data_package(request.user)).decode("utf-8")
+        "project_data_package": JSONRenderer()
+        .render(get_project_data_package(request.user))
+        .decode("utf-8")
     }
     return render(request, "course_flow/home.html", context)
+
 
 class ProjectCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Project
@@ -244,38 +289,58 @@ class ProjectCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return reverse(
             "course_flow:project-update", kwargs={"pk": self.object.pk}
         )
-    
-    
+
+
 class ProjectDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Project
-    fields = ["title", "description","published"]
+    fields = ["title", "description", "published"]
     template_name = "course_flow/project_detail.html"
 
-    
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         project = self.object
-        context["workflow_data_package"]=JSONRenderer().render(get_workflow_data_package(self.request.user,project,None)).decode("utf-8")
-        context["project_data"]=JSONRenderer().render(ProjectSerializerShallow(project).data).decode("utf-8")
-        
+        context["workflow_data_package"] = (
+            JSONRenderer()
+            .render(
+                get_workflow_data_package(self.request.user, project, None)
+            )
+            .decode("utf-8")
+        )
+        context["project_data"] = (
+            JSONRenderer()
+            .render(ProjectSerializerShallow(project).data)
+            .decode("utf-8")
+        )
+
         return context
 
 
 class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Project
-    fields = ["title", "description","published"]
+    fields = ["title", "description", "published"]
     template_name = "course_flow/project_update.html"
-    
+
     def test_func(self):
         return self.get_object().author == self.request.user
-    
+
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         project = self.object
-        context["workflow_data_package"]=JSONRenderer().render(get_workflow_data_package(self.request.user,project,None)).decode("utf-8")
-        context["project_data"]=JSONRenderer().render(ProjectSerializerShallow(project).data).decode("utf-8")
-        
+        context["workflow_data_package"] = (
+            JSONRenderer()
+            .render(
+                get_workflow_data_package(self.request.user, project, None)
+            )
+            .decode("utf-8")
+        )
+        context["project_data"] = (
+            JSONRenderer()
+            .render(ProjectSerializerShallow(project).data)
+            .decode("utf-8")
+        )
+
         return context
+
 
 class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Workflow
@@ -299,44 +364,78 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        workflow=self.get_object()
+        workflow = self.get_object()
         SerializerClass = serializer_lookups_shallow[workflow.type]
         columnworkflows = workflow.columnworkflow_set.all()
         strategyworkflows = workflow.strategyworkflow_set.all()
         columns = workflow.columns.all()
         strategies = workflow.strategies.all()
         nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
-        nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
+        nodes = Node.objects.filter(
+            pk__in=nodestrategies.values_list("node__pk", flat=True)
+        )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
-        column_choices = [{'type':choice[0],'name':choice[1]} for choice in Column._meta.get_field('column_type').choices]
-        context_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('context_classification').choices]
-        task_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('task_classification').choices]
-        time_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('time_units').choices]
-        parent_project_pk = WorkflowProject.objects.get(workflow=workflow).project.pk
-        
+        column_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Column._meta.get_field("column_type").choices
+        ]
+        context_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Node._meta.get_field(
+                "context_classification"
+            ).choices
+        ]
+        task_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Node._meta.get_field("task_classification").choices
+        ]
+        time_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Node._meta.get_field("time_units").choices
+        ]
+        parent_project_pk = WorkflowProject.objects.get(
+            workflow=workflow
+        ).project.pk
 
         data_flat = {
-            "workflow":SerializerClass(workflow).data,
-            "columnworkflow":ColumnWorkflowSerializerShallow(columnworkflows,many=True).data,
-            "column":ColumnSerializerShallow(columns,many=True).data,
-            "strategyworkflow":StrategyWorkflowSerializerShallow(strategyworkflows,many=True).data,
-            "strategy":StrategySerializerShallow(strategies,many=True).data,
-            "nodestrategy":NodeStrategySerializerShallow(nodestrategies,many=True).data,
-            "node":NodeSerializerShallow(nodes,many=True).data,
-            "nodelink":NodeLinkSerializerShallow(nodelinks,many=True).data,
-
+            "workflow": SerializerClass(workflow).data,
+            "columnworkflow": ColumnWorkflowSerializerShallow(
+                columnworkflows, many=True
+            ).data,
+            "column": ColumnSerializerShallow(columns, many=True).data,
+            "strategyworkflow": StrategyWorkflowSerializerShallow(
+                strategyworkflows, many=True
+            ).data,
+            "strategy": StrategySerializerShallow(strategies, many=True).data,
+            "nodestrategy": NodeStrategySerializerShallow(
+                nodestrategies, many=True
+            ).data,
+            "node": NodeSerializerShallow(nodes, many=True).data,
+            "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
         }
-        
-        context["data_flat"]=JSONRenderer().render(data_flat).decode("utf-8")
-        context["column_choices"]=JSONRenderer().render(column_choices).decode("utf-8")
-        context["context_choices"]=JSONRenderer().render(context_choices).decode("utf-8")
-        context["task_choices"]=JSONRenderer().render(task_choices).decode("utf-8")
-        context["time_choices"]=JSONRenderer().render(time_choices).decode("utf-8")
-        context["parent_project_pk"] = JSONRenderer().render(parent_project_pk).decode("utf-8")
+
+        context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
+        context["column_choices"] = (
+            JSONRenderer().render(column_choices).decode("utf-8")
+        )
+        context["context_choices"] = (
+            JSONRenderer().render(context_choices).decode("utf-8")
+        )
+        context["task_choices"] = (
+            JSONRenderer().render(task_choices).decode("utf-8")
+        )
+        context["time_choices"] = (
+            JSONRenderer().render(time_choices).decode("utf-8")
+        )
+        context["parent_project_pk"] = (
+            JSONRenderer().render(parent_project_pk).decode("utf-8")
+        )
         return context
 
 
-class WorkflowDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
+class WorkflowDetailView(
+    LoginRequiredMixin, OwnerOrPublishedMixin, DetailView
+):
     model = Workflow
     fields = ["title", "description"]
     template_name = "course_flow/workflow_detail.html"
@@ -348,7 +447,6 @@ class WorkflowDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
         workflow = super().get_object()
         return Workflow.objects.get_subclass(pk=workflow.pk)
 
-
     def get_success_url(self):
         return reverse(
             "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
@@ -356,49 +454,82 @@ class WorkflowDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        workflow=self.get_object()
+        workflow = self.get_object()
         SerializerClass = serializer_lookups_shallow[workflow.type]
         columnworkflows = workflow.columnworkflow_set.all()
         strategyworkflows = workflow.strategyworkflow_set.all()
         columns = workflow.columns.all()
         strategies = workflow.strategies.all()
         nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
-        nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
+        nodes = Node.objects.filter(
+            pk__in=nodestrategies.values_list("node__pk", flat=True)
+        )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
-        column_choices = [{'type':choice[0],'name':choice[1]} for choice in Column._meta.get_field('column_type').choices]
-        context_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('context_classification').choices]
-        task_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('task_classification').choices]
-        time_choices = [{'type':choice[0],'name':choice[1]} for choice in Node._meta.get_field('time_units').choices]
-        parent_project_pk = WorkflowProject.objects.get(workflow=workflow).project.pk
-        
+        column_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Column._meta.get_field("column_type").choices
+        ]
+        context_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Node._meta.get_field(
+                "context_classification"
+            ).choices
+        ]
+        task_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Node._meta.get_field("task_classification").choices
+        ]
+        time_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Node._meta.get_field("time_units").choices
+        ]
+        parent_project_pk = WorkflowProject.objects.get(
+            workflow=workflow
+        ).project.pk
 
         data_flat = {
-            "workflow":SerializerClass(workflow).data,
-            "columnworkflow":ColumnWorkflowSerializerShallow(columnworkflows,many=True).data,
-            "column":ColumnSerializerShallow(columns,many=True).data,
-            "strategyworkflow":StrategyWorkflowSerializerShallow(strategyworkflows,many=True).data,
-            "strategy":StrategySerializerShallow(strategies,many=True).data,
-            "nodestrategy":NodeStrategySerializerShallow(nodestrategies,many=True).data,
-            "node":NodeSerializerShallow(nodes,many=True).data,
-            "nodelink":NodeLinkSerializerShallow(nodelinks,many=True).data,
-
+            "workflow": SerializerClass(workflow).data,
+            "columnworkflow": ColumnWorkflowSerializerShallow(
+                columnworkflows, many=True
+            ).data,
+            "column": ColumnSerializerShallow(columns, many=True).data,
+            "strategyworkflow": StrategyWorkflowSerializerShallow(
+                strategyworkflows, many=True
+            ).data,
+            "strategy": StrategySerializerShallow(strategies, many=True).data,
+            "nodestrategy": NodeStrategySerializerShallow(
+                nodestrategies, many=True
+            ).data,
+            "node": NodeSerializerShallow(nodes, many=True).data,
+            "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
         }
-        
-        context["data_flat"]=JSONRenderer().render(data_flat).decode("utf-8")
-        context["column_choices"]=JSONRenderer().render(column_choices).decode("utf-8")
-        context["context_choices"]=JSONRenderer().render(context_choices).decode("utf-8")
-        context["task_choices"]=JSONRenderer().render(task_choices).decode("utf-8")
-        context["time_choices"]=JSONRenderer().render(time_choices).decode("utf-8")
-        context["parent_project_pk"] = JSONRenderer().render(parent_project_pk).decode("utf-8")
+
+        context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
+        context["column_choices"] = (
+            JSONRenderer().render(column_choices).decode("utf-8")
+        )
+        context["context_choices"] = (
+            JSONRenderer().render(context_choices).decode("utf-8")
+        )
+        context["task_choices"] = (
+            JSONRenderer().render(task_choices).decode("utf-8")
+        )
+        context["time_choices"] = (
+            JSONRenderer().render(time_choices).decode("utf-8")
+        )
+        context["parent_project_pk"] = (
+            JSONRenderer().render(parent_project_pk).decode("utf-8")
+        )
         return context
 
 
-
-class WorkflowViewSet(LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet):
+class WorkflowViewSet(
+    LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet
+):
     serializer_class = WorkflowSerializerFinder
     renderer_classes = [JSONRenderer]
     queryset = Workflow.objects.select_subclasses()
-    
+
 
 class StrategyWorkflowViewSet(
     LoginRequiredMixin, viewsets.ReadOnlyModelViewSet
@@ -444,30 +575,35 @@ class ColumnViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
     queryset = Column.objects.all()
 
 
-class ActivityViewSet(LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet):
+class ActivityViewSet(
+    LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet
+):
     serializer_class = ActivitySerializer
     renderer_classes = [JSONRenderer]
     queryset = Activity.objects.all()
 
 
-class CourseViewSet(LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet):
+class CourseViewSet(
+    LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet
+):
     serializer_class = CourseSerializer
     renderer_classes = [JSONRenderer]
     queryset = Course.objects.all()
 
 
-class ProgramViewSet(LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet):
+class ProgramViewSet(
+    LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet
+):
     serializer_class = ProgramSerializer
     renderer_classes = [JSONRenderer]
     queryset = Program.objects.all()
 
 
-
-class ProgramDetailView(LoginRequiredMixin,  OwnerOrPublishedMixin, DetailView):
+class ProgramDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Program
     template_name = "course_flow/program_detail.html"
 
-    
+
 class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Program
     fields = ["title", "description"]
@@ -477,17 +613,15 @@ class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         project = Project.objects.get(pk=self.kwargs["projectPk"])
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all() and
-            project.author == self.request.user
+            in self.request.user.groups.all()
+            and project.author == self.request.user
         )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         project = Project.objects.get(pk=self.kwargs["projectPk"])
         response = super(CreateView, self).form_valid(form)
-        WorkflowProject.objects.create(
-            project=project,workflow=form.instance
-        )
+        WorkflowProject.objects.create(project=project, workflow=form.instance)
         form.instance.published = project.published
         return response
 
@@ -497,11 +631,9 @@ class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         )
 
 
-
 class CourseDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Course
     template_name = "course_flow/course_detail.html"
-
 
 
 class StaticCourseDetailView(LoginRequiredMixin, DetailView):
@@ -523,17 +655,15 @@ class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         project = Project.objects.get(pk=self.kwargs["projectPk"])
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all() and
-            project.author == self.request.user
+            in self.request.user.groups.all()
+            and project.author == self.request.user
         )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         project = Project.objects.get(pk=self.kwargs["projectPk"])
         response = super(CreateView, self).form_valid(form)
-        WorkflowProject.objects.create(
-            project=project,workflow=form.instance
-        )
+        WorkflowProject.objects.create(project=project, workflow=form.instance)
         form.instance.published = project.published
         return response
 
@@ -543,8 +673,9 @@ class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         )
 
 
-
-class ActivityDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
+class ActivityDetailView(
+    LoginRequiredMixin, OwnerOrPublishedMixin, DetailView
+):
     model = Activity
     template_name = "course_flow/activity_detail.html"
 
@@ -568,17 +699,15 @@ class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         project = Project.objects.get(pk=self.kwargs["projectPk"])
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all() and
-            project.author == self.request.user
+            in self.request.user.groups.all()
+            and project.author == self.request.user
         )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         project = Project.objects.get(pk=self.kwargs["projectPk"])
         response = super(CreateView, self).form_valid(form)
-        WorkflowProject.objects.create(
-            project=project,workflow=form.instance
-        )
+        WorkflowProject.objects.create(project=project, workflow=form.instance)
         form.instance.published = project.published
         return response
 
@@ -586,8 +715,6 @@ class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return reverse(
             "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
-
-
 
 
 def save_serializer(serializer) -> HttpResponse:
@@ -630,7 +757,6 @@ def update_program_json(request: HttpRequest) -> HttpResponse:
         Program.objects.get(id=data["id"]), data=data
     )
     return save_serializer(serializer)
-
 
 
 # Called when a node is added from the sidebar (duplicated)
@@ -891,22 +1017,29 @@ def get_node_completion_count(request: HttpRequest) -> HttpResponse:
     )
 
 
-
 """
 Contextual information methods
 """
+
+
 @require_POST
 @ajax_login_required
 @is_owner("nodePk")
 def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
-        project = node.strategy_set.first().workflow_set.first().project_set.first()
-        data_package = get_workflow_data_package(request.user,project,node.node_type-1)
+        project = (
+            node.strategy_set.first().workflow_set.first().project_set.first()
+        )
+        data_package = get_workflow_data_package(
+            request.user, project, node.node_type - 1
+        )
     except AttributeError:
-        return JsonResponse({"action":"error"})
-    return JsonResponse({"action":"posted","data_package":data_package,"node_id":node.id})
-    
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {"action": "posted", "data_package": data_package, "node_id": node.id}
+    )
+
 
 @require_POST
 @ajax_login_required
@@ -919,118 +1052,136 @@ def get_flat_workflow(request: HttpRequest) -> HttpResponse:
         columns = workflow.columns.all()
         strategies = workflow.strategies.all()
         nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
-        nodes = Node.objects.filter(pk__in=nodestrategies.values_list("node__pk",flat=True))
+        nodes = Node.objects.filter(
+            pk__in=nodestrategies.values_list("node__pk", flat=True)
+        )
 
         response = {
-            "workflow":SerializerClass(workflow).data,
-            "columnworkflows":ColumnWorkflowSerializerShallow(columnworkflows,many=True).data,
-            "columns":ColumnSerializerShallow(columns,many=True).data,
-            "strategyworkflows":StrategyWorkflowSerializerShallow(strategyworkflows,many=True).data,
-            "strategies":StrategySerializerShallow(strategies,many=True).data,
-            "nodestrategies":NodeStrategySerializerShallow(nodestrategies,many=True).data,
-            "nodes":NodeSerializerShallow(nodes,many=True).data,
-
+            "workflow": SerializerClass(workflow).data,
+            "columnworkflows": ColumnWorkflowSerializerShallow(
+                columnworkflows, many=True
+            ).data,
+            "columns": ColumnSerializerShallow(columns, many=True).data,
+            "strategyworkflows": StrategyWorkflowSerializerShallow(
+                strategyworkflows, many=True
+            ).data,
+            "strategies": StrategySerializerShallow(
+                strategies, many=True
+            ).data,
+            "nodestrategies": NodeStrategySerializerShallow(
+                nodestrategies, many=True
+            ).data,
+            "nodes": NodeSerializerShallow(nodes, many=True).data,
         }
-        
+
     except AttributeError:
-         return JsonResponse({"action":"error"})
-    return JsonResponse(response)    
+        return JsonResponse({"action": "error"})
+    return JsonResponse(response)
+
 
 """
 Duplication methods
 """
 
-def duplicate_nodelink(nodelink: NodeLink, author: User, source_node: Node, target_node: Node) -> NodeLink:
+
+def duplicate_nodelink(
+    nodelink: NodeLink, author: User, source_node: Node, target_node: Node
+) -> NodeLink:
     new_nodelink = NodeLink.objects.create(
         title=nodelink.title,
-        author = author,
-        source_node = source_node,
-        target_node = target_node,
-        source_port = nodelink.source_port,
-        target_port = nodelink.target_port,
+        author=author,
+        source_node=source_node,
+        target_node=target_node,
+        source_port=nodelink.source_port,
+        target_port=nodelink.target_port,
         dashed=nodelink.dashed,
         is_original=False,
         parent_nodelink=nodelink,
     )
-    
+
     return new_nodelink
 
+
 def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
-    if(new_workflow is not None):
+    if new_workflow is not None:
         for new_column in new_workflow.columns.all():
-            if new_column==node.column or new_column.parent_column==node.column:
-                column=new_column
+            if (
+                new_column == node.column
+                or new_column.parent_column == node.column
+            ):
+                column = new_column
                 break
     else:
         column = node.column
     new_node = Node.objects.create(
-        title = node.title,
-        description = node.description,
+        title=node.title,
+        description=node.description,
         author=author,
         node_type=node.node_type,
         column=column,
-        task_classification = node.task_classification,
-        context_classification = node.context_classification,
+        task_classification=node.task_classification,
+        context_classification=node.context_classification,
         has_autolink=node.has_autolink,
-        represents_workflow = node.represents_workflow,
-        time_required = node.time_required,
-        time_units = node.time_units,
+        represents_workflow=node.represents_workflow,
+        time_required=node.time_required,
+        time_units=node.time_units,
         is_original=False,
         parent_node=node,
     )
     if node.linked_workflow is not None:
         if new_workflow is not None:
-            set_linked_workflow(new_node,node.linked_workflow)
-        else: new_node.linked_workflow = node.linked_workflow
-    
-        
-    return new_node
-    
+            set_linked_workflow(new_node, node.linked_workflow)
+        else:
+            new_node.linked_workflow = node.linked_workflow
 
-def duplicate_strategy(strategy:Strategy, author: User, new_workflow: Workflow) -> Strategy:
+    return new_node
+
+
+def duplicate_strategy(
+    strategy: Strategy, author: User, new_workflow: Workflow
+) -> Strategy:
     new_strategy = Strategy.objects.create(
         title=strategy.title,
-        description = strategy.description,
-        author = author,
+        description=strategy.description,
+        author=author,
         is_original=False,
         parent_strategy=strategy,
-        strategy_type=strategy.strategy_type
+        strategy_type=strategy.strategy_type,
     )
-    
+
     for node in strategy.nodes.all():
         NodeStrategy.objects.create(
             node=duplicate_node(node, author, new_workflow),
             strategy=new_strategy,
-            rank=NodeStrategy.objects.get(
-                node=node,strategy=strategy
-            ).rank
+            rank=NodeStrategy.objects.get(node=node, strategy=strategy).rank,
         )
-        
+
     return new_strategy
 
 
 def duplicate_column(column: Column, author: User) -> Column:
     new_column = Column.objects.create(
         title=column.title,
-        author = author,
+        author=author,
         is_original=False,
-        parent_column = column,
-        column_type = column.column_type
+        parent_column=column,
+        column_type=column.column_type,
     )
-    
+
     return new_column
+
 
 def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
     model = get_model_from_str(workflow.type)
-    
+
     new_workflow = model.objects.create(
         title=workflow.title,
         description=workflow.description,
         author=author,
         is_original=False,
-        parent_workflow=workflow
+        parent_workflow=workflow,
     )
-    
+
     for column in workflow.columns.all():
         ColumnWorkflow.objects.create(
             column=duplicate_column(column, author),
@@ -1047,21 +1198,29 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
                 strategy=strategy, workflow=workflow
             ).rank,
         )
-        
-    #Handle all the nodelinks. These need to be handled here because they potentially span strategies
+
+    # Handle all the nodelinks. These need to be handled here because they potentially span strategies
     for strategy in new_workflow.strategies.all():
         for node in strategy.nodes.all():
-            for node_link in NodeLink.objects.filter(source_node=node.parent_node):
+            for node_link in NodeLink.objects.filter(
+                source_node=node.parent_node
+            ):
                 for strategy2 in new_workflow.strategies.all():
-                    if strategy2.nodes.filter(parent_node=node_link.target_node).count()>0:
+                    if (
+                        strategy2.nodes.filter(
+                            parent_node=node_link.target_node
+                        ).count()
+                        > 0
+                    ):
                         duplicate_nodelink(
                             node_link,
                             author,
                             node,
-                            strategy2.nodes.get(parent_node=node_link.target_node)
+                            strategy2.nodes.get(
+                                parent_node=node_link.target_node
+                            ),
                         )
-                    
-    
+
     return new_workflow
 
 
@@ -1075,7 +1234,6 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted", "clone_pk": workflow.pk})
-   
 
 
 """
@@ -1116,15 +1274,14 @@ def new_node(request: HttpRequest) -> HttpResponse:
         if column_id is not None and column_id >= 0:
             column = Column.objects.get(pk=column_id)
             columnworkflow = ColumnWorkflow.objects.get(column=column)
-        elif column_type is not None and column_type >=0:
+        elif column_type is not None and column_type >= 0:
             column = Column.objects.create(
-                column_type=column_type,
-                author = strategy.author
+                column_type=column_type, author=strategy.author
             )
             columnworkflow = ColumnWorkflow.objects.create(
                 column=column,
                 workflow=strategy.workflow_set.first(),
-                rank=strategy.workflow_set.first().columns.count()
+                rank=strategy.workflow_set.first().columns.count(),
             )
         else:
             columnworkflow = ColumnWorkflow.objects.filter(
@@ -1132,9 +1289,7 @@ def new_node(request: HttpRequest) -> HttpResponse:
                     strategy=strategy
                 ).workflow
             ).first()
-            column = (
-                columnworkflow.column
-            )
+            column = columnworkflow.column
         if column.author != strategy.author:
             raise ValidationError("Column and strategy have different authors")
         if position < 0 or position > strategy.nodes.count():
@@ -1145,14 +1300,22 @@ def new_node(request: HttpRequest) -> HttpResponse:
             column=column,
         )
         node_strategy = NodeStrategy.objects.create(
-            strategy=strategy,
-            node=node,
-            rank=position,
+            strategy=strategy, node=node, rank=position
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
-        {"action": "posted", "new_model": NodeSerializerShallow(node).data,"new_through":NodeStrategySerializerShallow(node_strategy).data,"index":position,"parentID":strategy_id,"columnworkflow":ColumnWorkflowSerializerShallow(columnworkflow).data,"column":ColumnSerializerShallow(column).data}
+        {
+            "action": "posted",
+            "new_model": NodeSerializerShallow(node).data,
+            "new_through": NodeStrategySerializerShallow(node_strategy).data,
+            "index": position,
+            "parentID": strategy_id,
+            "columnworkflow": ColumnWorkflowSerializerShallow(
+                columnworkflow
+            ).data,
+            "column": ColumnSerializerShallow(column).data,
+        }
     )
 
 
@@ -1178,7 +1341,12 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "new_model": NodeLinkSerializerShallow(node_link).data})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_model": NodeLinkSerializerShallow(node_link).data,
+        }
+    )
 
 
 # Add a new sibling to a through model
@@ -1192,58 +1360,68 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
 
     try:
         if object_type == "strategy":
-            model=Strategy.objects.get(id=object_id)
-            parent=Workflow.objects.get(id=parent_id)
-            through=StrategyWorkflow.objects.get(strategy=model,workflow=parent)
+            model = Strategy.objects.get(id=object_id)
+            parent = Workflow.objects.get(id=parent_id)
+            through = StrategyWorkflow.objects.get(
+                strategy=model, workflow=parent
+            )
             newmodel = Strategy.objects.create(
-                author=model.author,
-                strategy_type=model.strategy_type,
+                author=model.author, strategy_type=model.strategy_type
             )
             newthroughmodel = StrategyWorkflow.objects.create(
-                workflow=parent,
-                strategy=newmodel,
-                rank=through.rank + 1,
+                workflow=parent, strategy=newmodel, rank=through.rank + 1
             )
-            new_model_serialized=StrategySerializerShallow(newmodel).data
-            new_through_serialized=StrategyWorkflowSerializerShallow(newthroughmodel).data
+            new_model_serialized = StrategySerializerShallow(newmodel).data
+            new_through_serialized = StrategyWorkflowSerializerShallow(
+                newthroughmodel
+            ).data
         elif object_type == "node":
-            model=Node.objects.get(id=object_id)
-            parent=Strategy.objects.get(id=parent_id)
-            through=NodeStrategy.objects.get(node=model,strategy=parent)
+            model = Node.objects.get(id=object_id)
+            parent = Strategy.objects.get(id=parent_id)
+            through = NodeStrategy.objects.get(node=model, strategy=parent)
             newmodel = Node.objects.create(
                 author=model.author,
                 column=model.column,
                 node_type=model.node_type,
             )
             newthroughmodel = NodeStrategy.objects.create(
-                strategy=parent,
-                node=newmodel,
-                rank=through.rank + 1,
+                strategy=parent, node=newmodel, rank=through.rank + 1
             )
-            new_model_serialized=NodeSerializerShallow(newmodel).data
-            new_through_serialized=NodeStrategySerializerShallow(newthroughmodel).data
+            new_model_serialized = NodeSerializerShallow(newmodel).data
+            new_through_serialized = NodeStrategySerializerShallow(
+                newthroughmodel
+            ).data
         elif object_type == "column":
-            model=Column.objects.get(id=object_id)
-            parent=Workflow.objects.get(id=parent_id)
-            through=ColumnWorkflow.objects.get(column=model,workflow=parent)
-            newmodel =Column.objects.create(
+            model = Column.objects.get(id=object_id)
+            parent = Workflow.objects.get(id=parent_id)
+            through = ColumnWorkflow.objects.get(column=model, workflow=parent)
+            newmodel = Column.objects.create(
                 author=model.author,
-                column_type=math.floor(model.column_type/10)*10
+                column_type=math.floor(model.column_type / 10) * 10,
             )
             newthroughmodel = ColumnWorkflow.objects.create(
-                workflow=parent,
-                column=newmodel,
-                rank=through.rank + 1,
+                workflow=parent, column=newmodel, rank=through.rank + 1
             )
-            new_model_serialized=ColumnSerializerShallow(newmodel).data
-            new_through_serialized=ColumnWorkflowSerializerShallow(newthroughmodel).data
+            new_model_serialized = ColumnSerializerShallow(newmodel).data
+            new_through_serialized = ColumnWorkflowSerializerShallow(
+                newthroughmodel
+            ).data
         else:
             raise ValidationError("Uknown component type")
 
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "new_model": new_model_serialized,"new_through":new_through_serialized,"parentID":parent_id,"siblingID":through.id})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_model": new_model_serialized,
+            "new_through": new_through_serialized,
+            "parentID": parent_id,
+            "siblingID": through.id,
+        }
+    )
+
 
 # Soft-duplicate the item
 @require_POST
@@ -1256,53 +1434,68 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
 
     try:
         if object_type == "strategy":
-            model=Strategy.objects.get(id=object_id)
-            parent=Workflow.objects.get(id=parent_id)
-            through=StrategyWorkflow.objects.get(strategy=model,workflow=parent)
-            newmodel = duplicate_strategy(model,model.author,None)
+            model = Strategy.objects.get(id=object_id)
+            parent = Workflow.objects.get(id=parent_id)
+            through = StrategyWorkflow.objects.get(
+                strategy=model, workflow=parent
+            )
+            newmodel = duplicate_strategy(model, model.author, None)
             newthroughmodel = StrategyWorkflow.objects.create(
-                workflow=parent,
-                strategy=newmodel,
-                rank=through.rank + 1,
+                workflow=parent, strategy=newmodel, rank=through.rank + 1
             )
-            new_model_serialized=StrategySerializerShallow(newmodel).data
-            new_through_serialized=StrategyWorkflowSerializerShallow(newthroughmodel).data
-            new_children_serialized=NodeSerializerShallow(newmodel.nodes,many=True).data
-            new_child_through_serialized=NodeStrategySerializerShallow(newmodel.nodestrategy_set,many=True).data
+            new_model_serialized = StrategySerializerShallow(newmodel).data
+            new_through_serialized = StrategyWorkflowSerializerShallow(
+                newthroughmodel
+            ).data
+            new_children_serialized = NodeSerializerShallow(
+                newmodel.nodes, many=True
+            ).data
+            new_child_through_serialized = NodeStrategySerializerShallow(
+                newmodel.nodestrategy_set, many=True
+            ).data
         elif object_type == "node":
-            model=Node.objects.get(id=object_id)
-            parent=Strategy.objects.get(id=parent_id)
-            through=NodeStrategy.objects.get(node=model,strategy=parent)
-            newmodel = duplicate_node(model,model.author,None)
+            model = Node.objects.get(id=object_id)
+            parent = Strategy.objects.get(id=parent_id)
+            through = NodeStrategy.objects.get(node=model, strategy=parent)
+            newmodel = duplicate_node(model, model.author, None)
             newthroughmodel = NodeStrategy.objects.create(
-                strategy=parent,
-                node=newmodel,
-                rank=through.rank + 1,
+                strategy=parent, node=newmodel, rank=through.rank + 1
             )
-            new_model_serialized=NodeSerializerShallow(newmodel).data
-            new_through_serialized=NodeStrategySerializerShallow(newthroughmodel).data
-            new_children_serialized=None
-            new_child_through_serialized=None
+            new_model_serialized = NodeSerializerShallow(newmodel).data
+            new_through_serialized = NodeStrategySerializerShallow(
+                newthroughmodel
+            ).data
+            new_children_serialized = None
+            new_child_through_serialized = None
         elif object_type == "column":
-            model=Column.objects.get(id=object_id)
-            parent=Workflow.objects.get(id=parent_id)
-            through=ColumnWorkflow.objects.get(column=model,workflow=parent)
-            newmodel = duplicate_column(model,model.author)
+            model = Column.objects.get(id=object_id)
+            parent = Workflow.objects.get(id=parent_id)
+            through = ColumnWorkflow.objects.get(column=model, workflow=parent)
+            newmodel = duplicate_column(model, model.author)
             newthroughmodel = ColumnWorkflow.objects.create(
-                workflow=parent,
-                column=newmodel,
-                rank=through.rank + 1,
+                workflow=parent, column=newmodel, rank=through.rank + 1
             )
-            new_model_serialized=ColumnSerializerShallow(newmodel).data
-            new_through_serialized=ColumnWorkflowSerializerShallow(newthroughmodel).data
-            new_children_serialized=None
-            new_child_through_serialized=None
+            new_model_serialized = ColumnSerializerShallow(newmodel).data
+            new_through_serialized = ColumnWorkflowSerializerShallow(
+                newthroughmodel
+            ).data
+            new_children_serialized = None
+            new_child_through_serialized = None
         else:
             raise ValidationError("Uknown component type")
     except ValidationError:
         return JsonResponse({"action": "error"})
-    response = {"action": "posted", "new_model": new_model_serialized,"new_through":new_through_serialized,"parentID":parent_id,"siblingID":through.id,"children":new_children_serialized,"children_through":new_child_through_serialized}
+    response = {
+        "action": "posted",
+        "new_model": new_model_serialized,
+        "new_through": new_through_serialized,
+        "parentID": parent_id,
+        "siblingID": through.id,
+        "children": new_children_serialized,
+        "children_through": new_child_through_serialized,
+    }
     return JsonResponse(response)
+
 
 """
 Reorder methods
@@ -1312,6 +1505,7 @@ Reorder methods
 @require_POST
 @ajax_login_required
 @is_throughmodel_parent_owner
+@new_parent_authorship
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -1325,10 +1519,10 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
         parentType = get_parent_model_str(object_type)
 
         new_parent = get_model_from_str(parentType).objects.get(id=parent_id)
-        
-        if object_type=="nodestrategy":
+
+        if object_type == "nodestrategy":
             parent = model.strategy
-        else: 
+        else:
             parent = new_parent
 
         new_parent_count = model_type.objects.filter(
@@ -1352,16 +1546,20 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                     out_of_order_link.save()
                 model.rank = new_position
                 model.save()
+
         elif parent.id != new_parent.id:
-            if hasattr(parent, "get_subclass"):
-                if (
-                    parent.get_subclass().author
-                    != new_parent.get_subclass().author
-                ):
-                    raise ValidationError("Authorship conflict")
-            else:
-                if parent.author != new_parent.author:
-                    raise ValidationError("Authorship conflict")
+
+            """
+            This takes advantage of signals, but the js is not compatible at the
+            moment as the throughmodel id is not being updated, after calling this function.
+
+            child = model.node
+            model.delete()
+            new_through_object = NodeStrategy(strategy=new_parent, node=child, rank=new_position)
+            setattr(new_through_object, parentType, new_parent)
+            new_through_object.save()
+
+            """
             for out_of_order_link in model_type.objects.filter(
                 rank__gt=old_position, **{parentType: parent}
             ):
@@ -1395,7 +1593,7 @@ def change_column(request: HttpRequest) -> HttpResponse:
         if new_column.author == node.author:
             node.column = new_column
             node.save()
-        else: 
+        else:
             raise ValidationError("Authorship conflict")
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -1431,23 +1629,33 @@ def update_value(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-def set_linked_workflow(node: Node,workflow):
-    project = node.strategy_set.first().workflow_set.first().project_set.first()
-    if project.author==node.author or project.published:
-        if WorkflowProject.objects.get(workflow=workflow).project==project:
-            node.linked_workflow=workflow
+def set_linked_workflow(node: Node, workflow):
+    project = (
+        node.strategy_set.first().workflow_set.first().project_set.first()
+    )
+    if project.author == node.author or project.published:
+        if WorkflowProject.objects.get(workflow=workflow).project == project:
+            node.linked_workflow = workflow
             node.save()
         else:
             try:
-                if(workflow.author==node.author or WorkflowProject.objects.get(workflow=workflow).project.published):
-                    new_workflow = duplicate_workflow(workflow,node.author)
-                    WorkflowProject.objects.create(workflow=new_workflow,project=project)
-                    node.linked_workflow=new_workflow
+                if (
+                    workflow.author == node.author
+                    or WorkflowProject.objects.get(
+                        workflow=workflow
+                    ).project.published
+                ):
+                    new_workflow = duplicate_workflow(workflow, node.author)
+                    WorkflowProject.objects.create(
+                        workflow=new_workflow, project=project
+                    )
+                    node.linked_workflow = new_workflow
                     node.save()
                 else:
                     raise ValidationError("Project unpublished")
             except ValidationError:
                 pass
+
 
 # Sets the linked workflow for a node, adding it to the project if different
 @require_POST
@@ -1458,26 +1666,34 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
         node_id = json.loads(request.POST.get("nodePk"))
         workflow_id = json.loads(request.POST.get("workflowPk"))
         node = Node.objects.get(pk=node_id)
-        if(workflow_id==-1):
+        if workflow_id == -1:
             node.linked_workflow = None
             node.represents_workflow = False
             node.save()
-            linked_workflow=None
-            linked_workflow_title=None
-            linked_workflow_description=None
+            linked_workflow = None
+            linked_workflow_title = None
+            linked_workflow_description = None
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
-            set_linked_workflow(node,workflow)
+            set_linked_workflow(node, workflow)
             if node.linked_workflow is None:
                 raise ValidationError("Project could not be found")
-            linked_workflow=node.linked_workflow.id
-            linked_workflow_title=node.linked_workflow.title
-            linked_workflow_description=node.linked_workflow.description
+            linked_workflow = node.linked_workflow.id
+            linked_workflow_title = node.linked_workflow.title
+            linked_workflow_description = node.linked_workflow.description
 
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted","id":node_id,"linked_workflow":linked_workflow,"linked_workflow_title":linked_workflow_title,"linked_workflow_description":linked_workflow_description})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "id": node_id,
+            "linked_workflow": linked_workflow,
+            "linked_workflow_title": linked_workflow_title,
+            "linked_workflow_description": linked_workflow_description,
+        }
+    )
 
 
 # Toggles whether or not a project is published
@@ -1488,7 +1704,7 @@ def project_toggle_published(request: HttpRequest) -> HttpResponse:
     try:
         object_id = json.loads(request.POST.get("projectPk"))
         project = Project.objects.get(id=object_id)
-        project.published = (not project.published)
+        project.published = not project.published
         project.save()
         for workflow in project.workflows.all():
             workflow.published = project.published
@@ -1498,9 +1714,11 @@ def project_toggle_published(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
+
 """
 Delete methods
 """
+
 
 @require_POST
 @ajax_login_required
