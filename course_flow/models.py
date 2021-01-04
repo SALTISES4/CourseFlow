@@ -4,13 +4,14 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models.signals import pre_delete, post_save
+from django.db.models.signals import pre_delete, post_save, pre_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
 
 User = get_user_model()
+
 
 class Project(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
@@ -19,16 +20,16 @@ class Project(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
-    
-    
-    workflows= models.ManyToManyField(
+
+    workflows = models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
     )
-    
+
     class Meta:
         verbose_name = "Project"
         verbose_name_plural = "Projects"
-    
+
+
 class WorkflowProject(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     workflow = models.ForeignKey("Workflow", on_delete=models.CASCADE)
@@ -39,7 +40,7 @@ class WorkflowProject(models.Model):
         verbose_name = "Workflow-Project Link"
         verbose_name_plural = "Workflow-Project Links"
 
-        
+
 class Column(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -74,11 +75,10 @@ class Column(models.Model):
     )
     column_type = models.PositiveIntegerField(default=0, choices=COLUMN_TYPES)
 
-    is_original=models.BooleanField(default=False)
-    parent_column=models.ForeignKey(
+    is_original = models.BooleanField(default=False)
+    parent_column = models.ForeignKey(
         "Column", on_delete=models.SET_NULL, null=True
     )
-    
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -113,11 +113,11 @@ class NodeLink(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    is_original=models.BooleanField(default=True)
-    parent_nodelink=models.ForeignKey(
+    is_original = models.BooleanField(default=True)
+    parent_nodelink = models.ForeignKey(
         "NodeLink", on_delete=models.SET_NULL, null=True
     )
-    
+
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     class Meta:
@@ -162,7 +162,6 @@ class Node(models.Model):
     is_original = models.BooleanField(default=True)
     has_autolink = models.BooleanField(default=False)
     is_dropped = models.BooleanField(default=False)
-    
 
     NONE = 0
     INDIVIDUAL = 1
@@ -172,7 +171,7 @@ class Node(models.Model):
     SUMMATIVE = 102
     COMPREHENSIVE = 103
     CONTEXT_CHOICES = (
-        (NONE,"None"),
+        (NONE, "None"),
         (INDIVIDUAL, "Individual Work"),
         (GROUPS, "Work in Groups"),
         (WHOLE_CLASS, "Whole Class"),
@@ -212,7 +211,7 @@ class Node(models.Model):
     DISTRIBUTED_PROBLEM_SOLVING = 109
     PEER_ASSESSMENT = 110
     TASK_CHOICES = (
-        (NONE,"None"),
+        (NONE, "None"),
         (GATHER_INFO, "Gather Information"),
         (DISCUSS, "Discuss"),
         (PROBLEM_SOLVE, "Problem Solve"),
@@ -227,20 +226,20 @@ class Node(models.Model):
         (PRESENT, "Present"),
         (EXPERIMENT, "Experiment/Inquiry"),
         (QUIZ_TEST, "Quiz/Test"),
-        (INSTRUCTOR_RESOURCE_CURATION,"Instructor Resource Curation"),
-        (INSTRUCTOR_ORCHESTRATION,"Instructor Orchestration"),
-        (INSTRUCTOR_EVALUATION,"Instructor Evaluation"),
+        (INSTRUCTOR_RESOURCE_CURATION, "Instructor Resource Curation"),
+        (INSTRUCTOR_ORCHESTRATION, "Instructor Orchestration"),
+        (INSTRUCTOR_EVALUATION, "Instructor Evaluation"),
         (OTHER, "Other"),
-        (JIGSAW,"Jigsaw"),
-        (PEER_INSTRUCTION,"Peer Instruction"),
-        (CASE_STUDIES,"Case Studies"),
-        (GALLERY_WALK,"Gallery Walk"),
-        (REFLECTIVE_WRITING,"Reflective Writing"),
-        (TWO_STAGE_EXAM,"Two-Stage Exam"),
-        (TOOLKIT,"Toolkit"),
-        (ONE_MINUTE_PAPER,"One Minute Paper"),
-        (DISTRIBUTED_PROBLEM_SOLVING,"Distributed Problem Solving"),
-        (PEER_ASSESSMENT,"Peer Assessment"),
+        (JIGSAW, "Jigsaw"),
+        (PEER_INSTRUCTION, "Peer Instruction"),
+        (CASE_STUDIES, "Case Studies"),
+        (GALLERY_WALK, "Gallery Walk"),
+        (REFLECTIVE_WRITING, "Reflective Writing"),
+        (TWO_STAGE_EXAM, "Two-Stage Exam"),
+        (TOOLKIT, "Toolkit"),
+        (ONE_MINUTE_PAPER, "One Minute Paper"),
+        (DISTRIBUTED_PROBLEM_SOLVING, "Distributed Problem Solving"),
+        (PEER_ASSESSMENT, "Peer Assessment"),
     )
     task_classification = models.PositiveIntegerField(
         choices=TASK_CHOICES, default=0
@@ -254,39 +253,40 @@ class Node(models.Model):
         (PROGRAM_NODE, "Program Node"),
     )
     node_type = models.PositiveIntegerField(choices=NODE_TYPES, default=0)
-    
-    
-    NO_UNITS=0
-    SECONDS=1
-    MINUTES=2
-    HOURS=3
-    DAYS=4
-    WEEKS=5
-    MONTHS=6
-    YEARS=7
-    CREDITS=8
-    UNIT_CHOICES = (
-        (NO_UNITS,""),
-        (SECONDS,"seconds"),
-        (MINUTES,"minutes"),
-        (HOURS,"hours"),
-        (DAYS,"days"),
-        (WEEKS,"weeks"),
-        (MONTHS,"months"),
-        (YEARS,"yrs"),
-        (CREDITS,"credits")
-    )
-    
-    #note: use charfield because some users like to put in ranges (i.e. 10-15 minutes)
-    time_required = models.CharField(max_length=30, null=True, blank=True)
-    time_units = models.PositiveIntegerField(default=0,choices=UNIT_CHOICES)
-    
-    
-    
-    represents_workflow = models.BooleanField(default=False)
-    linked_workflow = models.ForeignKey("Workflow", on_delete=models.SET_NULL, null=True)
 
-    column = models.ForeignKey("Column", on_delete=models.DO_NOTHING, null=True)
+    NO_UNITS = 0
+    SECONDS = 1
+    MINUTES = 2
+    HOURS = 3
+    DAYS = 4
+    WEEKS = 5
+    MONTHS = 6
+    YEARS = 7
+    CREDITS = 8
+    UNIT_CHOICES = (
+        (NO_UNITS, ""),
+        (SECONDS, "seconds"),
+        (MINUTES, "minutes"),
+        (HOURS, "hours"),
+        (DAYS, "days"),
+        (WEEKS, "weeks"),
+        (MONTHS, "months"),
+        (YEARS, "yrs"),
+        (CREDITS, "credits"),
+    )
+
+    # note: use charfield because some users like to put in ranges (i.e. 10-15 minutes)
+    time_required = models.CharField(max_length=30, null=True, blank=True)
+    time_units = models.PositiveIntegerField(default=0, choices=UNIT_CHOICES)
+
+    represents_workflow = models.BooleanField(default=False)
+    linked_workflow = models.ForeignKey(
+        "Workflow", on_delete=models.SET_NULL, null=True
+    )
+
+    column = models.ForeignKey(
+        "Column", on_delete=models.DO_NOTHING, null=True
+    )
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -397,7 +397,7 @@ class Workflow(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     static = models.BooleanField(default=False)
-    
+
     published = models.BooleanField(default=False)
 
     parent_workflow = models.ForeignKey(
@@ -420,7 +420,7 @@ class Workflow(models.Model):
     )
 
     SUBCLASSES = ["activity", "course", "program"]
-    
+
     @property
     def type(self):
         for subclass in self.SUBCLASSES:
@@ -581,9 +581,11 @@ class Discipline(models.Model):
         verbose_name = _("discipline")
         verbose_name_plural = _("disciplines")
 
+
 """
 Other receivers
 """
+
 
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
@@ -606,25 +608,130 @@ def switch_node_to_static(sender, instance, created, **kwargs):
             if activity.static:
                 instance.node.students.add(*list(activity.students.all()))
 
-                
-@receiver(pre_delete,sender=Column)
+
+@receiver(pre_delete, sender=Column)
 def move_nodes(sender, instance, **kwargs):
     columnworkflow = instance.columnworkflow_set.first()
     workflow = columnworkflow.workflow
-    
-    other_columns = workflow.columnworkflow_set.all().order_by('rank').exclude(column=instance)
-    if other_columns.count()>0:
+
+    other_columns = (
+        workflow.columnworkflow_set.all()
+        .order_by("rank")
+        .exclude(column=instance)
+    )
+    if other_columns.count() > 0:
         new_column = other_columns.first().column
         for node in Node.objects.filter(column=instance):
             node.column = new_column
             node.save()
     else:
         print("couldn't find a column")
-        
+
 
 """
 Reorder Receivers
 """
+
+
+@receiver(pre_save, sender=NodeStrategy)
+def insert_node(sender, instance, **kwargs):
+
+    if instance.rank < 0:
+        instance.rank = 0
+    if (
+        instance.rank
+        > NodeStrategy.objects.filter(strategy=instance.strategy).count()
+    ):
+        instance.rank = NodeStrategy.objects.filter(
+            strategy=instance.strategy
+        ).count()
+
+    old_link = NodeStrategy.objects.get(id=instance.id)
+
+    if old_link.strategy == instance.strategy:
+        change = 0
+        if old_link.rank > instance.rank:
+            change = -1
+            out_of_order_links = NodeStrategy.objects.filter(
+                strategy=instance.strategy,
+                rank__gt=old_link.rank,
+                rank__lte=instance.rank,
+            )
+        elif old_link.rank < instance.rank:
+            change = 1
+            out_of_order_links = NodeStrategy.objects.filter(
+                strategy=instance.strategy,
+                rank__lt=old_link.rank,
+                rank__gte=instance.rank,
+            )
+        if change != 0:
+            for out_of_order_link in out_of_order_links:
+                out_of_order_link.rank += change
+                out_of_order_link.save()
+
+    else:
+        for out_of_order_link in NodeStrategy.objects.filter(
+            strategy=old_link.strategy, rank__gt=old_link.rank
+        ):
+            out_of_order_link.rank -= 1
+            out_of_order_link.save()
+
+        for out_of_order_link in NodeStrategy.objects.filter(
+            strategy=instance.strategy, rank__gt=instance.rank
+        ):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
+
+
+@receiver(pre_save, sender=ColumnWorkflow)
+@receiver(pre_save, sender=StrategyWorkflow)
+def insert_strategy_or_column(sender, instance, **kwargs):
+
+    if instance.rank < 0:
+        instance.rank = 0
+    if (
+        instance.rank
+        > sender.objects.filter(workflow=instance.workflow).count()
+    ):
+        instance.rank = sender.objects.filter(
+            workflow=instance.workflow
+        ).count()
+
+    old_link = sender.objects.get(id=instance.id)
+
+    if old_link.workflow == instance.workflow:
+        change = 0
+        if old_link.rank > instance.rank:
+            change = -1
+            out_of_order_links = sender.objects.filter(
+                workflow=instance.workflow,
+                rank__gt=old_link.rank,
+                rank__lte=instance.rank,
+            )
+        elif old_link.rank < instance.rank:
+            change = 1
+            out_of_order_links = sender.objects.filter(
+                workflow=instance.workflow,
+                rank__lt=old_link.rank,
+                rank__gte=instance.rank,
+            )
+        if change != 0:
+            for out_of_order_link in out_of_order_links:
+                out_of_order_link.rank += change
+                out_of_order_link.save()
+
+    else:
+        for out_of_order_link in sender.objects.filter(
+            workflow=old_link.workflow, rank__gt=old_link.rank
+        ):
+            out_of_order_link.rank -= 1
+            out_of_order_link.save()
+
+        for out_of_order_link in sender.objects.filter(
+            workflow=instance.workflow, rank__gt=instance.rank
+        ):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
 
 
 @receiver(pre_delete, sender=NodeStrategy)
