@@ -146,8 +146,8 @@ class Outcome(models.Model):
 
 
 class OutcomeOutcome(models.Model):
-    parent = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    child = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    parent = models.ForeignKey(Outcome, on_delete=models.CASCADE, related_name='child_outcome_links')
+    children = models.ForeignKey(Outcome, on_delete=models.CASCADE, related_name='parent_outcome_links')
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 

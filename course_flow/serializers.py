@@ -801,6 +801,41 @@ class ProjectSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+class OutcomeSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "author_id",
+            "published",
+            "created_on",
+            "last_modified",
+            "child_outcomes",
+        ]
+
+    child_outcomes = serializers.SerializerMethodField()
+
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field="username"
+    )
+
+    def get_child_outcomes(self, instance):
+        links = instance.outcomeoutcome_set.all().order_by("rank")
+        return list(map(linkIDMap, links))
+
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.description = validated_data.get(
+            "description", instance.description
+        )
+        instance.save()
+        return instance    
+    
 class WorkflowSerializerShallow(serializers.ModelSerializer):
     
     author_id = serializers.SerializerMethodField()
@@ -986,4 +1021,5 @@ serializer_lookups_shallow = {
     "course": CourseSerializerShallow,
     "program": ProgramSerializerShallow,
     "project": ProjectSerializerShallow,
+    "outcome":OutcomeSerializerShallow,
 }

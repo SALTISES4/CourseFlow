@@ -343,7 +343,7 @@ class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
 
-class OuctomeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class OutcomeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = Outcome
     fields = ["title"]
     template_name = "course_flow/outcome_create.html"
