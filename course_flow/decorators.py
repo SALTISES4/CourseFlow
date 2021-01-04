@@ -2,7 +2,7 @@ from functools import wraps
 from django.http import JsonResponse
 from django.conf import settings
 import json
-from .models import User
+from .models import User, NodeStrategy, Strategy
 from .utils import *
 
 
@@ -47,7 +47,7 @@ owned_throughmodels = [
     "columnworkflow",
     "workflow",
     "workflowproject",
-    "project"
+    "project",
 ]
 program_level_owned_models = ["assessment", "program", "course", "program"]
 
@@ -86,6 +86,7 @@ def is_owner(model):
 
     return wrapped_view
 
+
 def is_owner_or_published(model):
     def wrapped_view(fct):
         @wraps(fct)
@@ -109,7 +110,10 @@ def is_owner_or_published(model):
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 401
                 return response
-            if User.objects.get(id=request.user.id) == object.author or object.published:
+            if (
+                User.objects.get(id=request.user.id) == object.author
+                or object.published
+            ):
                 return fct(request, *args, **kwargs)
             else:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
@@ -126,7 +130,7 @@ def is_parent_owner(view_func):
     def _wrapped_view(request, *args, **kwargs):
         model = json.loads(request.POST.get("objectType"))
         parent_id = json.loads(request.POST.get("parentID"))
-        if model == "activity" or model == "course" or model == "program":
+        if model in ["activity", "course", "program"]:
             return view_func(request, *args, **kwargs)
         try:
             parentType = get_model_from_str(
@@ -173,5 +177,35 @@ def is_throughmodel_parent_owner(view_func):
             response = JsonResponse({"login_url": settings.LOGIN_URL})
             response.status_code = 401
             return response
+
+    return _wrapped_view
+
+
+def new_parent_authorship(view_func):
+    @wraps(view_func)
+    def _wrapped_view(request, *args, **kwargs):
+        if json.loads(request.POST.get("objectType")) == "nodestrategy":
+
+            object_id = json.loads(request.POST.get("objectID"))
+            parent_id = json.loads(request.POST.get("parentID"))
+
+            old_parent_id = NodeStrategy.objects.get(id=object_id).strategy.id
+
+            if parent_id == old_parent_id:
+                return view_func(request, *args, **kwargs)
+
+            parent = Strategy.objects.get(id=parent_id)
+
+            if hasattr(parent, "get_subclass"):
+                parent_author = parent.get_subclass().author
+            else:
+                parent_author = parent.author
+
+            if User.objects.get(id=request.user.id) != parent_author:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+
+        return view_func(request, *args, **kwargs)
 
     return _wrapped_view
