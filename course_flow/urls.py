@@ -33,6 +33,11 @@ def flow_patterns():
             name="project-update",
         ),
         url(
+            r"^outcome/(?P<pk>[0-9]+)/outcome/$",
+            views.OutcomeUpdateView.as_view(),
+            name="outcome-update",
+        ),
+        url(
             r"^workflow/(?P<pk>[0-9]+)/update/$",
             views.WorkflowUpdateView.as_view(),
             name="workflow-update",
@@ -89,6 +94,16 @@ def flow_patterns():
             r"^project/(?P<pk>[0-9]+)/$",
             views.ProjectDetailView.as_view(),
             name="project-detail-view",
+        ),
+        url(
+            r"^outcome/create/$",
+            views.OutcomeCreateView.as_view(),
+            name="outcome-create",
+        ),
+        url(
+            r"^outcome/(?P<pk>[0-9]+)/$",
+            views.OutcomeDetailView.as_view(),
+            name="outcome-detail-view",
         ),
         url(
             r"^program/(?P<projectPk>[0-9]+)/create/$",

@@ -126,12 +126,14 @@ class NodeLink(models.Model):
 
 
 class Outcome(models.Model):
-    title = models.CharField(max_length=30)
+    title = models.CharField(max_length=400)
     description = models.TextField(max_length=400)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
+    
+    depth = models.PositiveIntegerField(default=0)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -142,6 +144,16 @@ class Outcome(models.Model):
         verbose_name = "Outcome"
         verbose_name_plural = "Outcomes"
 
+
+class OutcomeOutcome(models.Model):
+    parent = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    child = models.ForeignKey(Outcome, on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Outcome-Outcome Link"
+        verbose_name_plural = "Outcome-Outcome Links"
 
 class Node(models.Model):
     title = models.CharField(max_length=30, null=True, blank=True)

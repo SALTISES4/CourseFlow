@@ -14,6 +14,7 @@ from .models import (
     Program,
     NodeCompletionStatus,
     WorkflowProject,
+    Outcome
 )
 from .serializers import (
     serializer_lookups,
@@ -277,6 +278,60 @@ class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         
         return context
 
+
+class OuctomeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Outcome
+    fields = ["title"]
+    template_name = "course_flow/outcome_create.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super(OutcomeCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "course_flow:outcome-update", kwargs={"pk": self.object.pk}
+        )
+    
+    
+class OutcomeDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
+    model = Outcome
+    fields = ["title", "description","published"]
+    template_name = "course_flow/outcome_detail.html"
+
+    
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        outcome = self.object
+       
+        context["outcome_data"]=JSONRenderer().render(OutcomeSerializerShallow(outcome).data).decode("utf-8")
+        
+        return context
+
+
+class OutcomeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Outcome
+    fields = ["title", "description","published"]
+    template_name = "course_flow/outcome_update.html"
+    
+    def test_func(self):
+        return self.get_object().author == self.request.user
+    
+    def get_context_data(self, **kwargs):
+        context = super(UpdateView, self).get_context_data(**kwargs)
+        outcome = self.object
+        context["outcome_data"]=JSONRenderer().render(OutcomeSerializerShallow(outcome).data).decode("utf-8")
+        
+        return context
+
+    
+    
 class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Workflow
     fields = ["title", "description"]
