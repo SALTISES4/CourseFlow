@@ -34,6 +34,8 @@ owned_models = [
     "column",
     "workflow",
     "project",
+    "outcome",
+    "outcome"
 ]
 
 owned_throughmodels = [
@@ -48,6 +50,9 @@ owned_throughmodels = [
     "workflow",
     "workflowproject",
     "project",
+    "outcome",
+    "outcomeoutcome",
+    "outcome"
 ]
 program_level_owned_models = ["assessment", "program", "course", "program"]
 

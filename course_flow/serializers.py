@@ -16,6 +16,7 @@ from .models import (
     Outcome,
     OutcomeNode,
     OutcomeWorkflow,
+    OutcomeOutcome,
     NodeCompletionStatus,
     User,
 )
@@ -47,6 +48,7 @@ class OutcomeSerializer(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "author",
+            "depth"
         ]
 
     def create(self, validated_data):
@@ -804,7 +806,7 @@ class ProjectSerializerShallow(serializers.ModelSerializer):
 
 class OutcomeSerializerShallow(serializers.ModelSerializer):
     class Meta:
-        model = Project
+        model = Outcome
         fields = [
             "id",
             "title",
@@ -814,17 +816,19 @@ class OutcomeSerializerShallow(serializers.ModelSerializer):
             "published",
             "created_on",
             "last_modified",
-            "child_outcomes",
+            "child_outcome_links",
+            "is_dropped",
+            "depth"
         ]
 
-    child_outcomes = serializers.SerializerMethodField()
+    child_outcome_links = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
 
-    def get_child_outcomes(self, instance):
-        links = instance.outcomeoutcome_set.all().order_by("rank")
+    def get_child_outcome_links(self, instance):
+        links = instance.child_outcome_links.all().order_by("rank")
         return list(map(linkIDMap, links))
 
 
@@ -833,8 +837,33 @@ class OutcomeSerializerShallow(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
+        instance.is_dropped = validated_data.get(
+            "is_dropped",instance.is_dropped
+        )
         instance.save()
         return instance    
+    
+
+class OutcomeOutcomeSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = OutcomeOutcome
+        fields = ["parent", "child", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get("rank", instance.rank)
+        instance.save()
+        return instance
+
+class OutcomeNodeSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = OutcomeNode
+        fields = ["node", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get("rank", instance.rank)
+        instance.save()
+        return instance
+
     
 class WorkflowSerializerShallow(serializers.ModelSerializer):
     

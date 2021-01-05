@@ -14,7 +14,10 @@ from .models import (
     Program,
     NodeCompletionStatus,
     WorkflowProject,
-    Outcome
+    OutcomeProject,
+    Outcome,
+    OutcomeOutcome,
+    OutcomeNode,
 )
 from .serializers import (
     serializer_lookups,
@@ -38,6 +41,9 @@ from .serializers import (
     ColumnSerializerShallow,
     WorkflowSerializerFinder,
     ProjectSerializerShallow,
+    OutcomeSerializerShallow,
+    OutcomeOutcomeSerializerShallow,
+    OutcomeNodeSerializerShallow,
 )
 from .decorators import (
     ajax_login_required,
@@ -100,6 +106,13 @@ def registration_view(request):
         request, "course_flow/registration/registration.html", {"form": form}
     )
 
+
+def get_all_outcomes(outcome,search_depth):
+    if search_depth>10: return;
+    outcomes=[outcome]
+    for child_link in outcome.child_outcome_links.all():
+        outcomes+=get_all_outcomes(child_link.child,search_depth+1)
+    return outcomes
 
 def get_project_data_package(user):
     data_package = {
@@ -242,6 +255,41 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
+        
+    if type_filter is None:
+        this_project_sections.append(
+            {
+                "title": "Outcomes",
+                "object_type": "outcome",
+                "objects": OutcomeSerializerShallow(
+                    Outcome.objects.filter(project=project), many=True
+                ).data,
+            }
+        )
+        other_project_sections.append(
+            {
+                "title": "Outcomes",
+                "object_type": "outcome",
+                "objects": OutcomeSerializerShallow(
+                    Outcome.objects.filter(author=user).exclude(
+                        project=project
+                    ),
+                    many=True,
+                ).data,
+            }
+        )
+        all_published_sections.append(
+            {
+                "title": "Outcomes",
+                "object_type": "outcome",
+                "objects": OutcomeSerializerShallow(
+                    Outcome.objects.filter(published=True)
+                    .exclude(author=user)
+                    .exclude(project=project),
+                    many=True,
+                ).data,
+            }
+        )
 
     data_package = {
         "current_project": {
@@ -349,20 +397,27 @@ class OutcomeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "course_flow/outcome_create.html"
 
     def test_func(self):
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
             in self.request.user.groups.all()
+            and project.author == self.request.user
         )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
-        return super(OutcomeCreateView, self).form_valid(form)
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
+        response = super(CreateView, self).form_valid(form)
+        OutcomeProject.objects.create(project=project, outcome=form.instance)
+        form.instance.published = project.published
+        return response
 
     def get_success_url(self):
         return reverse(
             "course_flow:outcome-update", kwargs={"pk": self.object.pk}
         )
-    
+
+
     
 class OutcomeDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Outcome
@@ -390,7 +445,27 @@ class OutcomeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         outcome = self.object
-        context["outcome_data"]=JSONRenderer().render(OutcomeSerializerShallow(outcome).data).decode("utf-8")
+        outcomes = get_all_outcomes(outcome,0)
+        print(outcomes)
+        outcomeoutcomes=[]
+        for oc in outcomes:
+            outcomeoutcomes+=list(oc.child_outcome_links.all())
+        
+        parent_project_pk = OutcomeProject.objects.get(
+            outcome=outcome
+        ).project.pk
+        
+        data_flat = {
+            "outcome":OutcomeSerializerShallow(outcomes,many=True).data,
+            "outcomeoutcome":OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data
+            
+        }
+        context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
+        context["parent_project_pk"] = (
+            JSONRenderer().render(parent_project_pk).decode("utf-8")
+        )
+        
+        
         
         return context
 
@@ -429,6 +504,16 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             pk__in=nodestrategies.values_list("node__pk", flat=True)
         )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
+        base_outcomes = WorkflowProject.objects.get(
+            workflow=workflow
+        ).project.outcomes.all()
+        outcomes = []
+        for oc in base_outcomes:
+            outcomes+= get_all_outcomes(oc,0)
+        outcomeoutcomes=[]
+        for oc in outcomes:
+            outcomeoutcomes+=list(oc.child_outcome_links.all())
+        outcomenodes = OutcomeNode.objects.filter(node__in=nodes)
         column_choices = [
             {"type": choice[0], "name": choice[1]}
             for choice in Column._meta.get_field("column_type").choices
@@ -466,6 +551,9 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             ).data,
             "node": NodeSerializerShallow(nodes, many=True).data,
             "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
+            "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
+            "outcomeoutcome": OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data,
+            "outcomenode": OutcomeNodeSerializerShallow(outcomenodes,many=True).data
         }
 
         context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
@@ -519,6 +607,16 @@ class WorkflowDetailView(
             pk__in=nodestrategies.values_list("node__pk", flat=True)
         )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
+        base_outcomes = WorkflowProject.objects.get(
+            workflow=workflow
+        ).project.outcomes.all()
+        outcomes = []
+        for oc in base_outcomes:
+            outcomes+= get_all_outcomes(oc,0)
+        outcomeoutcomes=[]
+        for oc in outcomes:
+            outcomeoutcomes+=list(oc.child_outcome_links.all())
+        outcomenodes = OutcomeNode.objects.filter(node__in=nodes)
         column_choices = [
             {"type": choice[0], "name": choice[1]}
             for choice in Column._meta.get_field("column_type").choices
@@ -556,6 +654,9 @@ class WorkflowDetailView(
             ).data,
             "node": NodeSerializerShallow(nodes, many=True).data,
             "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
+            "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
+            "outcomeoutcome": OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data,
+            "outcomenode": OutcomeNodeSerializerShallow(outcomenodes,many=True).data
         }
 
         context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
@@ -1289,6 +1390,39 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted", "clone_pk": workflow.pk})
 
+def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
+
+    new_outcome = Outcome.objects.create(
+        title=outcome.title,
+        description=outcome.description,
+        author=author,
+        is_original=False,
+        parent_outcome=outcome,
+        depth=outcome.depth,
+    )
+
+    for child in outcome.children.all():
+        OutcomeOutcome.objects.create(
+            child=duplicate_outcome(child, author),
+            parent=new_outcome,
+            rank=OutcomeOutcome.objects.get(
+                child=child, parent=outcome
+            ).rank,
+        )
+
+    return new_outcome
+
+@require_POST
+@ajax_login_required
+def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
+    outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
+    try:
+        clone = duplicate_outcome(outcome, request.user)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted", "clone_pk": outcome.pk})
+
 
 """
 Creation methods
@@ -1403,6 +1537,43 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
     )
 
 
+# Add a new child to a model
+@require_POST
+@ajax_login_required
+@is_owner(False)
+def insert_child(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+
+    try:
+        if object_type == "outcome":
+            model = Outcome.objects.get(id=object_id)
+            newmodel = Outcome.objects.create(
+                author=model.author, depth=model.depth+1
+            )
+            newrank = model.children.count()
+            newthroughmodel = OutcomeOutcome.objects.create(
+                parent=model, child=newmodel, rank=newrank
+            )
+            new_model_serialized = OutcomeSerializerShallow(newmodel).data
+            new_through_serialized = OutcomeOutcomeSerializerShallow(
+                newthroughmodel
+            ).data
+        else:
+            raise ValidationError("Uknown component type")
+
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_model": new_model_serialized,
+            "new_through": new_through_serialized,
+            "parentID": model.id,
+        }
+    )
+
 # Add a new sibling to a through model
 @require_POST
 @ajax_login_required
@@ -1458,6 +1629,22 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
             )
             new_model_serialized = ColumnSerializerShallow(newmodel).data
             new_through_serialized = ColumnWorkflowSerializerShallow(
+                newthroughmodel
+            ).data
+        elif object_type == "outcome":
+            model = Outcome.objects.get(id=object_id)
+            parent = Outcome.objects.get(id=parent_id)
+            through = OutcomeOutcome.objects.get(
+                parent=parent, child=model
+            )
+            newmodel = Outcome.objects.create(
+                author=model.author, depth=model.depth
+            )
+            newthroughmodel = OutcomeOutcome.objects.create(
+                parent=parent, child=newmodel, rank=through.rank + 1
+            )
+            new_model_serialized = OutcomeSerializerShallow(newmodel).data
+            new_through_serialized = OutcomeOutcomeSerializerShallow(
                 newthroughmodel
             ).data
         else:
@@ -1535,6 +1722,28 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             ).data
             new_children_serialized = None
             new_child_through_serialized = None
+        elif object_type == "outcome":
+            model = Outcome.objects.get(id=object_id)
+            parent = Outcome.objects.get(id=parent_id)
+            through = OutcomeOutcome.objects.get(child=model, parent=parent)
+            newmodel = duplicate_outcome(model, model.author)
+            newthroughmodel = OutcomeOutcome.objects.create(
+                parent=parent, child=newmodel, rank=through.rank + 1
+            )
+            new_model_serialized = OutcomeSerializerShallow(newmodel).data
+            new_through_serialized = OutcomeOutcomeSerializerShallow(
+                newthroughmodel
+            ).data
+            outcomes = get_all_outcomes(newmodel,0)
+            outcomeoutcomes=[]
+            for oc in outcomes:
+                outcomeoutcomes+=list(oc.child_outcome_links.all())
+            new_children_serialized = OutcomeSerializerShallow(
+                outcomes[1:], many=True
+            ).data
+            new_child_through_serialized = OutcomeOutcomeSerializerShallow(
+                outcomeoutcomes, many=True
+            ).data
         else:
             raise ValidationError("Uknown component type")
     except ValidationError:
@@ -1573,11 +1782,17 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
         parentType = get_parent_model_str(object_type)
 
         new_parent = get_model_from_str(parentType).objects.get(id=parent_id)
+        print(new_parent.id);
 
         if object_type == "nodestrategy":
             parent = model.strategy
+        elif object_type =="outcomeoutcome":
+            parent = model.parent
         else:
             parent = new_parent
+            
+        if object_type=="outcomeoutcome":
+            parentType="parent"
 
         new_parent_count = model_type.objects.filter(
             **{parentType: new_parent}

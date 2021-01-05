@@ -131,7 +131,7 @@ export class SelectionManager{
             if($("#sidebar").tabs( "option", "active" )>0)$("#sidebar").tabs( "option", "active", 0 );
             this.currentSelection.setState({selected:true});
         }else{
-            if($("#sidebar").tabs( "option", "active" )===0)$("#sidebar").tabs( "option", "active", 1 );
+            if($("#sidebar").tabs( "option", "active" )===0&& $("#sidebar>ul>li").length>1)$("#sidebar").tabs( "option", "active", 1 );
             $("#sidebar").tabs("disable",0);
         }
     }
@@ -278,6 +278,13 @@ const deleteSelfAction = (id,parentID,objectType,extra_data) => {
 const insertBelowAction = (response_data,objectType) => {
     return {
         type: objectType+"/insertBelow",
+        payload:response_data
+    }
+}
+
+const insertChildAction = (response_data,objectType) => {
+    return {
+        type: objectType+"/insertChild",
         payload:response_data
     }
 }
@@ -495,7 +502,7 @@ function strategyReducer(state={},action){
                     old_parent_index=i;
                     old_parent={...state[i]};
                 }
-                if(state.[i].id==action.payload.new_parent){
+                if(state[i].id==action.payload.new_parent){
                     new_parent_index=i;
                     new_parent={...state[i]};
                 }
@@ -930,7 +937,7 @@ export class ComponentJSON extends Component{
         
     }
     
-    makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false){
+    makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith=false,handle=false){
         if(read_only)return;
         sortable_block.sortable({
             containment:".workflow-container",
@@ -941,6 +948,7 @@ export class ComponentJSON extends Component{
             handle:handle,
             tolerance:"pointer",
             distance:10,
+            connectWith:connectWith,
             start:(e,ui)=>{
                 $(".workflow-canvas").addClass("dragging-"+draggable_type);
                 $(draggable_selector).addClass("dragging");
@@ -1022,8 +1030,25 @@ export class ComponentJSON extends Component{
         );
     }
     
+    
+    //Adds a button that inserts a child to them item
+    addInsertChild(data){
+        var props = this.props;
+        var type = this.objectType;
+        return(
+            <ActionButton button_icon="createchild.svg" button_class="insert-sibling-button" handleClick={()=>insertChild(data.id,this.objectType,
+                (response_data)=>{
+                    let action = insertChildAction(response_data,type);
+                    props.dispatch(action);
+                }
+            )}/>
+        );
+    }
+    
     //Makes the item selectable
     addEditable(data){
+        console.log(read_only);
+        console.log(this.state.selected);
         if(read_only)return null;
         if(this.state.selected){
             var type=this.objectType;
@@ -1032,7 +1057,7 @@ export class ComponentJSON extends Component{
             return reactDom.createPortal(
                 <div class="right-panel-inner">
                     <h3>{"Edit "+type+":"}</h3>
-                    {["node","strategy","column","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
+                    {["node","strategy","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Title:</h4>
                             <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
@@ -1097,7 +1122,7 @@ export class ComponentJSON extends Component{
                         </div>
                     }
 
-                    {type!="workflow" && this.addDeleteSelf(data)}
+                    {(type!="workflow" && (type !="outcome" || data.depth>0)) && this.addDeleteSelf(data)}
                 </div>
             ,$("#edit-menu")[0])
         }
@@ -2240,13 +2265,13 @@ export class WorkflowForMenu extends Component{
                     </div>
                 );
                 buttons.push(
-                    <a href={update_path.replace("0",this.props.workflow_data.id)}>
+                    <a href={update_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
                         <img src={iconpath+'pencil-blue.svg'}/>
                     </a>
                 );
             }
             buttons.push(
-                <a href={detail_path.replace("0",this.props.workflow_data.id)}>
+                <a href={detail_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
                     <img src={iconpath+'pageview-24px.svg'}/>
                 </a>
             );

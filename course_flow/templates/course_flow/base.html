@@ -73,6 +73,14 @@
       charset="utf-8"
     ></script>
     {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script
+      src="{% static 'course_flow/js/scripts-outcomes.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
     <!-- * CSS -->
     {% compress css %}
     <link

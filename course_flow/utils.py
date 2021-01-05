@@ -6,8 +6,15 @@ owned_throughmodels = [
     "strategy",
     "strategyworkflow",
     "workflow",
+    "workflowproject",
+    "project",
     "columnworkflow",
     "workflow",
+    "workflowproject",
+    "project",
+    "outcome",
+    "outcomeoutcome",
+    "outcome"
 ]
 
 

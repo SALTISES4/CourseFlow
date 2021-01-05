@@ -290,6 +290,54 @@ p{
     display:inline-block;
 }
 
+.outcome{
+    position:relative;
+    margin-left:20px;
+    border:2px solid white;
+    padding:2px;
+    min-width:600px;
+    max-width:800px;
+}
+
+.outcome-title{
+    padding:2px;
+    white-space:normal;
+}
+
+.children-block{
+    border-left:2px solid #1976bc;
+    margin-left:20px;
+    height:0px;
+    overflow:hidden;
+}
+
+.outcome.dropped > .children-block{
+    height:auto;
+}
+
+.outcome-drop{
+    margin-left:14px;
+    line-height:12px;
+}
+
+.outcome-drop-img{
+    display:inline-block;
+}
+
+.outcome-drop-text{
+    font-size:10px;
+    color:#1976bc;
+    display:inline-block;
+    margin-left:10px;
+    vertical-align:top;
+}
+
+.outcome-drop-img img{
+    width:12px;
+    filter: invert(35%) sepia(85%) saturate(855%) hue-rotate(173deg) brightness(91%) contrast(90%);
+}
+
+
 .mouseover-actions{
     visibility:hidden;
     position:absolute;

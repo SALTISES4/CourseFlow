@@ -24,6 +24,9 @@ class Project(models.Model):
     workflows= models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
     )
+    outcomes = models.ManyToManyField(
+        "Outcome", through="OutcomeProject",blank=True
+    )
     
     class Meta:
         verbose_name = "Project"
@@ -39,6 +42,15 @@ class WorkflowProject(models.Model):
         verbose_name = "Workflow-Project Link"
         verbose_name_plural = "Workflow-Project Links"
 
+class OutcomeProject(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    outcome = models.ForeignKey("Outcome", on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Outcome-Project Link"
+        verbose_name_plural = "Outcome-Project Links"
         
 class Column(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
@@ -132,9 +144,19 @@ class Outcome(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
+    parent_outcome = models.ForeignKey(
+        "Outcome", on_delete=models.SET_NULL, null=True
+    )
+    is_original = models.BooleanField(default=True)
     
+    is_dropped = models.BooleanField(default=True)
     depth = models.PositiveIntegerField(default=0)
+    
+    
 
+    
+    children = models.ManyToManyField("Outcome", through="OutcomeOutcome", blank=True, related_name="parent_outcomes")
+    
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
@@ -147,7 +169,7 @@ class Outcome(models.Model):
 
 class OutcomeOutcome(models.Model):
     parent = models.ForeignKey(Outcome, on_delete=models.CASCADE, related_name='child_outcome_links')
-    children = models.ForeignKey(Outcome, on_delete=models.CASCADE, related_name='parent_outcome_links')
+    child = models.ForeignKey(Outcome, on_delete=models.CASCADE, related_name='parent_outcome_links')
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
@@ -358,9 +380,6 @@ class Strategy(models.Model):
 
     nodes = models.ManyToManyField(Node, through="NodeStrategy", blank=True)
 
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeStrategy", blank=True
-    )
 
     PART = 0
     WEEK = 1
@@ -607,6 +626,14 @@ def delete_workflow_objects(sender, instance, **kwargs):
 def delete_strategy_objects(sender, instance, **kwargs):
     instance.nodes.all().delete()
 
+@receiver(pre_delete, sender=Node)
+def delete_node_objects(sender, instance, **kwargs):
+    instance.nodelinks.all().delete()
+
+@receiver(pre_delete, sender=Outcome)
+def delete_outcome_objects(sender, instance, **kwargs):
+    instance.children.all().delete()
+
 
 @receiver(post_save, sender=NodeStrategy)
 def switch_node_to_static(sender, instance, created, **kwargs):
@@ -694,6 +721,15 @@ def reorder_for_inserted_column_workflow(sender, instance, created, **kwargs):
         for out_of_order_link in ColumnWorkflow.objects.filter(
             workflow=instance.workflow, rank__gte=instance.rank
         ).exclude(column=instance.column):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
+
+@receiver(post_save, sender=ColumnWorkflow)
+def reorder_for_inserted_outcome_outcome(sender, instance, created, **kwargs):
+    if created:
+        for out_of_order_link in OutcomeOutcome.objects.filter(
+            parent=instance.parent, rank__gte=instance.rank
+        ).exclude(child=instance.child):
             out_of_order_link.rank += 1
             out_of_order_link.save()
 
