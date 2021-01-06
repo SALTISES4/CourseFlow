@@ -4,7 +4,8 @@ import * as Redux from "redux";
 import * as React from "react";
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
-import {TitleText, ComponentJSON, WorkflowForMenu} from './scripts-wf-redux.js'
+import {WorkflowForMenu} from './MenuComponents.js'
+import {ComponentJSON, TitleText} from './ComponentJSON';
 
 const moveOutcomeOutcome = (id,new_position,new_parent) => {
     return {
