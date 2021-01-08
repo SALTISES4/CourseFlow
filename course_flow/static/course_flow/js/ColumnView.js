@@ -16,7 +16,7 @@ class ColumnView extends ComponentJSON{
     }
     
     render(){
-        $("#column-"+this.props.throughParentID+"-CSS").html(".node.column-"+this.props.throughParentID+"{background:"+this.getColour()+"}\n\n .node-bar-column.column-"+this.props.throughParentID+"{border-color:"+this.getColour()+"}");
+        $("#column-"+this.props.throughParentID+"-CSS").html(".node.column-"+this.props.throughParentID+"{background:"+this.getColour()+"}\n\n .node-bar-column.column-"+this.props.throughParentID+"{border-color:"+this.getColour()+"}\n\n .outcome-node-indicator-number.column-"+this.props.throughParentID+"{border-color:"+this.getColour()+"}\n\n .outcome-node-container.column-"+this.props.throughParentID+"{border-color:"+this.getColour()+"}");
         let data = this.props.data;
         var title = data.title;
         if(!title)title=data.column_type_display;

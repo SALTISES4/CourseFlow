@@ -45,8 +45,8 @@ class NodeView extends ComponentJSON{
         if(outcomenodes.length>0){
             outcomeDiv = (
                 <div class="outcome-node-indicator">
-                    <div class="outcome-node-indicator-number">{outcomenodes.length}</div>
-                    <div class="outcome-node-container">{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.columnworkflow}>{outcomenodes.length}</div>
+                    <div class={"outcome-node-container column-"+data.columnworkflow}>{outcomenodes}</div>
                 </div>
             );
         }

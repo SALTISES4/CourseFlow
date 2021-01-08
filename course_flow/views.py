@@ -430,7 +430,6 @@ class OutcomeDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
         context = super(DetailView, self).get_context_data(**kwargs)
         outcome = self.object
         outcomes = get_all_outcomes(outcome,0)
-        print(outcomes)
         outcomeoutcomes=[]
         for oc in outcomes:
             outcomeoutcomes+=list(oc.child_outcome_links.all())
@@ -1802,7 +1801,6 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
         parentType = get_parent_model_str(object_type)
 
         new_parent = get_model_from_str(parentType).objects.get(id=parent_id)
-        print(new_parent.id);
 
         if object_type == "nodestrategy":
             parent = model.strategy
@@ -1861,6 +1859,9 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 out_of_order_link.save()
             model.rank = new_position
             setattr(model, parentType, new_parent)
+            if(object_type=="outcomeoutcome"):
+                model.child.depth=model.parent.depth+1
+                model.child.save()
             model.save()
 
     except ValidationError:
@@ -1924,7 +1925,6 @@ Update Methods
 @ajax_login_required
 @is_owner(False)
 def update_value(request: HttpRequest) -> HttpResponse:
-    print("attempting to update value");
     try:
         object_id = json.loads(request.POST.get("objectID"))
         object_type = json.loads(request.POST.get("objectType"))
@@ -2056,9 +2056,10 @@ def unlink_outcome_from_node(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     try:
         model = OutcomeNode.objects.get(pk=object_id);
-        print(request.user.id)
         if(request.user.id != model.node.author.id or request.user.id != model.outcome.author.id):
-            return JsonResponse({"action": "error"})
+            response = JsonResponse({"action": "error"})
+            response.status_code = 401
+            return response
         model.delete()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
