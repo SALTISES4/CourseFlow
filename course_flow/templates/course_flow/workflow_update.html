@@ -32,6 +32,16 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
+{% block read_only_scripts %}
+
+<script nonce="{{request.csp_nonce}}">
+    
+    const read_only=false;
+    
+</script>
+
+{% endblock %}
+<!-- -->
 {% block scripts %}
 
 <script nonce="{{request.csp_nonce}}">
@@ -43,7 +53,7 @@ const workflow_paths = {
 const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 var selection_manager;
 
-$("#sidebar").tabs({collapsible:true,active:1,disabled:[0,2]});
+$("#sidebar").tabs({collapsible:true,active:1,disabled:[0]});
     
 $("#sidebar").on("click",(evt)=>{evt.stopPropagation()});    
     
@@ -55,7 +65,6 @@ column_choices = {{column_choices|safe}}
 context_choices = {{context_choices|safe}}
 task_choices = {{task_choices|safe}}
 time_choices = {{time_choices|safe}}
-const read_only=false;
 const user_id = {{ user.id }};
 const create_path=null;
     
@@ -93,161 +102,6 @@ window.addEventListener("load", function(){
     
     
 });
-
-function getLinkedWorkflowMenu(nodeData,updateFunction){
-    $.post("{% url 'course_flow:get-possible-linked-workflows' %}",{
-        nodePk:JSON.stringify(nodeData.id),
-    },(data)=>openLinkedWorkflowMenu(data,updateFunction));
-}
-
-function openLinkedWorkflowMenu(response,updateFunction){
-    if(response.action=="posted"){
-        workflow_redux.renderMessageBox(response,"linked_workflow_menu",updateFunction);
-    }else alert("Failed to find the parent project. Is this workflow in a project?");
-}
-
-function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>console.log("success")){
-    $.post("{% url 'course_flow:set-linked-workflow' %}", {
-        nodePk:node_id,
-        workflowPk:workflow_id,
-    }).done(function(data){
-        if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
-    });
-}
-
-function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
-    var t = 1000;
-    let previousCall = this.lastUpdateCall;
-    this.lastUpdateCall = {time:Date.now(),id:objectID,type:objectType,field:Object.keys(json)[0]};
-    
-    if(previousCall && ((this.lastUpdateCall.time-previousCall.time)<=t)){
-        clearTimeout(this.lastUpdateCallTimer);
-    }
-    if(previousCall && (previousCall.id!=this.lastUpdateCall.id || previousCall.type!=this.lastUpdateCall.type ||previousCall.field!=this.lastUpdateCall.field)){
-       this.lastUpdateCallFunction();
-    }
-    this.lastUpdateCallFunction = ()=>{
-        $.post("{% url 'course_flow:update-value' %}", {
-            objectID:JSON.stringify(objectID),
-            objectType:JSON.stringify(objectType),
-            data:JSON.stringify(json)
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
-        });
-    }
-    this.lastUpdateCallTimer = setTimeout(lastUpdateCallFunction,t);
-}
-    
-//Add a new column to the workflow 
-function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("success")){
-    $.post("{% url 'course_flow:new-column' %}", {
-        workflowPk:workflowPk,
-        column_type:column_type
-    }).done(function(data){
-        if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
-    });
-}
-    
-//Add a new node to a strategy
-function newNode(strategyPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){
-    $.post("{% url 'course_flow:new-node' %}", {
-        strategyPk:JSON.stringify(strategyPk),
-        position:JSON.stringify(position),
-        columnPk:JSON.stringify(column),
-        columnType:JSON.stringify(column_type),
-    }).done(function(data){
-        if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
-    });
-}
-  
-//Create a nodelink from the source to the target, at the given ports
-function newNodeLink(source_node,target_node,source_port,target_port,callBackFunction=()=>console.log("success")){
-    $.post("{% url 'course_flow:new-node-link' %}", {
-        nodePk:JSON.stringify(source_node),
-        targetID:JSON.stringify(target_node),
-        sourcePort:JSON.stringify(source_port),
-        targetPort:JSON.stringify(target_port),
-        
-    }).done(function(data){
-        if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
-    });
-}  
-
-//Causes the specified object to delete itself
-function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
-    $.post("{% url 'course_flow:delete-self' %}", {
-        objectID:JSON.stringify(objectID),
-        objectType:JSON.stringify(objectType)
-    }).done(function(data){
-        if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
-    });
-}
-
-//Causes the specified object to insert a sibling after itself
-function duplicateSelf(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
-    $.post("{% url 'course_flow:duplicate-self' %}", {
-        parentID:JSON.stringify(parentID),
-        objectID:JSON.stringify(objectID),
-        objectType:JSON.stringify(objectType),
-    }).done(function(data){
-        if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
-    });
-}
-//Causes the specified object to insert a sibling after itself
-function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
-    $.post("{% url 'course_flow:insert-sibling' %}", {
-        parentID:JSON.stringify(parentID),
-        objectID:JSON.stringify(objectID),
-        objectType:JSON.stringify(objectType),
-    }).done(function(data){
-        if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
-    });
-}
-
-    
-//Called when an object in a list is reordered
-function insertedAt(objectID,objectType,parentID,newPosition,callBackFunction=()=>console.log("success")){
-    
-    $(document).off(objectType+"-dropped.insert");
-    $(document).on(objectType+"-dropped.insert",()=>{
-        $.post("{% url 'course_flow:inserted-at' %}", {
-            objectID:JSON.stringify(objectID),
-            objectType:JSON.stringify(objectType),
-            parentID:JSON.stringify(parentID),
-            newPosition:JSON.stringify(newPosition),
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
-        });
-    });
-}
- 
-//Called when a node should have its column changed
-function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
-    
-    $(document).off("nodestrategy-dropped.columnchange");
-    $(document).on("nodestrategy-dropped.columnchange",()=>{
-    
-        $.post("{% url 'course_flow:change-column' %}", {
-            nodePk:JSON.stringify(objectID),
-            columnID:JSON.stringify(columnID),
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
-        });
-    });
-}
-
-
-
 
 
 </script>

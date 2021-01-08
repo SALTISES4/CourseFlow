@@ -2,15 +2,15 @@ import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as Redux from "redux";
 import * as React from "react";
-import {Decimal} from 'decimal.js/decimal';
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
-import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 import {ComponentJSON} from "./ComponentJSON.js";
 import WorkflowView from"./WorkflowView.js";
+import {ProjectMenu, HomeMenu, renderMessageBox} from"./MenuComponents.js";
 import {NodeBar} from"./WorkflowView.js";
 import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
+
 
 
 
@@ -36,7 +36,6 @@ export class SelectionManager{
             $("#sidebar").tabs("disable",0);
         }
     }
-
 }
 
 
@@ -51,6 +50,10 @@ const rootReducer = Redux.combineReducers({
     nodestrategy:Reducers.nodestrategyReducer,
     node:Reducers.nodeReducer,
     nodelink:Reducers.nodelinkReducer,
+    outcome:Reducers.outcomeReducer,
+    outcomeoutcome:Reducers.outcomeOutcomeReducer,
+    outcomenode:Reducers.outcomeNodeReducer,
+    outcomeproject:Reducers.outcomeProjectReducer,
 });
 
 var store;
@@ -66,20 +69,6 @@ export function renderWorkflowView(container){
         container
     );
 }
-
-export function renderMessageBox(data,type,updateFunction){
-    reactDom.render(
-        <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
-        $("#popup-container")[0]
-    );
-}
-
-
-
-export function closeMessageBox(){
-    reactDom.render(null,$("#popup-container")[0]);
-}
-
 
 
 export function renderHomeMenu(data_package){

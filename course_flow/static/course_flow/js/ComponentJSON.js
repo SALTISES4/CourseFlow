@@ -3,6 +3,9 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
 import {newNodeAction, deleteSelfAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction} from "./Reducers.js";
+import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
+import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu} from "./PostFunctions.js"
+
 
 //Extends the react component to add a few features that are used in a large number of components
 export class ComponentJSON extends React.Component{
@@ -69,11 +72,16 @@ export class ComponentJSON extends React.Component{
                 var new_index = drop_item.prevAll().length;
                 var new_parent_id = parseInt(drop_item.parent().attr("id")); 
                 
-                if(!drag_item.hasClass("new-node")){
-                    this.sortableMovedFunction(parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id);
-                }else{
+                if(drag_item.hasClass("new-node")){
                     drag_helper.addClass("valid-drop");
                     drop_item.addClass("new-node-drop-over");
+                   
+                }else if(drag_item.hasClass("outcome")){
+                    return;
+                }else{
+                    this.sortableMovedFunction(
+                        parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id
+                    );
                 }
             },
             out:(e,ui)=>{

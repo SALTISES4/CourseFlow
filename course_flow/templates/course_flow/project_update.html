@@ -17,6 +17,16 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
+{% block read_only_scripts %}
+
+<script nonce="{{request.csp_nonce}}">
+    
+    const read_only=false;
+    
+</script>
+
+{% endblock %}
+<!-- -->
 {% block scripts %}
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
@@ -57,22 +67,10 @@
     console.log(data_package);
     const project_title = "{{object.title|safe}}";
     const user_id = {{ user.id }};
-    const read_only=false;
     window.addEventListener("load",function(){
         workflow_redux.renderProjectMenu(data_package,project_data);
     });
     
-    
-    //Causes the specified object to delete itself
-    function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
-        $.post("{% url 'course_flow:delete-self' %}", {
-            objectID:JSON.stringify(objectID),
-            objectType:JSON.stringify(objectType)
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
-        });
-    }
     
     //Publishes or unpublishes the project
     function togglePublish(callBackFunction=()=>console.log("success")){
@@ -84,15 +82,5 @@
         });
     }
     
-    function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
-        $.post("{% url 'course_flow:update-value' %}", {
-            objectID:JSON.stringify(objectID),
-            objectType:JSON.stringify(objectType),
-            data:JSON.stringify(json)
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
-        });
-    }
 </script>
 {% endblock %}

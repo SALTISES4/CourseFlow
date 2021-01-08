@@ -59,3 +59,24 @@ export const getNodeLinkByID = (state,id)=>{
         if(nodelink.id==id)return {data:nodelink};
     }
 }
+export const getOutcomeByID = (state,id)=>{
+    for(var i in state.outcome){
+        var outcome = state.outcome[i];
+        if(outcome.id==id)return {data:outcome};
+    }
+}
+export const getOutcomeOutcomeByID = (state,id)=>{
+    for(var i in state.outcomeoutcome){
+        var outcomeoutcome = state.outcomeoutcome[i];
+        if(outcomeoutcome.id==id)return {data:outcomeoutcome};
+    }
+}
+export const getOutcomeNodeByID = (state,id)=>{
+    for(var i in state.outcomenode){
+        var outcomenode = state.outcomenode[i];
+        if(outcomenode.id==id)return {data:outcomenode};
+    }
+    console.log("didn't find an outcomenode");
+    console.log(state);
+    console.log(id);
+}

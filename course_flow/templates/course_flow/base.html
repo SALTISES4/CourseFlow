@@ -167,5 +167,33 @@
     {% csrf_token %}
   </body>
 
-  {% block scripts %} {% endblock %}
+  {% block common_scripts %} 
+    <script nonce="{{request.csp_nonce}}"> 
+        
+    //global paths for post/get
+    post_paths = {
+        get_possible_linked_workflows:"{% url 'course_flow:get-possible-linked-workflows' %}",
+        set_linked_workflow:"{% url 'course_flow:set-linked-workflow' %}",
+        update_value:"{% url 'course_flow:update-value' %}",
+        new_column:"{% url 'course_flow:new-column' %}",
+        new_node:"{% url 'course_flow:new-node' %}",
+        new_node_link:"{% url 'course_flow:new-node-link' %}",
+        delete_self:"{% url 'course_flow:delete-self' %}",
+        unlink_outcome_from_node:"{% url 'course_flow:unlink-outcome-from-node' %}",
+        duplicate_self:"{% url 'course_flow:duplicate-self' %}",
+        insert_sibling:"{% url 'course_flow:insert-sibling' %}",
+        inserted_at:"{% url 'course_flow:inserted-at' %}",
+        column_changed:"{% url 'course_flow:change-column' %}",
+        add_outcome_to_node:"{% url 'course_flow:add-outcome-to-node' %}",
+    }
+        
+        
+    </script>
+  {% endblock %}
+    
+  {% block read_only_scripts %}
+  {% endblock %}
+    
+  {% block scripts %} 
+  {% endblock %}
 </html>

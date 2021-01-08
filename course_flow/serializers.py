@@ -17,6 +17,7 @@ from .models import (
     OutcomeNode,
     OutcomeWorkflow,
     OutcomeOutcome,
+    OutcomeProject,
     NodeCompletionStatus,
     User,
 )
@@ -864,6 +865,16 @@ class OutcomeNodeSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class OutcomeProjectSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = OutcomeProject
+        fields = ["project", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get("rank", instance.rank)
+        instance.save()
+        return instance
+
     
 class WorkflowSerializerShallow(serializers.ModelSerializer):
     
@@ -884,6 +895,7 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
+            "author_id",
         ]
 
     strategyworkflow_set = serializers.SerializerMethodField()

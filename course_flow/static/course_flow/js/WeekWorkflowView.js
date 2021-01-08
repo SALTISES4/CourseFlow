@@ -16,8 +16,6 @@ class StrategyWorkflowView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log("selection manager for weekworkflow");
-        console.log(this.props.selection_manager);
         var strategy;
         if(data.strategy_type==2)strategy = (
                 <TermView objectID={data.strategy} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>

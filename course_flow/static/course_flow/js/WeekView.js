@@ -17,8 +17,6 @@ export class StrategyViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log("selection manager for week");
-        console.log(this.props.selection_manager);
         var nodes = data.nodestrategy_set.map((nodestrategy)=>
             <NodeStrategyView key={nodestrategy} objectID={nodestrategy} parentID={data.id} selection_manager={this.props.selection_manager}/>
         );

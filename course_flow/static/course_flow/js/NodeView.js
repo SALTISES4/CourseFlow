@@ -3,9 +3,11 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON, NodeLinkSVG, AutoLinkView, NodePorts, TitleText} from "./ComponentJSON.js";
 import NodeLinkView from "./NodeLinkView.js";
+import OutcomeNodeView from "./OutcomeNode.js";
 import {getNodeByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
-import {changeField} from "./Reducers.js";
+import {changeField, addOutcomeToNodeAction} from "./Reducers.js";
+import {addOutcomeToNode} from "./PostFunctions.js"
 
 
 //Basic component to represent a Node
@@ -21,8 +23,6 @@ class NodeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log("selection manager for node");
-        console.log(this.props.selection_manager);
         var nodePorts;
         var node_links;
         var auto_link;
@@ -36,6 +36,18 @@ class NodeView extends ComponentJSON{
             );
             if(data.has_autolink)auto_link = (
                 <AutoLinkView nodeID={this.props.objectID} node_div={this.maindiv}/>
+            );
+        }
+        let outcomenodes = data.outcomenode_set.map((outcomenode)=>
+            <OutcomeNodeView key={outcomenode} objectID={outcomenode}/>
+        );
+        let outcomeDiv;
+        if(outcomenodes.length>0){
+            outcomeDiv = (
+                <div class="outcome-node-indicator">
+                    <div class="outcome-node-indicator-number">{outcomenodes.length}</div>
+                    <div class="outcome-node-container">{outcomenodes}</div>
+                </div>
             );
         }
         let lefticon;
@@ -99,11 +111,13 @@ class NodeView extends ComponentJSON{
                     {this.addInsertSibling(data)}
                     {this.addDuplicateSelf(data)}
                     {this.addDeleteSelf(data)}
-                </div>}
+                </div>
+                }
                 {this.addEditable(data)}
                 {nodePorts}
                 {node_links}
                 {auto_link}
+                {outcomeDiv}
             </div>
         );
 
@@ -114,6 +128,7 @@ class NodeView extends ComponentJSON{
         $(this.maindiv.current).on("mouseenter",this.mouseIn.bind(this));
         $(document).on("render-ports render-links",()=>{this.setState({})});
         if(this.state.initial_render)this.setState({initial_render:false,port_render:true});
+        this.makeDroppable();
     }
 
     componentDidUpdate(prevProps){
@@ -131,6 +146,51 @@ class NodeView extends ComponentJSON{
         this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
     }
 
+    makeDroppable(){
+        var props = this.props;
+        $(this.maindiv.current).droppable({
+            tolerance:"pointer",
+            droppable:".outcome-ghost",
+            over:(e,ui)=>{
+                var drop_item = $(e.target);
+                var drag_item = ui.draggable;
+                var drag_helper = ui.helper;
+                var new_index = drop_item.prevAll().length;
+                var new_parent_id = parseInt(drop_item.parent().attr("id")); 
+                
+                if(drag_item.hasClass("outcome")){
+                    drag_helper.addClass("valid-drop");
+                    drop_item.addClass("new-node-drop-over");
+                    return;
+                }else{
+                    return;
+                }
+            },
+            out:(e,ui)=>{
+                var drag_item = ui.draggable;
+                var drag_helper = ui.helper;
+                var drop_item = $(e.target);
+                if(drag_item.hasClass("new-node")){
+                    drag_helper.removeClass("valid-drop");
+                    drop_item.removeClass("new-node-drop-over");
+                }
+            },
+            drop:(e,ui)=>{
+                $(".new-node-drop-over").removeClass("new-node-drop-over");
+                var drop_item = $(e.target);
+                var drag_item = ui.draggable;
+                if(drag_item.hasClass("outcome")){
+                    addOutcomeToNode(this.props.objectID,drag_item[0].dataDraggable.outcome,
+                        (response_data)=>{
+                            let action = addOutcomeToNodeAction(response_data);
+                            props.dispatch(action);
+                        }
+                    );
+                }
+            }
+        });
+    }
+
     mouseIn(evt){
         if(evt.which==1)return;
         $("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
@@ -144,6 +204,7 @@ class NodeView extends ComponentJSON{
             }
         });
     }
+
 }
 const mapNodeStateToProps = (state,own_props)=>(
     getNodeByID(state,own_props.objectID)

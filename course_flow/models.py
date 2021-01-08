@@ -628,7 +628,8 @@ def delete_strategy_objects(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=Node)
 def delete_node_objects(sender, instance, **kwargs):
-    instance.nodelinks.all().delete()
+    instance.outgoing_links.all().delete()
+    instance.incoming_links.all().delete()
 
 @receiver(pre_delete, sender=Outcome)
 def delete_outcome_objects(sender, instance, **kwargs):
@@ -724,7 +725,7 @@ def reorder_for_inserted_column_workflow(sender, instance, created, **kwargs):
             out_of_order_link.rank += 1
             out_of_order_link.save()
 
-@receiver(post_save, sender=ColumnWorkflow)
+@receiver(post_save, sender=OutcomeOutcome)
 def reorder_for_inserted_outcome_outcome(sender, instance, created, **kwargs):
     if created:
         for out_of_order_link in OutcomeOutcome.objects.filter(
@@ -733,6 +734,14 @@ def reorder_for_inserted_outcome_outcome(sender, instance, created, **kwargs):
             out_of_order_link.rank += 1
             out_of_order_link.save()
 
+@receiver(post_save, sender=OutcomeNode)
+def reorder_for_inserted_outcome_node(sender, instance, created, **kwargs):
+    if created:
+        for out_of_order_link in OutcomeNode.objects.filter(
+            node=instance.node, rank__gte=instance.rank
+        ).exclude(outcome=instance.outcome):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
 
 """
 Default content creation receivers

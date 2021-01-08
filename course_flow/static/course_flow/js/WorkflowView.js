@@ -9,6 +9,7 @@ import {NodeBarStrategyWorkflow} from "./WeekWorkflowView.js";
 import {WorkflowForMenu} from "./MenuComponents.js";
 import * as Constants from "./Constants.js";
 import {moveColumnWorkflow, moveStrategyWorkflow} from "./Reducers.js";
+import {OutcomeBar} from "./OutcomeTopView.js";
 
 
 
@@ -54,6 +55,9 @@ class WorkflowView extends ComponentJSON{
                     </div>
                     {!read_only &&reactDom.createPortal(
                         <NodeBar/>
+                    ,$("#container")[0])}
+                    {!read_only &&reactDom.createPortal(
+                        <OutcomeBar/>
                     ,$("#container")[0])}
                 </div>
             </div>
@@ -137,3 +141,5 @@ export const NodeBar = connect(
     mapNodeBarStateToProps,
     null
 )(NodeBarUnconnected)
+
+

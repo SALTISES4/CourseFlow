@@ -44,6 +44,7 @@ from .serializers import (
     OutcomeSerializerShallow,
     OutcomeOutcomeSerializerShallow,
     OutcomeNodeSerializerShallow,
+    OutcomeProjectSerializerShallow,
 )
 from .decorators import (
     ajax_login_required,
@@ -428,8 +429,26 @@ class OutcomeDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         outcome = self.object
-       
-        context["outcome_data"]=JSONRenderer().render(OutcomeSerializerShallow(outcome).data).decode("utf-8")
+        outcomes = get_all_outcomes(outcome,0)
+        print(outcomes)
+        outcomeoutcomes=[]
+        for oc in outcomes:
+            outcomeoutcomes+=list(oc.child_outcome_links.all())
+        
+        parent_project_pk = OutcomeProject.objects.get(
+            outcome=outcome
+        ).project.pk
+        
+        data_flat = {
+            "outcome":OutcomeSerializerShallow(outcomes,many=True).data,
+            "outcomeoutcome":OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data
+        }
+        context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
+        context["parent_project_pk"] = (
+            JSONRenderer().render(parent_project_pk).decode("utf-8")
+        )
+        
+        
         
         return context
 
@@ -446,7 +465,6 @@ class OutcomeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context = super(UpdateView, self).get_context_data(**kwargs)
         outcome = self.object
         outcomes = get_all_outcomes(outcome,0)
-        print(outcomes)
         outcomeoutcomes=[]
         for oc in outcomes:
             outcomeoutcomes+=list(oc.child_outcome_links.all())
@@ -494,6 +512,9 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         workflow = self.get_object()
+        project = WorkflowProject.objects.get(
+            workflow=workflow
+        ).project
         SerializerClass = serializer_lookups_shallow[workflow.type]
         columnworkflows = workflow.columnworkflow_set.all()
         strategyworkflows = workflow.strategyworkflow_set.all()
@@ -504,9 +525,8 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             pk__in=nodestrategies.values_list("node__pk", flat=True)
         )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
-        base_outcomes = WorkflowProject.objects.get(
-            workflow=workflow
-        ).project.outcomes.all()
+        outcomeprojects = project.outcomeproject_set.all()
+        base_outcomes = project.outcomes.all()
         outcomes = []
         for oc in base_outcomes:
             outcomes+= get_all_outcomes(oc,0)
@@ -532,9 +552,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             {"type": choice[0], "name": choice[1]}
             for choice in Node._meta.get_field("time_units").choices
         ]
-        parent_project_pk = WorkflowProject.objects.get(
-            workflow=workflow
-        ).project.pk
+        parent_project_pk = project.pk
 
         data_flat = {
             "workflow": SerializerClass(workflow).data,
@@ -553,7 +571,8 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
             "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
             "outcomeoutcome": OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data,
-            "outcomenode": OutcomeNodeSerializerShallow(outcomenodes,many=True).data
+            "outcomenode": OutcomeNodeSerializerShallow(outcomenodes,many=True).data,
+            "outcomeproject": OutcomeProjectSerializerShallow(outcomeprojects,many=True).data
         }
 
         context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
@@ -597,6 +616,9 @@ class WorkflowDetailView(
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         workflow = self.get_object()
+        project = WorkflowProject.objects.get(
+            workflow=workflow
+        ).project
         SerializerClass = serializer_lookups_shallow[workflow.type]
         columnworkflows = workflow.columnworkflow_set.all()
         strategyworkflows = workflow.strategyworkflow_set.all()
@@ -607,9 +629,8 @@ class WorkflowDetailView(
             pk__in=nodestrategies.values_list("node__pk", flat=True)
         )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
-        base_outcomes = WorkflowProject.objects.get(
-            workflow=workflow
-        ).project.outcomes.all()
+        outcomeprojects = project.outcomeproject_set.all()
+        base_outcomes = project.outcomes.all()
         outcomes = []
         for oc in base_outcomes:
             outcomes+= get_all_outcomes(oc,0)
@@ -635,9 +656,7 @@ class WorkflowDetailView(
             {"type": choice[0], "name": choice[1]}
             for choice in Node._meta.get_field("time_units").choices
         ]
-        parent_project_pk = WorkflowProject.objects.get(
-            workflow=workflow
-        ).project.pk
+        parent_project_pk = project.pk
 
         data_flat = {
             "workflow": SerializerClass(workflow).data,
@@ -656,7 +675,8 @@ class WorkflowDetailView(
             "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
             "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
             "outcomeoutcome": OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data,
-            "outcomenode": OutcomeNodeSerializerShallow(outcomenodes,many=True).data
+            "outcomenode": OutcomeNodeSerializerShallow(outcomenodes,many=True).data,
+            "outcomeproject": OutcomeProjectSerializerShallow(outcomeprojects,many=True).data
         }
 
         context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
@@ -1870,6 +1890,31 @@ def change_column(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
+# Add an outcome to a node
+@require_POST
+@ajax_login_required
+@is_owner("nodePk")
+@is_owner("outcomePk")
+def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
+    node_id = json.loads(request.POST.get("nodePk"))
+    outcome_id = json.loads(request.POST.get("outcomePk"))
+    try:
+        node = Node.objects.get(id=node_id)
+        outcome = Outcome.objects.get(id=outcome_id)
+        if OutcomeNode.objects.filter(node=node,outcome=outcome).count()>0:
+            return JsonResponse({"action": "error"})
+        if outcome.author == node.author:
+            outcomenode = OutcomeNode.objects.create(
+                outcome=outcome,
+                node=node,
+            )
+        else:
+            raise ValidationError("Authorship conflict")
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action":"posted","outcomenode": OutcomeNodeSerializerShallow(outcomenode).data})
+
 """
 Update Methods
 """
@@ -1879,6 +1924,7 @@ Update Methods
 @ajax_login_required
 @is_owner(False)
 def update_value(request: HttpRequest) -> HttpResponse:
+    print("attempting to update value");
     try:
         object_id = json.loads(request.POST.get("objectID"))
         object_type = json.loads(request.POST.get("objectType"))
@@ -1998,6 +2044,21 @@ def delete_self(request: HttpRequest) -> HttpResponse:
 
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
+        model.delete()
+    except (ProtectedError, ObjectDoesNotExist):
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
+@require_POST
+@ajax_login_required
+def unlink_outcome_from_node(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    try:
+        model = OutcomeNode.objects.get(pk=object_id);
+        print(request.user.id)
+        if(request.user.id != model.node.author.id or request.user.id != model.outcome.author.id):
+            return JsonResponse({"action": "error"})
         model.delete()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})

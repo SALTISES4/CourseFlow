@@ -1,3 +1,5 @@
+import * as Constants from "./Constants.js";
+import {unlinkOutcomeFromNode, deleteSelf, insertedAt, columnChanged, updateValue} from "./PostFunctions.js"
 
 export const moveColumnWorkflow = (id,new_position) => {
     return {
@@ -73,6 +75,20 @@ export const changeField = (id,objectType,field,value) => {
     return {
         type: objectType+'/changeField',
         payload:{id:id,field:field,value:value}
+    }
+}
+
+export const moveOutcomeOutcome = (id,new_position,new_parent) => {
+    return {
+        type: 'outcomeoutcome/movedTo',
+        payload:{id:id,new_index:new_position,new_parent:new_parent}
+    }
+}
+
+export const addOutcomeToNodeAction = (response_data) => {
+    return {
+        type: "outcome/addToNode",
+        payload:response_data
     }
 }
 
@@ -431,6 +447,17 @@ export function nodeReducer(state={},action){
                 }
             }
             return state;
+        case 'outcomenode/deleteSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].outcomenode_set.indexOf(action.payload.id)>=0){
+                    var new_state=state.slice();
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].outcomenode_set = state[i].outcomenode_set.slice();
+                    new_state[i].outcomenode_set.splice(new_state[i].outcomenode_set.indexOf(action.payload.id),1);
+                    return new_state;
+                }
+            }
+            return state;
         case 'strategy/insertBelow':
             if(!action.payload.children)return state;
             new_state = state.slice();
@@ -480,6 +507,17 @@ export function nodeReducer(state={},action){
                 }
             }
             return state;
+        case 'outcome/addToNode':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.outcomenode.node){
+                    var new_state=state.slice();
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].outcomenode_set = new_state[i].outcomenode_set.slice();
+                    new_state[i].outcomenode_set.push(action.payload.outcomenode.id);
+                    return new_state;
+                }
+            }
+            return state;
         default:
             return state;
     }
@@ -504,6 +542,140 @@ export function nodelinkReducer(state={},action){
                 }
             }
             return state;
+        default:
+            return state;
+    }
+}
+export function outcomeReducer(state={},action){
+    console.log(action);
+    switch(action.type){
+        case 'outcomeoutcome/movedTo':
+            let old_parent, old_parent_index,new_parent,new_parent_index;
+            for(var i=0;i<state.length;i++){
+                if(state[i].child_outcome_links.indexOf(action.payload.id)>=0){
+                    old_parent_index=i;
+                    old_parent={...state[i]};
+                }
+                if(state[i].id==action.payload.new_parent){
+                    new_parent_index=i;
+                    new_parent={...state[i]};
+                }
+            }
+            var new_index = action.payload.new_index;
+            var new_state = state.slice();
+            old_parent.child_outcome_links = old_parent.child_outcome_links.slice();
+            old_parent.child_outcome_links.splice(old_parent.child_outcome_links.indexOf(action.payload.id),1);
+            if(old_parent_index==new_parent_index){
+                old_parent.child_outcome_links.splice(new_index,0,action.payload.id);
+            }else{
+                new_parent.child_outcome_links = new_parent.child_outcome_links.slice();
+                new_parent.child_outcome_links.splice(new_index,0,action.payload.id);
+                new_state.splice(new_parent_index,1,new_parent);
+            }
+            new_state.splice(old_parent_index,1,old_parent);
+            insertedAt(action.payload.id,"outcomeoutcome",new_parent.id,new_index);
+            return new_state;
+        case 'outcome/deleteSelf':
+            var new_state=state.slice();
+            for(var i=0;i<state.length;i++){
+                if(state[i].child_outcome_links.indexOf(action.payload.parent_id)>=0){
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
+                    new_state[i].child_outcome_links.splice(new_state[i].child_outcome_links.indexOf(action.payload.parent_id),1);
+                }else if(state[i].id==action.payload.id){
+                    new_state.splice(i,1);
+                    deleteSelf(action.payload.id,"outcome");
+                }
+            }
+            return new_state;
+        case 'outcome/insertChild':
+        case 'outcome/insertBelow':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.parentID){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]}
+                    var new_child_outcome_links = state[i].child_outcome_links.slice();
+                    let new_index;
+                    if(action.payload.siblingID===undefined)new_index=new_child_outcome_links.length;
+                    else new_index= new_child_outcome_links.indexOf(action.payload.siblingID)+1;
+                    new_child_outcome_links.splice(new_index,0,action.payload.new_through.id);
+                    new_state[i].child_outcome_links = new_child_outcome_links;
+                    new_state.push(action.payload.new_model);
+                    if(action.payload.children){
+                        for(var i=0;i<action.payload.children.length;i++){
+                            new_state.push(action.payload.children[i]);
+                        }
+                    }
+                    console.log(new_state);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'outcome/changeField':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]};
+                    new_state[i][action.payload.field]=action.payload.value;
+                    let json = {};
+                    json[action.payload.field]=action.payload.value;
+                    if(!read_only)updateValue(action.payload.id,"outcome",json);
+                    return new_state;
+                }
+            }
+            return state;
+        default:
+            return state;
+    }
+}
+export function outcomeOutcomeReducer(state={},action){
+    console.log(action);
+    switch(action.type){
+        case 'outcome/deleteSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.parent_id){
+                    var new_state=state.slice();
+                    new_state.splice(i,1);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'outcome/insertChild':
+        case 'outcome/insertBelow':
+            var new_state = state.slice();
+            new_state.push(action.payload.new_through);
+            if(action.payload.children_through){
+                for(var i=0;i<action.payload.children_through.length;i++){
+                    new_state.push(action.payload.children_through[i]);
+                }
+            }
+            return new_state;
+        default:
+            return state;
+    }
+}
+export function outcomeNodeReducer(state={},action){
+    switch(action.type){
+        case 'outcome/addToNode':
+            var new_state = state.slice();
+            new_state.push(action.payload.outcomenode);
+            return new_state;
+        case 'outcomenode/deleteSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state.splice(i,1);
+                    unlinkOutcomeFromNode(action.payload.id)
+                    return new_state;
+                }
+            }
+            return state;
+        default:
+            return state;
+    }
+}
+export function outcomeProjectReducer(state={},action){
+    switch(action.type){
         default:
             return state;
     }

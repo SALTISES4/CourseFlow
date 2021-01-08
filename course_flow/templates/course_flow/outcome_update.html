@@ -23,6 +23,16 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
+{% block read_only_scripts %}
+
+<script nonce="{{request.csp_nonce}}">
+    
+    const read_only=false;
+    
+</script>
+
+{% endblock %}
+<!-- -->
 {% block scripts %}
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
@@ -45,7 +55,6 @@
     initial_data = {{data_flat|safe}}
     console.log(initial_data);
     const user_id = {{ user.id }};
-    const read_only=false;
     const initial_loading=false;
     
     $("#sidebar").tabs({collapsible:true,active:0,disabled:null});
@@ -60,6 +69,7 @@
     });
     
     
+    /*
 //Causes the specified object to delete itself
 function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
     $.post("{% url 'course_flow:delete-self' %}", {
@@ -70,7 +80,7 @@ function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("succes
         else console.log("Failed");
     });
 }
-    
+   
 function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
     var t = 1000;
     let previousCall = this.lastUpdateCall;
@@ -147,7 +157,7 @@ function insertedAt(objectID,objectType,parentID,newPosition,callBackFunction=()
             else console.log("Failed");
         });
     });
-}
+}*/
     
 </script>
 {% endblock %}

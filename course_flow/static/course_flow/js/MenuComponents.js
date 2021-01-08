@@ -1,5 +1,7 @@
 import * as Redux from "redux";
 import * as React from "react";
+import * as reactDom from "react-dom";
+import {updateValueInstant, deleteSelf, setLinkedWorkflow} from "./PostFunctions.js";
 
 export class MessageBox extends React.Component{
     render(){
@@ -93,7 +95,7 @@ export class WorkflowsMenu extends React.Component{
         return actions;
     }
     
-    ComponentDidMount(){
+    componentDidMount(){
         $("#home-tabs").tabs();
         $(".tab-header").on("click",()=>{this.setState({selected:null})})
     }
@@ -230,7 +232,7 @@ export class HomeMenu extends React.Component{
         
     }
     
-    ComponentDidMount(){
+    componentDidMount(){
         $("#home-tabs").tabs();
     }
 }
@@ -285,7 +287,7 @@ export class ProjectMenu extends React.Component{
         renderMessageBox({...this.state,id:this.props.project.id},"project_edit_menu",this.updateFunction.bind(this));
     }
     
-    ComponentDidMount(){
+    componentDidMount(){
         $("#home-tabs").tabs();
     }
 
@@ -323,7 +325,7 @@ export class ProjectEditMenu extends React.Component{
                     {this.getActions()}
                 </div>
             </div>
-        )
+        );
     }
     
     
@@ -351,7 +353,7 @@ export class ProjectEditMenu extends React.Component{
         var actions = [];
         actions.push(
             <button onClick={()=>{
-                updateValue(this.state.id,"project",this.state);
+                updateValueInstant(this.state.id,"project",this.state);
                 if(this.state.published!=this.props.data.published)togglePublish();
                 this.props.actionFunction(this.state);
                 closeMessageBox();
@@ -367,3 +369,18 @@ export class ProjectEditMenu extends React.Component{
         return actions;
     }
 }
+
+
+export function renderMessageBox(data,type,updateFunction){
+    reactDom.render(
+        <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
+        $("#popup-container")[0]
+    );
+}
+
+
+
+export function closeMessageBox(){
+    reactDom.render(null,$("#popup-container")[0]);
+}
+

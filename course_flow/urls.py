@@ -49,6 +49,7 @@ def flow_patterns():
             r"^project/project-toggle-published/$", views.project_toggle_published, name="project-toggle-published"
         ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
+        url(r"^workflow/unlink-outcome-from-node/$", views.unlink_outcome_from_node, name="unlink-outcome-from-node"),
         url(r"^workflow/duplicate-self/$", views.duplicate_self, name="duplicate-self"),
         url(r"^workflow/duplication/$", views.duplicate_workflow_ajax, name="duplicate-workflow"),
         url(
@@ -63,6 +64,7 @@ def flow_patterns():
         ),
         url(r"^workflow/inserted-at/$", views.inserted_at, name="inserted-at"),
         url(r"^node/change-column/$", views.change_column, name="change-column"),
+        url(r"^node/add-outcome-to-node/$", views.add_outcome_to_node, name="add-outcome-to-node"),
         url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
         url(
