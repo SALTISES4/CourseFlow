@@ -31,7 +31,8 @@ class ColumnView extends ComponentJSON{
                     {this.addInsertSibling(data)}
                     {this.addDuplicateSelf(data)}
                     {this.addDeleteSelf(data)}
-                </div>}
+                </div>
+                }
             </div>
         );
     }

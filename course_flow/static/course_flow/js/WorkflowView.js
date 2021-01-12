@@ -10,6 +10,7 @@ import {WorkflowForMenu} from "./MenuComponents.js";
 import * as Constants from "./Constants.js";
 import {moveColumnWorkflow, moveStrategyWorkflow} from "./Reducers.js";
 import {OutcomeBar} from "./OutcomeTopView.js";
+import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 
 
 
@@ -142,4 +143,46 @@ export const NodeBar = connect(
     null
 )(NodeBarUnconnected)
 
+
+//Basic component representing the workflow
+class WorkflowView_Outcome_Unconnected extends ComponentJSON{
+    
+    constructor(props){
+        super(props);
+        this.objectType="workflow";
+    }
+    
+    render(){
+        let data = this.props.data;
+        console.log("WORKFLOW DATA");
+        
+        console.log(data);
+        
+        var selector = this;
+        
+        return(
+            <div id="workflow-wrapper" class="workflow-wrapper">
+                <div class = "workflow-container">
+                    <div class="workflow-details">
+                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
+                        {this.addEditable(data)}
+                        <WorkflowOutcomeView outcome_sort={0}/>
+                    </div>
+                    {!read_only &&reactDom.createPortal(
+                        <NodeBar/>
+                    ,$("#container")[0])}
+                    {!read_only &&reactDom.createPortal(
+                        <OutcomeBar/>
+                    ,$("#container")[0])}
+                </div>
+            </div>
+        );
+    }
+    
+    
+}
+export const WorkflowView_Outcome =  connect(
+    mapWorkflowStateToProps,
+    null
+)(WorkflowView_Outcome_Unconnected)
 

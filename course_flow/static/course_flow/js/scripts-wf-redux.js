@@ -7,7 +7,7 @@ import {configureStore, createStore} from '@reduxjs/toolkit';
 import {ComponentJSON} from "./ComponentJSON.js";
 import WorkflowView from"./WorkflowView.js";
 import {ProjectMenu, HomeMenu, renderMessageBox} from"./MenuComponents.js";
-import {NodeBar} from"./WorkflowView.js";
+import {NodeBar, WorkflowView_Outcome} from"./WorkflowView.js";
 import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
 
@@ -64,7 +64,7 @@ export function renderWorkflowView(container){
     store = createStore(rootReducer,initial_data);
     reactDom.render(
         <Provider store = {store}>
-            <WorkflowView selection_manager={selection_manager}/>
+            <WorkflowView_Outcome selection_manager={selection_manager}/>
         </Provider>,
         container
     );
