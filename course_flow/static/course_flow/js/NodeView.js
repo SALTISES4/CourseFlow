@@ -214,3 +214,58 @@ export default connect(
     mapNodeStateToProps,
     null
 )(NodeView)
+
+
+
+//Basic component to represent a Node
+class NodeOutcomeViewUnconnected extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="node";
+        this.objectClass=".node";
+        this.state={
+            initial_render:true
+        }
+    }
+    
+    render(){
+        let data = this.props.data;
+        let titleText = data.title;
+        if(data.represents_workflow)titleText = data.linked_workflow_title;
+        let descriptionText = data.description;
+        if(data.represents_workflow)descriptionText = data.linked_workflow_description;
+        
+        
+        return (
+            <div 
+                
+                class={
+                    "node column-"+data.columnworkflow+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
+                } 
+                id={data.id} 
+                ref={this.maindiv} 
+                onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}
+            >
+                <div class = "node-top-row">
+                    <div class = "node-title">
+                        <TitleText text={titleText} defaultText="New Node"/>
+                    </div>
+                </div>
+                {!read_only && <div class="mouseover-actions">
+                    {this.addInsertSibling(data)}
+                    {this.addDuplicateSelf(data)}
+                    {this.addDeleteSelf(data)}
+                </div>
+                }
+                {this.addEditable(data)}
+            </div>
+        );
+
+
+    }
+
+}
+export const NodeOutcomeView = connect(
+    mapNodeStateToProps,
+    null
+)(NodeOutcomeViewUnconnected)

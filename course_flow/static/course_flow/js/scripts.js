@@ -410,7 +410,6 @@ export class DialogForm extends Component {
         </div>
       );
     } else {
-      console.log(this.state);
       var columnrows=[];
       if(this.state.isNode){
         var columnSet = this.state.parentActivity.columnworkflow_set;

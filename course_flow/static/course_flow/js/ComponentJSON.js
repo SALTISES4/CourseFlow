@@ -221,8 +221,6 @@ export class ComponentJSON extends React.Component{
     
     //Makes the item selectable
     addEditable(data){
-        console.log(read_only);
-        console.log(this.state.selected);
         if(read_only)return null;
         if(this.state.selected){
             var type=this.objectType;
@@ -295,6 +293,17 @@ export class ComponentJSON extends React.Component{
                             <label for="has_autolink">Draw arrow to next node</label>
                         </div>
                     }
+                    {type=="workflow" &&
+                        <div>
+                            <h4>Settings:</h4>
+                            <select name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
+                                {outcome_type_choices.map((choice)=>
+                                    <option value={choice.type}>{choice.name}</option>
+                                )}
+                            </select>
+                            <label for="outcomes_type">Outcomes Style</label>
+                        </div>
+                    }
 
                     {(type!="workflow" && (type !="outcome" || data.depth>0)) && this.addDeleteSelf(data)}
                 </div>
@@ -303,6 +312,8 @@ export class ComponentJSON extends React.Component{
     }
     
     inputChanged(field,evt){
+        console.log(evt);
+        console.log(evt.target.value);
         this.props.dispatch(changeField(this.props.data.id,this.objectType,field,evt.target.value));
     }
 

@@ -4,7 +4,7 @@ import {Provider, connect} from "react-redux";
 import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import OutcomeView from "./OutcomeView.js";
 import {OutcomeBarOutcomeView} from "./OutcomeView.js";
-import {NodeOutcomeView} from "./OutcomeView.js";
+import {NodeOutcomeView, TableOutcomeView} from "./OutcomeView.js";
 import {getOutcomeOutcomeByID} from "./FindState.js";
 
 //Basic component representing an outcome to outcome link
@@ -17,7 +17,6 @@ class OutcomeOutcomeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(this.props);
         
         return (
             <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
@@ -45,7 +44,6 @@ class OutcomeBarOutcomeOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(this.props);
         
         return (
             <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
@@ -71,7 +69,6 @@ class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(this.props);
         
         return (
             <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
@@ -85,3 +82,28 @@ export const NodeOutcomeOutcomeView = connect(
     mapOutcomeOutcomeStateToProps,
     null
 )(NodeOutcomeOutcomeViewUnconnected)
+
+
+//Basic component representing an outcome to outcome link
+class TableOutcomeOutcomeViewUnconnected extends ComponentJSON{
+    
+    constructor(props){
+        super(props);
+        this.objectType="outcomeoutcome";
+    }
+    
+    render(){
+        let data = this.props.data;
+        
+        return (
+            <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
+                <TableOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.props.updateParentCompletion} completion_status_from_parents={this.props.completion_status_from_parents} outcomes_type={this.props.outcomes_type}/>
+            </div>
+        );
+    }
+    
+}
+export const TableOutcomeOutcomeView = connect(
+    mapOutcomeOutcomeStateToProps,
+    null
+)(TableOutcomeOutcomeViewUnconnected)

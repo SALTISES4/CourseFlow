@@ -1,5 +1,5 @@
 import * as Constants from "./Constants.js";
-import {unlinkOutcomeFromNode, deleteSelf, insertedAt, columnChanged, updateValue} from "./PostFunctions.js"
+import {unlinkOutcomeFromNode, deleteSelf, insertedAt, columnChanged, updateValue, updateOutcomenodeDegree} from "./PostFunctions.js"
 
 export const moveColumnWorkflow = (id,new_position) => {
     return {
@@ -547,7 +547,6 @@ export function nodelinkReducer(state={},action){
     }
 }
 export function outcomeReducer(state={},action){
-    console.log(action);
     switch(action.type){
         case 'outcomeoutcome/movedTo':
             let old_parent, old_parent_index,new_parent,new_parent_index;
@@ -606,8 +605,6 @@ export function outcomeReducer(state={},action){
                             new_state.push(action.payload.children[i]);
                         }
                     }
-                    console.log(new_state);
-                    return new_state;
                 }
             }
             return state;
@@ -629,7 +626,6 @@ export function outcomeReducer(state={},action){
     }
 }
 export function outcomeOutcomeReducer(state={},action){
-    console.log(action);
     switch(action.type){
         case 'outcome/deleteSelf':
             for(var i=0;i<state.length;i++){
@@ -666,6 +662,19 @@ export function outcomeNodeReducer(state={},action){
                     var new_state = state.slice();
                     new_state.splice(i,1);
                     unlinkOutcomeFromNode(action.payload.id)
+                    return new_state;
+                }
+            }
+            return state;
+        case 'outcomenode/changeField':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]};
+                    new_state[i][action.payload.field]=action.payload.value;
+                    let json = {};
+                    json[action.payload.field]=action.payload.value;
+                    if(!read_only)updateOutcomenodeDegree(action.payload.id,action.payload.value);
                     return new_state;
                 }
             }

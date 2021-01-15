@@ -60,11 +60,17 @@ var store;
 
 
 
-export function renderWorkflowView(container){
-    store = createStore(rootReducer,initial_data);
-    reactDom.render(
+export function renderWorkflowView(container,outcome_view){
+    if(!store)store = createStore(rootReducer,initial_data);
+    if(outcome_view)reactDom.render(
         <Provider store = {store}>
             <WorkflowView_Outcome selection_manager={selection_manager}/>
+        </Provider>,
+        container
+    );
+    else reactDom.render(
+        <Provider store = {store}>
+            <WorkflowView selection_manager={selection_manager}/>
         </Provider>,
         container
     );

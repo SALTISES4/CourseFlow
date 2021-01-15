@@ -54,12 +54,12 @@ class WorkflowView extends ComponentJSON{
                             </defs>
                         </svg>
                     </div>
-                    {!read_only &&reactDom.createPortal(
+                    {!read_only &&
                         <NodeBar/>
-                    ,$("#container")[0])}
-                    {!read_only &&reactDom.createPortal(
+                    }
+                    {!read_only &&
                         <OutcomeBar/>
-                    ,$("#container")[0])}
+                    }
                 </div>
             </div>
         );
@@ -100,6 +100,13 @@ export default connect(
 
 
 class NodeBarUnconnected extends ComponentJSON{
+    
+    constructor(props){
+        super(props);
+        this.objectType="workflow";
+    }
+    
+    
     render(){
         let data = this.props.data;
         var nodebarcolumnworkflows = data.columnworkflow_set.map((columnworkflow)=>
@@ -118,9 +125,25 @@ class NodeBarUnconnected extends ComponentJSON{
         )
         
         
-        var nodebarstrategyworkflows = data.strategyworkflow_set.map((strategyworkflow)=>
+        var nodebarstrategyworkflows;
+        if(!this.props.outcomes_view)nodebarstrategyworkflows= data.strategyworkflow_set.map((strategyworkflow)=>
             <NodeBarStrategyWorkflow key={strategyworkflow} objectID={strategyworkflow}/>
         );
+        var sort_type;
+        console.log(this.props);
+        if(this.props.outcomes_view)sort_type=(
+            <div class="node-bar-sort-block">
+                <p>Sort Nodes By:</p>
+                {outcome_sort_choices.map((choice)=>
+                    <span><input type="radio" id={"sort_type_choice"+choice.type} name="sort_type" value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.inputChanged.bind(this,"outcomes_sort")}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></span>
+                    
+                )}
+            </div>
+        );
+        
+        
+        
+        
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
                 <h4>Nodes:</h4>
@@ -130,9 +153,11 @@ class NodeBarUnconnected extends ComponentJSON{
                 <div class="node-bar-strategy-block">
                     {nodebarstrategyworkflows}
                 </div>
+                {sort_type}
             </div>
         ,$("#node-bar")[0]);
     }
+    
 }
 const mapNodeBarStateToProps = state=>({
     data:state.workflow,
@@ -166,14 +191,14 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                     <div class="workflow-details">
                         <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
                         {this.addEditable(data)}
-                        <WorkflowOutcomeView outcome_sort={0}/>
+                        <WorkflowOutcomeView selection_manager={this.props.selection_manager} outcomes_type={data.outcomes_type}/>
                     </div>
-                    {!read_only &&reactDom.createPortal(
-                        <NodeBar/>
-                    ,$("#container")[0])}
-                    {!read_only &&reactDom.createPortal(
-                        <OutcomeBar/>
-                    ,$("#container")[0])}
+                    {!read_only &&
+                        <NodeBar outcomes_view={true}/>
+                    }
+                    {!read_only &&
+                        <OutcomeBar outcomes_view={true}/>
+                    }
                 </div>
             </div>
         );
@@ -185,4 +210,6 @@ export const WorkflowView_Outcome =  connect(
     mapWorkflowStateToProps,
     null
 )(WorkflowView_Outcome_Unconnected)
+
+
 

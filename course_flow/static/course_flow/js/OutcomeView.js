@@ -3,7 +3,8 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import OutcomeOutcomeView from "./OutcomeOutcomeView.js";
-import {OutcomeBarOutcomeOutcomeView, NodeOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
+import {OutcomeBarOutcomeOutcomeView, NodeOutcomeOutcomeView, TableOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
+import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode.js";
 import {getOutcomeByID} from "./FindState.js";
 import {changeField, moveOutcomeOutcome} from "./Reducers.js";
 
@@ -18,10 +19,9 @@ class OutcomeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(this.props.data);
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} selection_manager={this.props.selection_manager}/>
+            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} selection_manager={this.props.selection_manager} />
         );
         
         let actions=[];
@@ -113,7 +113,6 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(this.props.data);
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
             <OutcomeBarOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} selection_manager={this.props.selection_manager}/>
@@ -195,7 +194,7 @@ export const OutcomeBarOutcomeView = connect(
 )(OutcomeBarOutcomeViewUnconnected)
 
 
-//Basic component representing an inside a ndoe
+//Basic component representing an outcome in a node
 class NodeOutcomeViewUnconnected extends ComponentJSON{
     
     constructor(props){
@@ -206,7 +205,6 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(this.props.data);
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
             <NodeOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} selection_manager={this.props.selection_manager}/>
@@ -256,3 +254,139 @@ export const NodeOutcomeView = connect(
     mapOutcomeStateToProps,
     null
 )(NodeOutcomeViewUnconnected)
+
+//Basic component representing an outcome inside a table
+class TableOutcomeViewUnconnected extends ComponentJSON{
+    
+    constructor(props){
+        super(props);
+        this.objectType="outcome";
+        this.children_block = React.createRef();
+        this.child_completion_status={};
+        this.state={completion_status_from_children:{},completion_status_from_self:{}};
+    }
+    
+    render(){
+        let data = this.props.data;
+        let completion_status_to_pass = {...this.props.completion_status_from_parents};
+        for(let node_id in this.state.completion_status_from_self){
+            completion_status_to_pass[node_id] |= this.state.completion_status_from_self[node_id];
+        }
+        
+        var children = data.child_outcome_links.map((outcomeoutcome)=>
+            <TableOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} selection_manager={this.props.selection_manager} nodecategory={this.props.nodecategory} updateParentCompletion={this.childUpdatedFunction.bind(this,outcomeoutcome)} completion_status_from_parents={completion_status_to_pass} outcomes_type={this.props.outcomes_type}/>
+        );
+
+        let outcomeGroups = this.props.nodecategory.map((nodecategory)=>
+            <TableOutcomeGroup nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.selfUpdatedFunction.bind(this)} completion_status_from_children={this.state.completion_status_from_children} completion_status_from_parents={this.props.completion_status_from_parents} completion_status_from_self = {this.state.completion_status_from_self} outcomes_type={this.props.outcomes_type}/>
+                                                        
+                                                         
+        );
+                
+        let dropIcon;
+        if(data.is_dropped)dropIcon = "droptriangleup";
+        else dropIcon = "droptriangledown";
+        
+        let droptext;
+        if(data.is_dropped)droptext="hide";
+        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+        
+
+        let completion_status=0;
+        for(let node_id in this.props.completion_status_from_parents){
+            completion_status|=this.props.completion_status_from_parents[node_id];
+        }
+        for(let node_id in this.state.completion_status_from_children){
+            completion_status|=this.state.completion_status_from_children[node_id];
+        }
+        for(let node_id in this.state.completion_status_from_self){
+            completion_status|=this.state.completion_status_from_self[node_id];
+        }
+
+        
+        return(
+            <div
+            class={
+                "outcome"+((data.is_dropped && " dropped")||"")
+            }
+            ref={this.maindiv}>
+                <div class = "outcome-row">
+                    <div class="outcome-head" style={{width:400-data.depth*44}}>
+                        <div class="outcome-title">
+                            <TitleText text={data.title} defaultText={"Click to edit"}/>
+                        </div>
+                        {children.length>0 && 
+                            <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+                                <div class = "outcome-drop-img">
+                                    <img src={iconpath+dropIcon+".svg"}/>
+                                </div>
+                                <div class = "outcome-drop-text">
+                                    {droptext}
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="outcome-cells">
+                        {outcomeGroups}
+                        <TableTotalCell grand_total={true} completion_status={completion_status} outcomes_type={this.props.outcomes_type}/>
+                    </div>
+                </div>
+                <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
+                    {children}
+                </div>
+            </div>
+            
+        );
+    }
+    
+    
+    toggleDrop(){
+        this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
+    }
+
+    childUpdatedFunction(through_id,node_id,value){
+        let index = this.props.data.child_outcome_links.indexOf(through_id);
+        if(!this.child_completion_status[node_id]){
+            if(value){
+                this.child_completion_status[node_id]=this.props.data.child_outcome_links.map((outcome_link)=>0);
+            }else{
+                return;
+            }
+        }
+        if(this.child_completion_status[node_id][index]!=value){
+            this.child_completion_status[node_id][index]=value;
+            this.updateCompletion(node_id);
+        }
+    }
+
+    selfUpdatedFunction(node_id,value){
+        if(this.state.completion_status_from_self[node_id]!=value){
+            
+            
+            this.setState(function(state,props){
+                let new_completion_status_from_self={...state.completion_status_from_self};
+                new_completion_status_from_self[node_id]=value;
+                return {completion_status_from_self:new_completion_status_from_self};
+            });
+        }
+    }
+
+    updateCompletion(node_id){
+        let new_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>accumulator & current_value);
+        if(this.state.completion_status_from_children[node_id]!=new_completion){
+            this.setState(function(state,props){
+                let new_completion_status_from_children = {...state.completion_status_from_children};
+                new_completion_status_from_children[node_id]=new_completion;
+                return {completion_status_from_children:new_completion_status_from_children}
+            });
+            
+            if(this.props.updateParentCompletion)this.props.updateParentCompletion(node_id,new_completion);
+        }
+    }
+
+
+}
+export const TableOutcomeView = connect(
+    mapOutcomeStateToProps,
+    null
+)(TableOutcomeViewUnconnected)

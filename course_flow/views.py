@@ -551,6 +551,14 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             {"type": choice[0], "name": choice[1]}
             for choice in Node._meta.get_field("time_units").choices
         ]
+        outcome_type_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Workflow._meta.get_field("outcomes_type").choices
+        ]
+        outcome_sort_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Workflow._meta.get_field("outcomes_sort").choices
+        ]
         parent_project_pk = project.pk
 
         data_flat = {
@@ -586,6 +594,12 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         )
         context["time_choices"] = (
             JSONRenderer().render(time_choices).decode("utf-8")
+        )
+        context["outcome_type_choices"] = (
+            JSONRenderer().render(outcome_type_choices).decode("utf-8")
+        )
+        context["outcome_sort_choices"] = (
+            JSONRenderer().render(outcome_sort_choices).decode("utf-8")
         )
         context["parent_project_pk"] = (
             JSONRenderer().render(parent_project_pk).decode("utf-8")
@@ -655,6 +669,14 @@ class WorkflowDetailView(
             {"type": choice[0], "name": choice[1]}
             for choice in Node._meta.get_field("time_units").choices
         ]
+        outcome_type_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Workflow._meta.get_field("outcomes_type").choices
+        ]
+        outcome_sort_choices = [
+            {"type": choice[0], "name": choice[1]}
+            for choice in Workflow._meta.get_field("outcomes_sort").choices
+        ]
         parent_project_pk = project.pk
 
         data_flat = {
@@ -690,6 +712,12 @@ class WorkflowDetailView(
         )
         context["time_choices"] = (
             JSONRenderer().render(time_choices).decode("utf-8")
+        )
+        context["outcome_type_choices"] = (
+            JSONRenderer().render(outcome_type_choices).decode("utf-8")
+        )
+        context["outcome_sort_choices"] = (
+            JSONRenderer().render(outcome_sort_choices).decode("utf-8")
         )
         context["parent_project_pk"] = (
             JSONRenderer().render(parent_project_pk).decode("utf-8")
@@ -1351,6 +1379,8 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
     new_workflow = model.objects.create(
         title=workflow.title,
         description=workflow.description,
+        outcomes_type=workflow.outcomes_type,
+        outcomes_sort=workflow.outcomes_sort,
         author=author,
         is_original=False,
         parent_workflow=workflow,
@@ -1943,6 +1973,23 @@ def update_value(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
+@require_POST
+@ajax_login_required
+def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    degree = json.loads(request.POST.get("degree"))
+    try:
+        model = OutcomeNode.objects.get(pk=object_id);
+        if(request.user.id != model.node.author.id or request.user.id != model.outcome.author.id):
+            response = JsonResponse({"action": "error"})
+            response.status_code = 401
+            return response
+        model.degree=degree
+        model.save()
+    except (ProtectedError, ObjectDoesNotExist):
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
 
 def set_linked_workflow(node: Node, workflow):
     project = (

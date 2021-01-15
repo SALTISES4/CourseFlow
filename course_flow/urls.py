@@ -50,6 +50,7 @@ def flow_patterns():
         ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
         url(r"^workflow/unlink-outcome-from-node/$", views.unlink_outcome_from_node, name="unlink-outcome-from-node"),
+        url(r"^workflow/update-outcomenode-degree/$", views.update_outcomenode_degree, name="update-outcomenode-degree"),
         url(r"^workflow/duplicate-self/$", views.duplicate_self, name="duplicate-self"),
         url(r"^workflow/duplication/$", views.duplicate_workflow_ajax, name="duplicate-workflow"),
         url(

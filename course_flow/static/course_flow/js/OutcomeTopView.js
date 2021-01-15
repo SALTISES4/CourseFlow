@@ -45,9 +45,6 @@ export default connect(
 class OutcomeBarUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
-        console.log("outcomebar");
-        console.log(data);
-        console.log(this.props.data);
         var outcomebaroutcomes = data.map((outcome)=>
             <OutcomeBarOutcomeView key={outcome.outcome} objectID={outcome.outcome}/>
         );

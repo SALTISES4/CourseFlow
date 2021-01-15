@@ -357,6 +357,7 @@ class OutcomeNode(models.Model):
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+    degree = models.PositiveIntegerField(default=1)
 
     class Meta:
         verbose_name = "Outcome-Node Link"
@@ -449,6 +450,18 @@ class Workflow(models.Model):
     outcomes = models.ManyToManyField(
         Outcome, through="OutcomeWorkflow", blank=True
     )
+    
+    OUTCOMES_NORMAL = 0
+    OUTCOMES_ADVANCED = 1
+    OUTCOME_TYPES = ((OUTCOMES_NORMAL, "Normal"), (OUTCOMES_ADVANCED, "Advanced"))
+    outcomes_type = models.PositiveIntegerField(choices=OUTCOME_TYPES,default=0)
+    
+    OUTCOME_SORT_WEEK = 0
+    OUTCOME_SORT_COLUMN = 1
+    OUTCOME_SORT_TASK = 2
+    OUTCOME_SORT_CONTEXT = 3
+    OUTCOME_SORTS = ((OUTCOME_SORT_WEEK,"Time"),(OUTCOME_SORT_COLUMN,"Category"),(OUTCOME_SORT_TASK,"Task"),(OUTCOME_SORT_CONTEXT,"Context"))
+    outcomes_sort = models.PositiveIntegerField(choices=OUTCOME_SORTS,default=0)
 
     SUBCLASSES = ["activity", "course", "program"]
     

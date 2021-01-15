@@ -59,12 +59,20 @@ $("#sidebar").on("click",(evt)=>{evt.stopPropagation()});
     
 $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
     
+$("#viewbar").append("<div id='outcomeviewbar'><div class='outcomeviewtext'>Outcome View:</div><label class='switch'><input type='checkbox'><span class ='slider round'></span></label></div>");
+    
+$("#outcomeviewbar input").on("change",(evt)=>{
+    workflow_redux.renderWorkflowView($("#container").get()[0],evt.target.checked)
+});
+    
 initial_data = {{data_flat|safe}}
 console.log(initial_data);
 column_choices = {{column_choices|safe}}
 context_choices = {{context_choices|safe}}
 task_choices = {{task_choices|safe}}
 time_choices = {{time_choices|safe}}
+outcome_type_choices = {{outcome_type_choices|safe}}
+outcome_sort_choices = {{outcome_sort_choices|safe}}
 const user_id = {{ user.id }};
 const create_path=null;
     
@@ -98,7 +106,7 @@ window.addEventListener("load", function(){
     selection_manager = new workflow_redux.SelectionManager();
     
     
-    workflow_redux.renderWorkflowView($("#container").get()[0]);
+    workflow_redux.renderWorkflowView($("#container").get()[0],false);
     
     
 });

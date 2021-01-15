@@ -117,6 +117,17 @@ export function unlinkOutcomeFromNode(objectID,objectType,callBackFunction=()=>c
     });
 }
 
+//Causes the specified throughmodel to update its degree
+export function updateOutcomenodeDegree(objectID,value,callBackFunction=()=>console.log("success")){
+    $.post(post_paths.update_outcomenode_degree, {
+        objectID:JSON.stringify(objectID),
+        degree:JSON.stringify(value)
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
+
 //Causes the specified object to insert a sibling after itself
 export function duplicateSelf(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
     $.post(post_paths.duplicate_self, {

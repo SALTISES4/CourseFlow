@@ -76,7 +76,11 @@ export const getOutcomeNodeByID = (state,id)=>{
         var outcomenode = state.outcomenode[i];
         if(outcomenode.id==id)return {data:outcomenode};
     }
-    console.log("didn't find an outcomenode");
-    console.log(state);
-    console.log(id);
+}
+export const getTableOutcomeNodeByID = (state,node_id, outcome_id)=>{
+    for(var i in state.outcomenode){
+        var outcomenode = state.outcomenode[i];
+        if(outcomenode.outcome==outcome_id && outcomenode.node==node_id)return {data:outcomenode};
+    }
+    return {data:null}
 }
