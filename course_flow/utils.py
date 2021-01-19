@@ -2,9 +2,9 @@ from django.contrib.contenttypes.models import ContentType
 
 owned_throughmodels = [
     "node",
-    "nodestrategy",
-    "strategy",
-    "strategyworkflow",
+    "nodeweek",
+    "week",
+    "weekworkflow",
     "workflow",
     "workflowproject",
     "project",

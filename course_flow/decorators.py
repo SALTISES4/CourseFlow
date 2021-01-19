@@ -2,7 +2,7 @@ from functools import wraps
 from django.http import JsonResponse
 from django.conf import settings
 import json
-from .models import User, NodeStrategy, Strategy
+from .models import User, NodeWeek, Week
 from .utils import *
 
 
@@ -28,7 +28,7 @@ def ajax_login_required(view_func):
 owned_models = [
     "nodelink",
     "node",
-    "strategy",
+    "week",
     "workflow",
     "project",
     "column",
@@ -40,9 +40,9 @@ owned_models = [
 
 owned_throughmodels = [
     "node",
-    "nodestrategy",
-    "strategy",
-    "strategyworkflow",
+    "nodeweek",
+    "week",
+    "weekworkflow",
     "workflow",
     "workflowproject",
     "project",
@@ -189,17 +189,17 @@ def is_throughmodel_parent_owner(view_func):
 def new_parent_authorship(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if json.loads(request.POST.get("objectType")) == "nodestrategy":
+        if json.loads(request.POST.get("objectType")) == "nodeweek":
 
             object_id = json.loads(request.POST.get("objectID"))
             parent_id = json.loads(request.POST.get("parentID"))
 
-            old_parent_id = NodeStrategy.objects.get(id=object_id).strategy.id
+            old_parent_id = NodeWeek.objects.get(id=object_id).week.id
 
             if parent_id == old_parent_id:
                 return view_func(request, *args, **kwargs)
 
-            parent = Strategy.objects.get(id=parent_id)
+            parent = Week.objects.get(id=parent_id)
 
             if hasattr(parent, "get_subclass"):
                 parent_author = parent.get_subclass().author

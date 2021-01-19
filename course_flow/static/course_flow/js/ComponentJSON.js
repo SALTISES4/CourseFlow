@@ -166,7 +166,7 @@ export class ComponentJSON extends React.Component{
         return (
             <ActionButton button_icon="delrect.svg" button_class="delete-self-button" handleClick={()=>{
                 //Temporary confirmation; add better comfirmation dialogue later
-                if((this.objectType=="strategy"||this.objectType=="column")&&this.props.sibling_count<2){
+                if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
                     alert("You cannot delete the last "+this.objectType);
                     return;
                 }
@@ -229,7 +229,7 @@ export class ComponentJSON extends React.Component{
             return reactDom.createPortal(
                 <div class="right-panel-inner">
                     <h3>{"Edit "+type+":"}</h3>
-                    {["node","strategy","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
+                    {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Title:</h4>
                             <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
@@ -395,16 +395,16 @@ export class AutoLinkView extends React.Component{
     }
 
     findAutoTarget(){
-        var ns = this.source_node.closest(".node-strategy");
-        var next_ns = ns.nextAll(".node-strategy:not(.ui-sortable-placeholder)").first();
+        var ns = this.source_node.closest(".node-week");
+        var next_ns = ns.nextAll(".node-week:not(.ui-sortable-placeholder)").first();
         var target;
         if(next_ns.length>0){
             target = next_ns.find(".node").attr("id");
         }else{
-            var sw = ns.closest(".strategy-workflow");
+            var sw = ns.closest(".week-workflow");
             var next_sw = sw.next();
             while(next_sw.length>0){
-                target = next_sw.find(".node-strategy:not(ui-sortable-placeholder) .node").attr("id");
+                target = next_sw.find(".node-week:not(ui-sortable-placeholder) .node").attr("id");
                 if(target)break;
                 next_sw = next_sw.next();
             }
@@ -427,7 +427,7 @@ export class AutoLinkView extends React.Component{
                 return;
             }
             if(this.target_node)this.target_node.off(this.rerenderEvents);
-            this.target_node = $(".strategy #"+target+".node");
+            this.target_node = $(".week #"+target+".node");
             this.target_port_handle = d3.select(
                 "g.port-"+target+" circle[data-port-type='target'][data-port='n']"
             );
@@ -512,7 +512,7 @@ export class NodePorts extends React.Component{
         var node = $(this.props.node_div.current);
         var node_offset = Constants.getCanvasOffset(node);
         var node_dimensions={width:node.outerWidth(),height:node.outerHeight()};
-        //if(node.closest(".strategy-workflow").hasClass("dragging")||this.state.node_offset==node_offset&&this.state.node_dimensions==node_dimensions)return;
+        //if(node.closest(".week-workflow").hasClass("dragging")||this.state.node_offset==node_offset&&this.state.node_dimensions==node_dimensions)return;
         this.setState({node_offset:node_offset,node_dimensions:node_dimensions});
     }
     

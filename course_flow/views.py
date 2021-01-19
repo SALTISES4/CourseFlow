@@ -6,11 +6,11 @@ from .models import (
     ColumnWorkflow,
     Workflow,
     Activity,
-    Strategy,
+    Week,
     Node,
     NodeLink,
-    NodeStrategy,
-    StrategyWorkflow,
+    NodeWeek,
+    WeekWorkflow,
     Program,
     NodeCompletionStatus,
     WorkflowProject,
@@ -24,7 +24,7 @@ from .serializers import (
     serializer_lookups_shallow,
     ActivitySerializer,
     CourseSerializer,
-    StrategySerializer,
+    WeekSerializer,
     NodeSerializer,
     ProgramSerializer,
     WorkflowSerializer,
@@ -32,9 +32,9 @@ from .serializers import (
     CourseSerializerShallow,
     ActivitySerializerShallow,
     ProgramSerializerShallow,
-    StrategyWorkflowSerializerShallow,
-    StrategySerializerShallow,
-    NodeStrategySerializerShallow,
+    WeekWorkflowSerializerShallow,
+    WeekSerializerShallow,
+    NodeWeekSerializerShallow,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     ColumnWorkflowSerializerShallow,
@@ -516,12 +516,12 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         ).project
         SerializerClass = serializer_lookups_shallow[workflow.type]
         columnworkflows = workflow.columnworkflow_set.all()
-        strategyworkflows = workflow.strategyworkflow_set.all()
+        weekworkflows = workflow.weekworkflow_set.all()
         columns = workflow.columns.all()
-        strategies = workflow.strategies.all()
-        nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
+        weeks = workflow.weeks.all()
+        nodeweeks = NodeWeek.objects.filter(week__in=weeks)
         nodes = Node.objects.filter(
-            pk__in=nodestrategies.values_list("node__pk", flat=True)
+            pk__in=nodeweeks.values_list("node__pk", flat=True)
         )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
         outcomeprojects = project.outcomeproject_set.all()
@@ -567,12 +567,12 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 columnworkflows, many=True
             ).data,
             "column": ColumnSerializerShallow(columns, many=True).data,
-            "strategyworkflow": StrategyWorkflowSerializerShallow(
-                strategyworkflows, many=True
+            "weekworkflow": WeekWorkflowSerializerShallow(
+                weekworkflows, many=True
             ).data,
-            "strategy": StrategySerializerShallow(strategies, many=True).data,
-            "nodestrategy": NodeStrategySerializerShallow(
-                nodestrategies, many=True
+            "week": WeekSerializerShallow(weeks, many=True).data,
+            "nodeweek": NodeWeekSerializerShallow(
+                nodeweeks, many=True
             ).data,
             "node": NodeSerializerShallow(nodes, many=True).data,
             "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
@@ -634,12 +634,12 @@ class WorkflowDetailView(
         ).project
         SerializerClass = serializer_lookups_shallow[workflow.type]
         columnworkflows = workflow.columnworkflow_set.all()
-        strategyworkflows = workflow.strategyworkflow_set.all()
+        weekworkflows = workflow.weekworkflow_set.all()
         columns = workflow.columns.all()
-        strategies = workflow.strategies.all()
-        nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
+        weeks = workflow.weeks.all()
+        nodeweeks = NodeWeek.objects.filter(week__in=weeks)
         nodes = Node.objects.filter(
-            pk__in=nodestrategies.values_list("node__pk", flat=True)
+            pk__in=nodeweeks.values_list("node__pk", flat=True)
         )
         nodelinks = NodeLink.objects.filter(source_node__in=nodes)
         outcomeprojects = project.outcomeproject_set.all()
@@ -685,12 +685,12 @@ class WorkflowDetailView(
                 columnworkflows, many=True
             ).data,
             "column": ColumnSerializerShallow(columns, many=True).data,
-            "strategyworkflow": StrategyWorkflowSerializerShallow(
-                strategyworkflows, many=True
+            "weekworkflow": WeekWorkflowSerializerShallow(
+                weekworkflows, many=True
             ).data,
-            "strategy": StrategySerializerShallow(strategies, many=True).data,
-            "nodestrategy": NodeStrategySerializerShallow(
-                nodestrategies, many=True
+            "week": WeekSerializerShallow(weeks, many=True).data,
+            "nodeweek": NodeWeekSerializerShallow(
+                nodeweeks, many=True
             ).data,
             "node": NodeSerializerShallow(nodes, many=True).data,
             "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
@@ -733,24 +733,24 @@ class WorkflowViewSet(
     queryset = Workflow.objects.select_subclasses()
 
 
-class StrategyWorkflowViewSet(
+class WeekWorkflowViewSet(
     LoginRequiredMixin, viewsets.ReadOnlyModelViewSet
 ):
-    serializer_class = StrategyWorkflowSerializerShallow
+    serializer_class = WeekWorkflowSerializerShallow
     renderer_classes = [JSONRenderer]
-    queryset = StrategyWorkflow.objects.all()
+    queryset = WeekWorkflow.objects.all()
 
 
-class StrategyViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = StrategySerializerShallow
+class WeekViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+    serializer_class = WeekSerializerShallow
     renderer_classes = [JSONRenderer]
-    queryset = Strategy.objects.all()
+    queryset = Week.objects.all()
 
 
-class NodeStrategyViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = NodeStrategySerializerShallow
+class NodeWeekViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
+    serializer_class = NodeWeekSerializerShallow
     renderer_classes = [JSONRenderer]
-    queryset = NodeStrategy.objects.all()
+    queryset = NodeWeek.objects.all()
 
 
 class NodeViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
@@ -964,18 +964,18 @@ def update_program_json(request: HttpRequest) -> HttpResponse:
 # Called when a node is added from the sidebar (duplicated)
 @login_required
 @ajax_login_required
-@is_owner("strategyPk")
+@is_owner("weekPk")
 def add_node(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
-    strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
+    week = Week.objects.get(pk=request.POST.get("weekPk"))
 
     try:
-        for link in NodeStrategy.objects.filter(strategy=strategy):
+        for link in NodeWeek.objects.filter(week=week):
             link.rank += 1
             link.save()
 
-        NodeStrategy.objects.create(
-            strategy=strategy, node=duplicate_node(node, request.user), rank=0
+        NodeWeek.objects.create(
+            week=week, node=duplicate_node(node, request.user), rank=0
         )
 
     except ValidationError:
@@ -984,22 +984,22 @@ def add_node(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-# Called when a strategy is added from the sidebar (duplicated)
+# Called when a week is added from the sidebar (duplicated)
 @require_POST
 @ajax_login_required
 @is_owner("workflowPk")
-def add_strategy(request: HttpRequest) -> HttpResponse:
-    strategy = Strategy.objects.get(pk=request.POST.get("strategyPk"))
+def add_week(request: HttpRequest) -> HttpResponse:
+    week = Week.objects.get(pk=request.POST.get("weekPk"))
     workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
 
     try:
-        for link in StrategyWorkflow.objects.filter(workflow=workflow):
+        for link in WeekWorkflow.objects.filter(workflow=workflow):
             link.rank += 1
             link.save()
 
-        StrategyWorkflow.objects.create(
+        WeekWorkflow.objects.create(
             workflow=workflow,
-            strategy=duplicate_strategy(strategy, request.user),
+            week=duplicate_week(week, request.user),
             rank=0,
         )
     except ValidationError:
@@ -1016,12 +1016,12 @@ def duplicate_activity(activity: Activity, author: User) -> Activity:
         is_original=False,
         parent_workflow=activity,
     )
-    for strategy in activity.strategies.all():
-        StrategyWorkflow.objects.create(
+    for week in activity.weeks.all():
+        WeekWorkflow.objects.create(
             activity=new_activity,
-            strategy=duplicate_strategy(strategy, author),
-            rank=StrategyWorkflow.objects.get(
-                workflow=activity, strategy=strategy
+            week=duplicate_week(week, author),
+            rank=WeekWorkflow.objects.get(
+                workflow=activity, week=week
             ).rank,
         )
     return new_activity
@@ -1047,12 +1047,12 @@ def duplicate_course(course: Course, author: User) -> Course:
         is_original=False,
         parent_workflow=course,
     )
-    for strategy in course.strategies.all():
-        StrategyWorkflow.objects.create(
+    for week in course.weeks.all():
+        WeekWorkflow.objects.create(
             workflow=new_course,
-            strategy=duplicate_strategy(strategy, author),
-            rank=StrategyWorkflow.objects.get(
-                strategy=strategy, workflow=workflow
+            week=duplicate_week(week, author),
+            rank=WeekWorkflow.objects.get(
+                week=week, workflow=workflow
             ).rank,
         )
     return new_course
@@ -1097,8 +1097,8 @@ def setup_link_to_group(course_pk, students) -> Course:
             activity.static = True
             activity.save()
             activity.students.add(*students)
-            for strategy in activity.strategies.all():
-                for node in strategy.nodes.all():
+            for week in activity.weeks.all():
+                for node in week.nodes.all():
                     node.students.add(*students)
     return clone
 
@@ -1122,8 +1122,8 @@ def remove_student_from_group(student, course):
         ):
             activity = component.content_object
             activity.students.remove(student)
-            for strategy in activity.strategies.all():
-                for node in strategy.nodes.all():
+            for week in activity.weeks.all():
+                for node in week.nodes.all():
                     NodeCompletionStatus.objects.get(
                         student=student, node=node
                     ).delete()
@@ -1143,8 +1143,8 @@ def add_student_to_group(student, course):
         ):
             activity = component.content_object
             activity.students.add(student)
-            for strategy in activity.strategies.all():
-                for node in strategy.nodes.all():
+            for week in activity.weeks.all():
+                for node in week.nodes.all():
                     NodeCompletionStatus.objects.create(
                         student=student, node=node
                     )
@@ -1231,7 +1231,7 @@ def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
         project = (
-            node.strategy_set.first().workflow_set.first().project_set.first()
+            node.week_set.first().workflow_set.first().project_set.first()
         )
         data_package = get_workflow_data_package(
             request.user, project, node.node_type - 1
@@ -1250,12 +1250,12 @@ def get_flat_workflow(request: HttpRequest) -> HttpResponse:
     try:
         SerializerClass = serializer_lookups_shallow[workflow.type]
         columnworkflows = workflow.columnworkflow_set.all()
-        strategyworkflows = workflow.strategyworkflow_set.all()
+        weekworkflows = workflow.weekworkflow_set.all()
         columns = workflow.columns.all()
-        strategies = workflow.strategies.all()
-        nodestrategies = NodeStrategy.objects.filter(strategy__in=strategies)
+        weeks = workflow.weeks.all()
+        nodeweeks = NodeWeek.objects.filter(week__in=weeks)
         nodes = Node.objects.filter(
-            pk__in=nodestrategies.values_list("node__pk", flat=True)
+            pk__in=nodeweeks.values_list("node__pk", flat=True)
         )
 
         response = {
@@ -1264,14 +1264,14 @@ def get_flat_workflow(request: HttpRequest) -> HttpResponse:
                 columnworkflows, many=True
             ).data,
             "columns": ColumnSerializerShallow(columns, many=True).data,
-            "strategyworkflows": StrategyWorkflowSerializerShallow(
-                strategyworkflows, many=True
+            "weekworkflows": WeekWorkflowSerializerShallow(
+                weekworkflows, many=True
             ).data,
-            "strategies": StrategySerializerShallow(
-                strategies, many=True
+            "weeks": WeekSerializerShallow(
+                weeks, many=True
             ).data,
-            "nodestrategies": NodeStrategySerializerShallow(
-                nodestrategies, many=True
+            "nodeweeks": NodeWeekSerializerShallow(
+                nodeweeks, many=True
             ).data,
             "nodes": NodeSerializerShallow(nodes, many=True).data,
         }
@@ -1339,26 +1339,26 @@ def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
     return new_node
 
 
-def duplicate_strategy(
-    strategy: Strategy, author: User, new_workflow: Workflow
-) -> Strategy:
-    new_strategy = Strategy.objects.create(
-        title=strategy.title,
-        description=strategy.description,
+def duplicate_week(
+    week: Week, author: User, new_workflow: Workflow
+) -> Week:
+    new_week = Week.objects.create(
+        title=week.title,
+        description=week.description,
         author=author,
         is_original=False,
-        parent_strategy=strategy,
-        strategy_type=strategy.strategy_type,
+        parent_week=week,
+        week_type=week.week_type,
     )
 
-    for node in strategy.nodes.all():
-        NodeStrategy.objects.create(
+    for node in week.nodes.all():
+        NodeWeek.objects.create(
             node=duplicate_node(node, author, new_workflow),
-            strategy=new_strategy,
-            rank=NodeStrategy.objects.get(node=node, strategy=strategy).rank,
+            week=new_week,
+            rank=NodeWeek.objects.get(node=node, week=week).rank,
         )
 
-    return new_strategy
+    return new_week
 
 
 def duplicate_column(column: Column, author: User) -> Column:
@@ -1394,24 +1394,24 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
                 column=column, workflow=workflow
             ).rank,
         )
-    for strategy in workflow.strategies.all():
-        StrategyWorkflow.objects.create(
-            strategy=duplicate_strategy(strategy, author, new_workflow),
+    for week in workflow.weeks.all():
+        WeekWorkflow.objects.create(
+            week=duplicate_week(week, author, new_workflow),
             workflow=new_workflow,
-            rank=StrategyWorkflow.objects.get(
-                strategy=strategy, workflow=workflow
+            rank=WeekWorkflow.objects.get(
+                week=week, workflow=workflow
             ).rank,
         )
 
-    # Handle all the nodelinks. These need to be handled here because they potentially span strategies
-    for strategy in new_workflow.strategies.all():
-        for node in strategy.nodes.all():
+    # Handle all the nodelinks. These need to be handled here because they potentially span weeks
+    for week in new_workflow.weeks.all():
+        for node in week.nodes.all():
             for node_link in NodeLink.objects.filter(
                 source_node=node.parent_node
             ):
-                for strategy2 in new_workflow.strategies.all():
+                for week2 in new_workflow.weeks.all():
                     if (
-                        strategy2.nodes.filter(
+                        week2.nodes.filter(
                             parent_node=node_link.target_node
                         ).count()
                         > 0
@@ -1420,7 +1420,7 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
                             node_link,
                             author,
                             node,
-                            strategy2.nodes.get(
+                            week2.nodes.get(
                                 parent_node=node_link.target_node
                             ),
                         )
@@ -1500,44 +1500,44 @@ def new_column(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
-@is_owner("strategyPk")
+@is_owner("weekPk")
 def new_node(request: HttpRequest) -> HttpResponse:
-    strategy_id = json.loads(request.POST.get("strategyPk"))
+    week_id = json.loads(request.POST.get("weekPk"))
     column_id = json.loads(request.POST.get("columnPk"))
     column_type = json.loads(request.POST.get("columnType"))
     position = json.loads(request.POST.get("position"))
-    strategy = Strategy.objects.get(pk=strategy_id)
+    week = Week.objects.get(pk=week_id)
     try:
         if column_id is not None and column_id >= 0:
             column = Column.objects.get(pk=column_id)
             columnworkflow = ColumnWorkflow.objects.get(column=column)
         elif column_type is not None and column_type >= 0:
             column = Column.objects.create(
-                column_type=column_type, author=strategy.author
+                column_type=column_type, author=week.author
             )
             columnworkflow = ColumnWorkflow.objects.create(
                 column=column,
-                workflow=strategy.workflow_set.first(),
-                rank=strategy.workflow_set.first().columns.count(),
+                workflow=week.workflow_set.first(),
+                rank=week.workflow_set.first().columns.count(),
             )
         else:
             columnworkflow = ColumnWorkflow.objects.filter(
-                workflow=StrategyWorkflow.objects.get(
-                    strategy=strategy
+                workflow=WeekWorkflow.objects.get(
+                    week=week
                 ).workflow
             ).first()
             column = columnworkflow.column
-        if column.author != strategy.author:
-            raise ValidationError("Column and strategy have different authors")
-        if position < 0 or position > strategy.nodes.count():
-            position = strategy.nodes.count()
+        if column.author != week.author:
+            raise ValidationError("Column and week have different authors")
+        if position < 0 or position > week.nodes.count():
+            position = week.nodes.count()
         node = Node.objects.create(
-            author=strategy.author,
-            node_type=strategy.strategy_type,
+            author=week.author,
+            node_type=week.week_type,
             column=column,
         )
-        node_strategy = NodeStrategy.objects.create(
-            strategy=strategy, node=node, rank=position
+        node_week = NodeWeek.objects.create(
+            week=week, node=node, rank=position
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -1545,9 +1545,9 @@ def new_node(request: HttpRequest) -> HttpResponse:
         {
             "action": "posted",
             "new_model": NodeSerializerShallow(node).data,
-            "new_through": NodeStrategySerializerShallow(node_strategy).data,
+            "new_through": NodeWeekSerializerShallow(node_week).data,
             "index": position,
-            "parentID": strategy_id,
+            "parentID": week_id,
             "columnworkflow": ColumnWorkflowSerializerShallow(
                 columnworkflow
             ).data,
@@ -1633,36 +1633,36 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
     parent_id = json.loads(request.POST.get("parentID"))
 
     try:
-        if object_type == "strategy":
-            model = Strategy.objects.get(id=object_id)
+        if object_type == "week":
+            model = Week.objects.get(id=object_id)
             parent = Workflow.objects.get(id=parent_id)
-            through = StrategyWorkflow.objects.get(
-                strategy=model, workflow=parent
+            through = WeekWorkflow.objects.get(
+                week=model, workflow=parent
             )
-            newmodel = Strategy.objects.create(
-                author=model.author, strategy_type=model.strategy_type
+            newmodel = Week.objects.create(
+                author=model.author, week_type=model.week_type
             )
-            newthroughmodel = StrategyWorkflow.objects.create(
-                workflow=parent, strategy=newmodel, rank=through.rank + 1
+            newthroughmodel = WeekWorkflow.objects.create(
+                workflow=parent, week=newmodel, rank=through.rank + 1
             )
-            new_model_serialized = StrategySerializerShallow(newmodel).data
-            new_through_serialized = StrategyWorkflowSerializerShallow(
+            new_model_serialized = WeekSerializerShallow(newmodel).data
+            new_through_serialized = WeekWorkflowSerializerShallow(
                 newthroughmodel
             ).data
         elif object_type == "node":
             model = Node.objects.get(id=object_id)
-            parent = Strategy.objects.get(id=parent_id)
-            through = NodeStrategy.objects.get(node=model, strategy=parent)
+            parent = Week.objects.get(id=parent_id)
+            through = NodeWeek.objects.get(node=model, week=parent)
             newmodel = Node.objects.create(
                 author=model.author,
                 column=model.column,
                 node_type=model.node_type,
             )
-            newthroughmodel = NodeStrategy.objects.create(
-                strategy=parent, node=newmodel, rank=through.rank + 1
+            newthroughmodel = NodeWeek.objects.create(
+                week=parent, node=newmodel, rank=through.rank + 1
             )
             new_model_serialized = NodeSerializerShallow(newmodel).data
-            new_through_serialized = NodeStrategySerializerShallow(
+            new_through_serialized = NodeWeekSerializerShallow(
                 newthroughmodel
             ).data
         elif object_type == "column":
@@ -1723,36 +1723,36 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     parent_id = json.loads(request.POST.get("parentID"))
 
     try:
-        if object_type == "strategy":
-            model = Strategy.objects.get(id=object_id)
+        if object_type == "week":
+            model = Week.objects.get(id=object_id)
             parent = Workflow.objects.get(id=parent_id)
-            through = StrategyWorkflow.objects.get(
-                strategy=model, workflow=parent
+            through = WeekWorkflow.objects.get(
+                week=model, workflow=parent
             )
-            newmodel = duplicate_strategy(model, model.author, None)
-            newthroughmodel = StrategyWorkflow.objects.create(
-                workflow=parent, strategy=newmodel, rank=through.rank + 1
+            newmodel = duplicate_week(model, model.author, None)
+            newthroughmodel = WeekWorkflow.objects.create(
+                workflow=parent, week=newmodel, rank=through.rank + 1
             )
-            new_model_serialized = StrategySerializerShallow(newmodel).data
-            new_through_serialized = StrategyWorkflowSerializerShallow(
+            new_model_serialized = WeekSerializerShallow(newmodel).data
+            new_through_serialized = WeekWorkflowSerializerShallow(
                 newthroughmodel
             ).data
             new_children_serialized = NodeSerializerShallow(
                 newmodel.nodes, many=True
             ).data
-            new_child_through_serialized = NodeStrategySerializerShallow(
-                newmodel.nodestrategy_set, many=True
+            new_child_through_serialized = NodeWeekSerializerShallow(
+                newmodel.nodeweek_set, many=True
             ).data
         elif object_type == "node":
             model = Node.objects.get(id=object_id)
-            parent = Strategy.objects.get(id=parent_id)
-            through = NodeStrategy.objects.get(node=model, strategy=parent)
+            parent = Week.objects.get(id=parent_id)
+            through = NodeWeek.objects.get(node=model, week=parent)
             newmodel = duplicate_node(model, model.author, None)
-            newthroughmodel = NodeStrategy.objects.create(
-                strategy=parent, node=newmodel, rank=through.rank + 1
+            newthroughmodel = NodeWeek.objects.create(
+                week=parent, node=newmodel, rank=through.rank + 1
             )
             new_model_serialized = NodeSerializerShallow(newmodel).data
-            new_through_serialized = NodeStrategySerializerShallow(
+            new_through_serialized = NodeWeekSerializerShallow(
                 newthroughmodel
             ).data
             new_children_serialized = None
@@ -1832,8 +1832,8 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 
         new_parent = get_model_from_str(parentType).objects.get(id=parent_id)
 
-        if object_type == "nodestrategy":
-            parent = model.strategy
+        if object_type == "nodeweek":
+            parent = model.week
         elif object_type =="outcomeoutcome":
             parent = model.parent
         else:
@@ -1872,7 +1872,7 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 
             child = model.node
             model.delete()
-            new_through_object = NodeStrategy(strategy=new_parent, node=child, rank=new_position)
+            new_through_object = NodeWeek(week=new_parent, node=child, rank=new_position)
             setattr(new_through_object, parentType, new_parent)
             new_through_object.save()
 
@@ -1993,7 +1993,7 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
 
 def set_linked_workflow(node: Node, workflow):
     project = (
-        node.strategy_set.first().workflow_set.first().project_set.first()
+        node.week_set.first().workflow_set.first().project_set.first()
     )
     if project.author == node.author or project.published:
         if WorkflowProject.objects.get(workflow=workflow).project == project:

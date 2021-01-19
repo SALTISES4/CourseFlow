@@ -858,8 +858,8 @@ export class NodeView extends ComponentJSON{
 
 }
 
-//Basic component to represent a NodeStrategy
-export class NodeStrategyView extends ComponentJSON{
+//Basic component to represent a NodeWeek
+export class NodeWeekView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="nodestrategy";
@@ -883,7 +883,7 @@ export class NodeStrategyView extends ComponentJSON{
 
     postMountFunction(){
         if(this.maindiv.current){
-            //Add an event listener to check for reorderings of node-strategies, updating the rank if needed
+            //Add an event listener to check for reorderings of node-weeks, updating the rank if needed
             var node_strategy=this;
             $(this.maindiv.current).on("sorted dragging sibling-added sibling-removed",this.updateRank.bind(this));
             $(this.maindiv.current).on("parent-moved sibling-added sibling-removed cousin-added cousin-removed sorted dragging",(evt)=>{node_strategy.passEventToChild(evt)});
@@ -897,8 +897,8 @@ export class NodeStrategyView extends ComponentJSON{
     }
 }
 
-//Basic component to represent a Strategy
-export class StrategyView extends ComponentJSON{
+//Basic component to represent a Week
+export class WeekView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="strategy";
@@ -910,7 +910,7 @@ export class StrategyView extends ComponentJSON{
     render(){
         if(this.state.id){
             var nodes = this.state.nodestrategy_set.map((nodestrategy)=>
-                <NodeStrategyView key={nodestrategy} objectID={nodestrategy} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
+                <NodeWeekView key={nodestrategy} objectID={nodestrategy} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
             );
             var new_node;
             if(this.state.nodestrategy_set.length==0)new_node = (
@@ -937,7 +937,7 @@ export class StrategyView extends ComponentJSON{
     postMountFunction(){
         //Trigger the reordering event, which will make all other strategyworkflows update their indices in their states. This is critical for when a new strategy is inserted, because the DOM has not fully updated until this post-mount function is called.
         if(!initial_loading)triggerHandlerEach($(".strategy-workflow").not($(this.maindiv.current).parent()),"sibling-added");
-        //Makes the nodestrategies in the node block sortable, linking them with other node blocks
+        //Makes the nodeweeks in the node block sortable, linking them with other node blocks
         this.makeSortable($(this.node_block.current),
                           this.props.objectID,
                           "nodestrategy",
@@ -952,7 +952,7 @@ export class StrategyView extends ComponentJSON{
 }
 
 //Component to represent a Term
-export class TermView extends StrategyView{
+export class TermView extends WeekView{
     render(){
         if(this.state.id){
             console.log(this.state);
@@ -967,7 +967,7 @@ export class TermView extends StrategyView{
                     <div class={"node-block term column-"+col} id={this.props.objectID+"-node-block-column-"+col} key={col} >
                         {this.state.nodestrategy_set[col].map(
                             (nodestrategy)=>
-                                <NodeStrategyView key={nodestrategy} objectID={nodestrategy} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
+                                <NodeWeekView key={nodestrategy} objectID={nodestrategy} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
                             )
                         }
                     </div>
@@ -996,7 +996,7 @@ export class TermView extends StrategyView{
         //Trigger the reordering event, which will make all other strategyworkflows update their indices in their states. This is critical for when a new strategy is inserted, because the DOM has not fully updated until this post-mount function is called.
         if(!initial_loading)triggerHandlerEach($(".strategy-workflow").not($(this.maindiv.current).parent()),"sibling-added");
         var mycomponent=this;
-        //Makes the nodestrategies in the node block sortable, linking them with other node blocks
+        //Makes the nodeweeks in the node block sortable, linking them with other node blocks
         $(this.node_block.current).children(".term").each(function(index, element){
             mycomponent.makeSortable($(element),
                           mycomponent.props.objectID,
@@ -1114,7 +1114,7 @@ export class ColumnWorkflowView extends ComponentJSON{
 }
 
 //Basic strategyworkflow component
-export class StrategyWorkflowView extends ComponentJSON{
+export class WeekWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="strategyworkflow";
@@ -1130,7 +1130,7 @@ export class StrategyWorkflowView extends ComponentJSON{
                     <TermView objectID={this.state.strategy} rank={this.state.rank} updateParent={this.props.updateParent} parentID={this.props.parentID}/>
             );
             else strategy = (
-                <StrategyView objectID={this.state.strategy} rank={this.state.rank} updateParent={this.props.updateParent} parentID={this.props.parentID}/>
+                <WeekView objectID={this.state.strategy} rank={this.state.rank} updateParent={this.props.updateParent} parentID={this.props.parentID}/>
             );
             return (
                 <div class="strategy-workflow" id={this.state.id} ref={this.maindiv}>
@@ -1181,13 +1181,13 @@ export class WorkflowView extends ComponentJSON{
                 <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
             );
             var strategyworkflows = this.state.strategyworkflow_set.map((strategyworkflow)=>
-                <StrategyWorkflowView key={strategyworkflow} objectID={strategyworkflow} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
+                <WeekWorkflowView key={strategyworkflow} objectID={strategyworkflow} parentID={this.state.id} updateParent={this.updateJSON.bind(this)}/>
             );
             var nodebarcolumnworkflows = this.state.columnworkflow_set.map((columnworkflow)=>
                 <NodeBarColumnWorkflowView key={columnworkflow} objectID={columnworkflow}/>
             );
             var nodebarstrategyworkflows = this.state.strategyworkflow_set.map((strategyworkflow)=>
-                <NodeBarStrategyWorkflowView key={strategyworkflow} objectID={strategyworkflow}/>
+                <NodeBarWeekWorkflowView key={strategyworkflow} objectID={strategyworkflow}/>
             );
 
             return (
@@ -1256,7 +1256,7 @@ export class WorkflowView extends ComponentJSON{
     }
 }
 
-//Class to represent the nodebar's "columns" (used to drag nodes into the strategies)
+//Class to represent the nodebar's "columns" (used to drag nodes into the weeks)
 export class NodeBarColumnWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
@@ -1332,7 +1332,7 @@ export class NodeBarColumnView extends ComponentJSON{
     }
 }
 
-export class NodeBarStrategyWorkflowView extends ComponentJSON{
+export class NodeBarWeekWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="strategyworkflow";

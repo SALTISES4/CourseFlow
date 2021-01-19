@@ -3,12 +3,12 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON.js";
 import ColumnWorkflowView from "./ColumnWorkflowView.js";
-import StrategyWorkflowView from "./WeekWorkflowView.js";
+import WeekWorkflowView from "./WeekWorkflowView.js";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView.js";
-import {NodeBarStrategyWorkflow} from "./WeekWorkflowView.js";
+import {NodeBarWeekWorkflow} from "./WeekWorkflowView.js";
 import {WorkflowForMenu} from "./MenuComponents.js";
 import * as Constants from "./Constants.js";
-import {moveColumnWorkflow, moveStrategyWorkflow} from "./Reducers.js";
+import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers.js";
 import {OutcomeBar} from "./OutcomeTopView.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 
@@ -27,8 +27,8 @@ class WorkflowView extends ComponentJSON{
         var columnworkflows = data.columnworkflow_set.map((columnworkflow)=>
             <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
         );
-        var strategyworkflows = data.strategyworkflow_set.map((strategyworkflow)=>
-            <StrategyWorkflowView key={strategyworkflow} objectID={strategyworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
+        var weekworkflows = data.weekworkflow_set.map((weekworkflow)=>
+            <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
         );
         var selector = this;
         
@@ -41,8 +41,8 @@ class WorkflowView extends ComponentJSON{
                         <div class="column-row">
                             {columnworkflows}
                         </div>
-                        <div class="strategy-block">
-                            {strategyworkflows}
+                        <div class="week-block">
+                            {weekworkflows}
                         </div>
                         <svg class="workflow-canvas" width="100%" height="100%">
                             <defs>
@@ -71,21 +71,21 @@ class WorkflowView extends ComponentJSON{
           "columnworkflow",
           ".column-workflow",
           "x");
-        this.makeSortable($(".strategy-block"),
+        this.makeSortable($(".week-block"),
           this.props.objectID,
-          "strategyworkflow",
-          ".strategy-workflow",
+          "weekworkflow",
+          ".week-workflow",
           "y");
     }
 
     stopSortFunction(){
-        Constants.triggerHandlerEach($(".strategy .node"),"component-updated");
+        Constants.triggerHandlerEach($(".week .node"),"component-updated");
     }
     
     
     sortableMovedFunction(id,new_position,type){
         if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position))
-        if(type=="strategyworkflow")this.props.dispatch(moveStrategyWorkflow(id,new_position))
+        if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position))
     }
 }
 const mapWorkflowStateToProps = state=>({
@@ -125,9 +125,9 @@ class NodeBarUnconnected extends ComponentJSON{
         )
         
         
-        var nodebarstrategyworkflows;
-        if(!this.props.outcomes_view)nodebarstrategyworkflows= data.strategyworkflow_set.map((strategyworkflow)=>
-            <NodeBarStrategyWorkflow key={strategyworkflow} objectID={strategyworkflow}/>
+        var nodebarweekworkflows;
+        if(!this.props.outcomes_view)nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
+            <NodeBarWeekWorkflow key={weekworkflow} objectID={weekworkflow}/>
         );
         var sort_type;
         console.log(this.props);
@@ -150,8 +150,8 @@ class NodeBarUnconnected extends ComponentJSON{
                 <div class="node-bar-column-block">
                     {nodebarcolumnworkflows}
                 </div>
-                <div class="node-bar-strategy-block">
-                    {nodebarstrategyworkflows}
+                <div class="node-bar-week-block">
+                    {nodebarweekworkflows}
                 </div>
                 {sort_type}
             </div>

@@ -68,10 +68,10 @@ export function newColumn(workflowPk,column_type,callBackFunction=()=>console.lo
     });
 }
     
-//Add a new node to a strategy
-export function newNode(strategyPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){
+//Add a new node to a week
+export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){
     $.post(post_paths.new_node, {
-        strategyPk:JSON.stringify(strategyPk),
+        weekPk:JSON.stringify(weekPk),
         position:JSON.stringify(position),
         columnPk:JSON.stringify(column),
         columnType:JSON.stringify(column_type),
@@ -172,8 +172,8 @@ export function insertedAt(objectID,objectType,parentID,newPosition,callBackFunc
 //Called when a node should have its column changed
 export function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
     
-    $(document).off("nodestrategy-dropped.columnchange");
-    $(document).on("nodestrategy-dropped.columnchange",()=>{
+    $(document).off("nodeweek-dropped.columnchange");
+    $(document).on("nodeweek-dropped.columnchange",()=>{
     
         $.post(post_paths.column_changed, {
             nodePk:JSON.stringify(objectID),

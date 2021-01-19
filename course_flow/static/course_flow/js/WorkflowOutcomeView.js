@@ -61,27 +61,27 @@ function pushOrCreate(obj,index,value){
     else obj[index]=[value];
 }
 const mapStateToProps = (state,own_props)=>{
-    let strategyworkflow_order = state.workflow.strategyworkflow_set;
-    let strategy_order = state.strategyworkflow.slice().sort(function(a,b){return(strategyworkflow_order.indexOf(a.id)-strategyworkflow_order.indexOf(b.id))}).map((strategyworkflow)=>strategyworkflow.strategy);
-    let strategies_ordered = state.strategy.slice().sort(function(a,b){return strategy_order.indexOf(a.id)-strategy_order.indexOf(b.id)})
+    let weekworkflow_order = state.workflow.weekworkflow_set;
+    let week_order = state.weekworkflow.slice().sort(function(a,b){return(weekworkflow_order.indexOf(a.id)-weekworkflow_order.indexOf(b.id))}).map((weekworkflow)=>weekworkflow.week);
+    let weeks_ordered = state.week.slice().sort(function(a,b){return week_order.indexOf(a.id)-week_order.indexOf(b.id)})
         
-    let nodestrategy_order=[].concat(...strategies_ordered.map((strategy)=>strategy.nodestrategy_set));
-    console.log(nodestrategy_order);
-    let nodestrategies_ordered = state.nodestrategy.slice().sort(function(a,b){return nodestrategy_order.indexOf(a.id)-nodestrategy_order.indexOf(b.id)});
-    let node_order = nodestrategies_ordered.map((nodestrategy)=>nodestrategy.node);
+    let nodeweek_order=[].concat(...weeks_ordered.map((week)=>week.nodeweek_set));
+    console.log(nodeweek_order);
+    let nodeweeks_ordered = state.nodeweek.slice().sort(function(a,b){return nodeweek_order.indexOf(a.id)-nodeweek_order.indexOf(b.id)});
+    let node_order = nodeweeks_ordered.map((nodeweek)=>nodeweek.node);
     let nodes_ordered = state.node.slice().sort(function(a,b){return node_order.indexOf(a.id)-node_order.indexOf(b.id)});
     console.log(state.workflow.outcomes_sort);
     switch(parseInt(state.workflow.outcomes_sort)){
         case 0:
-            let nodes_by_strategy={};
-            for(let i=0;i<nodestrategies_ordered.length;i++){
-                let nodestrategy = nodestrategies_ordered[i];
-                pushOrCreate(nodes_by_strategy,nodestrategy.strategy,nodestrategy.node);
+            let nodes_by_week={};
+            for(let i=0;i<nodeweeks_ordered.length;i++){
+                let nodeweek = nodeweeks_ordered[i];
+                pushOrCreate(nodes_by_week,nodeweek.week,nodeweek.node);
             }
-            return {data:strategies_ordered.map((strategy,index)=>{return {title:(strategy.title||strategy.strategy_type_display+" "+(index+1)),nodes:nodes_by_strategy[strategy.id]};}),outcomeproject:state.outcomeproject};
+            return {data:weeks_ordered.map((week,index)=>{return {title:(week.title||week.week_type_display+" "+(index+1)),nodes:nodes_by_week[week.id]};}),outcomeproject:state.outcomeproject};
         case 1:
             let columnworkflow_order = state.workflow.columnworkflow_set;
-            let column_order = state.columnworkflow.slice().sort(function(a,b){return(columnworkflow_order.indexOf(a.id)-columnworkflow_order.indexOf(b.id))}).map((columnworkflow)=>columnworkflow.strategy);
+            let column_order = state.columnworkflow.slice().sort(function(a,b){return(columnworkflow_order.indexOf(a.id)-columnworkflow_order.indexOf(b.id))}).map((columnworkflow)=>columnworkflow.week);
             let columns_ordered = state.column.slice().sort(function(a,b){return(column_order.indexOf(a.id)-column_order.indexOf(b.id))});
             let nodes_by_column={};
             for(let i=0;i<nodes_ordered.length;i++){

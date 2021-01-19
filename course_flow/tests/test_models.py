@@ -10,11 +10,11 @@ from django.urls import reverse
 from django.contrib.auth.models import Group, User
 from course_flow.models import (
     Project,
-    Strategy,
+    Week,
     Column,
     Node,
-    NodeStrategy,
-    StrategyWorkflow,
+    NodeWeek,
+    WeekWorkflow,
     ColumnWorkflow,
     WorkflowProject,
     NodeLink,
@@ -142,51 +142,51 @@ class BulkTestCase(StaticLiveServerTestCase):
             in selenium.find_element_by_id("activity-author").text
         )
 
-        selenium.find_element_by_id("add-strategy").click()
+        selenium.find_element_by_id("add-week").click()
 
         time.sleep(2)
 
         title = selenium.find_element_by_id("title-field")
         description = selenium.find_element_by_id("description-field")
 
-        strategy_title = "test strategy title"
-        strategy_description = "test strategy description"
+        week_title = "test week title"
+        week_description = "test week description"
 
-        title.send_keys(strategy_title)
-        description.send_keys(strategy_description)
+        title.send_keys(week_title)
+        description.send_keys(week_description)
 
         selenium.find_element_by_id("submit-button").click()
 
         time.sleep(2)
 
-        selenium.find_elements_by_class_name("strategy")
+        selenium.find_elements_by_class_name("week")
 
         assert (
-            strategy_title
-            in selenium.find_elements_by_class_name("strategy-title")[0].text
+            week_title
+            in selenium.find_elements_by_class_name("week-title")[0].text
         )
 
         assert (
-            strategy_description
-            in selenium.find_elements_by_class_name("strategy-description")[
+            week_description
+            in selenium.find_elements_by_class_name("week-description")[
                 0
             ].text
         )
 
         assert (
             username_text
-            in selenium.find_elements_by_class_name("strategy-author")[0].text
+            in selenium.find_elements_by_class_name("week-author")[0].text
         )
 
-        selenium.find_elements_by_class_name("update-strategy")[0].click()
+        selenium.find_elements_by_class_name("update-week")[0].click()
 
         time.sleep(2)
 
         title = selenium.find_element_by_id("title-field")
         description = selenium.find_element_by_id("description-field")
 
-        strategy_title = "test strategy title updated"
-        strategy_description = "test strategy description updated"
+        week_title = "test week title updated"
+        week_description = "test week description updated"
 
         title.send_keys(" updated")
         description.send_keys(" updated")
@@ -196,20 +196,20 @@ class BulkTestCase(StaticLiveServerTestCase):
         time.sleep(2)
 
         assert (
-            strategy_title
-            in selenium.find_elements_by_class_name("strategy-title")[0].text
+            week_title
+            in selenium.find_elements_by_class_name("week-title")[0].text
         )
 
         assert (
-            strategy_description
-            in selenium.find_elements_by_class_name("strategy-description")[
+            week_description
+            in selenium.find_elements_by_class_name("week-description")[
                 0
             ].text
         )
 
         assert (
             username_text
-            in selenium.find_elements_by_class_name("strategy-author")[0].text
+            in selenium.find_elements_by_class_name("week-author")[0].text
         )
 
         selenium.find_elements_by_class_name("add-node")[0].click()
@@ -300,7 +300,7 @@ class BulkTestCase(StaticLiveServerTestCase):
 
         assert not selenium.find_elements_by_class_name("node")
 
-        selenium.find_elements_by_class_name("delete-strategy")[0].click()
+        selenium.find_elements_by_class_name("delete-week")[0].click()
 
         time.sleep(2)
 
@@ -308,7 +308,7 @@ class BulkTestCase(StaticLiveServerTestCase):
 
         time.sleep(2)
 
-        assert not selenium.find_elements_by_class_name("strategy")
+        assert not selenium.find_elements_by_class_name("week")
 
         selenium.find_element_by_id("delete-activity").click()
 
@@ -406,7 +406,7 @@ class BulkTestCase(StaticLiveServerTestCase):
 
         title = selenium.find_element_by_id("title-field")
 
-        strategy_title = "test strategy title updated"
+        week_title = "test week title updated"
 
         title.send_keys(" updated")
 
@@ -966,18 +966,18 @@ class ModelViewTest(TestCase):
             self.assertEqual(
                 workflow.columns.all().count(), len(workflow.DEFAULT_COLUMNS)
             )
-            # Get the base strategy and the first column
-            base_strategy = StrategyWorkflow.objects.get(
+            # Get the base week and the first column
+            base_week = WeekWorkflow.objects.get(
                 workflow=workflow, rank=0
-            ).strategy
+            ).week
             first_column = ColumnWorkflow.objects.get(
                 workflow=workflow, rank=0
             ).column
-            # Add a node to the base strategy that adds a new column
+            # Add a node to the base week that adds a new column
             response = self.client.post(
                 reverse("course_flow:new-node"),
                 {
-                    "strategyPk": str(base_strategy.id),
+                    "weekPk": str(base_week.id),
                     "columnPk": "null",
                     "columnType": str(workflow.DEFAULT_CUSTOM_COLUMN),
                     "position": 0,
@@ -990,7 +990,7 @@ class ModelViewTest(TestCase):
             )
             check_order(self, workflow.columnworkflow_set)
             Node.objects.all().delete()
-            Strategy.objects.all().delete()
+            Week.objects.all().delete()
             Column.objects.all().delete()
 
     def test_outcome_views(self):
@@ -1076,34 +1076,34 @@ class ModelViewTest(TestCase):
         
         
         
-    def test_add_strategy_column_node(self):
+    def test_add_week_column_node(self):
         user = login(self)
         for i, object_type in enumerate(["activity", "course", "program"]):
             workflow = make_object(object_type, user)
-            # Check for the default strategy
-            self.assertEqual(workflow.strategies.all().count(), 1)
+            # Check for the default week
+            self.assertEqual(workflow.weeks.all().count(), 1)
             # Check for the default columns
             self.assertEqual(
                 workflow.columns.all().count(), len(workflow.DEFAULT_COLUMNS)
             )
-            # Get the base strategy and the first column
-            base_strategy = StrategyWorkflow.objects.get(
+            # Get the base week and the first column
+            base_week = WeekWorkflow.objects.get(
                 workflow=workflow, rank=0
-            ).strategy
+            ).week
             first_column = ColumnWorkflow.objects.get(
                 workflow=workflow, rank=0
             ).column
-            # Add a custom column to the base strategy
+            # Add a custom column to the base week
             response = self.client.post(
                 reverse("course_flow:new-column"),
                 {"workflowPk": str(workflow.id), "column_type": i * 10},
             )
             self.assertEqual(response.status_code, 200)
-            # Add a node to the base strategy
+            # Add a node to the base week
             response = self.client.post(
                 reverse("course_flow:new-node"),
                 {
-                    "strategyPk": str(base_strategy.id),
+                    "weekPk": str(base_week.id),
                     "columnPk": str(first_column.id),
                     "columnType": str(first_column.column_type),
                     "position": 0,
@@ -1111,7 +1111,7 @@ class ModelViewTest(TestCase):
             )
             self.assertEqual(response.status_code, 200)
             self.assertEqual(Node.objects.all().count(), 1)
-            first_node = base_strategy.nodes.all().first()
+            first_node = base_week.nodes.all().first()
             # Insert a node below the node
             response = self.client.post(
                 reverse("course_flow:insert-sibling"),
@@ -1120,42 +1120,42 @@ class ModelViewTest(TestCase):
                     "objectType": JSONRenderer()
                     .render("node")
                     .decode("utf-8"),
-                    "parentID": str(base_strategy.id),
+                    "parentID": str(base_week.id),
                 },
             )
             self.assertEqual(response.status_code, 200)
             self.assertEqual(Node.objects.all().count(), 2)
-            # Insert a strategy below the strategy
+            # Insert a week below the week
             response = self.client.post(
                 reverse("course_flow:insert-sibling"),
                 {
-                    "objectID": base_strategy.id,
+                    "objectID": base_week.id,
                     "objectType": JSONRenderer()
-                    .render("strategy")
+                    .render("week")
                     .decode("utf-8"),
                     "parentID": workflow.id,
                 },
             )
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(Strategy.objects.all().count(), 2)
+            self.assertEqual(Week.objects.all().count(), 2)
 
             # Update the titles
             new_values = {"title": "test title 1"}
             response = self.client.post(
                 reverse("course_flow:update-value"),
                 {
-                    "objectID": base_strategy.id,
+                    "objectID": base_week.id,
                     "objectType": JSONRenderer()
-                    .render("strategy")
+                    .render("week")
                     .decode("utf-8"),
                     "data": JSONRenderer().render(new_values).decode("utf-8"),
                 },
             )
-            base_strategy = StrategyWorkflow.objects.get(
+            base_week = WeekWorkflow.objects.get(
                 workflow=workflow, rank=0
-            ).strategy
+            ).week
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(base_strategy.title, "test title 1")
+            self.assertEqual(base_week.title, "test title 1")
             response = self.client.post(
                 reverse("course_flow:update-value"),
                 {
@@ -1166,8 +1166,8 @@ class ModelViewTest(TestCase):
                     "data": JSONRenderer().render(new_values).decode("utf-8"),
                 },
             )
-            first_node = NodeStrategy.objects.get(
-                strategy=base_strategy, rank=0
+            first_node = NodeWeek.objects.get(
+                week=base_week, rank=0
             ).node
             self.assertEqual(response.status_code, 200)
             self.assertEqual(first_node.title, "test title 1")
@@ -1186,12 +1186,12 @@ class ModelViewTest(TestCase):
             ).column
             self.assertEqual(response.status_code, 200)
             self.assertEqual(first_node.title, "test title 1")
-            # Add more nodes to the base strategy
+            # Add more nodes to the base week
             for column in workflow.columns.all():
                 self.client.post(
                     reverse("course_flow:new-node"),
                     {
-                        "strategyPk": str(base_strategy.id),
+                        "weekPk": str(base_week.id),
                         "columnPk": str(column.id),
                         "columnType": str(column.column_type),
                         "position": 0,
@@ -1200,75 +1200,75 @@ class ModelViewTest(TestCase):
             second_column = ColumnWorkflow.objects.get(
                 workflow=workflow, rank=1
             ).column
-            second_strategy = StrategyWorkflow.objects.get(
+            second_week = WeekWorkflow.objects.get(
                 workflow=workflow, rank=1
-            ).strategy
+            ).week
             # reorder the nodes
             # Move rank 1 up a rank, down a rank, and not at all
             for change in [0, 1, -1, 99, -99]:
-                to_move = NodeStrategy.objects.get(
-                    strategy=base_strategy, rank=1
+                to_move = NodeWeek.objects.get(
+                    week=base_week, rank=1
                 )
                 response = self.client.post(
                     reverse("course_flow:inserted-at"),
                     {
                         "objectID": to_move.id,
-                        "parentID": base_strategy.id,
+                        "parentID": base_week.id,
                         "objectType": JSONRenderer()
-                        .render("nodestrategy")
+                        .render("nodeweek")
                         .decode("utf-8"),
                         "newPosition": 1 + change,
                     },
                 )
                 self.assertEqual(response.status_code, 200)
-                to_move = NodeStrategy.objects.get(id=to_move.id)
+                to_move = NodeWeek.objects.get(id=to_move.id)
                 self.assertEqual(
                     to_move.rank,
-                    max(min(1 + change, base_strategy.nodes.count() - 1), 0),
+                    max(min(1 + change, base_week.nodes.count() - 1), 0),
                 )
-                check_order(self, base_strategy.nodestrategy_set)
+                check_order(self, base_week.nodeweek_set)
             # move some nodes into the second week
             for position in [0, 1, -1]:
-                to_move = NodeStrategy.objects.get(
-                    strategy=base_strategy, rank=0
+                to_move = NodeWeek.objects.get(
+                    week=base_week, rank=0
                 )
                 response = self.client.post(
                     reverse("course_flow:inserted-at"),
                     {
                         "objectID": to_move.id,
-                        "parentID": second_strategy.id,
+                        "parentID": second_week.id,
                         "objectType": JSONRenderer()
-                        .render("nodestrategy")
+                        .render("nodeweek")
                         .decode("utf-8"),
                         "newPosition": position,
                     },
                 )
                 self.assertEqual(response.status_code, 200)
-                to_move = NodeStrategy.objects.get(id=to_move.id)
+                to_move = NodeWeek.objects.get(id=to_move.id)
                 self.assertEqual(
                     to_move.rank,
-                    max(min(position, second_strategy.nodes.count() - 1), 0),
+                    max(min(position, second_week.nodes.count() - 1), 0),
                 )
-                self.assertEqual(to_move.strategy.id, second_strategy.id)
-                check_order(self, base_strategy.nodestrategy_set)
-                check_order(self, second_strategy.nodestrategy_set)
-            # swap two strategies
-            to_move = StrategyWorkflow.objects.get(strategy=base_strategy)
+                self.assertEqual(to_move.week.id, second_week.id)
+                check_order(self, base_week.nodeweek_set)
+                check_order(self, second_week.nodeweek_set)
+            # swap two weeks
+            to_move = WeekWorkflow.objects.get(week=base_week)
             response = self.client.post(
                 reverse("course_flow:inserted-at"),
                 {
                     "objectID": to_move.id,
                     "parentID": workflow.id,
                     "objectType": JSONRenderer()
-                    .render("strategyworkflow")
+                    .render("weekworkflow")
                     .decode("utf-8"),
                     "newPosition": 1,
                 },
             )
             self.assertEqual(response.status_code, 200)
-            to_move = StrategyWorkflow.objects.get(id=to_move.id)
+            to_move = WeekWorkflow.objects.get(id=to_move.id)
             self.assertEqual(to_move.rank, 1)
-            check_order(self, workflow.strategyworkflow_set)
+            check_order(self, workflow.weekworkflow_set)
             # swap two columns
             to_move = ColumnWorkflow.objects.get(column=first_column)
             response = self.client.post(
@@ -1287,11 +1287,11 @@ class ModelViewTest(TestCase):
             self.assertEqual(to_move.rank, 1)
             check_order(self, workflow.columnworkflow_set)
             # test delete
-            base_strategy = StrategyWorkflow.objects.get(
+            base_week = WeekWorkflow.objects.get(
                 workflow=workflow, rank=0
-            ).strategy
-            number_of_nodes = base_strategy.nodes.count()
-            node = base_strategy.nodes.all().first()
+            ).week
+            number_of_nodes = base_week.nodes.count()
+            node = base_week.nodes.all().first()
             response = self.client.post(
                 reverse("course_flow:delete-self"),
                 {
@@ -1302,26 +1302,26 @@ class ModelViewTest(TestCase):
                 },
             )
             self.assertEqual(response.status_code, 200)
-            self.assertEqual(base_strategy.nodes.count(), number_of_nodes - 1)
-            check_order(self, base_strategy.nodestrategy_set)
-            number_of_strategies = workflow.strategies.count()
+            self.assertEqual(base_week.nodes.count(), number_of_nodes - 1)
+            check_order(self, base_week.nodeweek_set)
+            number_of_weeks = workflow.weeks.count()
             response = self.client.post(
                 reverse("course_flow:delete-self"),
                 {
-                    "objectID": base_strategy.id,
+                    "objectID": base_week.id,
                     "objectType": JSONRenderer()
-                    .render("strategy")
+                    .render("week")
                     .decode("utf-8"),
                 },
             )
             self.assertEqual(response.status_code, 200)
             self.assertEqual(
-                workflow.strategies.count(), number_of_strategies - 1
+                workflow.weeks.count(), number_of_weeks - 1
             )
-            check_order(self, workflow.strategyworkflow_set)
+            check_order(self, workflow.weekworkflow_set)
 
             Node.objects.all().delete()
-            Strategy.objects.all().delete()
+            Week.objects.all().delete()
             Column.objects.all().delete()
 
     def test_linked_wf_no_login_no_authorship(self):
@@ -1330,8 +1330,8 @@ class ModelViewTest(TestCase):
         activity = make_object("activity", author)
         course = make_object("course", author)
         WorkflowProject.objects.create(workflow=activity, project=project)
-        strategy = course.strategies.create(author=author)
-        node = strategy.nodes.create(author=author)
+        week = course.weeks.create(author=author)
+        node = week.nodes.create(author=author)
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
             {"nodePk": node.id, "workflowPk": activity.id},
@@ -1352,8 +1352,8 @@ class ModelViewTest(TestCase):
         course = make_object("course", author)
         WorkflowProject.objects.create(workflow=activity, project=project)
         WorkflowProject.objects.create(workflow=course, project=project)
-        strategy = course.strategies.create(author=author)
-        node = strategy.nodes.create(author=author)
+        week = course.weeks.create(author=author)
+        node = week.nodes.create(author=author)
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
             {"nodePk": node.id, "workflowPk": activity.id},
@@ -1373,9 +1373,9 @@ class ModelViewTest(TestCase):
         course = make_object("course", author)
         WorkflowProject.objects.create(workflow=activity, project=project2)
         WorkflowProject.objects.create(workflow=course, project=project)
-        activity.strategies.create(author=author)
-        strategy = course.strategies.create(author=author)
-        node = strategy.nodes.create(author=author)
+        activity.weeks.create(author=author)
+        week = course.weeks.create(author=author)
+        node = week.nodes.create(author=author)
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
             {"nodePk": node.id, "workflowPk": activity.id},
@@ -1385,7 +1385,7 @@ class ModelViewTest(TestCase):
         self.assertNotEqual(new_activity.id, activity.id)
         self.assertEqual(new_activity.id, project.workflows.last().id)
         self.assertEqual(Activity.objects.all().count(), 2)
-        self.assertEqual(Strategy.objects.all().count(), 6)
+        self.assertEqual(Week.objects.all().count(), 6)
         self.assertEqual(new_activity.parent_workflow.id, activity.id)
 
     # Test for linking a workflow from another project. The workflow should be duplicated into the project.
@@ -1399,9 +1399,9 @@ class ModelViewTest(TestCase):
         course = make_object("course", user)
         WorkflowProject.objects.create(workflow=activity, project=project2)
         WorkflowProject.objects.create(workflow=course, project=project)
-        activity.strategies.create(author=author)
-        strategy = course.strategies.create(author=user)
-        node = strategy.nodes.create(author=user)
+        activity.weeks.create(author=author)
+        week = course.weeks.create(author=user)
+        node = week.nodes.create(author=user)
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
             {"nodePk": node.id, "workflowPk": activity.id},
@@ -1422,7 +1422,7 @@ class ModelViewTest(TestCase):
         self.assertNotEqual(new_activity.id, activity.id)
         self.assertEqual(new_activity.id, project.workflows.last().id)
         self.assertEqual(Activity.objects.all().count(), 2)
-        self.assertEqual(Strategy.objects.all().count(), 6)
+        self.assertEqual(Week.objects.all().count(), 6)
         self.assertEqual(new_activity.parent_workflow.id, activity.id)
 
     def test_delete_self_no_login_no_authorship(self):
@@ -1432,7 +1432,7 @@ class ModelViewTest(TestCase):
             "program",
             "course",
             "activity",
-            "strategy",
+            "week",
             "node",
             "column",
             "outcome",
@@ -1469,7 +1469,7 @@ class ModelViewTest(TestCase):
             "program",
             "course",
             "activity",
-            "strategy",
+            "week",
             "node",
             "column",
             "outcome"
@@ -1508,9 +1508,9 @@ class ModelViewTest(TestCase):
 
     def test_reorder_no_login_no_authorship(self):
         author = get_author()
-        strategy1 = make_object("strategy", author)
-        node0 = strategy1.nodes.create(author=author)
-        node1 = strategy1.nodes.create(
+        week1 = make_object("week", author)
+        node0 = week1.nodes.create(author=author)
+        node1 = week1.nodes.create(
             author=author, through_defaults={"rank": 1}
         )
         workflow1 = make_object("activity", author)
@@ -1522,16 +1522,16 @@ class ModelViewTest(TestCase):
         node1.column = column1
         node0.save()
         node1.save()
-        to_move = NodeStrategy.objects.get(strategy=strategy1, rank=0)
-        # Try to move within the same strategy
+        to_move = NodeWeek.objects.get(week=week1, rank=0)
+        # Try to move within the same week
         response = self.client.post(
             reverse("course_flow:inserted-at"),
             {
                 "objectID": to_move.id,
                 "objectType": JSONRenderer()
-                .render("nodestrategy")
+                .render("nodeweek")
                 .decode("utf-8"),
-                "parentID": strategy1.id,
+                "parentID": week1.id,
                 "newPosition": 1,
             },
         )
@@ -1547,9 +1547,9 @@ class ModelViewTest(TestCase):
             {
                 "objectID": to_move.id,
                 "objectType": JSONRenderer()
-                .render("nodestrategy")
+                .render("nodeweek")
                 .decode("utf-8"),
-                "parentID": strategy1.id,
+                "parentID": week1.id,
                 "newPosition": 1,
             },
         )
@@ -1560,8 +1560,8 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 401)
         # Try to move from their stuff to your own
-        strategy2 = make_object("strategy", user)
-        node2 = strategy2.nodes.create(author=user)
+        week2 = make_object("week", user)
+        node2 = week2.nodes.create(author=user)
         workflow2 = make_object("activity", user)
         column2 = make_object("column", user)
         columnworkflow2 = ColumnWorkflow.objects.create(
@@ -1574,14 +1574,14 @@ class ModelViewTest(TestCase):
             {
                 "objectID": to_move.id,
                 "objectType": JSONRenderer()
-                .render("nodestrategy")
+                .render("nodeweek")
                 .decode("utf-8"),
-                "parentID": strategy2.id,
+                "parentID": week2.id,
                 "newPosition": 1,
             },
         )
         self.assertEqual(
-            NodeStrategy.objects.get(id=to_move.id).strategy.id, strategy2.id
+            NodeWeek.objects.get(id=to_move.id).week.id, week2.id
         )
         response = self.client.post(
             reverse("course_flow:change-column"),
@@ -1591,7 +1591,7 @@ class ModelViewTest(TestCase):
             Node.objects.get(id=to_move.node.id).column.id, column1.id
         )
         # Try to move from your stuff to theirs
-        to_move = NodeStrategy.objects.get(strategy=strategy2, rank=0)
+        to_move = NodeWeek.objects.get(week=week2, rank=0)
         response = self.client.post(
             reverse("course_flow:change-column"),
             {"nodePk": to_move.node.id, "columnID": columnworkflow1.id},
@@ -1604,15 +1604,15 @@ class ModelViewTest(TestCase):
             {
                 "objectID": to_move.id,
                 "objectType": JSONRenderer()
-                .render("nodestrategy")
+                .render("nodeweek")
                 .decode("utf-8"),
-                "parentID": strategy1.id,
+                "parentID": week1.id,
                 "newPosition": 1,
             },
         )
         self.assertEqual(response.status_code, 401)
         # Finally, check to make sure these work when you own both
-        strategy2b = make_object("strategy", user)
+        week2b = make_object("week", user)
         column2b = make_object("column", user)
         columnworkflow2b = ColumnWorkflow.objects.create(
             column=column2b, workflow=workflow2
@@ -1629,28 +1629,28 @@ class ModelViewTest(TestCase):
             {
                 "objectID": to_move.id,
                 "objectType": JSONRenderer()
-                .render("nodestrategy")
+                .render("nodeweek")
                 .decode("utf-8"),
-                "parentID": strategy2b.id,
+                "parentID": week2b.id,
                 "newPosition": 0,
             },
         )
         self.assertEqual(
-            NodeStrategy.objects.get(id=to_move.id).strategy.id, strategy2b.id
+            NodeWeek.objects.get(id=to_move.id).week.id, week2b.id
         )
 
     def test_insert_sibling_no_login_no_authorship(self):
         author = get_author()
         activity1 = make_object("activity", author)
-        strategy1 = activity1.strategies.create(author=author)
-        node1 = strategy1.nodes.create(author=author)
+        week1 = activity1.weeks.create(author=author)
+        node1 = week1.nodes.create(author=author)
         response = self.client.post(
             reverse("course_flow:insert-sibling"),
             {
-                "objectID": NodeStrategy.objects.get(node=node1).id,
-                "parentID": strategy1.id,
+                "objectID": NodeWeek.objects.get(node=node1).id,
+                "parentID": week1.id,
                 "objectType": JSONRenderer()
-                .render("nodestrategy")
+                .render("nodeweek")
                 .decode("utf-8"),
             },
         )
@@ -1658,12 +1658,12 @@ class ModelViewTest(TestCase):
         response = self.client.post(
             reverse("course_flow:insert-sibling"),
             {
-                "objectID": StrategyWorkflow.objects.get(
-                    strategy=strategy1
+                "objectID": WeekWorkflow.objects.get(
+                    week=week1
                 ).id,
                 "parentID": activity1.id,
                 "objectType": JSONRenderer()
-                .render("strategyworkflow")
+                .render("weekworkflow")
                 .decode("utf-8"),
             },
         )
@@ -1672,10 +1672,10 @@ class ModelViewTest(TestCase):
         response = self.client.post(
             reverse("course_flow:insert-sibling"),
             {
-                "objectID": NodeStrategy.objects.get(node=node1).id,
-                "parentID": strategy1.id,
+                "objectID": NodeWeek.objects.get(node=node1).id,
+                "parentID": week1.id,
                 "objectType": JSONRenderer()
-                .render("nodestrategy")
+                .render("nodeweek")
                 .decode("utf-8"),
             },
         )
@@ -1683,12 +1683,12 @@ class ModelViewTest(TestCase):
         response = self.client.post(
             reverse("course_flow:insert-sibling"),
             {
-                "objectID": StrategyWorkflow.objects.get(
-                    strategy=strategy1
+                "objectID": WeekWorkflow.objects.get(
+                    week=week1
                 ).id,
                 "parentID": activity1.id,
                 "objectType": JSONRenderer()
-                .render("strategyworkflow")
+                .render("weekworkflow")
                 .decode("utf-8"),
             },
         )
@@ -1792,8 +1792,8 @@ class ModelViewTest(TestCase):
     def test_duplicate_self_permissions_no_login_no_authorship(self):
         author = get_author()
         activity = make_object("activity", author)
-        strategy = StrategyWorkflow.objects.get(workflow=activity).strategy
-        node = strategy.nodes.create(author=author, title="test_title")
+        week = WeekWorkflow.objects.get(workflow=activity).week
+        node = week.nodes.create(author=author, title="test_title")
         node.column = activity.columnworkflow_set.first().column
         node.save()
         response = self.client.post(
@@ -1801,16 +1801,16 @@ class ModelViewTest(TestCase):
             {
                 "objectID": node.id,
                 "objectType": JSONRenderer().render("node").decode("utf-8"),
-                "parentID": strategy.id,
+                "parentID": week.id,
             },
         )
         self.assertEqual(response.status_code, 401)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
             {
-                "objectID": strategy.id,
+                "objectID": week.id,
                 "objectType": JSONRenderer()
-                .render("strategy")
+                .render("week")
                 .decode("utf-8"),
                 "parentID": activity.id,
             },
@@ -1830,8 +1830,8 @@ class ModelViewTest(TestCase):
         author = get_author()
         login(self)
         activity = make_object("activity", author)
-        strategy = StrategyWorkflow.objects.get(workflow=activity).strategy
-        node = strategy.nodes.create(author=author, title="test_title")
+        week = WeekWorkflow.objects.get(workflow=activity).week
+        node = week.nodes.create(author=author, title="test_title")
         node.column = activity.columnworkflow_set.first().column
         node.save()
         response = self.client.post(
@@ -1839,16 +1839,16 @@ class ModelViewTest(TestCase):
             {
                 "objectID": node.id,
                 "objectType": JSONRenderer().render("node").decode("utf-8"),
-                "parentID": strategy.id,
+                "parentID": week.id,
             },
         )
         self.assertEqual(response.status_code, 401)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
             {
-                "objectID": strategy.id,
+                "objectID": week.id,
                 "objectType": JSONRenderer()
-                .render("strategy")
+                .render("week")
                 .decode("utf-8"),
                 "parentID": activity.id,
             },
@@ -1867,11 +1867,11 @@ class ModelViewTest(TestCase):
     def test_duplicate_self(self):
         author = login(self)
         activity = make_object("activity", author)
-        strategy = StrategyWorkflow.objects.get(workflow=activity).strategy
-        node = strategy.nodes.create(author=author, title="test_title")
+        week = WeekWorkflow.objects.get(workflow=activity).week
+        node = week.nodes.create(author=author, title="test_title")
         node.column = activity.columnworkflow_set.first().column
         node.save()
-        node2 = strategy.nodes.create(author=author, title="test_title")
+        node2 = week.nodes.create(author=author, title="test_title")
         node2.column = activity.columnworkflow_set.first().column
         node2.save()
         nodelink = NodeLink.objects.create(
@@ -1882,16 +1882,16 @@ class ModelViewTest(TestCase):
             {
                 "objectID": node.id,
                 "objectType": JSONRenderer().render("node").decode("utf-8"),
-                "parentID": strategy.id,
+                "parentID": week.id,
             },
         )
         self.assertEqual(response.status_code, 200)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
             {
-                "objectID": strategy.id,
+                "objectID": week.id,
                 "objectType": JSONRenderer()
-                .render("strategy")
+                .render("week")
                 .decode("utf-8"),
                 "parentID": activity.id,
             },
@@ -1912,11 +1912,11 @@ class ModelViewTest(TestCase):
     def test_duplicate_activity(self):
         author = login(self)
         activity = make_object("activity", author)
-        strategy = StrategyWorkflow.objects.get(workflow=activity).strategy
-        node = strategy.nodes.create(author=author, title="test_title")
+        week = WeekWorkflow.objects.get(workflow=activity).week
+        node = week.nodes.create(author=author, title="test_title")
         node.column = activity.columnworkflow_set.first().column
         node.save()
-        node2 = strategy.nodes.create(author=author, title="test_title")
+        node2 = week.nodes.create(author=author, title="test_title")
         node2.column = activity.columnworkflow_set.first().column
         node2.save()
         nodelink = NodeLink.objects.create(
@@ -1936,11 +1936,11 @@ class ModelViewTest(TestCase):
     def test_duplicate_activity_no_login(self):
         author = get_author()
         activity = make_object("activity", author)
-        strategy = StrategyWorkflow.objects.get(workflow=activity).strategy
-        node = strategy.nodes.create(author=author, title="test_title")
+        week = WeekWorkflow.objects.get(workflow=activity).week
+        node = week.nodes.create(author=author, title="test_title")
         node.column = activity.columnworkflow_set.first().column
         node.save()
-        node2 = strategy.nodes.create(author=author, title="test_title")
+        node2 = week.nodes.create(author=author, title="test_title")
         node2.column = activity.columnworkflow_set.first().column
         node2.save()
         nodelink = NodeLink.objects.create(

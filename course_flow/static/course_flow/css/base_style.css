@@ -289,7 +289,7 @@ body{
 .drag-icon{
   cursor: grab;
 }
-.strategy-section{
+.week-section{
   height: 100%;
 }
 #detail-workspace{
@@ -341,10 +341,10 @@ text {
 #activity-title, #course-title, #program-title, .stategy-title, .week-title {
   font-size: 18px;
 }
-#activity-author, #course-author, #program-author, .strategy-author, .week-author  {
+#activity-author, #course-author, #program-author, .week-author, .week-author  {
   font-size: 12px;
 }
-#activity-description, #course-description, #program-description, .strategy-description {
+#activity-description, #course-description, #program-description, .week-description {
   font-size: 14px;
 }
 .component-completion-count, .node-completion-count{

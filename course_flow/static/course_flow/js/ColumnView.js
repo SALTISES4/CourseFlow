@@ -70,8 +70,8 @@ class NodeBarColumnUnconnected extends ComponentJSON{
     }
     
     makeDraggable(){
-        let draggable_selector = "node-strategy"
-        let draggable_type = "nodestrategy"
+        let draggable_selector = "node-week"
+        let draggable_type = "nodeweek"
         $(this.maindiv.current).draggable({
             helper:(e,item)=>{
                 var helper = $(document.createElement('div'));

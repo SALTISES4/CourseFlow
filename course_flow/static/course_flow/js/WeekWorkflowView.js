@@ -1,52 +1,52 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON.js";
-import StrategyView from "./WeekView.js";
+import WeekView from "./WeekView.js";
 import TermView from "./TermView.js";
-import {getStrategyWorkflowByID} from "./FindState.js";
+import {getWeekWorkflowByID} from "./FindState.js";
 import {} from "./Reducers.js";
 
-//Basic strategyworkflow component
-class StrategyWorkflowView extends ComponentJSON{
+//Basic weekworkflow component
+class WeekWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
-        this.objectType="strategyworkflow";
-        this.objectClass=".strategy-workflow";
+        this.objectType="weekworkflow";
+        this.objectClass=".week-workflow";
     }
     
     render(){
         let data = this.props.data;
-        var strategy;
-        if(data.strategy_type==2)strategy = (
-                <TermView objectID={data.strategy} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
+        var week;
+        if(data.week_type==2)week = (
+                <TermView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
         );
-        else strategy = (
-            <StrategyView objectID={data.strategy} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
+        else week = (
+            <WeekView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
         );
         return (
-            <div class="strategy-workflow" id={data.id} ref={this.maindiv}>
-                {strategy}
+            <div class="week-workflow" id={data.id} ref={this.maindiv}>
+                {week}
             </div>
         );
     }
 }
-const mapStrategyWorkflowStateToProps = (state,own_props)=>(
-    getStrategyWorkflowByID(state,own_props.objectID)
+const mapWeekWorkflowStateToProps = (state,own_props)=>(
+    getWeekWorkflowByID(state,own_props.objectID)
 )
-const mapStrategyWorkflowDispatchToProps = {};
+const mapWeekWorkflowDispatchToProps = {};
 export default connect(
-    mapStrategyWorkflowStateToProps,
+    mapWeekWorkflowStateToProps,
     null
-)(StrategyWorkflowView)
+)(WeekWorkflowView)
 
 
-class NodeBarStrategyWorkflowUnconnected extends ComponentJSON{
+class NodeBarWeekWorkflowUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
         return null;
     }
 }
-export const NodeBarStrategyWorkflow = connect(
-    mapStrategyWorkflowStateToProps,
+export const NodeBarWeekWorkflow = connect(
+    mapWeekWorkflowStateToProps,
     null
-)(NodeBarStrategyWorkflowUnconnected)
+)(NodeBarWeekWorkflowUnconnected)

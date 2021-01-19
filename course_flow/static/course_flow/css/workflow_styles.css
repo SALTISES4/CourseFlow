@@ -48,7 +48,7 @@ p{
     color:black;
 }
 
-.strategy{
+.week{
     background:white;
     min-height:200px;
     padding:10px;
@@ -58,7 +58,7 @@ p{
     border-radius:5px;
 }
 
-.strategy-workflow.dragging{
+.week-workflow.dragging{
     height:100px !important;
     overflow:hidden;
     border-color:#1976bc;
@@ -67,22 +67,22 @@ p{
     border-radius:5px;
 }
 
-.strategy-workflow.dragging .node-block{
+.week-workflow.dragging .node-block{
     display:none;
 }
 
-.strategy-block{
+.week-block{
     width:100%;
     padding-left:10px;
     padding-right:10px;
     box-sizing:border-box;
 }
 
-.strategy:first-of-type{
+.week:first-of-type{
     margin-top:20px;
 }
 
-.strategy-block > div:nth-of-type(odd) > .strategy{
+.week-block > div:nth-of-type(odd) > .week{
 /*    background: #e0e0e0e0;*/
 }
 
@@ -134,7 +134,7 @@ p{
     border:2px solid white;
 }
 
-.node-strategy{
+.node-week{
     width:100%;
     display:block;
     min-height:50px;
@@ -142,7 +142,7 @@ p{
     position:relative;
 }
 
-.node-strategy.dragging.ui-sortable-helper .node{
+.node-week.dragging.ui-sortable-helper .node{
     position:static;
 }
 
@@ -634,7 +634,7 @@ input:checked +.slider::before{
     background:white;
 }
 
-/*This is used to get around the issue that we can't make the strategy itself relatively positioned (messes up jquery sortable*/
+/*This is used to get around the issue that we can't make the week itself relatively positioned (messes up jquery sortable*/
 .mouseover-container-bypass{
     position:relative;
     padding:0;
@@ -689,7 +689,7 @@ circle.mouseover{
     visibility:visible;
 }
 
-.workflow-canvas.dragging-strategyworkflow{
+.workflow-canvas.dragging-weekworkflow{
     opacity:0;
 }
 
