@@ -235,7 +235,6 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         let descriptionText = data.description;
         if(data.represents_workflow)descriptionText = data.linked_workflow_description;
         
-        
         return (
             <div 
                 
@@ -251,13 +250,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
                         <TitleText text={titleText} defaultText="New Node"/>
                     </div>
                 </div>
-                {!read_only && <div class="mouseover-actions">
-                    {this.addInsertSibling(data)}
-                    {this.addDuplicateSelf(data)}
-                    {this.addDeleteSelf(data)}
-                </div>
-                }
-                {this.addEditable(data)}
+                {this.addEditable(data,true)}
             </div>
         );
 

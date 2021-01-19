@@ -220,12 +220,12 @@ export class ComponentJSON extends React.Component{
     }
     
     //Makes the item selectable
-    addEditable(data){
+    addEditable(data,no_delete=false){
         if(read_only)return null;
         if(this.state.selected){
             var type=this.objectType;
             var props = this.props;
-            
+            console.log(no_delete);
             return reactDom.createPortal(
                 <div class="right-panel-inner">
                     <h3>{"Edit "+type+":"}</h3>
@@ -305,7 +305,7 @@ export class ComponentJSON extends React.Component{
                         </div>
                     }
 
-                    {(type!="workflow" && (type !="outcome" || data.depth>0)) && this.addDeleteSelf(data)}
+                    {(!no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && this.addDeleteSelf(data)}
                 </div>
             ,$("#edit-menu")[0])
         }

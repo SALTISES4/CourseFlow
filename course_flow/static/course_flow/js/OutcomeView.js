@@ -302,6 +302,7 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         for(let node_id in this.state.completion_status_from_self){
             completion_status|=this.state.completion_status_from_self[node_id];
         }
+        if(completion_status==0&&this.state.completion_status_from_children)completion_status=null;
 
         
         return(
@@ -328,6 +329,7 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
                     </div>
                     <div class="outcome-cells">
                         {outcomeGroups}
+                        <div class="table-cell blank-cell"></div>
                         <TableTotalCell grand_total={true} completion_status={completion_status} outcomes_type={this.props.outcomes_type}/>
                     </div>
                 </div>
@@ -347,13 +349,14 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     childUpdatedFunction(through_id,node_id,value){
         let index = this.props.data.child_outcome_links.indexOf(through_id);
         if(!this.child_completion_status[node_id]){
-            if(value){
-                this.child_completion_status[node_id]=this.props.data.child_outcome_links.map((outcome_link)=>0);
+            if(value!==null){
+                this.child_completion_status[node_id]=this.props.data.child_outcome_links.map((outcome_link)=>null);
             }else{
                 return;
             }
         }
-        if(this.child_completion_status[node_id][index]!=value){
+        if(this.child_completion_status[node_id][index]!==value){
+            console.log("changing child completion status");
             this.child_completion_status[node_id][index]=value;
             this.updateCompletion(node_id);
         }
@@ -372,8 +375,13 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     }
 
     updateCompletion(node_id){
-        let new_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>accumulator & current_value);
-        if(this.state.completion_status_from_children[node_id]!=new_completion){
+        console.log("updating completion");
+        console.log(this.child_completion_status);
+        let new_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
+        console.log(new_completion);
+        console.log(this.state.completion_status_from_children);
+        if(this.state.completion_status_from_children[node_id]!==new_completion){
+            console.log("setting state");
             this.setState(function(state,props){
                 let new_completion_status_from_children = {...state.completion_status_from_children};
                 new_completion_status_from_children[node_id]=new_completion;

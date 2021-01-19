@@ -16,7 +16,7 @@ class WorkflowOutcomeView extends ComponentJSON{
     render(){
         
         let headers = [];
-        for(let i=0;i<this.props.data.length;i++){
+        /*for(let i=0;i<this.props.data.length;i++){
             for(let j=0;j<this.props.data[i].nodes.length+2;j++){
                 if(j==0)headers.push(
                     <div class="node-category-header">
@@ -27,16 +27,16 @@ class WorkflowOutcomeView extends ComponentJSON{
                     <div class="node-category-header"></div>
                 )
             }
-        }
+        }*/
         let nodes = this.props.data.map((nodecategory)=>
             <div class="table-group">
+                <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
                 {nodecategory.nodes.map((node)=>
                     <div class="table-cell nodewrapper">
                         <NodeOutcomeView objectID={node} selection_manager={this.props.selection_manager}/>
                     </div>
                 )}
                 <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
-                <div class="table-cell blank-cell"></div>
             </div>
         );
         
@@ -48,7 +48,8 @@ class WorkflowOutcomeView extends ComponentJSON{
         return(
             <div class="outcome-table">
                 <div class="outcome-row node-row"><div class="outcome-head"></div><div class="outcome-cells">{headers}</div></div>
-                <div class="outcome-row node-row"><div class="outcome-head"></div><div class="outcome-cells">{nodes}</div><div class="table-cell total-cell grand-total-cell"><div class="total-header">Grand Total</div></div></div>
+                <div class="outcome-row node-row"><div class="outcome-head"></div><div class="outcome-cells">{nodes}</div>
+                <div class="table-cell blank-cell"><div class="total-header"></div></div><div class="table-cell total-cell grand-total-cell"><div class="total-header">Grand Total</div></div></div>
                 {outcomes}
             </div>
         );
@@ -77,7 +78,7 @@ const mapStateToProps = (state,own_props)=>{
                 let nodestrategy = nodestrategies_ordered[i];
                 pushOrCreate(nodes_by_strategy,nodestrategy.strategy,nodestrategy.node);
             }
-            return {data:strategies_ordered.map((strategy)=>{return {title:strategy.title,nodes:nodes_by_strategy[strategy.id]};}),outcomeproject:state.outcomeproject};
+            return {data:strategies_ordered.map((strategy,index)=>{return {title:(strategy.title||strategy.strategy_type_display+" "+(index+1)),nodes:nodes_by_strategy[strategy.id]};}),outcomeproject:state.outcomeproject};
         case 1:
             let columnworkflow_order = state.workflow.columnworkflow_set;
             let column_order = state.columnworkflow.slice().sort(function(a,b){return(columnworkflow_order.indexOf(a.id)-columnworkflow_order.indexOf(b.id))}).map((columnworkflow)=>columnworkflow.strategy);
@@ -85,9 +86,9 @@ const mapStateToProps = (state,own_props)=>{
             let nodes_by_column={};
             for(let i=0;i<nodes_ordered.length;i++){
                 let node = nodes_ordered[i];
-                pushOrCreate(nodes_by_column,node.column,node.id);
+                pushOrCreate(nodes_by_column,node.columnworkflow,node.id);
             }
-            return {data:columns_ordered.map((column)=>{return {title:column.title,nodes:(nodes_by_column[column.id]||[])};}),outcomeproject:state.outcomeproject};
+            return {data:columns_ordered.map((column,index)=>{return {title:(column.title||column.column_type_display),nodes:(nodes_by_column[columnworkflow_order[index]]||[])};}),outcomeproject:state.outcomeproject};
         case 2:
             var workflow_type = ["activity","course","program"].indexOf(state.workflow.type)
             let context_ordered = context_choices.filter((x)=> (x.type==0 || (x.type>100*workflow_type &&x.type<100*(workflow_type+1))));
@@ -96,9 +97,6 @@ const mapStateToProps = (state,own_props)=>{
                 let node = nodes_ordered[i];
                 pushOrCreate(nodes_by_context,node.context_classification,node.id);
             }
-            console.log(context_ordered);
-            console.log(nodes_by_context);
-            console.log(context_ordered.map((context)=>{return {title:context.name,nodes:nodes_by_context[context.type]};}));
             return {data:context_ordered.map((context)=>{return {title:context.name,nodes:(nodes_by_context[context.type]||[])};}),outcomeproject:state.outcomeproject};
         case 3:
             var workflow_type = ["activity","course","program"].indexOf(state.workflow.type)
@@ -108,9 +106,6 @@ const mapStateToProps = (state,own_props)=>{
                 let node = nodes_ordered[i];
                 pushOrCreate(nodes_by_task,node.task_classification,node.id);
             }
-            console.log(task_ordered);
-            console.log(nodes_by_task);
-            console.log(task_ordered.map((task)=>{return {title:task.name,nodes:nodes_by_task[task.type]};}));
             return {data:task_ordered.map((task)=>{return {title:task.name,nodes:(nodes_by_task[task.type]||[])};}),outcomeproject:state.outcomeproject};
     }
 }

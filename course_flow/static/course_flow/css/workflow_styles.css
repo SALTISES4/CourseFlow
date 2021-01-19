@@ -553,7 +553,7 @@ p{
     padding:1px;
 }
 
-.outcome-table .table-cell .total-header{
+.outcome-table .table-cell .total-header, .outcome-table .table-cell .node-category-header{
     position:absolute;
     width:160px;
     height:26px;
@@ -562,12 +562,16 @@ p{
     font-weight:600;
     border-bottom:2px solid black;
     text-align:left;
-    font-size:14px;
+    font-size:10px;
+    white-space:normal;
 }
 
-.outcome-table .node-category-header{
-    display:inline-block;
-    width:30px;
+.outcome-table .table-cell .node-category-header{
+    font-size:12px;
+}
+
+.outcome-table .table-group:first-child .blank-cell{
+    border-left:0px;
 }
 
 .viewbar .outcomeviewtext{
