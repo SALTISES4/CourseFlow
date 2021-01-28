@@ -2,9 +2,9 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
-import {newNodeAction, deleteSelfAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction} from "./Reducers.js";
+import {newNodeAction, deleteSelfAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction, newStrategyAction, toggleStrategyAction} from "./Reducers.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu} from "./PostFunctions.js"
+import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy} from "./PostFunctions.js"
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -78,6 +78,8 @@ export class ComponentJSON extends React.Component{
                    
                 }else if(drag_item.hasClass("outcome")){
                     return;
+                }else if(drag_item.hasClass("strategy")){
+                    return;
                 }else{
                     this.sortableMovedFunction(
                         parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id
@@ -113,6 +115,7 @@ export class ComponentJSON extends React.Component{
     
     makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith=false,handle=false){
         if(read_only)return;
+        var props = this.props;
         sortable_block.sortable({
             containment:".workflow-container",
             axis:axis,
@@ -159,6 +162,8 @@ export class ComponentJSON extends React.Component{
                 this.stopSortFunction();
             }
         });
+        
+        
     }
     
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
@@ -302,6 +307,24 @@ export class ComponentJSON extends React.Component{
                                 )}
                             </select>
                             <label for="outcomes_type">Outcomes Style</label>
+                        </div>
+                    }
+                    {type=="week" && data.week_type <2 &&
+                        <div>
+                            <h4>Strategy:</h4>
+                            <button onClick = {()=>{toggleStrategy(data.id,data.is_strategy,
+                                (response_data)=>{
+                                    let action = toggleStrategyAction(response_data);
+                                    props.dispatch(action);
+                                })
+                            }}>
+                                {data.is_strategy &&
+                                    "Remove Strategy Status"
+                                }
+                                {!data.is_strategy &&
+                                    "Convert to New Strategy"
+                                }
+                            </button>
                         </div>
                     }
 

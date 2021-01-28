@@ -174,6 +174,10 @@ export class MenuSection extends React.Component{
         
         if(objects.length==0)objects="This category is currently empty."
 
+        console.log(this.props.section_data);
+        console.log(this.props.section_data.object_type);
+        console.log(create_path[this.props.section_data.object_type]);
+
         return (
             <div>
                 <h3>{this.props.section_data.title+":"}

@@ -10,6 +10,7 @@ import {WorkflowForMenu} from "./MenuComponents.js";
 import * as Constants from "./Constants.js";
 import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers.js";
 import {OutcomeBar} from "./OutcomeTopView.js";
+import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 
 
@@ -31,6 +32,9 @@ class WorkflowView extends ComponentJSON{
             <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
         );
         var selector = this;
+        
+        console.log(data);
+        
         
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
@@ -57,8 +61,11 @@ class WorkflowView extends ComponentJSON{
                     {!read_only &&
                         <NodeBar/>
                     }
-                    {!read_only &&
+                    {!read_only && !data.is_strategy &&
                         <OutcomeBar/>
+                    }
+                    {!read_only && !data.is_strategy &&
+                        <StrategyBar/>
                     }
                 </div>
             </div>
@@ -71,7 +78,7 @@ class WorkflowView extends ComponentJSON{
           "columnworkflow",
           ".column-workflow",
           "x");
-        this.makeSortable($(".week-block"),
+        if(!this.props.data.is_strategy)this.makeSortable($(".week-block"),
           this.props.objectID,
           "weekworkflow",
           ".week-workflow",
@@ -85,6 +92,7 @@ class WorkflowView extends ComponentJSON{
     
     sortableMovedFunction(id,new_position,type){
         if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position))
+        console.log(type);
         if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position))
     }
 }
@@ -167,6 +175,44 @@ export const NodeBar = connect(
     mapNodeBarStateToProps,
     null
 )(NodeBarUnconnected)
+
+class StrategyBarUnconnected extends ComponentJSON{
+    
+    constructor(props){
+        super(props);
+        this.objectType="workflow";
+    }
+    
+    
+    render(){
+        console.log("available strats!");
+        console.log(this.props.available_strategies);
+        
+        var strategies = this.props.available_strategies.map((strategy)=>
+            <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
+        );
+        
+        
+        
+        return reactDom.createPortal(
+            <div id="strategy-bar-workflow" class="right-panel-inner">
+                <h4>Strategies:</h4>
+                <div class="strategy-bar-strategy-block">
+                    {strategies}
+                </div>
+            </div>
+        ,$("#strategy-bar")[0]);
+    }
+    
+}
+const mapStrategyBarStateToProps = state=>({
+    data:state.workflow,
+    available_strategies:state.strategy
+})
+export const StrategyBar = connect(
+    mapStrategyBarStateToProps,
+    null
+)(StrategyBarUnconnected)
 
 
 //Basic component representing the workflow

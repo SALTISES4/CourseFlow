@@ -36,11 +36,21 @@
 <script nonce="{{request.csp_nonce}}">
     
     const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-    const detail_path = {project:"{% url 'course_flow:project-detail-view' pk='0'%}"};
-    const update_path = {project:"{% url 'course_flow:project-update' pk='0'%}"};
+    const detail_path = {
+        project:"{% url 'course_flow:project-detail-view' pk='0'%}",
+        activity:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
+        course:"{% url 'course_flow:workflow-detail-view' pk='0'%}"
+    };
+    const update_path = {
+        project:"{% url 'course_flow:project-update' pk='0'%}",
+        activity:"{% url 'course_flow:workflow-update' pk='0'%}",
+        course:"{% url 'course_flow:workflow-update' pk='0'%}"
+    };
     const create_path = {
         project:"{% url 'course_flow:project-create' %}",
-    }
+        activity:"{% url 'course_flow:activity-strategy-create' %}",
+        course:"{% url 'course_flow:course-strategy-create' %}"
+    };
     const data_package = {{project_data_package|safe}}
     const user_id = {{ user.id }};
     const read_only=false;

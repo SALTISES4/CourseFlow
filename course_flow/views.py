@@ -126,6 +126,18 @@ def get_project_data_package(user):
                     "objects": ProjectSerializerShallow(
                         Project.objects.filter(author=user), many=True
                     ).data,
+                },{
+                    "title": "Add an Activity Strategy",
+                    "object_type": "activity",
+                    "objects": ActivitySerializerShallow(
+                        Activity.objects.filter(author=user,is_strategy=True), many=True
+                    ).data,
+                },{
+                    "title": "Add a Course Strategy",
+                    "object_type": "course",
+                    "objects": CourseSerializerShallow(
+                        Course.objects.filter(author=user,is_strategy=True), many=True
+                    ).data,
                 }
             ],
             "add": True,
@@ -141,6 +153,22 @@ def get_project_data_package(user):
                             author=user
                         ),
                         many=True,
+                    ).data,
+                },{
+                    "title": "Published Activity Strategies",
+                    "object_type": "activity",
+                    "objects": ActivitySerializerShallow(
+                        Activity.objects.filter(published=True,is_strategy=True).exclude(
+                            author=user
+                        ), many=True
+                    ).data,
+                },{
+                    "title": "Published Course Strategies",
+                    "object_type": "course",
+                    "objects": CourseSerializerShallow(
+                        Course.objects.filter(published=True,is_strategy=True).exclude(
+                            author=user
+                        ), many=True
                     ).data,
                 }
             ],
@@ -159,7 +187,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Programs",
                 "object_type": "program",
                 "objects": ProgramSerializerShallow(
-                    Program.objects.filter(project=project), many=True
+                    Program.objects.filter(project=project, is_strategy=False), many=True
                 ).data,
             }
         )
@@ -168,7 +196,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Programs",
                 "object_type": "program",
                 "objects": ProgramSerializerShallow(
-                    Program.objects.filter(author=user).exclude(
+                    Program.objects.filter(author=user, is_strategy=False).exclude(
                         project=project
                     ),
                     many=True,
@@ -180,7 +208,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Programs",
                 "object_type": "program",
                 "objects": ProgramSerializerShallow(
-                    Program.objects.filter(published=True)
+                    Program.objects.filter(published=True, is_strategy=False)
                     .exclude(author=user)
                     .exclude(project=project),
                     many=True,
@@ -193,7 +221,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Courses",
                 "object_type": "course",
                 "objects": CourseSerializerShallow(
-                    Course.objects.filter(project=project), many=True
+                    Course.objects.filter(project=project, is_strategy=False), many=True
                 ).data,
             }
         )
@@ -202,7 +230,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Courses",
                 "object_type": "course",
                 "objects": CourseSerializerShallow(
-                    Course.objects.filter(author=user).exclude(
+                    Course.objects.filter(author=user, is_strategy=False).exclude(
                         project=project
                     ),
                     many=True,
@@ -214,7 +242,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Courses",
                 "object_type": "course",
                 "objects": CourseSerializerShallow(
-                    Course.objects.filter(published=True)
+                    Course.objects.filter(published=True, is_strategy=False)
                     .exclude(author=user)
                     .exclude(project=project),
                     many=True,
@@ -228,7 +256,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Activities",
                 "object_type": "activity",
                 "objects": ActivitySerializerShallow(
-                    Activity.objects.filter(project=project), many=True
+                    Activity.objects.filter(project=project, is_strategy=False), many=True
                 ).data,
             }
         )
@@ -237,7 +265,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Activities",
                 "object_type": "activity",
                 "objects": ActivitySerializerShallow(
-                    Activity.objects.filter(author=user).exclude(
+                    Activity.objects.filter(author=user, is_strategy=False).exclude(
                         project=project
                     ),
                     many=True,
@@ -249,7 +277,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Activities",
                 "object_type": "activity",
                 "objects": ActivitySerializerShallow(
-                    Activity.objects.filter(published=True)
+                    Activity.objects.filter(published=True, is_strategy=False)
                     .exclude(author=user)
                     .exclude(project=project),
                     many=True,
@@ -274,7 +302,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "objects": OutcomeSerializerShallow(
                     Outcome.objects.filter(author=user).exclude(
                         project=project
-                    ),
+                    ).exclude(project=None),
                     many=True,
                 ).data,
             }
@@ -286,7 +314,7 @@ def get_workflow_data_package(user, project, type_filter):
                 "objects": OutcomeSerializerShallow(
                     Outcome.objects.filter(published=True)
                     .exclude(author=user)
-                    .exclude(project=project),
+                    .exclude(project=project).exclude(project=None),
                     many=True,
                 ).data,
             }
@@ -486,8 +514,119 @@ class OutcomeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         
         return context
 
-    
-    
+def get_workflow_context_data(workflow,context,user):    
+    if(not workflow.is_strategy):
+        project = WorkflowProject.objects.get(
+            workflow=workflow
+        ).project
+    SerializerClass = serializer_lookups_shallow[workflow.type]
+    columnworkflows = workflow.columnworkflow_set.all()
+    weekworkflows = workflow.weekworkflow_set.all()
+    columns = workflow.columns.all()
+    weeks = workflow.weeks.all()
+    nodeweeks = NodeWeek.objects.filter(week__in=weeks)
+    nodes = Node.objects.filter(
+        pk__in=nodeweeks.values_list("node__pk", flat=True)
+    )
+    nodelinks = NodeLink.objects.filter(source_node__in=nodes)
+    if(not workflow.is_strategy):
+        outcomeprojects = project.outcomeproject_set.all()
+        base_outcomes = project.outcomes.all()
+        outcomes = []
+        for oc in base_outcomes:
+            outcomes+= get_all_outcomes(oc,0)
+        outcomeoutcomes=[]
+        for oc in outcomes:
+            outcomeoutcomes+=list(oc.child_outcome_links.all())
+        outcomenodes = OutcomeNode.objects.filter(node__in=nodes)
+    column_choices = [
+        {"type": choice[0], "name": choice[1]}
+        for choice in Column._meta.get_field("column_type").choices
+    ]
+    context_choices = [
+        {"type": choice[0], "name": choice[1]}
+        for choice in Node._meta.get_field(
+            "context_classification"
+        ).choices
+    ]
+    task_choices = [
+        {"type": choice[0], "name": choice[1]}
+        for choice in Node._meta.get_field("task_classification").choices
+    ]
+    time_choices = [
+        {"type": choice[0], "name": choice[1]}
+        for choice in Node._meta.get_field("time_units").choices
+    ]
+    outcome_type_choices = [
+        {"type": choice[0], "name": choice[1]}
+        for choice in Workflow._meta.get_field("outcomes_type").choices
+    ]
+    outcome_sort_choices = [
+        {"type": choice[0], "name": choice[1]}
+        for choice in Workflow._meta.get_field("outcomes_sort").choices
+    ]
+    if(not workflow.is_strategy):
+        parent_project_pk = project.pk
+
+    data_flat = {
+        "workflow": SerializerClass(workflow).data,
+        "columnworkflow": ColumnWorkflowSerializerShallow(
+            columnworkflows, many=True
+        ).data,
+        "column": ColumnSerializerShallow(columns, many=True).data,
+        "weekworkflow": WeekWorkflowSerializerShallow(
+            weekworkflows, many=True
+        ).data,
+        "week": WeekSerializerShallow(weeks, many=True).data,
+        "nodeweek": NodeWeekSerializerShallow(
+            nodeweeks, many=True
+        ).data,
+        "node": NodeSerializerShallow(nodes, many=True).data,
+        "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
+    }
+    if(not workflow.is_strategy):
+        data_flat["outcome"]= OutcomeSerializerShallow(outcomes, many=True).data
+        data_flat["outcomeoutcome"]= OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data
+        data_flat["outcomenode"]= OutcomeNodeSerializerShallow(outcomenodes,many=True).data
+        data_flat["outcomeproject"]= OutcomeProjectSerializerShallow(outcomeprojects,many=True).data
+        if(workflow.author==user):
+            if(workflow.type=="course"):
+                data_flat["strategy"] = WorkflowSerializerShallow(
+                    Course.objects.filter(author=user,is_strategy=True),many=True
+                ).data
+            elif(workflow.type=="activity"):
+                data_flat["strategy"] = WorkflowSerializerShallow(
+                    Activity.objects.filter(author=user,is_strategy=True),many=True
+                ).data
+                  
+    context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
+    context["is_strategy"] = JSONRenderer().render(workflow.is_strategy).decode("utf-8")
+    context["column_choices"] = (
+        JSONRenderer().render(column_choices).decode("utf-8")
+    )
+    context["context_choices"] = (
+        JSONRenderer().render(context_choices).decode("utf-8")
+    )
+    context["task_choices"] = (
+        JSONRenderer().render(task_choices).decode("utf-8")
+    )
+    context["time_choices"] = (
+        JSONRenderer().render(time_choices).decode("utf-8")
+    )
+    context["outcome_type_choices"] = (
+        JSONRenderer().render(outcome_type_choices).decode("utf-8")
+    )
+    context["outcome_sort_choices"] = (
+        JSONRenderer().render(outcome_sort_choices).decode("utf-8")
+    )
+    if(not workflow.is_strategy):
+        context["parent_project_pk"] = (
+            JSONRenderer().render(parent_project_pk).decode("utf-8")
+        )
+                  
+    return context
+                  
+        
 class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Workflow
     fields = ["title", "description"]
@@ -511,99 +650,10 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         workflow = self.get_object()
-        project = WorkflowProject.objects.get(
-            workflow=workflow
-        ).project
-        SerializerClass = serializer_lookups_shallow[workflow.type]
-        columnworkflows = workflow.columnworkflow_set.all()
-        weekworkflows = workflow.weekworkflow_set.all()
-        columns = workflow.columns.all()
-        weeks = workflow.weeks.all()
-        nodeweeks = NodeWeek.objects.filter(week__in=weeks)
-        nodes = Node.objects.filter(
-            pk__in=nodeweeks.values_list("node__pk", flat=True)
-        )
-        nodelinks = NodeLink.objects.filter(source_node__in=nodes)
-        outcomeprojects = project.outcomeproject_set.all()
-        base_outcomes = project.outcomes.all()
-        outcomes = []
-        for oc in base_outcomes:
-            outcomes+= get_all_outcomes(oc,0)
-        outcomeoutcomes=[]
-        for oc in outcomes:
-            outcomeoutcomes+=list(oc.child_outcome_links.all())
-        outcomenodes = OutcomeNode.objects.filter(node__in=nodes)
-        column_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Column._meta.get_field("column_type").choices
-        ]
-        context_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Node._meta.get_field(
-                "context_classification"
-            ).choices
-        ]
-        task_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Node._meta.get_field("task_classification").choices
-        ]
-        time_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Node._meta.get_field("time_units").choices
-        ]
-        outcome_type_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Workflow._meta.get_field("outcomes_type").choices
-        ]
-        outcome_sort_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Workflow._meta.get_field("outcomes_sort").choices
-        ]
-        parent_project_pk = project.pk
+        
+        context = get_workflow_context_data(workflow,context,self.request.user)
+        
 
-        data_flat = {
-            "workflow": SerializerClass(workflow).data,
-            "columnworkflow": ColumnWorkflowSerializerShallow(
-                columnworkflows, many=True
-            ).data,
-            "column": ColumnSerializerShallow(columns, many=True).data,
-            "weekworkflow": WeekWorkflowSerializerShallow(
-                weekworkflows, many=True
-            ).data,
-            "week": WeekSerializerShallow(weeks, many=True).data,
-            "nodeweek": NodeWeekSerializerShallow(
-                nodeweeks, many=True
-            ).data,
-            "node": NodeSerializerShallow(nodes, many=True).data,
-            "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
-            "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
-            "outcomeoutcome": OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data,
-            "outcomenode": OutcomeNodeSerializerShallow(outcomenodes,many=True).data,
-            "outcomeproject": OutcomeProjectSerializerShallow(outcomeprojects,many=True).data
-        }
-
-        context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
-        context["column_choices"] = (
-            JSONRenderer().render(column_choices).decode("utf-8")
-        )
-        context["context_choices"] = (
-            JSONRenderer().render(context_choices).decode("utf-8")
-        )
-        context["task_choices"] = (
-            JSONRenderer().render(task_choices).decode("utf-8")
-        )
-        context["time_choices"] = (
-            JSONRenderer().render(time_choices).decode("utf-8")
-        )
-        context["outcome_type_choices"] = (
-            JSONRenderer().render(outcome_type_choices).decode("utf-8")
-        )
-        context["outcome_sort_choices"] = (
-            JSONRenderer().render(outcome_sort_choices).decode("utf-8")
-        )
-        context["parent_project_pk"] = (
-            JSONRenderer().render(parent_project_pk).decode("utf-8")
-        )
         return context
 
 
@@ -629,99 +679,9 @@ class WorkflowDetailView(
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         workflow = self.get_object()
-        project = WorkflowProject.objects.get(
-            workflow=workflow
-        ).project
-        SerializerClass = serializer_lookups_shallow[workflow.type]
-        columnworkflows = workflow.columnworkflow_set.all()
-        weekworkflows = workflow.weekworkflow_set.all()
-        columns = workflow.columns.all()
-        weeks = workflow.weeks.all()
-        nodeweeks = NodeWeek.objects.filter(week__in=weeks)
-        nodes = Node.objects.filter(
-            pk__in=nodeweeks.values_list("node__pk", flat=True)
-        )
-        nodelinks = NodeLink.objects.filter(source_node__in=nodes)
-        outcomeprojects = project.outcomeproject_set.all()
-        base_outcomes = project.outcomes.all()
-        outcomes = []
-        for oc in base_outcomes:
-            outcomes+= get_all_outcomes(oc,0)
-        outcomeoutcomes=[]
-        for oc in outcomes:
-            outcomeoutcomes+=list(oc.child_outcome_links.all())
-        outcomenodes = OutcomeNode.objects.filter(node__in=nodes)
-        column_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Column._meta.get_field("column_type").choices
-        ]
-        context_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Node._meta.get_field(
-                "context_classification"
-            ).choices
-        ]
-        task_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Node._meta.get_field("task_classification").choices
-        ]
-        time_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Node._meta.get_field("time_units").choices
-        ]
-        outcome_type_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Workflow._meta.get_field("outcomes_type").choices
-        ]
-        outcome_sort_choices = [
-            {"type": choice[0], "name": choice[1]}
-            for choice in Workflow._meta.get_field("outcomes_sort").choices
-        ]
-        parent_project_pk = project.pk
+        
+        context = get_workflow_context_data(workflow,context,self.request.user)
 
-        data_flat = {
-            "workflow": SerializerClass(workflow).data,
-            "columnworkflow": ColumnWorkflowSerializerShallow(
-                columnworkflows, many=True
-            ).data,
-            "column": ColumnSerializerShallow(columns, many=True).data,
-            "weekworkflow": WeekWorkflowSerializerShallow(
-                weekworkflows, many=True
-            ).data,
-            "week": WeekSerializerShallow(weeks, many=True).data,
-            "nodeweek": NodeWeekSerializerShallow(
-                nodeweeks, many=True
-            ).data,
-            "node": NodeSerializerShallow(nodes, many=True).data,
-            "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
-            "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
-            "outcomeoutcome": OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data,
-            "outcomenode": OutcomeNodeSerializerShallow(outcomenodes,many=True).data,
-            "outcomeproject": OutcomeProjectSerializerShallow(outcomeprojects,many=True).data
-        }
-
-        context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
-        context["column_choices"] = (
-            JSONRenderer().render(column_choices).decode("utf-8")
-        )
-        context["context_choices"] = (
-            JSONRenderer().render(context_choices).decode("utf-8")
-        )
-        context["task_choices"] = (
-            JSONRenderer().render(task_choices).decode("utf-8")
-        )
-        context["time_choices"] = (
-            JSONRenderer().render(time_choices).decode("utf-8")
-        )
-        context["outcome_type_choices"] = (
-            JSONRenderer().render(outcome_type_choices).decode("utf-8")
-        )
-        context["outcome_sort_choices"] = (
-            JSONRenderer().render(outcome_sort_choices).decode("utf-8")
-        )
-        context["parent_project_pk"] = (
-            JSONRenderer().render(parent_project_pk).decode("utf-8")
-        )
         return context
 
 
@@ -873,6 +833,28 @@ class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return reverse(
             "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
+    
+class CourseStrategyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Course
+    fields = ["title", "description"]
+    template_name = "course_flow/course_create.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.is_strategy = True
+        response = super(CreateView, self).form_valid(form)
+        return response
+
+    def get_success_url(self):
+        return reverse(
+            "course_flow:workflow-update", kwargs={"pk": self.object.pk}
+        )
 
 
 class ActivityDetailView(
@@ -917,7 +899,28 @@ class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return reverse(
             "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
+    
+class ActivityStrategyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Activity
+    fields = ["title", "description"]
+    template_name = "course_flow/activity_create.html"
 
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.is_strategy = True
+        response = super(CreateView, self).form_valid(form)
+        return response
+
+    def get_success_url(self):
+        return reverse(
+            "course_flow:workflow-update", kwargs={"pk": self.object.pk}
+        )
 
 def save_serializer(serializer) -> HttpResponse:
     if serializer:
@@ -1304,7 +1307,7 @@ def duplicate_nodelink(
     return new_nodelink
 
 
-def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
+def duplicate_node(node: Node, author: User, new_workflow: Workflow, new_project:Project) -> Node:
     if new_workflow is not None:
         for new_column in new_workflow.columns.all():
             if (
@@ -1330,17 +1333,19 @@ def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
         is_original=False,
         parent_node=node,
     )
+    
     if node.linked_workflow is not None:
         if new_workflow is not None:
-            set_linked_workflow(new_node, node.linked_workflow)
+            set_linked_workflow(new_node, node.linked_workflow,new_project)
         else:
             new_node.linked_workflow = node.linked_workflow
+            new_node.save()
 
     return new_node
 
 
 def duplicate_week(
-    week: Week, author: User, new_workflow: Workflow
+    week: Week, author: User, new_workflow: Workflow, new_project:Project
 ) -> Week:
     new_week = Week.objects.create(
         title=week.title,
@@ -1349,11 +1354,13 @@ def duplicate_week(
         is_original=False,
         parent_week=week,
         week_type=week.week_type,
+        is_strategy=week.is_strategy,
+        original_strategy = week.original_strategy
     )
 
     for node in week.nodes.all():
         NodeWeek.objects.create(
-            node=duplicate_node(node, author, new_workflow),
+            node=duplicate_node(node, author, new_workflow, new_project),
             week=new_week,
             rank=NodeWeek.objects.get(node=node, week=week).rank,
         )
@@ -1373,7 +1380,7 @@ def duplicate_column(column: Column, author: User) -> Column:
     return new_column
 
 
-def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
+def duplicate_workflow(workflow: Workflow, author: User, new_project:Project) -> Workflow:
     model = get_model_from_str(workflow.type)
 
     new_workflow = model.objects.create(
@@ -1396,7 +1403,7 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
         )
     for week in workflow.weeks.all():
         WeekWorkflow.objects.create(
-            week=duplicate_week(week, author, new_workflow),
+            week=duplicate_week(week, author, new_workflow, new_project),
             workflow=new_workflow,
             rank=WeekWorkflow.objects.get(
                 week=week, workflow=workflow
@@ -1432,8 +1439,9 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
 @ajax_login_required
 def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    project = workflow.project_set.first()
     try:
-        clone = duplicate_workflow(workflow, request.user)
+        clone = duplicate_workflow(workflow, request.user,project)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -1555,6 +1563,110 @@ def new_node(request: HttpRequest) -> HttpResponse:
         }
     )
 
+@require_POST
+@ajax_login_required
+@is_owner("workflowPk")
+def add_strategy(request: HttpRequest) -> HttpResponse:
+    workflow_id = json.loads(request.POST.get("workflowPk"))
+    strategy_id = json.loads(request.POST.get("strategyPk"))
+    position = json.loads(request.POST.get("position"))
+    workflow = Workflow.objects.get(pk=workflow_id)
+    strategy = Workflow.objects.get(pk=strategy_id)
+    try:
+        if(strategy.get_subclass().author == request.user or strategy.is_published):
+            #first, check compatibility between types (activity/course)
+            if strategy.type!=workflow.type:
+                raise ValidationError("Mismatch between types")
+            #create a copy of the strategy (the first/only week in the strategy workflow). Note that all the nodes, at this point, are pointed at the columns from the OLD workflow
+            if position < 0 or position > workflow.weeks.count():
+                position = workflow.weeks.count()
+            old_week = strategy.weeks.first()
+            week = duplicate_week(old_week,request.user,None,None)
+            week.title = strategy.title
+            week.is_strategy=True
+            week.original_strategy=strategy
+            week.save()
+            new_through = WeekWorkflow.objects.create(
+                week=week,workflow=workflow,rank=position
+            )
+            #now, check for missing columns. We try to create a one to one relationship between the columns, and then add in any that are still missing
+            old_columns=[]
+            for node in week.nodes.all():
+                if(node.column not in old_columns):
+                    old_columns.append(node.column)
+            new_columns=[]
+            columnworkflows_added=[]
+            columns_added=[]
+            for column in old_columns:
+                #check for a new column with same type
+                columns_type = workflow.columns.filter(column_type=column.column_type).exclude(id__in=map(lambda x:x.id,new_columns))
+                if columns_type.count()==1:
+                    new_columns.append(columns_type.first())
+                    continue
+                if columns_type.count()==0:
+                    added_column = duplicate_column(column,request.user)
+                    columnworkflows_added.append(ColumnWorkflow.objects.create(
+                        column=added_column,
+                        workflow=workflow,
+                        rank=workflow.columns.count()
+                    ))
+                    new_columns.append(added_column)
+                    columns_added.append(added_column)
+                    continue
+                if columns_type.count()>1:
+                    #if we have multiple columns of that type, check to see if any have this one as their parent
+                    columns_parent = columns_type.filter(parent_column=column)
+                    if(columns_parent.count()==1):
+                        new_columns.append(columns_parent.first())
+                        continue
+                    if(columns_parent.count()>1):
+                        columns_type=columns_parent
+                    #check to see if any have the same title
+                    columns_title = columns_type.filter(title=column.title)
+                    if(columns_title.count()>=1):
+                        new_columns.append(columns_title.first())
+                        continue
+                    else:
+                        new_columns.append(columns_type.first())
+            #go through all the nodes and fill them in with our updated columns
+            for node in week.nodes.all():
+                column_index = old_columns.index(node.column)
+                node.column=new_columns[column_index]
+                node.save()
+            #we have to copy all the nodelinks, since by default they are not duplicated when a week is duplicated
+            for node_link in NodeLink.objects.filter(source_node__in = old_week.nodes.all(), target_node__in = old_week.nodes.all()):
+                duplicate_nodelink(
+                    node_link,
+                    request.user,
+                    week.nodes.get(
+                        parent_node=node_link.source_node
+                    ),
+                    week.nodes.get(
+                        parent_node=node_link.target_node
+                    ),
+                )
+
+            #return all this information to the user
+            return JsonResponse(
+            {
+                "action": "posted",
+                "strategy": WeekSerializerShallow(week).data,
+                "new_through": WeekWorkflowSerializerShallow(new_through).data,
+                "index": position,
+                "columns_added":ColumnSerializerShallow(columns_added,many=True).data,
+                "columnworkflows_added":ColumnWorkflowSerializerShallow(columnworkflows_added,many=True).data,
+                "nodeweeks_added":NodeWeekSerializerShallow(week.nodeweek_set,many=True).data,
+                "nodes_added":NodeSerializerShallow(week.nodes.all(),many=True).data,
+                "nodelinks_added":NodeLinkSerializerShallow(NodeLink.objects.filter(source_node__in = week.nodes.all(), target_node__in = week.nodes.all()),many=True).data,
+            }
+        )
+
+        else:
+            raise ValidationError("User cannot access this strategy")
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    
+    
 
 @require_POST
 @ajax_login_required
@@ -1729,7 +1841,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             through = WeekWorkflow.objects.get(
                 week=model, workflow=parent
             )
-            newmodel = duplicate_week(model, model.author, None)
+            newmodel = duplicate_week(model, model.author, None, None)
             newthroughmodel = WeekWorkflow.objects.create(
                 workflow=parent, week=newmodel, rank=through.rank + 1
             )
@@ -1747,7 +1859,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             model = Node.objects.get(id=object_id)
             parent = Week.objects.get(id=parent_id)
             through = NodeWeek.objects.get(node=model, week=parent)
-            newmodel = duplicate_node(model, model.author, None)
+            newmodel = duplicate_node(model, model.author, None, None)
             newthroughmodel = NodeWeek.objects.create(
                 week=parent, node=newmodel, rank=through.rank + 1
             )
@@ -1991,10 +2103,16 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
-def set_linked_workflow(node: Node, workflow):
-    project = (
-        node.week_set.first().workflow_set.first().project_set.first()
-    )
+def set_linked_workflow(node: Node, workflow,new_project):
+    if new_project is not None:
+        project = new_project
+    else:
+        week = node.week_set.first()
+        if week is None:
+            return
+        project = (
+            week.workflow_set.first().project_set.first()
+        )
     if project.author == node.author or project.published:
         if WorkflowProject.objects.get(workflow=workflow).project == project:
             node.linked_workflow = workflow
@@ -2007,7 +2125,7 @@ def set_linked_workflow(node: Node, workflow):
                         workflow=workflow
                     ).project.published
                 ):
-                    new_workflow = duplicate_workflow(workflow, node.author)
+                    new_workflow = duplicate_workflow(workflow, node.author,project)
                     WorkflowProject.objects.create(
                         workflow=new_workflow, project=project
                     )
@@ -2037,7 +2155,7 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             linked_workflow_description = None
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
-            set_linked_workflow(node, workflow)
+            set_linked_workflow(node, workflow, None)
             if node.linked_workflow is None:
                 raise ValidationError("Project could not be found")
             linked_workflow = node.linked_workflow.id
@@ -2075,6 +2193,56 @@ def project_toggle_published(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
+
+# Creates strategy from week or turns strategy into week
+@require_POST
+@ajax_login_required
+@is_owner("weekPk")
+def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
+    try:
+        object_id = json.loads(request.POST.get("weekPk"))
+        is_strategy = json.loads(request.POST.get("is_strategy"))
+        week = Week.objects.get(id=object_id)
+        if week.is_strategy != is_strategy:
+            raise ValidationError("Request has already been processed")
+        if week.is_strategy:
+            week.is_strategy=False
+            strategy = week.original_strategy.get_subclass()
+            week.original_strategy=None
+            week.save()
+        else:
+            workflow = WeekWorkflow.objects.get(week=week).workflow
+            strategy = duplicate_workflow(workflow,request.user,None)
+            strategy.title=week.title
+            strategy.is_strategy=True
+            strategy.save()
+            strategy.weeks.exclude(parent_week = week).delete()
+            strategy_week = strategy.weeks.first()
+            strategy_week.is_strategy=True
+            strategy_week.save()
+            week.is_strategy=True
+            week.original_strategy = strategy
+            week.save()
+        if strategy.type=="course":
+            strategy_serialized = CourseSerializerShallow(strategy).data
+        elif strategy.type =="activity":
+            strategy_serialized = ActivitySerializerShallow(strategy).data
+        else:
+            strategy_serialized = ""
+            
+            
+        
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({
+        "action": "posted",
+        "id":week.id,
+        "is_strategy":week.is_strategy,
+        "strategy":strategy_serialized
+    })
+
+
 
 
 """

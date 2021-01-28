@@ -717,6 +717,7 @@ class WeekSerializerShallow(serializers.ModelSerializer):
             "parent_week",
             "week_type",
             "week_type_display",
+            "is_strategy",
         ]
 
 
@@ -906,6 +907,7 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
             "outcomes_type",
             "outcomes_sort",
             "author_id",
+            "is_strategy",
         ]
 
     weekworkflow_set = serializers.SerializerMethodField()
@@ -964,6 +966,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "parent_workflow",
             "outcomes_type",
             "outcomes_sort",
+            "is_strategy",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
@@ -1003,6 +1006,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "parent_workflow",
             "outcomes_type",
             "outcomes_sort",
+            "is_strategy",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
@@ -1039,6 +1043,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "is_original",
             "parent_workflow",
             "outcomes_sort",
+            "is_strategy",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",

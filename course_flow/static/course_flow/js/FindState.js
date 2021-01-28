@@ -84,3 +84,9 @@ export const getTableOutcomeNodeByID = (state,node_id, outcome_id)=>{
     }
     return {data:null}
 }
+export const getStrategyByID = (state,id)=>{
+    for(var i in state.strategy){
+        var strategy = state.strategy[i];
+        if(strategy.id==id)return {data:strategy};
+    }
+}

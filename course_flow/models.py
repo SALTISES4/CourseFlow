@@ -376,6 +376,8 @@ class Week(models.Model):
     )
     is_original = models.BooleanField(default=True)
     published = models.BooleanField(default=False)
+    is_strategy = models.BooleanField(default=False)
+    original_strategy = models.ForeignKey("Workflow",on_delete=models.SET_NULL,null=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -396,17 +398,6 @@ class Week(models.Model):
     class Meta:
         verbose_name = "Week"
         verbose_name_plural = "Weeks"
-
-
-class OutcomeWeek(models.Model):
-    week = models.ForeignKey(Week, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Week Link"
-        verbose_name_plural = "Outcome-Week Links"
 
 
 class NodeWeek(models.Model):
@@ -432,6 +423,8 @@ class Workflow(models.Model):
     
     published = models.BooleanField(default=False)
 
+    is_strategy = models.BooleanField(default=False)
+    
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
     )
@@ -446,10 +439,7 @@ class Workflow(models.Model):
     columns = models.ManyToManyField(
         Column, through="ColumnWorkflow", blank=True
     )
-
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeWorkflow", blank=True
-    )
+    
     
     OUTCOMES_NORMAL = 0
     OUTCOMES_ADVANCED = 1
@@ -783,7 +773,7 @@ def create_default_activity_content(sender, instance, created, **kwargs):
             )
 
         instance.weeks.create(
-            week_type=Week.PART, author=instance.author
+            week_type=Week.PART, author=instance.author, is_strategy=instance.is_strategy
         )
         instance.save()
 
@@ -801,7 +791,7 @@ def create_default_course_content(sender, instance, created, **kwargs):
             )
 
         instance.weeks.create(
-            week_type=Week.WEEK, author=instance.author
+            week_type=Week.WEEK, author=instance.author, is_strategy=instance.is_strategy
         )
         instance.save()
 
@@ -819,7 +809,7 @@ def create_default_program_content(sender, instance, created, **kwargs):
             )
 
         instance.weeks.create(
-            week_type=Week.TERM, author=instance.author
+            week_type=Week.TERM, author=instance.author, is_strategy=instance.is_strategy
         )
         instance.save()
 

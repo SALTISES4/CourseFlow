@@ -95,6 +95,28 @@ export function newNodeLink(source_node,target_node,source_port,target_port,call
     });
 }  
 
+//Add a strategy to the workflow
+export function addStrategy(workflowPk,position=-1,strategyPk=-1,callBackFunction=()=>console.log("success")){
+    $.post(post_paths.add_strategy, {
+        workflowPk:JSON.stringify(workflowPk),
+        position:JSON.stringify(position),
+        strategyPk:JSON.stringify(strategyPk),
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
+//Add a strategy to the workflow
+export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.log("success")){
+    $.post(post_paths.toggle_strategy, {
+        weekPk:JSON.stringify(weekPk),
+        is_strategy:JSON.stringify(is_strategy),
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
+
 //Causes the specified object to delete itself
 export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
     $.post(post_paths.delete_self, {

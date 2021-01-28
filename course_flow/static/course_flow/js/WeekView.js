@@ -4,7 +4,8 @@ import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import NodeWeekView from "./NodeWeekView.js";
 import {getWeekByID, getNodeWeekByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
-import {columnChangeNodeWeek, moveNodeWeek} from "./Reducers.js";
+import {columnChangeNodeWeek, moveNodeWeek, newStrategyAction} from "./Reducers.js";
+import {addStrategy} from "./PostFunctions";
 
 //Basic component to represent a Week
 export class WeekViewUnconnected extends ComponentJSON{
@@ -23,9 +24,14 @@ export class WeekViewUnconnected extends ComponentJSON{
         if(nodes.length==0)nodes.push(
             <div class="node-week" style={{height:"100%"}}></div>
         );
+        let css_class = "week";
+        if(this.state.selected)css_class+=" selected";
+        if(data.is_strategy)css_class+=" strategy";
+        let default_text;
+        if(!is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
         return (
-            <div class={"week"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}>
-                {!read_only && <div class="mouseover-container-bypass">
+            <div class={css_class} ref={this.maindiv} onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}>
+                {!read_only && !is_strategy && <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}
                         {this.addDuplicateSelf(data)}
@@ -33,7 +39,7 @@ export class WeekViewUnconnected extends ComponentJSON{
                     </div>
                 </div>
                 }
-                <TitleText text={data.title} defaultText={data.week_type_display+" "+(this.props.rank+1)}/>
+                <TitleText text={data.title} defaultText={default_text}/>
                 <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                     {nodes}
                 </div>
@@ -61,6 +67,7 @@ export class WeekViewUnconnected extends ComponentJSON{
           [200,1],
           ".node-block",
           ".node");
+        this.makeDroppable()
     }
 
     stopSortFunction(id,new_position,type,new_parent){
@@ -77,7 +84,54 @@ export class WeekViewUnconnected extends ComponentJSON{
     }
     
     sortableMovedFunction(id,new_position,type,new_parent){
+        console.log(type);
         this.props.dispatch(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column))
+    }
+
+    makeDroppable(){
+        var props = this.props;
+        $(this.maindiv.current).droppable({
+            tolerance:"pointer",
+            droppable:".strategy-ghost",
+            over:(e,ui)=>{
+                var drop_item = $(e.target);
+                var drag_item = ui.draggable;
+                var drag_helper = ui.helper;
+                var new_index = drop_item.prevAll().length;
+                var new_parent_id = parseInt(drop_item.parent().attr("id")); 
+                
+                if(drag_item.hasClass("new-strategy")){
+                    drag_helper.addClass("valid-drop");
+                    drop_item.addClass("new-strategy-drop-over");
+                   
+                }else{
+                    return;
+                }
+            },
+            out:(e,ui)=>{
+                var drag_item = ui.draggable;
+                var drag_helper = ui.helper;
+                var drop_item = $(e.target);
+                if(drag_item.hasClass("new-strategy")){
+                    drag_helper.removeClass("valid-drop");
+                    drop_item.removeClass("new-strategy-drop-over");
+                }
+            },
+            drop:(e,ui)=>{
+                $(".new-strategy-drop-over").removeClass("new-strategy-drop-over");
+                var drop_item = $(e.target);
+                var drag_item = ui.draggable;
+                var new_index = drop_item.parent().prevAll().length+1;
+                if(drag_item.hasClass("new-strategy")){
+                    addStrategy(this.props.parentID,new_index,drag_item[0].dataDraggable.strategy,
+                        (response_data)=>{
+                            let action = newStrategyAction(response_data);
+                            props.dispatch(action);
+                        }
+                    );
+                }
+            }
+        });
     }
 
 }

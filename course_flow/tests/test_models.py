@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.contrib.auth.models import Group, User
 from course_flow.models import (
     Project,
+    Workflow,
     Week,
     Column,
     Node,
@@ -1424,6 +1425,133 @@ class ModelViewTest(TestCase):
         self.assertEqual(Activity.objects.all().count(), 2)
         self.assertEqual(Week.objects.all().count(), 6)
         self.assertEqual(new_activity.parent_workflow.id, activity.id)
+        
+    def test_add_strategy_no_login_no_authorship(self):
+        author = get_author()
+        strategy = Activity.objects.create(author=author,is_strategy=True)
+        #add some nodes to simulate a real strategy
+        for column in strategy.columns.all():
+            strategy.weeks.first().nodes.create(author=author,column=column)
+        workflow = Activity.objects.create(author=author)
+        response = self.client.post(
+            reverse("course_flow:add-strategy"),
+            {"workflowPk": workflow.id, "strategyPk": strategy.id,"position":1},
+        )
+        self.assertEqual(response.status_code, 401)
+        login(self)
+        response = self.client.post(
+            reverse("course_flow:add-strategy"),
+            {"workflowPk": workflow.id, "strategyPk": strategy.id,"position":1},
+        )
+        self.assertEqual(response.status_code, 401)
+        
+        
+    def test_add_strategy_same_columns(self):
+        user = login(self)
+        strategy = Activity.objects.create(author=user,is_strategy=True)
+        #add some nodes to simulate a real strategy
+        for column in strategy.columns.all():
+            strategy.weeks.first().nodes.create(author=user,column=column)
+        workflow = Activity.objects.create(author=user)
+        response = self.client.post(
+            reverse("course_flow:add-strategy"),
+            {"workflowPk": workflow.id, "strategyPk": strategy.id,"position":1},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(workflow.weeks.count(), 2)
+        self.assertEqual(workflow.weeks.filter(nodes__isnull=False).values_list('nodes',flat=True).count(), 4)
+        self.assertEqual(workflow.columns.count(), 4)
+        
+        
+    def test_add_strategy_extra_columns(self):
+        user = login(self)
+        strategy = Activity.objects.create(author=user,is_strategy=True)
+        #add two extra columns
+        self.client.post(
+            reverse("course_flow:new-column"),
+            {"workflowPk": strategy.id, "column_type":0},
+        )
+        self.client.post(
+            reverse("course_flow:new-column"),
+            {"workflowPk": strategy.id, "column_type":0},
+        )
+        #add some nodes to simulate a real strategy
+        for column in strategy.columns.all():
+            strategy.weeks.first().nodes.create(author=user,column=column)
+        workflow = Activity.objects.create(author=user)
+        response = self.client.post(
+            reverse("course_flow:add-strategy"),
+            {"workflowPk": workflow.id, "strategyPk": strategy.id,"position":0},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(workflow.weeks.count(), 2)
+        self.assertEqual(workflow.weeks.filter(nodes__isnull=False).values_list('nodes',flat=True).count(), 6)
+        self.assertEqual(workflow.columns.count(), 6)
+        #check to make sure all nodes have different columns. This acts as a check that a) they have been assigned to the new columns in the workflow and b) the two nodes that were in different custom columns did not get placed into the same custom column
+        column_array=[]
+        for node in Node.objects.all():
+            self.assertEqual((node.column.id in column_array), False)
+            column_array.append(node.column.id)
+            
+        
+        
+    def test_convert_to_strategy(self):
+        user = login(self)
+        workflow = Activity.objects.create(author=user)
+        week = workflow.weeks.create(author=user)
+        #add some nodes to simulate a real strategy
+        for column in workflow.columns.all():
+            week.nodes.create(author=user,column=column)
+        workflow.weeks.create(author=user)
+        response = self.client.post(
+            reverse("course_flow:toggle-strategy"),
+            {"weekPk": week.id, "is_strategy": JSONRenderer().render(True).decode("utf-8")},
+        )
+        #add a few more weeks
+        self.assertEqual(week.is_strategy,False)
+        response = self.client.post(
+            reverse("course_flow:toggle-strategy"),
+            {"weekPk": week.id, "is_strategy": JSONRenderer().render(False).decode("utf-8")},
+        )
+        week = workflow.weeks.get(id=week.id)
+        self.assertEqual(week.is_strategy,True)
+        strategy = Workflow.objects.get(is_strategy=True)
+        self.assertEqual(week.original_strategy,strategy)
+        self.assertEqual(strategy.weeks.first().is_strategy,True)
+        self.assertEqual(strategy.weeks.count(),1)
+        self.assertEqual(strategy.columns.count(), 4)
+        self.assertEqual(strategy.weeks.filter(nodes__isnull=False).values_list('nodes',flat=True).count(), 4)
+        
+        
+        
+    def test_convert_from_strategy(self):
+        user = login(self)
+        strategy = Activity.objects.create(author=user,is_strategy=True)
+        #add some nodes to simulate a real strategy
+        for column in strategy.columns.all():
+            strategy.weeks.first().nodes.create(author=user,column=column)
+        workflow = Activity.objects.create(author=user)
+        response = self.client.post(
+            reverse("course_flow:add-strategy"),
+            {"workflowPk": workflow.id, "strategyPk": strategy.id,"position":1},
+        )
+        week = workflow.weeks.get(is_strategy=True)
+        response = self.client.post(
+            reverse("course_flow:toggle-strategy"),
+            {"weekPk": week.id, "is_strategy": JSONRenderer().render(False).decode("utf-8")},
+        )
+        week = workflow.weeks.get(id=week.id)
+        self.assertEqual(week.is_strategy,True)
+        response = self.client.post(
+            reverse("course_flow:toggle-strategy"),
+            {"weekPk": week.id, "is_strategy": JSONRenderer().render(True).decode("utf-8")},
+        )
+        self.assertEqual(response.status_code, 200)
+        week = workflow.weeks.get(id=week.id)
+        self.assertEqual(week.is_strategy,False)
+        self.assertEqual(week.original_strategy,None)
+        
+        
 
     def test_delete_self_no_login_no_authorship(self):
         author = get_author()
@@ -1970,3 +2098,4 @@ class ModelViewTest(TestCase):
             {"projectPk": project.id},
         )
         self.assertEqual(response.status_code, 401)
+        
