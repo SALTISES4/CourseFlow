@@ -382,6 +382,35 @@ class Week(models.Model):
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)
+    
+    NONE = 0
+    JIGSAW = 1
+    PEER_INSTRUCTION = 2
+    CASE_STUDIES = 3
+    GALLERY_WALK = 4
+    REFLECTIVE_WRITING = 5
+    TWO_STAGE_EXAM = 6
+    TOOLKIT = 7
+    ONE_MINUTE_PAPER = 8
+    DISTRIBUTED_PROBLEM_SOLVING = 9
+    PEER_ASSESSMENT = 10
+    OTHER = 11
+    STRATEGY_CHOICES = (
+        (NONE,"None"),
+        (JIGSAW,"Jigsaw"),
+        (PEER_INSTRUCTION,"Peer Instruction"),
+        (CASE_STUDIES,"Case Studies"),
+        (GALLERY_WALK,"Gallery Walk"),
+        (REFLECTIVE_WRITING,"Reflective Writing"),
+        (TWO_STAGE_EXAM,"Two-Stage Exam"),
+        (TOOLKIT,"Toolkit"),
+        (ONE_MINUTE_PAPER,"One Minute Paper"),
+        (DISTRIBUTED_PROBLEM_SOLVING,"Distributed Problem Solving"),
+        (PEER_ASSESSMENT,"Peer Assessment"),
+    )
+    strategy_classification = models.PositiveIntegerField(
+        choices=STRATEGY_CHOICES, default=0
+    )
 
 
     PART = 0
