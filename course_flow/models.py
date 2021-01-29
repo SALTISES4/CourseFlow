@@ -407,6 +407,7 @@ class Week(models.Model):
         (ONE_MINUTE_PAPER,"One Minute Paper"),
         (DISTRIBUTED_PROBLEM_SOLVING,"Distributed Problem Solving"),
         (PEER_ASSESSMENT,"Peer Assessment"),
+        (OTHER,"Other"),
     )
     strategy_classification = models.PositiveIntegerField(
         choices=STRATEGY_CHOICES, default=0
@@ -416,9 +417,9 @@ class Week(models.Model):
     PART = 0
     WEEK = 1
     TERM = 2
-    STRATEGY_TYPES = ((PART, "Part"), (WEEK, "Week"), (TERM, "Term"))
+    WEEK_TYPES = ((PART, "Part"), (WEEK, "Week"), (TERM, "Term"))
     week_type = models.PositiveIntegerField(
-        choices=STRATEGY_TYPES, default=0
+        choices=WEEK_TYPES, default=0
     )
 
     def __str__(self):

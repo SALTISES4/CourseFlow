@@ -565,6 +565,10 @@ def get_workflow_context_data(workflow,context,user):
         {"type": choice[0], "name": choice[1]}
         for choice in Workflow._meta.get_field("outcomes_sort").choices
     ]
+    strategy_classification_choices = [
+        {"type": choice[0], "name": choice[1]}
+        for choice in Week._meta.get_field("strategy_classification").choices
+    ]
     if(not workflow.is_strategy):
         parent_project_pk = project.pk
 
@@ -621,6 +625,9 @@ def get_workflow_context_data(workflow,context,user):
     )
     context["outcome_sort_choices"] = (
         JSONRenderer().render(outcome_sort_choices).decode("utf-8")
+    )
+    context["strategy_classification_choices"] = (
+        JSONRenderer().render(strategy_classification_choices).decode("utf-8")
     )
     if(not workflow.is_strategy):
         context["parent_project_pk"] = (
@@ -1358,7 +1365,8 @@ def duplicate_week(
         parent_week=week,
         week_type=week.week_type,
         is_strategy=week.is_strategy,
-        original_strategy = week.original_strategy
+        original_strategy = week.original_strategy,
+        strategy_classification = week.strategy_classification,
     )
 
     for node in week.nodes.all():
@@ -2206,12 +2214,14 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("weekPk"))
         is_strategy = json.loads(request.POST.get("is_strategy"))
         week = Week.objects.get(id=object_id)
+        #This check is to prevent people from spamming the button, which would potentially create a bunch of superfluous strategies
         if week.is_strategy != is_strategy:
             raise ValidationError("Request has already been processed")
         if week.is_strategy:
             week.is_strategy=False
             strategy = week.original_strategy.get_subclass()
             week.original_strategy=None
+            week.strategy_classification = 0
             week.save()
         else:
             workflow = WeekWorkflow.objects.get(week=week).workflow

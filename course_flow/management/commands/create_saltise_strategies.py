@@ -25,6 +25,8 @@ class Command(BaseCommand):
             from_saltise=True,
         )
         week = workflow.weeks.first()
+        week.strategy_classification=1
+        week.save()
         ooci = workflow.columns.get(column_type=Column.OUT_OF_CLASS_INSTRUCTOR)
         oocs = workflow.columns.get(column_type=Column.OUT_OF_CLASS_STUDENT)
         ici = workflow.columns.get(column_type=Column.IN_CLASS_INSTRUCTOR)
@@ -81,6 +83,8 @@ class Command(BaseCommand):
             from_saltise=True,
         )
         week = workflow.weeks.first()
+        week.strategy_classification=2
+        week.save()
         ooci = workflow.columns.get(column_type=Column.OUT_OF_CLASS_INSTRUCTOR)
         oocs = workflow.columns.get(column_type=Column.OUT_OF_CLASS_STUDENT)
         ici = workflow.columns.get(column_type=Column.IN_CLASS_INSTRUCTOR)

@@ -718,6 +718,7 @@ class WeekSerializerShallow(serializers.ModelSerializer):
             "week_type",
             "week_type_display",
             "is_strategy",
+            "strategy_classification",
         ]
 
 
@@ -737,6 +738,9 @@ class WeekSerializerShallow(serializers.ModelSerializer):
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
             "description", instance.description
+        )
+        instance.strategy_classification = validated_data.get(
+            "strategy_classification",instance.strategy_classification
         )
         instance.save()
         return instance

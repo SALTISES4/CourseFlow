@@ -320,6 +320,13 @@ export class ComponentJSON extends React.Component{
                     {type=="week" && data.week_type <2 &&
                         <div>
                             <h4>Strategy:</h4>
+                            {data.is_strategy &&
+                                <select value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
+                                    {strategy_classification_choices.map((choice)=>
+                                        <option value={choice.type}>{choice.name}</option>
+                                    )}
+                                </select>
+                            }
                             <button onClick = {()=>{toggleStrategy(data.id,data.is_strategy,
                                 (response_data)=>{
                                     let action = toggleStrategyAction(response_data);

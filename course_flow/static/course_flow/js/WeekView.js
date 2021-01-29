@@ -44,6 +44,16 @@ export class WeekViewUnconnected extends ComponentJSON{
                     {nodes}
                 </div>
                 {this.addEditable(data)}
+                {data.strategy_classification > 0 && data.is_strategy&&
+                    <div class="strategy-tab">
+                        <div class="strategy-tab-triangle"></div>
+                        <div class="strategy-tab-square">
+                            <div class="strategy-tab-circle">
+                                <img src= {iconpath+Constants.strategy_keys[data.strategy_classification]+".svg"}/>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         );
     }
