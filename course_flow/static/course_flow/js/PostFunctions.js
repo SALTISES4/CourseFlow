@@ -173,6 +173,16 @@ export function insertSibling(objectID,objectType,parentID,callBackFunction=()=>
     });
 }
 
+//Causes the specified object to insert a child to itself
+export function insertChild(objectID,objectType,callBackFunction=()=>console.log("success")){
+    $.post(post_paths.insert_child, {
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify(objectType),
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
     
 //Called when an object in a list is reordered
 export function insertedAt(objectID,objectType,parentID,newPosition,callBackFunction=()=>console.log("success")){

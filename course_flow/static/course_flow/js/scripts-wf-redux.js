@@ -55,6 +55,7 @@ const rootReducer = Redux.combineReducers({
     outcomenode:Reducers.outcomeNodeReducer,
     outcomeproject:Reducers.outcomeProjectReducer,
     strategy:Reducers.strategyReducer,
+    saltise_strategy:Reducers.saltiseStrategyReducer,
 });
 
 var store;

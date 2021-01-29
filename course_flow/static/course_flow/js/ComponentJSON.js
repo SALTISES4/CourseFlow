@@ -4,7 +4,7 @@ import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
 import {newNodeAction, deleteSelfAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction, newStrategyAction, toggleStrategyAction} from "./Reducers.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy} from "./PostFunctions.js"
+import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild} from "./PostFunctions.js"
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -229,6 +229,8 @@ export class ComponentJSON extends React.Component{
         if(read_only)return null;
         if(this.state.selected){
             var type=this.objectType;
+            let title_length="50";
+            if(type=="outcome")title_length="500";
             var props = this.props;
             console.log(no_delete);
             return reactDom.createPortal(
@@ -237,13 +239,13 @@ export class ComponentJSON extends React.Component{
                     {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Title:</h4>
-                            <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
+                            <input value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Description:</h4>
-                            <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
+                            <input value={data.description} maxlength="500" onChange={this.inputChanged.bind(this,"description")}/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
@@ -269,7 +271,7 @@ export class ComponentJSON extends React.Component{
                     {type=="node" &&
                         <div>
                             <h4>Time:</h4>
-                            <input value={data.time_required} onChange={this.inputChanged.bind(this,"time_required")}/>
+                            <input value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
                             <select value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
                                 {time_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -307,6 +309,12 @@ export class ComponentJSON extends React.Component{
                                 )}
                             </select>
                             <label for="outcomes_type">Outcomes Style</label>
+                            {data.is_strategy && 
+                                [
+                                <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>,
+                                <label for="is_published">Published</label>
+                                ]
+                            }
                         </div>
                     }
                     {type=="week" && data.week_type <2 &&

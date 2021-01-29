@@ -14,7 +14,7 @@ User = get_user_model()
 
 class Project(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.CharField(max_length=400, null=True, blank=True)
+    description = models.CharField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -138,8 +138,8 @@ class NodeLink(models.Model):
 
 
 class Outcome(models.Model):
-    title = models.CharField(max_length=400)
-    description = models.TextField(max_length=400)
+    title = models.CharField(max_length=500)
+    description = models.TextField(max_length=500)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -178,8 +178,8 @@ class OutcomeOutcome(models.Model):
         verbose_name_plural = "Outcome-Outcome Links"
 
 class Node(models.Model):
-    title = models.CharField(max_length=30, null=True, blank=True)
-    description = models.TextField(max_length=400, null=True, blank=True)
+    title = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(
         User,
         related_name="authored_nodes",
@@ -365,8 +365,8 @@ class OutcomeNode(models.Model):
 
 
 class Week(models.Model):
-    title = models.CharField(max_length=30, null=True, blank=True)
-    description = models.TextField(max_length=400, null=True, blank=True)
+    title = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -414,8 +414,8 @@ class NodeWeek(models.Model):
 class Workflow(models.Model):
     objects = InheritanceManager()
 
-    title = models.CharField(max_length=30, null=True, blank=True)
-    description = models.TextField(max_length=400, null=True, blank=True)
+    title = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(max_length=500, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -424,6 +424,8 @@ class Workflow(models.Model):
     published = models.BooleanField(default=False)
 
     is_strategy = models.BooleanField(default=False)
+    
+    from_saltise = models.BooleanField(default=False)
     
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True

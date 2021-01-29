@@ -598,6 +598,9 @@ def get_workflow_context_data(workflow,context,user):
                 data_flat["strategy"] = WorkflowSerializerShallow(
                     Activity.objects.filter(author=user,is_strategy=True),many=True
                 ).data
+                data_flat["saltise_strategy"] = WorkflowSerializerShallow(
+                    Activity.objects.filter(from_saltise=True,is_strategy=True),many=True
+                ).data
                   
     context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
     context["is_strategy"] = JSONRenderer().render(workflow.is_strategy).decode("utf-8")
@@ -1573,7 +1576,7 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=workflow_id)
     strategy = Workflow.objects.get(pk=strategy_id)
     try:
-        if(strategy.get_subclass().author == request.user or strategy.is_published):
+        if(strategy.get_subclass().author == request.user or strategy.published):
             #first, check compatibility between types (activity/course)
             if strategy.type!=workflow.type:
                 raise ValidationError("Mismatch between types")

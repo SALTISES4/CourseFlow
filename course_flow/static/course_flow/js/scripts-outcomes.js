@@ -15,10 +15,6 @@ const rootReducer = Redux.combineReducers({
 
 var store;
 
-
-
-
-
 export function renderOutcomeView(container){
     store = createStore(rootReducer,initial_data);
     reactDom.render(

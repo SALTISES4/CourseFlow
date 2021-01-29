@@ -658,6 +658,7 @@ export function outcomeReducer(state={},action){
             return new_state;
         case 'outcome/insertChild':
         case 'outcome/insertBelow':
+            console.log("INSERTED CHILD");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parentID){
                     var new_state = state.slice();
@@ -674,6 +675,7 @@ export function outcomeReducer(state={},action){
                             new_state.push(action.payload.children[i]);
                         }
                     }
+                    return new_state;
                 }
             }
             return state;
@@ -765,6 +767,12 @@ export function strategyReducer(state={},action){
             let new_state=state.slice();
             new_state.push(action.payload.strategy);
             return new_state;
+        default:
+            return state;
+    }
+}
+export function saltiseStrategyReducer(state={},action){
+    switch(action.type){
         default:
             return state;
     }

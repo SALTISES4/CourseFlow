@@ -185,10 +185,11 @@ class StrategyBarUnconnected extends ComponentJSON{
     
     
     render(){
-        console.log("available strats!");
-        console.log(this.props.available_strategies);
         
         var strategies = this.props.available_strategies.map((strategy)=>
+            <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
+        );
+        var saltise_strategies = this.props.saltise_strategies.map((strategy)=>
             <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
         );
         
@@ -196,10 +197,17 @@ class StrategyBarUnconnected extends ComponentJSON{
         
         return reactDom.createPortal(
             <div id="strategy-bar-workflow" class="right-panel-inner">
-                <h4>Strategies:</h4>
+                <h4>My Strategies:</h4>
                 <div class="strategy-bar-strategy-block">
                     {strategies}
                 </div>
+                {(saltise_strategies.length>0) &&
+                    [<h4>SALTISE Strategies:</h4>,
+                    <div class="strategy-bar-strategy-block">
+                        {saltise_strategies}
+                    </div>
+                     ]
+                }
             </div>
         ,$("#strategy-bar")[0]);
     }
@@ -207,7 +215,8 @@ class StrategyBarUnconnected extends ComponentJSON{
 }
 const mapStrategyBarStateToProps = state=>({
     data:state.workflow,
-    available_strategies:state.strategy
+    available_strategies:state.strategy,
+    saltise_strategies:state.saltise_strategy,
 })
 export const StrategyBar = connect(
     mapStrategyBarStateToProps,

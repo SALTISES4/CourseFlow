@@ -908,6 +908,7 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
             "outcomes_sort",
             "author_id",
             "is_strategy",
+            "published",
         ]
 
     weekworkflow_set = serializers.SerializerMethodField()
@@ -919,7 +920,9 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
     )
     
     def get_author_id(self,instance):
-        return instance.author.id
+        if(instance.author is not None):
+            return instance.author.id
+        return None
 
     def get_weekworkflow_set(self, instance):
         links = instance.weekworkflow_set.all().order_by("rank")
@@ -940,6 +943,7 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
         )
         instance.outcomes_type=validated_data.get("outcomes_type", instance.outcomes_type)
         instance.outcomes_sort=validated_data.get("outcomes_sort", instance.outcomes_sort)
+        instance.published=validated_data.get("published", instance.published)
         instance.save()
         return instance
 
@@ -967,13 +971,16 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "outcomes_type",
             "outcomes_sort",
             "is_strategy",
+            "published",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
         ]
         
     def get_author_id(self,instance):
-        return instance.author.id
+        if(instance.author is not None):
+            return instance.author.id
+        return None
 
     def create(self, validated_data):
         return Program.objects.create(
@@ -1007,13 +1014,16 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "outcomes_type",
             "outcomes_sort",
             "is_strategy",
+            "published",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
         ]
         
     def get_author_id(self,instance):
-        return instance.author.id
+        if(instance.author is not None):
+            return instance.author.id
+        return None
 
     def create(self, validated_data):
         return Course.objects.create(
@@ -1044,13 +1054,16 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "parent_workflow",
             "outcomes_sort",
             "is_strategy",
+            "published",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
         ]
         
     def get_author_id(self,instance):
-        return instance.author.id
+        if(instance.author is not None):
+            return instance.author.id
+        return None
 
     def create(self, validated_data):
         if User.objects.filter(username=self.initial_data["author"]).exists():
