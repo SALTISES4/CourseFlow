@@ -19,7 +19,7 @@ class OutcomeNodeView extends ComponentJSON{
         let data = this.props.data;
         
         return (
-            <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
+            <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
                 <NodeOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             
                 {!read_only && <div class="mouseover-actions">

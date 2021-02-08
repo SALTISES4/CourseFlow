@@ -12,6 +12,7 @@ import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers.js";
 import {OutcomeBar} from "./OutcomeTopView.js";
 import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
+import WorkflowLegend from "./WorkflowLegend.js";
 
 
 
@@ -21,6 +22,7 @@ class WorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="workflow";
+        this.state={};
     }
     
     render(){
@@ -33,7 +35,6 @@ class WorkflowView extends ComponentJSON{
         );
         var selector = this;
         
-        console.log(data);
         
         
         return(
@@ -42,6 +43,15 @@ class WorkflowView extends ComponentJSON{
                     <div class="workflow-details">
                         <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
                         {this.addEditable(data)}
+                        {reactDom.createPortal(
+                        <div class="topdropwrapper" title="Show/Hide Legend">
+                            <img src={iconpath+"expand.svg"} onClick={this.toggleLegend.bind(this)}/>
+                        </div>,
+                        $("#viewbar")[0]
+                        )}
+                        {this.state.show_legend && 
+                            <WorkflowLegend toggle={this.toggleLegend.bind(this)}/>
+                        }
                         <div class="column-row">
                             {columnworkflows}
                         </div>
@@ -64,7 +74,7 @@ class WorkflowView extends ComponentJSON{
                     {!read_only && !data.is_strategy &&
                         <OutcomeBar/>
                     }
-                    {!read_only && !data.is_strategy &&
+                    {!read_only && !data.is_strategy && data.type != "program" &&
                         <StrategyBar/>
                     }
                 </div>
@@ -94,6 +104,14 @@ class WorkflowView extends ComponentJSON{
         if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position))
         console.log(type);
         if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position))
+    }
+                     
+    toggleLegend(){
+        if(this.state.show_legend){
+            this.setState({show_legend:false});
+        }else{
+            this.setState({show_legend:true});
+        }
     }
 }
 const mapWorkflowStateToProps = state=>({
@@ -154,7 +172,7 @@ class NodeBarUnconnected extends ComponentJSON{
         
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
-                <h4>Nodes:</h4>
+                <h4 class="drag-and-drop">Nodes:</h4>
                 <div class="node-bar-column-block">
                     {nodebarcolumnworkflows}
                 </div>
@@ -197,12 +215,12 @@ class StrategyBarUnconnected extends ComponentJSON{
         
         return reactDom.createPortal(
             <div id="strategy-bar-workflow" class="right-panel-inner">
-                <h4>My Strategies:</h4>
+                <h4 class="drag-and-drop">My Strategies:</h4>
                 <div class="strategy-bar-strategy-block">
                     {strategies}
                 </div>
                 {(saltise_strategies.length>0) &&
-                    [<h4>SALTISE Strategies:</h4>,
+                    [<h4 class="drag-and-drop">SALTISE Strategies:</h4>,
                     <div class="strategy-bar-strategy-block">
                         {saltise_strategies}
                     </div>

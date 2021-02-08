@@ -129,10 +129,10 @@ export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log(
 }
 
 //Causes the specified throughmodel to delete itself
-export function unlinkOutcomeFromNode(objectID,objectType,callBackFunction=()=>console.log("success")){
+export function unlinkOutcomeFromNode(nodeID,outcomeID,callBackFunction=()=>console.log("success")){
     $.post(post_paths.unlink_outcome_from_node, {
-        objectID:JSON.stringify(objectID),
-        objectType:JSON.stringify(objectType)
+        nodePk:JSON.stringify(nodeID),
+        outcomePk:JSON.stringify(outcomeID)
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
@@ -140,9 +140,10 @@ export function unlinkOutcomeFromNode(objectID,objectType,callBackFunction=()=>c
 }
 
 //Causes the specified throughmodel to update its degree
-export function updateOutcomenodeDegree(objectID,value,callBackFunction=()=>console.log("success")){
+export function updateOutcomenodeDegree(nodeID,outcomeID,value,callBackFunction=()=>console.log("success")){
     $.post(post_paths.update_outcomenode_degree, {
-        objectID:JSON.stringify(objectID),
+        nodePk:JSON.stringify(nodeID),
+        outcomePk:JSON.stringify(outcomeID),
         degree:JSON.stringify(value)
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);

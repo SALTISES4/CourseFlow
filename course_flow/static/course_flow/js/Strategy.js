@@ -18,9 +18,16 @@ class StrategyView extends ComponentJSON{
         var title;
         if(data)title = data.title;
         if(!title)title="untitled strategy";
+        let strategy_icon
+        if(data.strategy_icon)strategy_icon = (
+            <img src = {iconpath+Constants.strategy_keys[data.strategy_icon]+".svg"}/>
+        );
         return(
             <div class="strategy-bar-strategy strategy new-strategy" ref={this.maindiv}>
-                {title}
+                {strategy_icon}
+                <div>
+                    {title}
+                </div>
             </div>
         );
         

@@ -7,8 +7,36 @@ p{
     color:black;
 }
 
+button{
+    border:2px outset #1976bc;
+    background:white;
+    padding:5px;
+    border-radius:5px;
+}
+
 :focus{
     outline:none;
+}
+
+.workflow-create-wrapper{
+    font-family:sans-serif;
+    width:100%;
+    height:100%;
+    background:white;
+    padding-top:100px;
+    padding-left:40px;
+}
+
+.workflow-create-wrapper p label, .workflow-create-wrapper p input, .workflow-create-wrapper p textarea{
+    vertical-align:top;
+    display:block;
+}
+
+.workflow-create-wrapper p input, .workflow-create-wrapper p textarea{
+    width:400px;
+    resize:none;
+    margin-top:4px;
+    margin-bottom:10px;
 }
 
 .workflow-wrapper{
@@ -290,6 +318,7 @@ p{
     background:white;
     border-radius:0 0 5px 5px;
     overflow:hidden;
+    cursor:pointer;
 }
 
 .node-drop-side{
@@ -362,6 +391,7 @@ p{
 .outcome-drop{
     margin-left:14px;
     line-height:12px;
+    cursor:pointer;
 }
 
 .outcome-drop-img{
@@ -387,7 +417,7 @@ p{
 }
 
 .outcome-bar-outcome-block .outcome-outcome{
-    border:3px solid black;
+    border:3px outset #1976bc;
     margin-bottom:2px;
 }
 
@@ -397,7 +427,7 @@ p{
 }
 
 .outcome-bar-outcome-block{
-    border:3px solid black;
+    border:3px outset #1976bc;
 }
 
 .outcome-bar-outcome-block .outcome-drop{
@@ -405,6 +435,10 @@ p{
 }
 .outcome-bar-outcome-block .outcome-title, .outcome-node-container .outcome-title{
     font-size:10px;
+}
+
+.outcome-bar-outcome-block .outcome-title{
+    cursor:pointer;
 }
 
 .outcome-ghost{
@@ -429,6 +463,9 @@ p{
     background:white;
     border:2px solid;
     border-radius:10px;
+    z-index:1;
+    background:white;
+    width:200px;
 }
 
 .outcome-node-indicator-number{
@@ -446,8 +483,8 @@ p{
 }
 
 .outcome-node-container .outcome{
-    min-width:200px;
-    max-width:200px;
+    min-width:initial;
+    max-width:initial;
     margin:0px;
     border:0px;
 }
@@ -474,6 +511,25 @@ p{
 
 .outcome-node-container .outcome-outcome{
     position:relative;
+}
+
+.outcome-hover, .outcome-toggle{
+    outline:2px solid #ffff80;
+}
+
+.outcome-toggle-checkbox{
+    position:absolute;
+    right:-2px;
+    top:-2px;
+    display:none;
+}
+
+.outcome-hover>.outcome-toggle-checkbox{
+    display:block;
+}
+
+.outcome-bar-outcome-block .outcome-outcome{
+    background:white;
 }
 
 .outcome-table{
@@ -593,6 +649,7 @@ p{
 .outcome-table .node-title{
     width:100%;
     min-height:0px;
+    max-height:14px;
 }
 
 .outcome-table .node-top-row{
@@ -695,6 +752,7 @@ input:checked +.slider::before{
     width:20px;
     height:20px;
     display:inline-block;
+    cursor:pointer;
 }
 
 .action-button img{
@@ -765,6 +823,7 @@ circle.mouseover{
     position:relative;
 }
 
+
 .side-bar .ui-tabs-nav{
     margin:5px -2px 5px 5px; 
     padding:0px;
@@ -804,6 +863,46 @@ circle.mouseover{
     filter:none;
 }
 
+.side-bar select, .side-bar input[type=text], .side-bar textarea, .side-bar input[type=number]{
+    width:100%;
+    box-sizing:border-box;
+    padding:5px;
+    border:1px solid lightgray;
+    margin-top:2px;
+    margin-bottom:2px;
+}
+
+.side-bar button{
+    margin-top:2px;
+    margin-bottom:2px;
+    box-sizing:100%;
+    width:100%
+}
+
+.side-bar input[type=text]{
+    padding-top:6px;
+    padding-bottom:6px;
+}
+
+.side-bar input.half-width, .side-bar select.half-width{
+    width:50%;
+}
+
+.side-bar .delete-self-button{
+    margin:5px;
+    text-align:center;
+}
+
+.half-width{
+    width:50%;
+    display:inline-block;
+    box-sizing:border-box;
+}
+
+.right-panel-container textarea{
+    font-family:sans-serif;
+    resize:vertical;
+}
 
 .right-panel-inner{
     display:inline;
@@ -829,7 +928,7 @@ circle.mouseover{
 .node-bar-column{
     font-size:14px;
     width:100%;
-    border:3px solid;
+    border:3px outset;
     padding:10px;
     box-sizing:border-box;
 }
@@ -856,9 +955,22 @@ circle.mouseover{
     display:block;
     margin:2px;
     font-size:14px;
-    border:3px solid;
+    border:3px outset #1976bc;
     padding:10px;
     box-sizing:border-box;
+    white-space:nowrap;
+}
+
+.strategy-bar-strategy img{
+    width:24px;
+    display:inline-block;
+    vertical-align:middle;
+}
+.strategy-bar-strategy div{
+    display:inline-block;
+    vertical-align:middle;
+    margin-left:8px;
+    white-space:normal;
 }
 
 .week-ghost{
@@ -978,6 +1090,89 @@ circle.mouseover{
     left:0%;
     bottom:0%;
     position:absolute;
+}
+
+.workflow-legend{
+    cursor:move;
+    position:fixed;
+    background:white;
+    z-index:5;
+    padding:20px;
+    border:2px solid #1976bc;
+    left:calc(100% - 460px);
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+}
+
+.workflow-legend .legend-section{
+    
+}
+
+.workflow-legend .legend-line{
+    width:100%;
+    padding:2px;
+}
+
+.workflow-legend .legend-line img{
+    display:inline-block;
+    vertical-align: middle;
+    width:24px
+}
+
+.workflow-legend .legend-line div{
+    display:inline-block;
+    vertical-align: middle;
+    margin-left:8px;
+    font-weight:600;
+    font-size:12px;
+}
+
+.window-close-button{
+    right:8px;
+    top:8px;
+    position:absolute;
+    cursor:pointer;
+}
+
+.window-close-button img{
+    width:16px;
+}
+
+hr{
+    margin:4px;
+    margin-left:20%;
+    margin-right:20%;
+}
+
+h1{
+    color:#1976bc;
+    
+}
+
+h3{
+    color:#1976bc;
+}
+
+h4{
+    margin-top:10px;
+    margin-bottom:5px;
+    color:#1976bc;
+}
+h5{
+    margin-top:8px;
+    margin-bottom:8px;
+    color:#1976bc;
+}
+h4.drag-and-drop::after{
+    content:"\A Drag and drop to add";
+    font-size:10px;
+    color:grey;
+    white-space:pre;
+    
+}
+
+
+.workflow-legend *:is(h4, h5), .right-panel-container *:is(h3, h4, h5){
+    color:#1976bc;
 }
 
 

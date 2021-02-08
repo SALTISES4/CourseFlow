@@ -2,7 +2,7 @@ from functools import wraps
 from django.http import JsonResponse
 from django.conf import settings
 import json
-from .models import User, NodeWeek, Week
+from .models import User, NodeWeek, Week, Outcome, OutcomeOutcome
 from .utils import *
 
 
@@ -200,6 +200,27 @@ def new_parent_authorship(view_func):
                 return view_func(request, *args, **kwargs)
 
             parent = Week.objects.get(id=parent_id)
+
+            if hasattr(parent, "get_subclass"):
+                parent_author = parent.get_subclass().author
+            else:
+                parent_author = parent.author
+
+            if User.objects.get(id=request.user.id) != parent_author:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+        elif json.loads(request.POST.get("objectType")) == "outcomeoutcome":
+
+            object_id = json.loads(request.POST.get("objectID"))
+            parent_id = json.loads(request.POST.get("parentID"))
+
+            old_parent_id = OutcomeOutcome.objects.get(id=object_id).parent.id
+
+            if parent_id == old_parent_id:
+                return view_func(request, *args, **kwargs)
+
+            parent = Outcome.objects.get(id=parent_id)
 
             if hasattr(parent, "get_subclass"):
                 parent_author = parent.get_subclass().author

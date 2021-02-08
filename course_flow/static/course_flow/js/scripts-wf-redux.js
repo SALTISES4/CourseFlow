@@ -20,10 +20,25 @@ import * as Reducers from "./Reducers.js";
 export class SelectionManager{
     constructor(){
         this.currentSelection;
-        $(document).on("click",this.changeSelection.bind(this))
+        this.mouse_isclick=false;
+        var selector = this;
+        $(document).on("mousedown",()=>{
+            selector.mouse_isclick=true;
+            setTimeout(()=>{selector.mouse_isclick=false;},500);
+        });
+        $(document).on("mousemove",()=>{
+            selector.mouse_isclick=false;
+        });
+        $(document).on("mouseup",(evt,newSelection)=>{
+            if(selector.mouse_isclick){
+                selector.changeSelection(evt,newSelection);
+            }
+        });
     }
     
     changeSelection(evt,newSelection){
+        console.log(evt);
+        if(read_only)return;
         evt.stopPropagation();
         if(this.currentSelection)this.currentSelection.setState({selected:false});
         this.currentSelection=newSelection;

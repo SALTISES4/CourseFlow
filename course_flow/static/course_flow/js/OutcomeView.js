@@ -129,12 +129,14 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         return(
             <div
             class={
-                "outcome"+((data.is_dropped && " dropped")||"")
+                "outcome"+((data.is_dropped && " dropped")||"")+" outcome-"+data.id
             }
+            
             ref={this.maindiv}>
-                <div class="outcome-title">
+                <div class="outcome-title" >
                     <TitleText text={data.title} defaultText={"Click to edit"}/>
                 </div>
+                <input class="outcome-toggle-checkbox" type="checkbox" title="toggle highlighting" onChange={this.clickFunction.bind(this)}/>
                 {children.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
@@ -181,10 +183,40 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
             }
         });
     }
+
+    clickFunction(evt){
+        if(evt.target.checked){
+            this.toggleCSS(true,"toggle");
+        }else{
+            this.toggleCSS(false,"toggle");
+        }
+    }
+
+    toggleCSS(is_toggled,type){
+        if(is_toggled){
+            $(".outcome-"+this.props.data.id).addClass("outcome-"+type);
+            $(".outcome-"+this.props.data.id).parents(".node").addClass("outcome-"+type);
+        }else{
+            $(".outcome-"+this.props.data.id).removeClass("outcome-"+type);
+            $(".outcome-"+this.props.data.id).parents(".node").removeClass("outcome-"+type);
+        }
+    }
     
     postMountFunction(){
         this.makeDraggable();
         $(this.maindiv.current)[0].dataDraggable={outcome:this.props.data.id}
+        $(this.maindiv.current).mouseenter((evt)=>{
+            this.toggleCSS(true,"hover");
+        });
+        $(this.maindiv.current).mouseleave((evt)=>{
+            this.toggleCSS(false,"hover");
+        });
+        $(this.children_block.current).mouseleave((evt)=>{
+            this.toggleCSS(true,"hover");
+        });
+        $(this.children_block.current).mouseenter((evt)=>{
+            this.toggleCSS(false,"hover");
+        });
     }
 
 }
@@ -221,7 +253,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         return(
             <div
             class={
-                "outcome"+((data.is_dropped && " dropped")||"")
+                "outcome"+((data.is_dropped && " dropped")||"")+" outcome-"+data.id
             }
             ref={this.maindiv}>
                 <div class="outcome-title">

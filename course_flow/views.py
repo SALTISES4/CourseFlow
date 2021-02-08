@@ -598,6 +598,9 @@ def get_workflow_context_data(workflow,context,user):
                 data_flat["strategy"] = WorkflowSerializerShallow(
                     Course.objects.filter(author=user,is_strategy=True),many=True
                 ).data
+                data_flat["saltise_strategy"] = WorkflowSerializerShallow(
+                    Course.objects.filter(from_saltise=True,is_strategy=True),many=True
+                ).data
             elif(workflow.type=="activity"):
                 data_flat["strategy"] = WorkflowSerializerShallow(
                     Activity.objects.filter(author=user,is_strategy=True),many=True
@@ -2057,13 +2060,10 @@ def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
         outcome = Outcome.objects.get(id=outcome_id)
         if OutcomeNode.objects.filter(node=node,outcome=outcome).count()>0:
             return JsonResponse({"action": "error"})
-        if outcome.author == node.author:
-            outcomenode = OutcomeNode.objects.create(
-                outcome=outcome,
-                node=node,
-            )
-        else:
-            raise ValidationError("Authorship conflict")
+        outcomenode = OutcomeNode.objects.create(
+            outcome=outcome,
+            node=node,
+        )
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -2098,15 +2098,14 @@ def update_value(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
+@is_owner("nodePk")
+@is_owner("outcomePk")
 def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
-    object_id = json.loads(request.POST.get("objectID"))
+    node_id = json.loads(request.POST.get("nodePk"))
+    outcome_id = json.loads(request.POST.get("outcomePk"))
     degree = json.loads(request.POST.get("degree"))
     try:
-        model = OutcomeNode.objects.get(pk=object_id);
-        if(request.user.id != model.node.author.id or request.user.id != model.outcome.author.id):
-            response = JsonResponse({"action": "error"})
-            response.status_code = 401
-            return response
+        model = OutcomeNode.objects.get(node__id=node_id,outcome__id=outcome_id);
         model.degree=degree
         model.save()
     except (ProtectedError, ObjectDoesNotExist):
@@ -2280,14 +2279,13 @@ def delete_self(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
+@is_owner("nodePk")
+@is_owner("outcomePk")
 def unlink_outcome_from_node(request: HttpRequest) -> HttpResponse:
-    object_id = json.loads(request.POST.get("objectID"))
+    node_id = json.loads(request.POST.get("nodePk"))
+    outcome_id = json.loads(request.POST.get("outcomePk"))
     try:
-        model = OutcomeNode.objects.get(pk=object_id);
-        if(request.user.id != model.node.author.id or request.user.id != model.outcome.author.id):
-            response = JsonResponse({"action": "error"})
-            response.status_code = 401
-            return response
+        model = OutcomeNode.objects.get(node__id=node_id,outcome_id=outcome_id);
         model.delete()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})

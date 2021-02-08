@@ -121,3 +121,9 @@ export function mouseOutsidePadding(evt,elem,padding){
 export function triggerHandlerEach(trigger,eventname){
     return trigger.each((i,element)=>{$(element).triggerHandler(eventname);});
 }
+
+
+export function pushOrCreate(obj,index,value){
+    if(obj[index])obj[index].push(value);
+    else obj[index]=[value];
+}

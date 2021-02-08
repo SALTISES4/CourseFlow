@@ -731,8 +731,8 @@ export function outcomeNodeReducer(state={},action){
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
+                    unlinkOutcomeFromNode(state[i].node,state[i].outcome)
                     new_state.splice(i,1);
-                    unlinkOutcomeFromNode(action.payload.id)
                     return new_state;
                 }
             }
@@ -745,7 +745,7 @@ export function outcomeNodeReducer(state={},action){
                     new_state[i][action.payload.field]=action.payload.value;
                     let json = {};
                     json[action.payload.field]=action.payload.value;
-                    if(!read_only)updateOutcomenodeDegree(action.payload.id,action.payload.value);
+                    if(!read_only)updateOutcomenodeDegree(new_state[i].node,new_state[i].outcome,action.payload.value);
                     return new_state;
                 }
             }

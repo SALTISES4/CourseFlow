@@ -52,7 +52,7 @@ class OutcomeBarUnconnected extends ComponentJSON{
         
         return reactDom.createPortal(
             <div id="outcome-bar-workflow" class="right-panel-inner">
-                <h4>Outcomes:</h4>
+                <h4 class="drag-and-drop">Outcomes:</h4>
                 <div class="outcome-bar-outcome-block">
                     {outcomebaroutcomes}
                 </div>

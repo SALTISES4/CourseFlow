@@ -76,14 +76,12 @@ export class ComponentJSON extends React.Component{
                     drag_helper.addClass("valid-drop");
                     drop_item.addClass("new-node-drop-over");
                    
-                }else if(drag_item.hasClass("outcome")){
-                    return;
-                }else if(drag_item.hasClass("strategy")){
-                    return;
-                }else{
+                }else if(drag_item.hasClass("node-week")){
                     this.sortableMovedFunction(
                         parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id
                     );
+                }else{
+                    console.log(drag_item);
                 }
             },
             out:(e,ui)=>{
@@ -239,13 +237,13 @@ export class ComponentJSON extends React.Component{
                     {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Title:</h4>
-                            <input value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
+                            <input type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Description:</h4>
-                            <input value={data.description} maxlength="500" onChange={this.inputChanged.bind(this,"description")}/>
+                            <textarea value={data.description} maxlength="500" onChange={this.inputChanged.bind(this,"description")}/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
@@ -271,12 +269,14 @@ export class ComponentJSON extends React.Component{
                     {type=="node" &&
                         <div>
                             <h4>Time:</h4>
-                            <input value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
-                            <select value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
-                                {time_choices.map((choice)=>
-                                    <option value={choice.type}>{choice.name}</option>
-                                )}
-                            </select>
+                            <div>
+                                <input class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
+                                <select class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
+                                    {time_choices.map((choice)=>
+                                        <option value={choice.type}>{choice.name}</option>
+                                    )}
+                                </select>
+                            </div>
                         </div>
                     }
                     {type=="node" && data.node_type!=0 &&
@@ -343,7 +343,10 @@ export class ComponentJSON extends React.Component{
                         </div>
                     }
 
-                    {(!no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && this.addDeleteSelf(data)}
+                    {(!no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && 
+                        [<h4>Delete:</h4>,
+                        this.addDeleteSelf(data)]
+                    }
                 </div>
             ,$("#edit-menu")[0])
         }

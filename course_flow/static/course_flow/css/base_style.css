@@ -368,13 +368,6 @@ text {
     background:white;
     overflow:visible;
 }
-h2:not(.mdc-dialog__header__title), p {
-  font-family: "Montserrat", serif;
-}
-h1 {
-  font-family: "Montserrat", serif;
-  color: #F4F4F4;
-}
 
 
 .body-wrapper{

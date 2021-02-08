@@ -912,12 +912,14 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
             "outcomes_sort",
             "author_id",
             "is_strategy",
+            "strategy_icon",
             "published",
         ]
 
     weekworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
+    strategy_icon = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
@@ -928,6 +930,12 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
             return instance.author.id
         return None
 
+    def get_strategy_icon(self,instance):
+        if instance.is_strategy:
+            return instance.weeks.first().strategy_classification
+        else:
+            return None
+    
     def get_weekworkflow_set(self, instance):
         links = instance.weekworkflow_set.all().order_by("rank")
         return list(map(linkIDMap, links))

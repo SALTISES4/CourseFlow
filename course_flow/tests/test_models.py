@@ -1886,7 +1886,8 @@ class ModelViewTest(TestCase):
         response = self.client.post(
             reverse("course_flow:unlink-outcome-from-node"),
             {
-                "objectID":outcomenode.id
+                "nodePk":node.id,
+                "outcomePk":outcome.id
             },
         )
         self.assertEqual(response.status_code, 401)

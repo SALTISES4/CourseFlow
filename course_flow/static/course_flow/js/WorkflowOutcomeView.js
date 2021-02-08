@@ -4,6 +4,7 @@ import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON.js";
 import {NodeOutcomeView} from "./NodeView.js";
 import {TableOutcomeView} from "./OutcomeView.js";
+import {pushOrCreate} from "./Constants.js"
 
 
 //Represents the entire outcomeview, barring top level workflow stuff
@@ -15,7 +16,6 @@ class WorkflowOutcomeView extends ComponentJSON{
     
     render(){
         
-        let headers = [];
         /*for(let i=0;i<this.props.data.length;i++){
             for(let j=0;j<this.props.data[i].nodes.length+2;j++){
                 if(j==0)headers.push(
@@ -28,6 +28,8 @@ class WorkflowOutcomeView extends ComponentJSON{
                 )
             }
         }*/
+        console.log("mapping data");
+        console.log(this.props.data);
         let nodes = this.props.data.map((nodecategory)=>
             <div class="table-group">
                 <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
@@ -39,6 +41,7 @@ class WorkflowOutcomeView extends ComponentJSON{
                 <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
             </div>
         );
+        console.log("data mapped");
         
         let outcomes = this.props.outcomeproject.map((outcomeproject)=>
             <TableOutcomeView objectID={outcomeproject.outcome} nodecategory={this.props.data} outcomes_type={this.props.outcomes_type}/>                                          
@@ -47,7 +50,6 @@ class WorkflowOutcomeView extends ComponentJSON{
         
         return(
             <div class="outcome-table">
-                <div class="outcome-row node-row"><div class="outcome-head"></div><div class="outcome-cells">{headers}</div></div>
                 <div class="outcome-row node-row"><div class="outcome-head"></div><div class="outcome-cells">{nodes}</div>
                 <div class="table-cell blank-cell"><div class="total-header"></div></div><div class="table-cell total-cell grand-total-cell"><div class="total-header">Grand Total</div></div></div>
                 {outcomes}
@@ -55,10 +57,6 @@ class WorkflowOutcomeView extends ComponentJSON{
         );
     }
     
-}
-function pushOrCreate(obj,index,value){
-    if(obj[index])obj[index].push(value);
-    else obj[index]=[value];
 }
 const mapStateToProps = (state,own_props)=>{
     let weekworkflow_order = state.workflow.weekworkflow_set;
@@ -70,6 +68,7 @@ const mapStateToProps = (state,own_props)=>{
     let nodeweeks_ordered = state.nodeweek.slice().sort(function(a,b){return nodeweek_order.indexOf(a.id)-nodeweek_order.indexOf(b.id)});
     let node_order = nodeweeks_ordered.map((nodeweek)=>nodeweek.node);
     let nodes_ordered = state.node.slice().sort(function(a,b){return node_order.indexOf(a.id)-node_order.indexOf(b.id)});
+    console.log("sorting method:");
     console.log(state.workflow.outcomes_sort);
     switch(parseInt(state.workflow.outcomes_sort)){
         case 0:
@@ -78,7 +77,7 @@ const mapStateToProps = (state,own_props)=>{
                 let nodeweek = nodeweeks_ordered[i];
                 pushOrCreate(nodes_by_week,nodeweek.week,nodeweek.node);
             }
-            return {data:weeks_ordered.map((week,index)=>{return {title:(week.title||week.week_type_display+" "+(index+1)),nodes:nodes_by_week[week.id]};}),outcomeproject:state.outcomeproject};
+            return {data:weeks_ordered.map((week,index)=>{return {title:(week.title||week.week_type_display+" "+(index+1)),nodes:(nodes_by_week[week.id]||[])};}),outcomeproject:state.outcomeproject};
         case 1:
             let columnworkflow_order = state.workflow.columnworkflow_set;
             let column_order = state.columnworkflow.slice().sort(function(a,b){return(columnworkflow_order.indexOf(a.id)-columnworkflow_order.indexOf(b.id))}).map((columnworkflow)=>columnworkflow.week);
