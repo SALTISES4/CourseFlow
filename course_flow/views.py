@@ -52,6 +52,9 @@ from .decorators import (
     is_parent_owner,
     is_throughmodel_parent_owner,
     new_parent_authorship,
+    is_owner_or_none,
+    is_owner_or_published,
+    is_strategy_owner_or_published
 )
 from django.urls import reverse
 from django.views.generic.edit import CreateView
@@ -1523,6 +1526,7 @@ def new_column(request: HttpRequest) -> HttpResponse:
 @require_POST
 @ajax_login_required
 @is_owner("weekPk")
+@is_owner_or_none("columnPk")
 def new_node(request: HttpRequest) -> HttpResponse:
     week_id = json.loads(request.POST.get("weekPk"))
     column_id = json.loads(request.POST.get("columnPk"))
@@ -1549,8 +1553,6 @@ def new_node(request: HttpRequest) -> HttpResponse:
                 ).workflow
             ).first()
             column = columnworkflow.column
-        if column.author != week.author:
-            raise ValidationError("Column and week have different authors")
         if position < 0 or position > week.nodes.count():
             position = week.nodes.count()
         node = Node.objects.create(
@@ -1580,6 +1582,7 @@ def new_node(request: HttpRequest) -> HttpResponse:
 @require_POST
 @ajax_login_required
 @is_owner("workflowPk")
+@is_strategy_owner_or_published("strategyPk")
 def add_strategy(request: HttpRequest) -> HttpResponse:
     workflow_id = json.loads(request.POST.get("workflowPk"))
     strategy_id = json.loads(request.POST.get("strategyPk"))
@@ -1685,16 +1688,15 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
 @require_POST
 @ajax_login_required
 @is_owner("nodePk")
+@is_owner(False)
 def new_node_link(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
-    target_id = json.loads(request.POST.get("targetID"))
+    target_id = json.loads(request.POST.get("objectID"))
     source_port = json.loads(request.POST.get("sourcePort"))
     target_port = json.loads(request.POST.get("targetPort"))
     node = Node.objects.get(pk=node_id)
     target = Node.objects.get(pk=target_id)
     try:
-        if target.author != node.author:
-            raise ValidationError("Nodes have different authors")
         node_link = NodeLink.objects.create(
             author=node.author,
             source_node=node,
@@ -2030,17 +2032,15 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 @require_POST
 @ajax_login_required
 @is_owner("nodePk")
+@is_owner("columnPk")
 def change_column(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
-    new_column_id = json.loads(request.POST.get("columnID"))
+    new_column_id = json.loads(request.POST.get("columnPk"))
     try:
         node = Node.objects.get(id=node_id)
-        new_column = ColumnWorkflow.objects.get(id=new_column_id).column
-        if new_column.author == node.author:
-            node.column = new_column
-            node.save()
-        else:
-            raise ValidationError("Authorship conflict")
+        new_column = Column.objects.get(id=new_column_id)
+        node.column = new_column
+        node.save()
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -2105,7 +2105,10 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     outcome_id = json.loads(request.POST.get("outcomePk"))
     degree = json.loads(request.POST.get("degree"))
     try:
-        model = OutcomeNode.objects.get(node__id=node_id,outcome__id=outcome_id);
+        if OutcomeNode.objects.filter(node__id=node_id,outcome__id=outcome_id).count()>0:
+            model = OutcomeNode.objects.get(node__id=node_id,outcome__id=outcome_id);
+        else:
+            model = OutcomeNode.objects.create(node = Node.objects.get(id=node_id),outcome=Outcome.objects.get(id=outcome_id))
         model.degree=degree
         model.save()
     except (ProtectedError, ObjectDoesNotExist):
@@ -2123,34 +2126,34 @@ def set_linked_workflow(node: Node, workflow,new_project):
         project = (
             week.workflow_set.first().project_set.first()
         )
-    if project.author == node.author or project.published:
-        if WorkflowProject.objects.get(workflow=workflow).project == project:
-            node.linked_workflow = workflow
-            node.save()
-        else:
-            try:
-                if (
-                    workflow.author == node.author
-                    or WorkflowProject.objects.get(
-                        workflow=workflow
-                    ).project.published
-                ):
-                    new_workflow = duplicate_workflow(workflow, node.author,project)
-                    WorkflowProject.objects.create(
-                        workflow=new_workflow, project=project
-                    )
-                    node.linked_workflow = new_workflow
-                    node.save()
-                else:
-                    raise ValidationError("Project unpublished")
-            except ValidationError:
-                pass
+    if WorkflowProject.objects.get(workflow=workflow).project == project:
+        node.linked_workflow = workflow
+        node.save()
+    else:
+        try:
+            if (
+                workflow.author == node.author
+                or WorkflowProject.objects.get(
+                    workflow=workflow
+                ).project.published
+            ):
+                new_workflow = duplicate_workflow(workflow, node.author,project)
+                WorkflowProject.objects.create(
+                    workflow=new_workflow, project=project
+                )
+                node.linked_workflow = new_workflow
+                node.save()
+            else:
+                raise ValidationError("Project unpublished")
+        except ValidationError:
+            pass
 
 
 # Sets the linked workflow for a node, adding it to the project if different
 @require_POST
 @ajax_login_required
 @is_owner("nodePk")
+@is_owner_or_published("workflowPk")
 def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
     try:
         node_id = json.loads(request.POST.get("nodePk"))

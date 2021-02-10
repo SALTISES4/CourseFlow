@@ -19,7 +19,7 @@ export class WeekViewUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
         var nodes = data.nodeweek_set.map((nodeweek)=>
-            <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} selection_manager={this.props.selection_manager}/>
+            <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} selection_manager={this.props.selection_manager}  column_order={this.props.column_order}/>
         );
         if(nodes.length==0)nodes.push(
             <div class="node-week" style={{height:"100%"}}></div>

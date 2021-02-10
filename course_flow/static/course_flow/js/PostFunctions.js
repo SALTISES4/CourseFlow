@@ -85,7 +85,8 @@ export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunc
 export function newNodeLink(source_node,target_node,source_port,target_port,callBackFunction=()=>console.log("success")){
     $.post(post_paths.new_node_link, {
         nodePk:JSON.stringify(source_node),
-        targetID:JSON.stringify(target_node),
+        objectID:JSON.stringify(target_node),
+        objectType:JSON.stringify("node"),
         sourcePort:JSON.stringify(source_port),
         targetPort:JSON.stringify(target_port),
         
@@ -210,7 +211,7 @@ export function columnChanged(objectID,columnID,callBackFunction=()=>console.log
     
         $.post(post_paths.column_changed, {
             nodePk:JSON.stringify(objectID),
-            columnID:JSON.stringify(columnID),
+            columnPk:JSON.stringify(columnID),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else console.log("Failed");

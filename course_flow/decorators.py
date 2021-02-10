@@ -2,7 +2,7 @@ from functools import wraps
 from django.http import JsonResponse
 from django.conf import settings
 import json
-from .models import User, NodeWeek, Week, Outcome, OutcomeOutcome
+from .models import User, NodeWeek, Week, Outcome, OutcomeOutcome, Workflow
 from .utils import *
 
 
@@ -91,6 +91,42 @@ def is_owner(model):
 
     return wrapped_view
 
+def is_owner_or_none(model):
+    def wrapped_view(fct):
+        @wraps(fct)
+        def _wrapped_view(request, model=model, *args, **kwargs):
+            if model:
+                if model[-2:] == "Pk":
+                    id = json.loads(request.POST.get(model))
+                    model = model[:-2]
+                else:
+                    id = json.loads(request.POST.get("json"))["id"]
+            else:
+                id = json.loads(request.POST.get("objectID"))
+                model = json.loads(request.POST.get("objectType"))
+            if id is None:
+                return fct(request,*args,**kwargs)
+            try:
+                object_type = get_model_from_str(model)
+                if hasattr(object_type.objects, "get_subclass"):
+                    object = object_type.objects.get_subclass(id=id)
+                else:
+                    object = object_type.objects.get(id=id)
+            except:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+            if User.objects.get(id=request.user.id) == object.author:
+                return fct(request, *args, **kwargs)
+            else:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view
+
 
 def is_owner_or_published(model):
     def wrapped_view(fct):
@@ -115,6 +151,26 @@ def is_owner_or_published(model):
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 401
                 return response
+            if (
+                User.objects.get(id=request.user.id) == object.author
+                or object.published
+            ):
+                return fct(request, *args, **kwargs)
+            else:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view
+
+def is_strategy_owner_or_published(model):
+    def wrapped_view(fct):
+        @wraps(fct)
+        def _wrapped_view(request, model=model, *args, **kwargs):
+            id = json.loads(request.POST.get(model))
+            object = Workflow.objects.get_subclass(id=id)
             if (
                 User.objects.get(id=request.user.id) == object.author
                 or object.published

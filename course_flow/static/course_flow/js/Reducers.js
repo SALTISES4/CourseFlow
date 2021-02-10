@@ -50,10 +50,10 @@ export const newNodeAction = (response_data) => {
     }
 }
 
-export const columnChangeNodeWeek = (id,delta_x,columnworkflows) => {
+export const columnChangeNodeWeek = (id,delta_x,columns) => {
     return {
         type: 'node/movedColumnBy',
-        payload:{id:id,delta_x,columnworkflows:columnworkflows}
+        payload:{id:id,delta_x,columns:columns}
     }
 }
 
@@ -467,18 +467,20 @@ export function nodeReducer(state={},action){
             var new_state = state.slice();
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
+                    console.log(action.payload.columns);
+                    console.log(action.payload.delta_x);
                     try{
-                        let columns = action.payload.columnworkflows;
-                        let old_columnworkflow_index = columns.indexOf(state[i].columnworkflow);
-                        let new_columnworkflow_index = old_columnworkflow_index+action.payload.delta_x;
-                        if(new_columnworkflow_index<0 || new_columnworkflow_index>=columns.length)return state;
-                        let new_columnworkflow = columns[new_columnworkflow_index];
+                        let columns = action.payload.columns;
+                        let old_column_index = columns.indexOf(state[i].column);
+                        let new_column_index = old_column_index+action.payload.delta_x;
+                        if(new_column_index<0 || new_column_index>=columns.length)return state;
+                        let new_column = columns[new_column_index];
                         var new_nodedata = {
                             ...state[i],
-                            columnworkflow:new_columnworkflow,
+                            column:new_column,
                         };
                         new_state.splice(i,1,new_nodedata);
-                        columnChanged(action.payload.id,new_columnworkflow);
+                        columnChanged(action.payload.id,new_column);
                     }catch(err){console.log("couldn't find new column");return state;}
                     return new_state;
                 }

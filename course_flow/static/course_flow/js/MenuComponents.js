@@ -134,6 +134,7 @@ export class WorkflowForMenu extends React.Component{
         var buttons=[];
         if(this.props.type=="projectmenu"||this.props.type=="homemenu"){
             if(this.props.owned){
+                console.log(this.props);
                 buttons.push(
                     <div onClick={(evt)=>{
                         if(window.confirm("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone.")){
@@ -147,6 +148,11 @@ export class WorkflowForMenu extends React.Component{
                 buttons.push(
                     <a href={update_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
                         <img src={iconpath+'pencil-blue.svg'}/>
+                    </a>
+                );
+                buttons.push(
+                    <a href={copy_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
+                        <img src={iconpath+'file_copy-24px.svg'}/>
                     </a>
                 );
             }

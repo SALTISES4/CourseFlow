@@ -25,7 +25,7 @@ class OutcomeView extends ComponentJSON{
         );
         
         let actions=[];
-        if(!read_only)actions.push(this.addInsertChild(data));
+        if(!read_only && data.depth<2)actions.push(this.addInsertChild(data));
         if(!read_only && data.depth>0){
             actions.push(this.addInsertSibling(data));
             actions.push(this.addDuplicateSelf(data));

@@ -14,7 +14,14 @@ export const getColumnWorkflowByID = (state,id)=>{
 export const getWeekByID = (state,id)=>{
     for(var i in state.week){
         var week = state.week[i];
-        if(week.id==id)return {data:week,column_order:state.workflow.columnworkflow_set,sibling_count:state.workflow.weekworkflow_set.length,nodeweeks:state.nodeweek};
+        if(week.id==id)return {
+            data:week,
+            column_order:state.columnworkflow.sort(
+                (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
+            ).map(columnworkflow=>columnworkflow.column),
+            sibling_count:state.workflow.weekworkflow_set.length,
+            nodeweeks:state.nodeweek
+        };
     }
 }
 export const getTermByID = (state,id)=>{
@@ -31,7 +38,14 @@ export const getTermByID = (state,id)=>{
                 let node = getNodeByID(state,node_week.node).data;
                 nodes_by_column[node.columnworkflow].push(nodeweeks[j]);
             }
-            return {data:week,column_order:state.workflow.columnworkflow_set,nodes_by_column:nodes_by_column,nodeweeks:state.nodeweek};
+            return {
+                data:week,
+                column_order:state.columnworkflow.sort(
+                    (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
+                ).map(columnworkflow=>columnworkflow.column),
+                nodes_by_column:nodes_by_column,
+                nodeweeks:state.nodeweek
+            };
         }
     }
 }
@@ -44,7 +58,7 @@ export const getWeekWorkflowByID = (state,id)=>{
 export const getNodeByID = (state,id)=>{
     for(var i in state.node){
         var node = state.node[i];
-        if(node.id==id)return {data:node,column_order:state.workflow.columnworkflow_set};
+        if(node.id==id)return {data:node};
     }
 }
 export const getNodeWeekByID = (state,id)=>{

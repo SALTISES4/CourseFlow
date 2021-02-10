@@ -1389,9 +1389,8 @@ class ModelViewTest(TestCase):
         self.assertEqual(Week.objects.all().count(), 6)
         self.assertEqual(new_activity.parent_workflow.id, activity.id)
 
-    # Test for linking a workflow from another project. The workflow should be duplicated into the project.
     # We try first for an unpublished, then a published project
-    def test_linked_wf_same_author(self):
+    def test_linked_wf_different_author(self):
         author = get_author()
         user = login(self)
         project = make_object("project", user)
@@ -1407,8 +1406,11 @@ class ModelViewTest(TestCase):
             reverse("course_flow:set-linked-workflow"),
             {"nodePk": node.id, "workflowPk": activity.id},
         )
+        self.assertEqual(response.status_code, 401)
         self.assertEqual(Node.objects.get(id=node.id).linked_workflow, None)
         project2.published = True
+        activity.published = True
+        activity.save()
         project2.save()
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
@@ -1722,7 +1724,7 @@ class ModelViewTest(TestCase):
         to_move = NodeWeek.objects.get(week=week2, rank=0)
         response = self.client.post(
             reverse("course_flow:change-column"),
-            {"nodePk": to_move.node.id, "columnID": columnworkflow1.id},
+            {"nodePk": to_move.node.id, "columnPk": columnworkflow1.column.id},
         )
         self.assertEqual(
             Node.objects.get(id=to_move.node.id).column.id, column2.id
@@ -1747,7 +1749,7 @@ class ModelViewTest(TestCase):
         )
         response = self.client.post(
             reverse("course_flow:change-column"),
-            {"nodePk": to_move.node.id, "columnID": columnworkflow2b.id},
+            {"nodePk": to_move.node.id, "columnPk": columnworkflow2b.column.id},
         )
         self.assertEqual(
             Node.objects.get(id=to_move.node.id).column.id, column2b.id
@@ -1846,7 +1848,10 @@ class ModelViewTest(TestCase):
             reverse("course_flow:new-node-link"),
             {
                 "nodePk": node1.id,
-                "targetID": node2.id,
+                "objectID": node2.id,
+                "objectType": JSONRenderer()
+                .render("node")
+                .decode("utf-8"),
                 "sourcePort": 2,
                 "targetPort": 0,
             },
@@ -1862,7 +1867,10 @@ class ModelViewTest(TestCase):
             reverse("course_flow:new-node-link"),
             {
                 "nodePk": node1.id,
-                "targetID": node2.id,
+                "objectID": node2.id,
+                "objectType": JSONRenderer()
+                .render("node")
+                .decode("utf-8"),
                 "sourcePort": 2,
                 "targetPort": 0,
             },
