@@ -52,7 +52,8 @@ def flow_patterns():
         url(r"^workflow/unlink-outcome-from-node/$", views.unlink_outcome_from_node, name="unlink-outcome-from-node"),
         url(r"^workflow/update-outcomenode-degree/$", views.update_outcomenode_degree, name="update-outcomenode-degree"),
         url(r"^workflow/duplicate-self/$", views.duplicate_self, name="duplicate-self"),
-        url(r"^workflow/duplicate-workflow/$", views.duplicate_workflow_ajax, name="duplicate-workflow"),
+        url(r"^project/duplicate-workflow/$", views.duplicate_workflow_ajax, name="duplicate-workflow"),
+        url(r"^project/duplicate-outcome/$", views.duplicate_outcome_ajax, name="duplicate-outcome"),
         url(r"^project/duplicate-project/$", views.duplicate_project_ajax, name="duplicate-project"),
         url(r"^project/duplicate-strategy/$", views.duplicate_strategy_ajax, name="duplicate-strategy"),
         url(

@@ -1454,15 +1454,18 @@ def duplicate_workflow(workflow: Workflow, author: User, new_project:Project) ->
 
 @require_POST
 @ajax_login_required
+@is_owner_or_published("workflowPk")
+@is_owner("projectPk")
 def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
-    project = workflow.project_set.first()
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
         clone = duplicate_workflow(workflow, request.user,project)
+        WorkflowProject.objects.create(project=project,workflow=workflow)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "clone_pk": workflow.pk})
+    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
 
 def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 
@@ -1488,14 +1491,62 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 
 @require_POST
 @ajax_login_required
+@is_owner_or_published("outcomePk")
+@is_owner("projectPk")
 def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
     outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
         clone = duplicate_outcome(outcome, request.user)
+        OutcomeProject.objects.create(project=project,outcome=outcome)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "clone_pk": outcome.pk})
+    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+
+
+def duplicate_project(project: Project, author: User) -> Project:
+
+    new_project = Project.objects.create(
+        title=project.title,
+        description=project.description,
+        author=author,
+        is_original=False,
+        parent_project=project,
+    )
+
+    for outcome in project.outcomes.all():
+        OutcomeProject.objects.create(
+            outcome=duplicate_outcome(outcome, author),
+            project=new_project,
+            rank=OutcomeProject.objects.get(
+                outcome=outcome, project=project
+            ).rank,
+        )
+        
+    for workflow in project.workflows.all():
+        WorkflowProject.objects.create(
+            workflow=duplicate_workflow(workflow, author,new_project),
+            project=new_project,
+            rank=WorkflowProject.objects.get(
+                workflow=workflow, project=project
+            ).rank,
+        )
+
+    return new_project
+
+@require_POST
+@ajax_login_required
+@is_owner_or_published("projectPk")
+def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    try:
+        clone = duplicate_project(outcome, request.user)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+
 
 
 """

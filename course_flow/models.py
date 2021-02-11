@@ -28,6 +28,10 @@ class Project(models.Model):
         "Outcome", through="OutcomeProject",blank=True
     )
     
+    is_original=models.BooleanField(default=False)
+    parent_project=models.ForeignKey(
+        "Project", on_delete=models.SET_NULL, null=True
+    )
     class Meta:
         verbose_name = "Project"
         verbose_name_plural = "Projects"
