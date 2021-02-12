@@ -76,7 +76,7 @@ from django.shortcuts import render, redirect
 from django.db.models import ProtectedError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 import math
-from .utils import get_model_from_str, get_parent_model_str, get_parent_model
+from .utils import get_model_from_str, get_parent_model_str, get_parent_model, get_project_outcomes
 
 
 class OwnerOrPublishedMixin(UserPassesTestMixin):
@@ -441,7 +441,6 @@ class OutcomeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         project = Project.objects.get(pk=self.kwargs["projectPk"])
         response = super(CreateView, self).form_valid(form)
         OutcomeProject.objects.create(project=project, outcome=form.instance)
-        form.instance.published = project.published
         return response
 
     def get_success_url(self):
@@ -842,7 +841,6 @@ class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         project = Project.objects.get(pk=self.kwargs["projectPk"])
         response = super(CreateView, self).form_valid(form)
         WorkflowProject.objects.create(project=project, workflow=form.instance)
-        form.instance.published = project.published
         return response
 
     def get_success_url(self):
@@ -908,7 +906,6 @@ class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         project = Project.objects.get(pk=self.kwargs["projectPk"])
         response = super(CreateView, self).form_valid(form)
         WorkflowProject.objects.create(project=project, workflow=form.instance)
-        form.instance.published = project.published
         return response
 
     def get_success_url(self):
@@ -948,145 +945,6 @@ def save_serializer(serializer) -> HttpResponse:
     else:
         return JsonResponse({"action": "error"})
 
-
-@require_POST
-@ajax_login_required
-@is_owner("activity")
-def update_activity_json(request: HttpRequest) -> HttpResponse:
-    data = json.loads(request.POST.get("json"))
-    serializer = ActivitySerializer(
-        Activity.objects.get(id=data["id"]), data=data
-    )
-    return save_serializer(serializer)
-
-
-@require_POST
-@ajax_login_required
-@is_owner("course")
-def update_course_json(request: HttpRequest) -> HttpResponse:
-    data = json.loads(request.POST.get("json"))
-    serializer = CourseSerializer(Course.objects.get(id=data["id"]), data=data)
-    return save_serializer(serializer)
-
-
-@require_POST
-@ajax_login_required
-@is_owner("program")
-def update_program_json(request: HttpRequest) -> HttpResponse:
-    data = json.loads(request.POST.get("json"))
-    serializer = ProgramSerializer(
-        Program.objects.get(id=data["id"]), data=data
-    )
-    return save_serializer(serializer)
-
-
-# Called when a node is added from the sidebar (duplicated)
-@login_required
-@ajax_login_required
-@is_owner("weekPk")
-def add_node(request: HttpRequest) -> HttpResponse:
-    node = Node.objects.get(pk=request.POST.get("nodePk"))
-    week = Week.objects.get(pk=request.POST.get("weekPk"))
-
-    try:
-        for link in NodeWeek.objects.filter(week=week):
-            link.rank += 1
-            link.save()
-
-        NodeWeek.objects.create(
-            week=week, node=duplicate_node(node, request.user), rank=0
-        )
-
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-
-
-# Called when a week is added from the sidebar (duplicated)
-@require_POST
-@ajax_login_required
-@is_owner("workflowPk")
-def add_week(request: HttpRequest) -> HttpResponse:
-    week = Week.objects.get(pk=request.POST.get("weekPk"))
-    workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
-
-    try:
-        for link in WeekWorkflow.objects.filter(workflow=workflow):
-            link.rank += 1
-            link.save()
-
-        WeekWorkflow.objects.create(
-            workflow=workflow,
-            week=duplicate_week(week, request.user),
-            rank=0,
-        )
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-
-
-def duplicate_activity(activity: Activity, author: User) -> Activity:
-    new_activity = Activity.objects.create(
-        title=activity.title,
-        description=activity.description,
-        author=author,
-        is_original=False,
-        parent_workflow=activity,
-    )
-    for week in activity.weeks.all():
-        WeekWorkflow.objects.create(
-            activity=new_activity,
-            week=duplicate_week(week, author),
-            rank=WeekWorkflow.objects.get(
-                workflow=activity, week=week
-            ).rank,
-        )
-    return new_activity
-
-
-@require_POST
-@ajax_login_required
-def duplicate_activity_ajax(request: HttpRequest) -> HttpResponse:
-    activity = Activity.objects.get(pk=request.POST.get("activityPk"))
-    try:
-        clone = duplicate_activity(activity, request.user)
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
-
-
-def duplicate_course(course: Course, author: User) -> Course:
-    new_course = Course.objects.create(
-        title=course.title,
-        description=course.description,
-        author=author,
-        is_original=False,
-        parent_workflow=course,
-    )
-    for week in course.weeks.all():
-        WeekWorkflow.objects.create(
-            workflow=new_course,
-            week=duplicate_week(week, author),
-            rank=WeekWorkflow.objects.get(
-                week=week, workflow=workflow
-            ).rank,
-        )
-    return new_course
-
-
-@require_POST
-@ajax_login_required
-def duplicate_course_ajax(request: HttpRequest) -> HttpResponse:
-    course = Course.objects.get(pk=request.POST.get("coursePk"))
-    try:
-        clone = duplicate_course(course, request.user)
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
 
 
 def get_owned_courses(user: User):
@@ -1323,7 +1181,7 @@ def duplicate_nodelink(
     return new_nodelink
 
 
-def duplicate_node(node: Node, author: User, new_workflow: Workflow, new_project:Project) -> Node:
+def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
     if new_workflow is not None:
         for new_column in new_workflow.columns.all():
             if (
@@ -1348,21 +1206,21 @@ def duplicate_node(node: Node, author: User, new_workflow: Workflow, new_project
         time_units=node.time_units,
         is_original=False,
         parent_node=node,
+        linked_workflow=node.linked_workflow,
     )
     
-    if node.linked_workflow is not None:
-        if new_workflow is not None:
-            set_linked_workflow(new_node, node.linked_workflow,new_project)
-        else:
-            new_node.linked_workflow = node.linked_workflow
-            new_node.save()
+    for outcome in node.outcomes.all():
+        OutcomeNode.objects.create(
+            outcome = outcome,
+            node = new_node,
+            rank = OutcomeNode.objects.get(node=node,outcome=outcome).rank
+        )
+    
 
     return new_node
 
 
-def duplicate_week(
-    week: Week, author: User, new_workflow: Workflow, new_project:Project
-) -> Week:
+def duplicate_week(week: Week, author: User, new_workflow: Workflow) -> Week:
     new_week = Week.objects.create(
         title=week.title,
         description=week.description,
@@ -1377,7 +1235,7 @@ def duplicate_week(
 
     for node in week.nodes.all():
         NodeWeek.objects.create(
-            node=duplicate_node(node, author, new_workflow, new_project),
+            node=duplicate_node(node, author, new_workflow),
             week=new_week,
             rank=NodeWeek.objects.get(node=node, week=week).rank,
         )
@@ -1397,7 +1255,7 @@ def duplicate_column(column: Column, author: User) -> Column:
     return new_column
 
 
-def duplicate_workflow(workflow: Workflow, author: User, new_project:Project) -> Workflow:
+def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
     model = get_model_from_str(workflow.type)
 
     new_workflow = model.objects.create(
@@ -1408,6 +1266,7 @@ def duplicate_workflow(workflow: Workflow, author: User, new_project:Project) ->
         author=author,
         is_original=False,
         parent_workflow=workflow,
+        is_strategy=workflow.is_strategy
     )
 
     for column in workflow.columns.all():
@@ -1420,7 +1279,7 @@ def duplicate_workflow(workflow: Workflow, author: User, new_project:Project) ->
         )
     for week in workflow.weeks.all():
         WeekWorkflow.objects.create(
-            week=duplicate_week(week, author, new_workflow, new_project),
+            week=duplicate_week(week, author, new_workflow),
             workflow=new_workflow,
             rank=WeekWorkflow.objects.get(
                 week=week, workflow=workflow
@@ -1460,8 +1319,23 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
-        clone = duplicate_workflow(workflow, request.user,project)
-        WorkflowProject.objects.create(project=project,workflow=workflow)
+        clone = duplicate_workflow(workflow, request.user)
+        WorkflowProject.objects.create(project=project,workflow=clone)
+        if(workflow.project_set.first() != clone.project_set.first()):
+            outcomes_set = get_project_outcomes(project)
+            cleanup_workflow_post_duplication(clone,project,outcomes_set)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+
+@require_POST
+@ajax_login_required
+@is_owner_or_published("workflowPk")
+def duplicate_strategy_ajax(request: HttpRequest) -> HttpResponse:
+    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    try:
+        clone = duplicate_workflow(workflow, request.user)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -1498,7 +1372,7 @@ def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
         clone = duplicate_outcome(outcome, request.user)
-        OutcomeProject.objects.create(project=project,outcome=outcome)
+        OutcomeProject.objects.create(project=project,outcome=clone)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -1526,28 +1400,47 @@ def duplicate_project(project: Project, author: User) -> Project:
         
     for workflow in project.workflows.all():
         WorkflowProject.objects.create(
-            workflow=duplicate_workflow(workflow, author,new_project),
+            workflow=duplicate_workflow(workflow, author),
             project=new_project,
             rank=WorkflowProject.objects.get(
                 workflow=workflow, project=project
             ).rank,
         )
+    
+    outcomes_set = get_project_outcomes(new_project)
+    for workflow in new_project.workflows.all():
+        cleanup_workflow_post_duplication(workflow,new_project,outcomes_set)
 
     return new_project
 
 @require_POST
 @ajax_login_required
 @is_owner_or_published("projectPk")
-def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
+def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
-        clone = duplicate_project(outcome, request.user)
+        clone = duplicate_project(project, request.user)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted", "clone_pk": clone.pk})
 
 
+
+#post-duplication cleanup. Setting the linked workflows and outcomes for nodes. This must be done after the fact because the workflows and outcomes have not necessarily been duplicated by the time the nodes are
+def cleanup_workflow_post_duplication(workflow,project,outcomes_set):
+    for node in Node.objects.filter(week__workflow=workflow):
+        if(node.linked_workflow is not None):
+            new_linked_workflow = project.workflows.filter(parent_workflow = node.linked_workflow).last()
+            node.linked_workflow = new_linked_workflow
+            node.save()
+        for outcomenode in node.outcomenode_set.all():
+            new_outcome = outcomes_set.filter(parent_outcome = outcomenode.outcome).last()
+            if new_outcome is None:
+                outcomenode.delete()
+            else:
+                outcomenode.outcome = new_outcome
+                outcomenode.save()
 
 """
 Creation methods
@@ -1649,7 +1542,7 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
             if position < 0 or position > workflow.weeks.count():
                 position = workflow.weeks.count()
             old_week = strategy.weeks.first()
-            week = duplicate_week(old_week,request.user,None,None)
+            week = duplicate_week(old_week,request.user,None)
             week.title = strategy.title
             week.is_strategy=True
             week.original_strategy=strategy
@@ -1908,7 +1801,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             through = WeekWorkflow.objects.get(
                 week=model, workflow=parent
             )
-            newmodel = duplicate_week(model, model.author, None, None)
+            newmodel = duplicate_week(model, model.author, None)
             newthroughmodel = WeekWorkflow.objects.create(
                 workflow=parent, week=newmodel, rank=through.rank + 1
             )
@@ -1926,7 +1819,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             model = Node.objects.get(id=object_id)
             parent = Week.objects.get(id=parent_id)
             through = NodeWeek.objects.get(node=model, week=parent)
-            newmodel = duplicate_node(model, model.author, None, None)
+            newmodel = duplicate_node(model, model.author, None)
             newthroughmodel = NodeWeek.objects.create(
                 week=parent, node=newmodel, rank=through.rank + 1
             )
@@ -2167,40 +2060,27 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
-def set_linked_workflow(node: Node, workflow,new_project):
-    if new_project is not None:
-        project = new_project
-    else:
-        week = node.week_set.first()
-        if week is None:
-            return
-        project = (
-            week.workflow_set.first().project_set.first()
-        )
+#Do not call if duplicating the parent workflow
+def set_linked_workflow(node: Node, workflow):
+    project = (
+        node.week_set.first().workflow_set.first().project_set.first()
+    )
     if WorkflowProject.objects.get(workflow=workflow).project == project:
         node.linked_workflow = workflow
         node.save()
     else:
         try:
-            if (
-                workflow.author == node.author
-                or WorkflowProject.objects.get(
-                    workflow=workflow
-                ).project.published
-            ):
-                new_workflow = duplicate_workflow(workflow, node.author,project)
-                WorkflowProject.objects.create(
-                    workflow=new_workflow, project=project
-                )
-                node.linked_workflow = new_workflow
-                node.save()
-            else:
-                raise ValidationError("Project unpublished")
+            new_workflow = duplicate_workflow(workflow, node.author)
+            WorkflowProject.objects.create(
+                workflow=new_workflow, project=project
+            )
+            node.linked_workflow = new_workflow
+            node.save()
         except ValidationError:
             pass
 
 
-# Sets the linked workflow for a node, adding it to the project if different
+# Sets the linked workflow for a node, adding it to the project if different. 
 @require_POST
 @ajax_login_required
 @is_owner("nodePk")
@@ -2219,7 +2099,7 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             linked_workflow_description = None
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
-            set_linked_workflow(node, workflow, None)
+            set_linked_workflow(node, workflow)
             if node.linked_workflow is None:
                 raise ValidationError("Project could not be found")
             linked_workflow = node.linked_workflow.id
@@ -2278,7 +2158,7 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
             week.save()
         else:
             workflow = WeekWorkflow.objects.get(week=week).workflow
-            strategy = duplicate_workflow(workflow,request.user,None)
+            strategy = duplicate_workflow(workflow,request.user)
             strategy.title=week.title
             strategy.is_strategy=True
             strategy.save()

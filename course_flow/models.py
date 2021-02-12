@@ -848,6 +848,22 @@ def create_default_program_content(sender, instance, created, **kwargs):
             week_type=Week.TERM, author=instance.author, is_strategy=instance.is_strategy
         )
         instance.save()
+        
+@receiver(post_save, sender=WorkflowProject)
+def set_publication(sender, instance, created, **kwargs):
+    if created:
+        # Set the workflow's publication status to that of the project
+        workflow = instance.workflow
+        workflow.published = instance.project.published
+        workflow.save()      
+        
+@receiver(post_save, sender=OutcomeProject)
+def set_publication_outcome(sender, instance, created, **kwargs):
+    if created:
+        # Set the workflow's publication status to that of the project
+        outcome = instance.outcome
+        outcome.published = instance.project.published
+        outcome.save()
 
 
 @receiver(post_save, sender=WeekWorkflow)

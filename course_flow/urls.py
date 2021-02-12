@@ -158,16 +158,6 @@ def flow_patterns():
             views.ActivityDetailView.as_view(),
             name="activity-detail-view",
         ),
-        url(
-            r"^course/duplication",
-            views.duplicate_course_ajax,
-            name="course-duplication",
-        ),
-        url(
-            r"^activity/duplication",
-            views.duplicate_activity_ajax,
-            name="activity-duplication",
-        ),
     ] + router.urls
 
 

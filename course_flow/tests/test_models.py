@@ -20,6 +20,8 @@ from course_flow.models import (
     WorkflowProject,
     NodeLink,
     Activity,
+    Course,
+    Program,
     Outcome,
     OutcomeProject,
     OutcomeNode,
@@ -2046,48 +2048,8 @@ class ModelViewTest(TestCase):
         self.assertEqual(Node.objects.all().count(), 6)
         self.assertEqual(NodeLink.objects.all().count(), 1)
 
-    def test_duplicate_activity(self):
-        author = login(self)
-        activity = make_object("activity", author)
-        week = WeekWorkflow.objects.get(workflow=activity).week
-        node = week.nodes.create(author=author, title="test_title")
-        node.column = activity.columnworkflow_set.first().column
-        node.save()
-        node2 = week.nodes.create(author=author, title="test_title")
-        node2.column = activity.columnworkflow_set.first().column
-        node2.save()
-        nodelink = NodeLink.objects.create(
-            source_node=node, target_node=node2, source_port=2, target_port=0
-        )
-        response = self.client.post(
-            reverse("course_flow:duplicate-workflow"),
-            {"workflowPk": activity.id},
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(Node.objects.all().count(), 4)
-        self.assertEqual(NodeLink.objects.all().count(), 2)
-        second_nodelink = NodeLink.objects.get(is_original=False)
-        self.assertEqual(second_nodelink.source_node.is_original, False)
-        self.assertEqual(second_nodelink.target_node.is_original, False)
+  
 
-    def test_duplicate_activity_no_login(self):
-        author = get_author()
-        activity = make_object("activity", author)
-        week = WeekWorkflow.objects.get(workflow=activity).week
-        node = week.nodes.create(author=author, title="test_title")
-        node.column = activity.columnworkflow_set.first().column
-        node.save()
-        node2 = week.nodes.create(author=author, title="test_title")
-        node2.column = activity.columnworkflow_set.first().column
-        node2.save()
-        nodelink = NodeLink.objects.create(
-            source_node=node, target_node=node2, source_port=2, target_port=0
-        )
-        response = self.client.post(
-            reverse("course_flow:duplicate-workflow"),
-            {"workflowPk": activity.id},
-        )
-        self.assertEqual(response.status_code, 401)
 
     def test_publish_permissions_no_login_no_authorship(self):
         author = get_author()
@@ -2107,4 +2069,181 @@ class ModelViewTest(TestCase):
             {"projectPk": project.id},
         )
         self.assertEqual(response.status_code, 401)
+        
+    def test_duplicate_activity_no_login_no_permissions(self):
+        author = get_author()
+        activity = make_object("activity", author)
+        project = make_object("project",author)
+        WorkflowProject.objects.create(workflow=activity,project=project)
+        response = self.client.post(
+            reverse("course_flow:duplicate-workflow"),
+            {"workflowPk": activity.id,"projectPk":project.id},
+        )
+        self.assertEqual(response.status_code, 401)
+        login(self)
+        response = self.client.post(
+            reverse("course_flow:duplicate-workflow"),
+            {"workflowPk": activity.id,"projectPk":project.id},
+        )
+        self.assertEqual(response.status_code, 401)
+        
+    def test_duplicate_workflow(self):
+        author = login(self)
+        project = make_object("project",author)
+        base_outcome = Outcome.objects.create(title="new outcome",author=author)
+        OutcomeProject.objects.create(project=project,outcome=base_outcome)
+        child_outcome = base_outcome.children.create(title="child outcome",author=author)
+        for type in ["activity","course","program"]:
+            workflow = make_object(type, author)
+            WorkflowProject.objects.create(workflow=workflow,project=project)
+            week = WeekWorkflow.objects.get(workflow=workflow).week
+            node = week.nodes.create(author=author, title="test_title")
+            node.column = workflow.columnworkflow_set.first().column
+            OutcomeNode.objects.create(node=node,outcome=child_outcome)
+            if(type=="course"):
+                linked_wf = Activity.objects.first()
+                node.linked_workflow = linked_wf
+            elif(type=="program"):
+                linked_wf = Course.objects.first()
+                node.linked_workflow = linked_wf
+            node.save()
+            node2 = week.nodes.create(author=author, title="test_title")
+            node2.column = workflow.columnworkflow_set.first().column
+            node2.save()
+            nodelink = NodeLink.objects.create(
+                source_node=node, target_node=node2, source_port=2, target_port=0
+            )
+            response = self.client.post(
+                reverse("course_flow:duplicate-workflow"),
+                {"workflowPk": workflow.id,"projectPk":project.id},
+            )
+            new_workflow = Workflow.objects.get(parent_workflow = workflow)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(Node.objects.filter(week__workflow__id=new_workflow.id).count(),2)
+            second_nodelink = NodeLink.objects.get(source_node__week__workflow=new_workflow.id)
+            self.assertEqual(second_nodelink.source_node.is_original, False)
+            self.assertEqual(second_nodelink.target_node.is_original, False)
+            #Check that outcomes have been correctly duplicated
+            self.assertEqual(second_nodelink.source_node.outcomes.first(),child_outcome)
+            if(type=="course" or type=="program"):
+                self.assertEqual(second_nodelink.source_node.linked_workflow.id,linked_wf.id)
+                
+                
+    def test_duplicate_workflow_other_user(self):
+        author = get_author()
+        user = login(self)
+        my_project = make_object("project",user)
+        project = make_object("project",author)
+        base_outcome = Outcome.objects.create(title="new outcome",author=author)
+        OutcomeProject.objects.create(project=project,outcome=base_outcome)
+        child_outcome = base_outcome.children.create(title="child outcome",author=author)
+        for type in ["activity","course","program"]:
+            workflow = make_object(type, author)
+            WorkflowProject.objects.create(workflow=workflow,project=project)
+            week = WeekWorkflow.objects.get(workflow=workflow).week
+            node = week.nodes.create(author=author, title="test_title")
+            node.column = workflow.columnworkflow_set.first().column
+            OutcomeNode.objects.create(node=node,outcome=child_outcome)
+            if(type=="course"):
+                linked_wf = Activity.objects.first()
+                node.linked_workflow = linked_wf
+            elif(type=="program"):
+                linked_wf = Course.objects.first()
+                node.linked_workflow = linked_wf
+            node.save()
+            response = self.client.post(
+                reverse("course_flow:duplicate-workflow"),
+                {"workflowPk": workflow.id,"projectPk":my_project.id},
+            )
+            self.assertEqual(response.status_code, 401)
+            workflow.published = True
+            workflow.save()
+            response = self.client.post(
+                reverse("course_flow:duplicate-workflow"),
+                {"workflowPk": workflow.id,"projectPk":my_project.id},
+            )
+            self.assertEqual(response.status_code, 200)
+            new_workflow = Workflow.objects.get(parent_workflow = workflow)
+            #Check that nodes have no outcomes
+            new_node = Node.objects.get(week__workflow=new_workflow)
+            self.assertEqual(new_node.outcomes.count(),0)
+            #copy again, but this time we first copy the outcomes 
+            response = self.client.post(
+                reverse("course_flow:duplicate-outcome"),
+                {"outcomePk": base_outcome.id,"projectPk":my_project.id},
+            )
+            self.assertEqual(response.status_code, 401)
+            base_outcome.published=True
+            base_outcome.save()
+            response = self.client.post(
+                reverse("course_flow:duplicate-outcome"),
+                {"outcomePk": base_outcome.id,"projectPk":my_project.id},
+            )
+            self.assertEqual(response.status_code, 200)
+            new_child_outcome = Outcome.objects.get(parent_outcome = child_outcome)
+            response = self.client.post(
+                reverse("course_flow:duplicate-workflow"),
+                {"workflowPk": workflow.id,"projectPk":my_project.id},
+            )
+            new_workflow = Workflow.objects.exclude(id=new_workflow.id).get(parent_workflow = workflow)
+            #Check that outcomes have been correctly duplicated
+            new_node = Node.objects.get(week__workflow=new_workflow)
+            self.assertEqual(new_node.outcomes.first(),new_child_outcome)
+            if(type=="course" or type=="program"):
+                self.assertEqual(new_node.linked_workflow.id,Workflow.objects.get(parent_workflow = linked_wf).id)
+            new_workflow.delete()
+            Outcome.objects.exclude(parent_outcome=None).delete()
+            base_outcome.published=False
+            base_outcome.save()
+            
+    def test_duplicate_project(self):
+        author = get_author()
+        user = login(self)
+        project = make_object("project",author)
+        base_outcome = Outcome.objects.create(title="new outcome",author=author)
+        OutcomeProject.objects.create(project=project,outcome=base_outcome)
+        child_outcome = base_outcome.children.create(title="child outcome",author=author)
+        for type in ["activity","course","program"]:
+            workflow = make_object(type, author)
+            WorkflowProject.objects.create(workflow=workflow,project=project)
+            week = WeekWorkflow.objects.get(workflow=workflow).week
+            node = week.nodes.create(author=author, title="test_title")
+            node.column = workflow.columnworkflow_set.first().column
+            OutcomeNode.objects.create(node=node,outcome=child_outcome)
+            if(type=="course"):
+                linked_wf = Activity.objects.first()
+                node.linked_workflow = linked_wf
+            elif(type=="program"):
+                linked_wf = Course.objects.first()
+                node.linked_workflow = linked_wf
+            node.save()
+        response = self.client.post(
+            reverse("course_flow:duplicate-project"),
+            {"projectPk":project.id},
+        )
+        self.assertEqual(response.status_code, 401)
+        project.published = True
+        project.save()
+        response = self.client.post(
+            reverse("course_flow:duplicate-project"),
+            {"projectPk":project.id},
+        )
+        self.assertEqual(response.status_code, 200)
+        new_project = Project.objects.get(author=user)
+        new_activity = Activity.objects.get(author=user)
+        new_course = Course.objects.get(author=user)
+        new_program = Program.objects.get(author=user)
+        new_node = Node.objects.get(week__workflow=new_program)
+        new_child_outcome = Outcome.objects.get(parent_outcome=child_outcome,author=user)
+        self.assertEqual(new_node.linked_workflow.id, new_course.id)
+        self.assertEqual(new_node.outcomes.first(), new_child_outcome)
+        new_node = Node.objects.get(week__workflow=new_course)
+        self.assertEqual(new_node.linked_workflow.id, new_activity.id)
+        self.assertEqual(new_node.outcomes.first(), new_child_outcome)
+        new_node = Node.objects.get(week__workflow=new_activity)
+        self.assertEqual(new_node.outcomes.first(), new_child_outcome)
+            
+        
+        
+
         
