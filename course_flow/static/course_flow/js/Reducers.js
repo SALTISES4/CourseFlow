@@ -106,6 +106,14 @@ export const toggleStrategyAction = (response_data) => {
         payload:response_data
     }
 }
+export const homeMenuItemAdded = (response_data) => {
+    console.log(response_data);
+    return {
+        type: "homemenu/itemAdded",
+        payload:response_data
+    }
+}
+
 
 export function workflowReducer(state={},action){
     switch(action.type){
@@ -775,6 +783,41 @@ export function strategyReducer(state={},action){
 }
 export function saltiseStrategyReducer(state={},action){
     switch(action.type){
+        default:
+            return state;
+    }
+}
+
+export function homeMenuReducer(state={},action){
+    switch(action.type){
+        case 'homemenu/itemAdded':
+            var new_state = {...state}
+            new_state.owned_projects = {...new_state.owned_projects};
+            new_state.owned_projects.sections = new_state.owned_projects.sections.slice();
+            for(var i=0;i<new_state.owned_projects.sections.length;i++){
+                if(new_state.owned_projects.sections[i].object_type==action.payload.type){
+                    new_state.owned_projects.sections[i].objects=new_state.owned_projects.sections[i].objects.slice()
+                    new_state.owned_projects.sections[i].objects.push(action.payload.new_item);
+                }
+            }
+            return new_state;
+        default:
+            return state;
+    }
+}
+export function projectMenuReducer(state={},action){
+    switch(action.type){
+        case 'homemenu/itemAdded':
+            var new_state = {...state}
+            new_state.current_project = {...new_state.current_project};
+            new_state.current_project.sections = new_state.current_project.sections.slice();
+            for(var i=0;i<new_state.current_project.sections.length;i++){
+                if(new_state.current_project.sections[i].object_type==action.payload.type){
+                    new_state.current_project.sections[i].objects=new_state.current_project.sections[i].objects.slice()
+                    new_state.current_project.sections[i].objects.push(action.payload.new_item);
+                }
+            }
+            return new_state;
         default:
             return state;
     }

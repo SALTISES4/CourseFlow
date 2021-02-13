@@ -95,17 +95,23 @@ export function renderWorkflowView(container,outcome_view){
 
 
 export function renderHomeMenu(data_package){
+    if(!store)store = createStore(Reducers.homeMenuReducer,data_package);
     reactDom.render(
-        <HomeMenu data_package={data_package}/>,
+        <Provider store = {store}>
+            <HomeMenu/>
+        </Provider>,
         $("#content-container")[0]
     );
 }
 
 
 
-export function renderProjectMenu(data,project){
+export function renderProjectMenu(data_package,project){
+    if(!store)store = createStore(Reducers.projectMenuReducer,data_package);
     reactDom.render(
-        <ProjectMenu data_package={data} project={project}/>,
+        <Provider store = {store}>
+            <ProjectMenu project={project}/>
+        </Provider>,
         $("#content-container")[0]
     );
 }

@@ -230,3 +230,42 @@ export function addOutcomeToNode(nodePk,outcome,callBackFunction=()=>console.log
         else console.log("Failed");
     });
 }
+
+
+//Duplicate a project workflow, strategy, or outcome
+export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=()=>console.log("success")){
+    if(objectType=="project"){
+        $.post(post_paths.duplicate_project_ajax, {
+            projectPk:JSON.stringify(itemPk),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }else if(objectType=="outcome"){
+        $.post(post_paths.duplicate_outcome_ajax, {
+            outcomePk:JSON.stringify(itemPk),
+            projectPk:JSON.stringify(projectID),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }else if(!projectID && projectID!==0){
+        $.post(post_paths.duplicate_strategy_ajax, {
+            workflowPk:JSON.stringify(itemPk),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }else{
+        $.post(post_paths.duplicate_workflow_ajax, {
+            workflowPk:JSON.stringify(itemPk),
+            projectPk:JSON.stringify(projectID),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+
+    
+    
+}

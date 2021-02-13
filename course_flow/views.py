@@ -144,6 +144,7 @@ def get_project_data_package(user):
                 }
             ],
             "add": True,
+            "duplicate":"copy",
         },
         "other_projects": {
             "title": "Published Projects",
@@ -175,6 +176,7 @@ def get_project_data_package(user):
                     ).data,
                 }
             ],
+            "duplicate":"import",
         },
     }
     return data_package
@@ -322,20 +324,29 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
-
+    if project.author==user:
+        current_copy_type="copy"
+        other_copy_type="import"
+    else:
+        current_copy_type=False
+        other_copy_type=False
+    
     data_package = {
         "current_project": {
             "title": "This Project",
             "sections": this_project_sections,
             "add": (project.author == user),
+            "duplicate":current_copy_type,
         },
         "other_projects": {
             "title": "From Your Other Projects",
             "sections": other_project_sections,
+            "duplicate":other_copy_type,
         },
         "all_published": {
             "title": "All Published Workflows",
             "sections": all_published_sections,
+            "duplicate":other_copy_type,
         },
     }
     return data_package
@@ -1327,7 +1338,7 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+    return JsonResponse({"action": "posted", "new_item":WorkflowSerializerShallow(clone).data,"type":clone.type})
 
 @require_POST
 @ajax_login_required
@@ -1339,7 +1350,7 @@ def duplicate_strategy_ajax(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+    return JsonResponse({"action": "posted", "new_item":WorkflowSerializerShallow(clone).data,"type":clone.type})
 
 def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 
@@ -1376,7 +1387,7 @@ def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+    return JsonResponse({"action": "posted", "new_item":OutcomeSerializerShallow(clone).data,"type":"outcome"})
 
 
 def duplicate_project(project: Project, author: User) -> Project:
@@ -1423,7 +1434,7 @@ def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "clone_pk": clone.pk})
+    return JsonResponse({"action": "posted", "new_item":ProjectSerializerShallow(clone).data,"type":"project"})
 
 
 

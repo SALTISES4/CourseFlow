@@ -51,11 +51,6 @@
         activity:"{% url 'course_flow:activity-strategy-create' %}",
         course:"{% url 'course_flow:course-strategy-create' %}"
     };
-    const copy_path = {
-        project:"{% url 'course_flow:duplicate-project' %}",
-        activity:"{% url 'course_flow:duplicate-strategy' %}",
-        course:"{% url 'course_flow:duplicate-strategy' %}"
-    };
     const data_package = {{project_data_package|safe}}
     const user_id = {{ user.id }};
     const read_only=false;

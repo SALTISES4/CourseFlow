@@ -62,12 +62,6 @@
         course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
         program:"{% url 'course_flow:program-create' projectPk=object.pk %}"
     }
-    const copy_path = {
-        activity:"{% url 'course_flow:duplicate-workflow' %}",
-        course:"{% url 'course_flow:duplicate-workflow' %}",
-        program:"{% url 'course_flow:duplicate-workflow' %}",
-        outcome:"{% url 'course_flow:duplicate-outcome' %}",
-    };
     const data_package = {{workflow_data_package|safe}};
     const project_data= {{project_data|safe}};
     console.log(data_package);
