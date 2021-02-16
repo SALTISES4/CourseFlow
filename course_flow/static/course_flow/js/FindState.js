@@ -29,25 +29,32 @@ export const getTermByID = (state,id)=>{
         var week = state.week[i];
         if(week.id==id){
             var nodeweeks = week.nodeweek_set;
+            var column_order = state.columnworkflow.sort(
+                (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
+            ).map(columnworkflow=>columnworkflow.column);
             var nodes_by_column = {};
-            for(var j=0;j<state.workflow.columnworkflow_set.length;j++){
-                nodes_by_column[state.workflow.columnworkflow_set[j]]=[];
+            for(var j=0;j<column_order.length;j++){
+                nodes_by_column[column_order[j]]=[];
             }
             for(var j=0;j<nodeweeks.length;j++){
                 let node_week = getNodeWeekByID(state,nodeweeks[j]).data;
                 let node = getNodeByID(state,node_week.node).data;
-                nodes_by_column[node.columnworkflow].push(nodeweeks[j]);
+                nodes_by_column[node.column].push(nodeweeks[j]);
             }
+            console.log("column_order");
+            console.log(column_order);
+            console.log("nodes_by_column");
+            console.log(nodes_by_column);
             return {
                 data:week,
-                column_order:state.columnworkflow.sort(
-                    (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
-                ).map(columnworkflow=>columnworkflow.column),
+                column_order:column_order,
                 nodes_by_column:nodes_by_column,
                 nodeweeks:state.nodeweek
             };
         }
     }
+    console.log("Did not find term");
+    console.log(state);
 }
 export const getWeekWorkflowByID = (state,id)=>{
     for(var i in state.weekworkflow){

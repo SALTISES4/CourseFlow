@@ -11,15 +11,21 @@ class TermView extends WeekViewUnconnected{
     
     render(){
         let data = this.props.data;
+        console.log(this.props);
         var node_blocks = [];
         for(var i=0;i<this.props.column_order.length;i++){
             let col=this.props.column_order[i];
+            console.log("column is "+col);
+            console.log("nodes by column is ");
+            console.log(this.props.nodes_by_column);
+            console.log("evaluated");
+            console.log(this.props.nodes_by_column[col]);
             let nodeweeks = [];
             for(var j=0;j<data.nodeweek_set.length;j++){
                 let nodeweek = data.nodeweek_set[j];
                 if(this.props.nodes_by_column[col].indexOf(nodeweek)>=0){
                     nodeweeks.push(
-                        <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} selection_manager={this.props.selection_manager}/>
+                        <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} selection_manager={this.props.selection_manager} column_order={this.props.column_order}/>
                     );
                 }
             }
