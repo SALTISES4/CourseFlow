@@ -381,9 +381,6 @@ text {
   .create-button {
     transform: translateY(10px);
   }
-  img.link-image {
-    height: 35px;
-  }
   .mdc-card {
     background-color: white;
     margin-bottom: 10px;

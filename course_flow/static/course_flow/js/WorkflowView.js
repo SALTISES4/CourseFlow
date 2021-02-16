@@ -45,7 +45,7 @@ class WorkflowView extends ComponentJSON{
                         {this.addEditable(data)}
                         {reactDom.createPortal(
                         <div class="topdropwrapper" title="Show/Hide Legend">
-                            <img src={iconpath+"expand.svg"} onClick={this.toggleLegend.bind(this)}/>
+                            <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
                         </div>,
                         $("#viewbar")[0]
                         )}

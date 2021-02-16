@@ -165,9 +165,10 @@ export class ComponentJSON extends React.Component{
     }
     
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-    addDeleteSelf(data){
+    addDeleteSelf(data,alt_icon){
+        let icon=alt_icon || "rubbish.svg";
         return (
-            <ActionButton button_icon="delrect.svg" button_class="delete-self-button" handleClick={()=>{
+            <ActionButton button_icon={icon} button_class="delete-self-button" titletext="Delete" handleClick={()=>{
                 //Temporary confirmation; add better comfirmation dialogue later
                 if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
                     alert("You cannot delete the last "+this.objectType);
@@ -185,7 +186,7 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         return (
-            <ActionButton button_icon="copy.svg" button_class="duplicate-self-button" handleClick={()=>duplicateSelf(data.id,this.objectType,this.props.parentID,
+            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext="Duplicate" handleClick={()=>duplicateSelf(data.id,this.objectType,this.props.parentID,
                 (response_data)=>{
                     let action = insertBelowAction(response_data,type);
                     props.dispatch(action);
@@ -198,7 +199,7 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         return(
-            <ActionButton button_icon="add.svg" button_class="insert-sibling-button" handleClick={()=>insertSibling(data.id,this.objectType,this.props.parentID,
+            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext="Insert Below" handleClick={()=>insertSibling(data.id,this.objectType,this.props.parentID,
                 (response_data)=>{
                     let action = insertBelowAction(response_data,type);
                     props.dispatch(action);
@@ -213,7 +214,7 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         return(
-            <ActionButton button_icon="createchild.svg" button_class="insert-sibling-button" handleClick={()=>insertChild(data.id,this.objectType,
+            <ActionButton button_icon="create_new_child.svg" button_class="insert-sibling-button" titletext="Insert Child" handleClick={()=>insertChild(data.id,this.objectType,
                 (response_data)=>{
                     let action = insertChildAction(response_data,type);
                     props.dispatch(action);
@@ -601,7 +602,7 @@ export class ActionButton extends React.Component{
     
     render(){
         return (
-            <div class={this.props.button_class+" action-button"} onClick={this.handleClick}>
+            <div class={this.props.button_class+" action-button"} title={this.props.titletext} onClick={this.handleClick}>
                 <img src={iconpath+this.props.button_icon}/>
             </div>
         )

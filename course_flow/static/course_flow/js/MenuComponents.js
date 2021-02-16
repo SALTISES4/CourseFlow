@@ -144,31 +144,39 @@ export class WorkflowForMenu extends React.Component{
                             this.setState({hide:true});
                         }
                     }}>
-                        <img src={iconpath+'rubbish-bin-delete-button.svg'}/>
+                        <img src={iconpath+'rubbish.svg'} title="Delete"/>
                     </div>
                 );
                 buttons.push(
                     <a href={update_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
-                        <img src={iconpath+'pencil-blue.svg'}/>
+                        <img src={iconpath+'edit_pencil.svg'} title="Edit"/>
                     </a>
                 );
             }else{
                 buttons.push(
                     <a href={detail_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
-                        <img src={iconpath+'pageview-24px.svg'}/>
+                        <img src={iconpath+'page_view.svg'} title="View"/>
                     </a>
                 );
             }
             if(this.props.duplicate){
                 console.log(this.props);
                 let icon;
-                if(this.props.duplicate=="copy")icon = 'file_copy-24px.svg';
-                else icon = 'file_import-24px.svg';
+                let titletext;
+                if(this.props.duplicate=="copy"){
+                    icon = 'duplicate.svg';
+                    titletext="Duplicate";
+                }
+                else {
+                    icon = 'import.svg';
+                    if(this.props.type=="projectmenu")titletext="Import to current project";
+                    else titletext="Import to my files";
+                }
                 buttons.push(
                     <div onClick={()=>{
                         duplicateBaseItem(this.props.workflow_data.id,this.props.objectType,this.props.parentID,(response_data)=>{this.props.dispatch(homeMenuItemAdded(response_data))})
                     }}>
-                        <img src={iconpath+icon}/>
+                        <img src={iconpath+icon} title={titletext}/>
                     </div>
                 );
             }
@@ -197,8 +205,8 @@ export class MenuSection extends React.Component{
                 {(create_path && this.props.add) &&
                   <a href={create_path[this.props.section_data.object_type]}
                     ><img
-                      class="create-button link-image"
-                      src={iconpath+"add-square-button.svg"}
+                      class="create-button link-image" title="Add New"
+                      src={iconpath+"add_new.svg"}
                   /></a>
                 }
                 </h3>
@@ -283,8 +291,8 @@ class ProjectMenuUnconnected extends React.Component{
             <div>
                 <div class="project-header">
                     <h2>{this.state.title} {this.props.project.author_id==user_id  &&
-                        <a onClick ={ this.openEdit.bind(this)}>
-                            <img src={iconpath+'pencil-blue.svg'}/>
+                        <a class="action-button" onClick ={ this.openEdit.bind(this)}>
+                            <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
                         </a>
                     }</h2>
                     <p>{this.state.description}</p>

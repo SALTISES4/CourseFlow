@@ -55,7 +55,7 @@ class WorkflowLegend extends React.Component{
                     </div>
                 }
                 <div class="window-close-button" onClick = {this.props.toggle}>
-                    <img src = {iconpath+"delrect.svg"}/>
+                    <img src = {iconpath+"close.svg"}/>
                 </div>
             </div>
         );

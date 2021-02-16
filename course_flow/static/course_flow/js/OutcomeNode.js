@@ -23,7 +23,7 @@ class OutcomeNodeView extends ComponentJSON{
                 <NodeOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             
                 {!read_only && <div class="mouseover-actions">
-                    {this.addDeleteSelf(data)}
+                    {this.addDeleteSelf(data,"close.svg")}
                 </div>
                 }
             </div>

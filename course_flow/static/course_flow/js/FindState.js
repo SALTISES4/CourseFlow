@@ -41,10 +41,6 @@ export const getTermByID = (state,id)=>{
                 let node = getNodeByID(state,node_week.node).data;
                 nodes_by_column[node.column].push(nodeweeks[j]);
             }
-            console.log("column_order");
-            console.log(column_order);
-            console.log("nodes_by_column");
-            console.log(nodes_by_column);
             return {
                 data:week,
                 column_order:column_order,

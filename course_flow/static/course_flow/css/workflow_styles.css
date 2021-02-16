@@ -71,6 +71,11 @@ button{
     margin-bottom:30px;
 }
 
+.workflow-wrapper *:is(.node,.week,.column,.workflow-for-menu):not(.selected):hover{
+    border-color:gray;
+}
+
+
 .workflow-details .workflow-for-menu.selected{
     background:white;
     color:black;
@@ -232,7 +237,11 @@ button{
 
 .term .node{
     left:10px !important;
-    width:140px;
+    width:120px;
+}
+
+.term .outcome-node-indicator{
+    right:-24px;
 }
 
 .node-ghost{
@@ -498,9 +507,13 @@ button{
     margin-left:0px;
 }
 
+.outcome-node-container .outcome-title{
+    margin-left:16px;
+}
+
 .outcome-node-container .action-button{
-    width:8px;
-    height:8px;
+    width:12px;
+    height:12px;
 }
 
 .outcome-node-container .mouseover-actions{
@@ -511,6 +524,7 @@ button{
 
 .outcome-node-container .outcome-outcome{
     position:relative;
+    left:4px;
 }
 
 .outcome-hover, .outcome-toggle{
@@ -731,7 +745,7 @@ input:checked +.slider::before{
     top:-1px;
     right:-1px;
     border-radius:5px;
-    border:1px solid black;
+    border:0px solid black;
     padding:2px;
     line-height:0px;
     background:white;
@@ -833,7 +847,7 @@ circle.mouseover{
 .side-bar .ui-tabs-tab{
     text-align:center;
     display:block;
-    height:32px;
+    height:38px;
     background:white;
     border-radius:3px;
     border:1px solid lightgray;
@@ -849,13 +863,14 @@ circle.mouseover{
     display:block;
     text-decoration:none;
     color:lightgray;
-    filter:grayscale(100%);
+    filter:grayscale(100%) brightness(1.7);
     box-sizing:border-box;
     height:100%;
 }
 
 .side-bar .ui-tabs-tab a img{
     width:32px;
+    padding:4px;
 }
 
 
@@ -1061,6 +1076,8 @@ circle.mouseover{
 
 .workflow-buttons > *{
     display:inline-block;
+    padding:2px;
+    cursor:pointer;
 }
 
 
@@ -1175,5 +1192,10 @@ h4.drag-and-drop::after{
     color:#1976bc;
 }
 
+.create-button{
+    width:32px;
+    height:32px;
+    margin-left:4px;
+}
 
 
