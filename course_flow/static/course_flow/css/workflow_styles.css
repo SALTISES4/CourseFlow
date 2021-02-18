@@ -71,7 +71,7 @@ button{
     margin-bottom:30px;
 }
 
-.workflow-wrapper *:is(.node,.week,.column,.workflow-for-menu):not(.selected):hover{
+.workflow-wrapper *:is(.node,.week,.column,.workflow-for-menu,.outcome):not(.selected):hover{
     border-color:gray;
 }
 
@@ -563,7 +563,7 @@ button{
 }
 
 .outcome-table .outcome-drop{
-    margin-top:-7px;
+    margin-top:-2px;
 }
 
 .outcome-table .table-cell{
@@ -606,6 +606,7 @@ button{
 
 .outcome-table .table-group{
     display:inline-block;
+    height:100%;
 }
 
 .outcome-cells{
@@ -616,6 +617,10 @@ button{
 .outcome-table .outcome-head{
     display:inline-block;
     width:422px;
+}
+
+.outcome-row{
+    display:flex;
 }
 
 

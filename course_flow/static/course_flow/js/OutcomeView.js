@@ -328,13 +328,15 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         for(let node_id in this.props.completion_status_from_parents){
             completion_status|=this.props.completion_status_from_parents[node_id];
         }
+        let childnodes=0;
         for(let node_id in this.state.completion_status_from_children){
             completion_status|=this.state.completion_status_from_children[node_id];
+            if(this.state.completion_status_from_children[node_id]!==null)childnodes++;
         }
         for(let node_id in this.state.completion_status_from_self){
             completion_status|=this.state.completion_status_from_self[node_id];
         }
-        if(completion_status==0&&this.state.completion_status_from_children)completion_status=null;
+        if(completion_status==0&&childnodes==0)completion_status=null;
 
         
         return(
@@ -409,18 +411,23 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     updateCompletion(node_id){
         console.log("updating completion");
         console.log(this.child_completion_status);
-        let new_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
-        console.log(new_completion);
+        let new_child_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
+        console.log(new_child_completion);
         console.log(this.state.completion_status_from_children);
-        if(this.state.completion_status_from_children[node_id]!==new_completion){
+        if(this.state.completion_status_from_children[node_id]!==new_child_completion){
             console.log("setting state");
             this.setState(function(state,props){
                 let new_completion_status_from_children = {...state.completion_status_from_children};
-                new_completion_status_from_children[node_id]=new_completion;
+                new_completion_status_from_children[node_id]=new_child_completion;
                 return {completion_status_from_children:new_completion_status_from_children}
             });
-            
-            if(this.props.updateParentCompletion)this.props.updateParentCompletion(node_id,new_completion);
+            if(this.props.updateParentCompletion){
+                let self_completion = this.state.completion_status_from_self[node_id];
+                if(!self_completion && new_child_completion ===null )
+                    this.props.updateParentCompletion(node_id,null);
+                else 
+                    this.props.updateParentCompletion(node_id,new_child_completion|this.state.completion_status_from_self[node_id]);
+            }
         }
     }
 

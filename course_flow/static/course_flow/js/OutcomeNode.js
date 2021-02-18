@@ -145,7 +145,7 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
         let props = this.props;
         let value;
         if(props.data){
-            value=0;
+            value=null;
             props.dispatch(deleteSelfAction(props.data.id,props.nodeID,"outcomenode"))
         }else{
             value=1;
@@ -156,7 +156,16 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
                 }
             );
         }
-        if(props.updateParentCompletion)props.updateParentCompletion(props.nodeID,value);
+        if(props.updateParentCompletion){
+            console.log("NODE toggle triggering parent completion update");
+            let child_status = this.props.completion_status_from_children;
+            console.log(child_status);
+            console.log(value);
+            if(!child_status && child_status!==0)
+                props.updateParentCompletion(props.nodeID,value);
+            else
+                props.updateParentCompletion(props.nodeID,value|child_status);
+        }
         props.updateSelfCompletion(props.nodeID,value);
     }
 
@@ -164,7 +173,7 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
         let props = this.props;
         let value;
         if(props.data){
-            value=this.props.data.degree << 1;
+            value=props.data.degree << 1;
             if(value>15){
                 value=null;
                 props.dispatch(deleteSelfAction(props.data.id,props.nodeID,"outcomenode"));
@@ -180,7 +189,17 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
                 }
             );
         }
-        if(props.updateParentCompletion)props.updateParentCompletion(props.nodeID,value);
+       
+        if(props.updateParentCompletion){
+            console.log("NODE toggle triggering parent completion update");
+            let child_status = this.props.completion_status_from_children;
+            console.log(child_status);
+            console.log(value);
+            if(!child_status && child_status!==0)
+                props.updateParentCompletion(props.nodeID,value);
+            else
+                props.updateParentCompletion(props.nodeID,value|child_status);
+        }
         props.updateSelfCompletion(props.nodeID,value);
     }
 
@@ -225,7 +244,7 @@ export class TableOutcomeGroup extends ComponentJSON{
         for(let node_id in this.props.completion_status_from_children){
             if(this.props.nodes.indexOf(parseInt(node_id))>=0){
                 completion_status|=this.props.completion_status_from_children[node_id];
-                childnodes++;
+                if(this.props.completion_status_from_children[node_id]!==null)childnodes++;
             }
         }
         if(completion_status==0&&childnodes==0)completion_status=null;
