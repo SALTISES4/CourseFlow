@@ -149,10 +149,12 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
             props.dispatch(deleteSelfAction(props.data.id,props.nodeID,"outcomenode"))
         }else{
             value=1;
+            tiny_loader.startLoad();
             addOutcomeToNode(props.nodeID,props.outcomeID,
                 (response_data)=>{
                     let action = addOutcomeToNodeAction(response_data);
                     props.dispatch(action);
+                    tiny_loader.endLoad();
                 }
             );
         }

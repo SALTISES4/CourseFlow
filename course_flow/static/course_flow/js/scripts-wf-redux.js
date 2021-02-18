@@ -12,10 +12,6 @@ import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
 
 
-
-
-
-
 //Manages the current selection, ensuring we only have one at a time
 export class SelectionManager{
     constructor(){
@@ -116,4 +112,21 @@ export function renderProjectMenu(data_package,project){
     );
 }
 
+export class TinyLoader{
+    constructor(identifier){
+        this.identifier = identifier; 
+        this.loadings = 0;
+    }
+    
+    startLoad(){
+        $(this.identifier).addClass('waiting');
+        this.loadings++;
+    }
+        
+    endLoad(){
+        console.log("ending load");
+        if(this.loadings>0)this.loadings--;
+        if(this.loadings<=0)$(this.identifier).removeClass('waiting');
+    }
+}
 

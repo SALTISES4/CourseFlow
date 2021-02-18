@@ -4,6 +4,7 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem} from "./PostFunctions.js";
 import {homeMenuItemAdded} from "./Reducers.js";
+import {Loader} from "./Constants.js";
 
 export class MessageBox extends React.Component{
     render(){
@@ -174,7 +175,8 @@ export class WorkflowForMenu extends React.Component{
                 }
                 buttons.push(
                     <div onClick={()=>{
-                        duplicateBaseItem(this.props.workflow_data.id,this.props.objectType,this.props.parentID,(response_data)=>{this.props.dispatch(homeMenuItemAdded(response_data))})
+                        let loader = new Loader('body');
+                        duplicateBaseItem(this.props.workflow_data.id,this.props.objectType,this.props.parentID,(response_data)=>{this.props.dispatch(homeMenuItemAdded(response_data));loader.endLoad();})
                     }}>
                         <img src={iconpath+icon} title={titletext}/>
                     </div>

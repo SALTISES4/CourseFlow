@@ -186,12 +186,16 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         return (
-            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext="Duplicate" handleClick={()=>duplicateSelf(data.id,this.objectType,this.props.parentID,
+            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext="Duplicate" handleClick={()=>{
+            tiny_loader.startLoad();
+            duplicateSelf(data.id,this.objectType,this.props.parentID,
                 (response_data)=>{
                     let action = insertBelowAction(response_data,type);
                     props.dispatch(action);
+                    tiny_loader.endLoad();
                 }
-            )}/>
+            );
+            }}/>
         );
     }
     //Adds a button that inserts a sibling below the item. The callback function unfortunately does NOT seem to be called after the item is added to the DOM
@@ -199,12 +203,15 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         return(
-            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext="Insert Below" handleClick={()=>insertSibling(data.id,this.objectType,this.props.parentID,
+            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext="Insert Below" handleClick={()=>{
+            tiny_loader.startLoad();
+            insertSibling(data.id,this.objectType,this.props.parentID,
                 (response_data)=>{
                     let action = insertBelowAction(response_data,type);
                     props.dispatch(action);
+                    tiny_loader.endLoad();
                 }
-            )}/>
+            )}}/>
         );
     }
     
@@ -214,12 +221,15 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         return(
-            <ActionButton button_icon="create_new_child.svg" button_class="insert-sibling-button" titletext="Insert Child" handleClick={()=>insertChild(data.id,this.objectType,
+            <ActionButton button_icon="create_new_child.svg" button_class="insert-sibling-button" titletext="Insert Child" handleClick={()=>{
+            tinyLoader.startLoad();
+            insertChild(data.id,this.objectType,
                 (response_data)=>{
                     let action = insertChildAction(response_data,type);
                     props.dispatch(action);
+                    tiny_loader.endLoad();
                 }
-            )}/>
+            )}}/>
         );
     }
     
@@ -727,3 +737,6 @@ export class PathGenerator{
         return joined;
     }
 }
+
+
+

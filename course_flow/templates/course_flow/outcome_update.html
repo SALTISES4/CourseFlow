@@ -51,6 +51,7 @@
     
     const iconpath = "{% static 'course_flow/img/images_svg/' %}";
     var selection_manager;
+    var tiny_loader;
     
     initial_data = {{data_flat|safe}}
     console.log(initial_data);
@@ -64,6 +65,7 @@
     $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
     
     window.addEventListener("load",function(){
+        tiny_loader = new workflow_redux.TinyLoader('#container');
         selection_manager = new workflow_redux.SelectionManager();
         outcome_scripts.renderOutcomeView($("#container").get()[0]);
     });

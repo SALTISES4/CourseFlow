@@ -51,6 +51,7 @@
 {% block scripts %}
 
 <script nonce="{{request.csp_nonce}}">
+    
 const workflow_paths = {
     activity:'{% url "course_flow:activity-detail" pk=object.pk %}',
     course:'{% url "course_flow:course-detail" pk=object.pk %}',
@@ -58,6 +59,7 @@ const workflow_paths = {
 }
 const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 var selection_manager;
+var tiny_loader;
 
 $("#sidebar").tabs({collapsible:true,active:1,disabled:[0]});
     
@@ -91,6 +93,7 @@ outcome_sort_choices = {{outcome_sort_choices|safe}}
 strategy_classification_choices = {{strategy_classification_choices|safe}}
 is_strategy = {{is_strategy|safe}}
 
+
 const user_id = {{ user.id }};
 const create_path=null;
     
@@ -121,7 +124,8 @@ $(document).on("ports-rendered",(evt)=>{
 });
     
 window.addEventListener("load", function(){
-    selection_manager = new workflow_redux.SelectionManager();
+    selection_manager = new workflow_redux.SelectionManager(); 
+    tiny_loader = new workflow_redux.TinyLoader('#container');
     
     
     workflow_redux.renderWorkflowView($("#container").get()[0],false);
