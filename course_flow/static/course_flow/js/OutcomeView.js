@@ -109,6 +109,7 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         super(props);
         this.objectType="outcome";
         this.children_block = React.createRef();
+        this.state={is_dropped:(props.data.depth<1)};
     }
     
     render(){
@@ -119,24 +120,24 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         );
                 
         let dropIcon;
-        if(data.is_dropped)dropIcon = "droptriangleup";
+        if(this.state.is_dropped)dropIcon = "droptriangleup";
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(data.is_dropped)droptext="hide";
+        if(this.state.is_dropped)droptext="hide";
         else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
         
         return(
             <div
             class={
-                "outcome"+((data.is_dropped && " dropped")||"")+" outcome-"+data.id
+                "outcome"+((this.state.is_dropped && " dropped")||"")+" outcome-"+data.id
             }
             
             ref={this.maindiv}>
                 <div class="outcome-title" >
                     <TitleText text={data.title} defaultText={"Click to edit"}/>
                 </div>
-                <input class="outcome-toggle-checkbox" type="checkbox" title="toggle highlighting" onChange={this.clickFunction.bind(this)}/>
+                <input class="outcome-toggle-checkbox" type="checkbox" title="Toggle highlighting" onChange={this.clickFunction.bind(this)}/>
                 {children.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
@@ -156,7 +157,8 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
     }
     
     toggleDrop(){
-        this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
+       
+        this.setState({is_dropped:(!this.state.is_dropped)});
     }
 
 
@@ -233,6 +235,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         super(props);
         this.objectType="outcome";
         this.children_block = React.createRef();
+        this.state={is_dropped:false};
     }
     
     render(){
@@ -243,17 +246,17 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         );
                 
         let dropIcon;
-        if(data.is_dropped)dropIcon = "droptriangleup";
+        if(this.state.is_dropped)dropIcon = "droptriangleup";
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(data.is_dropped)droptext="hide";
+        if(this.state.is_dropped)droptext="hide";
         else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
         
         return(
             <div
             class={
-                "outcome"+((data.is_dropped && " dropped")||"")+" outcome-"+data.id
+                "outcome"+((this.state.is_dropped && " dropped")||"")+" outcome-"+data.id
             }
             ref={this.maindiv}>
                 <div class="outcome-title">
@@ -278,7 +281,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
     }
     
     toggleDrop(){
-        this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
+        this.setState({is_dropped:(!this.state.is_dropped)});
     }
 
 }

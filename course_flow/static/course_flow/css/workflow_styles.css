@@ -507,6 +507,10 @@ button{
     margin-left:0px;
 }
 
+.outcome-node-container .outcome-node{
+    position:relative;
+}
+
 .outcome-node-container .outcome-title{
     margin-left:16px;
 }

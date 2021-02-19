@@ -338,10 +338,13 @@ export class ComponentJSON extends React.Component{
                                     )}
                                 </select>
                             }
-                            <button onClick = {()=>{toggleStrategy(data.id,data.is_strategy,
+                            <button onClick = {()=>{
+                                let loader = new Constants.Loader('body');
+                                toggleStrategy(data.id,data.is_strategy,
                                 (response_data)=>{
                                     let action = toggleStrategyAction(response_data);
                                     props.dispatch(action);
+                                    loader.endLoad();
                                 })
                             }}>
                                 {data.is_strategy &&

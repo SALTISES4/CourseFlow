@@ -531,3 +531,330 @@ class Command(BaseCommand):
         
         for nodeweek in week.nodeweek_set.all():
             print(nodeweek.rank)
+            
+        #TOOLKIT
+        try:
+            workflow = Activity.objects.get(
+                title="Toolkit",
+                is_strategy=True,
+                published=True,
+                from_saltise=True,
+            )
+            workflow.weeks.first().nodes.all().delete()
+        except:
+            workflow = Activity.objects.create(
+                title="Toolkit",
+                is_strategy=True,
+                published=True,
+                from_saltise=True,
+            )
+        week = workflow.weeks.first()
+        week.strategy_classification=Week.TOOLKIT
+        week.save()
+        rank=0
+        ooci = workflow.columns.get(column_type=Column.OUT_OF_CLASS_INSTRUCTOR)
+        oocs = workflow.columns.get(column_type=Column.OUT_OF_CLASS_STUDENT)
+        ici = workflow.columns.get(column_type=Column.IN_CLASS_INSTRUCTOR)
+        ics = workflow.columns.get(column_type=Column.IN_CLASS_STUDENT)
+        node = week.nodes.create(
+            title="Give students a template",
+            description="Instructor provides students, at the end of a series of lessons/activities, with a template to support their identification and consolidation of the major intellectual tools learned and used in the preceding lessons.",
+            column=ici
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Discussion of themes or principles",
+            description="In groups, students discuss the lesson content and identify use-case examples of discipline-relevant principles, themes, rules/algorithms, etc.",
+            context_classification=Node.GROUPS,
+            task_classification=Node.DISCUSS,
+            column=ics
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Presentation of toolkit",
+            description="In groups, students present their list to the whole class.",
+            context_classification=Node.GROUPS,
+            task_classification=Node.PRESENT,
+            column=ics
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Feedback",
+            description="Instructor provides feedback on the relevance of the items to be included in the Toolkit list and guides students in their review, evaluation, and decision-making.",
+            column=ici,
+            context_classification=Node.WHOLE_CLASS,
+            task_classification=Node.DISCUSS,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Discuss and consolidate",
+            description="As a class, students discuss, evaluate, and justify decisions for entry of items into a single list.",
+            column=ics,
+            context_classification=Node.WHOLE_CLASS,
+            task_classification=Node.DISCUSS,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        
+        for nodeweek in week.nodeweek_set.all():
+            print(nodeweek.rank)
+
+            
+        #ONE MINUTE PAPER
+        try:
+            workflow = Activity.objects.get(
+                title="One Minute Paper",
+                is_strategy=True,
+                published=True,
+                from_saltise=True,
+            )
+            workflow.weeks.first().nodes.all().delete()
+        except:
+            workflow = Activity.objects.create(
+                title="One Minute Paper",
+                is_strategy=True,
+                published=True,
+                from_saltise=True,
+            )
+        week = workflow.weeks.first()
+        week.strategy_classification=Week.ONE_MINUTE_PAPER
+        week.save()
+        rank=0
+        ooci = workflow.columns.get(column_type=Column.OUT_OF_CLASS_INSTRUCTOR)
+        oocs = workflow.columns.get(column_type=Column.OUT_OF_CLASS_STUDENT)
+        ici = workflow.columns.get(column_type=Column.IN_CLASS_INSTRUCTOR)
+        ics = workflow.columns.get(column_type=Column.IN_CLASS_STUDENT)
+        node = week.nodes.create(
+            title="Assign reflection",
+            description="Instructor asks students to write a brief reflection on their understanding of a lesson or activity. A time limit is provided (1 min or more).",
+            column=ici
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Discussion of themes or principles",
+            description="In groups, students discuss the lesson content and identify use-case examples of discipline-relevant principles, themes, rules/algorithms, etc.",
+            context_classification=Node.GROUPS,
+            task_classification=Node.DISCUSS,
+            column=ics
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="One minute response",
+            description="Individually, students provide written responses, addressing such issues as the most important thing learned during this class or what important questions remain unanswered.",
+            context_classification=Node.INDIVIDUAL,
+            task_classification=Node.WRITE,
+            column=ics
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Analysis of responses",
+            description="Instructor collects written reflections and uses them to determine the lesson plan for the next class, including which topics need further review or explanation and what activities or material can be used next.",
+            column=ici,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        
+        for nodeweek in week.nodeweek_set.all():
+            print(nodeweek.rank)
+            
+        #DISTRIBUTED PROBLEM SOLVING
+        try:
+            workflow = Activity.objects.get(
+                title="Distributed Problem Solving",
+                is_strategy=True,
+                published=True,
+                from_saltise=True,
+            )
+            workflow.weeks.first().nodes.all().delete()
+        except:
+            workflow = Activity.objects.create(
+                title="Distributed Problem Solving",
+                is_strategy=True,
+                published=True,
+                from_saltise=True,
+            )
+        week = workflow.weeks.first()
+        week.strategy_classification=Week.DISTRIBUTED_PROBLEM_SOLVING
+        week.save()
+        rank=0
+        ooci = workflow.columns.get(column_type=Column.OUT_OF_CLASS_INSTRUCTOR)
+        oocs = workflow.columns.get(column_type=Column.OUT_OF_CLASS_STUDENT)
+        ici = workflow.columns.get(column_type=Column.IN_CLASS_INSTRUCTOR)
+        ics = workflow.columns.get(column_type=Column.IN_CLASS_STUDENT)
+        node = week.nodes.create(
+            title="Assign groups",
+            description="Instructor divides the class into small groups (4-6 students) and assigns each to a shared writable surface (whiteboard or interactive board).",
+            column=ici
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Assign distinct problems",
+            description="Instructor assigns one problem for each group. Problems should be closely related but distinct, and there should be at least two different problems.",
+            column=ici,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Begin problem solving",
+            description="Groups begin their problem solving process, making sure to record their worked solutions on the surface, e.g. Group 1 working on Problem A, Group 2 working on Problem B, etc.",
+            column=ics,
+            context_classification=Node.GROUPS,
+            task_classification=Node.PROBLEM_SOLVE,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Interrupt process and switch groups",
+            description="Instructor interrupts the process and has students switch problems and take up another group's problem-solving process, e.g. Group 1 moves to Group 2's problem B, Group 2 moves to Group 1's Problem A.",
+            column=ici,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Review work of other group",
+            description="Groups review and revise the solution of the first group and decide how they will continue the problem solving process.",
+            column=ics,
+            context_classification=Node.GROUPS,
+            task_classification=Node.ASSESS_PEERS,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Complete Problem",
+            description="Groups complete the other group's problem.",
+            column=ics,
+            context_classification=Node.GROUPS,
+            task_classification=Node.PROBLEM_SOLVE,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Interrupt process again",
+            description="Instructor interrupts the process and instructs groups to return to their original problem and evaluate the completed solution.",
+            column=ici,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Evaluate solution to original problem",
+            description="Groups review and evaluate the final solution to the original problem - e.g. Group 1 returns to Problem A, which was completed by Group 2.",
+            column=ics,
+            context_classification=Node.GROUPS,
+            task_classification=Node.ASSESS_PEERS,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Instructor evaluation and discussion",
+            description="Instructor evaluates all responses with the class, highlighting any errors and distinct procedures for arriving at correct solutions.",
+            column=ici,
+            context_classification=Node.WHOLE_CLASS,
+            task_classification=Node.DISCUSS,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        for nodeweek in week.nodeweek_set.all():
+            print(nodeweek.rank)
+            
+        #PEER ASSESSMENT
+        try:
+            workflow = Activity.objects.get(
+                title="Peer Assessment",
+                is_strategy=True,
+                published=True,
+                from_saltise=True,
+            )
+            workflow.weeks.first().nodes.all().delete()
+        except:
+            workflow = Activity.objects.create(
+                title="Peer Assessment",
+                is_strategy=True,
+                published=True,
+                from_saltise=True,
+            )
+        week = workflow.weeks.first()
+        week.strategy_classification=Week.REFLECTIVE_WRITING
+        week.save()
+        rank=0
+        ooci = workflow.columns.get(column_type=Column.OUT_OF_CLASS_INSTRUCTOR)
+        oocs = workflow.columns.get(column_type=Column.OUT_OF_CLASS_STUDENT)
+        ici = workflow.columns.get(column_type=Column.IN_CLASS_INSTRUCTOR)
+        ics = workflow.columns.get(column_type=Column.IN_CLASS_STUDENT)
+        node = week.nodes.create(
+            title="Assign rubric to students for peer assessment",
+            description="Instructor assigns students, individually or in groups, to review the work produced by peers using a rubric or template.",
+            column=ici
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Provide feedback using rubric",
+            description="Individually or in small groups, students review another individual's or group's work using the rubric or template. Students provide peers with feedback in writing or prepared for oral presentation.",
+            column=ics,
+            context_classification=Node.INDIVIDUAL,
+            task_classification=Node.ASSESS_PEERS,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        node = week.nodes.create(
+            title="Review and change work based on feedback",
+            description="Individually or in small groups, students review feedback and decide how to make changes.",
+            column=ics,
+            context_classification=Node.INDIVIDUAL,
+            task_classification=Node.WRITE,
+        )
+        nodeweek = NodeWeek.objects.get(node=node)
+        nodeweek.rank=rank
+        nodeweek.save()
+        rank=rank+1
+        
+        for nodeweek in week.nodeweek_set.all():
+            print(nodeweek.rank)

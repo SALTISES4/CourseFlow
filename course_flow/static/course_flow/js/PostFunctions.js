@@ -107,7 +107,7 @@ export function addStrategy(workflowPk,position=-1,strategyPk=-1,callBackFunctio
         else console.log("Failed");
     });
 }
-//Add a strategy to the workflow
+//Turn a week into a strategy or vice versa
 export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.log("success")){
     $.post(post_paths.toggle_strategy, {
         weekPk:JSON.stringify(weekPk),
