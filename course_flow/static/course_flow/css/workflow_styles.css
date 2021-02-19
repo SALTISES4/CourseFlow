@@ -948,6 +948,7 @@ circle.mouseover{
 .node-bar-column{
     font-size:14px;
     width:100%;
+    cursor:move;
     border:3px outset;
     padding:10px;
     box-sizing:border-box;
@@ -977,6 +978,7 @@ circle.mouseover{
     font-size:14px;
     border:3px outset #1976bc;
     padding:10px;
+    cursor:move;
     box-sizing:border-box;
     white-space:nowrap;
 }

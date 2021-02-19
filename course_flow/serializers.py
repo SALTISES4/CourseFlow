@@ -22,6 +22,8 @@ from .models import (
     User,
 )
 
+def dateTimeFormat():
+    return '%B %d, %Y at %X %Z'
 
 def linkIDMap(link):
     return link.id
@@ -515,6 +517,8 @@ class NodeLinkSerializerShallow(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
+    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=dateTimeFormat())
 
     class Meta:
         model = NodeLink
@@ -549,6 +553,8 @@ class NodeSerializerShallow(serializers.ModelSerializer):
         read_only=True, slug_field="username"
     )
 
+    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=dateTimeFormat())
     outcomenode_set = serializers.SerializerMethodField()
     columnworkflow = serializers.SerializerMethodField()
     outgoing_links = serializers.SerializerMethodField()
@@ -677,6 +683,8 @@ class ColumnSerializerShallow(serializers.ModelSerializer):
             "visible",
         ]
 
+    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=dateTimeFormat())
     def create(self, validated_data):
         return Column.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
@@ -722,6 +730,8 @@ class WeekSerializerShallow(serializers.ModelSerializer):
         ]
 
 
+    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=dateTimeFormat())
     def get_nodeweek_set(self, instance):
         links = instance.nodeweek_set.all().order_by("rank")
         return list(map(linkIDMap, links))
@@ -798,6 +808,8 @@ class ProjectSerializerShallow(serializers.ModelSerializer):
             "workflowproject_set",
         ]
 
+    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=dateTimeFormat())
     workflowproject_set = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
@@ -835,6 +847,8 @@ class OutcomeSerializerShallow(serializers.ModelSerializer):
             "depth"
         ]
 
+    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=dateTimeFormat())
     child_outcome_links = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
@@ -887,7 +901,6 @@ class OutcomeProjectSerializerShallow(serializers.ModelSerializer):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
         return instance
-
     
 class WorkflowSerializerShallow(serializers.ModelSerializer):
     
@@ -916,6 +929,8 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
             "published",
         ]
 
+    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=dateTimeFormat())
     weekworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
