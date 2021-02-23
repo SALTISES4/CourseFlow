@@ -234,10 +234,17 @@ body{
 .home-tabs .ui-tabs-nav{
     padding:0px;
     width:100%;
-    display:flex;
+    display:block;
     margin:0px;
     border:1px solid lightgray;
     overflow:hidden;
+    box-sizing:border-box;
+    background:white;
+    z-index:1;
+    width:20%;
+    height:100%;
+    min-width:200px;
+    position:fixed;
 }
 
 .home-tabs .ui-tabs-tab{
@@ -272,15 +279,32 @@ body{
 }
 
 .home-tabs>div{
-    width:100%;
+    width:80%;
+    left:20%;
+    position:relative;
     background:white;
     padding:20px;
     box-sizing: border-box;
+    height:100%;
+    overflow-y:auto;
 }
 
 .project-header{
     padding:20px;
     background:white;
+    height:150px;
+    overflow:hidden;
+    box-sizing:border-box;
+}
+
+.project-header + .home-tabs{
+    height:calc(100% - 150px);
+    border:1px solid lightgrey;
+    box-sizing:border-box;
+}
+
+.project-menu{
+    height:100%;
 }
 
 .action-icon{

@@ -290,7 +290,7 @@ class ProjectMenuUnconnected extends React.Component{
             i++;
         }
         return(
-            <div>
+            <div class="project-menu">
                 <div class="project-header">
                     <h2>{this.state.title} {this.props.project.author_id==user_id  &&
                         <a class="action-button" onClick ={ this.openEdit.bind(this)}>

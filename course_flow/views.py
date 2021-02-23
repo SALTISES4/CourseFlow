@@ -129,14 +129,22 @@ def get_project_data_package(user):
                     "objects": ProjectSerializerShallow(
                         Project.objects.filter(author=user), many=True
                     ).data,
-                },{
-                    "title": "Add an Activity Strategy",
+                }
+            ],
+            "add": True,
+            "duplicate":"copy",
+        },
+        "owned_strategies": {
+            "title": "Your Strategies",
+            "sections": [
+                {
+                    "title": "Add an Activity-Level Strategy",
                     "object_type": "activity",
                     "objects": ActivitySerializerShallow(
                         Activity.objects.filter(author=user,is_strategy=True), many=True
                     ).data,
                 },{
-                    "title": "Add a Course Strategy",
+                    "title": "Add a Course-Level Strategy",
                     "object_type": "course",
                     "objects": CourseSerializerShallow(
                         Course.objects.filter(author=user,is_strategy=True), many=True
@@ -158,8 +166,15 @@ def get_project_data_package(user):
                         ),
                         many=True,
                     ).data,
-                },{
-                    "title": "Published Activity Strategies",
+                }
+            ],
+            "duplicate":"import",
+        },
+        "other_strategies": {
+            "title": "Published Strategies",
+            "sections": [
+                {
+                    "title": "Published Activity-Level Strategies",
                     "object_type": "activity",
                     "objects": ActivitySerializerShallow(
                         Activity.objects.filter(published=True,is_strategy=True).exclude(
@@ -167,7 +182,7 @@ def get_project_data_package(user):
                         ), many=True
                     ).data,
                 },{
-                    "title": "Published Course Strategies",
+                    "title": "Published Course-Level Strategies",
                     "object_type": "course",
                     "objects": CourseSerializerShallow(
                         Course.objects.filter(published=True,is_strategy=True).exclude(

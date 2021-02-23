@@ -792,12 +792,23 @@ export function homeMenuReducer(state={},action){
     switch(action.type){
         case 'homemenu/itemAdded':
             var new_state = {...state}
-            new_state.owned_projects = {...new_state.owned_projects};
-            new_state.owned_projects.sections = new_state.owned_projects.sections.slice();
-            for(var i=0;i<new_state.owned_projects.sections.length;i++){
-                if(new_state.owned_projects.sections[i].object_type==action.payload.type){
-                    new_state.owned_projects.sections[i].objects=new_state.owned_projects.sections[i].objects.slice()
-                    new_state.owned_projects.sections[i].objects.push(action.payload.new_item);
+            if(action.payload.type!="project"){
+                new_state.owned_strategies = {...new_state.owned_strategies };
+                new_state.owned_strategies.sections = new_state.owned_strategies.sections.slice();
+                for(var i=0;i<new_state.owned_projects.sections.length;i++){
+                    if(new_state.owned_strategies.sections[i].object_type==action.payload.type){
+                        new_state.owned_strategies.sections[i].objects=new_state.owned_strategies.sections[i].objects.slice()
+                        new_state.owned_strategies.sections[i].objects.push(action.payload.new_item);
+                    }
+                }
+            }else{
+                new_state.owned_projects = {...new_state.owned_projects};
+                new_state.owned_projects.sections = new_state.owned_projects.sections.slice();
+                for(var i=0;i<new_state.owned_projects.sections.length;i++){
+                    if(new_state.owned_projects.sections[i].object_type==action.payload.type){
+                        new_state.owned_projects.sections[i].objects=new_state.owned_projects.sections[i].objects.slice()
+                        new_state.owned_projects.sections[i].objects.push(action.payload.new_item);
+                    }
                 }
             }
             return new_state;
