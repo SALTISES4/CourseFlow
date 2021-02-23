@@ -13,6 +13,7 @@ import {OutcomeBar} from "./OutcomeTopView.js";
 import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
+import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
 
 
 
@@ -248,6 +249,7 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="workflow";
+        this.state={};
     }
     
     render(){
@@ -264,6 +266,15 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                     <div class="workflow-details">
                         <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
                         {this.addEditable(data)}
+                        {reactDom.createPortal(
+                        <div class="topdropwrapper" title="Show/Hide Legend">
+                            <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
+                        </div>,
+                        $("#viewbar")[0]
+                        )}
+                        {this.state.show_legend && 
+                            <WorkflowOutcomeLegend toggle={this.toggleLegend.bind(this)}/>
+                        }
                         <WorkflowOutcomeView selection_manager={this.props.selection_manager} outcomes_type={data.outcomes_type}/>
                     </div>
                     {!read_only &&
@@ -275,6 +286,14 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                 </div>
             </div>
         );
+    }
+                     
+    toggleLegend(){
+        if(this.state.show_legend){
+            this.setState({show_legend:false});
+        }else{
+            this.setState({show_legend:true});
+        }
     }
     
     

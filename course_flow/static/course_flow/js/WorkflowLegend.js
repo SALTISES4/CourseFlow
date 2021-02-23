@@ -6,9 +6,16 @@ import {Provider, connect} from "react-redux";
 
 class LegendLine extends React.Component{
     render(){
+        let icon;
+        if(this.props.icon)icon=(
+            <img src={iconpath+this.props.icon+".svg"}/>
+        );
+        else icon=(
+            <div class={this.props.divclass}>{this.props.div}</div>
+        );
         return (
             <div class="legend-line">
-                <img src={iconpath+this.props.icon+".svg"}/>
+                {icon}
                 <div>{this.props.text}</div>
             </div>
         );
@@ -81,3 +88,49 @@ export default connect(
     mapStateToProps,
     null
 )(WorkflowLegend)
+
+class WorkflowOutcomeLegendUnconnected extends React.Component{
+    
+    render(){
+        
+
+        return (
+            <div class="workflow-legend">
+                <h4>Legend</h4>
+                <div class="legend-section">
+                    <hr/>
+                    <h5>Outcomes:</h5>
+                    <LegendLine icon="solid_check" text="Complete"/>
+                    <LegendLine icon="check" text="Completed (Auto-Calculated)"/>
+                    <LegendLine icon="nocheck" text="Partially Complete"/>
+                </div>
+                {this.props.outcomes_type ==1 &&
+                    <div class="legend-section">
+                        <hr/>
+                        <h5>Advanced Outcomes:</h5>
+                        <LegendLine div="I" divclass="outcome-introduced self-completed" text="Introduced"/>
+                        <LegendLine div="D" divclass="outcome-developed self-completed" text="Developed"/>
+                        <LegendLine div="A" divclass="outcome-advanced self-completed" text="Advanced"/>
+                        <LegendLine div="I" divclass="outcome-introduced" text="Introduced (Auto-Calculated)"/>
+                        <LegendLine div="D" divclass="outcome-developed" text="Developed (Auto-Calculated)"/>
+                        <LegendLine div="A" divclass="outcome-advanced" text="Advanced (Auto-Calculated)"/>
+                    </div>
+                }
+                <div class="window-close-button" onClick = {this.props.toggle}>
+                    <img src = {iconpath+"close.svg"}/>
+                </div>
+            </div>
+        );
+    }
+    
+    componentDidMount(){
+        $(".workflow-legend").draggable();
+    }
+}
+const mapWorkflowOutcomeLegendStateToProps = (state)=>{
+    return {outcomes_type:state.workflow.outcomes_type};
+}
+export const WorkflowOutcomeLegend = connect(
+    mapWorkflowOutcomeLegendStateToProps,
+    null
+)(WorkflowOutcomeLegendUnconnected)

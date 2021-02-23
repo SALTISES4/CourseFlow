@@ -26,13 +26,17 @@ export class SelectionManager{
             selector.mouse_isclick=false;
         });
         $(document).on("mouseup",(evt,newSelection)=>{
+            console.log("new selection");
+            console.log(newSelection);
+            console.log(evt);
             if(selector.mouse_isclick){
-                selector.changeSelection(evt,newSelection);
+                selector.changeSelection(evt,null);
             }
         });
     }
     
     changeSelection(evt,newSelection){
+        console.log("SELECTION CHANGED");
         console.log(evt);
         if(read_only)return;
         evt.stopPropagation();

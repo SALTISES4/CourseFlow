@@ -63,7 +63,7 @@ var tiny_loader;
 
 $("#sidebar").tabs({collapsible:true,active:1,disabled:[0]});
     
-$("#sidebar").on("mousedown",(evt)=>{evt.stopPropagation()});    
+$("#sidebar").on("mouseup",(evt)=>{console.log("CLICKED SIDEBAR");evt.stopPropagation();});    
 
 {% if parent_project_pk %}
     if(read_only){

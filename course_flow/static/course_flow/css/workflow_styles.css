@@ -587,8 +587,18 @@ button{
     box-shadow:none;
 }
 
+.outcome-table .total-cell, .outcome-table .total-header{
+    background:#EAEAEA;
+}
+
+
+
 .outcome-table .grand-total-cell{
     border-right:2px solid black;
+}
+
+.outcome-row:not(.node-row):hover, .outcome-row:not(.node-row):hover .total-cell{
+    background:#E0E0E0;
 }
 
 .table-cell .outcome-degree{
@@ -597,15 +607,34 @@ button{
     font-weight:600;
     white-space:nowrap;
     margin-top:6px;
+    opacity:0.7;
 }
-.table-cell .outcome-introduced{
-    color:#165016;
+.outcome-introduced{
+    color:#167016;
 }
-.table-cell .outcome-developed{
+.outcome-introduced.self-completed{
+    color:white;
+    background:#167016;
+    opacity:1;
+    min-width:10px;
+}
+.outcome-developed{
     color:#2ca02c;
 }
-.table-cell .outcome-advanced{
+.outcome-developed.self-completed{
+    color:white;
+    background:#2ca02c;
+    opacity:1;
+    min-width:10px;
+}
+.outcome-advanced{
     color:#11ca11;
+}
+.outcome-advanced.self-completed{
+    color:white;
+    background:#11ca11;
+    opacity:1;
+    min-width:10px;
 }
 
 .outcome-table .table-group{
@@ -639,6 +668,11 @@ button{
 .table-cell > img{
     padding:5px;
     width:16px;
+    opacity:0.7;
+}
+
+.table-cell > img.self-completed{
+    opacity:1;
 }
 
 .table-cell input, .table-cell button{
@@ -677,19 +711,37 @@ button{
 
 .outcome-table .node-top-row{
     padding:1px;
+    border-radius:0px 0px 5px 5px;
 }
 
 .outcome-table .table-cell .total-header, .outcome-table .table-cell .node-category-header{
     position:absolute;
     width:160px;
     height:26px;
-    transform-origin: bottom left;
-    transform: translateX(32px) translateY(-27px) rotate(-60deg);
+    transform-origin:top left;
+    transform:rotate(-60deg);
+    border-bottom:0px;
     font-weight:600;
-    border-bottom:2px solid black;
     text-align:left;
     font-size:10px;
     white-space:normal;
+}
+
+.outcome-table .total-header::before, .outcome-table .node-category-header::before{
+    content:"";
+    width:16px;
+    height:5px;
+    display:inline-block;
+}
+
+.outcome-table .total-header::after, .outcome-table .node-category-header::after{
+    content:"";
+    position:absolute;
+    margin-left:14px;
+    border-bottom:2px solid black;
+    bottom:-2px;
+    width:calc(100% - 14px);
+    left:0px;
 }
 
 .outcome-table .table-cell .node-category-header{

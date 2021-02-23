@@ -243,7 +243,7 @@ export class ComponentJSON extends React.Component{
             var props = this.props;
             console.log(no_delete);
             return reactDom.createPortal(
-                <div class="right-panel-inner">
+                <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
                     <h3>{"Edit "+type+":"}</h3>
                     {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
@@ -314,12 +314,12 @@ export class ComponentJSON extends React.Component{
                     {type=="workflow" &&
                         <div>
                             <h4>Settings:</h4>
+                            <label for="outcomes_type">Outcomes Style</label>
                             <select name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
                                 {outcome_type_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
                             </select>
-                            <label for="outcomes_type">Outcomes Style</label>
                             {data.is_strategy && 
                                 [
                                 <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>,
@@ -577,6 +577,7 @@ export class NodePorts extends React.Component{
     
     nodeLinkAdded(target,source_port,target_port){
         var props=this.props;
+        if(target==this.props.nodeID)return;
         newNodeLink(this.props.nodeID,target,Constants.port_keys.indexOf(source_port),Constants.port_keys.indexOf(target_port),(response_data)=>{
             let action = newNodeLinkAction(response_data);
             props.dispatch(action);
