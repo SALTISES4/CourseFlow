@@ -195,6 +195,9 @@
         duplicate_strategy_ajax:"{% url 'course_flow:duplicate-strategy' %}",
     }
         
+    workflow_update_path = "{% url 'course_flow:workflow-update' pk='0'%}";
+    workflow_detail_path = "{% url 'course_flow:workflow-detail-view' pk='0'%}";
+        
         
     </script>
   {% endblock %}
