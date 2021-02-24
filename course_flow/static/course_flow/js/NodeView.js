@@ -193,7 +193,7 @@ class NodeView extends ComponentJSON{
 
     mouseIn(evt){
         if(evt.which==1)return;
-        $("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
+        if(!read_only)$("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
         d3.selectAll(".node-ports").raise();
         var mycomponent = this;
         

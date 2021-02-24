@@ -222,7 +222,7 @@ export class ComponentJSON extends React.Component{
         var type = this.objectType;
         return(
             <ActionButton button_icon="create_new_child.svg" button_class="insert-sibling-button" titletext="Insert Child" handleClick={()=>{
-            tinyLoader.startLoad();
+            tiny_loader.startLoad();
             insertChild(data.id,this.objectType,
                 (response_data)=>{
                     let action = insertChildAction(response_data,type);
