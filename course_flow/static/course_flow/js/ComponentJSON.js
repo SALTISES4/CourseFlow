@@ -241,7 +241,6 @@ export class ComponentJSON extends React.Component{
             let title_length="50";
             if(type=="outcome")title_length="500";
             var props = this.props;
-            console.log(no_delete);
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
                     <h3>{"Edit "+type+":"}</h3>
@@ -367,8 +366,6 @@ export class ComponentJSON extends React.Component{
     }
     
     inputChanged(field,evt){
-        console.log(evt);
-        console.log(evt.target.value);
         this.props.dispatch(changeField(this.props.data.id,this.objectType,field,evt.target.value));
     }
 

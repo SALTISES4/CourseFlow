@@ -28,8 +28,6 @@ class WorkflowOutcomeView extends ComponentJSON{
                 )
             }
         }*/
-        console.log("mapping data");
-        console.log(this.props.data);
         let nodes = this.props.data.map((nodecategory)=>
             <div class="table-group">
                 <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
@@ -41,7 +39,6 @@ class WorkflowOutcomeView extends ComponentJSON{
                 <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
             </div>
         );
-        console.log("data mapped");
         
         let outcomes = this.props.outcomeproject.map((outcomeproject)=>
             <TableOutcomeView objectID={outcomeproject.outcome} nodecategory={this.props.data} outcomes_type={this.props.outcomes_type}/>                                          
@@ -64,12 +61,9 @@ const mapStateToProps = (state,own_props)=>{
     let weeks_ordered = state.week.slice().sort(function(a,b){return week_order.indexOf(a.id)-week_order.indexOf(b.id)})
         
     let nodeweek_order=[].concat(...weeks_ordered.map((week)=>week.nodeweek_set));
-    console.log(nodeweek_order);
     let nodeweeks_ordered = state.nodeweek.slice().sort(function(a,b){return nodeweek_order.indexOf(a.id)-nodeweek_order.indexOf(b.id)});
     let node_order = nodeweeks_ordered.map((nodeweek)=>nodeweek.node);
     let nodes_ordered = state.node.slice().sort(function(a,b){return node_order.indexOf(a.id)-node_order.indexOf(b.id)});
-    console.log("sorting method:");
-    console.log(state.workflow.outcomes_sort);
     switch(parseInt(state.workflow.outcomes_sort)){
         case 0:
             let nodes_by_week={};

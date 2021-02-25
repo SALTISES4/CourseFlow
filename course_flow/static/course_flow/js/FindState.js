@@ -49,8 +49,6 @@ export const getTermByID = (state,id)=>{
             };
         }
     }
-    console.log("Did not find term");
-    console.log(state);
 }
 export const getWeekWorkflowByID = (state,id)=>{
     for(var i in state.weekworkflow){

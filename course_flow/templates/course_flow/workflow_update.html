@@ -63,7 +63,7 @@ var tiny_loader;
 
 $("#sidebar").tabs({collapsible:true,active:1,disabled:[0]});
     
-$("#sidebar").on("mouseup",(evt)=>{console.log("CLICKED SIDEBAR");evt.stopPropagation();});    
+$("#sidebar").on("mouseup",(evt)=>{evt.stopPropagation();});    
 
 if(read_only)$("#sidebar").hide();    
     
@@ -126,6 +126,7 @@ $(document).on("ports-rendered",(evt)=>{
 });
     
 window.addEventListener("load", function(){
+    
     selection_manager = new workflow_redux.SelectionManager(); 
     tiny_loader = new workflow_redux.TinyLoader('#container');
     

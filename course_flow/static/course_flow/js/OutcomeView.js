@@ -393,7 +393,6 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
             }
         }
         if(this.child_completion_status[node_id][index]!==value){
-            console.log("changing child completion status");
             this.child_completion_status[node_id][index]=value;
             this.updateCompletion(node_id);
         }
@@ -412,13 +411,8 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     }
 
     updateCompletion(node_id){
-        console.log("updating completion");
-        console.log(this.child_completion_status);
         let new_child_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
-        console.log(new_child_completion);
-        console.log(this.state.completion_status_from_children);
         if(this.state.completion_status_from_children[node_id]!==new_child_completion){
-            console.log("setting state");
             this.setState(function(state,props){
                 let new_completion_status_from_children = {...state.completion_status_from_children};
                 new_completion_status_from_children[node_id]=new_child_completion;

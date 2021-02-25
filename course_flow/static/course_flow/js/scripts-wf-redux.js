@@ -26,9 +26,6 @@ export class SelectionManager{
             selector.mouse_isclick=false;
         });
         $(document).on("mouseup",(evt,newSelection)=>{
-            console.log("new selection");
-            console.log(newSelection);
-            console.log(evt);
             if(selector.mouse_isclick){
                 selector.changeSelection(evt,null);
             }
@@ -36,8 +33,6 @@ export class SelectionManager{
     }
     
     changeSelection(evt,newSelection){
-        console.log("SELECTION CHANGED");
-        console.log(evt);
         if(read_only)return;
         evt.stopPropagation();
         if(this.currentSelection)this.currentSelection.setState({selected:false});
@@ -128,7 +123,6 @@ export class TinyLoader{
     }
         
     endLoad(){
-        console.log("ending load");
         if(this.loadings>0)this.loadings--;
         if(this.loadings<=0)$(this.identifier).removeClass('waiting');
     }

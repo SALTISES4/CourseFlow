@@ -103,7 +103,6 @@ class WorkflowView extends ComponentJSON{
     
     sortableMovedFunction(id,new_position,type){
         if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position))
-        console.log(type);
         if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position))
     }
                      
@@ -157,7 +156,6 @@ class NodeBarUnconnected extends ComponentJSON{
             <NodeBarWeekWorkflow key={weekworkflow} objectID={weekworkflow}/>
         );
         var sort_type;
-        console.log(this.props);
         if(this.props.outcomes_view)sort_type=(
             <div class="node-bar-sort-block">
                 <p>Sort Nodes By:</p>
@@ -254,9 +252,6 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log("WORKFLOW DATA");
-        
-        console.log(data);
         
         var selector = this;
         

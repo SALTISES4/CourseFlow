@@ -25,7 +25,6 @@ class LegendLine extends React.Component{
 class WorkflowLegend extends React.Component{
     
     render(){
-        console.log(this.props.contexts);
         let contexts = this.props.contexts.map((value)=>
             <LegendLine icon={Constants.context_keys[value]} text = {context_choices.find((obj)=>obj.type==value).name}/>
         );
@@ -35,7 +34,6 @@ class WorkflowLegend extends React.Component{
         let strategies = this.props.strategies.map((value)=>
             <LegendLine icon={Constants.strategy_keys[value]} text = {strategy_classification_choices.find((obj)=>obj.type==value).name}/>
         );
-        console.log(contexts)
 
         return (
             <div class="workflow-legend">

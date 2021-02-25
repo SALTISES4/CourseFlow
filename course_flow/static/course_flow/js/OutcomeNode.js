@@ -170,10 +170,7 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
             );
         }
         if(props.updateParentCompletion){
-            console.log("NODE toggle triggering parent completion update");
             let child_status = this.props.completion_status_from_children;
-            console.log(child_status);
-            console.log(value);
             if(!child_status && child_status!==0)
                 props.updateParentCompletion(props.nodeID,value);
             else
@@ -204,10 +201,7 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
         }
        
         if(props.updateParentCompletion){
-            console.log("NODE toggle triggering parent completion update");
             let child_status = this.props.completion_status_from_children;
-            console.log(child_status);
-            console.log(value);
             if(!child_status && child_status!==0)
                 props.updateParentCompletion(props.nodeID,value);
             else

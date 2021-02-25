@@ -137,7 +137,6 @@ export class WorkflowForMenu extends React.Component{
         var buttons=[];
         if(this.props.type=="projectmenu"||this.props.type=="homemenu"){
             if(this.props.owned){
-                console.log(this.props);
                 buttons.push(
                     <div onClick={(evt)=>{
                         if(window.confirm("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone.")){
@@ -161,7 +160,6 @@ export class WorkflowForMenu extends React.Component{
                 );
             }
             if(this.props.duplicate){
-                console.log(this.props);
                 let icon;
                 let titletext;
                 if(this.props.duplicate=="copy"){
@@ -236,7 +234,6 @@ export class MenuTab extends React.Component{
 
 class HomeMenuUnconnected extends React.Component{
     render(){
-        console.log(this.props);
         var tabs = [];
         var tab_li = [];
         var i = 0;

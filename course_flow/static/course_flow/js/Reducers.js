@@ -93,21 +93,18 @@ export const addOutcomeToNodeAction = (response_data) => {
 }
 
 export const newStrategyAction = (response_data) => {
-    console.log(response_data);
     return {
         type: "strategy/addStrategy",
         payload:response_data
     }
 }
 export const toggleStrategyAction = (response_data) => {
-    console.log(response_data);
     return {
         type: "strategy/toggleStrategy",
         payload:response_data
     }
 }
 export const homeMenuItemAdded = (response_data) => {
-    console.log(response_data);
     return {
         type: "homemenu/itemAdded",
         payload:response_data
@@ -475,8 +472,6 @@ export function nodeReducer(state={},action){
             var new_state = state.slice();
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
-                    console.log(action.payload.columns);
-                    console.log(action.payload.delta_x);
                     try{
                         let columns = action.payload.columns;
                         let old_column_index = columns.indexOf(state[i].column);
@@ -668,7 +663,6 @@ export function outcomeReducer(state={},action){
             return new_state;
         case 'outcome/insertChild':
         case 'outcome/insertBelow':
-            console.log("INSERTED CHILD");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parentID){
                     var new_state = state.slice();
