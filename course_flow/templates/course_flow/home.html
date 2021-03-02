@@ -58,6 +58,29 @@
         workflow_redux.renderHomeMenu(data_package);
     });
     
+    fileLoader = document.createElement('input');
+    fileLoader.type="file";
+    fileLoader.accept=".json";
+    fileLoader.addEventListener('change',()=>{
+        let reader = new FileReader();
+        reader.readAsText(fileLoader.files[0]);
+        reader.onload = (evt)=>{
+            let readData = evt.target.result;
+            console.log(readData);
+            $.post("{% url 'course_flow:project-from-json' %}", {
+                jsonData:readData
+            }).done(function(data){
+                if(data.action == "posted") window.location.reload();
+                else console.log("Failed");
+            });
+        }
+    });
+    
+    $("#viewbar").append("<div id='import-old-file'></div>");
+    $("<button>Import old file</button>").appendTo("#import-old-file").on("click",()=>{
+        fileLoader.click();
+    });
+    
     
     //Causes the specified object to delete itself
     function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){

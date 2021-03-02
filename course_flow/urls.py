@@ -73,6 +73,7 @@ def flow_patterns():
         url(r"^workflow/node/new", views.new_node, name="new-node"),
         url(r"^workflow/strategy/add", views.add_strategy, name="add-strategy"),
         url(r"^workflow/strategy/toggle", views.week_toggle_strategy, name="toggle-strategy"),
+        url(r"^project/from-json/", views.project_from_json, name="project-from-json"),
         url(
             r"^workflow/node/set-linked-workflow/$",
             views.set_linked_workflow_ajax,

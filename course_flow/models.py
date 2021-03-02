@@ -63,6 +63,7 @@ class Column(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
+    colour = models.PositiveIntegerField(null=True)
     CUSTOM_ACTIVITY = 0
     OUT_OF_CLASS_INSTRUCTOR = 1
     OUT_OF_CLASS_STUDENT = 2
@@ -520,7 +521,7 @@ class Workflow(models.Model):
         if self.title is not None:
             return self.title
         else:
-            return self.type()
+            return self.type
 
 
 class Activity(Workflow):
@@ -547,7 +548,7 @@ class Activity(Workflow):
         if self.title is not None:
             return self.title
         else:
-            return self.type()
+            return self.type
 
     class Meta:
         verbose_name = "Activity"
@@ -582,7 +583,7 @@ class Course(Workflow):
         if self.title is not None:
             return self.title
         else:
-            return self.type()
+            return self.type
 
 
 class Program(Workflow):
@@ -600,7 +601,7 @@ class Program(Workflow):
         if self.title is not None:
             return self.title
         else:
-            return self.type()
+            return self.type
 
 
 class ColumnWorkflow(models.Model):
@@ -655,6 +656,11 @@ class Discipline(models.Model):
 Other receivers
 """
 
+@receiver(pre_delete, sender=Project)
+def delete_project_objects(sender, instance, **kwargs):
+    instance.workflows.all().delete()
+    instance.outcomes.all().delete()
+
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
     instance.weeks.all().delete()
@@ -689,6 +695,9 @@ def switch_node_to_static(sender, instance, created, **kwargs):
 @receiver(pre_delete,sender=Column)
 def move_nodes(sender, instance, **kwargs):
     columnworkflow = instance.columnworkflow_set.first()
+    if columnworkflow is None:
+        print("This column has no columnworkflow, probably orphaned")
+        return
     workflow = columnworkflow.workflow
     
     other_columns = workflow.columnworkflow_set.all().order_by('rank').exclude(column=instance)
@@ -787,6 +796,33 @@ Default content creation receivers
 """
 
 
+@receiver(post_save, sender=NodeWeek)
+def set_node_type_default(sender, instance, created, **kwargs):
+    node = instance.node
+    try:
+        node.node_type=instance.week.week_type
+        node.save()
+    except:
+        print("couldn't set default node type")
+        
+@receiver(post_save, sender=WeekWorkflow)
+def set_week_type_default(sender, instance, created, **kwargs):
+    week = instance.week
+    try:
+        week.week_type=instance.workflow.get_subclass().WORKFLOW_TYPE
+        week.save()
+    except:
+        print("couldn't set default week type")
+
+@receiver(post_save, sender=OutcomeOutcome)
+def set_outcome_depth_default(sender, instance, created, **kwargs):
+    child = instance.child
+    try:
+        child.depth=instance.parent.depth+1
+        child.save()
+    except:
+        print("couldn't set default outcome depth")
+        
 @receiver(post_save, sender=Node)
 def create_default_node_content(sender, instance, created, **kwargs):
     if created and instance.is_original:

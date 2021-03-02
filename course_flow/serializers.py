@@ -22,6 +22,25 @@ from .models import (
     User,
 )
 
+import bleach
+
+
+bleach_allowed_tags=[
+    'b',
+    'i',
+    'ul',
+    'li',
+    'br',
+    'p',
+    'a'
+]
+
+def bleach_sanitizer(value,**kwargs):
+    if value is not None:
+        return bleach.clean(value,**kwargs)
+    else:
+        return None
+
 def dateTimeFormat():
     return '%B %d, %Y at %X %Z'
 
