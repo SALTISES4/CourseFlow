@@ -7,6 +7,8 @@ from selenium.webdriver.support.expected_conditions import (
 )
 from django.test.client import RequestFactory
 from django.urls import reverse
+import os
+import json
 from django.contrib.auth.models import Group, User
 from course_flow.models import (
     Project,
@@ -39,6 +41,8 @@ from rest_framework.renderers import JSONRenderer
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
+
+TESTJSON_FILENAME = os.path.join(os.path.dirname(__file__),'test_json.json');
 
 import time
 
@@ -2242,6 +2246,21 @@ class ModelViewTest(TestCase):
         self.assertEqual(new_node.outcomes.first(), new_child_outcome)
         new_node = Node.objects.get(week__workflow=new_activity)
         self.assertEqual(new_node.outcomes.first(), new_child_outcome)
+        
+    def test_import_json(self):
+        filecontents = open(TESTJSON_FILENAME).read()
+        response = self.client.post(
+            reverse("course_flow:project-from-json"),
+            {"jsonData":filecontents},
+        )
+        self.assertEqual(response.status_code, 401)
+        login(self)
+        response = self.client.post(
+            reverse("course_flow:project-from-json"),
+            {"jsonData":filecontents},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content)["action"], "posted")
             
         
         

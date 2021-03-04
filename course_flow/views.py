@@ -2409,8 +2409,6 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                     workflow=id_dict["workflow"][activity_id]
                 )
             for course_id in project["courses"]:
-                print(id_dict["workflow"][course_id])
-                print(id_dict["workflow"][course_id].columnworkflow_set)
                 WorkflowProject.objects.create(
                     project=project_model,
                     workflow=id_dict["workflow"][course_id]
