@@ -11,7 +11,14 @@
 <!-- -->
 {% block body %}
 <div id="content-container" class="body-wrapper">
-    
+    <div class="splash-page">
+        <div class="splash-wrapper">
+            <button class="splash-image-wrapper">
+                <img id="import-json" src="{% static 'course_flow/img/images_svg/open_basic.svg' %}">
+                <div>Import Project<br><small>(May take some time)</small></div>
+            </button>
+        </div>
+    </div>
 </div>
 <!-- -->
 {% endblock %}
@@ -51,26 +58,37 @@
         activity:"{% url 'course_flow:activity-strategy-create' %}",
         course:"{% url 'course_flow:course-strategy-create' %}"
     };
-    const data_package = {{project_data_package|safe}}
+    
     const user_id = {{ user.id }};
     const read_only=false;
     window.addEventListener("load",function(){
         workflow_redux.renderHomeMenu(data_package);
     });
     
+    fileLoader = document.createElement('input');
+    fileLoader.type="file";
+    fileLoader.accept=".json";
+    fileLoader.addEventListener('change',()=>{
+        let loader = new workflow_redux.Loader('body');
+        let reader = new FileReader();
+        reader.readAsText(fileLoader.files[0]);
+        reader.onload = (evt)=>{
+            let readData = evt.target.result;
+            console.log(readData);
+            $.post("{% url 'course_flow:project-from-json' %}", {
+                jsonData:readData
+            }).done(function(data){
+                loader.endLoad();
+                if(data.action == "posted") window.location.href="{% url 'course_flow:home' %}";
+                else console.log("Failed");
+            });
+        }
+    });
     
+    $("#import-json").on("click",()=>{
+        fileLoader.click();
+    });
     
-    
-    //Causes the specified object to delete itself
-    function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
-        $.post("{% url 'course_flow:delete-self' %}", {
-            objectID:JSON.stringify(objectID),
-            objectType:JSON.stringify(objectType)
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
-        });
-    }
 </script>
 
 
