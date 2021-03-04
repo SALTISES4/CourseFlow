@@ -1,5 +1,9 @@
 import {renderMessageBox} from "./MenuComponents";
 
+function fail_function(){
+    alert("Something went wrong. Please reload the page.")
+}
+
 export function getLinkedWorkflowMenu(nodeData,updateFunction){
     $.post(post_paths.get_possible_linked_workflows,{
         nodePk:JSON.stringify(nodeData.id),
@@ -18,7 +22,7 @@ export function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>cons
         workflowPk:workflow_id,
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
 
@@ -40,7 +44,7 @@ export function updateValue(objectID,objectType,json,callBackFunction=()=>consol
             data:JSON.stringify(json)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
+            else fail_function();
         });
     }
     document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction,t);
@@ -53,7 +57,7 @@ export function updateValueInstant(objectID,objectType,json,callBackFunction=()=
         data:JSON.stringify(json)
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
 
@@ -64,7 +68,7 @@ export function newColumn(workflowPk,column_type,callBackFunction=()=>console.lo
         column_type:column_type
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
     
@@ -77,7 +81,7 @@ export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunc
         columnType:JSON.stringify(column_type),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
   
@@ -92,7 +96,7 @@ export function newNodeLink(source_node,target_node,source_port,target_port,call
         
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }  
 
@@ -104,7 +108,7 @@ export function addStrategy(workflowPk,position=-1,strategyPk=-1,callBackFunctio
         strategyPk:JSON.stringify(strategyPk),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
 //Turn a week into a strategy or vice versa
@@ -114,7 +118,7 @@ export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.l
         is_strategy:JSON.stringify(is_strategy),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
 
@@ -125,7 +129,7 @@ export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log(
         objectType:JSON.stringify(objectType)
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
 
@@ -136,7 +140,7 @@ export function unlinkOutcomeFromNode(nodeID,outcomeID,callBackFunction=()=>cons
         outcomePk:JSON.stringify(outcomeID)
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
 
@@ -148,7 +152,7 @@ export function updateOutcomenodeDegree(nodeID,outcomeID,value,callBackFunction=
         degree:JSON.stringify(value)
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
 
@@ -160,7 +164,7 @@ export function duplicateSelf(objectID,objectType,parentID,callBackFunction=()=>
         objectType:JSON.stringify(objectType),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
 //Causes the specified object to insert a sibling after itself
@@ -171,7 +175,7 @@ export function insertSibling(objectID,objectType,parentID,callBackFunction=()=>
         objectType:JSON.stringify(objectType),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
 
@@ -182,7 +186,7 @@ export function insertChild(objectID,objectType,callBackFunction=()=>console.log
         objectType:JSON.stringify(objectType),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
     
@@ -198,7 +202,7 @@ export function insertedAt(objectID,objectType,parentID,newPosition,callBackFunc
             newPosition:JSON.stringify(newPosition),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
+            else fail_function();
         });
     });
 }
@@ -214,7 +218,7 @@ export function columnChanged(objectID,columnID,callBackFunction=()=>console.log
             columnPk:JSON.stringify(columnID),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
+            else fail_function();
         });
     });
 }
@@ -227,7 +231,7 @@ export function addOutcomeToNode(nodePk,outcome,callBackFunction=()=>console.log
         outcomePk:JSON.stringify(outcome),
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else console.log("Failed");
+        else fail_function();
     });
 }
 
@@ -239,7 +243,7 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
             projectPk:JSON.stringify(itemPk),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
+            else fail_function();
         });
     }else if(objectType=="outcome"){
         $.post(post_paths.duplicate_outcome_ajax, {
@@ -247,14 +251,14 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
             projectPk:JSON.stringify(projectID),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
+            else fail_function();
         });
     }else if(!projectID && projectID!==0){
         $.post(post_paths.duplicate_strategy_ajax, {
             workflowPk:JSON.stringify(itemPk),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
+            else fail_function();
         });
     }else{
         $.post(post_paths.duplicate_workflow_ajax, {
@@ -262,7 +266,7 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
             projectPk:JSON.stringify(projectID),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
+            else fail_function();
         });
     }
 
