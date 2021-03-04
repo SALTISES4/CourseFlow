@@ -53,9 +53,9 @@
 <script nonce="{{request.csp_nonce}}">
     
 const workflow_paths = {
-    activity:'{% url "course_flow:activity-detail" pk=object.pk %}',
-    course:'{% url "course_flow:course-detail" pk=object.pk %}',
-    program:'{% url "course_flow:program-detail" pk=object.pk %}',
+    activity:'{% url "course_flow:activity-detail-view" pk=object.pk %}',
+    course:'{% url "course_flow:course-detail-view" pk=object.pk %}',
+    program:'{% url "course_flow:program-detail-view" pk=object.pk %}',
 }
 const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 var selection_manager;

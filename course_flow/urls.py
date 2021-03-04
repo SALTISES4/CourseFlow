@@ -7,9 +7,6 @@ from . import lti, views
 
 router = routers.SimpleRouter()
 router.register(r"workflow/read", views.WorkflowViewSet)
-router.register(r"activity/read", views.ActivityViewSet)
-router.register(r"course/read", views.CourseViewSet)
-router.register(r"program/read", views.ProgramViewSet)
 
 
 app_name = "course_flow"

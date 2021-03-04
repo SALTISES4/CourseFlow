@@ -741,74 +741,6 @@ class WorkflowViewSet(
     queryset = Workflow.objects.select_subclasses()
 
 
-class WeekWorkflowViewSet(
-    LoginRequiredMixin, viewsets.ReadOnlyModelViewSet
-):
-    serializer_class = WeekWorkflowSerializerShallow
-    renderer_classes = [JSONRenderer]
-    queryset = WeekWorkflow.objects.all()
-
-
-class WeekViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = WeekSerializerShallow
-    renderer_classes = [JSONRenderer]
-    queryset = Week.objects.all()
-
-
-class NodeWeekViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = NodeWeekSerializerShallow
-    renderer_classes = [JSONRenderer]
-    queryset = NodeWeek.objects.all()
-
-
-class NodeViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = NodeSerializerShallow
-    renderer_classes = [JSONRenderer]
-    queryset = Node.objects.all()
-
-
-class NodeLinkViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = NodeLinkSerializerShallow
-    renderer_classes = [JSONRenderer]
-    queryset = NodeLink.objects.all()
-
-
-class ColumnWorkflowViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = ColumnWorkflowSerializerShallow
-    renderer_classes = [JSONRenderer]
-    queryset = ColumnWorkflow.objects.all()
-
-
-class ColumnViewSet(LoginRequiredMixin, viewsets.ReadOnlyModelViewSet):
-    serializer_class = ColumnSerializerShallow
-    renderer_classes = [JSONRenderer]
-    queryset = Column.objects.all()
-
-
-class ActivityViewSet(
-    LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet
-):
-    serializer_class = ActivitySerializer
-    renderer_classes = [JSONRenderer]
-    queryset = Activity.objects.all()
-
-
-class CourseViewSet(
-    LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet
-):
-    serializer_class = CourseSerializer
-    renderer_classes = [JSONRenderer]
-    queryset = Course.objects.all()
-
-
-class ProgramViewSet(
-    LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet
-):
-    serializer_class = ProgramSerializer
-    renderer_classes = [JSONRenderer]
-    queryset = Program.objects.all()
-
-
 class ProgramDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Program
     template_name = "course_flow/program_detail.html"
@@ -846,14 +778,15 @@ class CourseDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     template_name = "course_flow/course_detail.html"
 
 
-class StaticCourseDetailView(LoginRequiredMixin, DetailView):
-    model = Course
-    template_name = "course_flow/course_detail_static.html"
 
-
-class StudentCourseDetailView(LoginRequiredMixin, DetailView):
-    model = Course
-    template_name = "course_flow/course_detail_student.html"
+#class StaticCourseDetailView(LoginRequiredMixin, DetailView):
+#    model = Course
+#    template_name = "course_flow/course_detail_static.html"
+#
+#
+#class StudentCourseDetailView(LoginRequiredMixin, DetailView):
+#    model = Course
+#    template_name = "course_flow/course_detail_student.html"
 
 
 class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -911,14 +844,14 @@ class ActivityDetailView(
     template_name = "course_flow/activity_detail.html"
 
 
-class StaticActivityDetailView(LoginRequiredMixin, DetailView):
-    model = Activity
-    template_name = "course_flow/activity_detail_static.html"
-
-
-class StudentActivityDetailView(LoginRequiredMixin, DetailView):
-    model = Activity
-    template_name = "course_flow/activity_detail_student.html"
+#class StaticActivityDetailView(LoginRequiredMixin, DetailView):
+#    model = Activity
+#    template_name = "course_flow/activity_detail_static.html"
+#
+#
+#class StudentActivityDetailView(LoginRequiredMixin, DetailView):
+#    model = Activity
+#    template_name = "course_flow/activity_detail_student.html"
 
 
 class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -980,153 +913,133 @@ def save_serializer(serializer) -> HttpResponse:
 
 
 
-def get_owned_courses(user: User):
-    return Course.objects.filter(author=user, static=False).order_by(
-        "-last_modified"
-    )[:10]
+
+    
+#def get_owned_courses(user: User):
+#    return Course.objects.filter(author=user, static=False).order_by(
+#        "-last_modified"
+#    )[:10]
+#
+#
+#def setup_link_to_group(course_pk, students) -> Course:
+#
+#    course = Course.objects.get(pk=course_pk)
+#
+#    clone = duplicate_course(course, course.author)
+#    clone.static = True
+#    clone.title += " -- Live"
+#    clone.save()
+#    clone.students.add(*students)
+#    for week in clone.weeks.all():
+#        for component in week.components.exclude(
+#            content_type=ContentType.objects.get_for_model(Activity)
+#        ):
+#            component.students.add(*students)
+#        for component in week.components.filter(
+#            content_type=ContentType.objects.get_for_model(Activity)
+#        ):
+#            activity = component.content_object
+#            activity.static = True
+#            activity.save()
+#            activity.students.add(*students)
+#            for week in activity.weeks.all():
+#                for node in week.nodes.all():
+#                    node.students.add(*students)
+#    return clone
+#
+#
+#def setup_unlink_from_group(course_pk):
+#    Course.objects.get(pk=course_pk).delete()
+#    return "done"
+#
+#
+#def remove_student_from_group(student, course):
+#    course.students.remove(student)
+#    for week in course.weeks.all():
+#        for component in week.components.exclude(
+#            content_type=ContentType.objects.get_for_model(Activity)
+#        ):
+#            ComponentCompletionStatus.objects.get(
+#                student=student, component=component
+#            ).delete()
+#        for component in week.components.filter(
+#            content_type=ContentType.objects.get_for_model(Activity)
+#        ):
+#            activity = component.content_object
+#            activity.students.remove(student)
+#            for week in activity.weeks.all():
+#                for node in week.nodes.all():
+#                    NodeCompletionStatus.objects.get(
+#                        student=student, node=node
+#                    ).delete()
+#
+#
+#def add_student_to_group(student, course):
+#    course.students.add(student)
+#    for week in course.weeks.all():
+#        for component in week.components.exclude(
+#            content_type=ContentType.objects.get_for_model(Activity)
+#        ):
+#            ComponentCompletionStatus.objects.create(
+#                student=student, component=component
+#            )
+#        for component in week.components.filter(
+#            content_type=ContentType.objects.get_for_model(Activity)
+#        ):
+#            activity = component.content_object
+#            activity.students.add(student)
+#            for week in activity.weeks.all():
+#                for node in week.nodes.all():
+#                    NodeCompletionStatus.objects.create(
+#                        student=student, node=node
+#                    )
+#
+#
+#@require_POST
+#@ajax_login_required
+#def switch_node_completion_status(request: HttpRequest) -> HttpResponse:
+#    node = Node.objects.get(pk=request.POST.get("pk"))
+#    is_completed = request.POST.get("isCompleted")
+#
+#    status = NodeCompletionStatus.objects.get(node=node, student=request.user)
+#
+#    try:
+#        if is_completed == "true":
+#            status.is_completed = True
+#        else:
+#            status.is_completed = False
+#
+#        status.save()
+#    except:
+#        return JsonResponse({"action": "error"})
+#
+#    return JsonResponse({"action": "posted"})
 
 
-def setup_link_to_group(course_pk, students) -> Course:
 
-    course = Course.objects.get(pk=course_pk)
-
-    clone = duplicate_course(course, course.author)
-    clone.static = True
-    clone.title += " -- Live"
-    clone.save()
-    clone.students.add(*students)
-    for week in clone.weeks.all():
-        for component in week.components.exclude(
-            content_type=ContentType.objects.get_for_model(Activity)
-        ):
-            component.students.add(*students)
-        for component in week.components.filter(
-            content_type=ContentType.objects.get_for_model(Activity)
-        ):
-            activity = component.content_object
-            activity.static = True
-            activity.save()
-            activity.students.add(*students)
-            for week in activity.weeks.all():
-                for node in week.nodes.all():
-                    node.students.add(*students)
-    return clone
-
-
-def setup_unlink_from_group(course_pk):
-    Course.objects.get(pk=course_pk).delete()
-    return "done"
-
-
-def remove_student_from_group(student, course):
-    course.students.remove(student)
-    for week in course.weeks.all():
-        for component in week.components.exclude(
-            content_type=ContentType.objects.get_for_model(Activity)
-        ):
-            ComponentCompletionStatus.objects.get(
-                student=student, component=component
-            ).delete()
-        for component in week.components.filter(
-            content_type=ContentType.objects.get_for_model(Activity)
-        ):
-            activity = component.content_object
-            activity.students.remove(student)
-            for week in activity.weeks.all():
-                for node in week.nodes.all():
-                    NodeCompletionStatus.objects.get(
-                        student=student, node=node
-                    ).delete()
-
-
-def add_student_to_group(student, course):
-    course.students.add(student)
-    for week in course.weeks.all():
-        for component in week.components.exclude(
-            content_type=ContentType.objects.get_for_model(Activity)
-        ):
-            ComponentCompletionStatus.objects.create(
-                student=student, component=component
-            )
-        for component in week.components.filter(
-            content_type=ContentType.objects.get_for_model(Activity)
-        ):
-            activity = component.content_object
-            activity.students.add(student)
-            for week in activity.weeks.all():
-                for node in week.nodes.all():
-                    NodeCompletionStatus.objects.create(
-                        student=student, node=node
-                    )
-
-
-@require_POST
-@ajax_login_required
-def switch_node_completion_status(request: HttpRequest) -> HttpResponse:
-    node = Node.objects.get(pk=request.POST.get("pk"))
-    is_completed = request.POST.get("isCompleted")
-
-    status = NodeCompletionStatus.objects.get(node=node, student=request.user)
-
-    try:
-        if is_completed == "true":
-            status.is_completed = True
-        else:
-            status.is_completed = False
-
-        status.save()
-    except:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-
-
-@require_POST
-@ajax_login_required
-def switch_component_completion_status(request: HttpRequest) -> HttpResponse:
-    component = Component.objects.get(pk=request.POST.get("pk"))
-    is_completed = request.POST.get("isCompleted")
-
-    try:
-        status = ComponentCompletionStatus.objects.get(
-            component=component, student=request.user
-        )
-
-        if is_completed == "true":
-            status.is_completed = True
-        else:
-            status.is_completed = False
-
-        status.save()
-    except:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-
-
-@ajax_login_required
-def get_node_completion_status(request: HttpRequest) -> HttpResponse:
-
-    status = NodeCompletionStatus.objects.get(
-        node=Node.objects.get(pk=request.GET.get("nodePk")),
-        student=request.user,
-    )
-
-    return JsonResponse(
-        {"action": "got", "completion_status": status.is_completed}
-    )
-
-
-@ajax_login_required
-def get_node_completion_count(request: HttpRequest) -> HttpResponse:
-
-    statuses = NodeCompletionStatus.objects.filter(
-        node=Node.objects.get(pk=request.GET.get("nodePk")), is_completed=True
-    )
-
-    return JsonResponse(
-        {"action": "got", "completion_status": statuses.count()}
-    )
+#@ajax_login_required
+#def get_node_completion_status(request: HttpRequest) -> HttpResponse:
+#
+#    status = NodeCompletionStatus.objects.get(
+#        node=Node.objects.get(pk=request.GET.get("nodePk")),
+#        student=request.user,
+#    )
+#
+#    return JsonResponse(
+#        {"action": "got", "completion_status": status.is_completed}
+#    )
+#
+#
+#@ajax_login_required
+#def get_node_completion_count(request: HttpRequest) -> HttpResponse:
+#
+#    statuses = NodeCompletionStatus.objects.filter(
+#        node=Node.objects.get(pk=request.GET.get("nodePk")), is_completed=True
+#    )
+#
+#    return JsonResponse(
+#        {"action": "got", "completion_status": statuses.count()}
+#    )
 
 
 """
