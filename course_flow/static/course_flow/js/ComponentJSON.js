@@ -253,7 +253,7 @@ export class ComponentJSON extends React.Component{
                     {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Description:</h4>
-                            <textarea value={data.description} maxlength="500" onChange={this.inputChanged.bind(this,"description")}/>
+                            <QuillDiv text={data.description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
@@ -371,6 +371,10 @@ export class ComponentJSON extends React.Component{
 
     checkboxChanged(field,evt){
          this.props.dispatch(changeField(this.props.data.id,this.objectType,field,evt.target.checked));
+    }
+
+    valueChanged(field,new_value){
+        this.props.dispatch(changeField(this.props.data.id,this.objectType,field,new_value));
     }
 }
 
@@ -592,15 +596,59 @@ export class TitleText extends React.Component{
     render(){
         var text = this.props.text;
         if((this.props.text==null || this.props.text=="") && this.props.defaultText!=null){
-            text=(
-                <span class="default=text">{this.props.defaultText}</span>
-            );
+            text=this.props.defaultText;
         }
         return (
-            <div>{text}</div>
+            <div dangerouslySetInnerHTML={{ __html: text }}></div>
         )
     }
 
+}
+
+//Quill div
+export class QuillDiv extends React.Component{
+    constructor(props){
+        super(props);
+        this.maindiv = React.createRef();
+    }
+    
+    render(){
+        
+        return(
+            <div ref={this.maindiv} class="quill-div">
+                
+            </div>
+        );
+    }
+    
+    componentDidMount(){
+        let quill_container = this.maindiv.current;
+        let toolbarOptions = [['bold','italic','underline'],[{'script':'sub'},{'script':'super'}],[{'list':'bullet'},{'list':'ordered'}],['link']/*,['formula']*/];
+        let quill = new Quill(quill_container,{
+            theme:'snow',
+            modules:{
+                toolbar:toolbarOptions
+            },
+            placeholder:this.props.placeholder
+        });
+        if(this.props.text)quill.clipboard.dangerouslyPasteHTML(this.props.text);
+        console.log(quill);
+        quill.on('text-change',()=>{
+            this.props.textChangeFunction(quill_container.childNodes[0].innerHTML.replace(/\<p\>\<br\>\<\/p\>\<ul\>/g,"\<ul\>"));
+        });
+        let toolbar = quill.getModule('toolbar');
+        toolbar.defaultLinkFunction=toolbar.handlers['link'];
+        toolbar.addHandler("link",function customLinkFunction(value){
+            var select = quill.getSelection();
+            if(value&&select['length']==0&&!readOnly){
+                quill.insertText(select['index'],'link');
+                quill.setSelection(select['index'],4);
+            }
+            this.defaultLinkFunction(value);
+        });
+    }
+    
+    
 }
 
 

@@ -29,10 +29,14 @@ bleach_allowed_tags=[
     'b',
     'i',
     'ul',
+    'ol',
     'li',
     'br',
     'p',
-    'a'
+    'a',
+    'strong',
+    'sub',
+    'sup'
 ]
 
 def bleach_sanitizer(value,**kwargs):
@@ -47,14 +51,34 @@ def dateTimeFormat():
 def linkIDMap(link):
     return link.id
 
-
+class DescriptionSerializerMixin:
+    description = serializers.SerializerMethodField()
+    def get_description(self, instance):
+        return bleach_sanitizer(instance.description,tags=bleach_allowed_tags)
+    def validate_description(self, value):
+        return bleach_sanitizer(value,tags=bleach_allowed_tags)
+    
+class TitleSerializerMixin:
+    title = serializers.SerializerMethodField()
+    def get_title(self, instance):
+        return bleach_sanitizer(instance.title,tags=bleach_allowed_tags)
+    def validate_title(self, value):
+        return bleach_sanitizer(value,tags=bleach_allowed_tags)
+    
+class TimeRequiredSerializerMixin:
+    time_required = serializers.SerializerMethodField()
+    def get_time_required(self, instance):
+        return bleach_sanitizer(instance.time_required,tags=bleach_allowed_tags)
+    def validate_time_required(self, value):
+        return bleach_sanitizer(value,tags=bleach_allowed_tags)
+    
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["email", "username"]
 
 
-class OutcomeSerializer(serializers.ModelSerializer):
+class OutcomeSerializer(serializers.ModelSerializer,TitleSerializerMixin,DescriptionSerializerMixin):
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
@@ -146,7 +170,7 @@ class ParentWeekSerializer(serializers.ModelSerializer):
             "author",
         ]
 
-class NodeLinkSerializer(serializers.ModelSerializer):
+class NodeLinkSerializer(serializers.ModelSerializer,TitleSerializerMixin):
     
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
@@ -180,7 +204,7 @@ class NodeLinkSerializer(serializers.ModelSerializer):
     
     
 
-class NodeSerializer(serializers.ModelSerializer):
+class NodeSerializer(serializers.ModelSerializer,TitleSerializerMixin,DescriptionSerializerMixin,TimeRequiredSerializerMixin):
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
@@ -272,7 +296,7 @@ class NodeWeekSerializer(serializers.ModelSerializer):
         return instance
 
 
-class ColumnSerializer(serializers.ModelSerializer):
+class ColumnSerializer(serializers.ModelSerializer,TitleSerializerMixin):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
@@ -305,7 +329,7 @@ class ColumnSerializer(serializers.ModelSerializer):
         )
 
 
-class WeekSerializer(serializers.ModelSerializer):
+class WeekSerializer(serializers.ModelSerializer,TitleSerializerMixin,DescriptionSerializerMixin):
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
@@ -407,7 +431,7 @@ class DisciplineSerializer(serializers.ModelSerializer):
         fields = ["id", "title"]
 
 
-class WorkflowSerializer(serializers.ModelSerializer):
+class WorkflowSerializer(serializers.ModelSerializer,TitleSerializerMixin,DescriptionSerializerMixin):
 
     weekworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
@@ -531,7 +555,7 @@ class ActivitySerializer(WorkflowSerializer):
         return activity
 
 
-class NodeLinkSerializerShallow(serializers.ModelSerializer):
+class NodeLinkSerializerShallow(serializers.ModelSerializer,TitleSerializerMixin):
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
@@ -566,7 +590,7 @@ class NodeLinkSerializerShallow(serializers.ModelSerializer):
         return instance
 
 
-class NodeSerializerShallow(serializers.ModelSerializer):
+class NodeSerializerShallow(serializers.ModelSerializer,TitleSerializerMixin,DescriptionSerializerMixin,TimeRequiredSerializerMixin):
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
@@ -680,7 +704,7 @@ class NodeWeekSerializerShallow(serializers.ModelSerializer):
         return instance
 
 
-class ColumnSerializerShallow(serializers.ModelSerializer):
+class ColumnSerializerShallow(serializers.ModelSerializer,TitleSerializerMixin):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
@@ -716,7 +740,7 @@ class ColumnSerializerShallow(serializers.ModelSerializer):
         return instance
 
 
-class WeekSerializerShallow(serializers.ModelSerializer):
+class WeekSerializerShallow(serializers.ModelSerializer,TitleSerializerMixin,DescriptionSerializerMixin):
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
@@ -812,7 +836,7 @@ class WorkflowSerializerFinder(serializers.ModelSerializer):
         return instance
 
 
-class ProjectSerializerShallow(serializers.ModelSerializer):
+class ProjectSerializerShallow(serializers.ModelSerializer,TitleSerializerMixin,DescriptionSerializerMixin):
     class Meta:
         model = Project
         fields = [
@@ -849,7 +873,7 @@ class ProjectSerializerShallow(serializers.ModelSerializer):
         return instance
 
 
-class OutcomeSerializerShallow(serializers.ModelSerializer):
+class OutcomeSerializerShallow(serializers.ModelSerializer,TitleSerializerMixin,DescriptionSerializerMixin):
     class Meta:
         model = Outcome
         fields = [
@@ -921,7 +945,7 @@ class OutcomeProjectSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
     
-class WorkflowSerializerShallow(serializers.ModelSerializer):
+class WorkflowSerializerShallow(serializers.ModelSerializer,TitleSerializerMixin,DescriptionSerializerMixin):
     
     author_id = serializers.SerializerMethodField()
     

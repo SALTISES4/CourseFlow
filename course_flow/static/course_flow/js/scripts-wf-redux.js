@@ -11,6 +11,7 @@ import {NodeBar, WorkflowView_Outcome} from"./WorkflowView.js";
 import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
 
+export {Loader} from './Constants';
 
 //Manages the current selection, ensuring we only have one at a time
 export class SelectionManager{

@@ -893,7 +893,7 @@ circle.mouseover{
     text-align:left;
     font-family:sans-serif;
     height:100%;
-    width:240px;
+    width:260px;
     display:inline-block;
     position:relative;
 }
@@ -958,6 +958,10 @@ circle.mouseover{
 .side-bar input[type=text]{
     padding-top:6px;
     padding-bottom:6px;
+}
+
+.side-bar .quill-div{
+    min-height:140px;
 }
 
 .side-bar input.half-width, .side-bar select.half-width{

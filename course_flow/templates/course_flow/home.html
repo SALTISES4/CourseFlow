@@ -62,6 +62,7 @@
     fileLoader.type="file";
     fileLoader.accept=".json";
     fileLoader.addEventListener('change',()=>{
+        let loader = new workflow_redux.Loader('body');
         let reader = new FileReader();
         reader.readAsText(fileLoader.files[0]);
         reader.onload = (evt)=>{
@@ -70,6 +71,7 @@
             $.post("{% url 'course_flow:project-from-json' %}", {
                 jsonData:readData
             }).done(function(data){
+                loader.endLoad();
                 if(data.action == "posted") window.location.reload();
                 else console.log("Failed");
             });
