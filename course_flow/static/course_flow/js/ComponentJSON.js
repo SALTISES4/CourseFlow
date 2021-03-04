@@ -330,13 +330,11 @@ export class ComponentJSON extends React.Component{
                     {type=="week" && data.week_type <2 &&
                         <div>
                             <h4>Strategy:</h4>
-                            {data.is_strategy &&
-                                <select value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
-                                    {strategy_classification_choices.map((choice)=>
-                                        <option value={choice.type}>{choice.name}</option>
-                                    )}
-                                </select>
-                            }
+                            <select value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
+                                {strategy_classification_choices.map((choice)=>
+                                    <option value={choice.type}>{choice.name}</option>
+                                )}
+                            </select>
                             <button onClick = {()=>{
                                 let loader = new Constants.Loader('body');
                                 toggleStrategy(data.id,data.is_strategy,
@@ -350,7 +348,7 @@ export class ComponentJSON extends React.Component{
                                     "Remove Strategy Status"
                                 }
                                 {!data.is_strategy &&
-                                    "Convert to New Strategy"
+                                    "Save as Template "
                                 }
                             </button>
                         </div>
