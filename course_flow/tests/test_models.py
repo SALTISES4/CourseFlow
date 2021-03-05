@@ -19,6 +19,10 @@ from course_flow.models import (
     WorkflowProject,
     NodeLink,
     Activity,
+    Outcome,
+    OutcomeProject,
+    OutcomeNode,
+    OutcomeOutcome
 )
 
 from course_flow.utils import (
@@ -765,7 +769,59 @@ class ModelViewTest(TestCase):
             reverse("course_flow:project-update", args=str(project.pk))
         )
         self.assertEqual(response.status_code, 403)
+        
+    def test_outcome_detail_view(self):
+        author = get_author()
+        project = Project.objects.create(author=author)
+        outcome = make_object("outcome", author)
+        OutcomeProject.objects.create(outcome=outcome, project=project)
+        response = self.client.get(
+            reverse("course_flow:outcome-detail-view", args=str(outcome.pk))
+        )
+        self.assertEqual(response.status_code, 302)
+        login(self)
+        project = Project.objects.create(author=author)
+        outcome = make_object("outcome", author)
+        OutcomeProject.objects.create(outcome=outcome, project=project)
+        response = self.client.get(
+            reverse("course_flow:outcome-detail-view", args=str(outcome.pk))
+        )
+        self.assertEqual(response.status_code, 403)
+        outcome.published = True
+        outcome.save()
+        response = self.client.get(
+            reverse("course_flow:outcome-detail-view", args=str(outcome.pk))
+        )
+        self.assertEqual(response.status_code, 200)
+    
+    def test_outcome_update_view(self):
+        author = get_author()
+        project = Project.objects.create(author=author)
+        outcome = make_object("outcome", author)
+        OutcomeProject.objects.create(outcome=outcome, project=project)
+        response = self.client.get(
+            reverse("course_flow:outcome-update", args=str(outcome.pk))
+        )
+        self.assertEqual(response.status_code, 302)
+        login(self)
+        project = Project.objects.create(author=author)
+        outcome = make_object("outcome", author)
+        OutcomeProject.objects.create(outcome=outcome, project=project)
+        response = self.client.get(
+            reverse("course_flow:outcome-update", args=str(outcome.pk))
+        )
+        self.assertEqual(response.status_code, 403)
 
+    def test_outcome_update_view_is_owner(self):
+        user = login(self)
+        project = Project.objects.create(author=user)
+        outcome= make_object("outcome", user)
+        OutcomeProject.objects.create(outcome=outcome, project=project)
+        response = self.client.get(
+            reverse("course_flow:outcome-update", args=str(outcome.pk))
+        )
+        self.assertEqual(response.status_code, 200)
+            
     def test_workflow_detail_view(self):
         author = get_author()
         for workflow_type in ["activity", "course", "program"]:
@@ -830,6 +886,24 @@ class ModelViewTest(TestCase):
         response = self.client.get(reverse("course_flow:project-create"))
         self.assertEqual(response.status_code, 200)
 
+    def test_outcomecreate_view(self):
+        author = get_author()
+        project = Project.objects.create(author=author)
+        response = self.client.get(
+            reverse("course_flow:outcome-create", args=[project.id])
+        )
+        self.assertEqual(response.status_code, 302)
+        user = login(self)
+        response = self.client.get(
+            reverse("course_flow:outcome-create", args=[project.id])
+        )
+        self.assertEqual(response.status_code, 403)
+        project2 = Project.objects.create(author=user)
+        response = self.client.get(
+            reverse("course_flow:outcome-create", args=[project2.id])
+        )
+        self.assertEqual(response.status_code, 200)
+        
     def test_program_create_view(self):
         author = get_author()
         project = Project.objects.create(author=author)
@@ -919,6 +993,89 @@ class ModelViewTest(TestCase):
             Strategy.objects.all().delete()
             Column.objects.all().delete()
 
+    def test_outcome_views(self):
+        user = login(self)
+        base_outcome = make_object("outcome",user)
+        self.assertEqual(base_outcome.depth,0)
+        response = self.client.post(
+            reverse("course_flow:insert-child"),
+            {
+                "objectID":str(base_outcome.id),
+                "objectType":JSONRenderer()
+                    .render("outcome")
+                    .decode("utf-8"),
+            },
+        )
+        #check that child has been added and has correct depth
+        self.assertEqual(Outcome.objects.all().count(),2)
+        child1 = Outcome.objects.last()
+        self.assertEqual(child1.depth,1)
+        #Add sub-children
+        response = self.client.post(
+            reverse("course_flow:insert-child"),
+            {
+                "objectID":str(child1.id),
+                "objectType":JSONRenderer()
+                    .render("outcome")
+                    .decode("utf-8"),
+            },
+        )
+        response = self.client.post(
+            reverse("course_flow:insert-child"),
+            {
+                "objectID":str(child1.id),
+                "objectType":JSONRenderer()
+                    .render("outcome")
+                    .decode("utf-8"),
+            },
+        )
+        check_order(self,child1.child_outcome_links)
+        subchildlink1 = child1.child_outcome_links.first()
+        subchildlink2 = child1.child_outcome_links.last()
+        self.assertEqual(subchildlink1.child.depth,2)
+        self.assertEqual(subchildlink1.rank,0)
+        self.assertEqual(subchildlink2.rank,1)
+        #swap the children
+        response = self.client.post(
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID":str(subchildlink2.id),
+                "objectType":JSONRenderer()
+                    .render("outcomeoutcome")
+                    .decode("utf-8"),
+                "parentID":str(child1.id),
+                "newPosition":str(0)
+            },
+        )
+        subchildlink1 = OutcomeOutcome.objects.get(id=subchildlink1.id)
+        subchildlink2 = OutcomeOutcome.objects.get(id=subchildlink2.id)
+        self.assertEqual(subchildlink2.rank,0)
+        self.assertEqual(subchildlink1.rank,1)
+        self.assertEqual(subchildlink2.child.depth,2)
+        check_order(self,child1.child_outcome_links)
+        #swap a child into the base outcome
+        response = self.client.post(
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID":str(subchildlink2.id),
+                "objectType":JSONRenderer()
+                    .render("outcomeoutcome")
+                    .decode("utf-8"),
+                "parentID":str(base_outcome.id),
+                "newPosition":str(0)
+            },
+        )
+        subchildlink1 = OutcomeOutcome.objects.get(id=subchildlink1.id)
+        subchildlink2 = OutcomeOutcome.objects.get(id=subchildlink2.id)
+        self.assertEqual(subchildlink1.rank,0)
+        self.assertEqual(subchildlink2.rank,0)
+        self.assertEqual(subchildlink2.parent.id,base_outcome.id)
+        check_order(self,child1.child_outcome_links)
+        check_order(self,base_outcome.child_outcome_links)
+        self.assertEqual(subchildlink2.child.depth,1)
+        
+        
+        
     def test_add_strategy_column_node(self):
         user = login(self)
         for i, object_type in enumerate(["activity", "course", "program"]):
@@ -1278,6 +1435,7 @@ class ModelViewTest(TestCase):
             "strategy",
             "node",
             "column",
+            "outcome",
         ]
         for object_type in type_list:
             object = make_object(object_type, author)
@@ -1314,6 +1472,7 @@ class ModelViewTest(TestCase):
             "strategy",
             "node",
             "column",
+            "outcome"
         ]
         for object_type in type_list:
             object = make_object(object_type, author)
@@ -1581,6 +1740,54 @@ class ModelViewTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 401)
+        
+    def test_add_remove_outcome_to_node_permissions_no_authorship(self):
+        myself = login(self)
+        author = get_author()
+        node = make_object("node", author)
+        outcome = make_object("outcome", author)
+        response = self.client.post(
+            reverse("course_flow:add-outcome-to-node"),
+            {
+                "nodePk": node.id,
+                "outcomePk": outcome.id,
+            },
+        )
+        self.assertEqual(response.status_code, 401)
+        outcomenode = OutcomeNode.objects.create(node=node,outcome=outcome)
+        response = self.client.post(
+            reverse("course_flow:unlink-outcome-from-node"),
+            {
+                "objectID":outcomenode.id
+            },
+        )
+        self.assertEqual(response.status_code, 401)
+        myoutcome = make_object("outcome",myself)
+        mynode = make_object("node",myself)
+        response = self.client.post(
+            reverse("course_flow:add-outcome-to-node"),
+            {
+                "nodePk": mynode.id,
+                "outcomePk": outcome.id,
+            },
+        )
+        self.assertEqual(response.status_code, 401)
+        response = self.client.post(
+            reverse("course_flow:add-outcome-to-node"),
+            {
+                "nodePk": node.id,
+                "outcomePk": myoutcome.id,
+            },
+        )
+        self.assertEqual(response.status_code, 401)
+        response = self.client.post(
+            reverse("course_flow:add-outcome-to-node"),
+            {
+                "nodePk": mynode.id,
+                "outcomePk": myoutcome.id,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
 
     def test_duplicate_self_permissions_no_login_no_authorship(self):
         author = get_author()

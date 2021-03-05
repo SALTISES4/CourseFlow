@@ -16,6 +16,8 @@ from .models import (
     Outcome,
     OutcomeNode,
     OutcomeWorkflow,
+    OutcomeOutcome,
+    OutcomeProject,
     NodeCompletionStatus,
     User,
 )
@@ -47,6 +49,7 @@ class OutcomeSerializer(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "author",
+            "depth"
         ]
 
     def create(self, validated_data):
@@ -70,7 +73,7 @@ class OutcomeNodeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OutcomeNode
-        fields = ["node", "outcome", "added_on", "rank", "id"]
+        fields = ["node", "outcome", "added_on", "rank", "id", "degree"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.title)
@@ -410,6 +413,8 @@ class WorkflowSerializer(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
+        instance.outcomes_type=validated_data.get("outcomes_type", instance.outcomes_type)
+        instance.outcomes_sort=validated_data.get("outcomes_sort", instance.outcomes_sort)
         instance.save()
         return instance
 
@@ -430,6 +435,8 @@ class ProgramSerializer(WorkflowSerializer):
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
+            "outcomes_type",
+            "outcomes_sort",
             "type"
         ]
 
@@ -460,6 +467,8 @@ class CourseSerializer(WorkflowSerializer):
             "discipline",
             "is_original",
             "parent_workflow",
+            "outcomes_type",
+            "outcomes_sort",
             "type",
         ]
 
@@ -486,6 +495,8 @@ class ActivitySerializer(WorkflowSerializer):
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
+            "outcomes_type",
+            "outcomes_sort",
             "type",
         ]
 
@@ -801,6 +812,78 @@ class ProjectSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+class OutcomeSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = Outcome
+        fields = [
+            "id",
+            "title",
+            "description",
+            "author",
+            "author_id",
+            "published",
+            "created_on",
+            "last_modified",
+            "child_outcome_links",
+            "is_dropped",
+            "depth"
+        ]
+
+    child_outcome_links = serializers.SerializerMethodField()
+
+    author = serializers.SlugRelatedField(
+        read_only=True, slug_field="username"
+    )
+
+    def get_child_outcome_links(self, instance):
+        links = instance.child_outcome_links.all().order_by("rank")
+        return list(map(linkIDMap, links))
+
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.description = validated_data.get(
+            "description", instance.description
+        )
+        instance.is_dropped = validated_data.get(
+            "is_dropped",instance.is_dropped
+        )
+        instance.save()
+        return instance    
+    
+
+class OutcomeOutcomeSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = OutcomeOutcome
+        fields = ["parent", "child", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get("rank", instance.rank)
+        instance.save()
+        return instance
+
+class OutcomeNodeSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = OutcomeNode
+        fields = ["node", "outcome", "added_on", "rank", "id", "degree"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get("rank", instance.rank)
+        instance.save()
+        return instance
+
+class OutcomeProjectSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = OutcomeProject
+        fields = ["project", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get("rank", instance.rank)
+        instance.save()
+        return instance
+
+    
 class WorkflowSerializerShallow(serializers.ModelSerializer):
     
     author_id = serializers.SerializerMethodField()
@@ -820,6 +903,9 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
+            "outcomes_type",
+            "outcomes_sort",
+            "author_id",
         ]
 
     strategyworkflow_set = serializers.SerializerMethodField()
@@ -850,6 +936,8 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
+        instance.outcomes_type=validated_data.get("outcomes_type", instance.outcomes_type)
+        instance.outcomes_sort=validated_data.get("outcomes_sort", instance.outcomes_sort)
         instance.save()
         return instance
 
@@ -874,6 +962,8 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
+            "outcomes_type",
+            "outcomes_sort",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
@@ -911,6 +1001,8 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "discipline",
             "is_original",
             "parent_workflow",
+            "outcomes_type",
+            "outcomes_sort",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
@@ -946,6 +1038,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
+            "outcomes_sort",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
@@ -986,4 +1079,5 @@ serializer_lookups_shallow = {
     "course": CourseSerializerShallow,
     "program": ProgramSerializerShallow,
     "project": ProjectSerializerShallow,
+    "outcome":OutcomeSerializerShallow,
 }

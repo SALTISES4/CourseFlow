@@ -68,4 +68,14 @@ export default [
     },
     plugins: plugins
   },
+  {
+    input: "course_flow/static/course_flow/js/scripts-outcomes.js",
+    output: {
+      file: "course_flow/static/course_flow/js/scripts-outcomes.min.js",
+      name: "outcome_scripts",
+      format: "iife",
+      sourceMap: "inline"
+    },
+    plugins: plugins
+  },
 ];

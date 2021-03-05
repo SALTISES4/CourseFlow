@@ -33,6 +33,11 @@ def flow_patterns():
             name="project-update",
         ),
         url(
+            r"^outcome/(?P<pk>[0-9]+)/update/$",
+            views.OutcomeUpdateView.as_view(),
+            name="outcome-update",
+        ),
+        url(
             r"^workflow/(?P<pk>[0-9]+)/update/$",
             views.WorkflowUpdateView.as_view(),
             name="workflow-update",
@@ -44,6 +49,8 @@ def flow_patterns():
             r"^project/project-toggle-published/$", views.project_toggle_published, name="project-toggle-published"
         ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
+        url(r"^workflow/unlink-outcome-from-node/$", views.unlink_outcome_from_node, name="unlink-outcome-from-node"),
+        url(r"^workflow/update-outcomenode-degree/$", views.update_outcomenode_degree, name="update-outcomenode-degree"),
         url(r"^workflow/duplicate-self/$", views.duplicate_self, name="duplicate-self"),
         url(r"^workflow/duplication/$", views.duplicate_workflow_ajax, name="duplicate-workflow"),
         url(
@@ -51,8 +58,14 @@ def flow_patterns():
             views.insert_sibling,
             name="insert-sibling",
         ),
+        url(
+            r"^workflow/insert-child/$",
+            views.insert_child,
+            name="insert-child",
+        ),
         url(r"^workflow/inserted-at/$", views.inserted_at, name="inserted-at"),
         url(r"^node/change-column/$", views.change_column, name="change-column"),
+        url(r"^node/add-outcome-to-node/$", views.add_outcome_to_node, name="add-outcome-to-node"),
         url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
         url(
@@ -89,6 +102,16 @@ def flow_patterns():
             r"^project/(?P<pk>[0-9]+)/$",
             views.ProjectDetailView.as_view(),
             name="project-detail-view",
+        ),
+        url(
+            r"^outcome/(?P<projectPk>[0-9]+)/create/$",
+            views.OutcomeCreateView.as_view(),
+            name="outcome-create",
+        ),
+        url(
+            r"^outcome/(?P<pk>[0-9]+)/$",
+            views.OutcomeDetailView.as_view(),
+            name="outcome-detail-view",
         ),
         url(
             r"^program/(?P<projectPk>[0-9]+)/create/$",
