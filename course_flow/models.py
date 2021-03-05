@@ -14,7 +14,7 @@ User = get_user_model()
 
 class Project(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.CharField(max_length=400, null=True, blank=True)
+    description = models.CharField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -28,6 +28,10 @@ class Project(models.Model):
         "Outcome", through="OutcomeProject",blank=True
     )
     
+    is_original=models.BooleanField(default=False)
+    parent_project=models.ForeignKey(
+        "Project", on_delete=models.SET_NULL, null=True
+    )
     class Meta:
         verbose_name = "Project"
         verbose_name_plural = "Projects"
@@ -138,8 +142,8 @@ class NodeLink(models.Model):
 
 
 class Outcome(models.Model):
-    title = models.CharField(max_length=400)
-    description = models.TextField(max_length=400)
+    title = models.CharField(max_length=500)
+    description = models.TextField(max_length=500)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
@@ -178,8 +182,8 @@ class OutcomeOutcome(models.Model):
         verbose_name_plural = "Outcome-Outcome Links"
 
 class Node(models.Model):
-    title = models.CharField(max_length=30, null=True, blank=True)
-    description = models.TextField(max_length=400, null=True, blank=True)
+    title = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(
         User,
         related_name="authored_nodes",
@@ -364,67 +368,88 @@ class OutcomeNode(models.Model):
         verbose_name_plural = "Outcome-Node Links"
 
 
-class Strategy(models.Model):
-    title = models.CharField(max_length=30, null=True, blank=True)
-    description = models.TextField(max_length=400, null=True, blank=True)
+class Week(models.Model):
+    title = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
     default = models.BooleanField(default=False)
-    parent_strategy = models.ForeignKey(
-        "Strategy", on_delete=models.SET_NULL, null=True
+    parent_week = models.ForeignKey(
+        "Week", on_delete=models.SET_NULL, null=True
     )
     is_original = models.BooleanField(default=True)
     published = models.BooleanField(default=False)
+    is_strategy = models.BooleanField(default=False)
+    original_strategy = models.ForeignKey("Workflow",on_delete=models.SET_NULL,null=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
-    nodes = models.ManyToManyField(Node, through="NodeStrategy", blank=True)
+    nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)
+    
+    NONE = 0
+    JIGSAW = 1
+    PEER_INSTRUCTION = 2
+    CASE_STUDIES = 3
+    GALLERY_WALK = 4
+    REFLECTIVE_WRITING = 5
+    TWO_STAGE_EXAM = 6
+    TOOLKIT = 7
+    ONE_MINUTE_PAPER = 8
+    DISTRIBUTED_PROBLEM_SOLVING = 9
+    PEER_ASSESSMENT = 10
+    OTHER = 11
+    STRATEGY_CHOICES = (
+        (NONE,"None"),
+        (JIGSAW,"Jigsaw"),
+        (PEER_INSTRUCTION,"Peer Instruction"),
+        (CASE_STUDIES,"Case Studies"),
+        (GALLERY_WALK,"Gallery Walk"),
+        (REFLECTIVE_WRITING,"Reflective Writing"),
+        (TWO_STAGE_EXAM,"Two-Stage Exam"),
+        (TOOLKIT,"Toolkit"),
+        (ONE_MINUTE_PAPER,"One Minute Paper"),
+        (DISTRIBUTED_PROBLEM_SOLVING,"Distributed Problem Solving"),
+        (PEER_ASSESSMENT,"Peer Assessment"),
+        (OTHER,"Other"),
+    )
+    strategy_classification = models.PositiveIntegerField(
+        choices=STRATEGY_CHOICES, default=0
+    )
 
 
     PART = 0
     WEEK = 1
     TERM = 2
-    STRATEGY_TYPES = ((PART, "Part"), (WEEK, "Week"), (TERM, "Term"))
-    strategy_type = models.PositiveIntegerField(
-        choices=STRATEGY_TYPES, default=0
+    WEEK_TYPES = ((PART, "Part"), (WEEK, "Week"), (TERM, "Term"))
+    week_type = models.PositiveIntegerField(
+        choices=WEEK_TYPES, default=0
     )
 
     def __str__(self):
-        return self.get_strategy_type_display()
+        return self.get_week_type_display()
 
     class Meta:
-        verbose_name = "Strategy"
-        verbose_name_plural = "Strategies"
+        verbose_name = "Week"
+        verbose_name_plural = "Weeks"
 
 
-class OutcomeStrategy(models.Model):
-    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Strategy Link"
-        verbose_name_plural = "Outcome-Strategy Links"
-
-
-class NodeStrategy(models.Model):
-    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
+class NodeWeek(models.Model):
+    week = models.ForeignKey(Week, on_delete=models.CASCADE)
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
     class Meta:
-        verbose_name = "Node-Strategy Link"
-        verbose_name_plural = "Node-Strategy Links"
+        verbose_name = "Node-Week Link"
+        verbose_name_plural = "Node-Week Links"
 
 
 class Workflow(models.Model):
     objects = InheritanceManager()
 
-    title = models.CharField(max_length=30, null=True, blank=True)
-    description = models.TextField(max_length=400, null=True, blank=True)
+    title = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(max_length=500, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -432,6 +457,10 @@ class Workflow(models.Model):
     
     published = models.BooleanField(default=False)
 
+    is_strategy = models.BooleanField(default=False)
+    
+    from_saltise = models.BooleanField(default=False)
+    
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
     )
@@ -439,17 +468,14 @@ class Workflow(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
-    strategies = models.ManyToManyField(
-        Strategy, through="StrategyWorkflow", blank=True
+    weeks = models.ManyToManyField(
+        Week, through="WeekWorkflow", blank=True
     )
 
     columns = models.ManyToManyField(
         Column, through="ColumnWorkflow", blank=True
     )
-
-    outcomes = models.ManyToManyField(
-        Outcome, through="OutcomeWorkflow", blank=True
-    )
+    
     
     OUTCOMES_NORMAL = 0
     OUTCOMES_ADVANCED = 1
@@ -599,15 +625,15 @@ class OutcomeWorkflow(models.Model):
         verbose_name_plural = "Outcome-Workflow Links"
 
 
-class StrategyWorkflow(models.Model):
+class WeekWorkflow(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
-    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE)
+    week = models.ForeignKey(Week, on_delete=models.CASCADE)
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
 
     class Meta:
-        verbose_name = "Strategy-Workflow Link"
-        verbose_name_plural = "Strategy-Workflow Links"
+        verbose_name = "Week-Workflow Link"
+        verbose_name_plural = "Week-Workflow Links"
 
 
 class Discipline(models.Model):
@@ -631,12 +657,12 @@ Other receivers
 
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
-    instance.strategies.all().delete()
+    instance.weeks.all().delete()
     instance.columns.all().delete()
 
 
-@receiver(pre_delete, sender=Strategy)
-def delete_strategy_objects(sender, instance, **kwargs):
+@receiver(pre_delete, sender=Week)
+def delete_week_objects(sender, instance, **kwargs):
     instance.nodes.all().delete()
 
 @receiver(pre_delete, sender=Node)
@@ -649,11 +675,11 @@ def delete_outcome_objects(sender, instance, **kwargs):
     instance.children.all().delete()
 
 
-@receiver(post_save, sender=NodeStrategy)
+@receiver(post_save, sender=NodeWeek)
 def switch_node_to_static(sender, instance, created, **kwargs):
     if created:
         activity = Activity.objects.filter(
-            strategies=instance.strategy
+            weeks=instance.week
         ).first()
         if activity:
             if activity.static:
@@ -680,18 +706,18 @@ Reorder Receivers
 """
 
 
-@receiver(pre_delete, sender=NodeStrategy)
-def reorder_for_deleted_node_strategy(sender, instance, **kwargs):
-    for out_of_order_link in NodeStrategy.objects.filter(
-        strategy=instance.strategy, rank__gt=instance.rank
+@receiver(pre_delete, sender=NodeWeek)
+def reorder_for_deleted_node_week(sender, instance, **kwargs):
+    for out_of_order_link in NodeWeek.objects.filter(
+        week=instance.week, rank__gt=instance.rank
     ):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
 
 
-@receiver(pre_delete, sender=StrategyWorkflow)
-def reorder_for_deleted_strategy_workflow(sender, instance, **kwargs):
-    for out_of_order_link in StrategyWorkflow.objects.filter(
+@receiver(pre_delete, sender=WeekWorkflow)
+def reorder_for_deleted_week_workflow(sender, instance, **kwargs):
+    for out_of_order_link in WeekWorkflow.objects.filter(
         workflow=instance.workflow, rank__gt=instance.rank
     ):
         out_of_order_link.rank -= 1
@@ -707,24 +733,24 @@ def reorder_for_deleted_column_workflow(sender, instance, **kwargs):
         out_of_order_link.save()
 
 
-@receiver(post_save, sender=NodeStrategy)
-def reorder_for_inserted_node_strategy(sender, instance, created, **kwargs):
+@receiver(post_save, sender=NodeWeek)
+def reorder_for_inserted_node_week(sender, instance, created, **kwargs):
     if created:
-        for out_of_order_link in NodeStrategy.objects.filter(
-            strategy=instance.strategy, rank__gte=instance.rank
+        for out_of_order_link in NodeWeek.objects.filter(
+            week=instance.week, rank__gte=instance.rank
         ).exclude(node=instance.node):
             out_of_order_link.rank += 1
             out_of_order_link.save()
 
 
-@receiver(post_save, sender=StrategyWorkflow)
-def reorder_for_inserted_strategy_workflow(
+@receiver(post_save, sender=WeekWorkflow)
+def reorder_for_inserted_week_workflow(
     sender, instance, created, **kwargs
 ):
     if created:
-        for out_of_order_link in StrategyWorkflow.objects.filter(
+        for out_of_order_link in WeekWorkflow.objects.filter(
             workflow=instance.workflow, rank__gte=instance.rank
-        ).exclude(strategy=instance.strategy):
+        ).exclude(week=instance.week):
             out_of_order_link.rank += 1
             out_of_order_link.save()
 
@@ -782,8 +808,8 @@ def create_default_activity_content(sender, instance, created, **kwargs):
                 author=instance.author,
             )
 
-        instance.strategies.create(
-            strategy_type=Strategy.PART, author=instance.author
+        instance.weeks.create(
+            week_type=Week.PART, author=instance.author, is_strategy=instance.is_strategy
         )
         instance.save()
 
@@ -800,8 +826,8 @@ def create_default_course_content(sender, instance, created, **kwargs):
                 author=instance.author,
             )
 
-        instance.strategies.create(
-            strategy_type=Strategy.WEEK, author=instance.author
+        instance.weeks.create(
+            week_type=Week.WEEK, author=instance.author, is_strategy=instance.is_strategy
         )
         instance.save()
 
@@ -818,15 +844,31 @@ def create_default_program_content(sender, instance, created, **kwargs):
                 author=instance.author,
             )
 
-        instance.strategies.create(
-            strategy_type=Strategy.TERM, author=instance.author
+        instance.weeks.create(
+            week_type=Week.TERM, author=instance.author, is_strategy=instance.is_strategy
         )
         instance.save()
+        
+@receiver(post_save, sender=WorkflowProject)
+def set_publication(sender, instance, created, **kwargs):
+    if created:
+        # Set the workflow's publication status to that of the project
+        workflow = instance.workflow
+        workflow.published = instance.project.published
+        workflow.save()      
+        
+@receiver(post_save, sender=OutcomeProject)
+def set_publication_outcome(sender, instance, created, **kwargs):
+    if created:
+        # Set the workflow's publication status to that of the project
+        outcome = instance.outcome
+        outcome.published = instance.project.published
+        outcome.save()
 
 
-@receiver(post_save, sender=StrategyWorkflow)
-def switch_strategy_to_static(sender, instance, created, **kwargs):
+@receiver(post_save, sender=WeekWorkflow)
+def switch_week_to_static(sender, instance, created, **kwargs):
     if created:
         if instance.workflow.static:
-            for node in instance.strategy.nodes.all():
+            for node in instance.week.nodes.all():
                 node.students.add(*list(instance.workflow.students.all()))

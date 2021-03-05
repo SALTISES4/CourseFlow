@@ -2,9 +2,9 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
-import {newNodeAction, deleteSelfAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction} from "./Reducers.js";
+import {newNodeAction, deleteSelfAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction, newStrategyAction, toggleStrategyAction} from "./Reducers.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu} from "./PostFunctions.js"
+import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild} from "./PostFunctions.js"
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -76,12 +76,12 @@ export class ComponentJSON extends React.Component{
                     drag_helper.addClass("valid-drop");
                     drop_item.addClass("new-node-drop-over");
                    
-                }else if(drag_item.hasClass("outcome")){
-                    return;
-                }else{
+                }else if(drag_item.hasClass("node-week")){
                     this.sortableMovedFunction(
                         parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id
                     );
+                }else{
+                    console.log(drag_item);
                 }
             },
             out:(e,ui)=>{
@@ -113,6 +113,7 @@ export class ComponentJSON extends React.Component{
     
     makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith=false,handle=false){
         if(read_only)return;
+        var props = this.props;
         sortable_block.sortable({
             containment:".workflow-container",
             axis:axis,
@@ -159,6 +160,8 @@ export class ComponentJSON extends React.Component{
                 this.stopSortFunction();
             }
         });
+        
+        
     }
     
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
@@ -166,7 +169,7 @@ export class ComponentJSON extends React.Component{
         return (
             <ActionButton button_icon="delrect.svg" button_class="delete-self-button" handleClick={()=>{
                 //Temporary confirmation; add better comfirmation dialogue later
-                if((this.objectType=="strategy"||this.objectType=="column")&&this.props.sibling_count<2){
+                if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
                     alert("You cannot delete the last "+this.objectType);
                     return;
                 }
@@ -220,25 +223,27 @@ export class ComponentJSON extends React.Component{
     }
     
     //Makes the item selectable
-    addEditable(data){
+    addEditable(data,no_delete=false){
         if(read_only)return null;
         if(this.state.selected){
             var type=this.objectType;
+            let title_length="50";
+            if(type=="outcome")title_length="500";
             var props = this.props;
-            
+            console.log(no_delete);
             return reactDom.createPortal(
                 <div class="right-panel-inner">
                     <h3>{"Edit "+type+":"}</h3>
-                    {["node","strategy","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
+                    {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Title:</h4>
-                            <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
+                            <input type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Description:</h4>
-                            <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
+                            <textarea value={data.description} maxlength="500" onChange={this.inputChanged.bind(this,"description")}/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
@@ -264,12 +269,14 @@ export class ComponentJSON extends React.Component{
                     {type=="node" &&
                         <div>
                             <h4>Time:</h4>
-                            <input value={data.time_required} onChange={this.inputChanged.bind(this,"time_required")}/>
-                            <select value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
-                                {time_choices.map((choice)=>
-                                    <option value={choice.type}>{choice.name}</option>
-                                )}
-                            </select>
+                            <div>
+                                <input class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
+                                <select class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
+                                    {time_choices.map((choice)=>
+                                        <option value={choice.type}>{choice.name}</option>
+                                    )}
+                                </select>
+                            </div>
                         </div>
                     }
                     {type=="node" && data.node_type!=0 &&
@@ -302,10 +309,44 @@ export class ComponentJSON extends React.Component{
                                 )}
                             </select>
                             <label for="outcomes_type">Outcomes Style</label>
+                            {data.is_strategy && 
+                                [
+                                <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>,
+                                <label for="is_published">Published</label>
+                                ]
+                            }
+                        </div>
+                    }
+                    {type=="week" && data.week_type <2 &&
+                        <div>
+                            <h4>Strategy:</h4>
+                            {data.is_strategy &&
+                                <select value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
+                                    {strategy_classification_choices.map((choice)=>
+                                        <option value={choice.type}>{choice.name}</option>
+                                    )}
+                                </select>
+                            }
+                            <button onClick = {()=>{toggleStrategy(data.id,data.is_strategy,
+                                (response_data)=>{
+                                    let action = toggleStrategyAction(response_data);
+                                    props.dispatch(action);
+                                })
+                            }}>
+                                {data.is_strategy &&
+                                    "Remove Strategy Status"
+                                }
+                                {!data.is_strategy &&
+                                    "Convert to New Strategy"
+                                }
+                            </button>
                         </div>
                     }
 
-                    {(type!="workflow" && (type !="outcome" || data.depth>0)) && this.addDeleteSelf(data)}
+                    {(!no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && 
+                        [<h4>Delete:</h4>,
+                        this.addDeleteSelf(data)]
+                    }
                 </div>
             ,$("#edit-menu")[0])
         }
@@ -395,16 +436,16 @@ export class AutoLinkView extends React.Component{
     }
 
     findAutoTarget(){
-        var ns = this.source_node.closest(".node-strategy");
-        var next_ns = ns.nextAll(".node-strategy:not(.ui-sortable-placeholder)").first();
+        var ns = this.source_node.closest(".node-week");
+        var next_ns = ns.nextAll(".node-week:not(.ui-sortable-placeholder)").first();
         var target;
         if(next_ns.length>0){
             target = next_ns.find(".node").attr("id");
         }else{
-            var sw = ns.closest(".strategy-workflow");
+            var sw = ns.closest(".week-workflow");
             var next_sw = sw.next();
             while(next_sw.length>0){
-                target = next_sw.find(".node-strategy:not(ui-sortable-placeholder) .node").attr("id");
+                target = next_sw.find(".node-week:not(ui-sortable-placeholder) .node").attr("id");
                 if(target)break;
                 next_sw = next_sw.next();
             }
@@ -427,7 +468,7 @@ export class AutoLinkView extends React.Component{
                 return;
             }
             if(this.target_node)this.target_node.off(this.rerenderEvents);
-            this.target_node = $(".strategy #"+target+".node");
+            this.target_node = $(".week #"+target+".node");
             this.target_port_handle = d3.select(
                 "g.port-"+target+" circle[data-port-type='target'][data-port='n']"
             );
@@ -512,7 +553,7 @@ export class NodePorts extends React.Component{
         var node = $(this.props.node_div.current);
         var node_offset = Constants.getCanvasOffset(node);
         var node_dimensions={width:node.outerWidth(),height:node.outerHeight()};
-        //if(node.closest(".strategy-workflow").hasClass("dragging")||this.state.node_offset==node_offset&&this.state.node_dimensions==node_dimensions)return;
+        //if(node.closest(".week-workflow").hasClass("dragging")||this.state.node_offset==node_offset&&this.state.node_dimensions==node_dimensions)return;
         this.setState({node_offset:node_offset,node_dimensions:node_dimensions});
     }
     

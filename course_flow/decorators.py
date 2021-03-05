@@ -2,7 +2,7 @@ from functools import wraps
 from django.http import JsonResponse
 from django.conf import settings
 import json
-from .models import User, NodeStrategy, Strategy
+from .models import User, NodeWeek, Week, Outcome, OutcomeOutcome, Workflow
 from .utils import *
 
 
@@ -28,7 +28,7 @@ def ajax_login_required(view_func):
 owned_models = [
     "nodelink",
     "node",
-    "strategy",
+    "week",
     "workflow",
     "project",
     "column",
@@ -40,9 +40,9 @@ owned_models = [
 
 owned_throughmodels = [
     "node",
-    "nodestrategy",
-    "strategy",
-    "strategyworkflow",
+    "nodeweek",
+    "week",
+    "weekworkflow",
     "workflow",
     "workflowproject",
     "project",
@@ -91,6 +91,42 @@ def is_owner(model):
 
     return wrapped_view
 
+def is_owner_or_none(model):
+    def wrapped_view(fct):
+        @wraps(fct)
+        def _wrapped_view(request, model=model, *args, **kwargs):
+            if model:
+                if model[-2:] == "Pk":
+                    id = json.loads(request.POST.get(model))
+                    model = model[:-2]
+                else:
+                    id = json.loads(request.POST.get("json"))["id"]
+            else:
+                id = json.loads(request.POST.get("objectID"))
+                model = json.loads(request.POST.get("objectType"))
+            if id is None:
+                return fct(request,*args,**kwargs)
+            try:
+                object_type = get_model_from_str(model)
+                if hasattr(object_type.objects, "get_subclass"):
+                    object = object_type.objects.get_subclass(id=id)
+                else:
+                    object = object_type.objects.get(id=id)
+            except:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+            if User.objects.get(id=request.user.id) == object.author:
+                return fct(request, *args, **kwargs)
+            else:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view
+
 
 def is_owner_or_published(model):
     def wrapped_view(fct):
@@ -115,6 +151,26 @@ def is_owner_or_published(model):
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 401
                 return response
+            if (
+                User.objects.get(id=request.user.id) == object.author
+                or object.published
+            ):
+                return fct(request, *args, **kwargs)
+            else:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view
+
+def is_strategy_owner_or_published(model):
+    def wrapped_view(fct):
+        @wraps(fct)
+        def _wrapped_view(request, model=model, *args, **kwargs):
+            id = json.loads(request.POST.get(model))
+            object = Workflow.objects.get_subclass(id=id)
             if (
                 User.objects.get(id=request.user.id) == object.author
                 or object.published
@@ -189,17 +245,38 @@ def is_throughmodel_parent_owner(view_func):
 def new_parent_authorship(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
-        if json.loads(request.POST.get("objectType")) == "nodestrategy":
+        if json.loads(request.POST.get("objectType")) == "nodeweek":
 
             object_id = json.loads(request.POST.get("objectID"))
             parent_id = json.loads(request.POST.get("parentID"))
 
-            old_parent_id = NodeStrategy.objects.get(id=object_id).strategy.id
+            old_parent_id = NodeWeek.objects.get(id=object_id).week.id
 
             if parent_id == old_parent_id:
                 return view_func(request, *args, **kwargs)
 
-            parent = Strategy.objects.get(id=parent_id)
+            parent = Week.objects.get(id=parent_id)
+
+            if hasattr(parent, "get_subclass"):
+                parent_author = parent.get_subclass().author
+            else:
+                parent_author = parent.author
+
+            if User.objects.get(id=request.user.id) != parent_author:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 401
+                return response
+        elif json.loads(request.POST.get("objectType")) == "outcomeoutcome":
+
+            object_id = json.loads(request.POST.get("objectID"))
+            parent_id = json.loads(request.POST.get("parentID"))
+
+            old_parent_id = OutcomeOutcome.objects.get(id=object_id).parent.id
+
+            if parent_id == old_parent_id:
+                return view_func(request, *args, **kwargs)
+
+            parent = Outcome.objects.get(id=parent_id)
 
             if hasattr(parent, "get_subclass"):
                 parent_author = parent.get_subclass().author

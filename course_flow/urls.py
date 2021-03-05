@@ -52,7 +52,10 @@ def flow_patterns():
         url(r"^workflow/unlink-outcome-from-node/$", views.unlink_outcome_from_node, name="unlink-outcome-from-node"),
         url(r"^workflow/update-outcomenode-degree/$", views.update_outcomenode_degree, name="update-outcomenode-degree"),
         url(r"^workflow/duplicate-self/$", views.duplicate_self, name="duplicate-self"),
-        url(r"^workflow/duplication/$", views.duplicate_workflow_ajax, name="duplicate-workflow"),
+        url(r"^project/duplicate-workflow/$", views.duplicate_workflow_ajax, name="duplicate-workflow"),
+        url(r"^project/duplicate-outcome/$", views.duplicate_outcome_ajax, name="duplicate-outcome"),
+        url(r"^project/duplicate-project/$", views.duplicate_project_ajax, name="duplicate-project"),
+        url(r"^project/duplicate-strategy/$", views.duplicate_strategy_ajax, name="duplicate-strategy"),
         url(
             r"^workflow/insert-sibling/$",
             views.insert_sibling,
@@ -68,6 +71,8 @@ def flow_patterns():
         url(r"^node/add-outcome-to-node/$", views.add_outcome_to_node, name="add-outcome-to-node"),
         url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
+        url(r"^workflow/strategy/add", views.add_strategy, name="add-strategy"),
+        url(r"^workflow/strategy/toggle", views.week_toggle_strategy, name="toggle-strategy"),
         url(
             r"^workflow/node/set-linked-workflow/$",
             views.set_linked_workflow_ajax,
@@ -129,6 +134,11 @@ def flow_patterns():
             name="course-create",
         ),
         url(
+            r"^course-strategy/create/$",
+            views.CourseStrategyCreateView.as_view(),
+            name="course-strategy-create",
+        ),
+        url(
             r"^course/(?P<pk>[0-9]+)/$",
             views.CourseDetailView.as_view(),
             name="course-detail-view",
@@ -139,19 +149,14 @@ def flow_patterns():
             name="activity-create",
         ),
         url(
+            r"^activity-strategy/create/$",
+            views.ActivityStrategyCreateView.as_view(),
+            name="activity-strategy-create",
+        ),
+        url(
             r"^activity/(?P<pk>[0-9]+)/$",
             views.ActivityDetailView.as_view(),
             name="activity-detail-view",
-        ),
-        url(
-            r"^course/duplication",
-            views.duplicate_course_ajax,
-            name="course-duplication",
-        ),
-        url(
-            r"^activity/duplication",
-            views.duplicate_activity_ajax,
-            name="activity-duplication",
         ),
     ] + router.urls
 

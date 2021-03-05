@@ -11,46 +11,67 @@ export const getColumnWorkflowByID = (state,id)=>{
         if(columnworkflow.id==id)return {data:columnworkflow,order:state.workflow.columnworkflow_set};
     }
 }
-export const getStrategyByID = (state,id)=>{
-    for(var i in state.strategy){
-        var strategy = state.strategy[i];
-        if(strategy.id==id)return {data:strategy,column_order:state.workflow.columnworkflow_set,sibling_count:state.workflow.strategyworkflow_set.length,nodestrategies:state.nodestrategy};
+export const getWeekByID = (state,id)=>{
+    for(var i in state.week){
+        var week = state.week[i];
+        if(week.id==id)return {
+            data:week,
+            column_order:state.columnworkflow.sort(
+                (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
+            ).map(columnworkflow=>columnworkflow.column),
+            sibling_count:state.workflow.weekworkflow_set.length,
+            nodeweeks:state.nodeweek
+        };
     }
 }
 export const getTermByID = (state,id)=>{
-    for(var i in state.strategy){
-        var strategy = state.strategy[i];
-        if(strategy.id==id){
-            var nodestrategies = strategy.nodestrategy_set;
+    for(var i in state.week){
+        var week = state.week[i];
+        if(week.id==id){
+            var nodeweeks = week.nodeweek_set;
+            var column_order = state.columnworkflow.sort(
+                (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
+            ).map(columnworkflow=>columnworkflow.column);
             var nodes_by_column = {};
-            for(var j=0;j<state.workflow.columnworkflow_set.length;j++){
-                nodes_by_column[state.workflow.columnworkflow_set[j]]=[];
+            for(var j=0;j<column_order.length;j++){
+                nodes_by_column[column_order[j]]=[];
             }
-            for(var j=0;j<nodestrategies.length;j++){
-                let node_strategy = getNodeStrategyByID(state,nodestrategies[j]).data;
-                let node = getNodeByID(state,node_strategy.node).data;
-                nodes_by_column[node.columnworkflow].push(nodestrategies[j]);
+            for(var j=0;j<nodeweeks.length;j++){
+                let node_week = getNodeWeekByID(state,nodeweeks[j]).data;
+                let node = getNodeByID(state,node_week.node).data;
+                nodes_by_column[node.column].push(nodeweeks[j]);
             }
-            return {data:strategy,column_order:state.workflow.columnworkflow_set,nodes_by_column:nodes_by_column,nodestrategies:state.nodestrategy};
+            console.log("column_order");
+            console.log(column_order);
+            console.log("nodes_by_column");
+            console.log(nodes_by_column);
+            return {
+                data:week,
+                column_order:column_order,
+                nodes_by_column:nodes_by_column,
+                nodeweeks:state.nodeweek
+            };
         }
     }
+    console.log("Did not find term");
+    console.log(state);
 }
-export const getStrategyWorkflowByID = (state,id)=>{
-    for(var i in state.strategyworkflow){
-        var strategyworkflow = state.strategyworkflow[i];
-        if(strategyworkflow.id==id)return {data:strategyworkflow,order:state.workflow.strategyworkflow_set};
+export const getWeekWorkflowByID = (state,id)=>{
+    for(var i in state.weekworkflow){
+        var weekworkflow = state.weekworkflow[i];
+        if(weekworkflow.id==id)return {data:weekworkflow,order:state.workflow.weekworkflow_set};
     }
 }
 export const getNodeByID = (state,id)=>{
     for(var i in state.node){
         var node = state.node[i];
-        if(node.id==id)return {data:node,column_order:state.workflow.columnworkflow_set};
+        if(node.id==id)return {data:node};
     }
 }
-export const getNodeStrategyByID = (state,id)=>{
-    for(var i in state.nodestrategy){
-        var nodestrategy = state.nodestrategy[i];
-        if(nodestrategy.id==id)return {data:nodestrategy,order:getStrategyByID(state,nodestrategy.strategy).nodestrategy_set};
+export const getNodeWeekByID = (state,id)=>{
+    for(var i in state.nodeweek){
+        var nodeweek = state.nodeweek[i];
+        if(nodeweek.id==id)return {data:nodeweek,order:getWeekByID(state,nodeweek.week).nodeweek_set};
     }
 }
 export const getNodeLinkByID = (state,id)=>{
@@ -83,4 +104,10 @@ export const getTableOutcomeNodeByID = (state,node_id, outcome_id)=>{
         if(outcomenode.outcome==outcome_id && outcomenode.node==node_id)return {data:outcomenode};
     }
     return {data:null}
+}
+export const getStrategyByID = (state,id)=>{
+    for(var i in state.strategy){
+        var strategy = state.strategy[i];
+        if(strategy.id==id)return {data:strategy};
+    }
 }

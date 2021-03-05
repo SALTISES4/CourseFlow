@@ -18,11 +18,17 @@
     <ul>
         <li><a href="#edit-menu"><img src="{% static 'course_flow/img/images_svg/pencil-blue.svg' %}"/></a></li>
         <li><a href="#node-bar"><img src="{% static 'course_flow/img/images_svg/add-square-button.svg' %}"/></a></li>
-        <li><a href="#outcome-bar"><img src="{% static 'course_flow/img/images_svg/pageview-24px.svg' %}"/></a></li>
+        {% if is_strategy == "false" %}
+            <li><a href="#outcome-bar"><img src="{% static 'course_flow/img/images_svg/pageview-24px.svg' %}"/></a></li>
+            <li><a href="#strategy-bar"><img src="{% static 'course_flow/img/images_svg/weekstyleparts.svg' %}"/></a></li>
+        {% endif %}
     </ul>
     <div id="edit-menu" class="right-panel-container"></div>
     <div id="node-bar" class="right-panel-container"></div>
-    <div id="outcome-bar" class="right-panel-container"></div>
+    {% if is_strategy == "false" %}
+        <div id="outcome-bar" class="right-panel-container"></div>
+        <div id="strategy-bar" class="right-panel-container"></div>
+    {% endif %}
 </div>
 
 
@@ -55,16 +61,25 @@ var selection_manager;
 
 $("#sidebar").tabs({collapsible:true,active:1,disabled:[0]});
     
-$("#sidebar").on("click",(evt)=>{evt.stopPropagation()});    
-    
-$("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-    
-$("#viewbar").append("<div id='outcomeviewbar'><div class='outcomeviewtext'>Outcome View:</div><label class='switch'><input type='checkbox'><span class ='slider round'></span></label></div>");
-    
-$("#outcomeviewbar input").on("change",(evt)=>{
-    workflow_redux.renderWorkflowView($("#container").get()[0],evt.target.checked)
-});
-    
+$("#sidebar").on("mousedown",(evt)=>{evt.stopPropagation()});    
+
+{% if parent_project_pk %}
+    if(read_only){
+        $("#floatbar").append("<a href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+    }else{
+        $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+    }
+{% endif %}
+ 
+{% if is_strategy == "false" %}
+    $("#viewbar").append("<div id='outcomeviewbar'><div class='outcomeviewtext'>Outcome View:</div><label class='switch'><input type='checkbox'><span class ='slider round'></span></label></div>");
+
+    $("#outcomeviewbar input").on("change",(evt)=>{
+        workflow_redux.renderWorkflowView($("#container").get()[0],evt.target.checked)
+    });
+{% endif %}
+
+
 initial_data = {{data_flat|safe}}
 console.log(initial_data);
 column_choices = {{column_choices|safe}}
@@ -73,6 +88,9 @@ task_choices = {{task_choices|safe}}
 time_choices = {{time_choices|safe}}
 outcome_type_choices = {{outcome_type_choices|safe}}
 outcome_sort_choices = {{outcome_sort_choices|safe}}
+strategy_classification_choices = {{strategy_classification_choices|safe}}
+is_strategy = {{is_strategy|safe}}
+
 const user_id = {{ user.id }};
 const create_path=null;
     
@@ -80,7 +98,7 @@ var initial_loading = true;
 var ports_rendered = false;
 var items_to_load = {
     column:initial_data.column.length,
-    strategy:initial_data.strategy.length,
+    week:initial_data.week.length,
     node:initial_data.node.length,
 };
 var ports_to_render = initial_data.node.length;

@@ -19,7 +19,7 @@ class OutcomeNodeView extends ComponentJSON{
         let data = this.props.data;
         
         return (
-            <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
+            <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
                 <NodeOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             
                 {!read_only && <div class="mouseover-actions">
@@ -61,7 +61,11 @@ export class TableTotalCell extends ComponentJSON{
     }
     
     getContents(completion_status){
-        if(completion_status==0){
+        if(completion_status===0){
+            return (
+                <img src={iconpath+'nocheck.svg'}/>
+            );
+        }else if(!completion_status){
             return "";
         }
         if(this.props.outcomes_type==0 || completion_status & 1){
@@ -103,9 +107,10 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
     render(){
         let data = this.props.data;
         
-        let completion_status=0;
+        let completion_status;
         if(data)completion_status|=data.degree;
         completion_status|=this.props.completion_status_from_children|this.props.completion_status_from_parents;
+        if(completion_status==0&&this.props.completion_status_from_children!==0)completion_status=null;
         let checked=false;
         if(data)checked=true;
         
@@ -114,9 +119,18 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
                 if(this.props.outcomes_type==0)input=(
                 <input type="checkbox" onChange={this.toggleFunction.bind(this)} checked={checked}/>
             );
-            else input=(
-                <button onClick={this.clickFunction.bind(this)}>+</button>
-            );
+            else {
+                let button_content="+";
+                if(data){
+                    if(data.degree&2)button_content="I";
+                    if(data.degree&4)button_content="D";
+                    if(data.degree&8)button_content="A";
+                    if(data.degree&1)button_content="Y";
+                }
+                input=(
+                    <button onClick={this.clickFunction.bind(this)}>{button_content}</button>
+                );
+            }
         }
         
         return (
@@ -171,7 +185,7 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
     }
 
     postMountFunction(){
-        let value=0;
+        let value=null;
         if(this.props.data)value=this.props.data.degree;
         if(this.props.updateParentCompletion && value)this.props.updateParentCompletion(this.props.nodeID,value);
         if(value)this.props.updateSelfCompletion(this.props.nodeID,value);
@@ -207,15 +221,20 @@ export class TableOutcomeGroup extends ComponentJSON{
         for(let node_id in this.props.completion_status_from_parents){
             if(this.props.nodes.indexOf(parseInt(node_id))>=0)completion_status|=this.props.completion_status_from_parents[node_id];
         }
+        let childnodes=0;
         for(let node_id in this.props.completion_status_from_children){
-            if(this.props.nodes.indexOf(parseInt(node_id))>=0)completion_status|=this.props.completion_status_from_children[node_id];
+            if(this.props.nodes.indexOf(parseInt(node_id))>=0){
+                completion_status|=this.props.completion_status_from_children[node_id];
+                childnodes++;
+            }
         }
+        if(completion_status==0&&childnodes==0)completion_status=null;
         
         return(
             <div class="table-group">
+                <div class="table-cell blank-cell"></div>
                 {tableCells}
                 <TableTotalCell completion_status={completion_status} outcomes_type={this.props.outcomes_type}/>
-                <div class="table-cell blank-cell"></div>
             </div>
         );
     }

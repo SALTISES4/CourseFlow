@@ -68,10 +68,10 @@ export function newColumn(workflowPk,column_type,callBackFunction=()=>console.lo
     });
 }
     
-//Add a new node to a strategy
-export function newNode(strategyPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){
+//Add a new node to a week
+export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){
     $.post(post_paths.new_node, {
-        strategyPk:JSON.stringify(strategyPk),
+        weekPk:JSON.stringify(weekPk),
         position:JSON.stringify(position),
         columnPk:JSON.stringify(column),
         columnType:JSON.stringify(column_type),
@@ -85,7 +85,8 @@ export function newNode(strategyPk,position=-1,column=-1,column_type=-1,callBack
 export function newNodeLink(source_node,target_node,source_port,target_port,callBackFunction=()=>console.log("success")){
     $.post(post_paths.new_node_link, {
         nodePk:JSON.stringify(source_node),
-        targetID:JSON.stringify(target_node),
+        objectID:JSON.stringify(target_node),
+        objectType:JSON.stringify("node"),
         sourcePort:JSON.stringify(source_port),
         targetPort:JSON.stringify(target_port),
         
@@ -94,6 +95,28 @@ export function newNodeLink(source_node,target_node,source_port,target_port,call
         else console.log("Failed");
     });
 }  
+
+//Add a strategy to the workflow
+export function addStrategy(workflowPk,position=-1,strategyPk=-1,callBackFunction=()=>console.log("success")){
+    $.post(post_paths.add_strategy, {
+        workflowPk:JSON.stringify(workflowPk),
+        position:JSON.stringify(position),
+        strategyPk:JSON.stringify(strategyPk),
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
+//Add a strategy to the workflow
+export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.log("success")){
+    $.post(post_paths.toggle_strategy, {
+        weekPk:JSON.stringify(weekPk),
+        is_strategy:JSON.stringify(is_strategy),
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
 
 //Causes the specified object to delete itself
 export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
@@ -107,10 +130,10 @@ export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log(
 }
 
 //Causes the specified throughmodel to delete itself
-export function unlinkOutcomeFromNode(objectID,objectType,callBackFunction=()=>console.log("success")){
+export function unlinkOutcomeFromNode(nodeID,outcomeID,callBackFunction=()=>console.log("success")){
     $.post(post_paths.unlink_outcome_from_node, {
-        objectID:JSON.stringify(objectID),
-        objectType:JSON.stringify(objectType)
+        nodePk:JSON.stringify(nodeID),
+        outcomePk:JSON.stringify(outcomeID)
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
@@ -118,9 +141,10 @@ export function unlinkOutcomeFromNode(objectID,objectType,callBackFunction=()=>c
 }
 
 //Causes the specified throughmodel to update its degree
-export function updateOutcomenodeDegree(objectID,value,callBackFunction=()=>console.log("success")){
+export function updateOutcomenodeDegree(nodeID,outcomeID,value,callBackFunction=()=>console.log("success")){
     $.post(post_paths.update_outcomenode_degree, {
-        objectID:JSON.stringify(objectID),
+        nodePk:JSON.stringify(nodeID),
+        outcomePk:JSON.stringify(outcomeID),
         degree:JSON.stringify(value)
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
@@ -151,6 +175,16 @@ export function insertSibling(objectID,objectType,parentID,callBackFunction=()=>
     });
 }
 
+//Causes the specified object to insert a child to itself
+export function insertChild(objectID,objectType,callBackFunction=()=>console.log("success")){
+    $.post(post_paths.insert_child, {
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify(objectType),
+    }).done(function(data){
+        if(data.action == "posted") callBackFunction(data);
+        else console.log("Failed");
+    });
+}
     
 //Called when an object in a list is reordered
 export function insertedAt(objectID,objectType,parentID,newPosition,callBackFunction=()=>console.log("success")){
@@ -172,12 +206,12 @@ export function insertedAt(objectID,objectType,parentID,newPosition,callBackFunc
 //Called when a node should have its column changed
 export function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
     
-    $(document).off("nodestrategy-dropped.columnchange");
-    $(document).on("nodestrategy-dropped.columnchange",()=>{
+    $(document).off("nodeweek-dropped.columnchange");
+    $(document).on("nodeweek-dropped.columnchange",()=>{
     
         $.post(post_paths.column_changed, {
             nodePk:JSON.stringify(objectID),
-            columnID:JSON.stringify(columnID),
+            columnPk:JSON.stringify(columnID),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else console.log("Failed");
@@ -195,4 +229,43 @@ export function addOutcomeToNode(nodePk,outcome,callBackFunction=()=>console.log
         if(data.action == "posted") callBackFunction(data);
         else console.log("Failed");
     });
+}
+
+
+//Duplicate a project workflow, strategy, or outcome
+export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=()=>console.log("success")){
+    if(objectType=="project"){
+        $.post(post_paths.duplicate_project_ajax, {
+            projectPk:JSON.stringify(itemPk),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }else if(objectType=="outcome"){
+        $.post(post_paths.duplicate_outcome_ajax, {
+            outcomePk:JSON.stringify(itemPk),
+            projectPk:JSON.stringify(projectID),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }else if(!projectID && projectID!==0){
+        $.post(post_paths.duplicate_strategy_ajax, {
+            workflowPk:JSON.stringify(itemPk),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }else{
+        $.post(post_paths.duplicate_workflow_ajax, {
+            workflowPk:JSON.stringify(itemPk),
+            projectPk:JSON.stringify(projectID),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else console.log("Failed");
+        });
+    }
+
+    
+    
 }

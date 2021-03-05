@@ -267,7 +267,7 @@
                     root.currentComponentInstance.setState({
                       parentID: jsonData.id,
                       objectType: "strategy",
-                      isStrategy: true
+                      isWeek: true
                     });
                     root.currentComponentInstance.dlg.MDComponent.show();
                 })
@@ -290,7 +290,7 @@
                 }
 
 
-              var runningStrategyHeight = programInfoHeight;
+              var runningWeekHeight = programInfoHeight;
 
               svgProgram.selectAll('.strategy').remove();
 
@@ -307,14 +307,14 @@
                                         .attr("height", `${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertical)-nodeSpacingVertical+2*strategyPadding+strategyInfoHeight}`)
                                         .attr("width", `${strategyWidth}`)
                                         .attr("fill", "rgb(65,80,96)");
-                                    renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
+                                    renderWeek(d.strategy.nodestrategy_set, d3.select(this));
                                 });
 
                   for(let i = 0; i<jsonData.strategyworkflow_set.length; i++){
                     for(let j = 0; j<jsonData.strategyworkflow_set.length; j++){
                       if(strategys["_groups"][0][j].__data__.rank == i){
-                          d3.select(strategys["_groups"][0][j]).attr("y", `${runningStrategyHeight}`);
-                          runningStrategyHeight += +d3.select(strategys["_groups"][0][j]).attr("height")+strategyVerticalSpacing;
+                          d3.select(strategys["_groups"][0][j]).attr("y", `${runningWeekHeight}`);
+                          runningWeekHeight += +d3.select(strategys["_groups"][0][j]).attr("height")+strategyVerticalSpacing;
                       }
                     }
                   }
@@ -341,7 +341,7 @@
                         root.currentComponentInstance.setState({
                           object: d3.select(this.parentNode).node().__data__.strategy,
                           objectType: "strategy",
-                          isStrategy: true,
+                          isWeek: true,
                           isDeleteForm: true
                         });
                         root.currentComponentInstance.dlg.MDComponent.show();
@@ -359,7 +359,7 @@
                         root.currentComponentInstance.setState({
                           object: d3.select(this.parentNode).node().__data__.strategy,
                           objectType: "strategy",
-                          isStrategy: true,
+                          isWeek: true,
                           isUpdateForm: true
                         });
                         root.currentComponentInstance.dlg.MDComponent.show();
@@ -401,7 +401,7 @@
 
 
 
-              function makeDragDropStrategy() {
+              function makeDragDropWeek() {
                 let widget = undefined;
                 let color = undefined;
                 let widgetData = undefined;
@@ -459,7 +459,7 @@
                 drags(strategys);
               }
 
-              makeDragDropStrategy();
+              makeDragDropWeek();
 
           }
 
@@ -506,10 +506,10 @@
 
           }
 
-        function renderStrategy(nodeStrategySet, svg){
+        function renderWeek(nodeWeekSet, svg){
 
 
-              const nodes = svg.selectAll('.node').data(nodeStrategySet).enter()
+              const nodes = svg.selectAll('.node').data(nodeWeekSet).enter()
                                 .append("svg").attr("class","node")
                                 .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification+strategyPadding}`)
                                 .attr("y", (d,i) => `${nodeTotalSpacingVertical*d.rank+strategyPadding+strategyInfoHeight}`);
@@ -693,7 +693,7 @@
                   if (widgetData.node.classification < 0) widgetData.node.classification = 0;
                   if (widgetData.node.classification > 2) widgetData.node.classification = 2;
                   if (widgetData.rank < 0) widgetData.rank = 0;
-                  if (widgetData.rank > nodeStrategySet.length-1) widgetData.rank = nodeStrategySet.length-1;
+                  if (widgetData.rank > nodeWeekSet.length-1) widgetData.rank = nodeWeekSet.length-1;
                   widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
                     .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("filter", "");
                   widget.attr("y",(d,i)=>`${d.rank*nodeTotalSpacingVertical+strategyPadding+strategyInfoHeight}`)

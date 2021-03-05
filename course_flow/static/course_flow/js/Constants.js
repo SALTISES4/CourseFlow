@@ -62,6 +62,20 @@ export const context_keys = {
     102:"test",
     103:"exam"
 }
+export const strategy_keys = {
+    0:"",
+    1:"jigsaw",
+    2:"peer-instruction",
+    3:"case-studies",
+    4:"gallery-walk",
+    5:"reflective-writing",
+    6:"two-stage-exam",
+    7:"toolkit",
+    8:"one-minute-paper",
+    9:"distributed-problem-solving",
+    10:"peer-assessment",
+    11:"other",
+}
 export const default_column_settings = {
     0:{colour:"#6738ff",icon:"other"},
     1:{colour:"#0b118a",icon:"ooci"},
@@ -106,4 +120,10 @@ export function mouseOutsidePadding(evt,elem,padding){
 //A utility function to trigger an event on each element. This is used to avoid .trigger, which bubbles (we will be careful to only trigger events on the elements that need them)
 export function triggerHandlerEach(trigger,eventname){
     return trigger.each((i,element)=>{$(element).triggerHandler(eventname);});
+}
+
+
+export function pushOrCreate(obj,index,value){
+    if(obj[index])obj[index].push(value);
+    else obj[index]=[value];
 }

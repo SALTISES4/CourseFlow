@@ -1,7 +1,9 @@
 import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {updateValueInstant, deleteSelf, setLinkedWorkflow} from "./PostFunctions.js";
+import {Provider, connect} from "react-redux";
+import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem} from "./PostFunctions.js";
+import {homeMenuItemAdded} from "./Reducers.js";
 
 export class MessageBox extends React.Component{
     render(){
@@ -134,6 +136,7 @@ export class WorkflowForMenu extends React.Component{
         var buttons=[];
         if(this.props.type=="projectmenu"||this.props.type=="homemenu"){
             if(this.props.owned){
+                console.log(this.props);
                 buttons.push(
                     <div onClick={(evt)=>{
                         if(window.confirm("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone.")){
@@ -149,12 +152,26 @@ export class WorkflowForMenu extends React.Component{
                         <img src={iconpath+'pencil-blue.svg'}/>
                     </a>
                 );
+            }else{
+                buttons.push(
+                    <a href={detail_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
+                        <img src={iconpath+'pageview-24px.svg'}/>
+                    </a>
+                );
             }
-            buttons.push(
-                <a href={detail_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
-                    <img src={iconpath+'pageview-24px.svg'}/>
-                </a>
-            );
+            if(this.props.duplicate){
+                console.log(this.props);
+                let icon;
+                if(this.props.duplicate=="copy")icon = 'file_copy-24px.svg';
+                else icon = 'file_import-24px.svg';
+                buttons.push(
+                    <div onClick={()=>{
+                        duplicateBaseItem(this.props.workflow_data.id,this.props.objectType,this.props.parentID,(response_data)=>{this.props.dispatch(homeMenuItemAdded(response_data))})
+                    }}>
+                        <img src={iconpath+icon}/>
+                    </div>
+                );
+            }
         }
         return (
             <div class="workflow-buttons">
@@ -168,7 +185,7 @@ export class WorkflowForMenu extends React.Component{
 export class MenuSection extends React.Component{
     render(){
         var objects = this.props.section_data.objects.map((object)=>
-            <WorkflowForMenu key={object.id} type={this.props.type} owned={(object.author_id==user_id)} workflow_data={object} objectType={this.props.section_data.object_type} selected={(this.props.selected_id==object.id)} selectAction={()=>{this.props.selectAction(object.id)}}/>                            
+            <WorkflowForMenu key={object.id} type={this.props.type} owned={(object.author_id==user_id)} workflow_data={object} objectType={this.props.section_data.object_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={()=>{this.props.selectAction(object.id)}} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
         );
         
         
@@ -177,7 +194,7 @@ export class MenuSection extends React.Component{
         return (
             <div>
                 <h3>{this.props.section_data.title+":"}
-                {create_path && this.props.add &&
+                {(create_path && this.props.add) &&
                   <a href={create_path[this.props.section_data.object_type]}
                     ><img
                       class="create-button link-image"
@@ -195,7 +212,7 @@ export class MenuSection extends React.Component{
 export class MenuTab extends React.Component{
     render(){
         var sections = this.props.data.sections.map((section)=>
-            <MenuSection type={this.props.type} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} selectAction={this.props.selectAction}/>
+            <MenuSection type={this.props.type} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.data.duplicate}/>
         );
         
         return (
@@ -207,8 +224,9 @@ export class MenuTab extends React.Component{
     }
 }
 
-export class HomeMenu extends React.Component{
+class HomeMenuUnconnected extends React.Component{
     render(){
+        console.log(this.props);
         var tabs = [];
         var tab_li = [];
         var i = 0;
@@ -217,7 +235,7 @@ export class HomeMenu extends React.Component{
                 <li><a href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
             )
             tabs.push(
-                <MenuTab data={this.props.data_package[prop]} type="homemenu" identifier={i}/>
+                <MenuTab data={this.props.data_package[prop]} dispatch={this.props.dispatch} type="homemenu" identifier={i}/>
             )
             i++;
         }
@@ -236,9 +254,13 @@ export class HomeMenu extends React.Component{
         $("#home-tabs").tabs();
     }
 }
+export const HomeMenu = connect(
+    state=>({data_package:state}),
+    null
+)(HomeMenuUnconnected)
 
 
-export class ProjectMenu extends React.Component{
+class ProjectMenuUnconnected extends React.Component{
     constructor(props){
         super(props);
         this.state={title:props.project.title,description:props.project.description,published:props.project.published};
@@ -253,7 +275,7 @@ export class ProjectMenu extends React.Component{
                 <li><a href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
             )
             tabs.push(
-                <MenuTab data={this.props.data_package[prop]} type="projectmenu" identifier={i}/>
+                <MenuTab data={this.props.data_package[prop]} dispatch={this.props.dispatch} type="projectmenu" identifier={i} parentID={this.props.project.id}/>
             )
             i++;
         }
@@ -295,6 +317,11 @@ export class ProjectMenu extends React.Component{
         this.setState(new_state);
     }
 }
+export const ProjectMenu = connect(
+    state=>({data_package:state}),
+    null
+)(ProjectMenuUnconnected)
+
 
 export class ProjectEditMenu extends React.Component{
     constructor(props){

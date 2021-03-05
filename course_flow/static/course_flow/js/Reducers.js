@@ -8,9 +8,9 @@ export const moveColumnWorkflow = (id,new_position) => {
     }
 }
 
-export const moveStrategyWorkflow = (id,new_position) => {
+export const moveWeekWorkflow = (id,new_position) => {
     return {
-        type: 'strategyworkflow/movedTo',
+        type: 'weekworkflow/movedTo',
         payload:{id:id,new_index:new_position}
     }
 }
@@ -50,16 +50,16 @@ export const newNodeAction = (response_data) => {
     }
 }
 
-export const columnChangeNodeStrategy = (id,delta_x,columnworkflows) => {
+export const columnChangeNodeWeek = (id,delta_x,columns) => {
     return {
         type: 'node/movedColumnBy',
-        payload:{id:id,delta_x,columnworkflows:columnworkflows}
+        payload:{id:id,delta_x,columns:columns}
     }
 }
 
-export const moveNodeStrategy = (id,new_position,new_parent,nodes_by_column) => {
+export const moveNodeWeek = (id,new_position,new_parent,nodes_by_column) => {
     return {
-        type: 'nodestrategy/movedTo',
+        type: 'nodeweek/movedTo',
         payload:{id:id,new_index:new_position,new_parent:new_parent,nodes_by_column:nodes_by_column}
     }
 }
@@ -92,6 +92,29 @@ export const addOutcomeToNodeAction = (response_data) => {
     }
 }
 
+export const newStrategyAction = (response_data) => {
+    console.log(response_data);
+    return {
+        type: "strategy/addStrategy",
+        payload:response_data
+    }
+}
+export const toggleStrategyAction = (response_data) => {
+    console.log(response_data);
+    return {
+        type: "strategy/toggleStrategy",
+        payload:response_data
+    }
+}
+export const homeMenuItemAdded = (response_data) => {
+    console.log(response_data);
+    return {
+        type: "homemenu/itemAdded",
+        payload:response_data
+    }
+}
+
+
 export function workflowReducer(state={},action){
     switch(action.type){
         case 'columnworkflow/movedTo':
@@ -107,32 +130,43 @@ export function workflowReducer(state={},action){
                 ...state,
                 columnworkflow_set:new_columnworkflow_set
             }
-        case 'strategyworkflow/movedTo':
-            var new_strategyworkflow_set = state.strategyworkflow_set.slice();
-            for(var i=0;i<new_strategyworkflow_set.length;i++){
-                if(new_strategyworkflow_set[i]==action.payload.id){
-                    new_strategyworkflow_set.splice(action.payload.new_index,0,new_strategyworkflow_set.splice(i,1)[0]);
+        case 'weekworkflow/movedTo':
+            var new_weekworkflow_set = state.weekworkflow_set.slice();
+            for(var i=0;i<new_weekworkflow_set.length;i++){
+                if(new_weekworkflow_set[i]==action.payload.id){
+                    new_weekworkflow_set.splice(action.payload.new_index,0,new_weekworkflow_set.splice(i,1)[0]);
                     break;
                 }
             }
-            insertedAt(action.payload.id,"strategyworkflow",state.id,action.payload.new_index);
+            insertedAt(action.payload.id,"weekworkflow",state.id,action.payload.new_index);
             return {
                 ...state,
-                strategyworkflow_set:new_strategyworkflow_set
+                weekworkflow_set:new_weekworkflow_set
             }
-        case 'strategy/deleteSelf':
-            if(state.strategyworkflow_set.indexOf(action.payload.parent_id)>=0){
+        case 'week/deleteSelf':
+            if(state.weekworkflow_set.indexOf(action.payload.parent_id)>=0){
                 var new_state = {...state};
-                new_state.strategyworkflow_set = state.strategyworkflow_set.slice();
-                new_state.strategyworkflow_set.splice(new_state.strategyworkflow_set.indexOf(action.payload.parent_id),1);
+                new_state.weekworkflow_set = state.weekworkflow_set.slice();
+                new_state.weekworkflow_set.splice(new_state.weekworkflow_set.indexOf(action.payload.parent_id),1);
                 return new_state;
             }
             return state;
-        case 'strategy/insertBelow':
+        case 'week/insertBelow':
             new_state = {...state}
-            var new_strategyworkflow_set = state.strategyworkflow_set.slice();
-            new_strategyworkflow_set.splice(new_strategyworkflow_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
-            new_state.strategyworkflow_set = new_strategyworkflow_set;
+            var new_weekworkflow_set = state.weekworkflow_set.slice();
+            new_weekworkflow_set.splice(new_weekworkflow_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
+            new_state.weekworkflow_set = new_weekworkflow_set;
+            return new_state;
+        case 'strategy/addStrategy':
+            new_state = {...state}
+            var new_weekworkflow_set = state.weekworkflow_set.slice();
+            new_weekworkflow_set.splice(action.payload.index,0,action.payload.new_through.id);
+            new_state.weekworkflow_set = new_weekworkflow_set;
+            if(action.payload.columnworkflows_added.length>0){
+                let new_columnworkflow_set = state.columnworkflow_set.slice();
+                new_columnworkflow_set.push(...action.payload.columnworkflows_added.map(columnworkflow=>columnworkflow.id));
+                new_state.columnworkflow_set = new_columnworkflow_set;
+            }
             return new_state;
         case 'column/deleteSelf':
             if(state.columnworkflow_set.indexOf(action.payload.parent_id)>=0){
@@ -189,6 +223,11 @@ export function columnworkflowReducer(state={},action){
             new_state = state.slice();
             new_state.push(action.payload.new_through);
             return new_state;
+        case 'strategy/addStrategy':
+            if(action.payload.columnworkflows_added.length==0)return state;
+            new_state=state.slice();
+            new_state.push(...action.payload.columnworkflows_added);
+            return new_state;
         default:
             return state;
     }
@@ -230,14 +269,19 @@ export function columnReducer(state={},action){
                 }
             }
             return state;
+        case 'strategy/addStrategy':
+            if(action.payload.columns_added.length==0)return state;
+            new_state=state.slice();
+            new_state.push(...action.payload.columns_added);
+            return new_state;
         default:
             return state;
     }
 }
 
-export function strategyworkflowReducer(state={},action){
+export function weekworkflowReducer(state={},action){
     switch(action.type){
-        case 'strategy/deleteSelf':
+        case 'week/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parent_id){
                     var new_state=state.slice();
@@ -246,20 +290,24 @@ export function strategyworkflowReducer(state={},action){
                 }
             }
             return state;
-        case 'strategy/insertBelow':
+        case 'week/insertBelow':
             new_state = state.slice();
+            new_state.push(action.payload.new_through);
+            return new_state;
+        case 'strategy/addStrategy':
+            new_state=state.slice();
             new_state.push(action.payload.new_through);
             return new_state;
         default:
             return state;
     }
 }
-export function strategyReducer(state={},action){
+export function weekReducer(state={},action){
     switch(action.type){
-        case 'nodestrategy/movedTo':
+        case 'nodeweek/movedTo':
             let old_parent,old_parent_index,new_parent,new_parent_index;
             for(var i=0;i<state.length;i++){
-                if(state[i].nodestrategy_set.indexOf(action.payload.id)>=0){
+                if(state[i].nodeweek_set.indexOf(action.payload.id)>=0){
                     old_parent_index=i;
                     old_parent={...state[i]};
                 }
@@ -274,33 +322,33 @@ export function strategyReducer(state={},action){
                 for(var col in action.payload.nodes_by_column){
                     if(action.payload.nodes_by_column[col].indexOf(action.payload.id)>=0){
                         let previous = action.payload.nodes_by_column[col][new_index];
-                        new_index = new_parent.nodestrategy_set.indexOf(previous);
+                        new_index = new_parent.nodeweek_set.indexOf(previous);
                     }
                 }
             }
             
             
             var new_state = state.slice();
-            old_parent.nodestrategy_set= old_parent.nodestrategy_set.slice();
-            old_parent.nodestrategy_set.splice(old_parent.nodestrategy_set.indexOf(action.payload.id),1);
+            old_parent.nodeweek_set= old_parent.nodeweek_set.slice();
+            old_parent.nodeweek_set.splice(old_parent.nodeweek_set.indexOf(action.payload.id),1);
             if(old_parent_index==new_parent_index){
-                old_parent.nodestrategy_set.splice(new_index,0,action.payload.id);
+                old_parent.nodeweek_set.splice(new_index,0,action.payload.id);
             }else{
-                new_parent.nodestrategy_set = new_parent.nodestrategy_set.slice();
-                new_parent.nodestrategy_set.splice(new_index,0,action.payload.id);
+                new_parent.nodeweek_set = new_parent.nodeweek_set.slice();
+                new_parent.nodeweek_set.splice(new_index,0,action.payload.id);
                 new_state.splice(new_parent_index,1,new_parent);
                 
             }
             new_state.splice(old_parent_index,1,old_parent);
-            insertedAt(action.payload.id,"nodestrategy",new_parent.id,new_index);
+            insertedAt(action.payload.id,"nodeweek",new_parent.id,new_index);
             return new_state;
         case 'node/deleteSelf':
             for(var i=0;i<state.length;i++){
-                if(state[i].nodestrategy_set.indexOf(action.payload.parent_id)>=0){
+                if(state[i].nodeweek_set.indexOf(action.payload.parent_id)>=0){
                     var new_state=state.slice();
                     new_state[i] = {...new_state[i]};
-                    new_state[i].nodestrategy_set = state[i].nodestrategy_set.slice();
-                    new_state[i].nodestrategy_set.splice(new_state[i].nodestrategy_set.indexOf(action.payload.parent_id),1);
+                    new_state[i].nodeweek_set = state[i].nodeweek_set.slice();
+                    new_state[i].nodeweek_set.splice(new_state[i].nodeweek_set.indexOf(action.payload.parent_id),1);
                     return new_state;
                 }
             }
@@ -310,9 +358,9 @@ export function strategyReducer(state={},action){
                 if(state[i].id==action.payload.parentID){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]}
-                    var new_nodestrategy_set = state[i].nodestrategy_set.slice();
-                    new_nodestrategy_set.splice(new_nodestrategy_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
-                    new_state[i].nodestrategy_set = new_nodestrategy_set;
+                    var new_nodeweek_set = state[i].nodeweek_set.slice();
+                    new_nodeweek_set.splice(new_nodeweek_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
+                    new_state[i].nodeweek_set = new_nodeweek_set;
                     return new_state;
                 }
             }
@@ -322,28 +370,28 @@ export function strategyReducer(state={},action){
                 if(state[i].id==action.payload.parentID){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]}
-                    var new_nodestrategy_set = state[i].nodestrategy_set.slice();
-                    new_nodestrategy_set.splice(action.payload.index,0,action.payload.new_through.id);
-                    new_state[i].nodestrategy_set = new_nodestrategy_set;
+                    var new_nodeweek_set = state[i].nodeweek_set.slice();
+                    new_nodeweek_set.splice(action.payload.index,0,action.payload.new_through.id);
+                    new_state[i].nodeweek_set = new_nodeweek_set;
                     return new_state;
                 }
             }
             return state;
-        case 'strategy/insertBelow':
+        case 'week/insertBelow':
             new_state = state.slice();
             new_state.push(action.payload.new_model);
             return new_state;
-        case 'strategy/deleteSelf':
+        case 'week/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
-                    deleteSelf(action.payload.id,"strategy");
+                    deleteSelf(action.payload.id,"week");
                     return new_state;
                 }
             }
             return state;
-        case 'strategy/changeField':
+        case 'week/changeField':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
@@ -351,16 +399,30 @@ export function strategyReducer(state={},action){
                     new_state[i][action.payload.field]=action.payload.value;
                     let json = {};
                     json[action.payload.field]=action.payload.value;
-                    if(!read_only)updateValue(action.payload.id,"strategy",json);
+                    if(!read_only)updateValue(action.payload.id,"week",json);
                     return new_state;
                 }
             }
             return state;
+        case 'strategy/toggleStrategy':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]};
+                    new_state[i].is_strategy = action.payload.is_strategy;
+                    return new_state;
+                }
+            }
+            return state;
+        case 'strategy/addStrategy':
+            new_state=state.slice();
+            new_state.push(action.payload.strategy);
+            return new_state;
         default:
             return state;
     }
 }
-export function nodestrategyReducer(state={},action){
+export function nodeweekReducer(state={},action){
     switch(action.type){
         case 'node/deleteSelf':
             for(var i=0;i<state.length;i++){
@@ -371,7 +433,7 @@ export function nodestrategyReducer(state={},action){
                 }
             }
             return state;
-        case 'strategy/insertBelow':
+        case 'week/insertBelow':
             if(!action.payload.children_through)return state;
             new_state = state.slice();
             for(var i=0;i<action.payload.children_through.length;i++){
@@ -382,6 +444,11 @@ export function nodestrategyReducer(state={},action){
         case 'node/newNode':
             new_state = state.slice();
             new_state.push(action.payload.new_through);
+            return new_state;
+        case 'strategy/addStrategy':
+            if(action.payload.nodeweeks_added.length==0)return state;
+            new_state=state.slice();
+            new_state.push(...action.payload.nodeweeks_added);
             return new_state;
         default:
             return state;
@@ -408,18 +475,20 @@ export function nodeReducer(state={},action){
             var new_state = state.slice();
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
+                    console.log(action.payload.columns);
+                    console.log(action.payload.delta_x);
                     try{
-                        let columns = action.payload.columnworkflows;
-                        let old_columnworkflow_index = columns.indexOf(state[i].columnworkflow);
-                        let new_columnworkflow_index = old_columnworkflow_index+action.payload.delta_x;
-                        if(new_columnworkflow_index<0 || new_columnworkflow_index>=columns.length)return state;
-                        let new_columnworkflow = columns[new_columnworkflow_index];
+                        let columns = action.payload.columns;
+                        let old_column_index = columns.indexOf(state[i].column);
+                        let new_column_index = old_column_index+action.payload.delta_x;
+                        if(new_column_index<0 || new_column_index>=columns.length)return state;
+                        let new_column = columns[new_column_index];
                         var new_nodedata = {
                             ...state[i],
-                            columnworkflow:new_columnworkflow,
+                            column:new_column,
                         };
                         new_state.splice(i,1,new_nodedata);
-                        columnChanged(action.payload.id,new_columnworkflow);
+                        columnChanged(action.payload.id,new_column);
                     }catch(err){console.log("couldn't find new column");return state;}
                     return new_state;
                 }
@@ -431,7 +500,7 @@ export function nodeReducer(state={},action){
                     var new_state = state.slice();
                     new_state.splice(i,1);
                     deleteSelf(action.payload.id,"node",
-                    ()=>{Constants.triggerHandlerEach($(".strategy .node"),"component-updated")});
+                    ()=>{Constants.triggerHandlerEach($(".week .node"),"component-updated")});
                     return new_state;
                 }
             }
@@ -458,7 +527,7 @@ export function nodeReducer(state={},action){
                 }
             }
             return state;
-        case 'strategy/insertBelow':
+        case 'week/insertBelow':
             if(!action.payload.children)return state;
             new_state = state.slice();
             for(var i=0;i<action.payload.children.length;i++){
@@ -518,6 +587,11 @@ export function nodeReducer(state={},action){
                 }
             }
             return state;
+        case 'strategy/addStrategy':
+            if(action.payload.nodes_added.length==0)return state;
+            new_state=state.slice();
+            new_state.push(...action.payload.nodes_added);
+            return new_state;
         default:
             return state;
     }
@@ -542,6 +616,11 @@ export function nodelinkReducer(state={},action){
                 }
             }
             return state;
+        case 'strategy/addStrategy':
+            if(action.payload.nodelinks_added.length==0)return state;
+            new_state=state.slice();
+            new_state.push(...action.payload.nodelinks_added);
+            return new_state;
         default:
             return state;
     }
@@ -589,6 +668,7 @@ export function outcomeReducer(state={},action){
             return new_state;
         case 'outcome/insertChild':
         case 'outcome/insertBelow':
+            console.log("INSERTED CHILD");
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parentID){
                     var new_state = state.slice();
@@ -605,6 +685,7 @@ export function outcomeReducer(state={},action){
                             new_state.push(action.payload.children[i]);
                         }
                     }
+                    return new_state;
                 }
             }
             return state;
@@ -660,8 +741,8 @@ export function outcomeNodeReducer(state={},action){
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
+                    unlinkOutcomeFromNode(state[i].node,state[i].outcome)
                     new_state.splice(i,1);
-                    unlinkOutcomeFromNode(action.payload.id)
                     return new_state;
                 }
             }
@@ -674,7 +755,7 @@ export function outcomeNodeReducer(state={},action){
                     new_state[i][action.payload.field]=action.payload.value;
                     let json = {};
                     json[action.payload.field]=action.payload.value;
-                    if(!read_only)updateOutcomenodeDegree(action.payload.id,action.payload.value);
+                    if(!read_only)updateOutcomenodeDegree(new_state[i].node,new_state[i].outcome,action.payload.value);
                     return new_state;
                 }
             }
@@ -685,6 +766,58 @@ export function outcomeNodeReducer(state={},action){
 }
 export function outcomeProjectReducer(state={},action){
     switch(action.type){
+        default:
+            return state;
+    }
+}
+export function strategyReducer(state={},action){
+    switch(action.type){
+        case 'strategy/toggleStrategy':
+            if(!action.payload.is_strategy)return state;
+            let new_state=state.slice();
+            new_state.push(action.payload.strategy);
+            return new_state;
+        default:
+            return state;
+    }
+}
+export function saltiseStrategyReducer(state={},action){
+    switch(action.type){
+        default:
+            return state;
+    }
+}
+
+export function homeMenuReducer(state={},action){
+    switch(action.type){
+        case 'homemenu/itemAdded':
+            var new_state = {...state}
+            new_state.owned_projects = {...new_state.owned_projects};
+            new_state.owned_projects.sections = new_state.owned_projects.sections.slice();
+            for(var i=0;i<new_state.owned_projects.sections.length;i++){
+                if(new_state.owned_projects.sections[i].object_type==action.payload.type){
+                    new_state.owned_projects.sections[i].objects=new_state.owned_projects.sections[i].objects.slice()
+                    new_state.owned_projects.sections[i].objects.push(action.payload.new_item);
+                }
+            }
+            return new_state;
+        default:
+            return state;
+    }
+}
+export function projectMenuReducer(state={},action){
+    switch(action.type){
+        case 'homemenu/itemAdded':
+            var new_state = {...state}
+            new_state.current_project = {...new_state.current_project};
+            new_state.current_project.sections = new_state.current_project.sections.slice();
+            for(var i=0;i<new_state.current_project.sections.length;i++){
+                if(new_state.current_project.sections[i].object_type==action.payload.type){
+                    new_state.current_project.sections[i].objects=new_state.current_project.sections[i].objects.slice()
+                    new_state.current_project.sections[i].objects.push(action.payload.new_item);
+                }
+            }
+            return new_state;
         default:
             return state;
     }

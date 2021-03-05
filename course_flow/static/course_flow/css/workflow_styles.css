@@ -7,8 +7,36 @@ p{
     color:black;
 }
 
+button{
+    border:2px outset #1976bc;
+    background:white;
+    padding:5px;
+    border-radius:5px;
+}
+
 :focus{
     outline:none;
+}
+
+.workflow-create-wrapper{
+    font-family:sans-serif;
+    width:100%;
+    height:100%;
+    background:white;
+    padding-top:100px;
+    padding-left:40px;
+}
+
+.workflow-create-wrapper p label, .workflow-create-wrapper p input, .workflow-create-wrapper p textarea{
+    vertical-align:top;
+    display:block;
+}
+
+.workflow-create-wrapper p input, .workflow-create-wrapper p textarea{
+    width:400px;
+    resize:none;
+    margin-top:4px;
+    margin-bottom:10px;
 }
 
 .workflow-wrapper{
@@ -33,7 +61,7 @@ p{
 }
 
 .workflow-details{
-    padding:30px;
+    padding:50px;
 }
 
 .workflow-details .workflow-for-menu{
@@ -48,7 +76,7 @@ p{
     color:black;
 }
 
-.strategy{
+.week{
     background:white;
     min-height:200px;
     padding:10px;
@@ -56,9 +84,10 @@ p{
     box-sizing:border-box;
     border:2px solid white;
     border-radius:5px;
+    position:relative;
 }
 
-.strategy-workflow.dragging{
+.week-workflow.dragging{
     height:100px !important;
     overflow:hidden;
     border-color:#1976bc;
@@ -67,23 +96,68 @@ p{
     border-radius:5px;
 }
 
-.strategy-workflow.dragging .node-block{
+.week-workflow.dragging .week{
+    border:none;
+}
+
+.week-workflow.dragging .node-block{
     display:none;
 }
 
-.strategy-block{
+.week-block{
     width:100%;
     padding-left:10px;
     padding-right:10px;
     box-sizing:border-box;
 }
 
-.strategy:first-of-type{
-    margin-top:20px;
+
+.week-block > div:nth-of-type(odd) > .week{
+/*    background: #e0e0e0e0;*/
 }
 
-.strategy-block > div:nth-of-type(odd) > .strategy{
-/*    background: #e0e0e0e0;*/
+.week.strategy{
+    border:black double;
+    margin-left:-1px;
+}
+
+.strategy-tab > div{
+    display:inline-block;
+    vertical-align:top;
+    box-sizing:border-box;
+}
+
+.strategy-tab  .strategy-tab-square{
+    background:#ed4528;
+    padding:4px;
+    height:48px;
+}
+
+.strategy-tab-triangle{
+    width:0;
+    height:0px;
+    border-top:24px solid transparent;
+    border-bottom:24px solid transparent;
+    border-right:16px solid #ed4528;
+}
+
+.strategy-tab-circle{
+    background:white;
+    border-radius:20px;
+    width:40px;
+    height:40px;
+    text-align:center;
+}
+
+.strategy-tab{
+    position:absolute;
+    right:-48px;
+    top:calc(50% - 24px);
+}
+
+.strategy-tab img{
+    width:24px;
+    margin-top:calc(50% - 12px);
 }
 
 .column-workflow{
@@ -134,7 +208,7 @@ p{
     border:2px solid white;
 }
 
-.node-strategy{
+.node-week{
     width:100%;
     display:block;
     min-height:50px;
@@ -142,7 +216,7 @@ p{
     position:relative;
 }
 
-.node-strategy.dragging.ui-sortable-helper .node{
+.node-week.dragging.ui-sortable-helper .node{
     position:static;
 }
 
@@ -244,6 +318,7 @@ p{
     background:white;
     border-radius:0 0 5px 5px;
     overflow:hidden;
+    cursor:pointer;
 }
 
 .node-drop-side{
@@ -316,6 +391,7 @@ p{
 .outcome-drop{
     margin-left:14px;
     line-height:12px;
+    cursor:pointer;
 }
 
 .outcome-drop-img{
@@ -341,7 +417,7 @@ p{
 }
 
 .outcome-bar-outcome-block .outcome-outcome{
-    border:3px solid black;
+    border:3px outset #1976bc;
     margin-bottom:2px;
 }
 
@@ -351,7 +427,7 @@ p{
 }
 
 .outcome-bar-outcome-block{
-    border:3px solid black;
+    border:3px outset #1976bc;
 }
 
 .outcome-bar-outcome-block .outcome-drop{
@@ -359,6 +435,10 @@ p{
 }
 .outcome-bar-outcome-block .outcome-title, .outcome-node-container .outcome-title{
     font-size:10px;
+}
+
+.outcome-bar-outcome-block .outcome-title{
+    cursor:pointer;
 }
 
 .outcome-ghost{
@@ -383,6 +463,9 @@ p{
     background:white;
     border:2px solid;
     border-radius:10px;
+    z-index:1;
+    background:white;
+    width:200px;
 }
 
 .outcome-node-indicator-number{
@@ -400,8 +483,8 @@ p{
 }
 
 .outcome-node-container .outcome{
-    min-width:200px;
-    max-width:200px;
+    min-width:initial;
+    max-width:initial;
     margin:0px;
     border:0px;
 }
@@ -428,6 +511,25 @@ p{
 
 .outcome-node-container .outcome-outcome{
     position:relative;
+}
+
+.outcome-hover, .outcome-toggle{
+    outline:2px solid #ffff80;
+}
+
+.outcome-toggle-checkbox{
+    position:absolute;
+    right:-2px;
+    top:-2px;
+    display:none;
+}
+
+.outcome-hover>.outcome-toggle-checkbox{
+    display:block;
+}
+
+.outcome-bar-outcome-block .outcome-outcome{
+    background:white;
 }
 
 .outcome-table{
@@ -547,13 +649,14 @@ p{
 .outcome-table .node-title{
     width:100%;
     min-height:0px;
+    max-height:14px;
 }
 
 .outcome-table .node-top-row{
     padding:1px;
 }
 
-.outcome-table .table-cell .total-header{
+.outcome-table .table-cell .total-header, .outcome-table .table-cell .node-category-header{
     position:absolute;
     width:160px;
     height:26px;
@@ -562,12 +665,16 @@ p{
     font-weight:600;
     border-bottom:2px solid black;
     text-align:left;
-    font-size:14px;
+    font-size:10px;
+    white-space:normal;
 }
 
-.outcome-table .node-category-header{
-    display:inline-block;
-    width:30px;
+.outcome-table .table-cell .node-category-header{
+    font-size:12px;
+}
+
+.outcome-table .table-group:first-child .blank-cell{
+    border-left:0px;
 }
 
 .viewbar .outcomeviewtext{
@@ -630,7 +737,7 @@ input:checked +.slider::before{
     background:white;
 }
 
-/*This is used to get around the issue that we can't make the strategy itself relatively positioned (messes up jquery sortable*/
+/*This is used to get around the issue that we can't make the week itself relatively positioned (messes up jquery sortable*/
 .mouseover-container-bypass{
     position:relative;
     padding:0;
@@ -645,6 +752,7 @@ input:checked +.slider::before{
     width:20px;
     height:20px;
     display:inline-block;
+    cursor:pointer;
 }
 
 .action-button img{
@@ -685,7 +793,7 @@ circle.mouseover{
     visibility:visible;
 }
 
-.workflow-canvas.dragging-strategyworkflow{
+.workflow-canvas.dragging-weekworkflow{
     opacity:0;
 }
 
@@ -714,6 +822,7 @@ circle.mouseover{
     display:inline-block;
     position:relative;
 }
+
 
 .side-bar .ui-tabs-nav{
     margin:5px -2px 5px 5px; 
@@ -754,6 +863,46 @@ circle.mouseover{
     filter:none;
 }
 
+.side-bar select, .side-bar input[type=text], .side-bar textarea, .side-bar input[type=number]{
+    width:100%;
+    box-sizing:border-box;
+    padding:5px;
+    border:1px solid lightgray;
+    margin-top:2px;
+    margin-bottom:2px;
+}
+
+.side-bar button{
+    margin-top:2px;
+    margin-bottom:2px;
+    box-sizing:100%;
+    width:100%
+}
+
+.side-bar input[type=text]{
+    padding-top:6px;
+    padding-bottom:6px;
+}
+
+.side-bar input.half-width, .side-bar select.half-width{
+    width:50%;
+}
+
+.side-bar .delete-self-button{
+    margin:5px;
+    text-align:center;
+}
+
+.half-width{
+    width:50%;
+    display:inline-block;
+    box-sizing:border-box;
+}
+
+.right-panel-container textarea{
+    font-family:sans-serif;
+    resize:vertical;
+}
 
 .right-panel-inner{
     display:inline;
@@ -779,7 +928,7 @@ circle.mouseover{
 .node-bar-column{
     font-size:14px;
     width:100%;
-    border:3px solid;
+    border:3px outset;
     padding:10px;
     box-sizing:border-box;
 }
@@ -792,8 +941,43 @@ circle.mouseover{
     border-bottom:2px solid #1976bc;
 }
 
+.new-strategy-drop-over{
+    border-bottom:2px solid #1976bc;
+}
+
 .valid-drop{
     outline:2px solid #1976bc;
+}
+
+
+.strategy-bar-strategy{
+    width:100%;
+    display:block;
+    margin:2px;
+    font-size:14px;
+    border:3px outset #1976bc;
+    padding:10px;
+    box-sizing:border-box;
+    white-space:nowrap;
+}
+
+.strategy-bar-strategy img{
+    width:24px;
+    display:inline-block;
+    vertical-align:middle;
+}
+.strategy-bar-strategy div{
+    display:inline-block;
+    vertical-align:middle;
+    margin-left:8px;
+    white-space:normal;
+}
+
+.week-ghost{
+    width:300px;
+    min-height:50px;
+    border:1px dashed black;
+    position:absolute;
 }
 
 .workflow-wrapper .selected{
@@ -866,11 +1050,11 @@ circle.mouseover{
     font-size:18px;
     margin-bottom:6px;
     display:inline-block;
-    width:80%;
+    width:75%;
 }
 
 .workflow-buttons{
-    width:20%;
+    width:25%;
     display:inline-block;
     text-align:right;
 }
@@ -906,6 +1090,89 @@ circle.mouseover{
     left:0%;
     bottom:0%;
     position:absolute;
+}
+
+.workflow-legend{
+    cursor:move;
+    position:fixed;
+    background:white;
+    z-index:5;
+    padding:20px;
+    border:2px solid #1976bc;
+    left:calc(100% - 460px);
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+}
+
+.workflow-legend .legend-section{
+    
+}
+
+.workflow-legend .legend-line{
+    width:100%;
+    padding:2px;
+}
+
+.workflow-legend .legend-line img{
+    display:inline-block;
+    vertical-align: middle;
+    width:24px
+}
+
+.workflow-legend .legend-line div{
+    display:inline-block;
+    vertical-align: middle;
+    margin-left:8px;
+    font-weight:600;
+    font-size:12px;
+}
+
+.window-close-button{
+    right:8px;
+    top:8px;
+    position:absolute;
+    cursor:pointer;
+}
+
+.window-close-button img{
+    width:16px;
+}
+
+hr{
+    margin:4px;
+    margin-left:20%;
+    margin-right:20%;
+}
+
+h1{
+    color:#1976bc;
+    
+}
+
+h3{
+    color:#1976bc;
+}
+
+h4{
+    margin-top:10px;
+    margin-bottom:5px;
+    color:#1976bc;
+}
+h5{
+    margin-top:8px;
+    margin-bottom:8px;
+    color:#1976bc;
+}
+h4.drag-and-drop::after{
+    content:"\A Drag and drop to add";
+    font-size:10px;
+    color:grey;
+    white-space:pre;
+    
+}
+
+
+.workflow-legend *:is(h4, h5), .right-panel-container *:is(h3, h4, h5){
+    color:#1976bc;
 }
 
 

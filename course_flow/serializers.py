@@ -8,10 +8,10 @@ from .models import (
     Column,
     ColumnWorkflow,
     Node,
-    NodeStrategy,
-    StrategyWorkflow,
+    NodeWeek,
+    WeekWorkflow,
     Discipline,
-    Strategy,
+    Week,
     NodeLink,
     Outcome,
     OutcomeNode,
@@ -108,14 +108,14 @@ class ParentNodeSerializer(serializers.ModelSerializer):
         ]
 
 
-class ParentStrategySerializer(serializers.ModelSerializer):
+class ParentWeekSerializer(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
 
     class Meta:
-        model = Strategy
+        model = Week
         fields = [
             "id",
             "title",
@@ -237,13 +237,13 @@ class NodeSerializer(serializers.ModelSerializer):
         return instance
 
 
-class NodeStrategySerializer(serializers.ModelSerializer):
+class NodeWeekSerializer(serializers.ModelSerializer):
 
     node = NodeSerializer()
 
     class Meta:
-        model = NodeStrategy
-        fields = ["strategy", "node", "added_on", "rank", "id"]
+        model = NodeWeek
+        fields = ["week", "node", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data["rank"]
@@ -284,19 +284,19 @@ class ColumnSerializer(serializers.ModelSerializer):
         )
 
 
-class StrategySerializer(serializers.ModelSerializer):
+class WeekSerializer(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
 
-    nodestrategy_set = serializers.SerializerMethodField()
-    strategy_type_display = serializers.CharField(
-        source="get_strategy_type_display"
+    nodeweek_set = serializers.SerializerMethodField()
+    week_type_display = serializers.CharField(
+        source="get_week_type_display"
     )
     
     class Meta:
-        model = Strategy
+        model = Week
         fields = [
             "id",
             "title",
@@ -306,19 +306,19 @@ class StrategySerializer(serializers.ModelSerializer):
             "hash",
             "default",
             "author",
-            "nodestrategy_set",
+            "nodeweek_set",
             "is_original",
-            "parent_strategy",
-            "strategy_type",
-            "strategy_type_display",
+            "parent_week",
+            "week_type",
+            "week_type_display",
         ]
 
-    def get_nodestrategy_set(self, instance):
-        links = instance.nodestrategy_set.all().order_by("rank")
-        return NodeStrategySerializer(links, many=True).data
+    def get_nodeweek_set(self, instance):
+        links = instance.nodeweek_set.all().order_by("rank")
+        return NodeWeekSerializer(links, many=True).data
 
     def create(self, validated_data):
-        return Strategy.objects.create(
+        return Week.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
@@ -332,13 +332,13 @@ class StrategySerializer(serializers.ModelSerializer):
         return instance
 
 
-class StrategyWorkflowSerializer(serializers.ModelSerializer):
+class WeekWorkflowSerializer(serializers.ModelSerializer):
 
-    strategy = StrategySerializer()
+    week = WeekSerializer()
 
     class Meta:
-        model = StrategyWorkflow
-        fields = ["workflow", "strategy", "added_on", "rank", "id"]
+        model = WeekWorkflow
+        fields = ["workflow", "week", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
@@ -388,7 +388,7 @@ class DisciplineSerializer(serializers.ModelSerializer):
 
 class WorkflowSerializer(serializers.ModelSerializer):
 
-    strategyworkflow_set = serializers.SerializerMethodField()
+    weekworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
 
@@ -396,9 +396,9 @@ class WorkflowSerializer(serializers.ModelSerializer):
         read_only=True, slug_field="username"
     )
 
-    def get_strategyworkflow_set(self, instance):
-        links = instance.strategyworkflow_set.all().order_by("rank")
-        return StrategyWorkflowSerializer(links, many=True).data
+    def get_weekworkflow_set(self, instance):
+        links = instance.weekworkflow_set.all().order_by("rank")
+        return WeekWorkflowSerializer(links, many=True).data
 
     def get_columnworkflow_set(self, instance):
         links = instance.columnworkflow_set.all().order_by("rank")
@@ -431,7 +431,7 @@ class ProgramSerializer(WorkflowSerializer):
             "last_modified",
             "hash",
             "columnworkflow_set",
-            "strategyworkflow_set",
+            "weekworkflow_set",
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
@@ -461,7 +461,7 @@ class CourseSerializer(WorkflowSerializer):
             "created_on",
             "last_modified",
             "hash",
-            "strategyworkflow_set",
+            "weekworkflow_set",
             "outcomeworkflow_set",
             "columnworkflow_set",
             "discipline",
@@ -491,7 +491,7 @@ class ActivitySerializer(WorkflowSerializer):
             "last_modified",
             "hash",
             "columnworkflow_set",
-            "strategyworkflow_set",
+            "weekworkflow_set",
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
@@ -644,10 +644,10 @@ class NodeSerializerShallow(serializers.ModelSerializer):
         return instance
 
 
-class NodeStrategySerializerShallow(serializers.ModelSerializer):
+class NodeWeekSerializerShallow(serializers.ModelSerializer):
     class Meta:
-        model = NodeStrategy
-        fields = ["strategy", "node", "added_on", "rank", "id"]
+        model = NodeWeek
+        fields = ["week", "node", "added_on", "rank", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
@@ -689,20 +689,20 @@ class ColumnSerializerShallow(serializers.ModelSerializer):
         return instance
 
 
-class StrategySerializerShallow(serializers.ModelSerializer):
+class WeekSerializerShallow(serializers.ModelSerializer):
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
 
-    nodestrategy_set = serializers.SerializerMethodField()
+    nodeweek_set = serializers.SerializerMethodField()
 
-    strategy_type_display = serializers.CharField(
-        source="get_strategy_type_display"
+    week_type_display = serializers.CharField(
+        source="get_week_type_display"
     )
 
     class Meta:
-        model = Strategy
+        model = Week
         fields = [
             "id",
             "title",
@@ -712,22 +712,24 @@ class StrategySerializerShallow(serializers.ModelSerializer):
             "hash",
             "default",
             "author",
-            "nodestrategy_set",
+            "nodeweek_set",
             "is_original",
-            "parent_strategy",
-            "strategy_type",
-            "strategy_type_display",
+            "parent_week",
+            "week_type",
+            "week_type_display",
+            "is_strategy",
+            "strategy_classification",
         ]
 
 
-    def get_nodestrategy_set(self, instance):
-        links = instance.nodestrategy_set.all().order_by("rank")
+    def get_nodeweek_set(self, instance):
+        links = instance.nodeweek_set.all().order_by("rank")
         return list(map(linkIDMap, links))
 
     
     
     def create(self, validated_data):
-        return Strategy.objects.create(
+        return Week.objects.create(
             author=User.objects.get(username=self.initial_data["author"]),
             **validated_data
         )
@@ -737,25 +739,28 @@ class StrategySerializerShallow(serializers.ModelSerializer):
         instance.description = validated_data.get(
             "description", instance.description
         )
+        instance.strategy_classification = validated_data.get(
+            "strategy_classification",instance.strategy_classification
+        )
         instance.save()
         return instance
     
 
-class StrategyWorkflowSerializerShallow(serializers.ModelSerializer):
+class WeekWorkflowSerializerShallow(serializers.ModelSerializer):
     
-    strategy_type = serializers.SerializerMethodField()
+    week_type = serializers.SerializerMethodField()
     
     class Meta:
-        model = StrategyWorkflow
-        fields = ["workflow", "strategy", "added_on", "rank", "id","strategy_type"]
+        model = WeekWorkflow
+        fields = ["workflow", "week", "added_on", "rank", "id","week_type"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
         return instance
     
-    def get_strategy_type(self,instance):
-        return instance.strategy.strategy_type
+    def get_week_type(self,instance):
+        return instance.week.week_type
 
 
 class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
@@ -899,28 +904,40 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
             "last_modified",
             "hash",
             "columnworkflow_set",
-            "strategyworkflow_set",
+            "weekworkflow_set",
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
             "outcomes_type",
             "outcomes_sort",
             "author_id",
+            "is_strategy",
+            "strategy_icon",
+            "published",
         ]
 
-    strategyworkflow_set = serializers.SerializerMethodField()
+    weekworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
+    strategy_icon = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
     
     def get_author_id(self,instance):
-        return instance.author.id
+        if(instance.author is not None):
+            return instance.author.id
+        return None
 
-    def get_strategyworkflow_set(self, instance):
-        links = instance.strategyworkflow_set.all().order_by("rank")
+    def get_strategy_icon(self,instance):
+        if instance.is_strategy:
+            return instance.weeks.first().strategy_classification
+        else:
+            return None
+    
+    def get_weekworkflow_set(self, instance):
+        links = instance.weekworkflow_set.all().order_by("rank")
         return list(map(linkIDMap, links))
 
     def get_columnworkflow_set(self, instance):
@@ -938,6 +955,7 @@ class WorkflowSerializerShallow(serializers.ModelSerializer):
         )
         instance.outcomes_type=validated_data.get("outcomes_type", instance.outcomes_type)
         instance.outcomes_sort=validated_data.get("outcomes_sort", instance.outcomes_sort)
+        instance.published=validated_data.get("published", instance.published)
         instance.save()
         return instance
 
@@ -958,19 +976,23 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "last_modified",
             "hash",
             "columnworkflow_set",
-            "strategyworkflow_set",
+            "weekworkflow_set",
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
             "outcomes_type",
             "outcomes_sort",
+            "is_strategy",
+            "published",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
         ]
         
     def get_author_id(self,instance):
-        return instance.author.id
+        if(instance.author is not None):
+            return instance.author.id
+        return None
 
     def create(self, validated_data):
         return Program.objects.create(
@@ -995,7 +1017,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "created_on",
             "last_modified",
             "hash",
-            "strategyworkflow_set",
+            "weekworkflow_set",
             "outcomeworkflow_set",
             "columnworkflow_set",
             "discipline",
@@ -1003,13 +1025,17 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "parent_workflow",
             "outcomes_type",
             "outcomes_sort",
+            "is_strategy",
+            "published",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
         ]
         
     def get_author_id(self,instance):
-        return instance.author.id
+        if(instance.author is not None):
+            return instance.author.id
+        return None
 
     def create(self, validated_data):
         return Course.objects.create(
@@ -1034,18 +1060,22 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "last_modified",
             "hash",
             "columnworkflow_set",
-            "strategyworkflow_set",
+            "weekworkflow_set",
             "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
             "outcomes_sort",
+            "is_strategy",
+            "published",
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
         ]
         
     def get_author_id(self,instance):
-        return instance.author.id
+        if(instance.author is not None):
+            return instance.author.id
+        return None
 
     def create(self, validated_data):
         if User.objects.filter(username=self.initial_data["author"]).exists():
@@ -1059,7 +1089,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
 
 serializer_lookups = {
     "node": NodeSerializer,
-    "strategy": StrategySerializer,
+    "week": WeekSerializer,
     "column": ColumnSerializer,
     "activity": ActivitySerializer,
     "course": CourseSerializer,
@@ -1069,9 +1099,9 @@ serializer_lookups = {
 
 serializer_lookups_shallow = {
     "node": NodeSerializerShallow,
-    "nodestrategy": NodeStrategySerializerShallow,
-    "strategy": StrategySerializerShallow,
-    "strategyworkflow": StrategyWorkflowSerializerShallow,
+    "nodeweek": NodeWeekSerializerShallow,
+    "week": WeekSerializerShallow,
+    "weekworkflow": WeekWorkflowSerializerShallow,
     "column": ColumnSerializerShallow,
     "columnworkflow": ColumnWorkflowSerializerShallow,
     "workflow": WorkflowSerializerShallow,

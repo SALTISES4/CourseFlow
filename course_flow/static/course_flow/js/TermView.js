@@ -1,39 +1,45 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON, TitleText} from "./ComponentJSON.js";
-import {StrategyViewUnconnected} from "./WeekView.js";
-import NodeStrategyView from "./NodeWeekView.js";
+import {WeekViewUnconnected} from "./WeekView.js";
+import NodeWeekView from "./NodeWeekView.js";
 import {getTermByID} from "./FindState.js";
 
 
-//Basic component to represent a Strategy
-class TermView extends StrategyViewUnconnected{
+//Basic component to represent a Week
+class TermView extends WeekViewUnconnected{
     
     render(){
         let data = this.props.data;
+        console.log(this.props);
         var node_blocks = [];
         for(var i=0;i<this.props.column_order.length;i++){
             let col=this.props.column_order[i];
-            let nodestrategies = [];
-            for(var j=0;j<data.nodestrategy_set.length;j++){
-                let nodestrategy = data.nodestrategy_set[j];
-                if(this.props.nodes_by_column[col].indexOf(nodestrategy)>=0){
-                    nodestrategies.push(
-                        <NodeStrategyView key={nodestrategy} objectID={nodestrategy} parentID={data.id} selection_manager={this.props.selection_manager}/>
+            console.log("column is "+col);
+            console.log("nodes by column is ");
+            console.log(this.props.nodes_by_column);
+            console.log("evaluated");
+            console.log(this.props.nodes_by_column[col]);
+            let nodeweeks = [];
+            for(var j=0;j<data.nodeweek_set.length;j++){
+                let nodeweek = data.nodeweek_set[j];
+                if(this.props.nodes_by_column[col].indexOf(nodeweek)>=0){
+                    nodeweeks.push(
+                        <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} selection_manager={this.props.selection_manager} column_order={this.props.column_order}/>
                     );
                 }
             }
-            if(nodestrategies.length==0)nodestrategies.push(
-                <div class="node-strategy" style={{height:"100%"}}></div>
+            if(nodeweeks.length==0)nodeweeks.push(
+                <div class="node-week" style={{height:"100%"}}></div>
             )
             node_blocks.push(
                 <div class={"node-block term column-"+col} id={this.props.objectID+"-node-block-column-"+col} key={col} >
-                    {nodestrategies}
+                    {nodeweeks}
                 </div>
             );
         }
         return (
-            <div class={"strategy"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}>
+            <div class={"week"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}>
                 {!read_only && <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}
@@ -42,7 +48,7 @@ class TermView extends StrategyViewUnconnected{
                     </div>
                 </div>
                 }
-                <TitleText text={data.title} defaultText={data.strategy_type_display+" "+(this.props.rank+1)}/>
+                <TitleText text={data.title} defaultText={data.week_type_display+" "+(this.props.rank+1)}/>
                 <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                     {node_blocks}
                 </div>
@@ -52,11 +58,11 @@ class TermView extends StrategyViewUnconnected{
     }
 
     makeDragAndDrop(){
-        //Makes the nodestrategies in the node block draggable
-        this.makeSortableNode($(this.node_block.current).children().children(".node-strategy").not(".ui-draggable"),
+        //Makes the nodeweeks in the node block draggable
+        this.makeSortableNode($(this.node_block.current).children().children(".node-week").not(".ui-draggable"),
           this.props.objectID,
-          "nodestrategy",
-          ".node-strategy",
+          "nodeweek",
+          ".node-week",
           false,
           [200,1],
           ".node-block",

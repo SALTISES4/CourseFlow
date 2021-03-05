@@ -25,7 +25,7 @@ class OutcomeView extends ComponentJSON{
         );
         
         let actions=[];
-        if(!read_only)actions.push(this.addInsertChild(data));
+        if(!read_only && data.depth<2)actions.push(this.addInsertChild(data));
         if(!read_only && data.depth>0){
             actions.push(this.addInsertSibling(data));
             actions.push(this.addDuplicateSelf(data));
@@ -129,12 +129,14 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         return(
             <div
             class={
-                "outcome"+((data.is_dropped && " dropped")||"")
+                "outcome"+((data.is_dropped && " dropped")||"")+" outcome-"+data.id
             }
+            
             ref={this.maindiv}>
-                <div class="outcome-title">
+                <div class="outcome-title" >
                     <TitleText text={data.title} defaultText={"Click to edit"}/>
                 </div>
+                <input class="outcome-toggle-checkbox" type="checkbox" title="toggle highlighting" onChange={this.clickFunction.bind(this)}/>
                 {children.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
@@ -181,10 +183,40 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
             }
         });
     }
+
+    clickFunction(evt){
+        if(evt.target.checked){
+            this.toggleCSS(true,"toggle");
+        }else{
+            this.toggleCSS(false,"toggle");
+        }
+    }
+
+    toggleCSS(is_toggled,type){
+        if(is_toggled){
+            $(".outcome-"+this.props.data.id).addClass("outcome-"+type);
+            $(".outcome-"+this.props.data.id).parents(".node").addClass("outcome-"+type);
+        }else{
+            $(".outcome-"+this.props.data.id).removeClass("outcome-"+type);
+            $(".outcome-"+this.props.data.id).parents(".node").removeClass("outcome-"+type);
+        }
+    }
     
     postMountFunction(){
         this.makeDraggable();
         $(this.maindiv.current)[0].dataDraggable={outcome:this.props.data.id}
+        $(this.maindiv.current).mouseenter((evt)=>{
+            this.toggleCSS(true,"hover");
+        });
+        $(this.maindiv.current).mouseleave((evt)=>{
+            this.toggleCSS(false,"hover");
+        });
+        $(this.children_block.current).mouseleave((evt)=>{
+            this.toggleCSS(true,"hover");
+        });
+        $(this.children_block.current).mouseenter((evt)=>{
+            this.toggleCSS(false,"hover");
+        });
     }
 
 }
@@ -221,7 +253,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         return(
             <div
             class={
-                "outcome"+((data.is_dropped && " dropped")||"")
+                "outcome"+((data.is_dropped && " dropped")||"")+" outcome-"+data.id
             }
             ref={this.maindiv}>
                 <div class="outcome-title">
@@ -302,6 +334,7 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         for(let node_id in this.state.completion_status_from_self){
             completion_status|=this.state.completion_status_from_self[node_id];
         }
+        if(completion_status==0&&this.state.completion_status_from_children)completion_status=null;
 
         
         return(
@@ -328,6 +361,7 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
                     </div>
                     <div class="outcome-cells">
                         {outcomeGroups}
+                        <div class="table-cell blank-cell"></div>
                         <TableTotalCell grand_total={true} completion_status={completion_status} outcomes_type={this.props.outcomes_type}/>
                     </div>
                 </div>
@@ -347,13 +381,14 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     childUpdatedFunction(through_id,node_id,value){
         let index = this.props.data.child_outcome_links.indexOf(through_id);
         if(!this.child_completion_status[node_id]){
-            if(value){
-                this.child_completion_status[node_id]=this.props.data.child_outcome_links.map((outcome_link)=>0);
+            if(value!==null){
+                this.child_completion_status[node_id]=this.props.data.child_outcome_links.map((outcome_link)=>null);
             }else{
                 return;
             }
         }
-        if(this.child_completion_status[node_id][index]!=value){
+        if(this.child_completion_status[node_id][index]!==value){
+            console.log("changing child completion status");
             this.child_completion_status[node_id][index]=value;
             this.updateCompletion(node_id);
         }
@@ -372,8 +407,13 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     }
 
     updateCompletion(node_id){
-        let new_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>accumulator & current_value);
-        if(this.state.completion_status_from_children[node_id]!=new_completion){
+        console.log("updating completion");
+        console.log(this.child_completion_status);
+        let new_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
+        console.log(new_completion);
+        console.log(this.state.completion_status_from_children);
+        if(this.state.completion_status_from_children[node_id]!==new_completion){
+            console.log("setting state");
             this.setState(function(state,props){
                 let new_completion_status_from_children = {...state.completion_status_from_children};
                 new_completion_status_from_children[node_id]=new_completion;

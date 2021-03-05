@@ -59,7 +59,7 @@
     
     $("#sidebar").tabs({collapsible:true,active:0,disabled:null});
 
-    $("#sidebar").on("click",(evt)=>{evt.stopPropagation()});    
+    $("#sidebar").on("mousedown",(evt)=>{evt.stopPropagation()});    
 
     $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
     

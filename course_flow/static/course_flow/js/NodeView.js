@@ -45,8 +45,8 @@ class NodeView extends ComponentJSON{
         if(outcomenodes.length>0){
             outcomeDiv = (
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.columnworkflow}>{outcomenodes.length}</div>
-                    <div class={"outcome-node-container column-"+data.columnworkflow}>{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column}>{outcomenodes.length}</div>
+                    <div class={"outcome-node-container column-"+data.column}>{outcomenodes}</div>
                 </div>
             );
         }
@@ -76,10 +76,10 @@ class NodeView extends ComponentJSON{
         return (
             <div 
                 style={
-                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.columnworkflow)+"px"}
+                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px"}
                 } 
                 class={
-                    "node column-"+data.columnworkflow+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
+                    "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
                 } 
                 id={data.id} 
                 ref={this.maindiv} 
@@ -235,12 +235,11 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         let descriptionText = data.description;
         if(data.represents_workflow)descriptionText = data.linked_workflow_description;
         
-        
         return (
             <div 
                 
                 class={
-                    "node column-"+data.columnworkflow+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
+                    "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
                 } 
                 id={data.id} 
                 ref={this.maindiv} 
@@ -251,13 +250,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
                         <TitleText text={titleText} defaultText="New Node"/>
                     </div>
                 </div>
-                {!read_only && <div class="mouseover-actions">
-                    {this.addInsertSibling(data)}
-                    {this.addDuplicateSelf(data)}
-                    {this.addDeleteSelf(data)}
-                </div>
-                }
-                {this.addEditable(data)}
+                {this.addEditable(data,true)}
             </div>
         );
 

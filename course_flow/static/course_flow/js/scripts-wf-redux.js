@@ -20,10 +20,25 @@ import * as Reducers from "./Reducers.js";
 export class SelectionManager{
     constructor(){
         this.currentSelection;
-        $(document).on("click",this.changeSelection.bind(this))
+        this.mouse_isclick=false;
+        var selector = this;
+        $(document).on("mousedown",()=>{
+            selector.mouse_isclick=true;
+            setTimeout(()=>{selector.mouse_isclick=false;},500);
+        });
+        $(document).on("mousemove",()=>{
+            selector.mouse_isclick=false;
+        });
+        $(document).on("mouseup",(evt,newSelection)=>{
+            if(selector.mouse_isclick){
+                selector.changeSelection(evt,newSelection);
+            }
+        });
     }
     
     changeSelection(evt,newSelection){
+        console.log(evt);
+        if(read_only)return;
         evt.stopPropagation();
         if(this.currentSelection)this.currentSelection.setState({selected:false});
         this.currentSelection=newSelection;
@@ -45,15 +60,17 @@ const rootReducer = Redux.combineReducers({
     workflow:Reducers.workflowReducer,
     columnworkflow:Reducers.columnworkflowReducer,
     column:Reducers.columnReducer,
-    strategyworkflow:Reducers.strategyworkflowReducer,
-    strategy:Reducers.strategyReducer,
-    nodestrategy:Reducers.nodestrategyReducer,
+    weekworkflow:Reducers.weekworkflowReducer,
+    week:Reducers.weekReducer,
+    nodeweek:Reducers.nodeweekReducer,
     node:Reducers.nodeReducer,
     nodelink:Reducers.nodelinkReducer,
     outcome:Reducers.outcomeReducer,
     outcomeoutcome:Reducers.outcomeOutcomeReducer,
     outcomenode:Reducers.outcomeNodeReducer,
     outcomeproject:Reducers.outcomeProjectReducer,
+    strategy:Reducers.strategyReducer,
+    saltise_strategy:Reducers.saltiseStrategyReducer,
 });
 
 var store;
@@ -78,17 +95,23 @@ export function renderWorkflowView(container,outcome_view){
 
 
 export function renderHomeMenu(data_package){
+    if(!store)store = createStore(Reducers.homeMenuReducer,data_package);
     reactDom.render(
-        <HomeMenu data_package={data_package}/>,
+        <Provider store = {store}>
+            <HomeMenu/>
+        </Provider>,
         $("#content-container")[0]
     );
 }
 
 
 
-export function renderProjectMenu(data,project){
+export function renderProjectMenu(data_package,project){
+    if(!store)store = createStore(Reducers.projectMenuReducer,data_package);
     reactDom.render(
-        <ProjectMenu data_package={data} project={project}/>,
+        <Provider store = {store}>
+            <ProjectMenu project={project}/>
+        </Provider>,
         $("#content-container")[0]
     );
 }

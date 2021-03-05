@@ -3,14 +3,16 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON.js";
 import ColumnWorkflowView from "./ColumnWorkflowView.js";
-import StrategyWorkflowView from "./WeekWorkflowView.js";
+import WeekWorkflowView from "./WeekWorkflowView.js";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView.js";
-import {NodeBarStrategyWorkflow} from "./WeekWorkflowView.js";
+import {NodeBarWeekWorkflow} from "./WeekWorkflowView.js";
 import {WorkflowForMenu} from "./MenuComponents.js";
 import * as Constants from "./Constants.js";
-import {moveColumnWorkflow, moveStrategyWorkflow} from "./Reducers.js";
+import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers.js";
 import {OutcomeBar} from "./OutcomeTopView.js";
+import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
+import WorkflowLegend from "./WorkflowLegend.js";
 
 
 
@@ -20,6 +22,7 @@ class WorkflowView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="workflow";
+        this.state={};
     }
     
     render(){
@@ -27,10 +30,12 @@ class WorkflowView extends ComponentJSON{
         var columnworkflows = data.columnworkflow_set.map((columnworkflow)=>
             <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
         );
-        var strategyworkflows = data.strategyworkflow_set.map((strategyworkflow)=>
-            <StrategyWorkflowView key={strategyworkflow} objectID={strategyworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
+        var weekworkflows = data.weekworkflow_set.map((weekworkflow)=>
+            <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
         );
         var selector = this;
+        
+        
         
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
@@ -38,11 +43,20 @@ class WorkflowView extends ComponentJSON{
                     <div class="workflow-details">
                         <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
                         {this.addEditable(data)}
+                        {reactDom.createPortal(
+                        <div class="topdropwrapper" title="Show/Hide Legend">
+                            <img src={iconpath+"expand.svg"} onClick={this.toggleLegend.bind(this)}/>
+                        </div>,
+                        $("#viewbar")[0]
+                        )}
+                        {this.state.show_legend && 
+                            <WorkflowLegend toggle={this.toggleLegend.bind(this)}/>
+                        }
                         <div class="column-row">
                             {columnworkflows}
                         </div>
-                        <div class="strategy-block">
-                            {strategyworkflows}
+                        <div class="week-block">
+                            {weekworkflows}
                         </div>
                         <svg class="workflow-canvas" width="100%" height="100%">
                             <defs>
@@ -57,8 +71,11 @@ class WorkflowView extends ComponentJSON{
                     {!read_only &&
                         <NodeBar/>
                     }
-                    {!read_only &&
+                    {!read_only && !data.is_strategy &&
                         <OutcomeBar/>
+                    }
+                    {!read_only && !data.is_strategy && data.type != "program" &&
+                        <StrategyBar/>
                     }
                 </div>
             </div>
@@ -71,21 +88,30 @@ class WorkflowView extends ComponentJSON{
           "columnworkflow",
           ".column-workflow",
           "x");
-        this.makeSortable($(".strategy-block"),
+        if(!this.props.data.is_strategy)this.makeSortable($(".week-block"),
           this.props.objectID,
-          "strategyworkflow",
-          ".strategy-workflow",
+          "weekworkflow",
+          ".week-workflow",
           "y");
     }
 
     stopSortFunction(){
-        Constants.triggerHandlerEach($(".strategy .node"),"component-updated");
+        Constants.triggerHandlerEach($(".week .node"),"component-updated");
     }
     
     
     sortableMovedFunction(id,new_position,type){
         if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position))
-        if(type=="strategyworkflow")this.props.dispatch(moveStrategyWorkflow(id,new_position))
+        console.log(type);
+        if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position))
+    }
+                     
+    toggleLegend(){
+        if(this.state.show_legend){
+            this.setState({show_legend:false});
+        }else{
+            this.setState({show_legend:true});
+        }
     }
 }
 const mapWorkflowStateToProps = state=>({
@@ -125,9 +151,9 @@ class NodeBarUnconnected extends ComponentJSON{
         )
         
         
-        var nodebarstrategyworkflows;
-        if(!this.props.outcomes_view)nodebarstrategyworkflows= data.strategyworkflow_set.map((strategyworkflow)=>
-            <NodeBarStrategyWorkflow key={strategyworkflow} objectID={strategyworkflow}/>
+        var nodebarweekworkflows;
+        if(!this.props.outcomes_view)nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
+            <NodeBarWeekWorkflow key={weekworkflow} objectID={weekworkflow}/>
         );
         var sort_type;
         console.log(this.props);
@@ -146,12 +172,12 @@ class NodeBarUnconnected extends ComponentJSON{
         
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
-                <h4>Nodes:</h4>
+                <h4 class="drag-and-drop">Nodes:</h4>
                 <div class="node-bar-column-block">
                     {nodebarcolumnworkflows}
                 </div>
-                <div class="node-bar-strategy-block">
-                    {nodebarstrategyworkflows}
+                <div class="node-bar-week-block">
+                    {nodebarweekworkflows}
                 </div>
                 {sort_type}
             </div>
@@ -167,6 +193,53 @@ export const NodeBar = connect(
     mapNodeBarStateToProps,
     null
 )(NodeBarUnconnected)
+
+class StrategyBarUnconnected extends ComponentJSON{
+    
+    constructor(props){
+        super(props);
+        this.objectType="workflow";
+    }
+    
+    
+    render(){
+        
+        var strategies = this.props.available_strategies.map((strategy)=>
+            <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
+        );
+        var saltise_strategies = this.props.saltise_strategies.map((strategy)=>
+            <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
+        );
+        
+        
+        
+        return reactDom.createPortal(
+            <div id="strategy-bar-workflow" class="right-panel-inner">
+                <h4 class="drag-and-drop">My Strategies:</h4>
+                <div class="strategy-bar-strategy-block">
+                    {strategies}
+                </div>
+                {(saltise_strategies.length>0) &&
+                    [<h4 class="drag-and-drop">SALTISE Strategies:</h4>,
+                    <div class="strategy-bar-strategy-block">
+                        {saltise_strategies}
+                    </div>
+                     ]
+                }
+            </div>
+        ,$("#strategy-bar")[0]);
+    }
+    
+}
+const mapStrategyBarStateToProps = state=>({
+    data:state.workflow,
+    available_strategies:state.strategy,
+    saltise_strategies:state.saltise_strategy,
+})
+export const StrategyBar = connect(
+    mapStrategyBarStateToProps,
+    null
+)(StrategyBarUnconnected)
 
 
 //Basic component representing the workflow
