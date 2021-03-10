@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.conf import settings
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait, Select
 from selenium.webdriver.support import expected_conditions
 from django.test.client import RequestFactory
@@ -87,6 +88,9 @@ def check_order(test_case, object_links):
     for i, link in enumerate(sorted_links):
         test_case.assertEqual(link.rank, i)
 
+def action_hover_click(selenium,hover_item,click_item):
+    hover = ActionChains(selenium).move_to_element(hover_item).click(click_item)
+    return hover
 
 class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
     def setUp(self):
@@ -139,6 +143,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
 
         super(SeleniumWorkflowsTestCase, self).setUp()
         selenium = self.selenium
+        selenium.maximize_window()
 
         self.user = login(self)
         selenium.get(self.live_server_url + "/home/")
@@ -216,35 +221,184 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
     #            else:
     #                self.assertEqual(get_model_from_str(workflow_type).objects.filter(is_strategy=False).count(),1)
 
-    def test_edit_project_details(self):
+#    def test_edit_project_details(self):
+#        selenium = self.selenium
+#        wait = WebDriverWait(selenium, timeout=10)
+#        project = Project.objects.create(author=self.user)
+#        selenium.get(
+#            self.live_server_url
+#            + reverse("course_flow:project-update", args=str(project.pk))
+#        )
+#        selenium.find_element_by_id("edit-project-button").click()
+#        selenium.find_element_by_id("project-title-input").send_keys(
+#            "new title"
+#        )
+#        selenium.find_element_by_id("project-description-input").send_keys(
+#            "new description"
+#        )
+#        selenium.find_element_by_id("project-publish-input").click()
+#        alert = wait.until(expected_conditions.alert_is_present())
+#        selenium.switch_to.alert.accept()
+#        time.sleep(1)
+#        selenium.find_element_by_id("save-changes").click()
+#        assert "new title" in selenium.find_element_by_id("project-title").text
+#        assert (
+#            "new description"
+#            in selenium.find_element_by_id("project-description").text
+#        )
+#        project = Project.objects.first()
+#        self.assertEqual(project.title, "new title")
+#        self.assertEqual(project.description, "new description")
+#        self.assertEqual(project.published, True)
+
+#    def test_import_published(self):
+#        selenium = self.selenium
+#        wait = WebDriverWait(selenium, timeout=10)
+#        author = get_author()
+#        project = Project.objects.create(author=author,published=True,title="published project")
+#        WorkflowProject.objects.create(workflow = Activity.objects.create(author=author,published=True),project=project)
+#        WorkflowProject.objects.create(workflow = Course.objects.create(author=author,published=True),project=project)
+#        WorkflowProject.objects.create(workflow = Program.objects.create(author=author,published=True),project=project)
+#        OutcomeProject.objects.create(outcome = Outcome.objects.create(author=author,published=True),project=project)
+#        selenium.get(
+#            self.live_server_url
+#            + reverse("course_flow:home")
+#        )
+#        home = selenium.current_url
+#        selenium.find_element_by_css_selector("a[href='#tabs-2']").click()
+#        selenium.find_element_by_css_selector(".section-project .workflow-view-button").click()
+#        assert "published project" in selenium.find_element_by_id("project-title").text
+#        project_url = selenium.current_url
+#        for workflow_type in ["activity","course","program","outcome"]:
+#            selenium.find_element_by_css_selector(".section-"+workflow_type+" .workflow-view-button").click()
+#            self.assertTrue(len(selenium.find_elements_by_css_selector(".workflow-title")))
+#            selenium.get(project_url)
+#        selenium.get(home)
+#        selenium.find_element_by_css_selector("a[href='#tabs-2']").click()
+#        selenium.find_element_by_css_selector(".section-project .workflow-duplicate-button").click()
+#        selenium.find_element_by_css_selector("a[href='#tabs-0']").click()
+#        selenium.find_element_by_css_selector(".section-project .workflow-edit-button").click()
+#        assert "published project" in selenium.find_element_by_id("project-title").text
+#        selenium.get(home)
+#        self.assertEqual(Project.objects.get(author=self.user).title,"published project")
+#        Project.objects.get(author=self.user).delete()
+#        
+#        my_project = Project.objects.create(author=self.user,published=True,title="project to be filled")
+#        selenium.get(home)
+#        
+#        selenium.get(
+#            self.live_server_url
+#            + reverse("course_flow:project-update", args=str(my_project.pk))
+#        )
+#        selenium.find_element_by_css_selector("a[href='#tabs-2']").click()
+#        
+#        for workflow_type in ["activity","course","program","outcome"]:
+#            selenium.find_element_by_css_selector(".section-"+workflow_type+" .workflow-duplicate-button").click()
+#            time.sleep(1)
+#            if workflow_type=="outcome":
+#                assert OutcomeProject.objects.get(
+#                    outcome=get_model_from_str(workflow_type).objects.get(author=self.user,parent_outcome=Outcome.objects.get(author=author)),
+#                    project=my_project
+#                )
+#            else:
+#                assert WorkflowProject.objects.get(
+#                    workflow=get_model_from_str(workflow_type).objects.get(author=self.user,parent_workflow=get_model_from_str(workflow_type).objects.get(author=author)),
+#                    project=my_project
+#                )
+    
+    
+    
+    def test_workflow_editing(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
-        selenium.get(
-            self.live_server_url
-            + reverse("course_flow:project-update", args=str(project.pk))
-        )
-        selenium.find_element_by_id("edit-project-button").click()
-        selenium.find_element_by_id("project-title-input").send_keys(
-            "new title"
-        )
-        selenium.find_element_by_id("project-description-input").send_keys(
-            "new description"
-        )
-        selenium.find_element_by_id("project-publish-input").click()
-        alert = wait.until(expected_conditions.alert_is_present())
-        selenium.switch_to.alert.accept()
-        time.sleep(1)
-        selenium.find_element_by_id("save-changes").click()
-        assert "new title" in selenium.find_element_by_id("project-title").text
-        assert (
-            "new description"
-            in selenium.find_element_by_id("project-description").text
-        )
-        project = Project.objects.first()
-        self.assertEqual(project.title, "new title")
-        self.assertEqual(project.description, "new description")
-        self.assertEqual(project.published, True)
+        for workflow_type in ["activity","course","program"]:
+            workflow = get_model_from_str(workflow_type).objects.create(author=self.user)
+            WorkflowProject.objects.create(workflow=workflow,project=project)
+            workflow.weeks.first().nodes.create(author=self.user,column=workflow.columns.first())
+            selenium.get(
+                self.live_server_url + reverse("course_flow:workflow-update", args=str(workflow.pk))
+            )
+            num_columns = workflow.columns.all().count()
+            num_weeks = workflow.weeks.all().count()
+            num_nodes = 1
+            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .column")),num_columns)
+            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .week")),num_weeks)
+            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .node")),num_nodes)
+            hover_item = selenium.find_element_by_css_selector(".workflow-details .column")
+            click_item = selenium.find_element_by_css_selector(".column .insert-sibling-button img")
+            action_hover_click(selenium,hover_item,click_item).perform()
+            hover_item = selenium.find_element_by_css_selector(".workflow-details .week")
+            click_item = selenium.find_element_by_css_selector(".week .insert-sibling-button img")
+            action_hover_click(selenium,hover_item,click_item).perform()
+            hover_item = selenium.find_element_by_css_selector(".workflow-details .node")
+            click_item = selenium.find_element_by_css_selector(".node .insert-sibling-button img")
+            action_hover_click(selenium,hover_item,click_item).perform()
+            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .column")),num_columns+1)
+            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .week")),num_weeks+1)
+            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .node")),num_nodes+1)
+            #Deleting
+            hover_item = selenium.find_element_by_css_selector(".workflow-details .column")
+            click_item = selenium.find_element_by_css_selector(".column .delete-self-button img")
+            action_hover_click(selenium,hover_item,click_item).perform()
+            alert = wait.until(expected_conditions.alert_is_present())
+            selenium.switch_to.alert.accept()
+            hover_item = selenium.find_element_by_css_selector(".workflow-details .week")
+            click_item = selenium.find_element_by_css_selector(".week .delete-self-button img")
+            action_hover_click(selenium,hover_item,click_item).perform()
+            alert = wait.until(expected_conditions.alert_is_present())
+            selenium.switch_to.alert.accept()
+            hover_item = selenium.find_element_by_css_selector(".workflow-details .node")
+            click_item = selenium.find_element_by_css_selector(".node .delete-self-button img")
+            action_hover_click(selenium,hover_item,click_item).perform()
+            alert = wait.until(expected_conditions.alert_is_present())
+            selenium.switch_to.alert.accept()
+            time.sleep(10)
+            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .column")),num_columns)
+            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .week")),num_weeks)
+            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .node")),0)
+            
+#    def test_workflow_duplication(self):
+#        selenium = self.selenium
+#        wait = WebDriverWait(selenium, timeout=10)
+#        project = Project.objects.create(author=self.user)
+#        for workflow_type in ["activity","course","program"]:
+#            workflow = get_model_from_str(workflow_type).objects.create(author=self.user)
+#            WorkflowProject.objects.create(workflow=workflow,project=project)
+#            workflow.weeks.first().nodes.create(author=self.user,column=workflow.columns.first())
+#            selenium.get(
+#                self.live_server_url + reverse("course_flow:workflow-update", args=str(workflow.pk))
+#            )
+#            num_columns = workflow.columns.all().count()
+#            num_weeks = workflow.weeks.all().count()
+#            num_nodes = 1
+#            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .column")),num_columns)
+#            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .week")),num_weeks)
+#            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .node")),num_nodes)
+#            hover_item = selenium.find_element_by_css_selector(".workflow-details .column")
+#            click_item = selenium.find_element_by_css_selector(".column .duplicate-self-button img")
+#            action_hover_click(selenium,hover_item,click_item).perform()
+#            hover_item = selenium.find_element_by_css_selector(".workflow-details .week")
+#            click_item = selenium.find_element_by_css_selector(".week .duplicate-self-button img")
+#            action_hover_click(selenium,hover_item,click_item).perform()
+#            hover_item = selenium.find_element_by_css_selector(".workflow-details .node")
+#            click_item = selenium.find_element_by_css_selector(".node .duplicate-self-button img")
+#            action_hover_click(selenium,hover_item,click_item).perform()
+#            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .column")),num_columns+1)
+#            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .week")),num_weeks+1)
+#            self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .node")),num_nodes*2+1)
+            
+        
+        
+#    def test_outcome_editing(self):
+#        selenium = self.selenium
+#        wait = WebDriverWait(selenium, timeout=10)
+#    
+#    def test_linked_workflow(self):
+#        selenium = self.selenium
+#        wait = WebDriverWait(selenium, timeout=10)
+            
+        
 
         """
         selenium.find_elements_by_class_name("create-button")[2].click()

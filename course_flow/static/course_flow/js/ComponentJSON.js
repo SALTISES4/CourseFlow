@@ -175,7 +175,7 @@ export class ComponentJSON extends React.Component{
                     return;
                 }
                 if(window.confirm("Are you sure you want to delete this "+this.objectType+"?")){
-                    this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,this.props.columnworkflows));
+                    this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,this.props.column_order));
                 }
             }}/>
         );

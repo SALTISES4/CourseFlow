@@ -2,7 +2,14 @@
 export const getColumnByID = (state,id)=>{
     for(var i in state.column){
         var column = state.column[i];
-        if(column.id==id)return {data:column,sibling_count:state.workflow.columnworkflow_set.length,columnworkflows:state.workflow.columnworkflow_set};
+        if(column.id==id)return {
+            data:column,
+            sibling_count:state.workflow.columnworkflow_set.length,
+            columnworkflows:state.workflow.columnworkflow_set,
+            column_order:state.columnworkflow.sort(
+                (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
+            ).map(columnworkflow=>columnworkflow.column),
+        };
     }
 }
 export const getColumnWorkflowByID = (state,id)=>{

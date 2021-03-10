@@ -455,16 +455,17 @@ export function nodeReducer(state={},action){
     switch(action.type){
         case 'column/deleteSelf':
             var new_state = state.slice();
-            var new_columnworkflow;
+            var new_column;
+            console.log(action.payload)
             if(action.payload.extra_data){
-                new_columnworkflow = action.payload.extra_data[0];
-                if(new_columnworkflow==action.payload.parent_id)new_columnworkflow=action.payload.extra_data[1];
+                new_column = action.payload.extra_data[0];
+                if(new_column==action.payload.id)new_column=action.payload.extra_data[1];
             }
             
             for(var i=0;i<state.length;i++){
-                if(state[i].columnworkflow==action.payload.parent_id){
+                if(state[i].column==action.payload.id){
                     new_state[i]={...state[i]};
-                    new_state[i].columnworkflow=new_columnworkflow;
+                    new_state[i].column=new_column;
                 }
             }
             return new_state;
