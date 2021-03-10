@@ -46,7 +46,7 @@ from .serializers import (
     OutcomeNodeSerializerShallow,
     OutcomeProjectSerializerShallow,
     bleach_allowed_tags,
-    bleach_sanitizer
+    bleach_sanitizer,
 )
 from .decorators import (
     ajax_login_required,
@@ -56,7 +56,7 @@ from .decorators import (
     new_parent_authorship,
     is_owner_or_none,
     is_owner_or_published,
-    is_strategy_owner_or_published
+    is_strategy_owner_or_published,
 )
 from django.urls import reverse
 from django.views.generic.edit import CreateView
@@ -78,8 +78,12 @@ from django.shortcuts import render, redirect
 from django.db.models import ProtectedError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 import math
-from .utils import get_model_from_str, get_parent_model_str, get_parent_model, get_project_outcomes
-
+from .utils import (
+    get_model_from_str,
+    get_parent_model_str,
+    get_parent_model,
+    get_project_outcomes,
+)
 
 
 class OwnerOrPublishedMixin(UserPassesTestMixin):
@@ -114,12 +118,14 @@ def registration_view(request):
     )
 
 
-def get_all_outcomes(outcome,search_depth):
-    if search_depth>10: return;
-    outcomes=[outcome]
+def get_all_outcomes(outcome, search_depth):
+    if search_depth > 10:
+        return
+    outcomes = [outcome]
     for child_link in outcome.child_outcome_links.all():
-        outcomes+=get_all_outcomes(child_link.child,search_depth+1)
+        outcomes += get_all_outcomes(child_link.child, search_depth + 1)
     return outcomes
+
 
 def get_project_data_package(user):
     data_package = {
@@ -135,7 +141,7 @@ def get_project_data_package(user):
                 }
             ],
             "add": True,
-            "duplicate":"copy",
+            "duplicate": "copy",
         },
         "owned_strategies": {
             "title": "Your Strategies",
@@ -144,18 +150,21 @@ def get_project_data_package(user):
                     "title": "Add an Activity-Level Strategy",
                     "object_type": "activity",
                     "objects": ActivitySerializerShallow(
-                        Activity.objects.filter(author=user,is_strategy=True), many=True
+                        Activity.objects.filter(author=user, is_strategy=True),
+                        many=True,
                     ).data,
-                },{
+                },
+                {
                     "title": "Add a Course-Level Strategy",
                     "object_type": "course",
                     "objects": CourseSerializerShallow(
-                        Course.objects.filter(author=user,is_strategy=True), many=True
+                        Course.objects.filter(author=user, is_strategy=True),
+                        many=True,
                     ).data,
-                }
+                },
             ],
             "add": True,
-            "duplicate":"copy",
+            "duplicate": "copy",
         },
         "other_projects": {
             "title": "Published Projects",
@@ -171,7 +180,7 @@ def get_project_data_package(user):
                     ).data,
                 }
             ],
-            "duplicate":"import",
+            "duplicate": "import",
         },
         "other_strategies": {
             "title": "Published Strategies",
@@ -180,21 +189,24 @@ def get_project_data_package(user):
                     "title": "Published Activity-Level Strategies",
                     "object_type": "activity",
                     "objects": ActivitySerializerShallow(
-                        Activity.objects.filter(published=True,is_strategy=True).exclude(
-                            author=user
-                        ), many=True
+                        Activity.objects.filter(
+                            published=True, is_strategy=True
+                        ).exclude(author=user),
+                        many=True,
                     ).data,
-                },{
+                },
+                {
                     "title": "Published Course-Level Strategies",
                     "object_type": "course",
                     "objects": CourseSerializerShallow(
-                        Course.objects.filter(published=True,is_strategy=True).exclude(
-                            author=user
-                        ), many=True
+                        Course.objects.filter(
+                            published=True, is_strategy=True
+                        ).exclude(author=user),
+                        many=True,
                     ).data,
-                }
+                },
             ],
-            "duplicate":"import",
+            "duplicate": "import",
         },
     }
     return data_package
@@ -210,7 +222,8 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Programs",
                 "object_type": "program",
                 "objects": ProgramSerializerShallow(
-                    Program.objects.filter(project=project, is_strategy=False), many=True
+                    Program.objects.filter(project=project, is_strategy=False),
+                    many=True,
                 ).data,
             }
         )
@@ -219,9 +232,9 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Programs",
                 "object_type": "program",
                 "objects": ProgramSerializerShallow(
-                    Program.objects.filter(author=user, is_strategy=False).exclude(
-                        project=project
-                    ),
+                    Program.objects.filter(
+                        author=user, is_strategy=False
+                    ).exclude(project=project),
                     many=True,
                 ).data,
             }
@@ -244,7 +257,8 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Courses",
                 "object_type": "course",
                 "objects": CourseSerializerShallow(
-                    Course.objects.filter(project=project, is_strategy=False), many=True
+                    Course.objects.filter(project=project, is_strategy=False),
+                    many=True,
                 ).data,
             }
         )
@@ -253,9 +267,9 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Courses",
                 "object_type": "course",
                 "objects": CourseSerializerShallow(
-                    Course.objects.filter(author=user, is_strategy=False).exclude(
-                        project=project
-                    ),
+                    Course.objects.filter(
+                        author=user, is_strategy=False
+                    ).exclude(project=project),
                     many=True,
                 ).data,
             }
@@ -279,7 +293,10 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Activities",
                 "object_type": "activity",
                 "objects": ActivitySerializerShallow(
-                    Activity.objects.filter(project=project, is_strategy=False), many=True
+                    Activity.objects.filter(
+                        project=project, is_strategy=False
+                    ),
+                    many=True,
                 ).data,
             }
         )
@@ -288,9 +305,9 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Activities",
                 "object_type": "activity",
                 "objects": ActivitySerializerShallow(
-                    Activity.objects.filter(author=user, is_strategy=False).exclude(
-                        project=project
-                    ),
+                    Activity.objects.filter(
+                        author=user, is_strategy=False
+                    ).exclude(project=project),
                     many=True,
                 ).data,
             }
@@ -307,7 +324,7 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
-        
+
     if type_filter is None:
         this_project_sections.append(
             {
@@ -323,9 +340,9 @@ def get_workflow_data_package(user, project, type_filter):
                 "title": "Outcomes",
                 "object_type": "outcome",
                 "objects": OutcomeSerializerShallow(
-                    Outcome.objects.filter(author=user).exclude(
-                        project=project
-                    ).exclude(project=None),
+                    Outcome.objects.filter(author=user)
+                    .exclude(project=project)
+                    .exclude(project=None),
                     many=True,
                 ).data,
             }
@@ -337,34 +354,35 @@ def get_workflow_data_package(user, project, type_filter):
                 "objects": OutcomeSerializerShallow(
                     Outcome.objects.filter(published=True)
                     .exclude(author=user)
-                    .exclude(project=project).exclude(project=None),
+                    .exclude(project=project)
+                    .exclude(project=None),
                     many=True,
                 ).data,
             }
         )
-    if project.author==user:
-        current_copy_type="copy"
-        other_copy_type="import"
+    if project.author == user:
+        current_copy_type = "copy"
+        other_copy_type = "import"
     else:
-        current_copy_type=False
-        other_copy_type=False
-    
+        current_copy_type = False
+        other_copy_type = False
+
     data_package = {
         "current_project": {
             "title": "This Project",
             "sections": this_project_sections,
             "add": (project.author == user),
-            "duplicate":current_copy_type,
+            "duplicate": current_copy_type,
         },
         "other_projects": {
             "title": "From Your Other Projects",
             "sections": other_project_sections,
-            "duplicate":other_copy_type,
+            "duplicate": other_copy_type,
         },
         "all_published": {
             "title": "All Published Workflows",
             "sections": all_published_sections,
-            "duplicate":other_copy_type,
+            "duplicate": other_copy_type,
         },
     }
     return data_package
@@ -378,6 +396,7 @@ def home_view(request):
         .decode("utf-8")
     }
     return render(request, "course_flow/home.html", context)
+
 
 @login_required
 def import_view(request):
@@ -482,78 +501,74 @@ class OutcomeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         )
 
 
-    
 class OutcomeDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Outcome
-    fields = ["title", "description","published"]
+    fields = ["title", "description", "published"]
     template_name = "course_flow/outcome_detail.html"
 
-    
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         outcome = self.object
-        outcomes = get_all_outcomes(outcome,0)
-        outcomeoutcomes=[]
+        outcomes = get_all_outcomes(outcome, 0)
+        outcomeoutcomes = []
         for oc in outcomes:
-            outcomeoutcomes+=list(oc.child_outcome_links.all())
-        
+            outcomeoutcomes += list(oc.child_outcome_links.all())
+
         parent_project_pk = OutcomeProject.objects.get(
             outcome=outcome
         ).project.pk
-        
+
         data_flat = {
-            "outcome":OutcomeSerializerShallow(outcomes,many=True).data,
-            "outcomeoutcome":OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data
+            "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
+            "outcomeoutcome": OutcomeOutcomeSerializerShallow(
+                outcomeoutcomes, many=True
+            ).data,
         }
         context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
         context["parent_project_pk"] = (
             JSONRenderer().render(parent_project_pk).decode("utf-8")
         )
-        
-        
-        
+
         return context
 
 
 class OutcomeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Outcome
-    fields = ["title", "description","published"]
+    fields = ["title", "description", "published"]
     template_name = "course_flow/outcome_update.html"
-    
+
     def test_func(self):
         return self.get_object().author == self.request.user
-    
+
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         outcome = self.object
-        outcomes = get_all_outcomes(outcome,0)
-        outcomeoutcomes=[]
+        outcomes = get_all_outcomes(outcome, 0)
+        outcomeoutcomes = []
         for oc in outcomes:
-            outcomeoutcomes+=list(oc.child_outcome_links.all())
-        
+            outcomeoutcomes += list(oc.child_outcome_links.all())
+
         parent_project_pk = OutcomeProject.objects.get(
             outcome=outcome
         ).project.pk
-        
+
         data_flat = {
-            "outcome":OutcomeSerializerShallow(outcomes,many=True).data,
-            "outcomeoutcome":OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data
-            
+            "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
+            "outcomeoutcome": OutcomeOutcomeSerializerShallow(
+                outcomeoutcomes, many=True
+            ).data,
         }
         context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
         context["parent_project_pk"] = (
             JSONRenderer().render(parent_project_pk).decode("utf-8")
         )
-        
-        
-        
+
         return context
 
-def get_workflow_context_data(workflow,context,user):    
-    if(not workflow.is_strategy):
-        project = WorkflowProject.objects.get(
-            workflow=workflow
-        ).project
+
+def get_workflow_context_data(workflow, context, user):
+    if not workflow.is_strategy:
+        project = WorkflowProject.objects.get(workflow=workflow).project
     SerializerClass = serializer_lookups_shallow[workflow.type]
     columnworkflows = workflow.columnworkflow_set.all()
     weekworkflows = workflow.weekworkflow_set.all()
@@ -564,15 +579,15 @@ def get_workflow_context_data(workflow,context,user):
         pk__in=nodeweeks.values_list("node__pk", flat=True)
     )
     nodelinks = NodeLink.objects.filter(source_node__in=nodes)
-    if(not workflow.is_strategy):
+    if not workflow.is_strategy:
         outcomeprojects = project.outcomeproject_set.all()
         base_outcomes = project.outcomes.all()
         outcomes = []
         for oc in base_outcomes:
-            outcomes+= get_all_outcomes(oc,0)
-        outcomeoutcomes=[]
+            outcomes += get_all_outcomes(oc, 0)
+        outcomeoutcomes = []
         for oc in outcomes:
-            outcomeoutcomes+=list(oc.child_outcome_links.all())
+            outcomeoutcomes += list(oc.child_outcome_links.all())
         outcomenodes = OutcomeNode.objects.filter(node__in=nodes)
     column_choices = [
         {"type": choice[0], "name": choice[1]}
@@ -580,9 +595,7 @@ def get_workflow_context_data(workflow,context,user):
     ]
     context_choices = [
         {"type": choice[0], "name": choice[1]}
-        for choice in Node._meta.get_field(
-            "context_classification"
-        ).choices
+        for choice in Node._meta.get_field("context_classification").choices
     ]
     task_choices = [
         {"type": choice[0], "name": choice[1]}
@@ -604,7 +617,7 @@ def get_workflow_context_data(workflow,context,user):
         {"type": choice[0], "name": choice[1]}
         for choice in Week._meta.get_field("strategy_classification").choices
     ]
-    if(not workflow.is_strategy):
+    if not workflow.is_strategy:
         parent_project_pk = project.pk
 
     data_flat = {
@@ -617,35 +630,49 @@ def get_workflow_context_data(workflow,context,user):
             weekworkflows, many=True
         ).data,
         "week": WeekSerializerShallow(weeks, many=True).data,
-        "nodeweek": NodeWeekSerializerShallow(
-            nodeweeks, many=True
-        ).data,
+        "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
         "node": NodeSerializerShallow(nodes, many=True).data,
         "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
     }
-    if(not workflow.is_strategy):
-        data_flat["outcome"]= OutcomeSerializerShallow(outcomes, many=True).data
-        data_flat["outcomeoutcome"]= OutcomeOutcomeSerializerShallow(outcomeoutcomes,many=True).data
-        data_flat["outcomenode"]= OutcomeNodeSerializerShallow(outcomenodes,many=True).data
-        data_flat["outcomeproject"]= OutcomeProjectSerializerShallow(outcomeprojects,many=True).data
-        if(workflow.author==user):
-            if(workflow.type=="course"):
+    if not workflow.is_strategy:
+        data_flat["outcome"] = OutcomeSerializerShallow(
+            outcomes, many=True
+        ).data
+        data_flat["outcomeoutcome"] = OutcomeOutcomeSerializerShallow(
+            outcomeoutcomes, many=True
+        ).data
+        data_flat["outcomenode"] = OutcomeNodeSerializerShallow(
+            outcomenodes, many=True
+        ).data
+        data_flat["outcomeproject"] = OutcomeProjectSerializerShallow(
+            outcomeprojects, many=True
+        ).data
+        if workflow.author == user:
+            if workflow.type == "course":
                 data_flat["strategy"] = WorkflowSerializerShallow(
-                    Course.objects.filter(author=user,is_strategy=True),many=True
+                    Course.objects.filter(author=user, is_strategy=True),
+                    many=True,
                 ).data
                 data_flat["saltise_strategy"] = WorkflowSerializerShallow(
-                    Course.objects.filter(from_saltise=True,is_strategy=True),many=True
+                    Course.objects.filter(from_saltise=True, is_strategy=True),
+                    many=True,
                 ).data
-            elif(workflow.type=="activity"):
+            elif workflow.type == "activity":
                 data_flat["strategy"] = WorkflowSerializerShallow(
-                    Activity.objects.filter(author=user,is_strategy=True),many=True
+                    Activity.objects.filter(author=user, is_strategy=True),
+                    many=True,
                 ).data
                 data_flat["saltise_strategy"] = WorkflowSerializerShallow(
-                    Activity.objects.filter(from_saltise=True,is_strategy=True),many=True
+                    Activity.objects.filter(
+                        from_saltise=True, is_strategy=True
+                    ),
+                    many=True,
                 ).data
-                  
+
     context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
-    context["is_strategy"] = JSONRenderer().render(workflow.is_strategy).decode("utf-8")
+    context["is_strategy"] = (
+        JSONRenderer().render(workflow.is_strategy).decode("utf-8")
+    )
     context["column_choices"] = (
         JSONRenderer().render(column_choices).decode("utf-8")
     )
@@ -667,14 +694,14 @@ def get_workflow_context_data(workflow,context,user):
     context["strategy_classification_choices"] = (
         JSONRenderer().render(strategy_classification_choices).decode("utf-8")
     )
-    if(not workflow.is_strategy):
+    if not workflow.is_strategy:
         context["parent_project_pk"] = (
             JSONRenderer().render(parent_project_pk).decode("utf-8")
         )
-                  
+
     return context
-                  
-        
+
+
 class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Workflow
     fields = ["title", "description"]
@@ -698,9 +725,10 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         workflow = self.get_object()
-        
-        context = get_workflow_context_data(workflow,context,self.request.user)
-        
+
+        context = get_workflow_context_data(
+            workflow, context, self.request.user
+        )
 
         return context
 
@@ -727,8 +755,10 @@ class WorkflowDetailView(
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         workflow = self.get_object()
-        
-        context = get_workflow_context_data(workflow,context,self.request.user)
+
+        context = get_workflow_context_data(
+            workflow, context, self.request.user
+        )
 
         return context
 
@@ -778,13 +808,12 @@ class CourseDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     template_name = "course_flow/course_detail.html"
 
 
-
-#class StaticCourseDetailView(LoginRequiredMixin, DetailView):
+# class StaticCourseDetailView(LoginRequiredMixin, DetailView):
 #    model = Course
 #    template_name = "course_flow/course_detail_static.html"
 #
 #
-#class StudentCourseDetailView(LoginRequiredMixin, DetailView):
+# class StudentCourseDetailView(LoginRequiredMixin, DetailView):
 #    model = Course
 #    template_name = "course_flow/course_detail_student.html"
 
@@ -813,8 +842,11 @@ class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return reverse(
             "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
-    
-class CourseStrategyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+
+
+class CourseStrategyCreateView(
+    LoginRequiredMixin, UserPassesTestMixin, CreateView
+):
     model = Course
     fields = ["title", "description"]
     template_name = "course_flow/course_create.html"
@@ -844,12 +876,12 @@ class ActivityDetailView(
     template_name = "course_flow/activity_detail.html"
 
 
-#class StaticActivityDetailView(LoginRequiredMixin, DetailView):
+# class StaticActivityDetailView(LoginRequiredMixin, DetailView):
 #    model = Activity
 #    template_name = "course_flow/activity_detail_static.html"
 #
 #
-#class StudentActivityDetailView(LoginRequiredMixin, DetailView):
+# class StudentActivityDetailView(LoginRequiredMixin, DetailView):
 #    model = Activity
 #    template_name = "course_flow/activity_detail_student.html"
 
@@ -878,8 +910,11 @@ class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return reverse(
             "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
-    
-class ActivityStrategyCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+
+
+class ActivityStrategyCreateView(
+    LoginRequiredMixin, UserPassesTestMixin, CreateView
+):
     model = Activity
     fields = ["title", "description"]
     template_name = "course_flow/activity_create.html"
@@ -901,6 +936,7 @@ class ActivityStrategyCreateView(LoginRequiredMixin, UserPassesTestMixin, Create
             "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
 
+
 def save_serializer(serializer) -> HttpResponse:
     if serializer:
         if serializer.is_valid():
@@ -912,16 +948,13 @@ def save_serializer(serializer) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
 
-
-
-    
-#def get_owned_courses(user: User):
+# def get_owned_courses(user: User):
 #    return Course.objects.filter(author=user, static=False).order_by(
 #        "-last_modified"
 #    )[:10]
 #
 #
-#def setup_link_to_group(course_pk, students) -> Course:
+# def setup_link_to_group(course_pk, students) -> Course:
 #
 #    course = Course.objects.get(pk=course_pk)
 #
@@ -948,12 +981,12 @@ def save_serializer(serializer) -> HttpResponse:
 #    return clone
 #
 #
-#def setup_unlink_from_group(course_pk):
+# def setup_unlink_from_group(course_pk):
 #    Course.objects.get(pk=course_pk).delete()
 #    return "done"
 #
 #
-#def remove_student_from_group(student, course):
+# def remove_student_from_group(student, course):
 #    course.students.remove(student)
 #    for week in course.weeks.all():
 #        for component in week.components.exclude(
@@ -974,7 +1007,7 @@ def save_serializer(serializer) -> HttpResponse:
 #                    ).delete()
 #
 #
-#def add_student_to_group(student, course):
+# def add_student_to_group(student, course):
 #    course.students.add(student)
 #    for week in course.weeks.all():
 #        for component in week.components.exclude(
@@ -995,9 +1028,9 @@ def save_serializer(serializer) -> HttpResponse:
 #                    )
 #
 #
-#@require_POST
-#@ajax_login_required
-#def switch_node_completion_status(request: HttpRequest) -> HttpResponse:
+# @require_POST
+# @ajax_login_required
+# def switch_node_completion_status(request: HttpRequest) -> HttpResponse:
 #    node = Node.objects.get(pk=request.POST.get("pk"))
 #    is_completed = request.POST.get("isCompleted")
 #
@@ -1016,9 +1049,8 @@ def save_serializer(serializer) -> HttpResponse:
 #    return JsonResponse({"action": "posted"})
 
 
-
-#@ajax_login_required
-#def get_node_completion_status(request: HttpRequest) -> HttpResponse:
+# @ajax_login_required
+# def get_node_completion_status(request: HttpRequest) -> HttpResponse:
 #
 #    status = NodeCompletionStatus.objects.get(
 #        node=Node.objects.get(pk=request.GET.get("nodePk")),
@@ -1030,8 +1062,8 @@ def save_serializer(serializer) -> HttpResponse:
 #    )
 #
 #
-#@ajax_login_required
-#def get_node_completion_count(request: HttpRequest) -> HttpResponse:
+# @ajax_login_required
+# def get_node_completion_count(request: HttpRequest) -> HttpResponse:
 #
 #    statuses = NodeCompletionStatus.objects.filter(
 #        node=Node.objects.get(pk=request.GET.get("nodePk")), is_completed=True
@@ -1090,12 +1122,8 @@ def get_flat_workflow(request: HttpRequest) -> HttpResponse:
             "weekworkflows": WeekWorkflowSerializerShallow(
                 weekworkflows, many=True
             ).data,
-            "weeks": WeekSerializerShallow(
-                weeks, many=True
-            ).data,
-            "nodeweeks": NodeWeekSerializerShallow(
-                nodeweeks, many=True
-            ).data,
+            "weeks": WeekSerializerShallow(weeks, many=True).data,
+            "nodeweeks": NodeWeekSerializerShallow(nodeweeks, many=True).data,
             "nodes": NodeSerializerShallow(nodes, many=True).data,
         }
 
@@ -1154,14 +1182,13 @@ def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
         parent_node=node,
         linked_workflow=node.linked_workflow,
     )
-    
+
     for outcome in node.outcomes.all():
         OutcomeNode.objects.create(
-            outcome = outcome,
-            node = new_node,
-            rank = OutcomeNode.objects.get(node=node,outcome=outcome).rank
+            outcome=outcome,
+            node=new_node,
+            rank=OutcomeNode.objects.get(node=node, outcome=outcome).rank,
         )
-    
 
     return new_node
 
@@ -1175,8 +1202,8 @@ def duplicate_week(week: Week, author: User, new_workflow: Workflow) -> Week:
         parent_week=week,
         week_type=week.week_type,
         is_strategy=week.is_strategy,
-        original_strategy = week.original_strategy,
-        strategy_classification = week.strategy_classification,
+        original_strategy=week.original_strategy,
+        strategy_classification=week.strategy_classification,
     )
 
     for node in week.nodes.all():
@@ -1212,7 +1239,7 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
         author=author,
         is_original=False,
         parent_workflow=workflow,
-        is_strategy=workflow.is_strategy
+        is_strategy=workflow.is_strategy,
     )
 
     for column in workflow.columns.all():
@@ -1227,9 +1254,7 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
         WeekWorkflow.objects.create(
             week=duplicate_week(week, author, new_workflow),
             workflow=new_workflow,
-            rank=WeekWorkflow.objects.get(
-                week=week, workflow=workflow
-            ).rank,
+            rank=WeekWorkflow.objects.get(week=week, workflow=workflow).rank,
         )
 
     # Handle all the nodelinks. These need to be handled here because they potentially span weeks
@@ -1249,9 +1274,7 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
                             node_link,
                             author,
                             node,
-                            week2.nodes.get(
-                                parent_node=node_link.target_node
-                            ),
+                            week2.nodes.get(parent_node=node_link.target_node),
                         )
 
     return new_workflow
@@ -1266,14 +1289,21 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
         clone = duplicate_workflow(workflow, request.user)
-        WorkflowProject.objects.create(project=project,workflow=clone)
-        if(workflow.project_set.first() != clone.project_set.first()):
+        WorkflowProject.objects.create(project=project, workflow=clone)
+        if workflow.project_set.first() != clone.project_set.first():
             outcomes_set = get_project_outcomes(project)
-            cleanup_workflow_post_duplication(clone,project,outcomes_set)
+            cleanup_workflow_post_duplication(clone, project, outcomes_set)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "new_item":WorkflowSerializerShallow(clone).data,"type":clone.type})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_item": WorkflowSerializerShallow(clone).data,
+            "type": clone.type,
+        }
+    )
+
 
 @require_POST
 @ajax_login_required
@@ -1285,7 +1315,14 @@ def duplicate_strategy_ajax(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "new_item":WorkflowSerializerShallow(clone).data,"type":clone.type})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_item": WorkflowSerializerShallow(clone).data,
+            "type": clone.type,
+        }
+    )
+
 
 def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 
@@ -1302,12 +1339,11 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
         OutcomeOutcome.objects.create(
             child=duplicate_outcome(child, author),
             parent=new_outcome,
-            rank=OutcomeOutcome.objects.get(
-                child=child, parent=outcome
-            ).rank,
+            rank=OutcomeOutcome.objects.get(child=child, parent=outcome).rank,
         )
 
     return new_outcome
+
 
 @require_POST
 @ajax_login_required
@@ -1318,11 +1354,17 @@ def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
         clone = duplicate_outcome(outcome, request.user)
-        OutcomeProject.objects.create(project=project,outcome=clone)
+        OutcomeProject.objects.create(project=project, outcome=clone)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "new_item":OutcomeSerializerShallow(clone).data,"type":"outcome"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_item": OutcomeSerializerShallow(clone).data,
+            "type": "outcome",
+        }
+    )
 
 
 def duplicate_project(project: Project, author: User) -> Project:
@@ -1343,7 +1385,7 @@ def duplicate_project(project: Project, author: User) -> Project:
                 outcome=outcome, project=project
             ).rank,
         )
-        
+
     for workflow in project.workflows.all():
         WorkflowProject.objects.create(
             workflow=duplicate_workflow(workflow, author),
@@ -1352,12 +1394,13 @@ def duplicate_project(project: Project, author: User) -> Project:
                 workflow=workflow, project=project
             ).rank,
         )
-    
+
     outcomes_set = get_project_outcomes(new_project)
     for workflow in new_project.workflows.all():
-        cleanup_workflow_post_duplication(workflow,new_project,outcomes_set)
+        cleanup_workflow_post_duplication(workflow, new_project, outcomes_set)
 
     return new_project
+
 
 @require_POST
 @ajax_login_required
@@ -1369,24 +1412,34 @@ def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted", "new_item":ProjectSerializerShallow(clone).data,"type":"project"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_item": ProjectSerializerShallow(clone).data,
+            "type": "project",
+        }
+    )
 
 
-
-#post-duplication cleanup. Setting the linked workflows and outcomes for nodes. This must be done after the fact because the workflows and outcomes have not necessarily been duplicated by the time the nodes are
-def cleanup_workflow_post_duplication(workflow,project,outcomes_set):
+# post-duplication cleanup. Setting the linked workflows and outcomes for nodes. This must be done after the fact because the workflows and outcomes have not necessarily been duplicated by the time the nodes are
+def cleanup_workflow_post_duplication(workflow, project, outcomes_set):
     for node in Node.objects.filter(week__workflow=workflow):
-        if(node.linked_workflow is not None):
-            new_linked_workflow = project.workflows.filter(parent_workflow = node.linked_workflow).last()
+        if node.linked_workflow is not None:
+            new_linked_workflow = project.workflows.filter(
+                parent_workflow=node.linked_workflow
+            ).last()
             node.linked_workflow = new_linked_workflow
             node.save()
         for outcomenode in node.outcomenode_set.all():
-            new_outcome = outcomes_set.filter(parent_outcome = outcomenode.outcome).last()
+            new_outcome = outcomes_set.filter(
+                parent_outcome=outcomenode.outcome
+            ).last()
             if new_outcome is None:
                 outcomenode.delete()
             else:
                 outcomenode.outcome = new_outcome
                 outcomenode.save()
+
 
 """
 Creation methods
@@ -1438,17 +1491,13 @@ def new_node(request: HttpRequest) -> HttpResponse:
             )
         else:
             columnworkflow = ColumnWorkflow.objects.filter(
-                workflow=WeekWorkflow.objects.get(
-                    week=week
-                ).workflow
+                workflow=WeekWorkflow.objects.get(week=week).workflow
             ).first()
             column = columnworkflow.column
         if position < 0 or position > week.nodes.count():
             position = week.nodes.count()
         node = Node.objects.create(
-            author=week.author,
-            node_type=week.week_type,
-            column=column,
+            author=week.author, node_type=week.week_type, column=column
         )
         node_week = NodeWeek.objects.create(
             week=week, node=node, rank=position
@@ -1469,6 +1518,7 @@ def new_node(request: HttpRequest) -> HttpResponse:
         }
     )
 
+
 @require_POST
 @ajax_login_required
 @is_owner("workflowPk")
@@ -1480,100 +1530,121 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=workflow_id)
     strategy = Workflow.objects.get(pk=strategy_id)
     try:
-        if(strategy.get_subclass().author == request.user or strategy.published):
-            #first, check compatibility between types (activity/course)
-            if strategy.type!=workflow.type:
+        if (
+            strategy.get_subclass().author == request.user
+            or strategy.published
+        ):
+            # first, check compatibility between types (activity/course)
+            if strategy.type != workflow.type:
                 raise ValidationError("Mismatch between types")
-            #create a copy of the strategy (the first/only week in the strategy workflow). Note that all the nodes, at this point, are pointed at the columns from the OLD workflow
+            # create a copy of the strategy (the first/only week in the strategy workflow). Note that all the nodes, at this point, are pointed at the columns from the OLD workflow
             if position < 0 or position > workflow.weeks.count():
                 position = workflow.weeks.count()
             old_week = strategy.weeks.first()
-            week = duplicate_week(old_week,request.user,None)
+            week = duplicate_week(old_week, request.user, None)
             week.title = strategy.title
-            week.is_strategy=True
-            week.original_strategy=strategy
+            week.is_strategy = True
+            week.original_strategy = strategy
             week.save()
             new_through = WeekWorkflow.objects.create(
-                week=week,workflow=workflow,rank=position
+                week=week, workflow=workflow, rank=position
             )
-            #now, check for missing columns. We try to create a one to one relationship between the columns, and then add in any that are still missing
-            old_columns=[]
+            # now, check for missing columns. We try to create a one to one relationship between the columns, and then add in any that are still missing
+            old_columns = []
             for node in week.nodes.all():
-                if(node.column not in old_columns):
+                if node.column not in old_columns:
                     old_columns.append(node.column)
-            new_columns=[]
-            columnworkflows_added=[]
-            columns_added=[]
+            new_columns = []
+            columnworkflows_added = []
+            columns_added = []
             for column in old_columns:
-                #check for a new column with same type
-                columns_type = workflow.columns.filter(column_type=column.column_type).exclude(id__in=map(lambda x:x.id,new_columns))
-                if columns_type.count()==1:
+                # check for a new column with same type
+                columns_type = workflow.columns.filter(
+                    column_type=column.column_type
+                ).exclude(id__in=map(lambda x: x.id, new_columns))
+                if columns_type.count() == 1:
                     new_columns.append(columns_type.first())
                     continue
-                if columns_type.count()==0:
-                    added_column = duplicate_column(column,request.user)
-                    columnworkflows_added.append(ColumnWorkflow.objects.create(
-                        column=added_column,
-                        workflow=workflow,
-                        rank=workflow.columns.count()
-                    ))
+                if columns_type.count() == 0:
+                    added_column = duplicate_column(column, request.user)
+                    columnworkflows_added.append(
+                        ColumnWorkflow.objects.create(
+                            column=added_column,
+                            workflow=workflow,
+                            rank=workflow.columns.count(),
+                        )
+                    )
                     new_columns.append(added_column)
                     columns_added.append(added_column)
                     continue
-                if columns_type.count()>1:
-                    #if we have multiple columns of that type, check to see if any have this one as their parent
+                if columns_type.count() > 1:
+                    # if we have multiple columns of that type, check to see if any have this one as their parent
                     columns_parent = columns_type.filter(parent_column=column)
-                    if(columns_parent.count()==1):
+                    if columns_parent.count() == 1:
                         new_columns.append(columns_parent.first())
                         continue
-                    if(columns_parent.count()>1):
-                        columns_type=columns_parent
-                    #check to see if any have the same title
+                    if columns_parent.count() > 1:
+                        columns_type = columns_parent
+                    # check to see if any have the same title
                     columns_title = columns_type.filter(title=column.title)
-                    if(columns_title.count()>=1):
+                    if columns_title.count() >= 1:
                         new_columns.append(columns_title.first())
                         continue
                     else:
                         new_columns.append(columns_type.first())
-            #go through all the nodes and fill them in with our updated columns
+            # go through all the nodes and fill them in with our updated columns
             for node in week.nodes.all():
                 column_index = old_columns.index(node.column)
-                node.column=new_columns[column_index]
+                node.column = new_columns[column_index]
                 node.save()
-            #we have to copy all the nodelinks, since by default they are not duplicated when a week is duplicated
-            for node_link in NodeLink.objects.filter(source_node__in = old_week.nodes.all(), target_node__in = old_week.nodes.all()):
+            # we have to copy all the nodelinks, since by default they are not duplicated when a week is duplicated
+            for node_link in NodeLink.objects.filter(
+                source_node__in=old_week.nodes.all(),
+                target_node__in=old_week.nodes.all(),
+            ):
                 duplicate_nodelink(
                     node_link,
                     request.user,
-                    week.nodes.get(
-                        parent_node=node_link.source_node
-                    ),
-                    week.nodes.get(
-                        parent_node=node_link.target_node
-                    ),
+                    week.nodes.get(parent_node=node_link.source_node),
+                    week.nodes.get(parent_node=node_link.target_node),
                 )
 
-            #return all this information to the user
+            # return all this information to the user
             return JsonResponse(
-            {
-                "action": "posted",
-                "strategy": WeekSerializerShallow(week).data,
-                "new_through": WeekWorkflowSerializerShallow(new_through).data,
-                "index": position,
-                "columns_added":ColumnSerializerShallow(columns_added,many=True).data,
-                "columnworkflows_added":ColumnWorkflowSerializerShallow(columnworkflows_added,many=True).data,
-                "nodeweeks_added":NodeWeekSerializerShallow(week.nodeweek_set,many=True).data,
-                "nodes_added":NodeSerializerShallow(week.nodes.all(),many=True).data,
-                "nodelinks_added":NodeLinkSerializerShallow(NodeLink.objects.filter(source_node__in = week.nodes.all(), target_node__in = week.nodes.all()),many=True).data,
-            }
-        )
+                {
+                    "action": "posted",
+                    "strategy": WeekSerializerShallow(week).data,
+                    "new_through": WeekWorkflowSerializerShallow(
+                        new_through
+                    ).data,
+                    "index": position,
+                    "columns_added": ColumnSerializerShallow(
+                        columns_added, many=True
+                    ).data,
+                    "columnworkflows_added": ColumnWorkflowSerializerShallow(
+                        columnworkflows_added, many=True
+                    ).data,
+                    "nodeweeks_added": NodeWeekSerializerShallow(
+                        week.nodeweek_set, many=True
+                    ).data,
+                    "nodes_added": NodeSerializerShallow(
+                        week.nodes.all(), many=True
+                    ).data,
+                    "nodelinks_added": NodeLinkSerializerShallow(
+                        NodeLink.objects.filter(
+                            source_node__in=week.nodes.all(),
+                            target_node__in=week.nodes.all(),
+                        ),
+                        many=True,
+                    ).data,
+                }
+            )
 
         else:
             raise ValidationError("User cannot access this strategy")
     except ValidationError:
         return JsonResponse({"action": "error"})
-    
-    
+
 
 @require_POST
 @ajax_login_required
@@ -1616,7 +1687,7 @@ def insert_child(request: HttpRequest) -> HttpResponse:
         if object_type == "outcome":
             model = Outcome.objects.get(id=object_id)
             newmodel = Outcome.objects.create(
-                author=model.author, depth=model.depth+1
+                author=model.author, depth=model.depth + 1
             )
             newrank = model.children.count()
             newthroughmodel = OutcomeOutcome.objects.create(
@@ -1641,6 +1712,7 @@ def insert_child(request: HttpRequest) -> HttpResponse:
         }
     )
 
+
 # Add a new sibling to a through model
 @require_POST
 @ajax_login_required
@@ -1654,9 +1726,7 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
         if object_type == "week":
             model = Week.objects.get(id=object_id)
             parent = Workflow.objects.get(id=parent_id)
-            through = WeekWorkflow.objects.get(
-                week=model, workflow=parent
-            )
+            through = WeekWorkflow.objects.get(week=model, workflow=parent)
             newmodel = Week.objects.create(
                 author=model.author, week_type=model.week_type
             )
@@ -1701,9 +1771,7 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
         elif object_type == "outcome":
             model = Outcome.objects.get(id=object_id)
             parent = Outcome.objects.get(id=parent_id)
-            through = OutcomeOutcome.objects.get(
-                parent=parent, child=model
-            )
+            through = OutcomeOutcome.objects.get(parent=parent, child=model)
             newmodel = Outcome.objects.create(
                 author=model.author, depth=model.depth
             )
@@ -1744,9 +1812,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
         if object_type == "week":
             model = Week.objects.get(id=object_id)
             parent = Workflow.objects.get(id=parent_id)
-            through = WeekWorkflow.objects.get(
-                week=model, workflow=parent
-            )
+            through = WeekWorkflow.objects.get(week=model, workflow=parent)
             newmodel = duplicate_week(model, model.author, None)
             newthroughmodel = WeekWorkflow.objects.create(
                 workflow=parent, week=newmodel, rank=through.rank + 1
@@ -1801,10 +1867,10 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             new_through_serialized = OutcomeOutcomeSerializerShallow(
                 newthroughmodel
             ).data
-            outcomes = get_all_outcomes(newmodel,0)
-            outcomeoutcomes=[]
+            outcomes = get_all_outcomes(newmodel, 0)
+            outcomeoutcomes = []
             for oc in outcomes:
-                outcomeoutcomes+=list(oc.child_outcome_links.all())
+                outcomeoutcomes += list(oc.child_outcome_links.all())
             new_children_serialized = OutcomeSerializerShallow(
                 outcomes[1:], many=True
             ).data
@@ -1852,13 +1918,13 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 
         if object_type == "nodeweek":
             parent = model.week
-        elif object_type =="outcomeoutcome":
+        elif object_type == "outcomeoutcome":
             parent = model.parent
         else:
             parent = new_parent
-            
-        if object_type=="outcomeoutcome":
-            parentType="parent"
+
+        if object_type == "outcomeoutcome":
+            parentType = "parent"
 
         new_parent_count = model_type.objects.filter(
             **{parentType: new_parent}
@@ -1907,8 +1973,8 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 out_of_order_link.save()
             model.rank = new_position
             setattr(model, parentType, new_parent)
-            if(object_type=="outcomeoutcome"):
-                model.child.depth=model.parent.depth+1
+            if object_type == "outcomeoutcome":
+                model.child.depth = model.parent.depth + 1
                 model.child.save()
             model.save()
 
@@ -1948,16 +2014,19 @@ def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
     try:
         node = Node.objects.get(id=node_id)
         outcome = Outcome.objects.get(id=outcome_id)
-        if OutcomeNode.objects.filter(node=node,outcome=outcome).count()>0:
+        if OutcomeNode.objects.filter(node=node, outcome=outcome).count() > 0:
             return JsonResponse({"action": "error"})
-        outcomenode = OutcomeNode.objects.create(
-            outcome=outcome,
-            node=node,
-        )
+        outcomenode = OutcomeNode.objects.create(outcome=outcome, node=node)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action":"posted","outcomenode": OutcomeNodeSerializerShallow(outcomenode).data})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "outcomenode": OutcomeNodeSerializerShallow(outcomenode).data,
+        }
+    )
+
 
 """
 Update Methods
@@ -1986,6 +2055,7 @@ def update_value(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
+
 @require_POST
 @ajax_login_required
 @is_owner("nodePk")
@@ -1995,22 +2065,31 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     outcome_id = json.loads(request.POST.get("outcomePk"))
     degree = json.loads(request.POST.get("degree"))
     try:
-        if OutcomeNode.objects.filter(node__id=node_id,outcome__id=outcome_id).count()>0:
-            model = OutcomeNode.objects.get(node__id=node_id,outcome__id=outcome_id);
+        if (
+            OutcomeNode.objects.filter(
+                node__id=node_id, outcome__id=outcome_id
+            ).count()
+            > 0
+        ):
+            model = OutcomeNode.objects.get(
+                node__id=node_id, outcome__id=outcome_id
+            )
         else:
-            model = OutcomeNode.objects.create(node = Node.objects.get(id=node_id),outcome=Outcome.objects.get(id=outcome_id))
-        model.degree=degree
+            model = OutcomeNode.objects.create(
+                node=Node.objects.get(id=node_id),
+                outcome=Outcome.objects.get(id=outcome_id),
+            )
+        model.degree = degree
         model.save()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
 
-#Do not call if duplicating the parent workflow
+
+# Do not call if duplicating the parent workflow
 def set_linked_workflow(node: Node, workflow):
-    project = (
-        node.week_set.first().workflow_set.first().project_set.first()
-    )
+    project = node.week_set.first().workflow_set.first().project_set.first()
     if WorkflowProject.objects.get(workflow=workflow).project == project:
         node.linked_workflow = workflow
         node.save()
@@ -2026,7 +2105,7 @@ def set_linked_workflow(node: Node, workflow):
             pass
 
 
-# Sets the linked workflow for a node, adding it to the project if different. 
+# Sets the linked workflow for a node, adding it to the project if different.
 @require_POST
 @ajax_login_required
 @is_owner("nodePk")
@@ -2066,24 +2145,6 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
     )
 
 
-# Toggles whether or not a project is published
-@require_POST
-@ajax_login_required
-@is_owner("projectPk")
-def project_toggle_published(request: HttpRequest) -> HttpResponse:
-    try:
-        object_id = json.loads(request.POST.get("projectPk"))
-        project = Project.objects.get(id=object_id)
-        project.published = not project.published
-        project.save()
-        for workflow in project.workflows.all():
-            workflow.published = project.published
-            workflow.save()
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
-
 # Creates strategy from week or turns strategy into week
 @require_POST
 @ajax_login_required
@@ -2093,48 +2154,46 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("weekPk"))
         is_strategy = json.loads(request.POST.get("is_strategy"))
         week = Week.objects.get(id=object_id)
-        #This check is to prevent people from spamming the button, which would potentially create a bunch of superfluous strategies
+        # This check is to prevent people from spamming the button, which would potentially create a bunch of superfluous strategies
         if week.is_strategy != is_strategy:
             raise ValidationError("Request has already been processed")
         if week.is_strategy:
-            week.is_strategy=False
+            week.is_strategy = False
             strategy = week.original_strategy.get_subclass()
-            week.original_strategy=None
+            week.original_strategy = None
             week.strategy_classification = 0
             week.save()
         else:
             workflow = WeekWorkflow.objects.get(week=week).workflow
-            strategy = duplicate_workflow(workflow,request.user)
-            strategy.title=week.title
-            strategy.is_strategy=True
+            strategy = duplicate_workflow(workflow, request.user)
+            strategy.title = week.title
+            strategy.is_strategy = True
             strategy.save()
-            strategy.weeks.exclude(parent_week = week).delete()
+            strategy.weeks.exclude(parent_week=week).delete()
             strategy_week = strategy.weeks.first()
-            strategy_week.is_strategy=True
+            strategy_week.is_strategy = True
             strategy_week.save()
-            week.is_strategy=True
+            week.is_strategy = True
             week.original_strategy = strategy
             week.save()
-        if strategy.type=="course":
+        if strategy.type == "course":
             strategy_serialized = CourseSerializerShallow(strategy).data
-        elif strategy.type =="activity":
+        elif strategy.type == "activity":
             strategy_serialized = ActivitySerializerShallow(strategy).data
         else:
             strategy_serialized = ""
-            
-            
-        
+
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({
-        "action": "posted",
-        "id":week.id,
-        "is_strategy":week.is_strategy,
-        "strategy":strategy_serialized
-    })
-
-
+    return JsonResponse(
+        {
+            "action": "posted",
+            "id": week.id,
+            "is_strategy": week.is_strategy,
+            "strategy": strategy_serialized,
+        }
+    )
 
 
 """
@@ -2157,6 +2216,7 @@ def delete_self(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
+
 @require_POST
 @ajax_login_required
 @is_owner("nodePk")
@@ -2165,7 +2225,9 @@ def unlink_outcome_from_node(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     outcome_id = json.loads(request.POST.get("outcomePk"))
     try:
-        model = OutcomeNode.objects.get(node__id=node_id,outcome_id=outcome_id);
+        model = OutcomeNode.objects.get(
+            node__id=node_id, outcome_id=outcome_id
+        )
         model.delete()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
@@ -2173,231 +2235,275 @@ def unlink_outcome_from_node(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-
 """
 Import
 """
 
+
 @require_POST
 @ajax_login_required
 def project_from_json(request: HttpRequest) -> HttpResponse:
-    column_type_dict={
-        "OOCI":1,
-        "OOC":2,
-        "ICI":3,
-        "ICS":4,
-        "HW":11,
-        "AC":12,
-        "FA":13,
-        "SA":14
+    column_type_dict = {
+        "OOCI": 1,
+        "OOC": 2,
+        "ICI": 3,
+        "ICS": 4,
+        "HW": 11,
+        "AC": 12,
+        "FA": 13,
+        "SA": 14,
     }
-    task_dict={
-        'research':1,
-        'discuss':2,
-        'problem':3,
-        'analyze':4,
-        'peerreview':5,
-        'debate':6,
-        'play':7,
-        'create':8,
-        'practice':9,
-        'reading':10,
-        'write':11,
-        'present':12,
-        'experiment':13,
-        'quiz':14,
-        'curation':15,
-        'orchestration':16,
-        'instrevaluate':17,
-        'jigsaw':101,
-        'peer-instruction':102,
-        'case-studies':103,
-        'gallery-walk':104,
-        'reflective-writing':105,
-        'two-stage-exam':106,
-        'toolkit':107,
-        'one-minute-paper':108,
-        'distributed-problem-solving':109,
-        'peer-assessment':110
+    task_dict = {
+        "research": 1,
+        "discuss": 2,
+        "problem": 3,
+        "analyze": 4,
+        "peerreview": 5,
+        "debate": 6,
+        "play": 7,
+        "create": 8,
+        "practice": 9,
+        "reading": 10,
+        "write": 11,
+        "present": 12,
+        "experiment": 13,
+        "quiz": 14,
+        "curation": 15,
+        "orchestration": 16,
+        "instrevaluate": 17,
+        "jigsaw": 101,
+        "peer-instruction": 102,
+        "case-studies": 103,
+        "gallery-walk": 104,
+        "reflective-writing": 105,
+        "two-stage-exam": 106,
+        "toolkit": 107,
+        "one-minute-paper": 108,
+        "distributed-problem-solving": 109,
+        "peer-assessment": 110,
     }
-    context_dict={
-        'solo':1,
-        'group':2,
-        'class':3,
-        'exercise':101,
-        'test':102,
-        'exam':103
+    context_dict = {
+        "solo": 1,
+        "group": 2,
+        "class": 3,
+        "exercise": 101,
+        "test": 102,
+        "exam": 103,
     }
-    time_unit_dict={
-        's':1,
-        'min':2,
-        'hr':3,
-        'day':4,
-        'week':5,
-        'month':6,
-        'yr':7,
-        'cr':8
+    time_unit_dict = {
+        "s": 1,
+        "min": 2,
+        "hr": 3,
+        "day": 4,
+        "week": 5,
+        "month": 6,
+        "yr": 7,
+        "cr": 8,
     }
-    
+
     try:
         json_data = json.loads(request.POST.get("jsonData"))
-        id_dict={"project":{},"workflow":{},"column":{},"week":{},"node":{},"outcome":{}}
+        id_dict = {
+            "project": {},
+            "workflow": {},
+            "column": {},
+            "week": {},
+            "node": {},
+            "outcome": {},
+        }
         for project in json_data["project"]:
             new_project = Project.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(project["title"],tags=bleach_allowed_tags)
+                title=bleach_sanitizer(
+                    project["title"], tags=bleach_allowed_tags
+                ),
             )
-            id_dict["project"][project["id"]]=new_project
+            id_dict["project"][project["id"]] = new_project
         for outcome in json_data["outcome"]:
             new_outcome = Outcome.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(outcome["title"],tags=bleach_allowed_tags)
+                title=bleach_sanitizer(
+                    outcome["title"], tags=bleach_allowed_tags
+                ),
             )
-            id_dict["outcome"][outcome["id"]]=new_outcome
+            id_dict["outcome"][outcome["id"]] = new_outcome
         for activity in json_data["activity"]:
             new_activity = Activity.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(activity["title"],tags=bleach_allowed_tags),
-                description=bleach_sanitizer(activity["description"],tags=bleach_allowed_tags),
-                outcomes_type=activity["outcomes_type"]
+                title=bleach_sanitizer(
+                    activity["title"], tags=bleach_allowed_tags
+                ),
+                description=bleach_sanitizer(
+                    activity["description"], tags=bleach_allowed_tags
+                ),
+                outcomes_type=activity["outcomes_type"],
             )
-            id_dict["workflow"][activity["id"]]=new_activity
-            id_dict["column"][activity["id"]]={}
+            id_dict["workflow"][activity["id"]] = new_activity
+            id_dict["column"][activity["id"]] = {}
             new_activity.weeks.all().delete()
             new_activity.columns.all().delete()
         for course in json_data["course"]:
             new_course = Course.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(course["title"],tags=bleach_allowed_tags),
-                description=bleach_sanitizer(course["description"],tags=bleach_allowed_tags),
-                outcomes_type=course["outcomes_type"]
+                title=bleach_sanitizer(
+                    course["title"], tags=bleach_allowed_tags
+                ),
+                description=bleach_sanitizer(
+                    course["description"], tags=bleach_allowed_tags
+                ),
+                outcomes_type=course["outcomes_type"],
             )
-            id_dict["workflow"][course["id"]]=new_course
-            id_dict["column"][course["id"]]={}
+            id_dict["workflow"][course["id"]] = new_course
+            id_dict["column"][course["id"]] = {}
             new_course.weeks.all().delete()
             new_course.columns.all().delete()
         for program in json_data["program"]:
             new_program = Program.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(program["title"],tags=bleach_allowed_tags),
-                description=bleach_sanitizer(program["description"],tags=bleach_allowed_tags),
-                outcomes_type=program["outcomes_type"])
-            id_dict["workflow"][program["id"]]=new_program
-            id_dict["column"][program["id"]]={}
+                title=bleach_sanitizer(
+                    program["title"], tags=bleach_allowed_tags
+                ),
+                description=bleach_sanitizer(
+                    program["description"], tags=bleach_allowed_tags
+                ),
+                outcomes_type=program["outcomes_type"],
+            )
+            id_dict["workflow"][program["id"]] = new_program
+            id_dict["column"][program["id"]] = {}
             new_program.weeks.all().delete()
             new_program.columns.all().delete()
         for column in json_data["column"]:
             workflow = id_dict["workflow"][column["workflow"]]
             workflow = id_dict["workflow"][column["workflow"]]
-            if column["id"][:3]=="CUS":
-                column_type = workflow.get_subclass().WORKFLOW_TYPE*10
+            if column["id"][:3] == "CUS":
+                column_type = workflow.get_subclass().WORKFLOW_TYPE * 10
             else:
                 column_type = column_type_dict[column["id"]]
-            new_column = Column.objects.create(author=request.user,title=column["title"],colour=int(column["colour"].replace("#","0x"),16),column_type=column_type)
-            id_dict["column"][column["workflow"]][column["id"]]=new_column
+            new_column = Column.objects.create(
+                author=request.user,
+                title=column["title"],
+                colour=int(column["colour"].replace("#", "0x"), 16),
+                column_type=column_type,
+            )
+            id_dict["column"][column["workflow"]][column["id"]] = new_column
 
         for week in json_data["week"]:
             new_week = Week.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(week["title"],tags=bleach_allowed_tags)
+                title=bleach_sanitizer(
+                    week["title"], tags=bleach_allowed_tags
+                ),
             )
-            id_dict["week"][week["id"]]=new_week
+            id_dict["week"][week["id"]] = new_week
         for node in json_data["node"]:
             new_node = Node.objects.create(
                 author=request.user,
-                title=bleach_sanitizer(node["title"],tags=bleach_allowed_tags),
-                description=bleach_sanitizer(node["description"],tags=bleach_allowed_tags),
-                task_classification=task_dict.get(node["task_classification"]) or 0,
-                context_classification=context_dict.get(node["context_classification"]) or 0,
+                title=bleach_sanitizer(
+                    node["title"], tags=bleach_allowed_tags
+                ),
+                description=bleach_sanitizer(
+                    node["description"], tags=bleach_allowed_tags
+                ),
+                task_classification=task_dict.get(node["task_classification"])
+                or 0,
+                context_classification=context_dict.get(
+                    node["context_classification"]
+                )
+                or 0,
                 time_units=time_unit_dict.get(node["time_units"]) or 0,
-                time_required = bleach_sanitizer(node["time_required"],tags=bleach_allowed_tags)
+                time_required=bleach_sanitizer(
+                    node["time_required"], tags=bleach_allowed_tags
+                ),
             )
-            id_dict["node"][node["id"]]=new_node
+            id_dict["node"][node["id"]] = new_node
 
         for project in json_data["project"]:
             project_model = id_dict["project"][project["id"]]
             for activity_id in project["activities"]:
                 WorkflowProject.objects.create(
                     project=project_model,
-                    workflow=id_dict["workflow"][activity_id]
+                    workflow=id_dict["workflow"][activity_id],
                 )
             for course_id in project["courses"]:
                 WorkflowProject.objects.create(
                     project=project_model,
-                    workflow=id_dict["workflow"][course_id]
+                    workflow=id_dict["workflow"][course_id],
                 )
             for program_id in project["programs"]:
                 WorkflowProject.objects.create(
                     project=project_model,
-                    workflow=id_dict["workflow"][program_id]
+                    workflow=id_dict["workflow"][program_id],
                 )
             for outcome_id in project["outcomes"]:
                 OutcomeProject.objects.create(
                     project=project_model,
-                    outcome=id_dict["outcome"][outcome_id]
+                    outcome=id_dict["outcome"][outcome_id],
                 )
 
         for outcome in json_data["outcome"]:
             outcome_model = id_dict["outcome"][outcome["id"]]
             for i, child in enumerate(outcome["children"]):
                 OutcomeOutcome.objects.create(
-                    parent = outcome_model,
-                    child = id_dict["outcome"][child],
-                    rank=i
+                    parent=outcome_model,
+                    child=id_dict["outcome"][child],
+                    rank=i,
                 )
 
-        for workflow in json_data["activity"]+json_data["course"]+json_data["program"]:
+        for workflow in (
+            json_data["activity"] + json_data["course"] + json_data["program"]
+        ):
             workflow_model = id_dict["workflow"][workflow["id"]]
             for i, column in enumerate(id_dict["column"][workflow["id"]]):
 
                 column_model = id_dict["column"][workflow["id"]][column]
                 ColumnWorkflow.objects.create(
-                    workflow=workflow_model,
-                    column=column_model,
-                    rank=i
+                    workflow=workflow_model, column=column_model, rank=i
                 )
 
             for i, week_id in enumerate(workflow["weeks"]):
                 WeekWorkflow.objects.create(
                     workflow=workflow_model,
                     week=id_dict["week"][week_id],
-                    rank=i
+                    rank=i,
                 )
 
         for week in json_data["week"]:
             week_model = id_dict["week"][week["id"]]
             for i, node_id in enumerate(week["nodes"]):
                 NodeWeek.objects.create(
-                    week=week_model,
-                    node = id_dict["node"][node_id],
-                    rank=i
+                    week=week_model, node=id_dict["node"][node_id], rank=i
                 )
 
         for node in json_data["node"]:
             node_model = id_dict["node"][node["id"]]
-            node_model.column = id_dict["column"][node["workflow"]][node["column"]]
+            node_model.column = id_dict["column"][node["workflow"]][
+                node["column"]
+            ]
             if node["linked_workflow"] is not None:
-                node_model.linked_workflow = id_dict["workflow"][node["linked_workflow"]]
-            node_model.has_autolink = (node_model.node_type == 0)
+                node_model.linked_workflow = id_dict["workflow"][
+                    node["linked_workflow"]
+                ]
+            node_model.has_autolink = node_model.node_type == 0
             node_model.save()
 
         for outcomenode in json_data["outcomenode"]:
             OutcomeNode.objects.create(
-                outcome = id_dict["outcome"][outcomenode["outcome"]],
-                node = id_dict["node"][outcomenode["node"]],
-                degree=outcomenode["degree"]
+                outcome=id_dict["outcome"][outcomenode["outcome"]],
+                node=id_dict["node"][outcomenode["node"]],
+                degree=outcomenode["degree"],
             )
 
         for nodelink in json_data["nodelink"]:
             NodeLink.objects.create(
-                source_node = id_dict["node"][nodelink["source"]],
-                target_node = id_dict["node"][nodelink["target"]],
-                title=bleach_sanitizer(nodelink["title"],tags=bleach_allowed_tags),
-                dashed=nodelink["style"] or False
+                source_node=id_dict["node"][nodelink["source"]],
+                target_node=id_dict["node"][nodelink["target"]],
+                title=bleach_sanitizer(
+                    nodelink["title"], tags=bleach_allowed_tags
+                ),
+                dashed=nodelink["style"] or False,
             )
-        
+
     except:
-        return JsonResponse({"action":"error"})
-    
-    
+        return JsonResponse({"action": "error"})
+
     return JsonResponse({"action": "posted"})

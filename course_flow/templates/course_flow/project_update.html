@@ -72,15 +72,6 @@
     });
     
     
-    //Publishes or unpublishes the project
-    function togglePublish(callBackFunction=()=>console.log("success")){
-        $.post("{% url 'course_flow:project-toggle-published' %}", {
-            projectPk:JSON.stringify({{object.pk|safe}})
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
-        });
-    }
     
 </script>
 {% endblock %}

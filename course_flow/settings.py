@@ -26,6 +26,8 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
+CHROMEDRIVER_PATH = None
+
 # Application definition
 
 TEACHER_GROUP = "Teacher"

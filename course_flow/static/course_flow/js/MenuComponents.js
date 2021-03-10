@@ -126,7 +126,7 @@ export class WorkflowForMenu extends React.Component{
                 <div class="workflow-created">
                     { "Created"+(data.author && " by "+data.author)+" on "+data.created_on}
                 </div>
-                <div class="activity-description">
+                <div class="workflow-description">
                     {data.description}
                 </div>
             </div>
@@ -138,7 +138,7 @@ export class WorkflowForMenu extends React.Component{
         if(this.props.type=="projectmenu"||this.props.type=="homemenu"){
             if(this.props.owned){
                 buttons.push(
-                    <div onClick={(evt)=>{
+                    <div  class="workflow-delete-button" onClick={(evt)=>{
                         if(window.confirm("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone.")){
                             deleteSelf(this.props.workflow_data.id,this.props.objectType);
                             this.setState({hide:true});
@@ -148,13 +148,13 @@ export class WorkflowForMenu extends React.Component{
                     </div>
                 );
                 buttons.push(
-                    <a href={update_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
+                    <a href={update_path[this.props.objectType].replace("0",this.props.workflow_data.id)}  class="workflow-edit-button">
                         <img src={iconpath+'edit_pencil.svg'} title="Edit"/>
                     </a>
                 );
             }else{
                 buttons.push(
-                    <a href={detail_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
+                    <a href={detail_path[this.props.objectType].replace("0",this.props.workflow_data.id)}  class="workflow-view-button">
                         <img src={iconpath+'page_view.svg'} title="View"/>
                     </a>
                 );
@@ -172,7 +172,7 @@ export class WorkflowForMenu extends React.Component{
                     else titletext="Import to my files";
                 }
                 buttons.push(
-                    <div onClick={()=>{
+                    <div class="workflow-duplicate-button" onClick={()=>{
                         let loader = new Loader('body');
                         duplicateBaseItem(this.props.workflow_data.id,this.props.objectType,this.props.parentID,(response_data)=>{this.props.dispatch(homeMenuItemAdded(response_data));loader.endLoad();})
                     }}>
@@ -200,12 +200,12 @@ export class MenuSection extends React.Component{
         if(objects.length==0)objects="This category is currently empty."
 
         return (
-            <div>
+            <div class={"section-"+this.props.section_data.object_type}>
                 <h3>{this.props.section_data.title+":"}
                 {(create_path && this.props.add) &&
                   <a href={create_path[this.props.section_data.object_type]}
                     ><img
-                      class="create-button link-image" title="Add New"
+                      class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title="Add New"
                       src={iconpath+"add_new.svg"}
                   /></a>
                 }
@@ -289,12 +289,12 @@ class ProjectMenuUnconnected extends React.Component{
         return(
             <div class="project-menu">
                 <div class="project-header">
-                    <h2>{this.state.title} {this.props.project.author_id==user_id  &&
-                        <a class="action-button" onClick ={ this.openEdit.bind(this)}>
+                    <h2 id="project-title">{this.state.title} {this.props.project.author_id==user_id  &&
+                        <a class="action-button" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
                             <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
                         </a>
                     }</h2>
-                    <p>{this.state.description}</p>
+                    <p id="project-description">{this.state.description}</p>
                     {this.state.published &&
                         <p>{"This project has been published and is visibile to all"}</p>
                     }
@@ -333,7 +333,7 @@ export const ProjectMenu = connect(
 export class ProjectEditMenu extends React.Component{
     constructor(props){
         super(props);
-        this.state=props.data;
+        this.state={...props.data};
     }
     
     render(){
@@ -344,15 +344,15 @@ export class ProjectEditMenu extends React.Component{
                 <h3>{"Edit Project:"}</h3>
                 <div>
                     <h4>Title:</h4>
-                    <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
+                    <input id="project-title-input" value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
                 </div>
                 <div>
                     <h4>Description:</h4>
-                    <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
+                    <input id="project-description-input" value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
                 </div>
                 <div>
                     <h4>Published:</h4>
-                    <input type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
+                    <input id="project-publish-input" type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
                     <label for="published">Is Published (visible to all users)</label>
                 </div>
                 <div class="action-bar">
@@ -386,9 +386,8 @@ export class ProjectEditMenu extends React.Component{
     getActions(){
         var actions = [];
         actions.push(
-            <button onClick={()=>{
+            <button id="save-changes" onClick={()=>{
                 updateValueInstant(this.state.id,"project",this.state);
-                if(this.state.published!=this.props.data.published)togglePublish();
                 this.props.actionFunction(this.state);
                 closeMessageBox();
             }}>
