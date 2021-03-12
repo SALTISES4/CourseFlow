@@ -221,7 +221,7 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         return(
-            <ActionButton button_icon="create_new_child.svg" button_class="insert-sibling-button" titletext="Insert Child" handleClick={()=>{
+            <ActionButton button_icon="create_new_child.svg" button_class="insert-child-button" titletext="Insert Child" handleClick={()=>{
             tiny_loader.startLoad();
             insertChild(data.id,this.objectType,
                 (response_data)=>{
@@ -247,7 +247,7 @@ export class ComponentJSON extends React.Component{
                     {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Title:</h4>
-                            <input type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
+                            <input id="title-editor" type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
@@ -259,7 +259,7 @@ export class ComponentJSON extends React.Component{
                     {type=="node" && data.node_type<2 &&
                         <div>
                             <h4>Context:</h4>
-                            <select value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
+                            <select  id="context-editor" value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
                                 {context_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
@@ -269,7 +269,7 @@ export class ComponentJSON extends React.Component{
                     {type=="node" && data.node_type<2 &&
                         <div>
                             <h4>Task:</h4>
-                            <select value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
+                            <select id="task-editor" value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
                                 {task_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
@@ -280,8 +280,8 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>Time:</h4>
                             <div>
-                                <input class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
-                                <select class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
+                                <input id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
+                                <select id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
                                     {time_choices.map((choice)=>
                                         <option value={choice.type}>{choice.name}</option>
                                     )}
@@ -293,7 +293,7 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>Linked Workflow:</h4>
                             <div>{data.linked_workflow_title}</div>
-                            <button onClick={()=>{getLinkedWorkflowMenu(data,(response_data)=>{
+                            <button  id="linked-workflow-editor" onClick={()=>{getLinkedWorkflowMenu(data,(response_data)=>{
                                 let action = setLinkedWorkflowAction(response_data);
                                 props.dispatch(action);
                             })}}>
@@ -335,7 +335,7 @@ export class ComponentJSON extends React.Component{
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
                             </select>
-                            <button onClick = {()=>{
+                            <button id="toggle-strategy-editor" onClick = {()=>{
                                 let loader = new Constants.Loader('body');
                                 toggleStrategy(data.id,data.is_strategy,
                                 (response_data)=>{

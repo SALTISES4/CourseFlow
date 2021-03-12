@@ -1188,6 +1188,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "is_original",
             "parent_workflow",
             "outcomes_sort",
+            "outcomes_type",
             "is_strategy",
             "published",
             "type",

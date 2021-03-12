@@ -74,7 +74,7 @@ export class WorkflowsMenu extends React.Component{
             var text="link to node";
             if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text="copy to current project and "+text;
             actions.push(
-                <button disabled={!this.state.selected} onClick={()=>{
+                <button id="set-linked-workflow" disabled={!this.state.selected} onClick={()=>{
                     setLinkedWorkflow(this.props.data.node_id,this.state.selected,this.props.actionFunction)
                     closeMessageBox();
                 }}>
@@ -82,7 +82,7 @@ export class WorkflowsMenu extends React.Component{
                 </button>
             );
             actions.push(
-                <button onClick={()=>{
+                <button id="set-linked-workflow-none" onClick={()=>{
                     setLinkedWorkflow(this.props.data.node_id,-1,this.props.actionFunction)
                     closeMessageBox();
                 }}>
@@ -90,7 +90,7 @@ export class WorkflowsMenu extends React.Component{
                 </button>
             );
             actions.push(
-                <button onClick={closeMessageBox}>
+                <button id="set-linked-workflow-cancel" onClick={closeMessageBox}>
                     cancel
                 </button>
             );
