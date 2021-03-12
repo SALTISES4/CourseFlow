@@ -57,6 +57,7 @@ from .decorators import (
     is_owner_or_none,
     is_owner_or_published,
     is_strategy_owner_or_published,
+    is_none_or_owner_or_published
 )
 from django.urls import reverse
 from django.views.generic.edit import CreateView
@@ -2109,6 +2110,7 @@ def set_linked_workflow(node: Node, workflow):
 @require_POST
 @ajax_login_required
 @is_owner("nodePk")
+@is_none_or_owner_or_published("workflowPk")
 def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
     try:
         node_id = json.loads(request.POST.get("nodePk"))
@@ -2123,15 +2125,12 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             linked_workflow_description = None
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
-            if(workflow.published or workflow.author == request.user):
-                set_linked_workflow(node, workflow)
-                if node.linked_workflow is None:
-                    raise ValidationError("Project could not be found")
-                linked_workflow = node.linked_workflow.id
-                linked_workflow_title = node.linked_workflow.title
-                linked_workflow_description = node.linked_workflow.description
-            else:
-                raise ValidationError
+            set_linked_workflow(node, workflow)
+            if node.linked_workflow is None:
+                raise ValidationError("Project could not be found")
+            linked_workflow = node.linked_workflow.id
+            linked_workflow_title = node.linked_workflow.title
+            linked_workflow_description = node.linked_workflow.description
 
     except ValidationError:
         return JsonResponse({"action": "error"})
