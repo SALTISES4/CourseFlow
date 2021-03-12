@@ -12,6 +12,7 @@ import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
 
 export {Loader} from './Constants';
+export {fail_function} from './PostFunctions';
 
 //Manages the current selection, ensuring we only have one at a time
 export class SelectionManager{

@@ -96,6 +96,7 @@ strategy_classification_choices = {{strategy_classification_choices|safe}}
 is_strategy = {{is_strategy|safe}}
 
 
+
 const user_id = {{ user.id }};
 const create_path=null;
     
@@ -126,6 +127,7 @@ $(document).on("ports-rendered",(evt)=>{
 });
     
 window.addEventListener("load", function(){
+    $(document).ajaxError(workflow_redux.fail_function);
     
     selection_manager = new workflow_redux.SelectionManager(); 
     tiny_loader = new workflow_redux.TinyLoader('#container');

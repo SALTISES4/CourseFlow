@@ -73,6 +73,7 @@
     {% endif %}
     
     window.addEventListener("load",function(){
+        $(document).ajaxError(outcome_scripts.fail_function);
         tiny_loader = new workflow_redux.TinyLoader('#container');
         selection_manager = new workflow_redux.SelectionManager();
         outcome_scripts.renderOutcomeView($("#container").get()[0]);
