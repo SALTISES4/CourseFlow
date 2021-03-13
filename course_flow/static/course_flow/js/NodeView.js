@@ -45,8 +45,8 @@ class NodeView extends ComponentJSON{
         if(outcomenodes.length>0){
             outcomeDiv = (
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column}>{outcomenodes.length}</div>
-                    <div class={"outcome-node-container column-"+data.column}>{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:column_colours[data.column]}}>{outcomenodes.length}</div>
+                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:column_colours[data.column]}}>{outcomenodes}</div>
                 </div>
             );
         }
@@ -76,7 +76,7 @@ class NodeView extends ComponentJSON{
         return (
             <div 
                 style={
-                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px"}
+                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:column_colours[data.column]}
                 } 
                 class={
                     "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]

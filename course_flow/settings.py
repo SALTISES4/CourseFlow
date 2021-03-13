@@ -21,6 +21,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = "course_flow"
 
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -58,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "csp.middleware.CSPMiddleware",
 ]
 
 ROOT_URLCONF = "course_flow.test_urls"
@@ -76,6 +78,30 @@ TEMPLATES = [
             ]
         },
     }
+]
+
+CSP_DEFAULT_SRC = ["'self'", "*.mydalite.org"]
+CSP_SCRIPT_SRC = [
+    "'self'",
+    "*.mydalite.org",
+    "d3js.org",
+    "ajax.googleapis.com",
+    "cdn.polyfill.io",
+    "cdn.quilljs.com",
+]
+CSP_STYLE_SRC = [
+    "'self'",
+    "*.mydalite.org",
+    "ajax.googleapis.com",
+    "cdn.quilljs.com",
+]
+CSP_FONT_SRC = [
+    "'self'",
+    "*.mydalite.org",
+]
+CSP_INCLUDE_NONCE_IN = [
+    "script-src",
+    "style-src",
 ]
 
 LOGIN_URL = "course_flow:login"
