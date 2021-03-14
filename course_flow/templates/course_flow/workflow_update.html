@@ -74,7 +74,7 @@ $("#sidebar").tabs({
     }
 });
     
-$("#sidebar").on("mouseup",(evt)=>{evt.stopPropagation();});    
+$("#sidebar").on("mouseup dblclick mousedown",(evt)=>{evt.stopPropagation();});
 
 if(read_only)$("#sidebar").hide();
 else{

@@ -81,7 +81,6 @@ class NodeView extends ComponentJSON{
                 class={
                     "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
                 }
-                onDoubleClick={this.doubleClick.bind(this)}
                 id={data.id} 
                 ref={this.maindiv} 
                 onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}
@@ -130,6 +129,7 @@ class NodeView extends ComponentJSON{
         $(document).on("render-ports render-links",()=>{this.setState({})});
         if(this.state.initial_render)this.setState({initial_render:false,port_render:true});
         this.makeDroppable();
+        $(this.maindiv.current).on("dblclick",this.doubleClick.bind(this));
     }
 
     componentDidUpdate(prevProps){

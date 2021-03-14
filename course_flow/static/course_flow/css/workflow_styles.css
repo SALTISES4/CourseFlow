@@ -887,7 +887,6 @@ circle.mouseover{
 
 
 .right-panel-container{
-    overflow:hidden;
     float:right;
     box-shadow: -1px 0px 3px -1px;
     background:white;
@@ -966,6 +965,7 @@ circle.mouseover{
 
 .side-bar .quill-div{
     min-height:140px;
+    position:unset;
 }
 
 .side-bar input.half-width, .side-bar select.half-width{
@@ -989,8 +989,6 @@ circle.mouseover{
 }
 
 .right-panel-inner{
-    display:inline;
-    overflow-x:hidden;
     overflow-y:auto;
     display:inline-block;
     padding:20px;

@@ -638,7 +638,7 @@ export class QuillDiv extends React.Component{
         toolbar.defaultLinkFunction=toolbar.handlers['link'];
         toolbar.addHandler("link",function customLinkFunction(value){
             var select = quill.getSelection();
-            if(value&&select['length']==0&&!readOnly){
+            if(value&&select['length']==0&&!read_only){
                 quill.insertText(select['index'],'link');
                 quill.setSelection(select['index'],4);
             }

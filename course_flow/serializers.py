@@ -27,6 +27,8 @@ import bleach
 
 bleach_allowed_tags = [
     "b",
+    "u",
+    "em",
     "i",
     "ul",
     "ol",

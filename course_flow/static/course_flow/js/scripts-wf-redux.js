@@ -41,7 +41,7 @@ export class SelectionManager{
         if(this.currentSelection)this.currentSelection.setState({selected:false});
         this.currentSelection=newSelection;
         if(this.currentSelection){
-            if($("#sidebar).tabs("option","active")!==0)this.last_sidebar_tab = $("#sidebar").tabs( "option", "active");
+            if($("#sidebar").tabs("option","active")!==0)this.last_sidebar_tab = $("#sidebar").tabs( "option", "active");
             $("#sidebar").tabs("enable",0);
             $("#sidebar").tabs( "option", "active", 0 );
             this.currentSelection.setState({selected:true});
