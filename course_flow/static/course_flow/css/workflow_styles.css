@@ -885,6 +885,7 @@ circle.mouseover{
     bottom:0px;
 }
 
+
 .right-panel-container{
     overflow:hidden;
     float:right;
@@ -898,6 +899,9 @@ circle.mouseover{
     position:relative;
 }
 
+.side-bar.collapsed .window-close-button{
+    display:none;
+}
 
 .side-bar .ui-tabs-nav{
     margin:5px -2px 5px 5px; 
@@ -915,8 +919,8 @@ circle.mouseover{
 }
 
 .side-bar .ui-tabs-tab.ui-state-disabled{
-    visibility:hidden;
-    height:0px;
+    background-color:#DDDDDD;
+    cursor:default;
 }
 
 .side-bar .ui-tabs-tab a{
@@ -924,7 +928,7 @@ circle.mouseover{
     display:block;
     text-decoration:none;
     color:lightgray;
-    filter:grayscale(100%) brightness(1.7);
+    filter:grayscale(100%) brightness(1.5);
     box-sizing:border-box;
     height:100%;
 }

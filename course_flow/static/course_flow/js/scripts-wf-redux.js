@@ -32,6 +32,7 @@ export class SelectionManager{
                 selector.changeSelection(evt,null);
             }
         });
+        this.last_sidebar_tab = $("#sidebar").tabs( "option", "active");
     }
     
     changeSelection(evt,newSelection){
@@ -40,11 +41,12 @@ export class SelectionManager{
         if(this.currentSelection)this.currentSelection.setState({selected:false});
         this.currentSelection=newSelection;
         if(this.currentSelection){
+            if($("#sidebar).tabs("option","active")!==0)this.last_sidebar_tab = $("#sidebar").tabs( "option", "active");
             $("#sidebar").tabs("enable",0);
-            if($("#sidebar").tabs( "option", "active" )>0)$("#sidebar").tabs( "option", "active", 0 );
+            $("#sidebar").tabs( "option", "active", 0 );
             this.currentSelection.setState({selected:true});
         }else{
-            if($("#sidebar").tabs( "option", "active" )===0&& $("#sidebar>ul>li").length>1)$("#sidebar").tabs( "option", "active", 1 );
+            if($("#sidebar").tabs( "option", "active" )===0)$("#sidebar").tabs( "option", "active", this.last_sidebar_tab );
             $("#sidebar").tabs("disable",0);
         }
     }

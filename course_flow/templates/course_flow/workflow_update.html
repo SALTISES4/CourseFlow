@@ -29,6 +29,9 @@
         <div id="outcome-bar" class="right-panel-container"></div>
         <div id="strategy-bar" class="right-panel-container"></div>
     {% endif %}
+    <div class="window-close-button" id="side-bar-close-button">
+        <img src = "{% static 'course_flow/img/images_svg/close.svg' %}"/>
+    </div>
 </div>
 
 
@@ -61,11 +64,25 @@ const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 var selection_manager;
 var tiny_loader;
 
-$("#sidebar").tabs({collapsible:true,active:1,disabled:[0]});
+$("#sidebar").tabs({
+    active:1,
+    disabled:[0],
+    collapsible:true,
+    activate:(evt,ui)=>{
+        if(ui.oldTab.length==0)$("#sidebar").removeClass("collapsed");
+        else if(ui.newTab.length==0)$("#sidebar").addClass("collapsed");
+    }
+});
     
 $("#sidebar").on("mouseup",(evt)=>{evt.stopPropagation();});    
 
-if(read_only)$("#sidebar").hide();    
+if(read_only)$("#sidebar").hide();
+else{
+    $("#side-bar-close-button").on("click",()=>{
+        $("#sidebar").addClass("collapsed");
+        $("#sidebar").tabs("option","active",false);
+    });
+}
     
 {% if parent_project_pk %}
     if(read_only){

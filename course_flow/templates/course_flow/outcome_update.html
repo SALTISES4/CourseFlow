@@ -10,11 +10,14 @@
 <!-- -->
 {% block body %}
 <div id=container class="body-wrapper"></div><div id="popup-container"></div>
-<div id="sidebar" class="side-bar">
+<div id="sidebar" class="side-bar collapsed">
     <ul>
         <li><a href="#edit-menu"><img src="{% static 'course_flow/img/images_svg/edit_pencil_blue.svg' %}"/></a></li>
     </ul>
     <div id="edit-menu" class="right-panel-container"></div>
+    <div class="window-close-button" id="side-bar-close-button">
+        <img src = "{% static 'course_flow/img/images_svg/close.svg' %}"/>
+    </div>
 </div>
 <!-- -->
 {% endblock %}
@@ -58,11 +61,26 @@
     const user_id = {{ user.id }};
     const initial_loading=false;
     
-    $("#sidebar").tabs({collapsible:true,active:0,disabled:null});
+    $("#sidebar").tabs({
+        active:false,
+        disabled:[0],
+        collapsible:true,
+        activate:(evt,ui)=>{
+            if(ui.oldTab.length==0)$("#sidebar").removeClass("collapsed");
+        else if(ui.newTab.length==0)$("#sidebar").addClass("collapsed");
+        }
+    });
 
     $("#sidebar").on("mousedown",(evt)=>{evt.stopPropagation()});    
 
-    if(read_only)$("#sidebar").hide();    
+    if(read_only)$("#sidebar").hide();
+    else{
+        $("#side-bar-close-button").on("click",()=>{
+            $("#sidebar").addClass("collapsed");
+            $("#sidebar").tabs("option","active",false);
+        });
+    }
+        
     
     {% if parent_project_pk %}
         if(read_only){
