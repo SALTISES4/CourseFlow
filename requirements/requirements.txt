@@ -4,9 +4,9 @@
 #
 #    pip-compile requirements/requirements.in
 #
--e git+https://github.com/SALTISES4/UserFeedback@8b25b254ac30a823a500edf7ed60ed1abee32cc6#egg=user_feedback
-    # via -r requirements/requirements.in
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
+    # via -r requirements/requirements.in
+-e git+https://github.com/SALTISES4/UserFeedback@8b25b254ac30a823a500edf7ed60ed1abee32cc6#egg=user_feedback
     # via -r requirements/requirements.in
 appdirs==1.4.4
     # via virtualenv
@@ -54,12 +54,6 @@ identify==1.5.6
     # via pre-commit
 idna==2.10
     # via requests
-importlib-metadata==2.0.0
-    # via
-    #   pluggy
-    #   pre-commit
-    #   pytest
-    #   virtualenv
 iniconfig==1.1.1
     # via pytest
 jsonfield==3.1.0
@@ -143,9 +137,7 @@ virtualenv==20.1.0
 webencodings==0.5.1
     # via bleach
 zipp==0.6.0
-    # via
-    #   -r requirements/requirements.in
-    #   importlib-metadata
+    # via -r requirements/requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
