@@ -15,4 +15,4 @@ django-model-utils
 
 
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
--e git+https://github.com/aahilgert/UserFeedback@master#egg=user_feedback
+-e git+https://github.com/SALTISES4/UserFeedback@8b25b254ac30a823a500edf7ed60ed1abee32cc6#egg=user_feedback
