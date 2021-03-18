@@ -299,6 +299,22 @@ export function addOutcomeToNode(nodePk,outcome,callBackFunction=()=>console.log
     }
 }
 
+//Add an outcome to a node
+export function toggleFavourite(objectID,objectType,favourite,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.toggle_favourite, {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            favourite:JSON.stringify(favourite),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 
 //Duplicate a project workflow, strategy, or outcome
 export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=()=>console.log("success")){
@@ -340,4 +356,15 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
 
     
     
+}
+
+//Add an outcome to a node
+export function getDisciplines(callBackFunction=()=>console.log("success")){
+    try{
+        $.get(get_paths.get_disciplines).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
 }

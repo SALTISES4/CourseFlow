@@ -597,7 +597,7 @@ export class TitleText extends React.Component{
             text=this.props.defaultText;
         }
         return (
-            <div dangerouslySetInnerHTML={{ __html: text }}></div>
+            <div class="title-text" dangerouslySetInnerHTML={{ __html: text }}></div>
         )
     }
 

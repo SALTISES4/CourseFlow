@@ -24,6 +24,7 @@ def flow_patterns():
         ),
         url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
         url(r"home/$", views.home_view, name="home"),
+        url(r"explore/$", views.ExploreView.as_view(), name="explore"),
         url(r"import/$", views.import_view, name="import"),
         url(
             r"^project/(?P<pk>[0-9]+)/update/$",
@@ -115,6 +116,14 @@ def flow_patterns():
             r"^project/from-json/",
             views.project_from_json,
             name="project-from-json",
+        ),
+        url(
+            r"^project/get-disciplines/",
+            views.DisciplineListView.as_view(),
+            name="get-disciplines",
+        ),
+        url(
+            r"^favourites/toggle", views.toggle_favourite, name="toggle-favourite"
         ),
         url(
             r"^workflow/node/set-linked-workflow/$",

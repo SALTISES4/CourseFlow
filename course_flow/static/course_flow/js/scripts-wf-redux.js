@@ -6,7 +6,7 @@ import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
 import {ComponentJSON} from "./ComponentJSON.js";
 import WorkflowView from"./WorkflowView.js";
-import {ProjectMenu, HomeMenu, renderMessageBox} from"./MenuComponents.js";
+import {ProjectMenu, HomeMenu, ExploreMenu, renderMessageBox} from"./MenuComponents.js";
 import {NodeBar, WorkflowView_Outcome} from"./WorkflowView.js";
 import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
@@ -99,6 +99,13 @@ export function renderHomeMenu(data_package){
         <Provider store = {store}>
             <HomeMenu/>
         </Provider>,
+        $("#content-container")[0]
+    );
+}
+
+export function renderExploreMenu(data_package,disciplines){
+    reactDom.render(
+        <ExploreMenu data_package={data_package} disciplines={disciplines} pages={pages}/>,
         $("#content-container")[0]
     );
 }

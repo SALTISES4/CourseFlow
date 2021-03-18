@@ -18,6 +18,12 @@ from .models import (
     Outcome,
     OutcomeOutcome,
     OutcomeNode,
+    Discipline,
+    ProjectFavourite,
+    ActivityFavourite,
+    CourseFavourite,
+    ProgramFavourite,
+    OutcomeFavourite,
 )
 from .serializers import (
     serializer_lookups,
@@ -45,6 +51,8 @@ from .serializers import (
     OutcomeOutcomeSerializerShallow,
     OutcomeNodeSerializerShallow,
     OutcomeProjectSerializerShallow,
+    DisciplineSerializer,
+    InfoBoxSerializer,
     bleach_allowed_tags,
     bleach_sanitizer,
 )
@@ -61,11 +69,12 @@ from .decorators import (
 )
 from django.urls import reverse
 from django.views.generic.edit import CreateView
-from django.views.generic import DetailView, UpdateView
+from django.views.generic import DetailView, UpdateView, TemplateView, ListView
 from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer
+from rest_framework.generics import ListAPIView
 from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.db.models import Count
+from django.db.models import Count, Q
 import json
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -79,6 +88,8 @@ from django.shortcuts import render, redirect
 from django.db.models import ProtectedError
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 import math
+from functools import reduce
+from itertools import chain, islice, tee
 from .utils import (
     get_model_from_str,
     get_parent_model_str,
@@ -118,6 +129,74 @@ def registration_view(request):
         request, "course_flow/registration/registration.html", {"form": form}
     )
 
+class ExploreView(LoginRequiredMixin,UserPassesTestMixin,TemplateView):
+
+    def test_func(self):
+        return (
+            Group.objects.get(name=settings.TEACHER_GROUP)
+            in self.request.user.groups.all()
+        )
+    
+    template_name = "course_flow/explore.html"
+    
+    def get_context_data(self):
+        print(self.request.GET)
+        types = self.request.GET.getlist("types[]",None)
+        author = self.request.GET.get("auth",None)
+        disciplines = self.request.GET.getlist("disc[]",None)
+        title = self.request.GET.get("title",None)
+        description = self.request.GET.get("des",None)
+        sort = self.request.GET.get("sort",None)
+        page = self.request.GET.get("page",1)
+        results = self.request.GET.get("results",20)
+        filter_kwargs = {'published':True}
+        if title: filter_kwargs['title__icontains']=title
+        if description: filter_kwargs['description__icontains']=description
+        if author: filter_kwargs['author__username__icontains']=author
+        if page:page=int(page)
+        else: page=1
+        if results: results=int(results)
+        else: results = 10
+        disciplines = Discipline.objects.filter(id__in=disciplines)
+        print(disciplines)
+        if len(disciplines)>0:
+            filter_kwargs['disciplines__in'] = disciplines
+            print(Project.objects.filter(**filter_kwargs))
+        try:
+            queryset = reduce(lambda x,y: chain(x,y), [
+                get_model_from_str(model_type).objects.filter(depth=0,**filter_kwargs).exclude(author=self.request.user).distinct() if model_type =="outcome" else get_model_from_str(model_type).objects.filter(**filter_kwargs).exclude(author=self.request.user).distinct()
+                for model_type in types])
+        except:
+            queryset = Project.objects.none()
+            print("failed")
+        total_results = 0
+        subqueryset = []
+        for x in queryset:
+            if(total_results>=(page-1)*results and total_results<page*results):subqueryset.append(x)
+            total_results=total_results+1
+        page_number = math.floor(total_results/results)+1
+        object_list = JSONRenderer().render(
+            InfoBoxSerializer(subqueryset,many=True,context={'user':self.request.user}).data
+        ).decode('utf-8')
+        return {
+            'object_list':object_list,
+            'pages':JSONRenderer().render({
+                'total_results':total_results,
+                'page_count':page_number,
+                'current_page':page,
+                'results_per_page':results,
+            }).decode('utf-8'),
+            'disciplines':JSONRenderer().render(
+                DisciplineSerializer(Discipline.objects.all(),many=True).data
+            ).decode('utf-8')
+        }
+    
+    
+    
+        
+        
+        
+
 
 def get_all_outcomes(outcome, search_depth):
     if search_depth > 10:
@@ -136,8 +215,10 @@ def get_project_data_package(user):
                 {
                     "title": "Add a Project",
                     "object_type": "project",
-                    "objects": ProjectSerializerShallow(
-                        Project.objects.filter(author=user), many=True
+                    "objects": InfoBoxSerializer(
+                        Project.objects.filter(author=user), 
+                        many=True,
+                        context={'user':user},
                     ).data,
                 }
             ],
@@ -150,17 +231,19 @@ def get_project_data_package(user):
                 {
                     "title": "Add an Activity-Level Strategy",
                     "object_type": "activity",
-                    "objects": ActivitySerializerShallow(
+                    "objects": InfoBoxSerializer(
                         Activity.objects.filter(author=user, is_strategy=True),
                         many=True,
+                        context={'user':user},
                     ).data,
                 },
                 {
                     "title": "Add a Course-Level Strategy",
                     "object_type": "course",
-                    "objects": CourseSerializerShallow(
+                    "objects": InfoBoxSerializer(
                         Course.objects.filter(author=user, is_strategy=True),
                         many=True,
+                        context={'user':user},
                     ).data,
                 },
             ],
@@ -168,42 +251,39 @@ def get_project_data_package(user):
             "duplicate": "copy",
         },
         "other_projects": {
-            "title": "Published Projects",
+            "title": "Favourite Projects",
             "sections": [
                 {
-                    "title": "Published Projects",
+                    "title": "Your Favourite Projects",
                     "object_type": "project",
-                    "objects": ProjectSerializerShallow(
-                        Project.objects.filter(published=True).exclude(
-                            author=user
-                        ),
+                    "objects": InfoBoxSerializer(
+                        [favourite.project for favourite in ProjectFavourite.objects.filter(user=user,project__published=True)],
                         many=True,
+                        context={'user':user},
                     ).data,
                 }
             ],
             "duplicate": "import",
         },
         "other_strategies": {
-            "title": "Published Strategies",
+            "title": "Favourite Strategies",
             "sections": [
                 {
-                    "title": "Published Activity-Level Strategies",
+                    "title": "Your Favourite Activity-Level Strategies",
                     "object_type": "activity",
-                    "objects": ActivitySerializerShallow(
-                        Activity.objects.filter(
-                            published=True, is_strategy=True
-                        ).exclude(author=user),
+                    "objects": InfoBoxSerializer(
+                        [favourite.activity for favourite in ActivityFavourite.objects.filter(user=user,activity__published=True,activity__is_strategy=True)],
                         many=True,
+                        context={'user':user},
                     ).data,
                 },
                 {
-                    "title": "Published Course-Level Strategies",
+                    "title": "Your Favourite Course-Level Strategies",
                     "object_type": "course",
-                    "objects": CourseSerializerShallow(
-                        Course.objects.filter(
-                            published=True, is_strategy=True
-                        ).exclude(author=user),
+                    "objects": InfoBoxSerializer(
+                        [favourite.course for favourite in CourseFavourite.objects.filter(user=user,course__published=True,course__is_strategy=True)],
                         many=True,
+                        context={'user':user},
                     ).data,
                 },
             ],
@@ -222,9 +302,10 @@ def get_workflow_data_package(user, project, type_filter):
             {
                 "title": "Programs",
                 "object_type": "program",
-                "objects": ProgramSerializerShallow(
+                "objects": InfoBoxSerializer(
                     Program.objects.filter(project=project, is_strategy=False),
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
@@ -232,23 +313,23 @@ def get_workflow_data_package(user, project, type_filter):
             {
                 "title": "Programs",
                 "object_type": "program",
-                "objects": ProgramSerializerShallow(
+                "objects": InfoBoxSerializer(
                     Program.objects.filter(
                         author=user, is_strategy=False
                     ).exclude(project=project),
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
         all_published_sections.append(
             {
-                "title": "Programs",
+                "title": "Your Favourite Programs",
                 "object_type": "program",
-                "objects": ProgramSerializerShallow(
-                    Program.objects.filter(published=True, is_strategy=False)
-                    .exclude(author=user)
-                    .exclude(project=project),
+                "objects": InfoBoxSerializer(
+                    [favourite.program for favourite in ProgramFavourite.objects.filter(user=user,program__published=True,program__is_strategy=False)],
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
@@ -257,9 +338,10 @@ def get_workflow_data_package(user, project, type_filter):
             {
                 "title": "Courses",
                 "object_type": "course",
-                "objects": CourseSerializerShallow(
+                "objects": InfoBoxSerializer(
                     Course.objects.filter(project=project, is_strategy=False),
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
@@ -267,23 +349,23 @@ def get_workflow_data_package(user, project, type_filter):
             {
                 "title": "Courses",
                 "object_type": "course",
-                "objects": CourseSerializerShallow(
+                "objects": InfoBoxSerializer(
                     Course.objects.filter(
                         author=user, is_strategy=False
                     ).exclude(project=project),
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
         all_published_sections.append(
             {
-                "title": "Courses",
+                "title": "Your Favourite Courses",
                 "object_type": "course",
-                "objects": CourseSerializerShallow(
-                    Course.objects.filter(published=True, is_strategy=False)
-                    .exclude(author=user)
-                    .exclude(project=project),
+                "objects": InfoBoxSerializer(
+                    [favourite.course for favourite in CourseFavourite.objects.filter(user=user,course__published=True,course__is_strategy=False)],
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
@@ -293,11 +375,12 @@ def get_workflow_data_package(user, project, type_filter):
             {
                 "title": "Activities",
                 "object_type": "activity",
-                "objects": ActivitySerializerShallow(
+                "objects": InfoBoxSerializer(
                     Activity.objects.filter(
                         project=project, is_strategy=False
                     ),
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
@@ -305,23 +388,23 @@ def get_workflow_data_package(user, project, type_filter):
             {
                 "title": "Activities",
                 "object_type": "activity",
-                "objects": ActivitySerializerShallow(
+                "objects": InfoBoxSerializer(
                     Activity.objects.filter(
                         author=user, is_strategy=False
                     ).exclude(project=project),
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
         all_published_sections.append(
             {
-                "title": "Activities",
+                "title": "Your Favourite Activities",
                 "object_type": "activity",
-                "objects": ActivitySerializerShallow(
-                    Activity.objects.filter(published=True, is_strategy=False)
-                    .exclude(author=user)
-                    .exclude(project=project),
+                "objects": InfoBoxSerializer(
+                    [favourite.activity for favourite in ActivityFavourite.objects.filter(user=user,activity__published=True,activity__is_strategy=False)],
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
@@ -331,8 +414,10 @@ def get_workflow_data_package(user, project, type_filter):
             {
                 "title": "Outcomes",
                 "object_type": "outcome",
-                "objects": OutcomeSerializerShallow(
-                    Outcome.objects.filter(project=project), many=True
+                "objects": InfoBoxSerializer(
+                    Outcome.objects.filter(project=project),
+                    many=True,
+                    context={'user':user},
                 ).data,
             }
         )
@@ -340,24 +425,23 @@ def get_workflow_data_package(user, project, type_filter):
             {
                 "title": "Outcomes",
                 "object_type": "outcome",
-                "objects": OutcomeSerializerShallow(
+                "objects": InfoBoxSerializer(
                     Outcome.objects.filter(author=user)
                     .exclude(project=project)
                     .exclude(project=None),
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
         all_published_sections.append(
             {
-                "title": "Outcomes",
+                "title": "Your Favourite Outcomes",
                 "object_type": "outcome",
-                "objects": OutcomeSerializerShallow(
-                    Outcome.objects.filter(published=True)
-                    .exclude(author=user)
-                    .exclude(project=project)
-                    .exclude(project=None),
+                "objects": InfoBoxSerializer(
+                    [favourite.outcome for favourite in OutcomeFavourite.objects.filter(user=user,outcome__published=True)],
                     many=True,
+                    context={'user':user},
                 ).data,
             }
         )
@@ -940,6 +1024,8 @@ class ActivityStrategyCreateView(
 
 def save_serializer(serializer) -> HttpResponse:
     if serializer:
+        print(serializer.is_valid())
+        print(serializer.errors)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse({"action": "posted"})
@@ -1078,6 +1164,11 @@ def save_serializer(serializer) -> HttpResponse:
 """
 Contextual information methods
 """
+
+class DisciplineListView(LoginRequiredMixin, ListAPIView):
+    queryset = Discipline.objects.order_by('title')
+    serializer_class = DisciplineSerializer
+
 
 
 @require_POST
@@ -1300,7 +1391,7 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "new_item": WorkflowSerializerShallow(clone).data,
+            "new_item": InfoBoxSerializer(clone,context={'user':request.user}).data,
             "type": clone.type,
         }
     )
@@ -1319,7 +1410,7 @@ def duplicate_strategy_ajax(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "new_item": WorkflowSerializerShallow(clone).data,
+            "new_item": InfoBoxSerializer(clone,context={'user':request.user}).data,
             "type": clone.type,
         }
     )
@@ -1362,7 +1453,7 @@ def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "new_item": OutcomeSerializerShallow(clone).data,
+            "new_item": InfoBoxSerializer(clone,context={'user':request.user}).data,
             "type": "outcome",
         }
     )
@@ -1395,6 +1486,9 @@ def duplicate_project(project: Project, author: User) -> Project:
                 workflow=workflow, project=project
             ).rank,
         )
+        
+    for discipline in project.disciplines.all():
+        new_project.disciplines.add(discipline)
 
     outcomes_set = get_project_outcomes(new_project)
     for workflow in new_project.workflows.all():
@@ -1416,7 +1510,7 @@ def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "new_item": ProjectSerializerShallow(clone).data,
+            "new_item": InfoBoxSerializer(clone,context={'user':request.user}).data,
             "type": "project",
         }
     )
@@ -1893,6 +1987,39 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     }
     return JsonResponse(response)
 
+#favourite/unfavourite a project or workflow or outcome for a user
+@require_POST
+@ajax_login_required
+@is_owner_or_published(False)
+def toggle_favourite(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    objectType = json.loads(request.POST.get("objectType"))
+    favourite = json.loads(request.POST.get("favourite"))
+    response = {}
+    print("Adding a favourite")
+    print(favourite)
+    try:
+        item = get_model_from_str(objectType).objects.get(id=object_id)
+        search_kwargs = {}
+        search_kwargs[objectType]=item
+        favourite_model = get_model_from_str(objectType+"favourite")
+        current_favourite = favourite_model.objects.filter(user=request.user,**search_kwargs)
+        print(current_favourite)
+        if current_favourite.count()>=1:
+            if favourite:
+                pass
+            else:
+                current_favourite.delete()
+        else:
+            if favourite:
+                favourite_model.objects.create(user=request.user,**search_kwargs)
+            else:
+                pass
+        response["action"]="posted"
+    except:
+        response["action"]="error"
+    
+    return JsonResponse(response)
 
 """
 Reorder methods
@@ -2042,6 +2169,7 @@ def update_value(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("objectID"))
         object_type = json.loads(request.POST.get("objectType"))
         data = json.loads(request.POST.get("data"))
+        print(data)
         objects = get_model_from_str(object_type).objects
         if hasattr(objects, "get_subclass"):
             object_to_update = objects.get_subclass(pk=object_id)

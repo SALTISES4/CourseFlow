@@ -32,12 +32,20 @@ class Project(models.Model):
     parent_project = models.ForeignKey(
         "Project", on_delete=models.SET_NULL, null=True
     )
+    
+    disciplines = models.ManyToManyField(
+        "Discipline", blank=True
+    )
 
+    @property
+    def type(self):
+        return "project"
+    
     class Meta:
         verbose_name = "Project"
         verbose_name_plural = "Projects"
 
-
+        
 class WorkflowProject(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     workflow = models.ForeignKey("Workflow", on_delete=models.CASCADE)
@@ -166,7 +174,14 @@ class Outcome(models.Model):
         blank=True,
         related_name="parent_outcomes",
     )
-
+    
+    disciplines = models.ManyToManyField(
+            "Discipline", blank=True
+    )
+    @property
+    def type(self):
+        return "outcome"
+    
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
@@ -477,7 +492,10 @@ class Workflow(models.Model):
     is_original = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-
+    
+    disciplines = models.ManyToManyField(
+        "Discipline", blank=True
+    )
     weeks = models.ManyToManyField(Week, through="WeekWorkflow", blank=True)
 
     columns = models.ManyToManyField(
@@ -581,10 +599,6 @@ class Course(Workflow):
         null=True,
     )
 
-    discipline = models.ForeignKey(
-        "Discipline", on_delete=models.SET_NULL, null=True
-    )
-
     students = models.ManyToManyField(
         User, related_name="assigned_courses", blank=True
     )
@@ -671,6 +685,22 @@ class Discipline(models.Model):
         verbose_name_plural = _("disciplines")
 
 
+class ProjectFavourite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
+class ActivityFavourite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    activity = models.ForeignKey(Activity, on_delete=models.CASCADE, null=True)
+class CourseFavourite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
+class ProgramFavourite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    program = models.ForeignKey(Program, on_delete=models.CASCADE, null=True)
+class OutcomeFavourite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE, null=True)
+    
 """
 Other receivers
 """
@@ -826,9 +856,11 @@ Default content creation receivers
 def set_publication_of_project_objects(sender, instance, created, **kwargs):
     for workflow in instance.workflows.all():
         workflow.published = instance.published
+        workflow.disciplines.set(instance.disciplines.all())
         workflow.save()
     for outcome in instance.outcomes.all():
         outcome.published = instance.published
+        outcome.disciplines.set(instance.disciplines.all())
         outcome.save()
 
 
@@ -937,6 +969,7 @@ def set_publication_workflow(sender, instance, created, **kwargs):
         # Set the workflow's publication status to that of the project
         workflow = instance.workflow
         workflow.published = instance.project.published
+        workflow.disciplines.set(instance.project.disciplines.all())
         workflow.save()
 
 
@@ -946,6 +979,7 @@ def set_publication_outcome(sender, instance, created, **kwargs):
         # Set the workflow's publication status to that of the project
         outcome = instance.outcome
         outcome.published = instance.project.published
+        outcome.disciplines.set(instance.project.disciplines.all())
         outcome.save()
 
 

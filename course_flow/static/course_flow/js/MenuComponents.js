@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem} from "./PostFunctions.js";
+import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite} from "./PostFunctions.js";
 import {homeMenuItemAdded} from "./Reducers.js";
 import {Loader} from "./Constants.js";
 
@@ -107,7 +107,9 @@ export class WorkflowsMenu extends React.Component{
 export class WorkflowForMenu extends React.Component{
     constructor(props){
         super(props);
-        this.state={};
+        console.log(props);
+        this.state={favourite:props.workflow_data.favourite};
+        console.log(this.state);
     }
     
     render(){
@@ -135,8 +137,12 @@ export class WorkflowForMenu extends React.Component{
     
     getButtons(){
         var buttons=[];
-        if(this.props.type=="projectmenu"||this.props.type=="homemenu"){
-            if(this.props.owned){
+        console.log(this.props.objectType);
+        console.log(this.state);
+        let favourite_img = "no_favourite.svg";
+        if(this.state.favourite)favourite_img = "favourite.svg";
+        if(this.props.type=="projectmenu"||this.props.type=="homemenu"||this.props.type=="exploremenu"){
+            if(this.props.workflow_data.is_owned){
                 buttons.push(
                     <div  class="workflow-delete-button" onClick={(evt)=>{
                         if(window.confirm("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone.")){
@@ -157,6 +163,16 @@ export class WorkflowForMenu extends React.Component{
                     <a href={detail_path[this.props.objectType].replace("0",this.props.workflow_data.id)}  class="workflow-view-button">
                         <img src={iconpath+'page_view.svg'} title="View"/>
                     </a>
+                );
+                buttons.push(
+                    <div class="workflow-toggle-favourite" onClick={(evt)=>{
+                        toggleFavourite(this.props.workflow_data.id,this.props.objectType,(!this.state.favourite));
+                        let state=this.state;
+                        this.setState({favourite:!(state.favourite)})
+                    
+                    }}>
+                        <img src={iconpath+favourite_img} title="Favourite"/>
+                    </div>
                 );
             }
             if(this.props.duplicate){
@@ -193,7 +209,7 @@ export class WorkflowForMenu extends React.Component{
 export class MenuSection extends React.Component{
     render(){
         var objects = this.props.section_data.objects.map((object)=>
-            <WorkflowForMenu key={object.id} type={this.props.type} owned={(object.author_id==user_id)} workflow_data={object} objectType={this.props.section_data.object_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={()=>{this.props.selectAction(object.id)}} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
+            <WorkflowForMenu key={object.id} type={this.props.type} workflow_data={object} objectType={this.props.section_data.object_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={()=>{this.props.selectAction(object.id)}} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
         );
         
         
@@ -270,7 +286,8 @@ export const HomeMenu = connect(
 class ProjectMenuUnconnected extends React.Component{
     constructor(props){
         super(props);
-        this.state={title:props.project.title,description:props.project.description,published:props.project.published};
+        console.log(props.project);
+        this.state={...props.project,all_disciplines:[]};
     }
     
     render(){
@@ -286,6 +303,7 @@ class ProjectMenuUnconnected extends React.Component{
             )
             i++;
         }
+        
         return(
             <div class="project-menu">
                 <div class="project-header">
@@ -295,6 +313,11 @@ class ProjectMenuUnconnected extends React.Component{
                         </a>
                     }</h2>
                     <p id="project-description">{this.state.description}</p>
+                    <p>
+                        Disciplines: {
+                            (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||"None")
+                        }
+                    </p>
                     {this.state.published &&
                         <p>{"This project has been published and is visibile to all"}</p>
                     }
@@ -318,6 +341,9 @@ class ProjectMenuUnconnected extends React.Component{
     
     componentDidMount(){
         $("#home-tabs").tabs();
+        getDisciplines((response)=>{
+            this.setState({all_disciplines:response});
+        });
     }
 
     updateFunction(new_state){
@@ -339,6 +365,22 @@ export class ProjectEditMenu extends React.Component{
     render(){
         var data = this.state;
         
+        let all_disciplines;
+        let disciplines;
+        console.log(data);
+        if(data.all_disciplines){
+            all_disciplines = data.all_disciplines.filter(discipline=>data.disciplines.indexOf(discipline.id)==-1).map((discipline)=>
+                <option value={discipline.id}>{discipline.title}</option>
+            );
+            disciplines = data.all_disciplines.filter(discipline=>data.disciplines.indexOf(discipline.id)>=0).map((discipline)=>
+                <option value={discipline.id}>{discipline.title}</option>
+            );
+        }
+        
+        let published_enabled = (data.title && data.disciplines.length>0);
+        if(data.published && !published_enabled)this.setState({published:false})
+        let disabled_publish_text;
+        if(!published_enabled)disabled_publish_text = "A title and at least one discipline is required for publishing.";
         return(
             <div class="message-wrap">
                 <h3>{"Edit Project:"}</h3>
@@ -351,8 +393,27 @@ export class ProjectEditMenu extends React.Component{
                     <input id="project-description-input" value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
                 </div>
                 <div>
+                    <h4>Disciplines:</h4>
+                    <div class="multi-select">
+                        <h5>This Project:</h5>
+                        <select id="disciplines_chosen" multiple>
+                            {disciplines}
+                        </select>
+                        <button id="remove-discipline" onClick={this.removeDiscipline.bind(this)}> Remove </button>
+                    </div>
+                    <div class="multi-select">
+                        <h5>All:</h5>
+                        <select id="disciplines_all" multiple>
+                            {all_disciplines}
+                        </select>
+                        <button id="add-discipline" onClick={this.addDiscipline.bind(this)}> Add </button>
+                    </div>
+                    
+                </div>
+                <div>
                     <h4>Published:</h4>
-                    <input id="project-publish-input" type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
+                    <div>{disabled_publish_text}</div>
+                    <input id="project-publish-input" disabled={!published_enabled} type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
                     <label for="published">Is Published (visible to all users)</label>
                 </div>
                 <div class="action-bar">
@@ -360,6 +421,30 @@ export class ProjectEditMenu extends React.Component{
                 </div>
             </div>
         );
+    }
+    
+    
+
+    addDiscipline(evt){
+        let selected = $("#disciplines_all").val()
+        $("#disciplines_all").val([]);
+        this.setState(
+            (state,props)=>{
+                return {disciplines:[...state.disciplines,...selected.map(val=>parseInt(val))]};
+            }
+        )
+    }
+
+    removeDiscipline(evt){
+        let selected = $("#disciplines_chosen").val()
+        $("#disciplines_chosen").val([]);
+        this.setState(
+            (state,props)=>{
+                return {
+                    disciplines:state.disciplines.filter(value=>selected.map(val=>parseInt(val)).indexOf(value)==-1)
+                };
+            }
+        )
     }
     
     
@@ -387,7 +472,7 @@ export class ProjectEditMenu extends React.Component{
         var actions = [];
         actions.push(
             <button id="save-changes" onClick={()=>{
-                updateValueInstant(this.state.id,"project",this.state);
+                updateValueInstant(this.state.id,"project",{title:this.state.title,description:this.state.description,published:this.state.published,disciplines:this.state.disciplines});
                 this.props.actionFunction(this.state);
                 closeMessageBox();
             }}>
@@ -403,6 +488,115 @@ export class ProjectEditMenu extends React.Component{
     }
 }
 
+
+
+export class ExploreMenu extends React.Component{
+    render(){
+        
+        
+        
+        let objects = this.props.data_package.map(object=>
+            <WorkflowForMenu key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.object_type}/>  
+        )
+        let disciplines = this.props.disciplines.map(discipline=>
+            <li><label><input class = "fillable"  type="checkbox" name="disc[]" value={discipline.id}/>{discipline.title}</label></li>                                            
+        )
+        let page_buttons = [];
+        for(let i=0;i<this.props.pages.page_count;i++){
+            let button_class="page-button";
+            if(i+1==this.props.pages.current_page)button_class+=" active-page-button"
+            page_buttons.push(
+                <button class={button_class} onClick = {this.toPage.bind(this,i+1)}>{i+1}</button>
+            )
+        }
+        return(
+            <div class="explore-menu">
+                <h3>Explore:</h3>
+                <form id="search-parameters" action={explore_path} method="GET">
+                    <div>
+                        <div>
+                            <h4>Filters:</h4>
+                            <label><div>Title:</div><input class = "fillable" id="search-title" name="title"/></label>
+                            <label><div>Description:</div><input class = "fillable"  id="search-description" name="des"/></label>
+                            <label><div>Author (Username):</div><input class = "fillable"  id="search-author" name="auth"/></label>
+                        </div>
+                        <div>
+                            <h4>Allowed Types:</h4>
+                            <ul id="search-type" class="search-checklist-block">
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="activity"/>Activity</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="course"/>Course</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="program"/>Program</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="outcome"/>Outcome</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="project"/>Project</label></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4>Disciplines (leave blank for all):</h4>
+                            <ul id="search-discipline" class="search-checklist-block">
+                                {disciplines}
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                        <input type="hidden" name="page"/>
+                        <label><div>Results Per Page: </div>
+                            <select class="fillable" name="results">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </label>
+                        <input id="submit" type="submit" value="Search"/>
+                        
+                    </div>
+                </form>
+                <hr/>
+                {objects.length>1 &&
+                    [
+                    <p>
+                        Showing results {this.props.pages.results_per_page*(this.props.pages.current_page-1)+1}-{(this.props.pages.results_per_page*this.props.pages.current_page)} ({this.props.pages.total_results} total results)
+
+                    </p>,
+                    <p>
+                        <button disabled={(this.props.pages.current_page==1)} onClick={
+                            this.toPage.bind(this,this.props.pages.current_page-1)
+                        }>Previous</button>
+                            {page_buttons}
+                        <button disabled={(this.props.pages.current_page==this.props.pages.page_count)} onClick={
+                            this.toPage.bind(this,this.props.pages.current_page+1)
+                        }>Next</button>
+                    </p>,
+                    objects]
+                }
+                {objects.length==0 &&
+                    <p>No results were found. Adjust your search parameters, and make sure you have at least one allowed type selected.</p>
+                }
+            </div>
+        );
+        
+    }
+    
+    toPage(page){
+        $("input[name='page']").attr('value',page);
+        $("#submit").click()
+    }
+
+    componentDidMount(){
+        let url_params = new URL(window.location.href).searchParams;
+        console.log(url_params)
+        url_params.forEach((value,key)=>{
+            if(key.indexOf("[]")>=0){
+                $(".fillable[name='"+key+"'][value='"+value+"']").attr("checked",true);
+            }else{
+                $(".fillable[name='"+key+"']").val(value);
+            }
+            console.log(value);
+            console.log(key);
+            
+        });
+    }
+}
 
 export function renderMessageBox(data,type,updateFunction){
     reactDom.render(

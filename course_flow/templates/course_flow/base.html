@@ -97,7 +97,7 @@
         color: #1976bc;
         font-size: 32px !important;
       }
-      #home-icon {
+      #home-icon, #explore-icon {
         height: 32px;
       }
       #user-feedback-container {
@@ -133,6 +133,15 @@
                   ><img
                     id="home-icon"
                     src="{% static 'course_flow/img/home-24px.svg' %}"
+                /></a>
+              </button>
+            </div>
+            <div class="topdropwrapper">
+              <button class="topdropbutton">
+                <a id="explore-icon-link" href="{% url 'course_flow:explore' %}"
+                  ><img
+                    id="explore-icon"
+                    src="{% static 'course_flow/img/images_svg/explore.svg' %}"
                 /></a>
               </button>
             </div>
@@ -183,6 +192,10 @@
             duplicate_outcome_ajax:"{% url 'course_flow:duplicate-outcome' %}",
             duplicate_workflow_ajax:"{% url 'course_flow:duplicate-workflow' %}",
             duplicate_strategy_ajax:"{% url 'course_flow:duplicate-strategy' %}",
+            toggle_favourite:"{% url 'course_flow:toggle-favourite' %}",
+        }
+        get_paths = {
+            get_disciplines: "{% url 'course_flow:get-disciplines' %}"
         }
 
         workflow_update_path = "{% url 'course_flow:workflow-update' pk='0'%}";

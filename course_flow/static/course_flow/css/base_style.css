@@ -155,7 +155,7 @@ button:hover{
     height:48px;
     left:0;
     bottom:0;
-    min-width:100px;
+    min-width:50px;
     padding-left:20px;
     padding-right:20px;
     font-weight:600;
@@ -277,6 +277,7 @@ button:hover{
     text-decoration: none;
     width:100%;
     padding:10px;
+    font-size:18px;
     display:block;
 }
 
@@ -310,6 +311,52 @@ button:hover{
 
 .project-menu{
     height:100%;
+}
+
+.explore-menu{
+    width:100%;
+    background-color:white;
+    padding:50px;
+}
+
+.search-checklist-block{
+    
+}
+
+.page-button{
+    border-radius:0;
+}
+
+.active-page-button{
+    background:#1976bc;
+    color:white;
+}
+
+#search-parameters > div{
+    display:flex;
+    flex-wrap:wrap;
+}
+#search-parameters > div >div+div{
+    margin-left:50px;
+}
+
+#search-discipline{
+    column-count:4;
+}
+#search-parameters label div{
+    width:200px;
+}
+
+#search-parameters label{
+    display:block;
+}
+
+#search-parameters ul{
+    padding-left:0;
+}
+#search-parameters li{
+    list-style:none;
+    text-indent: 0;
 }
 
 .action-icon{

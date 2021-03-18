@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from .utils import get_model_from_str
 from .models import (
     Project,
     Workflow,
@@ -529,7 +530,6 @@ class ProgramSerializer(WorkflowSerializer):
 
 class CourseSerializer(WorkflowSerializer):
 
-    discipline = DisciplineSerializer(read_only=True)
 
     class Meta:
         model = Course
@@ -544,7 +544,6 @@ class CourseSerializer(WorkflowSerializer):
             "weekworkflow_set",
             "outcomeworkflow_set",
             "columnworkflow_set",
-            "discipline",
             "is_original",
             "parent_workflow",
             "outcomes_type",
@@ -898,7 +897,9 @@ class ProjectSerializerShallow(
             "created_on",
             "last_modified",
             "workflowproject_set",
+            "disciplines"
         ]
+        
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
@@ -913,6 +914,10 @@ class ProjectSerializerShallow(
         return list(map(linkIDMap, links))
 
     def update(self, instance, validated_data):
+        print(validated_data)
+        print(validated_data.get(
+            "disciplines",instance.disciplines
+        ))
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
             "description", instance.description
@@ -920,7 +925,12 @@ class ProjectSerializerShallow(
         instance.published = validated_data.get(
             "published", instance.published
         )
+        print(instance.disciplines)
+        instance.disciplines.set(validated_data.get(
+            "disciplines",instance.disciplines
+        ))
         instance.save()
+        print( instance.disciplines)
         return instance
 
 
@@ -1128,7 +1138,6 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
 
 class CourseSerializerShallow(WorkflowSerializerShallow):
 
-    discipline = DisciplineSerializer(read_only=True)
     author_id = serializers.SerializerMethodField()
 
     class Meta:
@@ -1145,7 +1154,6 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "weekworkflow_set",
             "outcomeworkflow_set",
             "columnworkflow_set",
-            "discipline",
             "is_original",
             "parent_workflow",
             "outcomes_type",
@@ -1212,6 +1220,38 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
 
         return activity
 
+class InfoBoxSerializer(serializers.Serializer,TitleSerializerMixin,DescriptionSerializerMixin):
+    
+    id = serializers.ReadOnlyField()
+    author = serializers.SerializerMethodField()
+    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    last_modified = serializers.DateTimeField(format=dateTimeFormat())
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+    object_type = serializers.SerializerMethodField()
+    favourite = serializers.SerializerMethodField()
+    is_owned = serializers.SerializerMethodField()
+    
+    def get_is_owned(self,instance):
+        user = self.context.get("user")
+        if user == instance.author:
+            return True
+        else:
+            return False
+        
+    
+    def get_favourite(self,instance):
+        user = self.context.get("user")
+        if get_model_from_str(instance.type+"favourite").objects.filter(user=user,**{instance.type:instance}):
+            return True
+        else:
+            return False
+    
+    def get_object_type(self,instance):
+        return instance.type
+    
+    def get_author(self,instance):
+        return str(instance.author)
 
 serializer_lookups = {
     "node": NodeSerializer,
