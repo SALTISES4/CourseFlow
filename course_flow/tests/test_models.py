@@ -27,6 +27,12 @@ from course_flow.models import (
     OutcomeProject,
     OutcomeNode,
     OutcomeOutcome,
+    Discipline,
+    ProjectFavourite,
+    ActivityFavourite,
+    CourseFavourite,
+    ProgramFavourite,
+    OutcomeFavourite,
 )
 
 from course_flow.utils import (
@@ -225,9 +231,10 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
+        discipline = Discipline.objects.create(title="discipline")
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:project-update", args=str(project.pk))
+            + reverse("course_flow:project-update", args=[project.pk])
         )
         selenium.find_element_by_id("edit-project-button").click()
         selenium.find_element_by_id("project-title-input").send_keys(
@@ -236,6 +243,8 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         selenium.find_element_by_id("project-description-input").send_keys(
             "new description"
         )
+        selenium.find_elements_by_css_selector("#disciplines_all option")[0].click()
+        selenium.find_element_by_css_selector("#add-discipline").click()
         selenium.find_element_by_id("project-publish-input").click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
@@ -250,8 +259,9 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         self.assertEqual(project.title, "new title")
         self.assertEqual(project.description, "new description")
         self.assertEqual(project.published, True)
+        self.assertEqual(project.disciplines.first(),discipline)
 
-    def test_import_published(self):
+    def test_import_favourite(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -260,6 +270,11 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         WorkflowProject.objects.create(workflow = Course.objects.create(author=author,published=True),project=project)
         WorkflowProject.objects.create(workflow = Program.objects.create(author=author,published=True),project=project)
         OutcomeProject.objects.create(outcome = Outcome.objects.create(author=author,published=True),project=project)
+        ProjectFavourite.objects.create(user=self.user,project=project)
+        ActivityFavourite.objects.create(user=self.user,activity=Activity.objects.first())
+        CourseFavourite.objects.create(user=self.user,course=Course.objects.first())
+        ProgramFavourite.objects.create(user=self.user,program=Program.objects.first())
+        OutcomeFavourite.objects.create(user=self.user,outcome=Outcome.objects.first())
         selenium.get(
             self.live_server_url
             + reverse("course_flow:home")
@@ -288,7 +303,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:project-update", args=str(my_project.pk))
+            + reverse("course_flow:project-update", args=[my_project.pk])
         )
         selenium.find_element_by_css_selector("a[href='#tabs-2']").click()
         
@@ -401,7 +416,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         base_outcome = Outcome.objects.create(author=self.user)
         OutcomeProject.objects.create(outcome=base_outcome,project=project)
         selenium.get(
-            self.live_server_url + reverse("course_flow:outcome-update", args=str(base_outcome.pk))
+            self.live_server_url + reverse("course_flow:outcome-update", args=[base_outcome.pk])
         )
         hover_item = selenium.find_element_by_css_selector(".workflow-details .outcome")
         click_item = selenium.find_element_by_css_selector(".outcome .insert-child-button img")
@@ -695,618 +710,113 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             self.assertEqual(workflow.weeks.first().nodes.first().linked_workflow,None)
             ActionChains(selenium).double_click(selenium.find_element_by_css_selector(".workflow-details .node")).perform()
             assert workflow_type in selenium.find_element_by_css_selector(".workflow-title").text
-            
-            
-            
+        
+    def create_many_items(self,author,published,disciplines):
+        for object_type in ["project","activity","outcome","course","program"]:
+            for i in range(10):
+                item = get_model_from_str(object_type).objects.create(author=author,published=published,title=object_type+str(i))
+                item.disciplines.set(disciplines)
 
-        """
-        selenium.find_elements_by_class_name("create-button")[2].click()
-
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
-
-        activity_title = "test activity title"
-        activity_description = "test activity description"
-
-        title.send_keys(activity_title)
-        description.send_keys(activity_description)
-
-        selenium.find_element_by_id("save-button").click()
-
-        WebDriverWait(selenium, timeout).until(
-            presence_of_element_located((By.CLASS_NAME, "activity"))
+    def test_explore(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        author = get_author()
+        discipline = Discipline.objects.create(title="Discipline1")
+        self.create_many_items(author,True,disciplines=[discipline])
+        selenium.get(
+            self.live_server_url + reverse("course_flow:explore")
         )
-
-        assert (
-            activity_title
-            in selenium.find_element_by_id("activity-title").text
+        for checkbox in selenium.find_elements_by_css_selector("#search-type input[type='checkbox']"):checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),10)
+        selenium.find_elements_by_css_selector(".page-button")[3].click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),10)
+        assert "active" in selenium.find_elements_by_css_selector(".page-button")[3].get_attribute("class")
+        selenium.find_element_by_css_selector("#next-page-button").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),10)
+        assert "active" in selenium.find_elements_by_css_selector(".page-button")[4].get_attribute("class")
+        selenium.find_element_by_css_selector("#prev-page-button").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),10)
+        assert "active" in selenium.find_elements_by_css_selector(".page-button")[3].get_attribute("class")
+        for checkbox in selenium.find_elements_by_css_selector("#search-discipline input[type='checkbox']"):checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),10)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),5)
+        selenium.find_element_by_css_selector("select[name='results']").click()
+        selenium.find_elements_by_css_selector("select[name='results'] option")[1].click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),20)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),3)
+        selenium.find_element_by_css_selector("select[name='results']").click()
+        selenium.find_elements_by_css_selector("select[name='results'] option")[2].click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),50)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),1)
+        selenium.find_element_by_id("search-title").send_keys("1")
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),1)
+        for button in selenium.find_elements_by_css_selector(".workflow-toggle-favourite"): button.click()
+        time.sleep(0.5)
+        self.assertEqual(ProjectFavourite.objects.filter(user=self.user).count(),1)
+        self.assertEqual(ActivityFavourite.objects.filter(user=self.user).count(),1)
+        self.assertEqual(CourseFavourite.objects.filter(user=self.user).count(),1)
+        self.assertEqual(ProgramFavourite.objects.filter(user=self.user).count(),1)
+        self.assertEqual(OutcomeFavourite.objects.filter(user=self.user).count(),1)
+        selenium.find_element_by_css_selector("select[name='results']").click()
+        selenium.find_elements_by_css_selector("select[name='results'] option")[0].click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),1)
+        
+        
+    def test_explore_no_publish(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        author = get_author()
+        discipline = Discipline.objects.create(title="Discipline1")
+        self.create_many_items(author,False,disciplines=[discipline])
+        selenium.get(
+            self.live_server_url + reverse("course_flow:explore")
         )
-
-        assert (
-            activity_description
-            in selenium.find_element_by_id("activity-description").text
+        for checkbox in selenium.find_elements_by_css_selector("#search-type input[type='checkbox']"):checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),0)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),0)
+        
+    def test_explore_disciplines(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        author = get_author()
+        discipline1 = Discipline.objects.create(title="Discipline1")
+        discipline2 = Discipline.objects.create(title="Discipline2")
+        self.create_many_items(author,True,disciplines=[discipline1])
+        self.create_many_items(author,True,disciplines=[discipline2])
+        self.create_many_items(author,True,disciplines=[discipline1,discipline2])
+        selenium.get(
+            self.live_server_url + reverse("course_flow:explore")
         )
-
-        assert (
-            username_text
-            in selenium.find_element_by_id("activity-author").text
-        )
-
-        selenium.find_element_by_id("update-activity").click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        activity_title = "test activity title updated"
-        activity_description = "test activity description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert (
-            activity_title
-            in selenium.find_element_by_id("activity-title").text
-        )
-
-        assert (
-            activity_description
-            in selenium.find_element_by_id("activity-description").text
-        )
-
-        assert (
-            username_text
-            in selenium.find_element_by_id("activity-author").text
-        )
-
-        selenium.find_element_by_id("add-week").click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        week_title = "test week title"
-        week_description = "test week description"
-
-        title.send_keys(week_title)
-        description.send_keys(week_description)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("week")
-
-        assert (
-            week_title
-            in selenium.find_elements_by_class_name("week-title")[0].text
-        )
-
-        assert (
-            week_description
-            in selenium.find_elements_by_class_name("week-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("week-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("update-week")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        week_title = "test week title updated"
-        week_description = "test week description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert (
-            week_title
-            in selenium.find_elements_by_class_name("week-title")[0].text
-        )
-
-        assert (
-            week_description
-            in selenium.find_elements_by_class_name("week-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("week-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("add-node")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        node_title = "test node title"
-        node_description = "test node description"
-
-        title.send_keys(node_title)
-        description.send_keys(node_description)
-        Select(
-            selenium.find_elements_by_class_name("mdc-select__native-control")[
-                0
-            ]
-        ).select_by_value("1")
-        Select(
-            selenium.find_elements_by_class_name("mdc-select__native-control")[
-                1
-            ]
-        ).select_by_value("1")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("node")
-
-        assert (
-            node_title
-            in selenium.find_elements_by_class_name("node-title")[0].text
-        )
-
-        assert (
-            node_description
-            in selenium.find_elements_by_class_name("node-description")[0].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("node-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("update-node")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        node_title = "test node title updated"
-        node_description = "test node description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("node")
-
-        assert (
-            node_title
-            in selenium.find_elements_by_class_name("node-title")[0].text
-        )
-
-        assert (
-            node_description
-            in selenium.find_elements_by_class_name("node-description")[0].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("node-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("delete-node")[0].click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert not selenium.find_elements_by_class_name("node")
-
-        selenium.find_elements_by_class_name("delete-week")[0].click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert not selenium.find_elements_by_class_name("week")
-
-        selenium.find_element_by_id("delete-activity").click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        selenium.get(self.live_server_url + "/home/")
-
-        selenium.find_elements_by_class_name("create-button")[1].click()
-
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
-
-        course_title = "test course title"
-        course_description = "test course description"
-
-        title.send_keys(course_title)
-        description.send_keys(course_description)
-
-        selenium.find_element_by_id("save-button").click()
-
-        WebDriverWait(selenium, timeout).until(
-            presence_of_element_located((By.CLASS_NAME, "course"))
-        )
-
-        assert course_title in selenium.find_element_by_id("course-title").text
-
-        assert (
-            course_description
-            in selenium.find_element_by_id("course-description").text
-        )
-
-        assert (
-            username_text in selenium.find_element_by_id("course-author").text
-        )
-
-        selenium.find_element_by_id("update-course").click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        course_title = "test course title updated"
-        course_description = "test course description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert course_title in selenium.find_element_by_id("course-title").text
-
-        assert (
-            course_description
-            in selenium.find_element_by_id("course-description").text
-        )
-
-        assert (
-            username_text in selenium.find_element_by_id("course-author").text
-        )
-
-        selenium.find_element_by_id("add-week").click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-
-        week_title = "test week title"
-
-        title.send_keys(week_title)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("week")[0]
-
-        assert (
-            week_title
-            in selenium.find_elements_by_class_name("week-title")[0].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("week-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("update-week")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-
-        week_title = "test week title updated"
-
-        title.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert (
-            week_title
-            in selenium.find_elements_by_class_name("week-title")[0].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("week-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("add-component")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        component_title = "test component title"
-        component_description = "test component description"
-
-        Select(
-            selenium.find_elements_by_class_name("mdc-select__native-control")[
-                0
-            ]
-        ).select_by_value("assessment")
-        title.send_keys(component_title)
-        description.send_keys(component_description)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("component")[0]
-
-        assert (
-            component_title
-            in selenium.find_elements_by_class_name("component-title")[0].text
-        )
-
-        assert (
-            component_description
-            in selenium.find_elements_by_class_name("component-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("component-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("update-component")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        component_title = "test component title updated"
-        component_description = "test component description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("component")[0]
-
-        assert (
-            component_title
-            in selenium.find_elements_by_class_name("component-title")[0].text
-        )
-
-        assert (
-            component_description
-            in selenium.find_elements_by_class_name("component-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("component-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("delete-component")[0].click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert not selenium.find_elements_by_class_name("component")
-
-        selenium.find_elements_by_class_name("delete-week")[0].click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert not selenium.find_elements_by_class_name("week")
-
-        selenium.find_element_by_id("delete-course").click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.get(self.live_server_url + "/home/")
-
-        assert "Homepage" in selenium.find_element_by_id("header").text
-
-        selenium.find_elements_by_class_name("create-button")[0].click()
-
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
-
-        program_title = "test program title"
-        program_description = "test program description"
-
-        title.send_keys(program_title)
-        description.send_keys(program_description)
-
-        selenium.find_element_by_id("save-button").click()
-
-        WebDriverWait(selenium, timeout).until(
-            presence_of_element_located((By.CLASS_NAME, "program"))
-        )
-
-        assert (
-            program_title in selenium.find_element_by_id("program-title").text
-        )
-
-        assert (
-            program_description
-            in selenium.find_element_by_id("program-description").text
-        )
-
-        assert (
-            username_text in selenium.find_element_by_id("program-author").text
-        )
-
-        selenium.find_element_by_id("update-program").click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        program_title = "test program title updated"
-        program_description = "test program description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert (
-            program_title in selenium.find_element_by_id("program-title").text
-        )
-
-        assert (
-            program_description
-            in selenium.find_element_by_id("program-description").text
-        )
-
-        assert (
-            username_text in selenium.find_element_by_id("program-author").text
-        )
-
-        selenium.find_element_by_id("add-component").click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        Select(
-            selenium.find_elements_by_class_name("mdc-select__native-control")[
-                0
-            ]
-        ).select_by_value("assessment")
-        component_title = "test component title"
-        component_description = "test component description"
-
-        title.send_keys(component_title)
-        description.send_keys(component_description)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("component")[0]
-
-        assert (
-            component_title
-            in selenium.find_elements_by_class_name("component-title")[0].text
-        )
-
-        assert (
-            component_description
-            in selenium.find_elements_by_class_name("component-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("component-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("update-component")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        component_title = "test component title updated"
-        component_description = "test component description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert (
-            component_title
-            in selenium.find_elements_by_class_name("component-title")[0].text
-        )
-
-        assert (
-            component_description
-            in selenium.find_elements_by_class_name("component-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("component-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("delete-component")[0].click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert not selenium.find_elements_by_class_name("component")
-
-        selenium.find_element_by_id("delete-program").click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-"""
+        for checkbox in selenium.find_elements_by_css_selector("#search-type input[type='checkbox']"):checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),15)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),10)
+        selenium.find_elements_by_css_selector("#search-discipline input[type='checkbox']")[0].click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),10)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),10)
+        selenium.find_elements_by_css_selector("#search-discipline input[type='checkbox']")[0].click()
+        selenium.find_elements_by_css_selector("#search-discipline input[type='checkbox']")[1].click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),10)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),10)
+        selenium.find_elements_by_css_selector("#search-discipline input[type='checkbox']")[0].click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),15)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),10)
 
 
 class ModelViewTest(TestCase):
@@ -1317,18 +827,18 @@ class ModelViewTest(TestCase):
         author = get_author()
         project = Project.objects.create(author=author)
         response = self.client.get(
-            reverse("course_flow:project-detail-view", args=str(project.pk))
+            reverse("course_flow:project-detail-view", args=[project.pk])
         )
         self.assertEqual(response.status_code, 302)
         login(self)
         response = self.client.get(
-            reverse("course_flow:project-detail-view", args=str(project.pk))
+            reverse("course_flow:project-detail-view", args=[project.pk])
         )
         self.assertEqual(response.status_code, 403)
         project.published = True
         project.save()
         response = self.client.get(
-            reverse("course_flow:project-detail-view", args=str(project.pk))
+            reverse("course_flow:project-detail-view", args=[project.pk])
         )
         self.assertEqual(response.status_code, 200)
 
@@ -1336,18 +846,18 @@ class ModelViewTest(TestCase):
         author = get_author()
         project = Project.objects.create(author=author)
         response = self.client.get(
-            reverse("course_flow:project-update", args=str(project.pk))
+            reverse("course_flow:project-update", args=[project.pk])
         )
         self.assertEqual(response.status_code, 302)
         login(self)
         response = self.client.get(
-            reverse("course_flow:project-update", args=str(project.pk))
+            reverse("course_flow:project-update", args=[project.pk])
         )
         self.assertEqual(response.status_code, 403)
         project.published = True
         project.save()
         response = self.client.get(
-            reverse("course_flow:project-update", args=str(project.pk))
+            reverse("course_flow:project-update", args=[project.pk])
         )
         self.assertEqual(response.status_code, 403)
 
@@ -1357,7 +867,7 @@ class ModelViewTest(TestCase):
         outcome = make_object("outcome", author)
         OutcomeProject.objects.create(outcome=outcome, project=project)
         response = self.client.get(
-            reverse("course_flow:outcome-detail-view", args=str(outcome.pk))
+            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
         )
         self.assertEqual(response.status_code, 302)
         login(self)
@@ -1365,13 +875,13 @@ class ModelViewTest(TestCase):
         outcome = make_object("outcome", author)
         OutcomeProject.objects.create(outcome=outcome, project=project)
         response = self.client.get(
-            reverse("course_flow:outcome-detail-view", args=str(outcome.pk))
+            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
         )
         self.assertEqual(response.status_code, 403)
         outcome.published = True
         outcome.save()
         response = self.client.get(
-            reverse("course_flow:outcome-detail-view", args=str(outcome.pk))
+            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
         )
         self.assertEqual(response.status_code, 200)
 
@@ -1381,7 +891,7 @@ class ModelViewTest(TestCase):
         outcome = make_object("outcome", author)
         OutcomeProject.objects.create(outcome=outcome, project=project)
         response = self.client.get(
-            reverse("course_flow:outcome-update", args=str(outcome.pk))
+            reverse("course_flow:outcome-update", args=[outcome.pk])
         )
         self.assertEqual(response.status_code, 302)
         login(self)
@@ -1389,7 +899,7 @@ class ModelViewTest(TestCase):
         outcome = make_object("outcome", author)
         OutcomeProject.objects.create(outcome=outcome, project=project)
         response = self.client.get(
-            reverse("course_flow:outcome-update", args=str(outcome.pk))
+            reverse("course_flow:outcome-update", args=[outcome.pk])
         )
         self.assertEqual(response.status_code, 403)
 
@@ -1399,7 +909,7 @@ class ModelViewTest(TestCase):
         outcome = make_object("outcome", user)
         OutcomeProject.objects.create(outcome=outcome, project=project)
         response = self.client.get(
-            reverse("course_flow:outcome-update", args=str(outcome.pk))
+            reverse("course_flow:outcome-update", args=[outcome.pk])
         )
         self.assertEqual(response.status_code, 200)
 
@@ -1410,7 +920,7 @@ class ModelViewTest(TestCase):
             workflow = make_object(workflow_type, author)
             WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
-                reverse("course_flow:workflow-detail", args=str(workflow.pk))
+                reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 302)
         login(self)
@@ -1419,13 +929,13 @@ class ModelViewTest(TestCase):
             workflow = make_object(workflow_type, author)
             WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
-                reverse("course_flow:workflow-detail", args=str(workflow.pk))
+                reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 403)
             workflow.published = True
             workflow.save()
             response = self.client.get(
-                reverse("course_flow:workflow-detail", args=str(workflow.pk))
+                reverse("course_flow:workflow-detail", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 200)
 
@@ -1436,7 +946,7 @@ class ModelViewTest(TestCase):
             workflow = make_object(workflow_type, author)
             WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
-                reverse("course_flow:workflow-update", args=str(workflow.pk))
+                reverse("course_flow:workflow-update", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 302)
         login(self)
@@ -1445,7 +955,7 @@ class ModelViewTest(TestCase):
             workflow = make_object(workflow_type, author)
             WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
-                reverse("course_flow:workflow-update", args=str(workflow.pk))
+                reverse("course_flow:workflow-update", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 403)
 
@@ -1456,7 +966,7 @@ class ModelViewTest(TestCase):
             workflow = make_object(workflow_type, user)
             WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
-                reverse("course_flow:workflow-update", args=str(workflow.pk))
+                reverse("course_flow:workflow-update", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 200)
 
@@ -2628,7 +2138,7 @@ class ModelViewTest(TestCase):
                 "objectID": project.id,
                 "objectType": JSONRenderer().render("project").decode("utf-8"),
                 "data": JSONRenderer()
-                .render('{"published":"true"}')
+                .render({"published": True})
                 .decode("utf-8"),
             },
         )
@@ -2644,7 +2154,7 @@ class ModelViewTest(TestCase):
                 "objectID": project.id,
                 "objectType": JSONRenderer().render("project").decode("utf-8"),
                 "data": JSONRenderer()
-                .render('{"published":"true"}')
+                .render({"published": True})
                 .decode("utf-8"),
             },
         )
@@ -2680,6 +2190,139 @@ class ModelViewTest(TestCase):
         self.assertEqual(Project.objects.filter(published=True).count(), 1)
         self.assertEqual(Workflow.objects.filter(published=True).count(), 3)
         self.assertEqual(Outcome.objects.filter(published=True).count(), 1)
+        
+    def test_add_discipline_permissions_no_login_no_authorship(self):
+        author = get_author()
+        project = make_object("project", author)
+        discipline_to_add = Discipline.objects.create(title="My Discipline")
+        response = self.client.post(
+            reverse("course_flow:update-value"),
+            {
+                "objectID": project.id,
+                "objectType": JSONRenderer().render("project").decode("utf-8"),
+                "data": JSONRenderer()
+                .render({"disciplines":[discipline_to_add.id]})
+                .decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 401)    
+        
+    def test_add_discipline_permissions_no_authorship(self):
+        author = get_author()
+        login(self)
+        project = make_object("project", author)
+        discipline_to_add = Discipline.objects.create(title="My Discipline")
+        response = self.client.post(
+            reverse("course_flow:update-value"),
+            {
+                "objectID": project.id,
+                "objectType": JSONRenderer().render("project").decode("utf-8"),
+                "data": JSONRenderer()
+                .render({"disciplines":[discipline_to_add.id]})
+                .decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 401)   
+        
+    def test_add_discipline(self):
+        user = login(self)
+        project = Project.objects.create(author=user)
+        WorkflowProject.objects.create(
+            workflow=Activity.objects.create(author=user), project=project
+        )
+        WorkflowProject.objects.create(
+            workflow=Course.objects.create(author=user), project=project
+        )
+        WorkflowProject.objects.create(
+            workflow=Program.objects.create(author=user), project=project
+        )
+        OutcomeProject.objects.create(
+            outcome=Outcome.objects.create(author=user), project=project
+        )
+        discipline1 = Discipline.objects.create(title="My Discipline")
+        discipline2 = Discipline.objects.create(title="My Second Discipline")
+        response = self.client.post(
+            reverse("course_flow:update-value"),
+            {
+                "objectID": project.id,
+                "objectType": JSONRenderer().render("project").decode("utf-8"),
+                "data": JSONRenderer()
+                .render({"disciplines":[discipline1.id,discipline2.id]})
+                .decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Project.objects.first().disciplines.count(),2)
+        self.assertEqual(Activity.objects.first().disciplines.count(),2)
+        self.assertEqual(Course.objects.first().disciplines.count(),2)
+        self.assertEqual(Program.objects.first().disciplines.count(),2)
+        self.assertEqual(Outcome.objects.first().disciplines.count(),2)
+        
+    def test_add_favourite_permissions_no_login_no_authorship(self):
+        author = get_author()
+        for object_type in ["project","activity","course","program","outcome"]:
+            item = get_model_from_str(object_type).objects.create(author=author,published=True)
+            response = self.client.post(
+                reverse("course_flow:toggle-favourite"),
+                {
+                    "objectID": item.id,
+                    "objectType": JSONRenderer().render(object_type).decode("utf-8"),
+                    "favourite": JSONRenderer()
+                    .render(True)
+                    .decode("utf-8"),
+                },
+            )
+            self.assertEqual(response.status_code, 401)    
+            
+    def test_add_favourite_permissions_no_login_not_published(self):
+        author = get_author()
+        user=login(self)
+        for object_type in ["project","activity","course","program","outcome"]:
+            item = get_model_from_str(object_type).objects.create(author=author,published=False)
+            response = self.client.post(
+                reverse("course_flow:toggle-favourite"),
+                {
+                    "objectID": item.id,
+                    "objectType": JSONRenderer().render(object_type).decode("utf-8"),
+                    "favourite": JSONRenderer()
+                    .render(True)
+                    .decode("utf-8"),
+                },
+            )
+            self.assertEqual(response.status_code, 401)    
+            
+    def test_add_favourite(self):
+        author = get_author()
+        user = login(self)
+        for object_type in ["project","activity","course","program","outcome"]:
+            item = get_model_from_str(object_type).objects.create(author=author,published=True)
+            response = self.client.post(
+                reverse("course_flow:toggle-favourite"),
+                {
+                    "objectID": item.id,
+                    "objectType": JSONRenderer().render(object_type).decode("utf-8"),
+                    "favourite": JSONRenderer()
+                    .render(True)
+                    .decode("utf-8"),
+                },
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(get_model_from_str(object_type+"favourite").objects.filter(user=user).count(),1)
+            response = self.client.post(
+                reverse("course_flow:toggle-favourite"),
+                {
+                    "objectID": item.id,
+                    "objectType": JSONRenderer().render(object_type).decode("utf-8"),
+                    "favourite": JSONRenderer()
+                    .render(False)
+                    .decode("utf-8"),
+                },
+            )
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(get_model_from_str(object_type+"favourite").objects.filter(user=user).count(),0)
+          
+        
+    
 
     def test_duplicate_activity_no_login_no_permissions(self):
         author = get_author()
@@ -2901,3 +2544,19 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content)["action"], "posted")
+        
+    def test_explore_no_login(self):
+        response = self.client.get(
+            reverse("course_flow:explore")
+        )
+        self.assertEqual(response.status_code,302)  
+        
+    def test_explore_login(self):
+        user = login(self)
+        response = self.client.get(
+            reverse("course_flow:explore")
+        )
+        self.assertEqual(response.status_code,200)
+    
+        
+        

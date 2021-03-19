@@ -140,7 +140,6 @@ class ExploreView(LoginRequiredMixin,UserPassesTestMixin,TemplateView):
     template_name = "course_flow/explore.html"
     
     def get_context_data(self):
-        print(self.request.GET)
         types = self.request.GET.getlist("types[]",None)
         author = self.request.GET.get("auth",None)
         disciplines = self.request.GET.getlist("disc[]",None)
@@ -149,7 +148,7 @@ class ExploreView(LoginRequiredMixin,UserPassesTestMixin,TemplateView):
         sort = self.request.GET.get("sort",None)
         page = self.request.GET.get("page",1)
         results = self.request.GET.get("results",20)
-        filter_kwargs = {'published':True}
+        filter_kwargs = {}
         if title: filter_kwargs['title__icontains']=title
         if description: filter_kwargs['description__icontains']=description
         if author: filter_kwargs['author__username__icontains']=author
@@ -158,23 +157,20 @@ class ExploreView(LoginRequiredMixin,UserPassesTestMixin,TemplateView):
         if results: results=int(results)
         else: results = 10
         disciplines = Discipline.objects.filter(id__in=disciplines)
-        print(disciplines)
         if len(disciplines)>0:
             filter_kwargs['disciplines__in'] = disciplines
-            print(Project.objects.filter(**filter_kwargs))
         try:
             queryset = reduce(lambda x,y: chain(x,y), [
-                get_model_from_str(model_type).objects.filter(depth=0,**filter_kwargs).exclude(author=self.request.user).distinct() if model_type =="outcome" else get_model_from_str(model_type).objects.filter(**filter_kwargs).exclude(author=self.request.user).distinct()
+                get_model_from_str(model_type).objects.filter(published=True).filter(depth=0,**filter_kwargs).exclude(author=self.request.user).distinct() if model_type =="outcome" else get_model_from_str(model_type).objects.filter(published=True).filter(**filter_kwargs).exclude(author=self.request.user).distinct()
                 for model_type in types])
         except:
             queryset = Project.objects.none()
-            print("failed")
         total_results = 0
         subqueryset = []
         for x in queryset:
             if(total_results>=(page-1)*results and total_results<page*results):subqueryset.append(x)
             total_results=total_results+1
-        page_number = math.floor(total_results/results)+1
+        page_number = math.ceil(float(total_results)/results)
         object_list = JSONRenderer().render(
             InfoBoxSerializer(subqueryset,many=True,context={'user':self.request.user}).data
         ).decode('utf-8')
@@ -1024,8 +1020,6 @@ class ActivityStrategyCreateView(
 
 def save_serializer(serializer) -> HttpResponse:
     if serializer:
-        print(serializer.is_valid())
-        print(serializer.errors)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse({"action": "posted"})
@@ -1996,15 +1990,12 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
     objectType = json.loads(request.POST.get("objectType"))
     favourite = json.loads(request.POST.get("favourite"))
     response = {}
-    print("Adding a favourite")
-    print(favourite)
     try:
         item = get_model_from_str(objectType).objects.get(id=object_id)
         search_kwargs = {}
         search_kwargs[objectType]=item
         favourite_model = get_model_from_str(objectType+"favourite")
         current_favourite = favourite_model.objects.filter(user=request.user,**search_kwargs)
-        print(current_favourite)
         if current_favourite.count()>=1:
             if favourite:
                 pass
@@ -2169,7 +2160,6 @@ def update_value(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("objectID"))
         object_type = json.loads(request.POST.get("objectType"))
         data = json.loads(request.POST.get("data"))
-        print(data)
         objects = get_model_from_str(object_type).objects
         if hasattr(objects, "get_subclass"):
             object_to_update = objects.get_subclass(pk=object_id)

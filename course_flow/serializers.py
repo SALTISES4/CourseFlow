@@ -914,10 +914,6 @@ class ProjectSerializerShallow(
         return list(map(linkIDMap, links))
 
     def update(self, instance, validated_data):
-        print(validated_data)
-        print(validated_data.get(
-            "disciplines",instance.disciplines
-        ))
         instance.title = validated_data.get("title", instance.title)
         instance.description = validated_data.get(
             "description", instance.description
@@ -925,12 +921,10 @@ class ProjectSerializerShallow(
         instance.published = validated_data.get(
             "published", instance.published
         )
-        print(instance.disciplines)
         instance.disciplines.set(validated_data.get(
-            "disciplines",instance.disciplines
+            "disciplines",instance.disciplines.all()
         ))
         instance.save()
-        print( instance.disciplines)
         return instance
 
 

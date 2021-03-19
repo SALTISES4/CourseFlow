@@ -559,11 +559,11 @@ export class ExploreMenu extends React.Component{
 
                     </p>,
                     <p>
-                        <button disabled={(this.props.pages.current_page==1)} onClick={
+                        <button id="prev-page-button" disabled={(this.props.pages.current_page==1)} onClick={
                             this.toPage.bind(this,this.props.pages.current_page-1)
                         }>Previous</button>
                             {page_buttons}
-                        <button disabled={(this.props.pages.current_page==this.props.pages.page_count)} onClick={
+                        <button id="next-page-button" disabled={(this.props.pages.current_page==this.props.pages.page_count)} onClick={
                             this.toPage.bind(this,this.props.pages.current_page+1)
                         }>Next</button>
                     </p>,
