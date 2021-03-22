@@ -25,753 +25,984 @@
 <!-- -->
 {% block scripts %}
 <script nonce="{{ request.csp_nonce }}">
+  window.addEventListener("load", function() {
+    const feedback = () => {
+      return user_feedback.h(user_feedback.App, {
+        acceptText: "{% trans 'Send' %}",
+        cancelText: "{% trans 'Cancel' %}",
+        charCountText: "{% trans 'characters remaining' %}",
+        description: "{% trans 'Leave feedback or get help' %}",
+        feedbackTypes: [
+          { value: 1, text: "Bug report" },
+          { value: 2, text: "Feature request" },
+          { value: 3, text: "General feedback" }
+        ],
+        menuFeedbackText: "{% trans 'Give Feedback' %}",
+        menuHelpText: "{% trans 'Tutorials and Forums' %}",
+        menuHelpUrl: "#",
+        placeholder: "{% trans 'Let us know what is on your mind...' %}",
+        snackbarError:
+          "{% trans 'An error occurred.  Please try again later.' %}",
+        snackbarSuccess: "{% trans 'Thanks for your feedback!' %}",
+        text: "",
+        title: "{% trans 'How can we improve your experience?' %}",
+        url: "{% url 'user_feedback:post' %}"
+      });
+    };
+    user_feedback.render(
+      feedback(),
+      document.getElementById("user-feedback-app")
+    );
 
-        window.addEventListener("load", function() {
+    root.injectDialogForm(
+      "{% url 'course_flow:dialog-form-create' %}",
+      "{% url 'course_flow:dialog-form-update' %}",
+      "{% url 'course_flow:dialog-form-delete' %}",
+      "{% url 'course_flow:dialog-form-remove' %}",
+      "{% url 'course_flow:home' %}",
+      "{% trans 'posting worked' %}",
+      "{% trans 'posting didnt work' %}"
+    );
 
-          userFeedback.injectDialog(
-            "{% trans 'Let us know how we can improve your experience!' %}",
-            "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
-            "{% trans 'Thanks for your feedback!' %}",
-            "{% trans 'Sorry, please try again later!' %}",
-            "{% url 'user_feedback:post' %}"
+    let courseJson = null;
+    //const nodeBoardJson = {{ owned_node_json|safe }};
+
+    const innerWidth = $(window).innerWidth();
+    const svgParent = d3.select("svg").style("margin-top", "100px");
+    svgParent.attr("width", innerWidth);
+
+    const nodeHeight = innerWidth / 10;
+    const nodeWidth = innerWidth / 5.5;
+    const nodeSpacingVertical = 50.0;
+    const nodeSpacingHorizontal = 30.0;
+    const nodeTotalSpacingVertical = nodeHeight + nodeSpacingVertical;
+    const nodeTotalSpacingHorizontal = nodeWidth + nodeSpacingHorizontal;
+
+    const nodeMidpointVertical = nodeHeight / 2.0;
+    const nodeMidpointHorizontal = nodeWidth / 2.0;
+
+    const strategyPadding = 30.0;
+    const strategyInfoHeight = 200.0;
+    const strategyVerticalSpacing = 20.0;
+
+    const courseInfoHeight = 200.0;
+
+    const strategyWidth =
+      2 * strategyPadding +
+      nodeTotalSpacingHorizontal * 4 -
+      nodeSpacingHorizontal;
+
+    const classificationLabels = [
+      "Activity",
+      "Preparation",
+      "Assessment",
+      "Artifact"
+    ];
+
+    function fetchThenRenderCourse() {
+      d3.json("{% url 'course_flow:course-detail' pk=object.pk %}").then(
+        function(json) {
+          courseJson = json;
+          renderCourse(courseJson, svgParent);
+          svgParent.attr(
+            "height",
+            Math.max(
+              d3
+                .select(".course")
+                .node()
+                .getBBox().height + 20,
+              $(window).innerHeight() - 100
+            )
           );
+        }
+      );
+    }
 
+    fetchThenRenderCourse();
 
-          root.injectDialogForm(
-            "{% url 'course_flow:dialog-form-create' %}",
-            "{% url 'course_flow:dialog-form-update' %}",
-            "{% url 'course_flow:dialog-form-delete' %}",
-            "{% url 'course_flow:dialog-form-remove' %}",
-            "{% url 'course_flow:home' %}",
-            "{% trans 'posting worked' %}",
-            "{% trans 'posting didnt work' %}"
-          );
+    //renderNodeBoard(svgParent, nodeBoardJson);
 
-          let courseJson = null;
-          //const nodeBoardJson = {{ owned_node_json|safe }};
+    function renderNodeBoard(parent, jsonData) {
+      const boardNodes = parent
+        .selectAll(".board-node")
+        .data(jsonData)
+        .enter()
+        .append("svg")
+        .attr("class", "board-node")
+        .attr("x", `${nodeTotalSpacingHorizontal * 4 + 50}`)
+        .attr("y", (d, i) => `${(nodeTotalSpacingVertical / 3) * i + 50}`)
+        .attr("width", `${nodeWidth / 1.5}`)
+        .attr("height", `${nodeHeight / 3}`);
 
-          const innerWidth = $(window).innerWidth();
-          const svgParent = d3.select("svg").style("margin-top", "100px");
-          svgParent.attr("width", innerWidth);
+      boardNodes
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("rx", "6")
+        .attr("width", `${nodeWidth / 1.5}`)
+        .attr("height", `${nodeHeight / 3}`)
+        .attr("fill", "#979797")
+        .style("pointer-events", "none");
 
-          const nodeHeight = innerWidth/10;
-          const nodeWidth = innerWidth/5.5;
-          const nodeSpacingVertical = 50.0;
-          const nodeSpacingHorizontal = 30.0;
-          const nodeTotalSpacingVertical = nodeHeight + nodeSpacingVertical;
-          const nodeTotalSpacingHorizontal = nodeWidth + nodeSpacingHorizontal;
+      boardNodes
+        .append("text")
+        .attr("class", "node-title")
+        .attr("x", "15")
+        .attr("y", "20")
+        .attr("dy", 6)
+        .style("font-size", nodeWidth / 20)
+        .text(d => d.content_object.title);
 
-          const nodeMidpointVertical = nodeHeight/2.0;
-          const nodeMidpointHorizontal = nodeWidth/2.0;
+      const dragDropIcons = boardNodes
+        .append("g")
+        .attr("class", "drag-icon")
+        .append("image")
+        .attr("x", `${(nodeWidth - 30) / 1.5}`)
+        .attr("y", `${10 / 2}`)
+        .attr("width", `${20 / 2}`)
+        .attr("height", `${20 / 2}`)
+        .attr(
+          "xlink:href",
+          "{% static 'course_flow/img/reorder-option-blue.svg' %}"
+        );
 
-          const strategyPadding = 30.0;
-          const strategyInfoHeight = 200.0;
-          const strategyVerticalSpacing = 20.0;
+      function makeDragDropBoardNode() {
+        let widget = undefined;
+        let color = undefined;
+        let initX = undefined;
+        let initY = undefined;
 
-          const courseInfoHeight = 200.0;
+        let drags = d3
+          .drag()
+          .on("start", function() {
+            widget = d3.select(this);
+            dragDropIcons.style("cursor", "grabbing");
+            initX = +widget.attr("x");
+            initY = +widget.attr("y");
+            color = widget.select("rect").attr("fill");
+            strategys = d3.selectAll(".strategy");
+            widget
+              .select("rect")
+              .attr("filter", "url(#selection-shadow)")
+              .attr("x", 3)
+              .attr("y", 2)
+              .attr("width", `${(nodeWidth - 10) / 1.5}`)
+              .attr("height", `${(nodeHeight - 8) / 3}`);
+            swapDiv(this);
+          })
+          .on("drag", function() {
+            widget
+              .attr("x", d3.event.x - (nodeWidth + 10) / 2)
+              .attr("y", d3.event.y - 20);
 
-          const strategyWidth = 2*strategyPadding+nodeTotalSpacingHorizontal*4-nodeSpacingHorizontal;
+            let flag = true;
 
-          const classificationLabels = ["Activity","Preparation","Assessment","Artifact"];
-
-          function fetchThenRenderCourse(){
-            d3.json("{% url 'course_flow:course-detail' pk=object.pk %}").then(function (json) {
-              courseJson = json;
-              renderCourse(courseJson, svgParent);
-              svgParent.attr("height",Math.max(d3.select(".course").node().getBBox().height+20,$(window).innerHeight()-100));
+            strategys.each(function(i, j) {
+              strategy = d3.select(this);
+              if (
+                flag &&
+                +strategy.attr("y") + +strategy.attr("height") >
+                  +widget.attr("y") + +widget.attr("height") &&
+                +strategy.attr("x") + +strategy.attr("width") >
+                  +widget.attr("x") + +widget.attr("width") &&
+                +strategy.attr("y") < +widget.attr("y") &&
+                +strategy.attr("x") < +widget.attr("x")
+              ) {
+                widget.select("rect").attr("fill", "#1976BC");
+                flag = false;
+              }
             });
+
+            if (flag) widget.select("rect").attr("fill", color);
+          })
+          .on("end", function() {
+            strategys.each(function(i, j) {
+              strategy = d3.select(this);
+              if (
+                +strategy.attr("y") + +strategy.attr("height") >
+                  +widget.attr("y") + +widget.attr("height") &&
+                +strategy.attr("x") + +strategy.attr("width") >
+                  +widget.attr("x") + +widget.attr("width") &&
+                +strategy.attr("y") < +widget.attr("y") &&
+                +strategy.attr("x") < +widget.attr("x")
+              ) {
+                addNode(
+                  widget.node().__data__.id,
+                  strategy.node().__data__.strategy.id
+                );
+              }
+            });
+
+            dragDropIcons.style("cursor", "grab");
+            widget
+              .select("rect")
+              .attr("fill", color)
+              .attr("y", 0)
+              .attr("x", 0)
+              .attr("width", `${nodeWidth / 1.5}`)
+              .attr("height", `${nodeHeight / 3}`)
+              .attr("filter", "");
+            widget
+              .attr("x", initX)
+              .attr("y", initY)
+              .style("cursor", "default");
+
+            widget = undefined;
+          });
+
+        drags(boardNodes);
+      }
+      makeDragDropBoardNode();
+    }
+
+    let repositionBoard = function() {
+      let displacement = $(window).scrollTop();
+      d3.selectAll(".board-node").attr(
+        "y",
+        (d, i) => `${(nodeTotalSpacingVertical / 3) * i + 50 + displacement}`
+      );
+    };
+
+    window.addEventListener("scroll", repositionBoard);
+
+    function renderCourse(jsonData, parent) {
+      d3.selectAll(".course").remove();
+
+      const svgCourse = parent
+        .append("svg")
+        .attr("x", "0")
+        .attr("y", "0")
+        .attr("width", `${strategyWidth}`)
+        .attr("class", "course");
+
+      svgCourse
+        .append("text")
+        .attr("id", "course-title")
+        .attr("class", "course-title")
+        .attr("x", "15")
+        .attr("y", "20")
+        .attr("dy", 6)
+        .text(jsonData.title);
+
+      svgCourse
+        .append("text")
+        .attr("id", "course-author")
+        .attr("class", "course-author")
+        .attr("x", "15")
+        .attr("y", "40")
+        .attr("dy", 6)
+        .text("created by " + jsonData.author);
+
+      svgCourse
+        .append("text")
+        .attr("id", "course-description")
+        .attr("class", "course-description")
+        .attr("x", "15")
+        .attr("y", "70")
+        .attr("dy", 6)
+        .text(jsonData.description);
+
+      svgCourse
+        .append("g")
+        .attr("class", "action-icon")
+        .attr("id", "delete-course")
+        .on("click", function(d, i) {
+          root.currentComponentInstance.setState({
+            object: jsonData,
+            objectType: "course",
+            isCourse: true,
+            isDeleteForm: true,
+            isOwnView: true
+          });
+          root.currentComponentInstance.dlg.MDComponent.show();
+        })
+        .append("image")
+        .attr("x", `${strategyWidth - 40}`)
+        .attr("y", `${60}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr(
+          "xlink:href",
+          "{% static 'course_flow/img/rubbish-bin-delete-button.svg' %}"
+        );
+
+      svgCourse
+        .append("g")
+        .attr("class", "action-icon")
+        .attr("id", "update-course")
+        .on("click", function(d, i) {
+          root.currentComponentInstance.setState({
+            object: courseJson,
+            objectType: "course",
+            isCourse: true,
+            isUpdateForm: true
+          });
+          root.currentComponentInstance.dlg.MDComponent.show();
+        })
+        .append("image")
+        .attr("x", `${strategyWidth - 40}`)
+        .attr("y", `${15}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr("xlink:href", "{% static 'course_flow/img/pencil.svg' %}");
+
+      svgCourse
+        .append("g")
+        .attr("class", "action-icon")
+        .attr("id", "add-strategy")
+        .on("click", function(d, i) {
+          root.currentComponentInstance.setState({
+            parentID: courseJson.id,
+            objectType: "strategy",
+            isWeek: true
+          });
+          root.currentComponentInstance.dlg.MDComponent.show();
+        })
+        .append("image")
+        .attr("x", `${strategyWidth - 40}`)
+        .attr("y", `${100}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr(
+          "xlink:href",
+          "{% static 'course_flow/img/add-square-button.svg' %}"
+        );
+
+      for (let i = 0; i < 4; i++) {
+        svgCourse
+          .append("text")
+          .attr("class", "course-classification")
+          .attr("text-anchor", "middle")
+          .attr(
+            "x",
+            `${nodeTotalSpacingHorizontal * i + nodeTotalSpacingHorizontal / 2}`
+          )
+          .attr("y", "160")
+          .attr("dy", 6)
+          .text(classificationLabels[i]);
+      }
+
+      var runningWeekHeight = courseInfoHeight;
+
+      svgCourse.selectAll(".strategy").remove();
+
+      const strategys = svgCourse
+        .selectAll(".strategy")
+        .data(jsonData.strategyworkflow_set)
+        .enter()
+        .append("svg")
+        .attr("class", "strategy")
+        .attr("x", "0")
+        .attr(
+          "height",
+          (d, i) =>
+            `${d.strategy.nodestrategy_set.length *
+              (nodeHeight + nodeSpacingVertical) -
+              nodeSpacingVertical +
+              2 * strategyPadding +
+              strategyInfoHeight}`
+        )
+        .attr("width", `${strategyWidth}`)
+        .each(function(d, i) {
+          d3.select(this)
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("rx", "6")
+            .style("pointer-events", "none")
+            .attr(
+              "width",
+              `${(nodeWidth + nodeSpacingHorizontal) * 4 -
+                nodeSpacingHorizontal}`
+            )
+            .attr(
+              "height",
+              `${d.strategy.nodestrategy_set.length *
+                (nodeHeight + nodeSpacingVertical) -
+                nodeSpacingVertical +
+                2 * strategyPadding +
+                strategyInfoHeight}`
+            )
+            .attr("width", `${strategyWidth}`)
+            .attr("fill", "rgb(65,80,96)");
+          renderWeek(d.strategy.nodestrategy_set, d3.select(this));
+        });
+
+      for (let i = 0; i < jsonData.strategyworkflow_set.length; i++) {
+        for (let j = 0; j < jsonData.strategyworkflow_set.length; j++) {
+          if (strategys["_groups"][0][j].__data__.rank == i) {
+            d3.select(strategys["_groups"][0][j]).attr(
+              "y",
+              `${runningWeekHeight}`
+            );
+            runningWeekHeight +=
+              +d3.select(strategys["_groups"][0][j]).attr("height") +
+              strategyVerticalSpacing;
           }
+        }
+      }
 
-          fetchThenRenderCourse();
+      strategys
+        .append("text")
+        .attr("class", "strategy-title")
+        .attr("x", "15")
+        .attr("y", "20")
+        .attr("dy", 6)
+        .text(d => d.strategy.title);
 
-          //renderNodeBoard(svgParent, nodeBoardJson);
+      strategys
+        .append("text")
+        .attr("class", "strategy-author")
+        .attr("x", "15")
+        .attr("y", "40")
+        .attr("dy", 6)
+        .text(d => "created by " + d.strategy.author);
 
-          function renderNodeBoard(parent, jsonData){
+      strategys
+        .append("g")
+        .attr("class", "action-icon delete-strategy")
+        .on("mousedown", function(d, i) {
+          root.currentComponentInstance.setState({
+            object: d3.select(this.parentNode).node().__data__.strategy,
+            objectType: "strategy",
+            isWeek: true,
+            isDeleteForm: true
+          });
+          root.currentComponentInstance.dlg.MDComponent.show();
+        })
+        .append("image")
+        .attr("x", `${strategyWidth - 40}`)
+        .attr("y", `${90}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr(
+          "xlink:href",
+          "{% static 'course_flow/img/rubbish-bin-delete-button.svg' %}"
+        );
 
-          const boardNodes = parent.selectAll('.board-node').data(jsonData).enter()
-                            .append("svg").attr("class",'board-node')
-                            .attr("x", `${nodeTotalSpacingHorizontal*4+50}`)
-                            .attr("y", (d,i) => `${nodeTotalSpacingVertical/3*i+50}`)
-                            .attr("width", `${nodeWidth/1.5}`).attr("height", `${nodeHeight/3}`);
+      strategys
+        .append("g")
+        .attr("class", "action-icon update-strategy")
+        .on("mousedown", function(d, i) {
+          root.currentComponentInstance.setState({
+            object: d3.select(this.parentNode).node().__data__.strategy,
+            objectType: "strategy",
+            isWeek: true,
+            isUpdateForm: true
+          });
+          root.currentComponentInstance.dlg.MDComponent.show();
+        })
+        .append("image")
+        .attr("x", `${strategyWidth - 40}`)
+        .attr("y", `${45}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr("xlink:href", "{% static 'course_flow/img/pencil.svg' %}");
 
-          boardNodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6")
-              .attr("width", `${nodeWidth/1.5}`).attr("height", `${nodeHeight/3}`)
-              .attr("fill", "#979797").style('pointer-events', 'none');
+      strategys
+        .append("g")
+        .attr("class", "action-icon add-node")
+        .on("mousedown", function(d, i) {
+          console.log(jsonData);
+          root.currentComponentInstance.setState({
+            objectType: "node",
+            parentID: d3.select(this.parentNode).node().__data__.strategy.id,
+            isNode: true,
+            parentActivity: jsonData
+          });
+          root.currentComponentInstance.dlg.MDComponent.show();
+        })
+        .append("image")
+        .attr("x", `${strategyWidth - 40}`)
+        .attr("y", `${135}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr(
+          "xlink:href",
+          "{% static 'course_flow/img/add-square-button.svg' %}"
+        );
 
-              boardNodes
-                .append('text')
-                .attr('class', 'node-title')
-                .attr('x', "15")
-                .attr('y', "20")
-                .attr('dy', 6)
-                .style('font-size', nodeWidth/20)
-                .text(d => d.content_object.title);
+      const dragDropIcons = strategys
+        .append("g")
+        .attr("class", "drag-icon")
+        .append("image")
+        .attr("x", `${strategyWidth - 30}`)
+        .attr("y", `${10}`)
+        .attr("width", `${20}`)
+        .attr("height", `${20}`)
+        .attr(
+          "xlink:href",
+          "{% static 'course_flow/img/reorder-option (1).svg' %}"
+        );
 
-                  const dragDropIcons = boardNodes
-                    .append("g")
-                    .attr("class", "drag-icon")
-                    .append('image')
-                    .attr('x', `${(nodeWidth-30)/1.5}`)
-                    .attr('y', `${10/2}`)
-                    .attr("width", `${20/2}`)
-                    .attr("height", `${20/2}`)
-                    .attr("xlink:href","{% static 'course_flow/img/reorder-option-blue.svg' %}");
+      function makeDragDropWeek() {
+        let widget = undefined;
+        let color = undefined;
+        let widgetData = undefined;
+        let initYAxis = undefined;
 
+        let drags = d3
+          .drag()
+          .on("start", function() {
+            widget = d3.select(this);
+            d3.selectAll(".strategy")
+              .attr("height", 45)
+              .attr(
+                "y",
+                (d, i) =>
+                  d.rank * (45 + strategyVerticalSpacing) + strategyInfoHeight
+              )
+              .select("rect")
+              .attr("height", 45);
+            d3.selectAll(".strategy")
+              .select(".strategy-author")
+              .remove();
+            window.scrollTo(0, 0);
+            widget
+              .select("rect")
+              .attr("filter", "url(#selection-shadow)")
+              .attr("x", 5)
+              .attr("y", 4)
+              .attr("width", +widget.attr("width") - 10)
+              .attr("height", +widget.attr("height") - 8);
+            widgetData = widget.node().__data__;
+            initYAxis = widget.attr("y");
+            swapDiv(this);
+            dragDropIcons.style("cursor", "grabbing");
+          })
+          .on("drag", function() {
+            widget.attr(
+              "y",
+              `${Math.max(d3.event.y - 15, courseInfoHeight - 10)}`
+            );
 
-            function makeDragDropBoardNode() {
-              let widget = undefined;
-              let color = undefined;
-              let initX = undefined;
-              let initY = undefined;
-
-              let drags = d3
-                .drag()
-                .on("start", function() {
-                  widget = d3.select(this);
-                  dragDropIcons.style("cursor","grabbing");
-                  initX = +widget.attr("x");
-                  initY = +widget.attr("y");
-                  color = widget.select("rect").attr("fill");
-                  strategys = d3.selectAll(".strategy");
-                  widget.select("rect").attr("filter","url(#selection-shadow)")
-                        .attr('x', 3).attr('y', 2)
-                        .attr("width", `${(nodeWidth-10)/1.5}`).attr("height", `${(nodeHeight-8)/3}`);
-                  swapDiv(this);
-                })
-                .on("drag", function() {
-                  widget.attr("x", d3.event.x-(nodeWidth+10)/2).attr("y", d3.event.y-20);
-
-                  let flag = true;
-
-                  strategys.each(function(i,j){
-                      strategy = d3.select(this);
-                      if(flag&&(+strategy.attr("y")+(+strategy.attr("height")))>(+widget.attr("y")+(+widget.attr("height")))
-                          &&(+strategy.attr("x")+(+strategy.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
-                          &&+strategy.attr("y")<+widget.attr("y")&&+strategy.attr("x")<+widget.attr("x")){
-
-                          widget.select("rect").attr("fill", "#1976BC");
-                          flag = false;
-                      }
-                  });
-
-                  if(flag) widget.select("rect").attr("fill", color);
-
-
-                })
-                .on("end", function() {
-
-                  strategys.each(function(i,j){
-                      strategy = d3.select(this);
-                      if(+strategy.attr("y")+(+strategy.attr("height"))>(+widget.attr("y")+(+widget.attr("height")))
-                          &&(+strategy.attr("x")+(+strategy.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))
-                          &&+strategy.attr("y")<+widget.attr("y")&&+strategy.attr("x")<+widget.attr("x")){
-
-                            addNode(widget.node().__data__.id, strategy.node().__data__.strategy.id);
-
-                      }
-                  });
-
-                  dragDropIcons.style("cursor","grab");
-                  widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
-                  .attr("width", `${nodeWidth/1.5}`).attr("height", `${nodeHeight/3}`).attr("filter", "");
-                  widget.attr("x", initX).attr("y", initY).style("cursor","default");
-
-                  widget = undefined;
-                });
-
-              drags(boardNodes);
+            if (widget.attr("y") < initYAxis) {
+              strategys.each(function(d, i) {
+                if (
+                  d.rank == widgetData.rank - 1 &&
+                  +d3.select(this).attr("y") +
+                    +d3.select(this).attr("height") / 2 >=
+                    +widget.attr("y")
+                ) {
+                  [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
+                  d3.select(this).attr(
+                    "y",
+                    `${+d3.select(this).attr("y") + +widget.attr("height")}`
+                  );
+                }
+              });
+            } else if (widget.attr("y") > initYAxis) {
+              strategys.each(function(d, i) {
+                if (
+                  d.rank == widgetData.rank + 1 &&
+                  +d3.select(this).attr("y") +
+                    +d3.select(this).attr("height") / 2 <=
+                    +widget.attr("y") + +widget.attr("height")
+                ) {
+                  [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
+                  d3.select(this).attr(
+                    "y",
+                    `${+d3.select(this).attr("y") - +widget.attr("height")}`
+                  );
+                }
+              });
             }
-            makeDragDropBoardNode();
+            initYAxis = +widget.attr("y");
+          })
+          .on("end", function() {
+            let yRealignPos = 0;
+            strategys.each(function(d, i) {
+              if (d3.select(this).node().__data__.rank < widgetData.rank) {
+                yRealignPos += +d3.select(this).attr("height");
+              }
+            });
+            widget.attr("y", `${yRealignPos}`);
+            widget
+              .select("rect")
+              .attr("filter", "")
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("width", +widget.attr("width"))
+              .attr("height", +widget.attr("height"));
+            dragDropIcons.style("cursor", "grab");
+            renderCourse(jsonData, parent);
+            updateJson();
+            widget = undefined;
+          });
 
+        drags(strategys);
+      }
+
+      makeDragDropWeek();
+    }
+
+    function pathToNextSiblingRect(s, i) {
+      path =
+        "M" +
+        (s[i].x.animVal.value + nodeMidpointHorizontal) +
+        "," +
+        (s[i].y.animVal.value + nodeHeight) +
+        "C" +
+        (s[i].x.animVal.value + nodeMidpointHorizontal) +
+        "," +
+        (s[i].y.animVal.value + nodeHeight + s[i + 1].y.animVal.value) / 2 +
+        " " +
+        (s[i + 1].x.animVal.value + nodeMidpointHorizontal) +
+        "," +
+        (s[i].y.animVal.value + nodeHeight + s[i + 1].y.animVal.value) / 2 +
+        " " +
+        (s[i + 1].x.animVal.value + nodeMidpointHorizontal) +
+        "," +
+        s[i + 1].y.animVal.value;
+      return path;
+    }
+
+    function renderNodeLinks(svg) {
+      svg.selectAll("path").remove();
+
+      let rects = svg.selectAll(".node")["_groups"][0];
+
+      sortedRects = [rects.length];
+
+      for (let i = 0; i < rects.length; i++) {
+        for (let j = 0; j < rects.length; j++) {
+          if (i == rects[j].__data__.rank) {
+            sortedRects[i] = rects[j];
+          } else if (rects[j].__data__.rank < 0) sortedRects[0] = rects[j];
+          else if (rects[j].__data__.rank > rects.length - 1)
+            sortedRects[rects.length - 1] = rects[j];
         }
+      }
 
+      for (let i = 0; i < rects.length - 1; i++) {
+        svg
+          .append("path")
+          .style("stroke", "black")
+          .style("stroke-width", 3)
+          .attr("fill", "none")
+          .attr("d", pathToNextSiblingRect(sortedRects, i));
+      }
+    }
 
-        let repositionBoard = function(){
-          let displacement = $(window).scrollTop();
-          d3.selectAll('.board-node').attr("y", (d,i) => `${nodeTotalSpacingVertical/3*i+50+displacement}`);
+    function renderWeek(nodeWeekSet, svg) {
+      const nodes = svg
+        .selectAll(".node")
+        .data(nodeWeekSet)
+        .enter()
+        .append("svg")
+        .attr("class", "node")
+        .attr(
+          "x",
+          (d, i) =>
+            `${nodeTotalSpacingHorizontal * d.node.classification +
+              strategyPadding}`
+        )
+        .attr(
+          "y",
+          (d, i) =>
+            `${nodeTotalSpacingVertical * d.rank +
+              strategyPadding +
+              strategyInfoHeight}`
+        );
 
-        }
+      nodes
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("rx", "6")
+        .attr("class", "node-rect")
+        .attr("fill", "#1976BC")
+        .attr("width", `${nodeWidth}`)
+        .attr("height", `${nodeHeight}`)
+        .style("pointer-events", "none");
 
-        window.addEventListener("scroll", repositionBoard);
+      nodes
+        .append("text")
+        .attr("class", "node-title")
+        .attr("x", "15")
+        .attr("y", "20")
+        .attr("dy", 6)
+        .style("font-size", nodeWidth / 25)
+        .text(d => d.node.title);
 
-          function renderCourse(jsonData, parent){
+      nodes
+        .append("text")
+        .attr("class", "node-author")
+        .attr("x", "15")
+        .attr("y", "40")
+        .attr("dy", 6)
+        .style("font-size", 12)
+        .text(d => "created by " + d.node.author);
 
-              d3.selectAll(".course").remove();
+      nodes
+        .append("text")
+        .attr("class", "node-description")
+        .attr("x", "15")
+        .attr("y", "0")
+        .attr("dy", 6)
+        .style("font-size", nodeWidth / 30)
+        .text(d => d.node.description)
+        .call(wrap, nodeWidth - 60);
 
-              const svgCourse = parent
-                                  .append("svg").attr("x","0").attr("y","0")
-                                  .attr("width", `${strategyWidth}`)
-                                  .attr("class","course");
+      // following function taken from Mike Bostock's 'Wrapping Long Labels'
 
-              svgCourse
-                .append('text')
-                .attr('id','course-title')
-                .attr('class', 'course-title')
-                .attr('x', "15")
-                .attr('y', "20")
-                .attr('dy', 6)
-                .text(jsonData.title);
-
-              svgCourse
-                .append('text')
-                .attr('id','course-author')
-                .attr('class', 'course-author')
-                .attr('x', "15")
-                .attr('y', "40")
-                .attr('dy', 6)
-                .text("created by "+jsonData.author);
-
-              svgCourse
-                .append('text')
-                .attr('id','course-description')
-                .attr('class', 'course-description')
-                .attr('x', "15")
-                .attr('y', "70")
-                .attr('dy', 6)
-                .text(jsonData.description);
-
-              svgCourse.append("g")
-                .attr("class", "action-icon")
-                .attr("id", "delete-course")
-                .on("click", function(d,i){
-                    root.currentComponentInstance.setState({
-                      object: jsonData,
-                      objectType: "course",
-                      isCourse: true,
-                      isDeleteForm: true,
-                      isOwnView: true
-                    });
-                    root.currentComponentInstance.dlg.MDComponent.show();
-                })
-                .append('image')
-                .attr('x', `${strategyWidth-40}`)
-                .attr('y', `${60}`)
-                .attr("width", `${31}`)
-                .attr("height", `${31}`)
-                .attr("xlink:href","{% static 'course_flow/img/rubbish-bin-delete-button.svg' %}");
-
-              svgCourse.append("g")
-                .attr("class", "action-icon")
-                .attr("id", "update-course")
-                .on("click", function(d,i){
-                    root.currentComponentInstance.setState({
-                      object: courseJson,
-                      objectType: "course",
-                      isCourse: true,
-                      isUpdateForm: true
-                    });
-                    root.currentComponentInstance.dlg.MDComponent.show();
-                })
-                .append('image')
-                .attr('x', `${strategyWidth-40}`)
-                .attr('y', `${15}`)
-                .attr("width", `${31}`)
-                .attr("height", `${31}`)
-                .attr("xlink:href","{% static 'course_flow/img/pencil.svg' %}");
-
-              svgCourse.append("g")
-                .attr("class", "action-icon")
-                .attr("id", "add-strategy")
-                .on("click", function(d,i){
-                    root.currentComponentInstance.setState({
-                      parentID: courseJson.id,
-                      objectType: "strategy",
-                      isWeek: true
-                    });
-                    root.currentComponentInstance.dlg.MDComponent.show();
-                })
-                .append('image')
-                .attr('x', `${strategyWidth-40}`)
-                .attr('y', `${100}`)
-                .attr("width", `${31}`)
-                .attr("height", `${31}`)
-                .attr("xlink:href","{% static 'course_flow/img/add-square-button.svg' %}");
-
-                for (let i=0; i<4; i++) {
-                  svgCourse
-                    .append('text')
-                    .attr('class','course-classification')
-                    .attr('text-anchor',"middle")
-                    .attr('x', `${nodeTotalSpacingHorizontal*i+nodeTotalSpacingHorizontal/2}`)
-                    .attr('y', "160")
-                    .attr('dy', 6)
-                    .text(classificationLabels[i]);
-                }
-
-
-              var runningWeekHeight = courseInfoHeight;
-
-              svgCourse.selectAll('.strategy').remove();
-
-
-              const strategys = svgCourse.selectAll('.strategy').data(jsonData.strategyworkflow_set).enter()
-                                .append("svg").attr("class","strategy")
-                                .attr("x", "0")
-                                .attr("height", (d,i)=>`${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertical)-nodeSpacingVertical+2*strategyPadding+strategyInfoHeight}`)
-                                .attr("width", `${strategyWidth}`)
-                                .each(function(d,i){
-
-                                    d3.select(this).append("rect").attr('x', 0).attr('y', 0).attr("rx", "6").style('pointer-events', 'none')
-                                        .attr("width", `${(nodeWidth+nodeSpacingHorizontal)*4-nodeSpacingHorizontal}`)
-                                        .attr("height", `${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertical)-nodeSpacingVertical+2*strategyPadding+strategyInfoHeight}`)
-                                        .attr("width", `${strategyWidth}`)
-                                        .attr("fill", "rgb(65,80,96)");
-                                    renderWeek(d.strategy.nodestrategy_set, d3.select(this));
-                                });
-
-                  for(let i = 0; i<jsonData.strategyworkflow_set.length; i++){
-                    for(let j = 0; j<jsonData.strategyworkflow_set.length; j++){
-                      if(strategys["_groups"][0][j].__data__.rank == i){
-                          d3.select(strategys["_groups"][0][j]).attr("y", `${runningWeekHeight}`);
-                          runningWeekHeight += +d3.select(strategys["_groups"][0][j]).attr("height")+strategyVerticalSpacing;
-                      }
-                    }
-                  }
-
-                    strategys
-                      .append('text')
-                      .attr('class', 'strategy-title')
-                      .attr('x', "15")
-                      .attr('y', "20")
-                      .attr('dy', 6)
-                      .text(d => d.strategy.title);
-
-                    strategys
-                      .append('text')
-                      .attr('class', 'strategy-author')
-                      .attr('x', "15")
-                      .attr('y', "40")
-                      .attr('dy', 6)
-                      .text(d=> "created by "+d.strategy.author);
-
-                  strategys.append("g")
-                    .attr("class", "action-icon delete-strategy")
-                    .on("mousedown", function(d,i){
-                        root.currentComponentInstance.setState({
-                          object: d3.select(this.parentNode).node().__data__.strategy,
-                          objectType: "strategy",
-                          isWeek: true,
-                          isDeleteForm: true
-                        });
-                        root.currentComponentInstance.dlg.MDComponent.show();
-                    })
-                    .append('image')
-                    .attr('x', `${strategyWidth-40}`)
-                    .attr('y', `${90}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/rubbish-bin-delete-button.svg' %}");
-
-                  strategys.append("g")
-                    .attr("class", "action-icon update-strategy")
-                    .on("mousedown", function(d,i){
-                        root.currentComponentInstance.setState({
-                          object: d3.select(this.parentNode).node().__data__.strategy,
-                          objectType: "strategy",
-                          isWeek: true,
-                          isUpdateForm: true
-                        });
-                        root.currentComponentInstance.dlg.MDComponent.show();
-                    })
-                    .append('image')
-                    .attr('x', `${strategyWidth-40}`)
-                    .attr('y', `${45}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/pencil.svg' %}");
-
-                  strategys.append("g")
-                    .attr("class", "action-icon add-node")
-                    .on("mousedown", function(d,i){
-                        console.log(jsonData);
-                        root.currentComponentInstance.setState({
-                          objectType: "node",
-                          parentID: d3.select(this.parentNode).node().__data__.strategy.id,
-                          isNode: true,
-                          parentActivity:jsonData,
-                        });
-                        root.currentComponentInstance.dlg.MDComponent.show();
-                    })
-                    .append('image')
-                    .attr('x', `${strategyWidth-40}`)
-                    .attr('y', `${135}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/add-square-button.svg' %}");
-
-                const dragDropIcons =  strategys.append("g")
-                    .attr("class", "drag-icon")
-                    .append('image')
-                    .attr('x', `${strategyWidth-30}`)
-                    .attr('y', `${10}`)
-                    .attr("width", `${20}`)
-                    .attr("height", `${20}`)
-                    .attr("xlink:href","{% static 'course_flow/img/reorder-option (1).svg' %}");
-
-
-
-              function makeDragDropWeek() {
-                let widget = undefined;
-                let color = undefined;
-                let widgetData = undefined;
-                let initYAxis = undefined;
-
-                let drags = d3
-                  .drag()
-                  .on("start", function() {
-                    widget = d3.select(this);
-                    d3.selectAll(".strategy").attr("height", 45).attr("y",(d,i)=>d.rank*(45+strategyVerticalSpacing)+strategyInfoHeight).select("rect").attr("height", 45);
-                    d3.selectAll(".strategy").select(".strategy-author").remove();
-                    window.scrollTo(0, 0);
-                    widget.select("rect").attr("filter","url(#selection-shadow)")
-                          .attr('x', 5).attr('y', 4)
-                          .attr("width", +widget.attr("width")-10).attr("height", +widget.attr("height")-8);
-                    widgetData = widget.node().__data__;
-                    initYAxis = widget.attr("y");
-                    swapDiv(this);
-                    dragDropIcons.style("cursor","grabbing");
-                  })
-                  .on("drag", function() {
-                    widget.attr("y", `${Math.max(d3.event.y-15,courseInfoHeight-10)}`);
-
-                    if(widget.attr("y")<initYAxis){
-                        strategys.each(function(d,i) { if((d.rank == widgetData.rank-1)&&((+d3.select(this).attr("y")+(+d3.select(this).attr("height"))/2)>=+widget.attr("y"))){
-                          [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
-                          d3.select(this).attr("y",`${+d3.select(this).attr("y")+(+widget.attr("height"))}`);
-                        }});
-                    }
-                    else if(widget.attr("y")>initYAxis){
-                      strategys.each(function(d,i) { if((d.rank == widgetData.rank+1)&&((+d3.select(this).attr("y")+(+d3.select(this).attr("height"))/2)<=(+widget.attr("y")+(+widget.attr("height"))))){
-                        [d.rank, widgetData.rank] = [widgetData.rank, d.rank];
-                        d3.select(this).attr("y",`${+d3.select(this).attr("y")-(+widget.attr("height"))}`);
-                      }});
-                    }
-                    initYAxis = +widget.attr("y");
-                  })
-                  .on("end", function() {
-                    let yRealignPos = 0;
-                    strategys.each(function(d,i) {
-                        if(d3.select(this).node().__data__.rank<widgetData.rank){
-                           yRealignPos += +d3.select(this).attr("height");
-                        }
-                    });
-                    widget.attr("y", `${yRealignPos}`);
-                    widget.select("rect").attr("filter","")
-                          .attr('x', 0).attr('y', 0)
-                          .attr("width", +widget.attr("width")).attr("height", +widget.attr("height"));
-                    dragDropIcons.style("cursor","grab");
-                    renderCourse(jsonData, parent);
-                    updateJson();
-                    widget = undefined;
-                  });
-
-                drags(strategys);
-              }
-
-              makeDragDropWeek();
-
-          }
-
-
-          function pathToNextSiblingRect(s, i) {
-            path = "M" + (s[i].x.animVal.value+nodeMidpointHorizontal) + "," + (s[i].y.animVal.value+nodeHeight) + "C" + (s[i].x.animVal.value+nodeMidpointHorizontal) + ","
-                    + (s[i].y.animVal.value + nodeHeight + s[i+1].y.animVal.value) / 2 + " " + (s[i+1].x.animVal.value+nodeMidpointHorizontal) + "," +  (s[i].y.animVal.value + nodeHeight + s[i+1].y.animVal.value) / 2
-                    + " " + (s[i+1].x.animVal.value+nodeMidpointHorizontal) + "," + s[i+1].y.animVal.value;
-            return path
-          }
-
-
-
-
-
-          function renderNodeLinks(svg){
-
-              svg.selectAll('path').remove();
-
-              let rects = svg.selectAll('.node')['_groups'][0];
-
-              sortedRects = [rects.length];
-
-              for(let i=0; i<rects.length; i++){
-                  for(let j=0; j<rects.length; j++){
-                  if(i==rects[j].__data__.rank){
-                      sortedRects[i]=rects[j];
-                  }
-                  else if(rects[j].__data__.rank<0) sortedRects[0]=rects[j];
-                  else if(rects[j].__data__.rank>rects.length-1) sortedRects[rects.length-1]=rects[j];
-                }
-              }
-
-              for(let i=0; i<rects.length-1; i++){
-                  svg.append("path")
-                      .style("stroke", "black")
-                      .style("stroke-width", 3)
-                      .attr('fill', 'none')
-                      .attr("d",  pathToNextSiblingRect(sortedRects, i));
-
-
-              }
-
-
-          }
-
-
-          function renderWeek(nodeWeekSet, svg){
-
-
-              const nodes = svg.selectAll('.node').data(nodeWeekSet).enter()
-                                .append("svg").attr("class","node")
-                                .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification+strategyPadding}`)
-                                .attr("y", (d,i) => `${nodeTotalSpacingVertical*d.rank+strategyPadding+strategyInfoHeight}`);
-
-              nodes.append("rect").attr('x', 0).attr('y', 0).attr("rx", "6").attr("class","node-rect")
-                  .attr("fill","#1976BC").attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).style('pointer-events', 'none');
-
-              nodes
-                .append('text')
-                .attr('class', 'node-title')
-                .attr('x', "15")
-                .attr('y', "20")
-                .attr('dy', 6)
-                .style('font-size', nodeWidth/25)
-                .text(d => d.node.title);
-
-                nodes
-                  .append('text')
-                  .attr('class', 'node-author')
-                  .attr('x', "15")
-                  .attr('y', "40")
-                  .attr('dy', 6)
-                  .style('font-size', 12)
-                  .text(d=> "created by "+d.node.author);
-
-                  nodes
-                    .append('text')
-                    .attr('class', 'node-description')
-                    .attr('x', "15")
-                    .attr('y', "0")
-                    .attr('dy', 6)
-                    .style('font-size', nodeWidth/30)
-                    .text(d => d.node.description)
-                    .call(wrap, nodeWidth-60);
-
-  // following function taken from Mike Bostock's 'Wrapping Long Labels'
-
-  function wrap(text, width) {
-      text.each(function() {
-        var text = d3.select(this),
-            words = text.text().split(/\s+/).reverse(),
+      function wrap(text, width) {
+        text.each(function() {
+          var text = d3.select(this),
+            words = text
+              .text()
+              .split(/\s+/)
+              .reverse(),
             word,
             line = [],
             lineNumber = 0,
             lineHeight = 1.5, // ems
-            y = text.attr("y")
-            x = text.attr("x"),
-            dy = parseFloat(text.attr("dy")),
-            tspan = text.text(null).append("tspan").attr("x", x).attr("y", y).attr("dy", dy + "em");
-        while (word = words.pop()) {
-          line.push(word);
-          tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > width) {
-            line.pop();
+            y = text.attr("y");
+          (x = text.attr("x")),
+            (dy = parseFloat(text.attr("dy"))),
+            (tspan = text
+              .text(null)
+              .append("tspan")
+              .attr("x", x)
+              .attr("y", y)
+              .attr("dy", dy + "em"));
+          while ((word = words.pop())) {
+            line.push(word);
             tspan.text(line.join(" "));
-            line = [word];
-            tspan = text.append("tspan").attr("x", x).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+            if (tspan.node().getComputedTextLength() > width) {
+              line.pop();
+              tspan.text(line.join(" "));
+              line = [word];
+              tspan = text
+                .append("tspan")
+                .attr("x", x)
+                .attr("y", y)
+                .attr("dy", ++lineNumber * lineHeight + dy + "em")
+                .text(word);
+            }
           }
-        }
-      });
+        });
+      }
+
+      nodes
+        .append("g")
+        .attr("class", "action-icon delete-node")
+        .on("mousedown", function(d, i) {
+          root.currentComponentInstance.setState({
+            object: d3.select(this.parentNode).node().__data__.node,
+            objectType: "node",
+            isNode: true,
+            isDeleteForm: true
+          });
+          root.currentComponentInstance.dlg.MDComponent.show();
+        })
+        .append("image")
+        .attr("x", `${nodeWidth - 40}`)
+        .attr("y", `${nodeHeight - 45}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr(
+          "xlink:href",
+          "{% static 'course_flow/img/rubbish-bin-delete-button.svg' %}"
+        );
+
+      nodes
+        .append("g")
+        .attr("class", "action-icon update-node")
+        .on("mousedown", function(d, i) {
+          console.log(courseJson);
+          root.currentComponentInstance.setState({
+            object: d3.select(this.parentNode).node().__data__.node,
+            objectType: "node",
+            isNode: true,
+            isUpdateForm: true,
+            parentActivity: courseJson
+          });
+          root.currentComponentInstance.dlg.MDComponent.show();
+        })
+        .append("image")
+        .attr("x", `${nodeWidth - 40}`)
+        .attr("y", `${nodeHeight - 90}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr("xlink:href", "{% static 'course_flow/img/pencil.svg' %}");
+
+      nodes
+        .append("image")
+        .style("pointer-events", "none")
+        .attr("x", `${nodeWidth - 135}`)
+        .attr("y", `${10}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr(
+          "xlink:href",
+          "{% static 'course_flow/img/multiple-users-silhouette.svg' %}"
+        );
+
+      nodes
+        .append("image")
+        .style("pointer-events", "none")
+        .attr("x", `${nodeWidth - 95}`)
+        .attr("y", `${10}`)
+        .attr("width", `${31}`)
+        .attr("height", `${31}`)
+        .attr("xlink:href", "{% static 'course_flow/img/classroom.svg' %}");
+
+      const dragDropIcons = nodes
+        .append("g")
+        .attr("class", "drag-icon")
+        .append("image")
+        .attr("x", `${nodeWidth - 30}`)
+        .attr("y", `${10}`)
+        .attr("width", `${20}`)
+        .attr("height", `${20}`)
+        .attr(
+          "xlink:href",
+          "{% static 'course_flow/img/reorder-option (1).svg' %}"
+        );
+
+      renderNodeLinks(svg);
+
+      function reorderByRank(previousRank, newRank) {
+        nodes.each(function(d, i) {
+          if (d.rank == newRank) {
+            d.rank = previousRank;
+            d3.select(this).attr(
+              "y",
+              `${d.rank * nodeTotalSpacingVertical +
+                strategyPadding +
+                strategyInfoHeight}`
+            );
+          }
+        });
+      }
+
+      function makeDragDropNode() {
+        let widget = undefined;
+        let color = undefined;
+        let initRank = undefined;
+        let currentRank = undefined;
+        let initClassification = undefined;
+        let currentClassification = undefined;
+        let widgetData = undefined;
+
+        let drags = d3
+          .drag()
+          .on("start", function() {
+            widget = d3.select(this);
+            color = widget.select("rect").attr("fill");
+            widget
+              .select("rect")
+              .attr("filter", "url(#selection-shadow)")
+              .attr("x", 5)
+              .attr("y", 4)
+              .attr("width", `${nodeWidth - 10}`)
+              .attr("height", `${nodeHeight - 8}`);
+            dragDropIcons.style("cursor", "grabbing");
+            widgetData = widget.node().__data__;
+            initRank = widgetData.rank;
+            initClassification = widgetData.node.classification;
+            swapDiv(this);
+          })
+          .on("drag", function() {
+            widget
+              .attr("x", d3.event.x - nodeWidth + 20)
+              .attr("y", d3.event.y - 20);
+            currentRank = Math.round(
+              (widget.attr("y") - strategyPadding - strategyInfoHeight) /
+                nodeTotalSpacingVertical
+            );
+            currentClassification = Math.round(
+              (widget.attr("x") - strategyPadding) / nodeTotalSpacingHorizontal
+            );
+            if (currentRank != initRank) {
+              reorderByRank(initRank, currentRank);
+              widgetData.rank = currentRank;
+              initRank = currentRank;
+            }
+            if (currentClassification != initClassification) {
+              widgetData.node.classification = currentClassification;
+              initClassification = currentClassification;
+            }
+            renderNodeLinks(svg, nodeMidpointHorizontal);
+          })
+          .on("end", function() {
+            if (widgetData.node.classification < 0)
+              widgetData.node.classification = 0;
+            if (widgetData.node.classification > 2)
+              widgetData.node.classification = 2;
+            if (widgetData.rank < 0) widgetData.rank = 0;
+            if (widgetData.rank > nodeWeekSet.length - 1)
+              widgetData.rank = nodeWeekSet.length - 1;
+            widget
+              .select("rect")
+              .attr("fill", color)
+              .attr("y", 0)
+              .attr("x", 0)
+              .attr("width", `${nodeWidth}`)
+              .attr("height", `${nodeHeight}`)
+              .attr("filter", "");
+            widget
+              .attr(
+                "y",
+                (d, i) =>
+                  `${d.rank * nodeTotalSpacingVertical +
+                    strategyPadding +
+                    strategyInfoHeight}`
+              )
+              .attr(
+                "x",
+                (d, i) =>
+                  `${nodeTotalSpacingHorizontal * d.node.classification +
+                    strategyPadding}`
+              );
+            dragDropIcons.style("cursor", "grab");
+            updateJson();
+            renderNodeLinks(svg, nodeMidpointHorizontal);
+            widget = undefined;
+          });
+
+        drags(nodes);
+      }
+      makeDragDropNode();
     }
 
-                  nodes.append("g")
-                    .attr("class", "action-icon delete-node")
-                    .on("mousedown", function(d,i){
-                      root.currentComponentInstance.setState({
-                        object: d3.select(this.parentNode).node().__data__.node,
-                        objectType: "node",
-                        isNode: true,
-                        isDeleteForm: true
-                      });
-                      root.currentComponentInstance.dlg.MDComponent.show();
-                    })
-                    .append('image')
-                    .attr('x', `${nodeWidth-40}`)
-                    .attr('y', `${nodeHeight-45}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/rubbish-bin-delete-button.svg' %}");
+    function swapDiv(referenceNode) {
+      referenceNode.parentNode.insertBefore(
+        referenceNode,
+        referenceNode.parentNode.lastChild.nextSibling
+      );
+    }
 
-                  nodes.append("g")
-                    .attr("class", "action-icon update-node")
-                    .on("mousedown", function(d,i){
-                      console.log(courseJson)
-                      root.currentComponentInstance.setState({
-                        object: d3.select(this.parentNode).node().__data__.node,
-                        objectType: "node",
-                        isNode: true,
-                        isUpdateForm: true,
-                        parentActivity:courseJson
-                      });
-                      root.currentComponentInstance.dlg.MDComponent.show();
-                    })
-                    .append('image')
-                    .attr('x', `${nodeWidth-40}`)
-                    .attr('y', `${nodeHeight-90}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/pencil.svg' %}");
-
-
-                  nodes
-                    .append('image')
-                    .style('pointer-events', 'none')
-                    .attr('x', `${nodeWidth-135}`)
-                    .attr('y', `${10}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/multiple-users-silhouette.svg' %}");
-
-                  nodes
-                    .append('image')
-                    .style('pointer-events', 'none')
-                    .attr('x', `${nodeWidth-95}`)
-                    .attr('y', `${10}`)
-                    .attr("width", `${31}`)
-                    .attr("height", `${31}`)
-                    .attr("xlink:href","{% static 'course_flow/img/classroom.svg' %}");
-
-                  const dragDropIcons = nodes.append("g")
-                    .attr("class", "drag-icon")
-                    .append('image')
-                    .attr('x', `${nodeWidth-30}`)
-                    .attr('y', `${10}`)
-                    .attr("width", `${20}`)
-                    .attr("height", `${20}`)
-                    .attr("xlink:href","{% static 'course_flow/img/reorder-option (1).svg' %}");
-
-
-
-
-
-              renderNodeLinks(svg);
-
-                function reorderByRank(previousRank, newRank){
-                    nodes.each(function(d,i) { if(d.rank == newRank){
-                      d.rank=previousRank;
-                      d3.select(this).attr("y",`${d.rank*nodeTotalSpacingVertical+strategyPadding+strategyInfoHeight}`);
-                    }});
-                }
-
-            function makeDragDropNode() {
-              let widget = undefined;
-              let color = undefined;
-              let initRank = undefined;
-              let currentRank = undefined;
-              let initClassification = undefined;
-              let currentClassification = undefined;
-              let widgetData = undefined;
-
-              let drags = d3
-                .drag()
-                .on("start", function() {
-                  widget = d3.select(this);
-                  color = widget.select("rect").attr("fill");
-                  widget.select("rect").attr("filter","url(#selection-shadow)")
-                        .attr('x', 5).attr('y', 4)
-                        .attr("width", `${nodeWidth-10}`).attr("height", `${nodeHeight-8}`);
-                  dragDropIcons.style("cursor","grabbing");
-                  widgetData = widget.node().__data__;
-                  initRank = widgetData.rank;
-                  initClassification = widgetData.node.classification
-                  swapDiv(this);
-                })
-                .on("drag", function() {
-                  widget.attr("x", d3.event.x-nodeWidth+20).attr("y", d3.event.y-20);
-                  currentRank = Math.round((widget.attr("y")-strategyPadding-strategyInfoHeight)/nodeTotalSpacingVertical);
-                  currentClassification = Math.round((widget.attr("x")-strategyPadding)/nodeTotalSpacingHorizontal);
-                  if(currentRank != initRank){
-                      reorderByRank(initRank, currentRank);
-                      widgetData.rank = currentRank;
-                      initRank = currentRank;
-                  }
-                  if(currentClassification != initClassification){
-                      widgetData.node.classification = currentClassification;
-                      initClassification = currentClassification;
-                  }
-                  renderNodeLinks(svg, nodeMidpointHorizontal);
-                })
-                .on("end", function() {
-                  if (widgetData.node.classification < 0) widgetData.node.classification = 0;
-                  if (widgetData.node.classification > 2) widgetData.node.classification = 2;
-                  if (widgetData.rank < 0) widgetData.rank = 0;
-                  if (widgetData.rank > nodeWeekSet.length-1) widgetData.rank = nodeWeekSet.length-1;
-                  widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
-                    .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("filter", "");
-                  widget.attr("y",(d,i)=>`${d.rank*nodeTotalSpacingVertical+strategyPadding+strategyInfoHeight}`)
-                      .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification+strategyPadding}`);
-                  dragDropIcons.style("cursor","grab");
-                  updateJson();
-                  renderNodeLinks(svg, nodeMidpointHorizontal);
-                  widget = undefined;
-                });
-
-              drags(nodes);
-            }
-            makeDragDropNode();
-
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
         }
-
-      function swapDiv(referenceNode){
-          referenceNode.parentNode.insertBefore(referenceNode, referenceNode.parentNode.lastChild.nextSibling);
+        d3.select("#container").style("pointer-events", "none");
+      },
+      success: function() {
+        fetchThenRenderCourse();
+        d3.select("#container").style("pointer-events", "auto");
+      },
+      failure: function() {
+        fetchThenRenderCourse();
+        d3.select("#container").style("pointer-events", "auto");
       }
+    });
 
-      $.ajaxSetup({
-          beforeSend: function(xhr, settings) {
-              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                  xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
-              }
-              d3.select("#container").style("pointer-events","none");
-          },
-          success: function(){
-            fetchThenRenderCourse();
-            d3.select("#container").style("pointer-events","auto");
-          },
-          failure: function(){
-            fetchThenRenderCourse();
-            d3.select("#container").style("pointer-events","auto");
-          }
-      });
-
-      function csrfSafeMethod(method) {
-
-          return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
-      }
-      function getCsrfToken() {
-          return document
-            .getElementsByName("csrfmiddlewaretoken")[0]
-            .getAttribute("value");
-        }
-      function updateJson(){
-        $.post("{% url 'course_flow:update-course-json' %}", {json: JSON.stringify(courseJson)})
-          .done(function(data) {
-            if (data.action == "posted") {
-              root.currentComponentInstance.snack.MDComponent.show({
-                message: root.currentComponentInstance.props.snackMessageOnSuccess
-              });
-            } else {
-              root.currentComponentInstance.snack.MDComponent.show({
-                message: root.currentComponentInstance.props.snackMessageOnFailure
-              });
-            }
-          })
-          .fail(function(data) {
-            root.currentComponentInstance.snack.MDComponent.show({
-              message: root.currentComponentInstance.props.snackMessageOnFailure
-            });
-          });
-        }
-
-      function addNode(nodePk, strategyPk){
-        $.post("{% url 'course_flow:add-node' %}", {nodePk: nodePk, strategyPk: strategyPk})
+    function csrfSafeMethod(method) {
+      return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+    }
+    function getCsrfToken() {
+      return document
+        .getElementsByName("csrfmiddlewaretoken")[0]
+        .getAttribute("value");
+    }
+    function updateJson() {
+      $.post("{% url 'course_flow:update-course-json' %}", {
+        json: JSON.stringify(courseJson)
+      })
         .done(function(data) {
           if (data.action == "posted") {
             root.currentComponentInstance.snack.MDComponent.show({
@@ -788,8 +1019,30 @@
             message: root.currentComponentInstance.props.snackMessageOnFailure
           });
         });
-      }
+    }
 
+    function addNode(nodePk, strategyPk) {
+      $.post("{% url 'course_flow:add-node' %}", {
+        nodePk: nodePk,
+        strategyPk: strategyPk
+      })
+        .done(function(data) {
+          if (data.action == "posted") {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnSuccess
+            });
+          } else {
+            root.currentComponentInstance.snack.MDComponent.show({
+              message: root.currentComponentInstance.props.snackMessageOnFailure
+            });
+          }
+        })
+        .fail(function(data) {
+          root.currentComponentInstance.snack.MDComponent.show({
+            message: root.currentComponentInstance.props.snackMessageOnFailure
+          });
+        });
+    }
   });
 </script>
 {% endblock %}

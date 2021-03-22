@@ -10,14 +10,14 @@
 <!-- -->
 {% block body %}
 <div class="workflow-create-wrapper">
-    <h1>
-      {% trans 'Create an activity:' %}
-    </h1>
-    <form method="post">
-      {% csrf_token %} {{ form.as_p }}
-      <input id="save-button" type="submit" value="Save" />
-    </form>
-</div>    
+  <h1>
+    {% trans 'Create an activity:' %}
+  </h1>
+  <form method="post">
+    {% csrf_token %} {{ form.as_p }}
+    <input id="save-button" type="submit" value="Save" />
+  </form>
+</div>
 {% endblock %}
 <!-- -->
 {% block foot %} {% endblock %}
@@ -27,12 +27,32 @@
 {% block scripts %}
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
-    userFeedback.injectDialog(
-      "{% trans 'Let us know how we can improve your experience!' %}",
-      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
-      "{% trans 'Thanks for your feedback!' %}",
-      "{% trans 'Sorry, please try again later!' %}",
-      "{% url 'user_feedback:post' %}"
+    const feedback = () => {
+      return user_feedback.h(user_feedback.App, {
+        acceptText: "{% trans 'Send' %}",
+        cancelText: "{% trans 'Cancel' %}",
+        charCountText: "{% trans 'characters remaining' %}",
+        description: "{% trans 'Leave feedback or get help' %}",
+        feedbackTypes: [
+          { value: 1, text: "Bug report" },
+          { value: 2, text: "Feature request" },
+          { value: 3, text: "General feedback" }
+        ],
+        menuFeedbackText: "{% trans 'Give Feedback' %}",
+        menuHelpText: "{% trans 'Tutorials and Forums' %}",
+        menuHelpUrl: "#",
+        placeholder: "{% trans 'Let us know what is on your mind...' %}",
+        snackbarError:
+          "{% trans 'An error occurred.  Please try again later.' %}",
+        snackbarSuccess: "{% trans 'Thanks for your feedback!' %}",
+        text: "",
+        title: "{% trans 'How can we improve your experience?' %}",
+        url: "{% url 'user_feedback:post' %}"
+      });
+    };
+    user_feedback.render(
+      feedback(),
+      document.getElementById("user-feedback-app")
     );
   });
 </script>

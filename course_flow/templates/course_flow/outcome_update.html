@@ -9,12 +9,18 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id=container class="body-wrapper"></div><div id="popup-container"></div>
+<div id="container" class="body-wrapper"></div>
+<div id="popup-container"></div>
 <div id="sidebar" class="side-bar">
-    <ul>
-        <li><a href="#edit-menu"><img src="{% static 'course_flow/img/images_svg/edit_pencil_blue.svg' %}"/></a></li>
-    </ul>
-    <div id="edit-menu" class="right-panel-container"></div>
+  <ul>
+    <li>
+      <a href="#edit-menu"
+        ><img
+          src="{% static 'course_flow/img/images_svg/edit_pencil_blue.svg' %}"
+      /></a>
+    </li>
+  </ul>
+  <div id="edit-menu" class="right-panel-container"></div>
 </div>
 <!-- -->
 {% endblock %}
@@ -26,9 +32,7 @@
 {% block read_only_scripts %}
 
 <script nonce="{{request.csp_nonce}}">
-    
-    const read_only=false;
-    
+  const read_only = false;
 </script>
 
 {% endblock %}
@@ -36,50 +40,66 @@
 {% block scripts %}
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
-    userFeedback.injectDialog(
-      "{% trans 'Let us know how we can improve your experience!' %}",
-      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
-      "{% trans 'Thanks for your feedback!' %}",
-      "{% trans 'Sorry, please try again later!' %}",
-      "{% url 'user_feedback:post' %}"
+    const feedback = () => {
+      return user_feedback.h(user_feedback.App, {
+        acceptText: "{% trans 'Send' %}",
+        cancelText: "{% trans 'Cancel' %}",
+        charCountText: "{% trans 'characters remaining' %}",
+        description: "{% trans 'Leave feedback or get help' %}",
+        feedbackTypes: [
+          { value: 1, text: "Bug report" },
+          { value: 2, text: "Feature request" },
+          { value: 3, text: "General feedback" }
+        ],
+        menuFeedbackText: "{% trans 'Give Feedback' %}",
+        menuHelpText: "{% trans 'Tutorials and Forums' %}",
+        menuHelpUrl: "#",
+        placeholder: "{% trans 'Let us know what is on your mind...' %}",
+        snackbarError:
+          "{% trans 'An error occurred.  Please try again later.' %}",
+        snackbarSuccess: "{% trans 'Thanks for your feedback!' %}",
+        text: "",
+        title: "{% trans 'How can we improve your experience?' %}",
+        url: "{% url 'user_feedback:post' %}"
+      });
+    };
+    user_feedback.render(
+      feedback(),
+      document.getElementById("user-feedback-app")
     );
   });
 </script>
 
-
 <script nonce="{{request.csp_nonce}}">
-    
-    const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-    var selection_manager;
-    var tiny_loader;
-    
-    initial_data = {{data_flat|safe}}
-    console.log(initial_data);
-    const user_id = {{ user.id }};
-    const initial_loading=false;
-    
-    $("#sidebar").tabs({collapsible:true,active:0,disabled:null});
 
-    $("#sidebar").on("mousedown",(evt)=>{evt.stopPropagation()});    
+  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+  var selection_manager;
+  var tiny_loader;
 
-    if(read_only)$("#sidebar").hide();    
-    
-    {% if parent_project_pk %}
-        if(read_only){
-            $("#floatbar").append("<a href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-        }else{
-            $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-        }
-    {% endif %}
-    
-    window.addEventListener("load",function(){
-        $(document).ajaxError(outcome_scripts.fail_function);
-        tiny_loader = new workflow_redux.TinyLoader('#container');
-        selection_manager = new workflow_redux.SelectionManager();
-        outcome_scripts.renderOutcomeView($("#container").get()[0]);
-    });
-    
-  
-    
+  initial_data = {{data_flat|safe}}
+  console.log(initial_data);
+  const user_id = {{ user.id }};
+  const initial_loading=false;
+
+  $("#sidebar").tabs({collapsible:true,active:0,disabled:null});
+
+  $("#sidebar").on("mousedown",(evt)=>{evt.stopPropagation()});
+
+  if(read_only)$("#sidebar").hide();
+
+  {% if parent_project_pk %}
+      if(read_only){
+          $("#floatbar").append("<a href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+      }else{
+          $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+      }
+  {% endif %}
+
+  window.addEventListener("load",function(){
+      $(document).ajaxError(outcome_scripts.fail_function);
+      tiny_loader = new workflow_redux.TinyLoader('#container');
+      selection_manager = new workflow_redux.SelectionManager();
+      outcome_scripts.renderOutcomeView($("#container").get()[0]);
+  });
 </script>
 {% endblock %}

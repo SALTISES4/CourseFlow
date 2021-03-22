@@ -19,12 +19,32 @@
 {% block scripts %}
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
-    userFeedback.injectDialog(
-      "{% trans 'Let us know how we can improve your experience!' %}",
-      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
-      "{% trans 'Thanks for your feedback!' %}",
-      "{% trans 'Sorry, please try again later!' %}",
-      "{% url 'user_feedback:post' %}"
+    const feedback = () => {
+      return user_feedback.h(user_feedback.App, {
+        acceptText: "{% trans 'Send' %}",
+        cancelText: "{% trans 'Cancel' %}",
+        charCountText: "{% trans 'characters remaining' %}",
+        description: "{% trans 'Leave feedback or get help' %}",
+        feedbackTypes: [
+          { value: 1, text: "Bug report" },
+          { value: 2, text: "Feature request" },
+          { value: 3, text: "General feedback" }
+        ],
+        menuFeedbackText: "{% trans 'Give Feedback' %}",
+        menuHelpText: "{% trans 'Tutorials and Forums' %}",
+        menuHelpUrl: "#",
+        placeholder: "{% trans 'Let us know what is on your mind...' %}",
+        snackbarError:
+          "{% trans 'An error occurred.  Please try again later.' %}",
+        snackbarSuccess: "{% trans 'Thanks for your feedback!' %}",
+        text: "",
+        title: "{% trans 'How can we improve your experience?' %}",
+        url: "{% url 'user_feedback:post' %}"
+      });
+    };
+    user_feedback.render(
+      feedback(),
+      document.getElementById("user-feedback-app")
     );
 
     let activityJson = null;
@@ -52,9 +72,7 @@
     const activityInfoHeight = 200.0;
 
     const weekWidth =
-      2 * weekPadding +
-      nodeTotalSpacingHorizontal * 3 -
-      nodeSpacingHorizontal;
+      2 * weekPadding + nodeTotalSpacingHorizontal * 3 - nodeSpacingHorizontal;
 
     const classificationLabels = [
       "Out of Class",
@@ -160,8 +178,7 @@
         .attr(
           "height",
           (d, i) =>
-            `${d.week.nodeweek_set.length *
-              (nodeHeight + nodeSpacingVertical) -
+            `${d.week.nodeweek_set.length * (nodeHeight + nodeSpacingVertical) -
               nodeSpacingVertical +
               2 * weekPadding +
               weekInfoHeight}`
