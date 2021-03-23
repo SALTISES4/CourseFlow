@@ -60,9 +60,11 @@ class OutcomeView extends ComponentJSON{
                         </div>
                     </div>
                 }
-                <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
+                <ol class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
                     {children}
-                </div>
+                </ol>
+                {(!read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>+ Add New</div>
+                }
                 {!read_only && <div class="mouseover-actions">
                     {actions}
                 </div>

@@ -19,9 +19,9 @@ class OutcomeOutcomeView extends ComponentJSON{
         let data = this.props.data;
         
         return (
-            <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
+            <li class="outcome-outcome" id={data.id} ref={this.maindiv}>
                 <OutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
-            </div>
+            </li>
         );
     }
     

@@ -28,11 +28,13 @@ class WorkflowView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        let renderer = this.props.renderer;
+        let selection_manager = renderer.selection_manager;
         var columnworkflows = data.columnworkflow_set.map((columnworkflow)=>
-            <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
+            <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={data.id} renderer={renderer}/>
         );
         var weekworkflows = data.weekworkflow_set.map((weekworkflow)=>
-            <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
+            <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
         );
         var selector = this;
         
@@ -42,7 +44,7 @@ class WorkflowView extends ComponentJSON{
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class = "workflow-container">
                     <div class="workflow-details">
-                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
+                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{selection_manager.changeSelection(evt,selector)}}/>
                         {this.addEditable(data)}
                         {reactDom.createPortal(
                         <div class="topdropwrapper" title="Show/Hide Legend">
@@ -254,12 +256,14 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
         let data = this.props.data;
         
         var selector = this;
+        let renderer = this.props.renderer;
+        let selection_manager = renderer.selection_manager;
         
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class = "workflow-container">
                     <div class="workflow-details">
-                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
+                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{selection_manager.changeSelection(evt,selector)}}/>
                         {this.addEditable(data)}
                         {reactDom.createPortal(
                         <div class="topdropwrapper" title="Show/Hide Legend">
@@ -270,7 +274,7 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                         {this.state.show_legend && 
                             <WorkflowOutcomeLegend toggle={this.toggleLegend.bind(this)}/>
                         }
-                        <WorkflowOutcomeView selection_manager={this.props.selection_manager} outcomes_type={data.outcomes_type}/>
+                        <WorkflowOutcomeView renderer={renderer} outcomes_type={data.outcomes_type}/>
                     </div>
                     {!read_only &&
                         <NodeBar outcomes_view={true}/>

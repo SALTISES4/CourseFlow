@@ -391,6 +391,68 @@ button, input[type="submit"]{
     max-width:800px;
 }
 
+li.outcome-outcome::before{
+    content:"";
+    display:block;
+    width:10px;
+    height:0;
+    border-top:2px solid #1976bc;
+    margin-top:-2px;
+    position:absolute;
+    top:15px;
+    left:-40px;
+}
+
+li.outcome-outcome{
+    position:relative;
+    margin-left:40px;
+}
+
+li.outcome-outcome > .outcome{
+    margin-left:0px;
+}
+
+li.outcome-outcome::marker{
+    
+}
+
+ol.children-block{
+    padding-left:0px;
+}
+
+.outcome ol ol{
+    list-style-type:lower-roman;
+}
+
+.outcome.dropped > .outcome-create-child{
+    display:block;
+}
+
+.outcome.dropped > .children-block:empty + .outcome-create-child{
+    display:none;
+}
+
+.outcome-create-child{
+    position:relative;
+    font-size:12px;
+    color:#1976bc;
+    margin-left:40px;
+    display:none;
+    cursor:pointer;
+}
+
+.outcome-create-child::before{
+    content:"";
+    display:block;
+    width:10px;
+    height:6px;
+    border-bottom:2px solid #1976bc;
+    border-left:2px solid #1976bc;
+    position:absolute;
+    top:0px;
+    left:-20px;
+}
+
 .outcome-title{
     padding:2px;
     white-space:normal;
@@ -399,8 +461,12 @@ button, input[type="submit"]{
 .children-block{
     border-left:2px solid #1976bc;
     margin-left:20px;
+    margin-top:0px;
+    margin-bottom:0px;
     display:none;
+    position:relative;
 }
+
 
 .outcome.dropped > .children-block{
     display:block;

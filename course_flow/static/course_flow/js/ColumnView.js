@@ -19,7 +19,7 @@ class ColumnView extends ComponentJSON{
         var title = data.title;
         if(!title)title=data.column_type_display;
         return (
-            <div class={"column"+((this.state.selected && " selected")||"")} onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}>
+            <div class={"column"+((this.state.selected && " selected")||"")} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="column-line">
                     <img src={this.getIcon()}/>
                     <div>{title}</div>

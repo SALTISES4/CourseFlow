@@ -141,9 +141,9 @@ def flow_patterns():
             name="get-possible-linked-workflows",
         ),
         url(
-            r"^workflow/get-flat-workflow/",
-            views.get_flat_workflow,
-            name="get-flat-workflow",
+            r"^workflow/get-workflow-data/",
+            views.get_workflow_data,
+            name="get-workflow-data",
         ),
         url(
             r"^workflow/(?P<pk>[0-9]+)/$",

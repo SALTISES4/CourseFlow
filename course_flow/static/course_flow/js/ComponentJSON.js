@@ -168,68 +168,79 @@ export class ComponentJSON extends React.Component{
     addDeleteSelf(data,alt_icon){
         let icon=alt_icon || "rubbish.svg";
         return (
-            <ActionButton button_icon={icon} button_class="delete-self-button" titletext="Delete" handleClick={()=>{
-                //Temporary confirmation; add better comfirmation dialogue later
-                if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
-                    alert("You cannot delete the last "+this.objectType);
-                    return;
-                }
-                if(window.confirm("Are you sure you want to delete this "+this.objectType+"?")){
-                    this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,this.props.column_order));
-                }
-            }}/>
+            <ActionButton button_icon={icon} button_class="delete-self-button" titletext="Delete" handleClick={this.deleteSelf.bind(this,data)}/>
         );
+    }
+    
+    deleteSelf(data){
+        //Temporary confirmation; add better confirmation dialogue later
+        if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
+            alert("You cannot delete the last "+this.objectType);
+            return;
+        }
+        if(window.confirm("Are you sure you want to delete this "+this.objectType+"?")){
+            this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,this.props.column_order));
+        }
     }
     
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDuplicateSelf(data){
-        var props = this.props;
-        var type = this.objectType;
         return (
-            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext="Duplicate" handleClick={()=>{
-            tiny_loader.startLoad();
-            duplicateSelf(data.id,this.objectType,this.props.parentID,
-                (response_data)=>{
-                    let action = insertBelowAction(response_data,type);
-                    props.dispatch(action);
-                    tiny_loader.endLoad();
-                }
-            );
-            }}/>
+            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext="Duplicate" handleClick={this.duplicateSelf.bind(this,data)}/>
         );
     }
-    //Adds a button that inserts a sibling below the item. The callback function unfortunately does NOT seem to be called after the item is added to the DOM
-    addInsertSibling(data){
+    
+    duplicateSelf(data){
         var props = this.props;
         var type = this.objectType;
+        tiny_loader.startLoad();
+        duplicateSelf(data.id,type,props.parentID,
+            (response_data)=>{
+                let action = insertBelowAction(response_data,type);
+                props.dispatch(action);
+                tiny_loader.endLoad();
+            }
+        );
+    }
+    
+    //Adds a button that inserts a sibling below the item. The callback function unfortunately does NOT seem to be called after the item is added to the DOM
+    addInsertSibling(data){
         return(
-            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext="Insert Below" handleClick={()=>{
-            tiny_loader.startLoad();
-            insertSibling(data.id,this.objectType,this.props.parentID,
-                (response_data)=>{
-                    let action = insertBelowAction(response_data,type);
-                    props.dispatch(action);
-                    tiny_loader.endLoad();
-                }
-            )}}/>
+            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext="Insert Below" handleClick={this.insertSibling.bind(this,data)}/>
+        );
+    }
+    
+    insertSibling(data){
+        var props = this.props;
+        var type = this.objectType;
+        tiny_loader.startLoad();
+        insertSibling(data.id,type,props.parentID,
+            (response_data)=>{
+                let action = insertBelowAction(response_data,type);
+                props.dispatch(action);
+                tiny_loader.endLoad();
+            }
         );
     }
     
     
     //Adds a button that inserts a child to them item
     addInsertChild(data){
+        return(
+            <ActionButton button_icon="create_new_child.svg" button_class="insert-child-button" titletext="Insert Child" handleClick={this.insertChild.bind(this,data)}/>
+        );
+    }
+    
+    insertChild(data){
         var props = this.props;
         var type = this.objectType;
-        return(
-            <ActionButton button_icon="create_new_child.svg" button_class="insert-child-button" titletext="Insert Child" handleClick={()=>{
-            tiny_loader.startLoad();
-            insertChild(data.id,this.objectType,
-                (response_data)=>{
-                    let action = insertChildAction(response_data,type);
-                    props.dispatch(action);
-                    tiny_loader.endLoad();
-                }
-            )}}/>
+        tiny_loader.startLoad();
+        insertChild(data.id,type,
+            (response_data)=>{
+                let action = insertChildAction(response_data,type);
+                props.dispatch(action);
+                tiny_loader.endLoad();
+            }
         );
     }
     

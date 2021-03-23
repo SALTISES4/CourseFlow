@@ -37,7 +37,7 @@ class NodeLinkView extends ComponentJSON{
         return(
             <div>
                 {reactDom.createPortal(
-                    <NodeLinkSVG source_port_handle={this.source_port_handle} source_port={data.source_port} target_port_handle={this.target_port_handle} target_port={data.target_port} clickFunction={(evt)=>this.props.selection_manager.changeSelection(evt,selector)} selected={this.state.selected} source_dimensions={source_dims} target_dimensions={target_dims}/>
+                    <NodeLinkSVG source_port_handle={this.source_port_handle} source_port={data.source_port} target_port_handle={this.target_port_handle} target_port={data.target_port} clickFunction={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,selector)} selected={this.state.selected} source_dimensions={source_dims} target_dimensions={target_dims}/>
                     ,$(".workflow-canvas")[0])}
                 {this.addEditable(data)}
             </div>

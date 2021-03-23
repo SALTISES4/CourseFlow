@@ -61,8 +61,6 @@ const workflow_paths = {
     program:'{% url "course_flow:program-detail-view" pk=object.pk %}',
 }
 const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-var selection_manager;
-var tiny_loader;
 
 $("#sidebar").tabs({
     active:1,
@@ -101,56 +99,17 @@ else{
 {% endif %}
 
 
-initial_data = {{data_flat|safe}}
-console.log(initial_data);
-column_choices = {{column_choices|safe}}
-context_choices = {{context_choices|safe}}
-task_choices = {{task_choices|safe}}
-time_choices = {{time_choices|safe}}
-outcome_type_choices = {{outcome_type_choices|safe}}
-outcome_sort_choices = {{outcome_sort_choices|safe}}
-strategy_classification_choices = {{strategy_classification_choices|safe}}
-is_strategy = {{is_strategy|safe}}
+workflow_data_package = {{data_package|safe}}
 
 var column_colours = {}
 
 const user_id = {{ user.id }};
 const create_path=null;
-    
-var initial_loading = true;
-var ports_rendered = false;
-var items_to_load = {
-    column:initial_data.column.length,
-    week:initial_data.week.length,
-    node:initial_data.node.length,
-};
-var ports_to_render = initial_data.node.length;
-$(document).on("component-loaded",(evt,objectType)=>{
-    if(objectType&&items_to_load[objectType]){
-        items_to_load[objectType]--;
-        for(prop in items_to_load){
-            if(items_to_load[prop]>0)return;
-        }
-        initial_loading=false;
-        $(document).triggerHandler("render-ports");
-    }
-});
 
-$(document).on("ports-rendered",(evt)=>{
-    ports_to_render--;
-    if(ports_to_render>0)return;
-    ports_rendered=true;
-    $(document).triggerHandler("render-links");
-});
     
 window.addEventListener("load", function(){
     $(document).ajaxError(workflow_redux.fail_function);
-    
-    selection_manager = new workflow_redux.SelectionManager(); 
-    tiny_loader = new workflow_redux.TinyLoader('#container');
-    
-    
-    workflow_redux.renderWorkflowView($("#container").get()[0],false);
+    workflow_redux.renderWorkflowView($("#container"),workflow_data_package);
     
     
 });

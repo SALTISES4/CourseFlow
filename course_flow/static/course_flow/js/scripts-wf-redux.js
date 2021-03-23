@@ -7,9 +7,10 @@ import {configureStore, createStore} from '@reduxjs/toolkit';
 import {ComponentJSON} from "./ComponentJSON.js";
 import WorkflowView from"./WorkflowView.js";
 import {ProjectMenu, HomeMenu, ExploreMenu, renderMessageBox} from"./MenuComponents.js";
-import {NodeBar, WorkflowView_Outcome} from"./WorkflowView.js";
+import {WorkflowView_Outcome} from"./WorkflowView.js";
 import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
+import {WorkflowRenderer} from "./Renderers";
 
 export {Loader} from './Constants';
 export {fail_function} from './PostFunctions';
@@ -55,41 +56,14 @@ export class SelectionManager{
 
 
 
-const rootReducer = Redux.combineReducers({
-    workflow:Reducers.workflowReducer,
-    columnworkflow:Reducers.columnworkflowReducer,
-    column:Reducers.columnReducer,
-    weekworkflow:Reducers.weekworkflowReducer,
-    week:Reducers.weekReducer,
-    nodeweek:Reducers.nodeweekReducer,
-    node:Reducers.nodeReducer,
-    nodelink:Reducers.nodelinkReducer,
-    outcome:Reducers.outcomeReducer,
-    outcomeoutcome:Reducers.outcomeOutcomeReducer,
-    outcomenode:Reducers.outcomeNodeReducer,
-    outcomeproject:Reducers.outcomeProjectReducer,
-    strategy:Reducers.strategyReducer,
-    saltise_strategy:Reducers.saltiseStrategyReducer,
-});
 
 var store;
 
 
 
-export function renderWorkflowView(container,outcome_view){
-    if(!store)store = createStore(rootReducer,initial_data);
-    if(outcome_view)reactDom.render(
-        <Provider store = {store}>
-            <WorkflowView_Outcome selection_manager={selection_manager}/>
-        </Provider>,
-        container
-    );
-    else reactDom.render(
-        <Provider store = {store}>
-            <WorkflowView selection_manager={selection_manager}/>
-        </Provider>,
-        container
-    );
+export function renderWorkflowView(container,data_package,outcome_view){
+    var workflow_renderer = new WorkflowRenderer(data_package);
+    workflow_renderer.render(container,outcome_view);
 }
 
 

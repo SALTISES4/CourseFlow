@@ -496,7 +496,7 @@ export class ExploreMenu extends React.Component{
         
         
         let objects = this.props.data_package.map(object=>
-            <WorkflowForMenu key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.object_type}/>  
+            <WorkflowForMenu key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.object_type} selectAction={this.previewItem.bind(this,object.id,object.object_type)}/>  
         )
         let disciplines = this.props.disciplines.map(discipline=>
             <li><label><input class = "fillable"  type="checkbox" name="disc[]" value={discipline.id}/>{discipline.title}</label></li>                                            
@@ -552,26 +552,31 @@ export class ExploreMenu extends React.Component{
                     </div>
                 </form>
                 <hr/>
-                {objects.length>1 &&
-                    [
-                    <p>
-                        Showing results {this.props.pages.results_per_page*(this.props.pages.current_page-1)+1}-{(this.props.pages.results_per_page*this.props.pages.current_page)} ({this.props.pages.total_results} total results)
+                <div class="explore-results">
+                    {objects.length>1 &&
+                        [
+                        <p>
+                            Showing results {this.props.pages.results_per_page*(this.props.pages.current_page-1)+1}-{(this.props.pages.results_per_page*this.props.pages.current_page)} ({this.props.pages.total_results} total results)
 
-                    </p>,
-                    <p>
-                        <button id="prev-page-button" disabled={(this.props.pages.current_page==1)} onClick={
-                            this.toPage.bind(this,this.props.pages.current_page-1)
-                        }>Previous</button>
-                            {page_buttons}
-                        <button id="next-page-button" disabled={(this.props.pages.current_page==this.props.pages.page_count)} onClick={
-                            this.toPage.bind(this,this.props.pages.current_page+1)
-                        }>Next</button>
-                    </p>,
-                    objects]
-                }
-                {objects.length==0 &&
-                    <p>No results were found. Adjust your search parameters, and make sure you have at least one allowed type selected.</p>
-                }
+                        </p>,
+                        <p>
+                            <button id="prev-page-button" disabled={(this.props.pages.current_page==1)} onClick={
+                                this.toPage.bind(this,this.props.pages.current_page-1)
+                            }>Previous</button>
+                                {page_buttons}
+                            <button id="next-page-button" disabled={(this.props.pages.current_page==this.props.pages.page_count)} onClick={
+                                this.toPage.bind(this,this.props.pages.current_page+1)
+                            }>Next</button>
+                        </p>,
+                        objects]
+                    }
+                    {objects.length==0 &&
+                        <p>No results were found. Adjust your search parameters, and make sure you have at least one allowed type selected.</p>
+                    }
+                </div>
+                <div class="explore-preview">
+                    
+                </div>
             </div>
         );
         
@@ -595,6 +600,31 @@ export class ExploreMenu extends React.Component{
             console.log(key);
             
         });
+    }
+
+    previewItem(id,type){
+        let loader = new workflow_redux.TinyLoader();
+        loader.startLoad();
+        $.post(post_paths.get_workflow_data,{
+            workflowPk:JSON.stringify(id),
+        }).done(function(data){
+            if(data.action=="posted"){
+                loader.endLoad();
+                console.log(data)
+                initial_data = data.data_flat;
+                column_choices = data.column_choices;
+                context_choices = data.context_choices;
+                time_choices = data.time_choices;
+                outcome_type_choices = data.outcome_type_choices;
+                outcome_sort_choices = data.outcome_sort_choices;
+                strategy_classification_choices = data.strategy_classification_choices;
+                is_strategy = data.is_strategy;
+                workflow_redux.renderWorkflowView($(".explore-preview"))
+                
+            }
+            else console.log("couldn't show preview");
+        })
+        
     }
 }
 

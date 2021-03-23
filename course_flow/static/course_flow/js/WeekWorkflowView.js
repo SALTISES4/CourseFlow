@@ -18,10 +18,10 @@ class WeekWorkflowView extends ComponentJSON{
         let data = this.props.data;
         var week;
         if(data.week_type==2)week = (
-                <TermView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
+                <TermView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
         );
         else week = (
-            <WeekView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
+            <WeekView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
         );
         return (
             <div class="week-workflow" id={data.id} ref={this.maindiv}>

@@ -23,16 +23,19 @@ class NodeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        let renderer = this.props.renderer;
+        let selection_manager=renderer.selection_manager;
         var nodePorts;
         var node_links;
         var auto_link;
+        
         if(!this.state.initial_render)nodePorts = reactDom.createPortal(
                 <NodePorts nodeID={this.props.objectID} node_div={this.maindiv} dispatch={this.props.dispatch}/>
             ,$(".workflow-canvas")[0]
         );
         if(ports_rendered&&!this.state.port_render){
             node_links = data.outgoing_links.map((link)=>
-                <NodeLinkView key={link} objectID={link} node_div={this.maindiv} selection_manager={this.props.selection_manager}/>
+                <NodeLinkView key={link} objectID={link} node_div={this.maindiv} renderer={renderer}/>
             );
             if(data.has_autolink)auto_link = (
                 <AutoLinkView nodeID={this.props.objectID} node_div={this.maindiv}/>
@@ -83,7 +86,7 @@ class NodeView extends ComponentJSON{
                 }
                 id={data.id} 
                 ref={this.maindiv} 
-                onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}
+                onClick={(evt)=>selection_manager.changeSelection(evt,this)}
             >
                 <div class = "node-top-row">
                     <div class = "node-icon">
@@ -240,6 +243,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
         let titleText = data.title;
+        let selection_manager = this.props.renderer.selection_manager;
         if(data.represents_workflow)titleText = data.linked_workflow_title;
         let descriptionText = data.description;
         if(data.represents_workflow)descriptionText = data.linked_workflow_description;
@@ -252,7 +256,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
                 } 
                 id={data.id} 
                 ref={this.maindiv} 
-                onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}
+                onClick={(evt)=>selection_manager.changeSelection(evt,this)}
             >
                 <div class = "node-top-row">
                     <div class = "node-title">

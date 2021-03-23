@@ -17,7 +17,7 @@ class ColumnWorkflowView extends ComponentJSON{
         let data = this.props.data;
         return (
             <div class={"column-workflow column-"+data.id} ref={this.maindiv} id={data.id}>
-                <ColumnView objectID={data.column} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
+                <ColumnView objectID={data.column} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
             </div>
         )
     }

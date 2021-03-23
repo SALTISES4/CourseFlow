@@ -439,6 +439,9 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         time.sleep(1)
         self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .outcome .outcome")),1)
         self.assertEqual(OutcomeOutcome.objects.filter(parent=base_outcome).count(),1)
+        selenium.find_element_by_css_selector(".children-block:not(:empty)+.outcome-create-child").click()
+        time.sleep(1)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-details .outcome .outcome")),2)
         
         
         

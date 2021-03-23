@@ -648,6 +648,7 @@ class OutcomeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 def get_workflow_context_data(workflow, context, user):
+    data_package={}
     if not workflow.is_strategy:
         project = WorkflowProject.objects.get(workflow=workflow).project
     SerializerClass = serializer_lookups_shallow[workflow.type]
@@ -750,35 +751,18 @@ def get_workflow_context_data(workflow, context, user):
                     many=True,
                 ).data
 
-    context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
-    context["is_strategy"] = (
-        JSONRenderer().render(workflow.is_strategy).decode("utf-8")
-    )
-    context["column_choices"] = (
-        JSONRenderer().render(column_choices).decode("utf-8")
-    )
-    context["context_choices"] = (
-        JSONRenderer().render(context_choices).decode("utf-8")
-    )
-    context["task_choices"] = (
-        JSONRenderer().render(task_choices).decode("utf-8")
-    )
-    context["time_choices"] = (
-        JSONRenderer().render(time_choices).decode("utf-8")
-    )
-    context["outcome_type_choices"] = (
-        JSONRenderer().render(outcome_type_choices).decode("utf-8")
-    )
-    context["outcome_sort_choices"] = (
-        JSONRenderer().render(outcome_sort_choices).decode("utf-8")
-    )
-    context["strategy_classification_choices"] = (
-        JSONRenderer().render(strategy_classification_choices).decode("utf-8")
-    )
+    data_package["data_flat"] = data_flat
+    data_package["is_strategy"] = workflow.is_strategy
+    data_package["column_choices"] = column_choices
+    data_package["context_choices"] = context_choices
+    data_package["task_choices"] = task_choices
+    data_package["time_choices"] = time_choices
+    data_package["outcome_type_choices"] = outcome_type_choices
+    data_package["outcome_sort_choices"] = outcome_sort_choices
+    data_package["strategy_classification_choices"] = strategy_classification_choices
     if not workflow.is_strategy:
-        context["parent_project_pk"] = (
-            JSONRenderer().render(parent_project_pk).decode("utf-8")
-        )
+        context["parent_project_pk"] = parent_project_pk
+    context["data_package"] = JSONRenderer().render(data_package).decode("utf-8")
 
     return context
 
@@ -1164,6 +1148,18 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
     serializer_class = DisciplineSerializer
 
 
+@require_POST
+@ajax_login_required
+@is_owner_or_published("workflowPk")
+def get_workflow_data(request: HttpRequest) -> HttpResponse:
+    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    try:
+        data_package = get_workflow_context_data(workflow.get_subclass(),{},request.user)
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {"action": "posted", "data_package": data_package}
+    )
 
 @require_POST
 @ajax_login_required
@@ -1183,39 +1179,6 @@ def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
         {"action": "posted", "data_package": data_package, "node_id": node.id}
     )
 
-
-@require_POST
-@ajax_login_required
-def get_flat_workflow(request: HttpRequest) -> HttpResponse:
-    workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
-    try:
-        SerializerClass = serializer_lookups_shallow[workflow.type]
-        columnworkflows = workflow.columnworkflow_set.all()
-        weekworkflows = workflow.weekworkflow_set.all()
-        columns = workflow.columns.all()
-        weeks = workflow.weeks.all()
-        nodeweeks = NodeWeek.objects.filter(week__in=weeks)
-        nodes = Node.objects.filter(
-            pk__in=nodeweeks.values_list("node__pk", flat=True)
-        )
-
-        response = {
-            "workflow": SerializerClass(workflow).data,
-            "columnworkflows": ColumnWorkflowSerializerShallow(
-                columnworkflows, many=True
-            ).data,
-            "columns": ColumnSerializerShallow(columns, many=True).data,
-            "weekworkflows": WeekWorkflowSerializerShallow(
-                weekworkflows, many=True
-            ).data,
-            "weeks": WeekSerializerShallow(weeks, many=True).data,
-            "nodeweeks": NodeWeekSerializerShallow(nodeweeks, many=True).data,
-            "nodes": NodeSerializerShallow(nodes, many=True).data,
-        }
-
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse(response)
 
 
 """
