@@ -491,12 +491,17 @@ export class ProjectEditMenu extends React.Component{
 
 
 export class ExploreMenu extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={selected:null}
+    }
+    
     render(){
         
         
         
         let objects = this.props.data_package.map(object=>
-            <WorkflowForMenu key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.object_type} selectAction={this.previewItem.bind(this,object.id,object.object_type)}/>  
+            <WorkflowForMenu selected={(this.state.selected==object.id)} key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.object_type} selectAction={this.selectItem.bind(this,object.id,object.object_type)}/>  
         )
         let disciplines = this.props.disciplines.map(discipline=>
             <li><label><input class = "fillable"  type="checkbox" name="disc[]" value={discipline.id}/>{discipline.title}</label></li>                                            
@@ -552,30 +557,32 @@ export class ExploreMenu extends React.Component{
                     </div>
                 </form>
                 <hr/>
-                <div class="explore-results">
-                    {objects.length>1 &&
-                        [
-                        <p>
-                            Showing results {this.props.pages.results_per_page*(this.props.pages.current_page-1)+1}-{(this.props.pages.results_per_page*this.props.pages.current_page)} ({this.props.pages.total_results} total results)
+                <div class="explore-main">
+                    <div class="explore-results">
+                        {objects.length>1 &&
+                            [
+                            <p>
+                                Showing results {this.props.pages.results_per_page*(this.props.pages.current_page-1)+1}-{(this.props.pages.results_per_page*this.props.pages.current_page)} ({this.props.pages.total_results} total results)
 
-                        </p>,
-                        <p>
-                            <button id="prev-page-button" disabled={(this.props.pages.current_page==1)} onClick={
-                                this.toPage.bind(this,this.props.pages.current_page-1)
-                            }>Previous</button>
-                                {page_buttons}
-                            <button id="next-page-button" disabled={(this.props.pages.current_page==this.props.pages.page_count)} onClick={
-                                this.toPage.bind(this,this.props.pages.current_page+1)
-                            }>Next</button>
-                        </p>,
-                        objects]
-                    }
-                    {objects.length==0 &&
-                        <p>No results were found. Adjust your search parameters, and make sure you have at least one allowed type selected.</p>
-                    }
-                </div>
-                <div class="explore-preview">
-                    
+                            </p>,
+                            <p>
+                                <button id="prev-page-button" disabled={(this.props.pages.current_page==1)} onClick={
+                                    this.toPage.bind(this,this.props.pages.current_page-1)
+                                }>Previous</button>
+                                    {page_buttons}
+                                <button id="next-page-button" disabled={(this.props.pages.current_page==this.props.pages.page_count)} onClick={
+                                    this.toPage.bind(this,this.props.pages.current_page+1)
+                                }>Next</button>
+                            </p>,
+                            objects]
+                        }
+                        {objects.length==0 &&
+                            <p>No results were found. Adjust your search parameters, and make sure you have at least one allowed type selected.</p>
+                        }
+                    </div>
+                    <div class="explore-preview">
+
+                    </div>
                 </div>
             </div>
         );
@@ -602,28 +609,57 @@ export class ExploreMenu extends React.Component{
         });
     }
 
-    previewItem(id,type){
-        let loader = new workflow_redux.TinyLoader();
+    selectItem(id,type){
+        this.setState({selected:id})
+        let loader = new renderers.TinyLoader();
         loader.startLoad();
-        $.post(post_paths.get_workflow_data,{
-            workflowPk:JSON.stringify(id),
-        }).done(function(data){
-            if(data.action=="posted"){
-                loader.endLoad();
-                console.log(data)
-                initial_data = data.data_flat;
-                column_choices = data.column_choices;
-                context_choices = data.context_choices;
-                time_choices = data.time_choices;
-                outcome_type_choices = data.outcome_type_choices;
-                outcome_sort_choices = data.outcome_sort_choices;
-                strategy_classification_choices = data.strategy_classification_choices;
-                is_strategy = data.is_strategy;
-                workflow_redux.renderWorkflowView($(".explore-preview"))
+        switch(type){
+            case "activity":
+            case "course":
+            case "program":
+                $.post(post_paths.get_workflow_data,{
+                    workflowPk:JSON.stringify(id),
+                }).done(function(data){
+                    if(data.action=="posted"){
+                        loader.endLoad();
+                        var workflow_renderer = new renderers.WorkflowRenderer(JSON.parse(data.data_package));
+                        workflow_renderer.render($(".explore-preview"));
+                    }
+                    else console.log("couldn't show preview");
+                });
+                break;
+            case "project":
+                $.post(post_paths.get_project_data,{
+                    projectPk:JSON.stringify(id),
+                }).done(function(data){
+                    if(data.action=="posted"){
+                        loader.endLoad();
+                        console.log(data.data_package);
+                        console.log(data);
+                        console.log(data.project_data);
+                        var project_renderer = new renderers.ProjectRenderer(data.data_package,JSON.parse(data.project_data));
+                        project_renderer.render($(".explore-preview"));
+                    }
+                    else console.log("couldn't show preview");
+                });
+                break;
+            case "outcome":
+                $.post(post_paths.get_outcome_data,{
+                    outcomePk:JSON.stringify(id),
+                }).done(function(data){
+                    if(data.action=="posted"){
+                        loader.endLoad();
+                        console.log(data.data_package);
+                        var outcome_renderer = new renderers.OutcomeRenderer(JSON.parse(data.data_package));
+                        outcome_renderer.render($(".explore-preview"));
+                    }
+                    else console.log("couldn't show preview");
+                });
+                break;
                 
-            }
-            else console.log("couldn't show preview");
-        })
+            default: 
+                return;
+        }
         
     }
 }

@@ -30,10 +30,10 @@ class NodeView extends ComponentJSON{
         var auto_link;
         
         if(!this.state.initial_render)nodePorts = reactDom.createPortal(
-                <NodePorts nodeID={this.props.objectID} node_div={this.maindiv} dispatch={this.props.dispatch}/>
+                <NodePorts renderer={renderer} nodeID={this.props.objectID} node_div={this.maindiv} dispatch={this.props.dispatch}/>
             ,$(".workflow-canvas")[0]
         );
-        if(ports_rendered&&!this.state.port_render){
+        if(renderer.ports_rendered&&!this.state.port_render){
             node_links = data.outgoing_links.map((link)=>
                 <NodeLinkView key={link} objectID={link} node_div={this.maindiv} renderer={renderer}/>
             );
@@ -48,8 +48,8 @@ class NodeView extends ComponentJSON{
         if(outcomenodes.length>0){
             outcomeDiv = (
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:column_colours[data.column]}}>{outcomenodes.length}</div>
-                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:column_colours[data.column]}}>{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:this.props.renderer.column_colours[data.column]}}>{outcomenodes.length}</div>
+                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:this.props.renderer.column_colours[data.column]}}>{outcomenodes}</div>
                 </div>
             );
         }
@@ -79,7 +79,7 @@ class NodeView extends ComponentJSON{
         return (
             <div 
                 style={
-                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:column_colours[data.column]}
+                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:this.props.renderer.column_colours[data.column]}
                 } 
                 class={
                     "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
@@ -106,7 +106,7 @@ class NodeView extends ComponentJSON{
                     <div class = "node-drop-side node-drop-left">{dropText}</div>
                     <div class = "node-drop-middle"><img src={iconpath+dropIcon+".svg"}/></div>
                     <div class = "node-drop-side node-drop-right">
-                        <div class="node-drop-time">{data.time_required && (data.time_required+" "+time_choices[data.time_units].name)}</div>
+                        <div class="node-drop-time">{data.time_required && (data.time_required+" "+this.props.renderer.time_choices[data.time_units].name)}</div>
                         {linkIcon}
                     </div>
                 </div> 
@@ -253,7 +253,10 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
                 
                 class={
                     "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
-                } 
+                }
+                style={
+                    {backgroundColor:this.props.renderer.column_colours[data.column]}
+                }
                 id={data.id} 
                 ref={this.maindiv} 
                 onClick={(evt)=>selection_manager.changeSelection(evt,this)}

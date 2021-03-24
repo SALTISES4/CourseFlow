@@ -34,6 +34,7 @@
     </div>
 </div>
 
+{{is_strategy}}
 
 {% endblock %}
 <!-- -->
@@ -90,26 +91,29 @@ else{
     }
 {% endif %}
  
+workflow_data_package = {{data_package|safe}}
+var workflow_renderer;
+ 
 {% if is_strategy == "false" %}
     $("#viewbar").append("<div id='outcomeviewbar'><div class='outcomeviewtext'>Outcome View:</div><label class='switch'><input type='checkbox'><span class ='slider round'></span></label></div>");
 
     $("#outcomeviewbar input").on("change",(evt)=>{
-        workflow_redux.renderWorkflowView($("#container").get()[0],evt.target.checked)
+        workflow_renderer.render($("#container"),evt.target.checked)
     });
 {% endif %}
 
 
-workflow_data_package = {{data_package|safe}}
 
-var column_colours = {}
+
 
 const user_id = {{ user.id }};
 const create_path=null;
 
     
-window.addEventListener("load", function(){
-    $(document).ajaxError(workflow_redux.fail_function);
-    workflow_redux.renderWorkflowView($("#container"),workflow_data_package);
+window.addEventListener("load", function(){ 
+    workflow_renderer = new renderers.WorkflowRenderer(workflow_data_package);
+    $(document).ajaxError(renderers.fail_function);
+    workflow_renderer.render($("#container"));
     
     
 });

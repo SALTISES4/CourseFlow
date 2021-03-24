@@ -1,5 +1,6 @@
 import * as Constants from "./Constants.js";
 import {unlinkOutcomeFromNode, deleteSelf, insertedAt, columnChanged, updateValue, updateOutcomenodeDegree} from "./PostFunctions.js"
+import * as Redux from "redux";
 
 export const moveColumnWorkflow = (id,new_position) => {
     return {
@@ -828,3 +829,25 @@ export function projectMenuReducer(state={},action){
             return state;
     }
 }
+
+export const rootWorkflowReducer = Redux.combineReducers({
+    workflow:workflowReducer,
+    columnworkflow:columnworkflowReducer,
+    column:columnReducer,
+    weekworkflow:weekworkflowReducer,
+    week:weekReducer,
+    nodeweek:nodeweekReducer,
+    node:nodeReducer,
+    nodelink:nodelinkReducer,
+    outcome:outcomeReducer,
+    outcomeoutcome:outcomeOutcomeReducer,
+    outcomenode:outcomeNodeReducer,
+    outcomeproject:outcomeProjectReducer,
+    strategy:strategyReducer,
+    saltise_strategy:saltiseStrategyReducer,
+});
+
+export const rootOutcomeReducer = Redux.combineReducers({
+    outcome:outcomeReducer,
+    outcomeoutcome:outcomeOutcomeReducer,
+});

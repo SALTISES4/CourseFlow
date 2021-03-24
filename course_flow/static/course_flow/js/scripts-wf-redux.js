@@ -10,7 +10,7 @@ import {ProjectMenu, HomeMenu, ExploreMenu, renderMessageBox} from"./MenuCompone
 import {WorkflowView_Outcome} from"./WorkflowView.js";
 import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
-import {WorkflowRenderer} from "./Renderers";
+import OutcomeTopView from './OutcomeTopView.js'
 
 export {Loader} from './Constants';
 export {fail_function} from './PostFunctions';
@@ -57,25 +57,6 @@ export class SelectionManager{
 
 
 
-var store;
-
-
-
-export function renderWorkflowView(container,data_package,outcome_view){
-    var workflow_renderer = new WorkflowRenderer(data_package);
-    workflow_renderer.render(container,outcome_view);
-}
-
-
-export function renderHomeMenu(data_package){
-    if(!store)store = createStore(Reducers.homeMenuReducer,data_package);
-    reactDom.render(
-        <Provider store = {store}>
-            <HomeMenu/>
-        </Provider>,
-        $("#content-container")[0]
-    );
-}
 
 export function renderExploreMenu(data_package,disciplines){
     reactDom.render(
@@ -84,17 +65,6 @@ export function renderExploreMenu(data_package,disciplines){
     );
 }
 
-
-
-export function renderProjectMenu(data_package,project){
-    if(!store)store = createStore(Reducers.projectMenuReducer,data_package);
-    reactDom.render(
-        <Provider store = {store}>
-            <ProjectMenu project={project}/>
-        </Provider>,
-        $("#content-container")[0]
-    );
-}
 
 export class TinyLoader{
     constructor(identifier){
@@ -112,4 +82,149 @@ export class TinyLoader{
         if(this.loadings<=0)$(this.identifier).removeClass('waiting');
     }
 }
+
+export class HomeRenderer{
+    constructor(data_package){
+        this.initial_data = data_package;
+        this.store = createStore(Reducers.homeMenuReducer,data_package);
+    }
+    
+    render(container){
+        this.container = container;
+        
+        reactDom.render(
+            <Provider store = {this.store}>
+                <HomeMenu/>
+            </Provider>,
+            container[0]
+        );
+    }
+}
+
+export class ProjectRenderer{
+    constructor(data_package,project_data){
+        this.initial_project_data = data_package;
+        this.project_data = project_data;
+        this.store = createStore(Reducers.projectMenuReducer,data_package);
+    }
+    
+    render(container){
+        this.container=container;
+        
+        reactDom.render(
+        <Provider store = {this.store}>
+            <ProjectMenu project={this.project_data}/>
+        </Provider>,
+        container[0]
+    );
+        
+    }
+}
+
+
+export class WorkflowRenderer{
+    constructor(data_package){
+        this.initial_workflow_data = data_package.data_flat;
+        this.column_choices = data_package.column_choices;
+        this.context_choices = data_package.context_choices;
+        this.task_choices = data_package.task_choices;
+        this.time_choices = data_package.time_choices;
+        this.outcome_type_choices = data_package.outcome_type_choices;
+        this.outcome_sort_choices = data_package.outcome_sort_choices;
+        this.strategy_classification_choices = data_package.strategy_classification_choices;
+        this.is_strategy = data_package.is_strategy;
+        this.store = createStore(Reducers.rootWorkflowReducer,this.initial_workflow_data);
+        this.column_colours = {}
+    }
+    
+    render(container,outcome_view){
+        var renderer = this;
+        this.initial_loading=true;
+        this.container = container;
+        this.items_to_load = {
+            column:this.initial_workflow_data.column.length,
+            week:this.initial_workflow_data.week.length,
+            node:this.initial_workflow_data.node.length,
+        };
+        this.ports_to_render = this.initial_workflow_data.node.length;
+        
+        container.on("component-loaded",(evt,objectType)=>{
+            evt.stopPropagation();
+            if(objectType&&renderer.items_to_load[objectType]){
+                renderer.items_to_load[objectType]--;
+                for(let prop in renderer.items_to_load){
+                    if(renderer.items_to_load[prop]>0)return;
+                }
+                renderer.initial_loading=false;
+                container.triggerHandler("render-ports");
+            }
+        });
+        
+        
+        container.on("ports-rendered",(evt)=>{
+            evt.stopPropagation();
+            renderer.ports_to_render--;
+            if(renderer.ports_to_render>0)return;
+            renderer.ports_rendered=true;
+            container.triggerHandler("render-links");
+        });
+        
+        container.on("render-links",(evt)=>{
+           evt.stopPropagation(); 
+        });
+    
+        this.selection_manager = new SelectionManager(); 
+        this.tiny_loader = new TinyLoader(container);
+        if(outcome_view)reactDom.render(
+            <Provider store = {this.store}>
+                <WorkflowView_Outcome renderer={this}/>
+            </Provider>,
+            container[0]
+        );
+        else reactDom.render(
+            <Provider store = {this.store}>
+                <WorkflowView renderer={this}/>
+            </Provider>,
+            container[0]
+        );
+        
+    }
+    
+}
+
+
+
+
+export class OutcomeRenderer{
+    constructor(data_package){
+        this.initial_data = data_package;
+        this.store = createStore(Reducers.rootOutcomeReducer,data_package);
+    }
+    
+    
+    render(container){
+        this.container=container;
+        this.selection_manager = new SelectionManager(); 
+        this.tiny_loader = new TinyLoader(container);
+        reactDom.render(
+            <Provider store = {this.store}>
+                <OutcomeTopView objectID={this.initial_data.outcome[0].id} renderer={this}/>
+            </Provider>,
+            container[0]
+        );
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 

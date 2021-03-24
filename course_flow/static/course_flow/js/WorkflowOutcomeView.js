@@ -33,7 +33,7 @@ class WorkflowOutcomeView extends ComponentJSON{
                 <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
                 {nodecategory.nodes.map((node)=>
                     <div class="table-cell nodewrapper">
-                        <NodeOutcomeView objectID={node} selection_manager={this.props.selection_manager}/>
+                        <NodeOutcomeView renderer={this.props.renderer} objectID={node}/>
                     </div>
                 )}
                 <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
@@ -41,7 +41,7 @@ class WorkflowOutcomeView extends ComponentJSON{
         );
         
         let outcomes = this.props.outcomeproject.map((outcomeproject)=>
-            <TableOutcomeView objectID={outcomeproject.outcome} nodecategory={this.props.data} outcomes_type={this.props.outcomes_type}/>                                          
+            <TableOutcomeView renderer={this.props.renderer} objectID={outcomeproject.outcome} nodecategory={this.props.data} outcomes_type={this.props.outcomes_type}/>                                          
         );
         
         

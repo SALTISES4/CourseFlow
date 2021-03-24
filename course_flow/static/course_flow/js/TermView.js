@@ -19,7 +19,7 @@ class TermView extends WeekViewUnconnected{
                 let nodeweek = data.nodeweek_set[j];
                 if(this.props.nodes_by_column[col].indexOf(nodeweek)>=0){
                     nodeweeks.push(
-                        <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} selection_manager={this.props.selection_manager} column_order={this.props.column_order}/>
+                        <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} renderer={this.props.renderer} column_order={this.props.column_order}/>
                     );
                 }
             }
@@ -33,7 +33,7 @@ class TermView extends WeekViewUnconnected{
             );
         }
         return (
-            <div class={"week"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}>
+            <div class={"week"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 {!read_only && <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}

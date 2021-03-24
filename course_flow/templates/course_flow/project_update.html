@@ -64,11 +64,18 @@
     }
     const data_package = {{workflow_data_package|safe}};
     const project_data= {{project_data|safe}};
+    var project_renderer;
+    
     console.log(data_package);
-    const project_title = "{{object.title|safe}}";
+    
+    
+    
     const user_id = {{ user.id }};
+    
     window.addEventListener("load",function(){
-        workflow_redux.renderProjectMenu(data_package,project_data);
+        project_renderer = new renderers.ProjectRenderer(data_package,project_data);
+        $(document).ajaxError(renderers.fail_function);
+        project_renderer.render($("#content-container"));
     });
     
     

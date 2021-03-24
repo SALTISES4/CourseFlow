@@ -72,7 +72,7 @@ class WorkflowView extends ComponentJSON{
                         </svg>
                     </div>
                     {!read_only &&
-                        <NodeBar/>
+                        <NodeBar renderer={this.props.renderer}/>
                     }
                     {!read_only && !data.is_strategy &&
                         <OutcomeBar/>
@@ -138,30 +138,30 @@ class NodeBarUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
         var nodebarcolumnworkflows = data.columnworkflow_set.map((columnworkflow)=>
-            <NodeBarColumnWorkflow key={columnworkflow} objectID={columnworkflow}/>
+            <NodeBarColumnWorkflow key={columnworkflow} renderer={this.props.renderer} objectID={columnworkflow}/>
         );
         var columns_present = this.props.columns.map(col=>col.column_type);
         for(var i=0;i<data.DEFAULT_COLUMNS.length;i++){
             if(columns_present.indexOf(data.DEFAULT_COLUMNS[i])<0){
                 nodebarcolumnworkflows.push(
-                    <NodeBarColumnWorkflow key={"default"+i} columnType={data.DEFAULT_COLUMNS[i]}/>
+                    <NodeBarColumnWorkflow key={"default"+i} renderer={this.props.renderer} columnType={data.DEFAULT_COLUMNS[i]}/>
                 )
             }
         }
         nodebarcolumnworkflows.push(
-            <NodeBarColumnWorkflow key={"default"+i} columnType={data.DEFAULT_CUSTOM_COLUMN}/>
+            <NodeBarColumnWorkflow key={"default"+i} renderer={this.props.renderer} columnType={data.DEFAULT_CUSTOM_COLUMN}/>
         )
         
         
         var nodebarweekworkflows;
         if(!this.props.outcomes_view)nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
-            <NodeBarWeekWorkflow key={weekworkflow} objectID={weekworkflow}/>
+            <NodeBarWeekWorkflow key={weekworkflow} renderer={this.props.renderer} objectID={weekworkflow}/>
         );
         var sort_type;
         if(this.props.outcomes_view)sort_type=(
             <div class="node-bar-sort-block">
                 <p>Sort Nodes By:</p>
-                {outcome_sort_choices.map((choice)=>
+                {this.props.renderer.outcome_sort_choices.map((choice)=>
                     <span><input type="radio" id={"sort_type_choice"+choice.type} name="sort_type" value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.inputChanged.bind(this,"outcomes_sort")}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></span>
                     
                 )}
@@ -263,7 +263,7 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class = "workflow-container">
                     <div class="workflow-details">
-                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{selection_manager.changeSelection(evt,selector)}}/>
+                        <WorkflowForMenu renderer={renderer} workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{selection_manager.changeSelection(evt,selector)}}/>
                         {this.addEditable(data)}
                         {reactDom.createPortal(
                         <div class="topdropwrapper" title="Show/Hide Legend">
@@ -272,12 +272,12 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                         $("#viewbar")[0]
                         )}
                         {this.state.show_legend && 
-                            <WorkflowOutcomeLegend toggle={this.toggleLegend.bind(this)}/>
+                            <WorkflowOutcomeLegend renderer={renderer} toggle={this.toggleLegend.bind(this)}/>
                         }
                         <WorkflowOutcomeView renderer={renderer} outcomes_type={data.outcomes_type}/>
                     </div>
                     {!read_only &&
-                        <NodeBar outcomes_view={true}/>
+                        <NodeBar renderer={renderer} outcomes_view={true}/>
                     }
                     {!read_only &&
                         <OutcomeBar outcomes_view={true}/>

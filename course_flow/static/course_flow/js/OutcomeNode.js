@@ -160,12 +160,12 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
             props.dispatch(deleteSelfAction(props.data.id,props.nodeID,"outcomenode"))
         }else{
             value=1;
-            tiny_loader.startLoad();
+            props.renderer.tiny_loader.startLoad();
             addOutcomeToNode(props.nodeID,props.outcomeID,
                 (response_data)=>{
                     let action = addOutcomeToNodeAction(response_data);
                     props.dispatch(action);
-                    tiny_loader.endLoad();
+                    props.renderer.tiny_loader.endLoad();
                 }
             );
         }
@@ -238,7 +238,7 @@ export class TableOutcomeGroup extends ComponentJSON{
         if(this.props.completion_status_from_parents)completion_status_from_parents=this.props.completion_status_from_parents;
         
         let tableCells = this.props.nodes.map((node)=>
-            <TableOutcomeNode nodeID={node} outcomeID={this.props.outcomeID} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.props.updateSelfCompletion} completion_status_from_children={this.props.completion_status_from_children[node]} completion_status_from_parents={completion_status_from_parents[node]} outcomes_type={this.props.outcomes_type}/>
+            <TableOutcomeNode renderer={this.props.renderer} nodeID={node} outcomeID={this.props.outcomeID} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.props.updateSelfCompletion} completion_status_from_children={this.props.completion_status_from_children[node]} completion_status_from_parents={completion_status_from_parents[node]} outcomes_type={this.props.outcomes_type}/>
          )
         let completion_status =0;
         for(let node_id in this.props.completion_status_from_self){

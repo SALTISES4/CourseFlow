@@ -319,6 +319,19 @@ button:hover{
     padding:50px;
 }
 
+.explore-menu .explore-results, .explore-menu .explore-preview{
+    display:inline-block;
+    vertical-align: top;
+}
+
+.explore-menu .explore-preview{
+    overflow-x:auto;
+}
+
+.explore-menu .explore-main{
+    white-space: nowrap;
+}
+
 .search-checklist-block{
     
 }

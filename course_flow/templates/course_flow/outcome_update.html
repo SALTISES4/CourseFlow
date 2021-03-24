@@ -53,13 +53,11 @@
 <script nonce="{{request.csp_nonce}}">
     
     const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-    var selection_manager;
-    var tiny_loader;
     
     initial_data = {{data_flat|safe}}
     console.log(initial_data);
+    var outcome_renderer;
     const user_id = {{ user.id }};
-    const initial_loading=false;
     
     $("#sidebar").tabs({
         active:false,
@@ -90,11 +88,11 @@
         }
     {% endif %}
     
+    
     window.addEventListener("load",function(){
+        outcome_renderer = new renderers.OutcomeRenderer(initial_data);
         $(document).ajaxError(outcome_scripts.fail_function);
-        tiny_loader = new workflow_redux.TinyLoader('#container');
-        selection_manager = new workflow_redux.SelectionManager();
-        outcome_scripts.renderOutcomeView($("#container").get()[0]);
+        outcome_renderer.render($("#container"));
     });
     
   

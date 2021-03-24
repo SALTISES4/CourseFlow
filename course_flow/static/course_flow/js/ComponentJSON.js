@@ -17,7 +17,7 @@ export class ComponentJSON extends React.Component{
     
     componentDidMount(){
         this.postMountFunction();
-        if(initial_loading)$(document).triggerHandler("component-loaded",this.objectType);
+        if(this.props.renderer&& this.props.renderer.initial_loading)this.props.renderer.container.triggerHandler("component-loaded",this.objectType);
     }
     
     postMountFunction(){};
@@ -193,12 +193,12 @@ export class ComponentJSON extends React.Component{
     duplicateSelf(data){
         var props = this.props;
         var type = this.objectType;
-        tiny_loader.startLoad();
+        props.renderer.tiny_loader.startLoad();
         duplicateSelf(data.id,type,props.parentID,
             (response_data)=>{
                 let action = insertBelowAction(response_data,type);
                 props.dispatch(action);
-                tiny_loader.endLoad();
+                props.renderer.tiny_loader.endLoad();
             }
         );
     }
@@ -213,12 +213,12 @@ export class ComponentJSON extends React.Component{
     insertSibling(data){
         var props = this.props;
         var type = this.objectType;
-        tiny_loader.startLoad();
+        props.renderer.tiny_loader.startLoad();
         insertSibling(data.id,type,props.parentID,
             (response_data)=>{
                 let action = insertBelowAction(response_data,type);
                 props.dispatch(action);
-                tiny_loader.endLoad();
+                props.renderer.tiny_loader.endLoad();
             }
         );
     }
@@ -234,12 +234,12 @@ export class ComponentJSON extends React.Component{
     insertChild(data){
         var props = this.props;
         var type = this.objectType;
-        tiny_loader.startLoad();
+        props.renderer.tiny_loader.startLoad();
         insertChild(data.id,type,
             (response_data)=>{
                 let action = insertChildAction(response_data,type);
                 props.dispatch(action);
-                tiny_loader.endLoad();
+                props.renderer.tiny_loader.endLoad();
             }
         );
     }
@@ -271,7 +271,7 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>Context:</h4>
                             <select  id="context-editor" value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
-                                {context_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
+                                {this.props.renderer.context_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
                             </select>
@@ -281,7 +281,7 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>Task:</h4>
                             <select id="task-editor" value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
-                                {task_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
+                                {this.props.renderer.task_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
                             </select>
@@ -293,7 +293,7 @@ export class ComponentJSON extends React.Component{
                             <div>
                                 <input id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
                                 <select id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
-                                    {time_choices.map((choice)=>
+                                    {this.props.renderer.time_choices.map((choice)=>
                                         <option value={choice.type}>{choice.name}</option>
                                     )}
                                 </select>
@@ -326,7 +326,7 @@ export class ComponentJSON extends React.Component{
                             <h4>Settings:</h4>
                             <label for="outcomes_type">Outcomes Style</label>
                             <select name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
-                                {outcome_type_choices.map((choice)=>
+                                {this.props.renderer.outcome_type_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
                             </select>
@@ -342,7 +342,7 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>Strategy:</h4>
                             <select value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
-                                {strategy_classification_choices.map((choice)=>
+                                {this.props.renderer.strategy_classification_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
                             </select>
@@ -569,7 +569,7 @@ export class NodePorts extends React.Component{
         this.updatePorts();
         $(this.props.node_div.current).on("component-updated",this.updatePorts.bind(this));
         //$(this.props.node_div.current).triggerHandler("ports-rendered");
-        $(document).triggerHandler("ports-rendered");
+        this.props.renderer.container.triggerHandler("ports-rendered");
     }
     
     updatePorts(){

@@ -23,8 +23,8 @@ class OutcomeTopView extends ComponentJSON{
             <div id="outcome-wrapper" class="workflow-wrapper">
                 <div class = "workflow-container">
                     <div class="workflow-details">
-                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
-                        <OutcomeView objectID={data.id} selection_manager={this.props.selection_manager}/>
+                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,selector)}}/>
+                        <OutcomeView objectID={data.id} renderer={this.props.renderer}/>
                     </div>
                 </div>
                 {this.addEditable(data)}

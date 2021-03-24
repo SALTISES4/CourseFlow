@@ -52,10 +52,13 @@
         course:"{% url 'course_flow:course-strategy-create' %}"
     };
     const data_package = {{project_data_package|safe}}
+    var home_renderer;
     const user_id = {{ user.id }};
     const read_only=false;
     window.addEventListener("load",function(){
-        workflow_redux.renderHomeMenu(data_package);
+        home_renderer = new renderers.HomeRenderer(data_package);
+        $(document).ajaxError(renderers.fail_function);
+        home_renderer.render($("#content-container"));
     });
     
     

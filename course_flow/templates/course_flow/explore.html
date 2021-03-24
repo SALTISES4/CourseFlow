@@ -43,7 +43,9 @@
         program:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
         outcome:"{% url 'course_flow:outcome-detail-view' pk='0'%}"
     };
+    const create_path=null;
     const explore_path = "{% url 'course_flow:explore' %}";
+    const user_id = {{ user.id }};
     
     list_objects = {{object_list|safe}};
     console.log(list_objects);
@@ -58,7 +60,7 @@
     
     
     window.addEventListener("load",function(){
-        workflow_redux.renderExploreMenu(list_objects,disciplines);
+        renderers.renderExploreMenu(list_objects,disciplines);
     });
     
     

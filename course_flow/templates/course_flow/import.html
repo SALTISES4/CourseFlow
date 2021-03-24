@@ -61,15 +61,12 @@
     
     const user_id = {{ user.id }};
     const read_only=false;
-    window.addEventListener("load",function(){
-        workflow_redux.renderHomeMenu(data_package);
-    });
     
     fileLoader = document.createElement('input');
     fileLoader.type="file";
     fileLoader.accept=".json";
     fileLoader.addEventListener('change',()=>{
-        let loader = new workflow_redux.Loader('body');
+        let loader = new renderers.Loader('body');
         let reader = new FileReader();
         reader.readAsText(fileLoader.files[0]);
         reader.onload = (evt)=>{

@@ -146,6 +146,16 @@ def flow_patterns():
             name="get-workflow-data",
         ),
         url(
+            r"^project/get-project-data/",
+            views.get_project_data,
+            name="get-project-data",
+        ),
+        url(
+            r"^outcome/get-outcome-data/",
+            views.get_outcome_data,
+            name="get-outcome-data",
+        ),
+        url(
             r"^workflow/(?P<pk>[0-9]+)/$",
             views.WorkflowDetailView.as_view(),
             name="workflow-detail-view",

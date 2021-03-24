@@ -31,10 +31,10 @@ export class WeekViewUnconnected extends ComponentJSON{
         if(this.state.selected)css_class+=" selected";
         if(data.is_strategy)css_class+=" strategy";
         let default_text;
-        if(!is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
+        if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
         return (
             <div class={css_class} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
-                {!read_only && !is_strategy && <div class="mouseover-container-bypass">
+                {!read_only && !renderer.is_strategy && <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}
                         {this.addDuplicateSelf(data)}

@@ -21,7 +21,7 @@ class OutcomeView extends ComponentJSON{
         let data = this.props.data;
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} selection_manager={this.props.selection_manager} />
+            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} />
         );
         
         let actions=[];
@@ -46,7 +46,7 @@ class OutcomeView extends ComponentJSON{
                 "outcome"+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")
             }
             ref={this.maindiv} 
-            onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}>
+            onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="outcome-title">
                     <TitleText text={data.title} defaultText={"Click to edit"}/>
                 </div>
@@ -118,7 +118,7 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         let data = this.props.data;
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <OutcomeBarOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} selection_manager={this.props.selection_manager}/>
+            <OutcomeBarOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer}/>
         );
                 
         let dropIcon;
@@ -244,7 +244,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         let data = this.props.data;
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <NodeOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} selection_manager={this.props.selection_manager}/>
+            <NodeOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer}/>
         );
                 
         let dropIcon;
@@ -311,11 +311,11 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         }
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <TableOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} selection_manager={this.props.selection_manager} nodecategory={this.props.nodecategory} updateParentCompletion={this.childUpdatedFunction.bind(this,outcomeoutcome)} completion_status_from_parents={completion_status_to_pass} outcomes_type={this.props.outcomes_type}/>
+            <TableOutcomeOutcomeView renderer={this.props.renderer} key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.childUpdatedFunction.bind(this,outcomeoutcome)} completion_status_from_parents={completion_status_to_pass} outcomes_type={this.props.outcomes_type}/>
         );
 
         let outcomeGroups = this.props.nodecategory.map((nodecategory)=>
-            <TableOutcomeGroup nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.selfUpdatedFunction.bind(this)} completion_status_from_children={this.state.completion_status_from_children} completion_status_from_parents={this.props.completion_status_from_parents} completion_status_from_self = {this.state.completion_status_from_self} outcomes_type={this.props.outcomes_type}/>
+            <TableOutcomeGroup renderer={this.props.renderer} nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.selfUpdatedFunction.bind(this)} completion_status_from_children={this.state.completion_status_from_children} completion_status_from_parents={this.props.completion_status_from_parents} completion_status_from_self = {this.state.completion_status_from_self} outcomes_type={this.props.outcomes_type}/>
                                                         
                                                          
         );

@@ -289,7 +289,7 @@ def get_project_data_package(user):
     return data_package
 
 
-def get_workflow_data_package(user, project, type_filter):
+def get_workflow_data_package(user, project, type_filter, self_only):
     this_project_sections = []
     other_project_sections = []
     all_published_sections = []
@@ -305,7 +305,7 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
-        other_project_sections.append(
+        if not self_only: other_project_sections.append(
             {
                 "title": "Programs",
                 "object_type": "program",
@@ -318,7 +318,7 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
-        all_published_sections.append(
+        if not self_only: all_published_sections.append(
             {
                 "title": "Your Favourite Programs",
                 "object_type": "program",
@@ -341,7 +341,7 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
-        other_project_sections.append(
+        if not self_only: other_project_sections.append(
             {
                 "title": "Courses",
                 "object_type": "course",
@@ -354,7 +354,7 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
-        all_published_sections.append(
+        if not self_only: all_published_sections.append(
             {
                 "title": "Your Favourite Courses",
                 "object_type": "course",
@@ -380,7 +380,7 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
-        other_project_sections.append(
+        if not self_only: other_project_sections.append(
             {
                 "title": "Activities",
                 "object_type": "activity",
@@ -393,7 +393,7 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
-        all_published_sections.append(
+        if not self_only: all_published_sections.append(
             {
                 "title": "Your Favourite Activities",
                 "object_type": "activity",
@@ -417,7 +417,7 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
-        other_project_sections.append(
+        if not self_only: other_project_sections.append(
             {
                 "title": "Outcomes",
                 "object_type": "outcome",
@@ -430,7 +430,7 @@ def get_workflow_data_package(user, project, type_filter):
                 ).data,
             }
         )
-        all_published_sections.append(
+        if not self_only: all_published_sections.append(
             {
                 "title": "Your Favourite Outcomes",
                 "object_type": "outcome",
@@ -455,17 +455,18 @@ def get_workflow_data_package(user, project, type_filter):
             "add": (project.author == user),
             "duplicate": current_copy_type,
         },
-        "other_projects": {
+    }
+    if not self_only: 
+        data_package["other_projects"]={
             "title": "From Your Other Projects",
             "sections": other_project_sections,
             "duplicate": other_copy_type,
-        },
-        "all_published": {
+        }
+        data_package["all_published"]={
             "title": "All Published Workflows",
             "sections": all_published_sections,
             "duplicate": other_copy_type,
-        },
-    }
+        }
     return data_package
 
 
@@ -516,7 +517,7 @@ class ProjectDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
         context["workflow_data_package"] = (
             JSONRenderer()
             .render(
-                get_workflow_data_package(self.request.user, project, None)
+                get_workflow_data_package(self.request.user, project, None,False)
             )
             .decode("utf-8")
         )
@@ -543,7 +544,7 @@ class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context["workflow_data_package"] = (
             JSONRenderer()
             .render(
-                get_workflow_data_package(self.request.user, project, None)
+                get_workflow_data_package(self.request.user, project, None,False)
             )
             .decode("utf-8")
         )
@@ -581,6 +582,27 @@ class OutcomeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             "course_flow:outcome-update", kwargs={"pk": self.object.pk}
         )
 
+def get_outcome_context_data(outcome, context, user):
+    outcomes = get_all_outcomes(outcome, 0)
+    outcomeoutcomes = []
+    for oc in outcomes:
+        outcomeoutcomes += list(oc.child_outcome_links.all())
+
+    parent_project_pk = OutcomeProject.objects.get(
+        outcome=outcome
+    ).project.pk
+
+    data_flat = {
+        "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
+        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
+            outcomeoutcomes, many=True
+        ).data,
+    }
+    context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
+    context["parent_project_pk"] = (
+        JSONRenderer().render(parent_project_pk).decode("utf-8")
+    )
+    return context
 
 class OutcomeDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
     model = Outcome
@@ -589,26 +611,7 @@ class OutcomeDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        outcome = self.object
-        outcomes = get_all_outcomes(outcome, 0)
-        outcomeoutcomes = []
-        for oc in outcomes:
-            outcomeoutcomes += list(oc.child_outcome_links.all())
-
-        parent_project_pk = OutcomeProject.objects.get(
-            outcome=outcome
-        ).project.pk
-
-        data_flat = {
-            "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
-            "outcomeoutcome": OutcomeOutcomeSerializerShallow(
-                outcomeoutcomes, many=True
-            ).data,
-        }
-        context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
-        context["parent_project_pk"] = (
-            JSONRenderer().render(parent_project_pk).decode("utf-8")
-        )
+        context = get_outcome_context_data(self.object,context,self.request.user)
 
         return context
 
@@ -623,27 +626,8 @@ class OutcomeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        outcome = self.object
-        outcomes = get_all_outcomes(outcome, 0)
-        outcomeoutcomes = []
-        for oc in outcomes:
-            outcomeoutcomes += list(oc.child_outcome_links.all())
-
-        parent_project_pk = OutcomeProject.objects.get(
-            outcome=outcome
-        ).project.pk
-
-        data_flat = {
-            "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
-            "outcomeoutcome": OutcomeOutcomeSerializerShallow(
-                outcomeoutcomes, many=True
-            ).data,
-        }
-        context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
-        context["parent_project_pk"] = (
-            JSONRenderer().render(parent_project_pk).decode("utf-8")
-        )
-
+        context = get_outcome_context_data(self.object,context,self.request.user)
+        
         return context
 
 
@@ -762,6 +746,7 @@ def get_workflow_context_data(workflow, context, user):
     data_package["strategy_classification_choices"] = strategy_classification_choices
     if not workflow.is_strategy:
         context["parent_project_pk"] = parent_project_pk
+    context["is_strategy"] = JSONRenderer().render(workflow.is_strategy).decode("utf-8")
     context["data_package"] = JSONRenderer().render(data_package).decode("utf-8")
 
     return context
@@ -1154,7 +1139,38 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
 def get_workflow_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
-        data_package = get_workflow_context_data(workflow.get_subclass(),{},request.user)
+        data_package = get_workflow_context_data(workflow.get_subclass(),{},request.user)["data_package"]
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {"action": "posted", "data_package": data_package}
+    )
+
+@require_POST
+@ajax_login_required
+@is_owner_or_published("projectPk")
+def get_project_data(request: HttpRequest) -> HttpResponse:
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    try:
+        data_package = get_workflow_data_package(request.user,project,None,True)
+        project_data = (
+            JSONRenderer()
+            .render(ProjectSerializerShallow(project).data)
+            .decode("utf-8")
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {"action": "posted", "data_package": data_package,"project_data":project_data}
+    )
+
+@require_POST
+@ajax_login_required
+@is_owner_or_published("outcomePk")
+def get_outcome_data(request: HttpRequest) -> HttpResponse:
+    outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
+    try:
+        data_package = get_outcome_context_data(outcome,{},request.user)["data_flat"]
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
@@ -1171,7 +1187,7 @@ def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
             node.week_set.first().workflow_set.first().project_set.first()
         )
         data_package = get_workflow_data_package(
-            request.user, project, node.node_type - 1
+            request.user, project, node.node_type - 1,False
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
