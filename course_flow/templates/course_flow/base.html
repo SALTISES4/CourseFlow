@@ -68,7 +68,6 @@
     <!-- Internal resources -->
     {% compress js %}
     <script
-      nonce="{{ request.csp_nonce }}"
       src="{% static 'course_flow/js/scripts.min.js' %}"
       defer="true"
       charset="utf-8"
@@ -77,7 +76,6 @@
     <!-- -->
     {% compress js %}
     <script
-      nonce="{{ request.csp_nonce }}"
       src="{% static 'user_feedback/js/app.min.js' %}"
       defer="true"
       charset="utf-8"
@@ -86,7 +84,6 @@
     <!-- -->
     {% compress js %}
     <script
-      nonce="{{ request.csp_nonce }}"
       src="{% static 'course_flow/js/scripts-wf-redux.min.js' %}"
       defer="true"
       charset="utf-8"
@@ -95,7 +92,6 @@
     <!-- -->
     {% compress js %}
     <script
-      nonce="{{ request.csp_nonce }}"
       src="{% static 'course_flow/js/scripts-outcomes.min.js' %}"
       defer="true"
       charset="utf-8"
@@ -247,5 +243,7 @@
     };
     window.addEventListener("storage", onLocalStorageEvent, false);
   </script>
-  {% endblock %} {% block read_only_scripts %} {% endblock %} {% block scripts %} {% endblock %}
+  {% endblock %} {% block read_only_scripts %} {% endblock %}
+  <!-- -->
+  {% block scripts %} {% endblock %}
 </html>
