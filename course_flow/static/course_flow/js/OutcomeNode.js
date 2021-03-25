@@ -238,7 +238,12 @@ export class TableOutcomeGroup extends ComponentJSON{
         if(this.props.completion_status_from_parents)completion_status_from_parents=this.props.completion_status_from_parents;
         
         let tableCells = this.props.nodes.map((node)=>
-            <TableOutcomeNode renderer={this.props.renderer} nodeID={node} outcomeID={this.props.outcomeID} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.props.updateSelfCompletion} completion_status_from_children={this.props.completion_status_from_children[node]} completion_status_from_parents={completion_status_from_parents[node]} outcomes_type={this.props.outcomes_type}/>
+            <TableOutcomeNode renderer={this.props.renderer} nodeID={node} outcomeID={this.props.outcomeID} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.props.updateSelfCompletion} completion_status_from_children={
+                this.props.completion_status_from_children[node] &&
+                this.props.completion_status_from_children[node].reduce(
+                    (accumulator,current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;}
+                )
+            } completion_status_from_parents={completion_status_from_parents[node]} outcomes_type={this.props.outcomes_type}/>
          )
         let completion_status =0;
         for(let node_id in this.props.completion_status_from_self){
@@ -248,17 +253,23 @@ export class TableOutcomeGroup extends ComponentJSON{
             if(this.props.nodes.indexOf(parseInt(node_id))>=0)completion_status|=this.props.completion_status_from_parents[node_id];
         }
         let childnodes=0;
+        let sub_outcomes_completion;
         for(let node_id in this.props.completion_status_from_children){
             if(this.props.nodes.indexOf(parseInt(node_id))>=0){
-                completion_status|=this.props.completion_status_from_children[node_id];
-                if(this.props.completion_status_from_children[node_id]!==null)childnodes++;
+                if(sub_outcomes_completion==null)sub_outcomes_completion = this.props.completion_status_from_children[node_id].slice();
+                else for(let i=0;i<this.props.completion_status_from_children[node_id].length;i++){
+                    sub_outcomes_completion[i]|=this.props.completion_status_from_children[node_id][i];
+                }
+                if(this.props.completion_status_from_children[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;})!==null)childnodes++;
             }
         }
+        console.log("Checking for completion status before/after");
+        console.log(completion_status);
+        if(sub_outcomes_completion)completion_status|=sub_outcomes_completion.reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
+        console.log(completion_status);
+        console.log(childnodes);
         if(completion_status==0&&childnodes==0)completion_status=null;
         
-        console.log(this.props.outcomeID);
-        console.log(this.props.completion_status_from_parents);
-        console.log(this.props.completion_status_from_children);
         
         return(
             <div class="table-group">

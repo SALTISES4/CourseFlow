@@ -315,7 +315,7 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         );
 
         let outcomeGroups = this.props.nodecategory.map((nodecategory)=>
-            <TableOutcomeGroup renderer={this.props.renderer} nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.selfUpdatedFunction.bind(this)} completion_status_from_children={this.state.completion_status_from_children} completion_status_from_parents={this.props.completion_status_from_parents} completion_status_from_self = {this.state.completion_status_from_self} outcomes_type={this.props.outcomes_type}/>
+            <TableOutcomeGroup renderer={this.props.renderer} nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.selfUpdatedFunction.bind(this)} completion_status_from_children={this.child_completion_status} completion_status_from_parents={this.props.completion_status_from_parents} completion_status_from_self = {this.state.completion_status_from_self} outcomes_type={this.props.outcomes_type}/>
                                                         
                                                          
         );
@@ -333,11 +333,19 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         for(let node_id in this.props.completion_status_from_parents){
             completion_status|=this.props.completion_status_from_parents[node_id];
         }
+        console.log("Calculating the total completion");
+        console.log(this.props.outcomeID);
+        console.log(this.props.child_completion_status);
         let childnodes=0;
-        for(let node_id in this.state.completion_status_from_children){
-            completion_status|=this.state.completion_status_from_children[node_id];
-            if(this.state.completion_status_from_children[node_id]!==null)childnodes++;
+        let sub_outcomes_completion;
+        for(let node_id in this.child_completion_status){
+            if(sub_outcomes_completion==null)sub_outcomes_completion = this.child_completion_status[node_id].slice();
+            else for(let i=0;i<this.child_completion_status[node_id].length;i++){
+                sub_outcomes_completion[i]|=this.child_completion_status[node_id][i];
+            }
+            if(this.child_completion_status[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;})!==null)childnodes++;
         }
+        if(sub_outcomes_completion)completion_status|=sub_outcomes_completion.reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
         for(let node_id in this.state.completion_status_from_self){
             completion_status|=this.state.completion_status_from_self[node_id];
         }
@@ -386,6 +394,9 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     }
 
     childUpdatedFunction(through_id,node_id,value){
+        console.log("A child has been updated");
+        console.log(node_id);
+        console.log(value);
         let index = this.props.data.child_outcome_links.indexOf(through_id);
         if(!this.child_completion_status[node_id]){
             if(value!==null){
@@ -396,11 +407,16 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         }
         if(this.child_completion_status[node_id][index]!==value){
             this.child_completion_status[node_id][index]=value;
+            console.log("calling update completion with node "+node_id+" at index "+index+" and value "+value);
+            console.log(this.child_completion_status);
             this.updateCompletion(node_id);
         }
     }
 
     selfUpdatedFunction(node_id,value){
+        console.log("received a node update");
+        console.log(node_id);
+        console.log(value);
         if(this.state.completion_status_from_self[node_id]!=value){
             
             
@@ -414,6 +430,9 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
 
     updateCompletion(node_id){
         let new_child_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
+        console.log("updating completion");
+        console.log(node_id);
+        console.log(new_child_completion);
         if(this.state.completion_status_from_children[node_id]!==new_child_completion){
             this.setState(function(state,props){
                 let new_completion_status_from_children = {...state.completion_status_from_children};
