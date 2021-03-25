@@ -243,6 +243,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         selenium.find_element_by_id("project-description-input").send_keys(
             "new description"
         )
+        time.sleep(1)
         selenium.find_elements_by_css_selector("#disciplines_all option")[0].click()
         selenium.find_element_by_css_selector("#add-discipline").click()
         selenium.find_element_by_id("project-publish-input").click()
@@ -554,32 +555,32 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             )
             selenium.find_element_by_css_selector("#outcomeviewbar span").click()
             base_outcome_row_select = ".outcome-table > .outcome > .outcome-row"
-            outcome1_row_select = ".outcome .outcome-outcome .outcome > .outcome-row"
+            outcome1_row_select = ".outcome .outcome-outcome:first-of-type .outcome > .outcome-row"
             outcome2_row_select = ".outcome .outcome-outcome+.outcome-outcome .outcome > .outcome-row"
-            base_cell = base_outcome_row_select+" .blank-cell+.table-cell"
-            base_cell2 = base_outcome_row_select+" .blank-cell+.table-cell+.table-cell"
-            base_input = base_outcome_row_select+" .blank-cell+.table-cell input"
-            base_input2 = base_outcome_row_select+" .blank-cell+.table-cell+.table-cell input"
-            base_img = base_outcome_row_select+" .blank-cell+.table-cell img"
-            base_img2 = base_outcome_row_select+" .blank-cell+.table-cell+.table-cell img"
+            base_cell = base_outcome_row_select+" .table-group:first-of-type .blank-cell+.table-cell"
+            base_cell2 = base_outcome_row_select+" .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+            base_input = base_outcome_row_select+" .table-group:first-of-type .blank-cell+.table-cell input"
+            base_input2 = base_outcome_row_select+" .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+            base_img = base_outcome_row_select+" .table-group:first-of-type .blank-cell+.table-cell img"
+            base_img2 = base_outcome_row_select+" .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
             base_total_img = base_outcome_row_select+" .table-cell.total-cell:not(.grand-total-cell) img"
             base_grandtotal_img = base_outcome_row_select+" .table-cell.grand-total-cell img"
             base_toggle = action_hover_click(selenium,selenium.find_element_by_css_selector(base_cell),selenium.find_element_by_css_selector(base_input))
-            outcome1_cell = outcome1_row_select+" .blank-cell+.table-cell"
-            outcome1_cell2 = outcome1_row_select+" .blank-cell+.table-cell+.table-cell"
-            outcome1_input = outcome1_row_select+" .blank-cell+.table-cell input"
-            outcome1_input2 = outcome1_row_select+" .blank-cell+.table-cell+.table-cell input"
-            outcome1_img = outcome1_row_select+" .blank-cell+.table-cell img"
-            outcome1_img2 = outcome1_row_select+" .blank-cell+.table-cell+.table-cell img"
+            outcome1_cell = outcome1_row_select+" .table-group:first-of-type .blank-cell+.table-cell"
+            outcome1_cell2 = outcome1_row_select+" .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+            outcome1_input = outcome1_row_select+" .table-group:first-of-type .blank-cell+.table-cell input"
+            outcome1_input2 = outcome1_row_select+" .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+            outcome1_img = outcome1_row_select+" .table-group:first-of-type .blank-cell+.table-cell img"
+            outcome1_img2 = outcome1_row_select+" .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
             outcome1_total_img = outcome1_row_select+" .table-cell.total-cell:not(.grand-total-cell) img"
             outcome1_grandtotal_img = outcome1_row_select+" .table-cell.grand-total-cell img"
             outcome1_toggle = action_hover_click(selenium,selenium.find_element_by_css_selector(outcome1_cell),selenium.find_element_by_css_selector(outcome1_input))
-            outcome2_cell = outcome2_row_select+" .blank-cell+.table-cell"
-            outcome2_cell2 = outcome2_row_select+" .blank-cell+.table-cell+.table-cell"
-            outcome2_input = outcome2_row_select+" .blank-cell+.table-cell input"
-            outcome2_input2 = outcome2_row_select+" .blank-cell+.table-cell+.table-cell input"
-            outcome2_img = outcome2_row_select+" .blank-cell+.table-cell img"
-            outcome2_img2 = outcome2_row_select+" .blank-cell+.table-cell+.table-cell img"
+            outcome2_cell = outcome2_row_select+" .table-group:first-of-type .blank-cell+.table-cell"
+            outcome2_cell2 = outcome2_row_select+" .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+            outcome2_input = outcome2_row_select+" .table-group:first-of-type .blank-cell+.table-cell input"
+            outcome2_input2 = outcome2_row_select+" .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+            outcome2_img = outcome2_row_select+" .table-group:first-of-type .blank-cell+.table-cell img"
+            outcome2_img2 = outcome2_row_select+" .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
             outcome2_total_img = outcome2_row_select+" .table-cell.total-cell:not(.grand-total-cell) img"
             outcome2_grandtotal_img = outcome2_row_select+" .table-cell.grand-total-cell img"
             outcome2_toggle = action_hover_click(selenium,selenium.find_element_by_css_selector(outcome2_cell),selenium.find_element_by_css_selector(outcome2_input))
@@ -657,19 +658,19 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 selenium.find_element_by_css_selector(outcome2_input2)
             ).perform()
             time.sleep(1)
-            #Currently does not pass, will fix later
-#            assert_image(base_img,"/nocheck")
-#            assert_image(base_img2,"/nocheck")
-#            assert_image(base_total_img,"/check")
-#            assert_image(base_grandtotal_img,"/check")
-#            assert_image(outcome1_img,"solid_check")
-#            assert_no_image(outcome1_img2)
-#            assert_image(outcome1_total_img,"/check")
-#            assert_image(outcome1_grandtotal_img,"/check")
-#            assert_no_image(outcome2_img)
-#            assert_image(outcome2_img2,"solid_check")
-#            assert_image(outcome2_total_img,"/check")
-#            assert_image(outcome2_grandtotal_img,"/check")
+            
+            assert_image(base_img,"/nocheck")
+            assert_image(base_img2,"/nocheck")
+            assert_image(base_total_img,"/check")
+            assert_image(base_grandtotal_img,"/check")
+            assert_image(outcome1_img,"solid_check")
+            assert_no_image(outcome1_img2)
+            assert_image(outcome1_total_img,"/check")
+            assert_image(outcome1_grandtotal_img,"/check")
+            assert_no_image(outcome2_img)
+            assert_image(outcome2_img2,"solid_check")
+            assert_image(outcome2_total_img,"/check")
+            assert_image(outcome2_grandtotal_img,"/check")
             
             
             
