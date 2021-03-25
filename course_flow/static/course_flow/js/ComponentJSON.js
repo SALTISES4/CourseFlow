@@ -641,7 +641,6 @@ export class QuillDiv extends React.Component{
             placeholder:this.props.placeholder
         });
         if(this.props.text)quill.clipboard.dangerouslyPasteHTML(this.props.text);
-        console.log(quill);
         quill.on('text-change',()=>{
             this.props.textChangeFunction(quill_container.childNodes[0].innerHTML.replace(/\<p\>\<br\>\<\/p\>\<ul\>/g,"\<ul\>"));
         });

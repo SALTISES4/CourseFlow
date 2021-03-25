@@ -457,7 +457,6 @@ export function nodeReducer(state={},action){
         case 'column/deleteSelf':
             var new_state = state.slice();
             var new_column;
-            console.log(action.payload)
             if(action.payload.extra_data){
                 new_column = action.payload.extra_data[0];
                 if(new_column==action.payload.id)new_column=action.payload.extra_data[1];

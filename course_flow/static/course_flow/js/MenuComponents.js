@@ -107,9 +107,7 @@ export class WorkflowsMenu extends React.Component{
 export class WorkflowForMenu extends React.Component{
     constructor(props){
         super(props);
-        console.log(props);
         this.state={favourite:props.workflow_data.favourite};
-        console.log(this.state);
     }
     
     render(){
@@ -137,8 +135,6 @@ export class WorkflowForMenu extends React.Component{
     
     getButtons(){
         var buttons=[];
-        console.log(this.props.objectType);
-        console.log(this.state);
         let favourite_img = "no_favourite.svg";
         if(this.state.favourite)favourite_img = "favourite.svg";
         if(this.props.type=="projectmenu"||this.props.type=="homemenu"||this.props.type=="exploremenu"){
@@ -286,7 +282,6 @@ export const HomeMenu = connect(
 class ProjectMenuUnconnected extends React.Component{
     constructor(props){
         super(props);
-        console.log(props.project);
         this.state={...props.project,all_disciplines:[]};
     }
     
@@ -367,7 +362,6 @@ export class ProjectEditMenu extends React.Component{
         
         let all_disciplines;
         let disciplines;
-        console.log(data);
         if(data.all_disciplines){
             all_disciplines = data.all_disciplines.filter(discipline=>data.disciplines.indexOf(discipline.id)==-1).map((discipline)=>
                 <option value={discipline.id}>{discipline.title}</option>
@@ -596,15 +590,12 @@ export class ExploreMenu extends React.Component{
 
     componentDidMount(){
         let url_params = new URL(window.location.href).searchParams;
-        console.log(url_params)
         url_params.forEach((value,key)=>{
             if(key.indexOf("[]")>=0){
                 $(".fillable[name='"+key+"'][value='"+value+"']").attr("checked",true);
             }else{
                 $(".fillable[name='"+key+"']").val(value);
             }
-            console.log(value);
-            console.log(key);
             
         });
     }
@@ -634,9 +625,6 @@ export class ExploreMenu extends React.Component{
                 }).done(function(data){
                     if(data.action=="posted"){
                         loader.endLoad();
-                        console.log(data.data_package);
-                        console.log(data);
-                        console.log(data.project_data);
                         var project_renderer = new renderers.ProjectRenderer(data.data_package,JSON.parse(data.project_data));
                         project_renderer.render($(".explore-preview"));
                     }
@@ -649,7 +637,6 @@ export class ExploreMenu extends React.Component{
                 }).done(function(data){
                     if(data.action=="posted"){
                         loader.endLoad();
-                        console.log(data.data_package);
                         var outcome_renderer = new renderers.OutcomeRenderer(JSON.parse(data.data_package));
                         outcome_renderer.render($(".explore-preview"));
                     }

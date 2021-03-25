@@ -256,6 +256,10 @@ export class TableOutcomeGroup extends ComponentJSON{
         }
         if(completion_status==0&&childnodes==0)completion_status=null;
         
+        console.log(this.props.outcomeID);
+        console.log(this.props.completion_status_from_parents);
+        console.log(this.props.completion_status_from_children);
+        
         return(
             <div class="table-group">
                 <div class="table-cell blank-cell"></div>
