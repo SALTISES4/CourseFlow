@@ -99,10 +99,6 @@ CSP_FONT_SRC = [
     "'self'",
     "*.mydalite.org",
 ]
-CSP_INCLUDE_NONCE_IN = [
-    "script-src",
-    "style-src",
-]
 
 LOGIN_URL = "course_flow:login"
 
