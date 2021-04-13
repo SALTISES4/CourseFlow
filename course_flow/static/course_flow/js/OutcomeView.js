@@ -85,8 +85,8 @@ class OutcomeView extends ComponentJSON{
         this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
     }
 
-    sortableMovedFunction(id,new_position,type,new_parent){
-        this.props.dispatch(moveOutcomeOutcome(id,new_position,new_parent));
+    sortableMovedFunction(id,new_position,type,new_parent,child_id){
+        this.props.dispatch(moveOutcomeOutcome(id,new_position,new_parent,child_id));
     }
 
     stopSortFunction(){

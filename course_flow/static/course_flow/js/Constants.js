@@ -89,6 +89,18 @@ export const default_column_settings = {
     14:{colour:"#f7ba2a",icon:"assessment"},
     20:{colour:"#369934",icon:"other"}
 }
+export const parent_dictionary = {
+    node:"week",
+    week:"workflow",
+    column:"workflow",
+    outcome:"outcome",
+}
+export const through_parent_dictionary = {
+    node:"nodeweek",
+    week:"weekworkflow",
+    column:"columnworkflow",
+    outcome:"outcomeoutcome",
+}
 
 
 //Get translate from an svg transform

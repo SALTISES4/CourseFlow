@@ -19,7 +19,7 @@ class OutcomeOutcomeView extends ComponentJSON{
         let data = this.props.data;
         
         return (
-            <li class="outcome-outcome" id={data.id} ref={this.maindiv}>
+            <li class="outcome-outcome" id={data.id} ref={this.maindiv} data-child-id={data.child}>
                 <OutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
             </li>
         );

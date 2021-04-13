@@ -44,15 +44,7 @@ def flow_patterns():
         url(
             r"^workflow/updatevalue/$", views.update_value, name="update-value"
         ),
-        #        url(
-        #            r"^project/project-toggle-published/$", views.project_toggle_published, name="project-toggle-published"
-        #        ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
-        url(
-            r"^workflow/unlink-outcome-from-node/$",
-            views.unlink_outcome_from_node,
-            name="unlink-outcome-from-node",
-        ),
         url(
             r"^workflow/update-outcomenode-degree/$",
             views.update_outcomenode_degree,
@@ -126,6 +118,9 @@ def flow_patterns():
             r"^favourites/toggle", views.toggle_favourite, name="toggle-favourite"
         ),
         url(
+            r"^permissions/set", views.set_permission, name="set-permission"
+        ),
+        url(
             r"^workflow/node/set-linked-workflow/$",
             views.set_linked_workflow_ajax,
             name="set-linked-workflow",
@@ -154,6 +149,16 @@ def flow_patterns():
             r"^outcome/get-outcome-data/",
             views.get_outcome_data,
             name="get-outcome-data",
+        ),
+        url(
+            r"^project/get-users-for-object/",
+            views.get_users_for_object,
+            name="get-users-for-object",
+        ),
+        url(
+            r"^users/get-user-list/",
+            views.get_user_list,
+            name="get-user-list",
         ),
         url(
             r"^workflow/(?P<pk>[0-9]+)/$",

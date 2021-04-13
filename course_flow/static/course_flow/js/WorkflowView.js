@@ -6,7 +6,7 @@ import ColumnWorkflowView from "./ColumnWorkflowView.js";
 import WeekWorkflowView from "./WeekWorkflowView.js";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView.js";
 import {NodeBarWeekWorkflow} from "./WeekWorkflowView.js";
-import {WorkflowForMenu} from "./MenuComponents.js";
+import {WorkflowForMenu,renderMessageBox} from "./MenuComponents.js";
 import * as Constants from "./Constants.js";
 import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers.js";
 import {OutcomeBar} from "./OutcomeTopView.js";
@@ -37,6 +37,8 @@ class WorkflowView extends ComponentJSON{
             <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
         );
         var selector = this;
+        let share;
+        if(!read_only)share = <button onClick={renderMessageBox.bind(this,data,"share_menu")}>Sharing</button>
         
         
         
@@ -46,6 +48,7 @@ class WorkflowView extends ComponentJSON{
                     <div class="workflow-details">
                         <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{selection_manager.changeSelection(evt,selector)}}/>
                         {this.addEditable(data)}
+                        {share}
                         {reactDom.createPortal(
                         <div class="topdropwrapper" title="Show/Hide Legend">
                             <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
@@ -55,10 +58,10 @@ class WorkflowView extends ComponentJSON{
                         {this.state.show_legend && 
                             <WorkflowLegend toggle={this.toggleLegend.bind(this)}/>
                         }
-                        <div class="column-row">
+                        <div class="column-row" id={data.id+"-column-block"}>
                             {columnworkflows}
                         </div>
-                        <div class="week-block">
+                        <div class="week-block" id={data.id+"-week-block"}>
                             {weekworkflows}
                         </div>
                         <svg class="workflow-canvas" width="100%" height="100%">
@@ -103,9 +106,9 @@ class WorkflowView extends ComponentJSON{
     }
     
     
-    sortableMovedFunction(id,new_position,type){
-        if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position))
-        if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position))
+    sortableMovedFunction(id,new_position,type,new_parent,child_id){
+        if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position,new_parent,child_id))
+        if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position,new_parent,child_id))
     }
                      
     toggleLegend(){

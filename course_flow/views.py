@@ -19,11 +19,8 @@ from .models import (
     OutcomeOutcome,
     OutcomeNode,
     Discipline,
-    ProjectFavourite,
-    ActivityFavourite,
-    CourseFavourite,
-    ProgramFavourite,
-    OutcomeFavourite,
+    Favourite,
+    ObjectPermission,
 )
 from .serializers import (
     serializer_lookups,
@@ -52,20 +49,18 @@ from .serializers import (
     OutcomeNodeSerializerShallow,
     OutcomeProjectSerializerShallow,
     DisciplineSerializer,
+    UserSerializer,
     InfoBoxSerializer,
     bleach_allowed_tags,
     bleach_sanitizer,
 )
 from .decorators import (
     ajax_login_required,
-    is_owner,
-    is_parent_owner,
-    is_throughmodel_parent_owner,
-    new_parent_authorship,
-    is_owner_or_none,
-    is_owner_or_published,
-    is_strategy_owner_or_published,
-    is_none_or_owner_or_published
+    user_can_edit,
+    user_can_view,
+    user_can_delete,
+    user_can_view_or_none,
+    user_is_teacher
 )
 from django.urls import reverse
 from django.views.generic.edit import CreateView
@@ -253,7 +248,7 @@ def get_project_data_package(user):
                     "title": "Your Favourite Projects",
                     "object_type": "project",
                     "objects": InfoBoxSerializer(
-                        [favourite.project for favourite in ProjectFavourite.objects.filter(user=user,project__published=True)],
+                        [favourite.content_object for favourite in Favourite.objects.filter(user=user,project__published=True)],
                         many=True,
                         context={'user':user},
                     ).data,
@@ -268,7 +263,7 @@ def get_project_data_package(user):
                     "title": "Your Favourite Activity-Level Strategies",
                     "object_type": "activity",
                     "objects": InfoBoxSerializer(
-                        [favourite.activity for favourite in ActivityFavourite.objects.filter(user=user,activity__published=True,activity__is_strategy=True)],
+                        [favourite.content_object for favourite in Favourite.objects.filter(user=user,activity__published=True,activity__is_strategy=True)],
                         many=True,
                         context={'user':user},
                     ).data,
@@ -277,7 +272,7 @@ def get_project_data_package(user):
                     "title": "Your Favourite Course-Level Strategies",
                     "object_type": "course",
                     "objects": InfoBoxSerializer(
-                        [favourite.course for favourite in CourseFavourite.objects.filter(user=user,course__published=True,course__is_strategy=True)],
+                        [favourite.content_object for favourite in Favourite.objects.filter(user=user,course__published=True,course__is_strategy=True)],
                         many=True,
                         context={'user':user},
                     ).data,
@@ -323,7 +318,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
                 "title": "Your Favourite Programs",
                 "object_type": "program",
                 "objects": InfoBoxSerializer(
-                    [favourite.program for favourite in ProgramFavourite.objects.filter(user=user,program__published=True,program__is_strategy=False)],
+                    [favourite.content_object for favourite in Favourite.objects.filter(user=user,program__published=True,program__is_strategy=False)],
                     many=True,
                     context={'user':user},
                 ).data,
@@ -359,7 +354,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
                 "title": "Your Favourite Courses",
                 "object_type": "course",
                 "objects": InfoBoxSerializer(
-                    [favourite.course for favourite in CourseFavourite.objects.filter(user=user,course__published=True,course__is_strategy=False)],
+                    [favourite.content_object for favourite in Favourite.objects.filter(user=user,course__published=True,course__is_strategy=False)],
                     many=True,
                     context={'user':user},
                 ).data,
@@ -398,7 +393,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
                 "title": "Your Favourite Activities",
                 "object_type": "activity",
                 "objects": InfoBoxSerializer(
-                    [favourite.activity for favourite in ActivityFavourite.objects.filter(user=user,activity__published=True,activity__is_strategy=False)],
+                    [favourite.content_object for favourite in Favourite.objects.filter(user=user,activity__published=True,activity__is_strategy=False)],
                     many=True,
                     context={'user':user},
                 ).data,
@@ -435,7 +430,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
                 "title": "Your Favourite Outcomes",
                 "object_type": "outcome",
                 "objects": InfoBoxSerializer(
-                    [favourite.outcome for favourite in OutcomeFavourite.objects.filter(user=user,outcome__published=True)],
+                    [favourite.content_object for favourite in Favourite.objects.filter(user=user,outcome__published=True)],
                     many=True,
                     context={'user':user},
                 ).data,
@@ -463,7 +458,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
             "duplicate": other_copy_type,
         }
         data_package["all_published"]={
-            "title": "All Published Workflows",
+            "title": "Your Favourites",
             "sections": all_published_sections,
             "duplicate": other_copy_type,
         }
@@ -1135,7 +1130,7 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
 
 @require_POST
 @ajax_login_required
-@is_owner_or_published("workflowPk")
+@user_can_view("workflowPk")
 def get_workflow_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
@@ -1148,7 +1143,7 @@ def get_workflow_data(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
-@is_owner_or_published("projectPk")
+@user_can_view("projectPk")
 def get_project_data(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
@@ -1166,7 +1161,7 @@ def get_project_data(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
-@is_owner_or_published("outcomePk")
+@user_can_view("outcomePk")
 def get_outcome_data(request: HttpRequest) -> HttpResponse:
     outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
     try:
@@ -1179,12 +1174,12 @@ def get_outcome_data(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
-@is_owner("nodePk")
+@user_can_edit("nodePk")
 def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
         project = (
-            node.week_set.first().workflow_set.first().project_set.first()
+            node.get_workflow().get_project()
         )
         data_package = get_workflow_data_package(
             request.user, project, node.node_type - 1,False
@@ -1347,15 +1342,15 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
 
 @require_POST
 @ajax_login_required
-@is_owner_or_published("workflowPk")
-@is_owner("projectPk")
+@user_can_view("workflowPk")
+@user_can_edit("projectPk")
 def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
         clone = duplicate_workflow(workflow, request.user)
         WorkflowProject.objects.create(project=project, workflow=clone)
-        if workflow.project_set.first() != clone.project_set.first():
+        if workflow.get_project() != clone.get_project():
             outcomes_set = get_project_outcomes(project)
             cleanup_workflow_post_duplication(clone, project, outcomes_set)
     except ValidationError:
@@ -1372,7 +1367,7 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
-@is_owner_or_published("workflowPk")
+@user_can_view("workflowPk")
 def duplicate_strategy_ajax(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
@@ -1412,8 +1407,8 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 
 @require_POST
 @ajax_login_required
-@is_owner_or_published("outcomePk")
-@is_owner("projectPk")
+@user_can_view("outcomePk")
+@user_can_edit("projectPk")
 def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
     outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
     project = Project.objects.get(pk=request.POST.get("projectPk"))
@@ -1472,7 +1467,7 @@ def duplicate_project(project: Project, author: User) -> Project:
 
 @require_POST
 @ajax_login_required
-@is_owner_or_published("projectPk")
+@user_can_view("projectPk")
 def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
@@ -1516,7 +1511,7 @@ Creation methods
 
 @require_POST
 @ajax_login_required
-@is_owner("workflowPk")
+@user_can_edit("workflowPk")
 def new_column(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
     column_type = request.POST.get("column_type")
@@ -1536,8 +1531,8 @@ def new_column(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
-@is_owner("weekPk")
-@is_owner_or_none("columnPk")
+@user_can_edit("weekPk")
+@user_can_view_or_none("columnPk")
 def new_node(request: HttpRequest) -> HttpResponse:
     week_id = json.loads(request.POST.get("weekPk"))
     column_id = json.loads(request.POST.get("columnPk"))
@@ -1554,8 +1549,8 @@ def new_node(request: HttpRequest) -> HttpResponse:
             )
             columnworkflow = ColumnWorkflow.objects.create(
                 column=column,
-                workflow=week.workflow_set.first(),
-                rank=week.workflow_set.first().columns.count(),
+                workflow=week.get_workflow(),
+                rank=week.get_workflow().columns.count(),
             )
         else:
             columnworkflow = ColumnWorkflow.objects.filter(
@@ -1589,14 +1584,15 @@ def new_node(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
-@is_owner("workflowPk")
-@is_strategy_owner_or_published("strategyPk")
+@user_can_edit("workflowPk")
+@user_can_view(False)
 def add_strategy(request: HttpRequest) -> HttpResponse:
     workflow_id = json.loads(request.POST.get("workflowPk"))
-    strategy_id = json.loads(request.POST.get("strategyPk"))
+    strategy_id = json.loads(request.POST.get("objectID"))
+    strategy_type = json.loads(request.POST.get("objectType"))
     position = json.loads(request.POST.get("position"))
     workflow = Workflow.objects.get(pk=workflow_id)
-    strategy = Workflow.objects.get(pk=strategy_id)
+    strategy = get_model_from_str(strategy_type).objects.get(pk=strategy_id)
     try:
         if (
             strategy.get_subclass().author == request.user
@@ -1716,8 +1712,8 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
-@is_owner("nodePk")
-@is_owner(False)
+@user_can_edit("nodePk")
+@user_can_edit(False)
 def new_node_link(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     target_id = json.loads(request.POST.get("objectID"))
@@ -1746,7 +1742,7 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
 # Add a new child to a model
 @require_POST
 @ajax_login_required
-@is_owner(False)
+@user_can_edit(False)
 def insert_child(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -1784,74 +1780,53 @@ def insert_child(request: HttpRequest) -> HttpResponse:
 # Add a new sibling to a through model
 @require_POST
 @ajax_login_required
-@is_parent_owner
+@user_can_view(False)
+@user_can_edit(False,get_parent=True)
 def insert_sibling(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("parentID"))
-
+    parent_type = json.loads(request.POST.get("parentType"))
+    through_type = json.loads(request.POST.get("throughType"))
     try:
-        if object_type == "week":
-            model = Week.objects.get(id=object_id)
-            parent = Workflow.objects.get(id=parent_id)
-            through = WeekWorkflow.objects.get(week=model, workflow=parent)
-            newmodel = Week.objects.create(
-                author=model.author, week_type=model.week_type
-            )
-            newthroughmodel = WeekWorkflow.objects.create(
-                workflow=parent, week=newmodel, rank=through.rank + 1
-            )
-            new_model_serialized = WeekSerializerShallow(newmodel).data
-            new_through_serialized = WeekWorkflowSerializerShallow(
-                newthroughmodel
-            ).data
-        elif object_type == "node":
-            model = Node.objects.get(id=object_id)
-            parent = Week.objects.get(id=parent_id)
-            through = NodeWeek.objects.get(node=model, week=parent)
-            newmodel = Node.objects.create(
-                author=model.author,
-                column=model.column,
-                node_type=model.node_type,
-            )
-            newthroughmodel = NodeWeek.objects.create(
-                week=parent, node=newmodel, rank=through.rank + 1
-            )
-            new_model_serialized = NodeSerializerShallow(newmodel).data
-            new_through_serialized = NodeWeekSerializerShallow(
-                newthroughmodel
-            ).data
-        elif object_type == "column":
-            model = Column.objects.get(id=object_id)
-            parent = Workflow.objects.get(id=parent_id)
-            through = ColumnWorkflow.objects.get(column=model, workflow=parent)
-            newmodel = Column.objects.create(
-                author=model.author,
-                column_type=math.floor(model.column_type / 10) * 10,
-            )
-            newthroughmodel = ColumnWorkflow.objects.create(
-                workflow=parent, column=newmodel, rank=through.rank + 1
-            )
-            new_model_serialized = ColumnSerializerShallow(newmodel).data
-            new_through_serialized = ColumnWorkflowSerializerShallow(
-                newthroughmodel
-            ).data
-        elif object_type == "outcome":
-            model = Outcome.objects.get(id=object_id)
-            parent = Outcome.objects.get(id=parent_id)
-            through = OutcomeOutcome.objects.get(parent=parent, child=model)
-            newmodel = Outcome.objects.create(
-                author=model.author, depth=model.depth
-            )
-            newthroughmodel = OutcomeOutcome.objects.create(
-                parent=parent, child=newmodel, rank=through.rank + 1
-            )
-            new_model_serialized = OutcomeSerializerShallow(newmodel).data
-            new_through_serialized = OutcomeOutcomeSerializerShallow(
-                newthroughmodel
-            ).data
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        parent = get_model_from_str(parent_type).objects.get(id=parent_id)
+        if parent_type==object_type:
+            old_through_kwargs = {"child":model,"parent":parent}
         else:
-            raise ValidationError("Uknown component type")
+            old_through_kwargs = {object_type:model,parent_type:parent}
+        through = get_model_from_str(through_type).objects.get(**old_through_kwargs)
+
+        if object_type=="week":
+            defaults={"week_type":model.week_type}
+        elif object_type=="node":
+            defaults={"column":model.column,"node_type":model.node_type}
+        elif object_type=="column":
+            defaults={"column_type":math.floor(model.column_type / 10) * 10}
+        elif object_type=="outcome":
+            defaults={"depth":model.depth}
+        else:
+            defaults={}
+
+        new_model = get_model_from_str(object_type).objects.create(
+            author = request.user,**defaults
+        )
+        if parent_type==object_type:
+            new_through_kwargs = {"child":new_model,"parent":parent}
+        else:
+            new_through_kwargs = {object_type:new_model,parent_type:parent}
+        new_through_model = get_model_from_str(through_type).objects.create(
+            **new_through_kwargs,
+            rank=through.rank+1
+        )
+        new_model_serialized = serializer_lookups_shallow[object_type](
+            new_model
+        ).data
+        new_through_serialized = serializer_lookups_shallow[through_type](
+            new_through_model
+        ).data
+    
+    
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -1862,7 +1837,6 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
             "new_model": new_model_serialized,
             "new_through": new_through_serialized,
             "parentID": parent_id,
-            "siblingID": through.id,
         }
     )
 
@@ -1870,18 +1844,20 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
 # Soft-duplicate the item
 @require_POST
 @ajax_login_required
-@is_parent_owner
+@user_can_view(False)
+@user_can_edit(False,get_parent=True)
 def duplicate_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("parentID"))
-
+    parent_type = json.loads(request.POST.get("parentType"))
+    through_type = json.loads(request.POST.get("throughType"))
     try:
         if object_type == "week":
             model = Week.objects.get(id=object_id)
             parent = Workflow.objects.get(id=parent_id)
             through = WeekWorkflow.objects.get(week=model, workflow=parent)
-            newmodel = duplicate_week(model, model.author, None)
+            newmodel = duplicate_week(model, request.user, None)
             newthroughmodel = WeekWorkflow.objects.create(
                 workflow=parent, week=newmodel, rank=through.rank + 1
             )
@@ -1899,7 +1875,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             model = Node.objects.get(id=object_id)
             parent = Week.objects.get(id=parent_id)
             through = NodeWeek.objects.get(node=model, week=parent)
-            newmodel = duplicate_node(model, model.author, None)
+            newmodel = duplicate_node(model, request.user, None)
             newthroughmodel = NodeWeek.objects.create(
                 week=parent, node=newmodel, rank=through.rank + 1
             )
@@ -1913,7 +1889,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             model = Column.objects.get(id=object_id)
             parent = Workflow.objects.get(id=parent_id)
             through = ColumnWorkflow.objects.get(column=model, workflow=parent)
-            newmodel = duplicate_column(model, model.author)
+            newmodel = duplicate_column(model, request.user)
             newthroughmodel = ColumnWorkflow.objects.create(
                 workflow=parent, column=newmodel, rank=through.rank + 1
             )
@@ -1927,7 +1903,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             model = Outcome.objects.get(id=object_id)
             parent = Outcome.objects.get(id=parent_id)
             through = OutcomeOutcome.objects.get(child=model, parent=parent)
-            newmodel = duplicate_outcome(model, model.author)
+            newmodel = duplicate_outcome(model, request.user)
             newthroughmodel = OutcomeOutcome.objects.create(
                 parent=parent, child=newmodel, rank=through.rank + 1
             )
@@ -1954,7 +1930,6 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
         "new_model": new_model_serialized,
         "new_through": new_through_serialized,
         "parentID": parent_id,
-        "siblingID": through.id,
         "children": new_children_serialized,
         "children_through": new_child_through_serialized,
     }
@@ -1963,7 +1938,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
 #favourite/unfavourite a project or workflow or outcome for a user
 @require_POST
 @ajax_login_required
-@is_owner_or_published(False)
+@user_can_view(False)
 def toggle_favourite(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     objectType = json.loads(request.POST.get("objectType"))
@@ -1971,26 +1946,84 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
     response = {}
     try:
         item = get_model_from_str(objectType).objects.get(id=object_id)
-        search_kwargs = {}
-        search_kwargs[objectType]=item
-        favourite_model = get_model_from_str(objectType+"favourite")
-        current_favourite = favourite_model.objects.filter(user=request.user,**search_kwargs)
-        if current_favourite.count()>=1:
-            if favourite:
-                pass
-            else:
-                current_favourite.delete()
-        else:
-            if favourite:
-                favourite_model.objects.create(user=request.user,**search_kwargs)
-            else:
-                pass
+        Favourite.objects.filter(
+            user=request.user,
+            content_type=ContentType.objects.get_for_model(item),
+            object_id=object_id
+        ).delete()
+        if favourite:
+            f = Favourite.objects.create(user=request.user,content_object=item)
         response["action"]="posted"
     except:
         response["action"]="error"
     
     return JsonResponse(response)
 
+#change permissions on an object for a user
+@require_POST
+@ajax_login_required
+@user_can_edit(False)
+def set_permission(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    objectType = json.loads(request.POST.get("objectType"))
+    user_id = json.loads(request.POST.get("permission_user"))
+    permission_type = json.loads(request.POST.get("permission_type"))
+    response = {}
+    try:
+        user = User.objects.get(id=user_id)
+        item = get_model_from_str(objectType).objects.get(id=object_id)
+        if hasattr(item,"get_subclass"):
+            item = item.get_subclass()
+        ObjectPermission.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(item),
+            object_id=object_id
+        ).delete()
+        p = ObjectPermission.objects.create(user=user,content_object=item,permission_type=permission_type)
+        response["action"]="posted"
+    except:
+        response["action"]="error"
+    
+    return JsonResponse(response)
+
+@require_POST
+@ajax_login_required
+@user_can_edit(False)
+def get_users_for_object(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    content_type = ContentType.objects.get(model=object_type)
+    try:
+        editors = set()
+        for object_permission in ObjectPermission.objects.filter(content_type=content_type,object_id=object_id,permission_type=ObjectPermission.PERMISSION_EDIT).select_related('user'):
+            editors.add(object_permission.user)
+        viewers = set()
+        for object_permission in ObjectPermission.objects.filter(content_type=content_type,object_id=object_id,permission_type=ObjectPermission.PERMISSION_VIEW).select_related('user'):
+            viewers.add(object_permission.user)
+    except:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({
+        "action":"posted",
+        "viewers":UserSerializer(viewers,many=True).data,
+        "editors":UserSerializer(editors,many=True).data,
+    })
+
+@require_POST
+@ajax_login_required
+#@user_is_teacher(False)
+def get_user_list(request: HttpRequest) -> HttpResponse:
+    name_filter = json.loads(request.POST.get("filter"))
+    print(name_filter)
+    try:
+        print(User.objects.filter(username__istartswith=name_filter))
+        user_list = User.objects.filter(username__istartswith=name_filter,groups=Group.objects.get(name=settings.TEACHER_GROUP))[:10]
+    except:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({
+        "action":"posted",
+        "user_list":UserSerializer(user_list,many=True).data,
+    })
+    
 """
 Reorder methods
 """
@@ -1998,83 +2031,24 @@ Reorder methods
 # Insert a model via its throughmodel
 @require_POST
 @ajax_login_required
-@is_throughmodel_parent_owner
-@new_parent_authorship
+@user_can_edit(False)
+@user_can_edit(False,get_parent=True)
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("parentID"))
+    parent_type = json.loads(request.POST.get("parentType"))
     new_position = json.loads(request.POST.get("newPosition"))
+    through_type = json.loads(request.POST.get("throughType"))
+    
     try:
-        model_type = get_model_from_str(object_type)
-        model = model_type.objects.get(id=object_id)
-        old_position = model.rank
-
-        parentType = get_parent_model_str(object_type)
-
-        new_parent = get_model_from_str(parentType).objects.get(id=parent_id)
-
-        if object_type == "nodeweek":
-            parent = model.week
-        elif object_type == "outcomeoutcome":
-            parent = model.parent
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        parent = get_model_from_str(parent_type).objects.get(id=parent_id)
+        if object_type==parent_type:
+            creation_kwargs = {"child":model,"parent":parent}
         else:
-            parent = new_parent
-
-        if object_type == "outcomeoutcome":
-            parentType = "parent"
-
-        new_parent_count = model_type.objects.filter(
-            **{parentType: new_parent}
-        ).count()
-        if new_position < 0:
-            new_position = 0
-        if new_position > new_parent_count:
-            new_position = new_parent_count - 1
-        delta = new_position - old_position
-
-        if parent.id == new_parent.id:
-            if delta != 0:
-                sign = int(math.copysign(1, delta))
-                for out_of_order_link in model_type.objects.filter(
-                    rank__gte=min(old_position + 1, new_position),
-                    rank__lte=max(new_position, old_position - 1),
-                    **{parentType: parent}
-                ):
-                    out_of_order_link.rank -= sign
-                    out_of_order_link.save()
-                model.rank = new_position
-                model.save()
-
-        elif parent.id != new_parent.id:
-
-            """
-            This takes advantage of signals, but the js is not compatible at the
-            moment as the throughmodel id is not being updated, after calling this function.
-
-            child = model.node
-            model.delete()
-            new_through_object = NodeWeek(week=new_parent, node=child, rank=new_position)
-            setattr(new_through_object, parentType, new_parent)
-            new_through_object.save()
-
-            """
-            for out_of_order_link in model_type.objects.filter(
-                rank__gt=old_position, **{parentType: parent}
-            ):
-                out_of_order_link.rank -= 1
-                out_of_order_link.save()
-            for out_of_order_link in model_type.objects.filter(
-                rank__gte=new_position, **{parentType: new_parent}
-            ):
-                out_of_order_link.rank += 1
-                out_of_order_link.save()
-            model.rank = new_position
-            setattr(model, parentType, new_parent)
-            if object_type == "outcomeoutcome":
-                model.child.depth = model.parent.depth + 1
-                model.child.save()
-            model.save()
+            creation_kwargs = {object_type:model,parent_type:parent}
+        through = get_model_from_str(through_type).objects.create(rank=new_position,**creation_kwargs)
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -2085,8 +2059,8 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 # Change a node's column
 @require_POST
 @ajax_login_required
-@is_owner("nodePk")
-@is_owner("columnPk")
+@user_can_edit("nodePk")
+@user_can_edit("columnPk")
 def change_column(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     new_column_id = json.loads(request.POST.get("columnPk"))
@@ -2104,8 +2078,8 @@ def change_column(request: HttpRequest) -> HttpResponse:
 # Add an outcome to a node
 @require_POST
 @ajax_login_required
-@is_owner("nodePk")
-@is_owner("outcomePk")
+@user_can_edit("nodePk")
+@user_can_view("outcomePk")
 def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     outcome_id = json.loads(request.POST.get("outcomePk"))
@@ -2133,7 +2107,7 @@ Update Methods
 # Updates an object's information using its serializer
 @require_POST
 @ajax_login_required
-@is_owner(False)
+@user_can_edit(False)
 def update_value(request: HttpRequest) -> HttpResponse:
     try:
         object_id = json.loads(request.POST.get("objectID"))
@@ -2156,8 +2130,8 @@ def update_value(request: HttpRequest) -> HttpResponse:
 
 @require_POST
 @ajax_login_required
-@is_owner("nodePk")
-@is_owner("outcomePk")
+@user_can_edit("nodePk")
+@user_can_view("outcomePk")
 def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     outcome_id = json.loads(request.POST.get("outcomePk"))
@@ -2187,7 +2161,7 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
 
 # Do not call if duplicating the parent workflow
 def set_linked_workflow(node: Node, workflow):
-    project = node.week_set.first().workflow_set.first().project_set.first()
+    project = node.get_workflow().get_project()
     if WorkflowProject.objects.get(workflow=workflow).project == project:
         node.linked_workflow = workflow
         node.save()
@@ -2206,8 +2180,8 @@ def set_linked_workflow(node: Node, workflow):
 # Sets the linked workflow for a node, adding it to the project if different.
 @require_POST
 @ajax_login_required
-@is_owner("nodePk")
-@is_none_or_owner_or_published("workflowPk")
+@user_can_edit("nodePk")
+@user_can_view_or_none("workflowPk")
 def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
     try:
         node_id = json.loads(request.POST.get("nodePk"))
@@ -2246,7 +2220,7 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
 # Creates strategy from week or turns strategy into week
 @require_POST
 @ajax_login_required
-@is_owner("weekPk")
+@user_can_edit("weekPk")
 def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
     try:
         object_id = json.loads(request.POST.get("weekPk"))
@@ -2301,7 +2275,7 @@ Delete methods
 
 @require_POST
 @ajax_login_required
-@is_owner(False)
+@user_can_delete(False)
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -2314,23 +2288,6 @@ def delete_self(request: HttpRequest) -> HttpResponse:
 
     return JsonResponse({"action": "posted"})
 
-
-@require_POST
-@ajax_login_required
-@is_owner("nodePk")
-@is_owner("outcomePk")
-def unlink_outcome_from_node(request: HttpRequest) -> HttpResponse:
-    node_id = json.loads(request.POST.get("nodePk"))
-    outcome_id = json.loads(request.POST.get("outcomePk"))
-    try:
-        model = OutcomeNode.objects.get(
-            node__id=node_id, outcome_id=outcome_id
-        )
-        model.delete()
-    except (ProtectedError, ObjectDoesNotExist):
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse({"action": "posted"})
 
 
 """

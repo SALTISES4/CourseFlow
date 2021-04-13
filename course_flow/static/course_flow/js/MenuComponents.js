@@ -2,9 +2,10 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite} from "./PostFunctions.js";
-import {homeMenuItemAdded} from "./Reducers.js";
-import {Loader} from "./Constants.js";
+import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite} from "./PostFunctions";
+import {homeMenuItemAdded} from "./Reducers";
+import {Loader} from "./Constants";
+import {ShareMenu} from "./ShareMenu";
 
 export class MessageBox extends React.Component{
     render(){
@@ -14,6 +15,9 @@ export class MessageBox extends React.Component{
         );
         if(this.props.message_type=="project_edit_menu")menu=(
             <ProjectEditMenu type={this.props.message_type} data={this.props.message_data} actionFunction={this.props.actionFunction}/>
+        );
+        if(this.props.message_type=="share_menu")menu=(
+            <ShareMenu data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
         return(
             <div class="screen-barrier" onClick={(evt)=>evt.stopPropagation()}>
@@ -651,7 +655,7 @@ export class ExploreMenu extends React.Component{
     }
 }
 
-export function renderMessageBox(data,type,updateFunction){
+export function renderMessageBox(data,type,updateFunction=closeMessageBox){
     reactDom.render(
         <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
         $("#popup-container")[0]

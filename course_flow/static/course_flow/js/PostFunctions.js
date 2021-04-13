@@ -126,7 +126,8 @@ export function addStrategy(workflowPk,position=-1,strategyPk=-1,callBackFunctio
         $.post(post_paths.add_strategy, {
             workflowPk:JSON.stringify(workflowPk),
             position:JSON.stringify(position),
-            strategyPk:JSON.stringify(strategyPk),
+            objectID:JSON.stringify(strategyPk),
+            objectType:JSON.stringify("workflow"),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else fail_function();
@@ -165,20 +166,6 @@ export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log(
     }
 }
 
-//Causes the specified throughmodel to delete itself
-export function unlinkOutcomeFromNode(nodeID,outcomeID,callBackFunction=()=>console.log("success")){
-    try{
-        $.post(post_paths.unlink_outcome_from_node, {
-            nodePk:JSON.stringify(nodeID),
-            outcomePk:JSON.stringify(outcomeID)
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else fail_function();
-        });
-    }catch(err){
-        fail_function();
-    }
-}
 
 //Causes the specified throughmodel to update its degree
 export function updateOutcomenodeDegree(nodeID,outcomeID,value,callBackFunction=()=>console.log("success")){
@@ -197,12 +184,14 @@ export function updateOutcomenodeDegree(nodeID,outcomeID,value,callBackFunction=
 }
 
 //Causes the specified object to insert a sibling after itself
-export function duplicateSelf(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
+export function duplicateSelf(objectID,objectType,parentID,parentType,throughType,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.duplicate_self, {
             parentID:JSON.stringify(parentID),
+            parentType:JSON.stringify(parentType),
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType),
+            throughType:JSON.stringify(throughType)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else fail_function();
@@ -212,12 +201,14 @@ export function duplicateSelf(objectID,objectType,parentID,callBackFunction=()=>
     }
 }
 //Causes the specified object to insert a sibling after itself
-export function insertSibling(objectID,objectType,parentID,callBackFunction=()=>console.log("success")){
+export function insertSibling(objectID,objectType,parentID,parentType,throughType,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.insert_sibling, {
             parentID:JSON.stringify(parentID),
+            parentType:JSON.stringify(parentType),
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType),
+            throughType:JSON.stringify(throughType)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else fail_function();
@@ -243,16 +234,19 @@ export function insertChild(objectID,objectType,callBackFunction=()=>console.log
 }
     
 //Called when an object in a list is reordered
-export function insertedAt(objectID,objectType,parentID,newPosition,callBackFunction=()=>console.log("success")){
-    
-    $(document).off(objectType+"-dropped.insert");
-    $(document).on(objectType+"-dropped.insert",()=>{
+export function insertedAt(objectID,objectType,parentID,parentType,newPosition,throughType,callBackFunction=()=>console.log("success")){
+    console.log(parentID);
+    console.log(parentType);
+    $(document).off(throughType+"-dropped.insert");
+    $(document).on(throughType+"-dropped.insert",()=>{
         try{
             $.post(post_paths.inserted_at, {
                 objectID:JSON.stringify(objectID),
                 objectType:JSON.stringify(objectType),
                 parentID:JSON.stringify(parentID),
+                parentType:JSON.stringify(parentType),
                 newPosition:JSON.stringify(newPosition),
+                throughType:JSON.stringify(throughType)
             }).done(function(data){
                 if(data.action == "posted") callBackFunction(data);
                 else fail_function();
@@ -358,10 +352,52 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
     
 }
 
-//Add an outcome to a node
+//Get the list of possible disciplines
 export function getDisciplines(callBackFunction=()=>console.log("success")){
     try{
         $.get(get_paths.get_disciplines).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//set the permission for a user
+export function setUserPermission(user_id,objectID,objectType,permission_type,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.set_permission,{
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            permission_type:JSON.stringify(permission_type)
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the list of users for a project
+export function getUsersForObject(objectID,objectType,callBackFunction=()=>console.log("success")){
+    console.log(objectType);
+    try{
+        $.post(post_paths.get_users_for_object,{
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get a list of users, filtered by name
+export function getUserList(filter,callBackFunction=()=>console.log("success")){
+    console.log(filter);
+    try{
+        $.post(post_paths.get_user_list,{filter:JSON.stringify(filter)}).done(function(data){
             callBackFunction(data);
         });
     }catch(err){

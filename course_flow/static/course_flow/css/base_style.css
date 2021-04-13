@@ -372,6 +372,16 @@ button:hover{
     text-indent: 0;
 }
 
+.ui-autocomplete{
+    z-index:100;
+}
+
+
+
+
+
+
+
 .action-icon{
   cursor: pointer;
 }

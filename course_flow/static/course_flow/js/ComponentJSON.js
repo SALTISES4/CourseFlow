@@ -78,7 +78,7 @@ export class ComponentJSON extends React.Component{
                    
                 }else if(drag_item.hasClass("node-week")){
                     this.sortableMovedFunction(
-                        parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id
+                        parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id,drag_item.attr("data-child-id")
                     );
                 }else{
                     console.log(drag_item);
@@ -140,7 +140,8 @@ export class ComponentJSON extends React.Component{
                 var placeholder_index = ui.placeholder.prevAll().not(".ui-sortable-helper").length;
                 if(ui.placeholder.parent()[0]!=ui.item.parent()[0]||ui.item.prevAll().not(".ui-sortable-placeholder").length!=placeholder_index){
                     var new_parent_id = parseInt(ui.placeholder.parent().attr("id"));
-                    this.sortableMovedFunction(parseInt(ui.item.attr("id")),placeholder_index,draggable_type,new_parent_id);
+                    console.log(ui.placeholder.parent().attr("id"))
+                    this.sortableMovedFunction(parseInt(ui.item.attr("id")),placeholder_index,draggable_type,new_parent_id,ui.item.attr("data-child-id"));
                 }
                 
                 ui.item.triggerHandler("dragging");
@@ -194,7 +195,12 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         props.renderer.tiny_loader.startLoad();
-        duplicateSelf(data.id,type,props.parentID,
+        duplicateSelf(
+            data.id,
+            type,
+            props.parentID,
+            Constants.parent_dictionary[type],
+            Constants.through_parent_dictionary[type],
             (response_data)=>{
                 let action = insertBelowAction(response_data,type);
                 props.dispatch(action);
@@ -203,7 +209,7 @@ export class ComponentJSON extends React.Component{
         );
     }
     
-    //Adds a button that inserts a sibling below the item. The callback function unfortunately does NOT seem to be called after the item is added to the DOM
+    //Adds a button that inserts a sibling below the item. 
     addInsertSibling(data){
         return(
             <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext="Insert Below" handleClick={this.insertSibling.bind(this,data)}/>
@@ -214,7 +220,12 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         props.renderer.tiny_loader.startLoad();
-        insertSibling(data.id,type,props.parentID,
+        insertSibling(
+            data.id,
+            type,
+            props.parentID,
+            Constants.parent_dictionary[type],
+            Constants.through_parent_dictionary[type],
             (response_data)=>{
                 let action = insertBelowAction(response_data,type);
                 props.dispatch(action);

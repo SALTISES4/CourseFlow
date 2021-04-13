@@ -24,7 +24,7 @@ class WeekWorkflowView extends ComponentJSON{
             <WeekView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
         );
         return (
-            <div class="week-workflow" id={data.id} ref={this.maindiv}>
+            <div class="week-workflow" id={data.id} ref={this.maindiv} data-child-id={data.week}>
                 {week}
             </div>
         );

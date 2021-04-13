@@ -1,18 +1,18 @@
 import * as Constants from "./Constants.js";
-import {unlinkOutcomeFromNode, deleteSelf, insertedAt, columnChanged, updateValue, updateOutcomenodeDegree} from "./PostFunctions.js"
+import {deleteSelf, insertedAt, columnChanged, updateValue, updateOutcomenodeDegree} from "./PostFunctions.js"
 import * as Redux from "redux";
 
-export const moveColumnWorkflow = (id,new_position) => {
+export const moveColumnWorkflow = (id,new_position,new_parent,child_id) => {
     return {
         type: 'columnworkflow/movedTo',
-        payload:{id:id,new_index:new_position}
+        payload:{id:id,new_index:new_position,new_parent:new_parent,child_id:child_id}
     }
 }
 
-export const moveWeekWorkflow = (id,new_position) => {
+export const moveWeekWorkflow = (id,new_position,new_parent,child_id) => {
     return {
         type: 'weekworkflow/movedTo',
-        payload:{id:id,new_index:new_position}
+        payload:{id:id,new_index:new_position,new_parent:new_parent,child_id:child_id}
     }
 }
 
@@ -58,10 +58,10 @@ export const columnChangeNodeWeek = (id,delta_x,columns) => {
     }
 }
 
-export const moveNodeWeek = (id,new_position,new_parent,nodes_by_column) => {
+export const moveNodeWeek = (id,new_position,new_parent,nodes_by_column,child_id) => {
     return {
         type: 'nodeweek/movedTo',
-        payload:{id:id,new_index:new_position,new_parent:new_parent,nodes_by_column:nodes_by_column}
+        payload:{id:id,new_index:new_position,new_parent:new_parent,nodes_by_column:nodes_by_column,child_id:child_id}
     }
 }
 
@@ -79,10 +79,10 @@ export const changeField = (id,objectType,field,value) => {
     }
 }
 
-export const moveOutcomeOutcome = (id,new_position,new_parent) => {
+export const moveOutcomeOutcome = (id,new_position,new_parent,child_id) => {
     return {
         type: 'outcomeoutcome/movedTo',
-        payload:{id:id,new_index:new_position,new_parent:new_parent}
+        payload:{id:id,new_index:new_position,new_parent:new_parent,child_id:child_id}
     }
 }
 
@@ -123,7 +123,7 @@ export function workflowReducer(state={},action){
                     break;
                 }
             }
-            insertedAt(action.payload.id,"columnworkflow",state.id,action.payload.new_index);
+            insertedAt(action.payload.child_id,"column",action.payload.new_parent,"workflow",action.payload.new_index,"columnworkflow");
             return {
                 ...state,
                 columnworkflow_set:new_columnworkflow_set
@@ -136,7 +136,7 @@ export function workflowReducer(state={},action){
                     break;
                 }
             }
-            insertedAt(action.payload.id,"weekworkflow",state.id,action.payload.new_index);
+            insertedAt(action.payload.child_id,"week",action.payload.new_parent,"workflow",action.payload.new_index,"weekworkflow");
             return {
                 ...state,
                 weekworkflow_set:new_weekworkflow_set
@@ -152,7 +152,7 @@ export function workflowReducer(state={},action){
         case 'week/insertBelow':
             new_state = {...state}
             var new_weekworkflow_set = state.weekworkflow_set.slice();
-            new_weekworkflow_set.splice(new_weekworkflow_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
+            new_weekworkflow_set.splice(action.payload.new_through.rank,0,action.payload.new_through.id);
             new_state.weekworkflow_set = new_weekworkflow_set;
             return new_state;
         case 'strategy/addStrategy':
@@ -184,7 +184,7 @@ export function workflowReducer(state={},action){
         case 'column/insertBelow':
             new_state = {...state}
             var new_columnworkflow_set = state.columnworkflow_set.slice();
-            new_columnworkflow_set.splice(new_columnworkflow_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
+            new_columnworkflow_set.splice(action.payload.new_through.rank,0,action.payload.new_through.id);
             new_state.columnworkflow_set = new_columnworkflow_set;
             return new_state;
         case 'workflow/changeField':
@@ -338,7 +338,7 @@ export function weekReducer(state={},action){
                 
             }
             new_state.splice(old_parent_index,1,old_parent);
-            insertedAt(action.payload.id,"nodeweek",new_parent.id,new_index);
+            insertedAt(action.payload.child_id,"node",new_parent.id,"week",new_index,"nodeweek");
             return new_state;
         case 'node/deleteSelf':
             for(var i=0;i<state.length;i++){
@@ -357,7 +357,7 @@ export function weekReducer(state={},action){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]}
                     var new_nodeweek_set = state[i].nodeweek_set.slice();
-                    new_nodeweek_set.splice(new_nodeweek_set.indexOf(action.payload.siblingID)+1,0,action.payload.new_through.id);
+                    new_nodeweek_set.splice(action.payload.new_through.rank,0,action.payload.new_through.id);
                     new_state[i].nodeweek_set = new_nodeweek_set;
                     return new_state;
                 }
@@ -647,7 +647,7 @@ export function outcomeReducer(state={},action){
                 new_state.splice(new_parent_index,1,new_parent);
             }
             new_state.splice(old_parent_index,1,old_parent);
-            insertedAt(action.payload.id,"outcomeoutcome",new_parent.id,new_index);
+            insertedAt(action.payload.child_id,"outcome",new_parent.id,"outcome",new_index,"outcomeoutcome");
             return new_state;
         case 'outcome/deleteSelf':
             var new_state=state.slice();
@@ -670,8 +670,7 @@ export function outcomeReducer(state={},action){
                     new_state[i] = {...state[i]}
                     var new_child_outcome_links = state[i].child_outcome_links.slice();
                     let new_index;
-                    if(action.payload.siblingID===undefined)new_index=new_child_outcome_links.length;
-                    else new_index= new_child_outcome_links.indexOf(action.payload.siblingID)+1;
+                    new_index= action.payload.new_through.rank;
                     new_child_outcome_links.splice(new_index,0,action.payload.new_through.id);
                     new_state[i].child_outcome_links = new_child_outcome_links;
                     new_state.push(action.payload.new_model);
@@ -736,7 +735,7 @@ export function outcomeNodeReducer(state={},action){
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
-                    unlinkOutcomeFromNode(state[i].node,state[i].outcome)
+                    updateOutcomenodeDegree(state[i].node,state[i].outcome,0)
                     new_state.splice(i,1);
                     return new_state;
                 }

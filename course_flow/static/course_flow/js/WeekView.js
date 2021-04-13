@@ -96,8 +96,8 @@ export class WeekViewUnconnected extends ComponentJSON{
         
     }
     
-    sortableMovedFunction(id,new_position,type,new_parent){
-        this.props.dispatch(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column))
+    sortableMovedFunction(id,new_position,type,new_parent,child_id){
+        this.props.dispatch(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column,child_id))
     }
 
     makeDroppable(){

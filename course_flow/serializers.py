@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .utils import get_model_from_str
+from django.contrib.contenttypes.models import ContentType
 from .models import (
     Project,
     Workflow,
@@ -16,11 +17,11 @@ from .models import (
     NodeLink,
     Outcome,
     OutcomeNode,
-    OutcomeWorkflow,
     OutcomeOutcome,
     OutcomeProject,
     NodeCompletionStatus,
     User,
+    Favourite
 )
 
 import bleach
@@ -93,7 +94,12 @@ class TimeRequiredSerializerMixin:
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["email", "username"]
+        fields = [
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+        ]
 
 
 class OutcomeSerializer(
@@ -433,25 +439,6 @@ class ColumnWorkflowSerializer(serializers.ModelSerializer):
         return instance
 
 
-class OutcomeWorkflowSerializer(serializers.ModelSerializer):
-
-    outcome = OutcomeSerializer()
-
-    class Meta:
-        model = OutcomeWorkflow
-        fields = ["workflow", "outcome", "added_on", "rank", "id"]
-
-    def update(self, instance, validated_data):
-        instance.rank = validated_data.get("rank", instance.rank)
-        outcome_data = self.initial_data.pop("outcome")
-        outcome_serializer = OutcomeSerializer(
-            Outcome.objects.get(id=outcome_data["id"]), outcome_data
-        )
-        outcome_serializer.is_valid()
-        outcome_serializer.save()
-        instance.save()
-        return instance
-
 
 class DisciplineSerializer(serializers.ModelSerializer):
     class Meta:
@@ -466,7 +453,6 @@ class WorkflowSerializer(
 ):
 
     weekworkflow_set = serializers.SerializerMethodField()
-    outcomeworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
@@ -481,9 +467,6 @@ class WorkflowSerializer(
         links = instance.columnworkflow_set.all().order_by("rank")
         return ColumnWorkflowSerializer(links, many=True).data
 
-    def get_outcomeworkflow_set(self, instance):
-        links = instance.outcomeworkflow_set.all().order_by("rank")
-        return OutcomeWorkflowSerializer(links, many=True).data
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -513,7 +496,6 @@ class ProgramSerializer(WorkflowSerializer):
             "hash",
             "columnworkflow_set",
             "weekworkflow_set",
-            "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
             "outcomes_type",
@@ -542,7 +524,6 @@ class CourseSerializer(WorkflowSerializer):
             "last_modified",
             "hash",
             "weekworkflow_set",
-            "outcomeworkflow_set",
             "columnworkflow_set",
             "is_original",
             "parent_workflow",
@@ -571,7 +552,6 @@ class ActivitySerializer(WorkflowSerializer):
             "hash",
             "columnworkflow_set",
             "weekworkflow_set",
-            "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
             "outcomes_type",
@@ -1026,7 +1006,6 @@ class WorkflowSerializerShallow(
             "hash",
             "columnworkflow_set",
             "weekworkflow_set",
-            "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
             "outcomes_type",
@@ -1040,7 +1019,6 @@ class WorkflowSerializerShallow(
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     weekworkflow_set = serializers.SerializerMethodField()
-    outcomeworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
     strategy_icon = serializers.SerializerMethodField()
 
@@ -1067,9 +1045,6 @@ class WorkflowSerializerShallow(
         links = instance.columnworkflow_set.all().order_by("rank")
         return list(map(linkIDMap, links))
 
-    def get_outcomeworkflow_set(self, instance):
-        links = instance.outcomeworkflow_set.all().order_by("rank")
-        return list(map(linkIDMap, links))
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -1106,7 +1081,6 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "hash",
             "columnworkflow_set",
             "weekworkflow_set",
-            "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
             "outcomes_type",
@@ -1146,7 +1120,6 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "last_modified",
             "hash",
             "weekworkflow_set",
-            "outcomeworkflow_set",
             "columnworkflow_set",
             "is_original",
             "parent_workflow",
@@ -1188,7 +1161,6 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "hash",
             "columnworkflow_set",
             "weekworkflow_set",
-            "outcomeworkflow_set",
             "is_original",
             "parent_workflow",
             "outcomes_sort",
@@ -1236,7 +1208,7 @@ class InfoBoxSerializer(serializers.Serializer,TitleSerializerMixin,DescriptionS
     
     def get_favourite(self,instance):
         user = self.context.get("user")
-        if get_model_from_str(instance.type+"favourite").objects.filter(user=user,**{instance.type:instance}):
+        if Favourite.objects.filter(user=user,content_type=ContentType.objects.get_for_model(instance),object_id=instance.id):
             return True
         else:
             return False
@@ -1270,4 +1242,5 @@ serializer_lookups_shallow = {
     "program": ProgramSerializerShallow,
     "project": ProjectSerializerShallow,
     "outcome": OutcomeSerializerShallow,
+    "outcomeoutcome": OutcomeOutcomeSerializerShallow,
 }
