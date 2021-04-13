@@ -365,10 +365,12 @@ export function getDisciplines(callBackFunction=()=>console.log("success")){
 
 //set the permission for a user
 export function setUserPermission(user_id,objectID,objectType,permission_type,callBackFunction=()=>console.log("success")){
+    console.log(user_id);
     try{
         $.post(post_paths.set_permission,{
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType),
+            permission_user:JSON.stringify(user_id),
             permission_type:JSON.stringify(permission_type)
         }).done(function(data){
             callBackFunction(data);

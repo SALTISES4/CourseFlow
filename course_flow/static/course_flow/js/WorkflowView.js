@@ -6,7 +6,7 @@ import ColumnWorkflowView from "./ColumnWorkflowView.js";
 import WeekWorkflowView from "./WeekWorkflowView.js";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView.js";
 import {NodeBarWeekWorkflow} from "./WeekWorkflowView.js";
-import {WorkflowForMenu,renderMessageBox} from "./MenuComponents.js";
+import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents.js";
 import * as Constants from "./Constants.js";
 import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers.js";
 import {OutcomeBar} from "./OutcomeTopView.js";
@@ -38,7 +38,7 @@ class WorkflowView extends ComponentJSON{
         );
         var selector = this;
         let share;
-        if(!read_only)share = <button onClick={renderMessageBox.bind(this,data,"share_menu")}>Sharing</button>
+        if(!read_only)share = <button onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}>Sharing</button>
         
         
         

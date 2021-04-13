@@ -373,13 +373,63 @@ button:hover{
 }
 
 .ui-autocomplete{
+    position:absolute;
     z-index:100;
+    background:white;
+    border:1px solid lightgrey;
+    list-style:none;
+    padding:0;
+    margin:0;
 }
 
+.ui-menu .ui-menu-item{
+    margin:0;
+    cursor:pointer;
+}
 
+.ui-menu .ui-menu-item-wrapper{
+    position:relative;
+    padding:3px 1em 3px .4em;
+}
 
+.user-list{
+    list-style:none;
+    padding:0;
+    margin:0;
+    width:200px;
+}
 
+.user-list .user-label{
+    padding:2px;
+    border:1px solid #1976bc;
+    position:relative;
+}
 
+.user-list .user-label .workflow-delete-button{
+    display:block;
+    position:absolute;
+    top:2px;
+    right:2px;
+}
+
+.user-panel{
+    padding-right:20px;
+    vertical-align:top;
+    border:none;
+    display:inline-block;
+}
+
+.user-add button{
+    padding:0;
+    margin:0;
+    border:0;
+    vertical-align:middle;
+}
+
+.user-label .window-close-button{
+    top:2px;
+    right:2px;
+}
 
 
 .action-icon{

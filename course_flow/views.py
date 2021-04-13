@@ -60,7 +60,8 @@ from .decorators import (
     user_can_view,
     user_can_delete,
     user_can_view_or_none,
-    user_is_teacher
+    user_is_teacher,
+    test_object_permission
 )
 from django.urls import reverse
 from django.views.generic.edit import CreateView
@@ -93,15 +94,32 @@ from .utils import (
 )
 
 
-class OwnerOrPublishedMixin(UserPassesTestMixin):
+
+class UserCanViewMixin(UserPassesTestMixin):
     def test_func(self):
         return Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
-            self.get_object().author == self.request.user
-            or self.get_object().published
+            test_object_permission(self.get_object(),self.request.user,ObjectPermission.PERMISSION_VIEW)
+        )
+    
+class UserCanEditMixin(UserPassesTestMixin):
+    def test_func(self):
+        return Group.objects.get(
+            name=settings.TEACHER_GROUP
+        ) in self.request.user.groups.all() and (
+            test_object_permission(self.get_object(),self.request.user,ObjectPermission.PERMISSION_EDIT)
         )
 
+class UserCanEditProjectMixin(UserPassesTestMixin):
+    def test_func(self):
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
+        return Group.objects.get(
+            name=settings.TEACHER_GROUP
+        ) in self.request.user.groups.all() and (
+            test_object_permission(project,self.request.user,ObjectPermission.PERMISSION_EDIT)
+        )  
+    
 
 def registration_view(request):
 
@@ -501,7 +519,7 @@ class ProjectCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         )
 
 
-class ProjectDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
+class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Project
     fields = ["title", "description", "published"]
     template_name = "course_flow/project_detail.html"
@@ -525,13 +543,10 @@ class ProjectDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
         return context
 
 
-class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class ProjectUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
     model = Project
     fields = ["title", "description", "published"]
     template_name = "course_flow/project_update.html"
-
-    def test_func(self):
-        return self.get_object().author == self.request.user
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
@@ -552,7 +567,7 @@ class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
 
-class OutcomeCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class OutcomeCreateView(LoginRequiredMixin, UserCanEditProjectMixin, CreateView):
     model = Outcome
     fields = ["title"]
     template_name = "course_flow/outcome_create.html"
@@ -599,7 +614,7 @@ def get_outcome_context_data(outcome, context, user):
     )
     return context
 
-class OutcomeDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
+class OutcomeDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Outcome
     fields = ["title", "description", "published"]
     template_name = "course_flow/outcome_detail.html"
@@ -611,13 +626,11 @@ class OutcomeDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
         return context
 
 
-class OutcomeUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class OutcomeUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
     model = Outcome
     fields = ["title", "description", "published"]
     template_name = "course_flow/outcome_update.html"
 
-    def test_func(self):
-        return self.get_object().author == self.request.user
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
@@ -708,27 +721,26 @@ def get_workflow_context_data(workflow, context, user):
         data_flat["outcomeproject"] = OutcomeProjectSerializerShallow(
             outcomeprojects, many=True
         ).data
-        if workflow.author == user:
-            if workflow.type == "course":
-                data_flat["strategy"] = WorkflowSerializerShallow(
-                    Course.objects.filter(author=user, is_strategy=True),
-                    many=True,
-                ).data
-                data_flat["saltise_strategy"] = WorkflowSerializerShallow(
-                    Course.objects.filter(from_saltise=True, is_strategy=True),
-                    many=True,
-                ).data
-            elif workflow.type == "activity":
-                data_flat["strategy"] = WorkflowSerializerShallow(
-                    Activity.objects.filter(author=user, is_strategy=True),
-                    many=True,
-                ).data
-                data_flat["saltise_strategy"] = WorkflowSerializerShallow(
-                    Activity.objects.filter(
-                        from_saltise=True, is_strategy=True
-                    ),
-                    many=True,
-                ).data
+        if workflow.type == "course":
+            data_flat["strategy"] = WorkflowSerializerShallow(
+                Course.objects.filter(author=user, is_strategy=True),
+                many=True,
+            ).data
+            data_flat["saltise_strategy"] = WorkflowSerializerShallow(
+                Course.objects.filter(from_saltise=True, is_strategy=True),
+                many=True,
+            ).data
+        elif workflow.type == "activity":
+            data_flat["strategy"] = WorkflowSerializerShallow(
+                Activity.objects.filter(author=user, is_strategy=True),
+                many=True,
+            ).data
+            data_flat["saltise_strategy"] = WorkflowSerializerShallow(
+                Activity.objects.filter(
+                    from_saltise=True, is_strategy=True
+                ),
+                many=True,
+            ).data
 
     data_package["data_flat"] = data_flat
     data_package["is_strategy"] = workflow.is_strategy
@@ -747,7 +759,7 @@ def get_workflow_context_data(workflow, context, user):
     return context
 
 
-class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class WorkflowUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
     model = Workflow
     fields = ["title", "description"]
     template_name = "course_flow/workflow_update.html"
@@ -759,8 +771,6 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         workflow = super().get_object()
         return Workflow.objects.get_subclass(pk=workflow.pk)
 
-    def test_func(self):
-        return self.get_object().author == self.request.user
 
     def get_success_url(self):
         return reverse(
@@ -779,7 +789,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class WorkflowDetailView(
-    LoginRequiredMixin, OwnerOrPublishedMixin, DetailView
+    LoginRequiredMixin, UserCanViewMixin, DetailView
 ):
     model = Workflow
     fields = ["title", "description"]
@@ -809,19 +819,19 @@ class WorkflowDetailView(
 
 
 class WorkflowViewSet(
-    LoginRequiredMixin, OwnerOrPublishedMixin, viewsets.ReadOnlyModelViewSet
+    LoginRequiredMixin, UserCanViewMixin, viewsets.ReadOnlyModelViewSet
 ):
     serializer_class = WorkflowSerializerFinder
     renderer_classes = [JSONRenderer]
     queryset = Workflow.objects.select_subclasses()
 
 
-class ProgramDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
+class ProgramDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Program
     template_name = "course_flow/program_detail.html"
 
 
-class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class ProgramCreateView(LoginRequiredMixin, UserCanEditProjectMixin, CreateView):
     model = Program
     fields = ["title", "description"]
     template_name = "course_flow/program_create.html"
@@ -848,7 +858,7 @@ class ProgramCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         )
 
 
-class CourseDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
+class CourseDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Course
     template_name = "course_flow/course_detail.html"
 
@@ -863,7 +873,7 @@ class CourseDetailView(LoginRequiredMixin, OwnerOrPublishedMixin, DetailView):
 #    template_name = "course_flow/course_detail_student.html"
 
 
-class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class CourseCreateView(LoginRequiredMixin, UserCanEditProjectMixin, CreateView):
     model = Course
     fields = ["title", "description"]
     template_name = "course_flow/course_create.html"
@@ -915,7 +925,7 @@ class CourseStrategyCreateView(
 
 
 class ActivityDetailView(
-    LoginRequiredMixin, OwnerOrPublishedMixin, DetailView
+    LoginRequiredMixin, UserCanViewMixin, DetailView
 ):
     model = Activity
     template_name = "course_flow/activity_detail.html"
@@ -931,7 +941,7 @@ class ActivityDetailView(
 #    template_name = "course_flow/activity_detail_student.html"
 
 
-class ActivityCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class ActivityCreateView(LoginRequiredMixin, UserCanEditProjectMixin, CreateView):
     model = Activity
     fields = ["title", "description"]
     template_name = "course_flow/activity_create.html"

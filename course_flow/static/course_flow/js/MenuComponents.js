@@ -655,7 +655,7 @@ export class ExploreMenu extends React.Component{
     }
 }
 
-export function renderMessageBox(data,type,updateFunction=closeMessageBox){
+export function renderMessageBox(data,type,updateFunction){
     reactDom.render(
         <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
         $("#popup-container")[0]

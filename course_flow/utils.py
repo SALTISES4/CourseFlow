@@ -48,4 +48,3 @@ def get_descendant_outcomes(outcome):
         outcomes = outcomes | get_descendant_outcomes(child)
     return outcomes
         
-        
