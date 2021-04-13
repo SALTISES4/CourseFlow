@@ -19,6 +19,7 @@
 /node_modules
 /sent_emails
 /static
+/server_static
 /*venv*/
 locust*
 logs
