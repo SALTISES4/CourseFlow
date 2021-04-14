@@ -21,7 +21,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = "course_flow"
 
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
@@ -171,6 +170,11 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication"
     ]
 }
+
+# For LTI tests
+PASSWORD_KEY = "course_flow"
+LTI_CLIENT_KEY = "course_flow"
+LTI_CLIENT_SECRET = "course_flow"
 
 """
 LOGGING = {

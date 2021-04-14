@@ -53,3 +53,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 12. For testing before commits, run:
 
         (dev_venv) python3 course_flow.py test
+
+    or:
+
+        (dev_venv) pytest

@@ -4,6 +4,8 @@
 #
 #    pip-compile --no-emit-index-url requirements/requirements.in
 #
+-e file:./#egg=course_flow
+    # via -r requirements/requirements.in
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
     # via -r requirements/requirements.in
 -e git+https://github.com/SALTISES4/UserFeedback@8b25b254ac30a823a500edf7ed60ed1abee32cc6#egg=user_feedback
@@ -32,6 +34,8 @@ django-appconf==1.0.4
     # via django-compressor
 django-compressor==2.4
     # via -r requirements/requirements.in
+django-csp==3.7
+    # via -r requirements/requirements.in
 django-filter==2.4.0
     # via -r requirements/requirements.in
 django-model-utils==4.0.0
@@ -40,6 +44,7 @@ django==2.2.20
     # via
     #   -r requirements/requirements.in
     #   django-appconf
+    #   django-csp
     #   django-filter
     #   django-lti-tool-provider
     #   django-model-utils

@@ -2,6 +2,7 @@ pre-commit
 asgiref==3.2.3
 bleach
 Django<3.0.0
+django-csp
 django-filter
 djangorestframework>=3.10.3
 Markdown==3.1.1
@@ -13,6 +14,7 @@ zipp==0.6.0
 django-compressor>=2.3
 django-model-utils
 
+-e file:./#egg=course_flow
 
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
 -e git+https://github.com/SALTISES4/UserFeedback@8b25b254ac30a823a500edf7ed60ed1abee32cc6#egg=user_feedback
