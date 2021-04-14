@@ -79,13 +79,13 @@ def is_owner(model):
                     try:
                         id = json.loads(request.POST.get("json"))["id"]
                     except (TypeError, KeyError):
-                        return HttpResponseBadRequest
+                        return HttpResponseBadRequest()
             else:
                 id = request.POST.get("objectID")
                 model = request.POST.get("objectType")
 
             if not id or not model:
-                return HttpResponseBadRequest
+                return HttpResponseBadRequest()
 
             try:
                 object_type = get_model_from_str(model)
@@ -94,7 +94,7 @@ def is_owner(model):
                 else:
                     object = object_type.objects.get(id=id)
             except ObjectDoesNotExist:
-                return HttpResponseNotFound
+                return HttpResponseNotFound()
 
             # Check ownership
             if request.user == object.author:
