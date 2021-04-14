@@ -48,7 +48,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
 11. Create default strategies.
 
-        (dev_venv) python3 cousre_flow.py create_instances course_flow/initial_data/template_strategies.json <username you registered under>
+        (dev_venv) python3 course_flow.py create_instances course_flow/initial_data/template_strategies.json <username you registered under>
 
 12. For testing before commits, run:
 

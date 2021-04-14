@@ -1,5 +1,4 @@
 from django.conf.urls import url
-from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from rest_framework import routers
 
@@ -14,15 +13,6 @@ app_name = "course_flow"
 
 def flow_patterns():
     return [
-        url(r"^register/$", views.registration_view, name="registration"),
-        url(
-            r"^login/$",
-            auth_views.LoginView.as_view(
-                template_name="course_flow/registration/login.html"
-            ),
-            name="login",
-        ),
-        url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
         url(r"home/$", views.home_view, name="home"),
         url(r"import/$", views.import_view, name="import"),
         url(
@@ -43,9 +33,11 @@ def flow_patterns():
         url(
             r"^workflow/updatevalue/$", views.update_value, name="update-value"
         ),
-        #        url(
-        #            r"^project/project-toggle-published/$", views.project_toggle_published, name="project-toggle-published"
-        #        ),
+        # url(
+        #     r"^project/project-toggle-published/$",
+        #     views.project_toggle_published,
+        #     name="project-toggle-published",
+        # ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
         url(
             r"^workflow/unlink-outcome-from-node/$",
