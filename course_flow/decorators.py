@@ -73,7 +73,7 @@ def is_owner(model):
         def _wrapped_view(request, model=model, *args, **kwargs):
             if model:
                 if model[-2:] == "Pk":
-                    id = request.POST.get(model)
+                    id = json.loads(request.POST.get(model, json.dumps("")))
                     model = model[:-2]
                 else:
                     try:
@@ -81,8 +81,10 @@ def is_owner(model):
                     except (TypeError, KeyError):
                         return HttpResponseBadRequest()
             else:
-                id = request.POST.get("objectID")
-                model = request.POST.get("objectType")
+                id = json.loads(request.POST.get("objectID", json.dumps("")))
+                model = json.loads(
+                    request.POST.get("objectType", json.dumps(""))
+                )
 
             if not id or not model:
                 return HttpResponseBadRequest()

@@ -14,12 +14,11 @@ owned_throughmodels = [
     "project",
     "outcome",
     "outcomeoutcome",
-    "outcome"
+    "outcome",
 ]
 
 
 def get_model_from_str(model_str: str):
-
     return ContentType.objects.get(model=model_str).model_class()
 
 
@@ -36,16 +35,15 @@ def get_parent_model(model_str: str):
 
 
 def get_project_outcomes(project):
-    #this should probably be replaced with a single recursive raw sql call... but not by me
+    # this should probably be replaced with a single recursive raw sql call... but not by me
     outcomes = project.outcomes.all()
     for outcome in outcomes:
         outcomes = outcomes | get_descendant_outcomes(outcome)
     return outcomes
-    
+
+
 def get_descendant_outcomes(outcome):
     outcomes = outcome.children.all()
     for child in outcomes:
         outcomes = outcomes | get_descendant_outcomes(child)
     return outcomes
-        
-        
