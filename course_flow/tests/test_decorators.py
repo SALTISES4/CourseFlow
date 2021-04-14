@@ -1,10 +1,12 @@
 import json
 
 import pytest
-from course_flow import decorators
 from django.contrib.auth.models import AnonymousUser
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest, HttpResponseNotAllowed, JsonResponse
+from django.urls import reverse
+
+from course_flow import decorators
 
 
 def default_view(request):
@@ -89,3 +91,21 @@ def test_is_owner__False(node):
     assert isinstance(response, JsonResponse)
     assert response.status_code == 200
     assert json.loads(response.content)["status"] == "OK"
+
+
+def test_get_possible_linked_workflows(client, node, settings):
+    """ Check that ajax_login_required and requre_POST are applied. """
+
+    # Not logged in -> 401
+    response = client.post(
+        reverse("course_flow:get-possible-linked-workflows"),
+        {"nodePk": str(node.pk)},
+    )
+    assert response.status_code == 401
+    assert json.loads(response.content)["login_url"] == settings.LOGIN_URL
+
+    # Not POST -> 405
+    response = client.get(
+        reverse("course_flow:get-possible-linked-workflows"),
+    )
+    assert response.status_code == 405

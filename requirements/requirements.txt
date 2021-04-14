@@ -62,6 +62,8 @@ idna==2.10
     # via requests
 iniconfig==1.1.1
     # via pytest
+isort==5.8.0
+    # via -r requirements/requirements.in
 jsonfield==3.1.0
     # via django-lti-tool-provider
 lti==0.9.5

@@ -1,88 +1,79 @@
+import json
+import math
+
+from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import Group
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import ProtectedError
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.views.decorators.http import require_POST
+from django.views.generic import DetailView, UpdateView
+from django.views.generic.edit import CreateView
+from rest_framework import viewsets
+from rest_framework.renderers import JSONRenderer
+
+from .decorators import (
+    ajax_login_required,
+    is_none_or_owner_or_published,
+    is_owner,
+    is_owner_or_none,
+    is_owner_or_published,
+    is_parent_owner,
+    is_strategy_owner_or_published,
+    is_throughmodel_parent_owner,
+    new_parent_authorship,
+)
+from .forms import RegistrationForm
 from .models import (
-    User,
-    Project,
-    Course,
+    Activity,
     Column,
     ColumnWorkflow,
-    Workflow,
-    Activity,
-    Week,
+    Course,
     Node,
     NodeLink,
     NodeWeek,
-    WeekWorkflow,
-    Program,
-    NodeCompletionStatus,
-    WorkflowProject,
-    OutcomeProject,
     Outcome,
-    OutcomeOutcome,
     OutcomeNode,
+    OutcomeOutcome,
+    OutcomeProject,
+    Program,
+    Project,
+    User,
+    Week,
+    WeekWorkflow,
+    Workflow,
+    WorkflowProject,
 )
 from .serializers import (
-    serializer_lookups,
-    serializer_lookups_shallow,
-    ActivitySerializer,
-    CourseSerializer,
-    WeekSerializer,
-    NodeSerializer,
-    ProgramSerializer,
-    WorkflowSerializer,
-    WorkflowSerializerShallow,
-    CourseSerializerShallow,
     ActivitySerializerShallow,
-    ProgramSerializerShallow,
-    WeekWorkflowSerializerShallow,
-    WeekSerializerShallow,
-    NodeWeekSerializerShallow,
+    ColumnSerializerShallow,
+    ColumnWorkflowSerializerShallow,
+    CourseSerializerShallow,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
-    ColumnWorkflowSerializerShallow,
-    ColumnSerializerShallow,
-    WorkflowSerializerFinder,
-    ProjectSerializerShallow,
-    OutcomeSerializerShallow,
-    OutcomeOutcomeSerializerShallow,
+    NodeWeekSerializerShallow,
     OutcomeNodeSerializerShallow,
+    OutcomeOutcomeSerializerShallow,
     OutcomeProjectSerializerShallow,
+    OutcomeSerializerShallow,
+    ProgramSerializerShallow,
+    ProjectSerializerShallow,
+    WeekSerializerShallow,
+    WeekWorkflowSerializerShallow,
+    WorkflowSerializerFinder,
+    WorkflowSerializerShallow,
     bleach_allowed_tags,
     bleach_sanitizer,
+    serializer_lookups_shallow,
 )
-from .decorators import (
-    ajax_login_required,
-    is_owner,
-    is_parent_owner,
-    is_throughmodel_parent_owner,
-    new_parent_authorship,
-    is_owner_or_none,
-    is_owner_or_published,
-    is_strategy_owner_or_published,
-    is_none_or_owner_or_published
-)
-from django.urls import reverse
-from django.views.generic.edit import CreateView
-from django.views.generic import DetailView, UpdateView
-from rest_framework import viewsets
-from rest_framework.renderers import JSONRenderer
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.db.models import Count
-import json
-from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
-from .forms import RegistrationForm
-from django.shortcuts import render, redirect
-from django.db.models import ProtectedError
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
-import math
 from .utils import (
     get_model_from_str,
     get_parent_model_str,
-    get_parent_model,
     get_project_outcomes,
 )
 
@@ -1080,8 +1071,6 @@ Contextual information methods
 """
 
 
-@require_POST
-@ajax_login_required
 @is_owner("nodePk")
 def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
@@ -1258,7 +1247,8 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
             rank=WeekWorkflow.objects.get(week=week, workflow=workflow).rank,
         )
 
-    # Handle all the nodelinks. These need to be handled here because they potentially span weeks
+    # Handle all the nodelinks. These need to be handled here because they
+    # potentially span weeks
     for week in new_workflow.weeks.all():
         for node in week.nodes.all():
             for node_link in NodeLink.objects.filter(
@@ -1422,7 +1412,9 @@ def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     )
 
 
-# post-duplication cleanup. Setting the linked workflows and outcomes for nodes. This must be done after the fact because the workflows and outcomes have not necessarily been duplicated by the time the nodes are
+# post-duplication cleanup. Setting the linked workflows and outcomes for nodes.
+# This must be done after the fact because the workflows and outcomes have not
+# necessarily been duplicated by the time the nodes are
 def cleanup_workflow_post_duplication(workflow, project, outcomes_set):
     for node in Node.objects.filter(week__workflow=workflow):
         if node.linked_workflow is not None:
@@ -1538,7 +1530,9 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
             # first, check compatibility between types (activity/course)
             if strategy.type != workflow.type:
                 raise ValidationError("Mismatch between types")
-            # create a copy of the strategy (the first/only week in the strategy workflow). Note that all the nodes, at this point, are pointed at the columns from the OLD workflow
+            # create a copy of the strategy (the first/only week in the strategy
+            # workflow). Note that all the nodes, at this point, are pointed at
+            # the columns from the OLD workflow
             if position < 0 or position > workflow.weeks.count():
                 position = workflow.weeks.count()
             old_week = strategy.weeks.first()
@@ -1550,7 +1544,9 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
             new_through = WeekWorkflow.objects.create(
                 week=week, workflow=workflow, rank=position
             )
-            # now, check for missing columns. We try to create a one to one relationship between the columns, and then add in any that are still missing
+            # now, check for missing columns. We try to create a one to one
+            # relationship between the columns, and then add in any that are
+            # still missing
             old_columns = []
             for node in week.nodes.all():
                 if node.column not in old_columns:
@@ -1579,7 +1575,8 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
                     columns_added.append(added_column)
                     continue
                 if columns_type.count() > 1:
-                    # if we have multiple columns of that type, check to see if any have this one as their parent
+                    # if we have multiple columns of that type, check to see if
+                    # any have this one as their parent
                     columns_parent = columns_type.filter(parent_column=column)
                     if columns_parent.count() == 1:
                         new_columns.append(columns_parent.first())
@@ -1598,7 +1595,8 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
                 column_index = old_columns.index(node.column)
                 node.column = new_columns[column_index]
                 node.save()
-            # we have to copy all the nodelinks, since by default they are not duplicated when a week is duplicated
+            # we have to copy all the nodelinks, since by default they are not
+            # duplicated when a week is duplicated
             for node_link in NodeLink.objects.filter(
                 source_node__in=old_week.nodes.all(),
                 target_node__in=old_week.nodes.all(),
@@ -1898,6 +1896,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
 Reorder methods
 """
 
+
 # Insert a model via its throughmodel
 @require_POST
 @ajax_login_required
@@ -1953,11 +1952,13 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 
             """
             This takes advantage of signals, but the js is not compatible at the
-            moment as the throughmodel id is not being updated, after calling this function.
+            moment as the throughmodel id is not being updated, after calling this
+            function.
 
             child = model.node
             model.delete()
-            new_through_object = NodeWeek(week=new_parent, node=child, rank=new_position)
+            new_through_object =
+                NodeWeek(week=new_parent, node=child, rank=new_position)
             setattr(new_through_object, parentType, new_parent)
             new_through_object.save()
 
@@ -2032,6 +2033,7 @@ def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
 """
 Update Methods
 """
+
 
 # Updates an object's information using its serializer
 @require_POST
@@ -2155,7 +2157,8 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("weekPk"))
         is_strategy = json.loads(request.POST.get("is_strategy"))
         week = Week.objects.get(id=object_id)
-        # This check is to prevent people from spamming the button, which would potentially create a bunch of superfluous strategies
+        # This check is to prevent people from spamming the button, which would
+        # potentially create a bunch of superfluous strategies
         if week.is_strategy != is_strategy:
             raise ValidationError("Request has already been processed")
         if week.is_strategy:
@@ -2504,7 +2507,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 dashed=nodelink["style"] or False,
             )
 
-    except:
+    except Exception:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
