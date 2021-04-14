@@ -38,7 +38,7 @@ class WorkflowView extends ComponentJSON{
         );
         var selector = this;
         let share;
-        if(!read_only)share = <button onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}>Sharing</button>
+        if(!read_only)share = <button class="share-menu-button" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}>Sharing</button>
         
         
         

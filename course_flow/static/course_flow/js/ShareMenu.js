@@ -21,7 +21,7 @@ export class ShareMenu extends React.Component{
             <UserLabel user={user} removeClick={this.setUserPermission.bind(this,0)}/>
         );
         if(viewers.length==0)viewers=<li>None</li>;
-        console.log(this.props.actionFunction);
+        console.log(this.props);
         return(
             <div class="message-wrap">
                 <h3>Sharing Options:</h3>

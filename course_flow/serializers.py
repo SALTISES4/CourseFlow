@@ -877,7 +877,8 @@ class ProjectSerializerShallow(
             "created_on",
             "last_modified",
             "workflowproject_set",
-            "disciplines"
+            "disciplines",
+            "type",
         ]
         
 
@@ -927,6 +928,7 @@ class OutcomeSerializerShallow(
             "child_outcome_links",
             "is_dropped",
             "depth",
+            "type",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())

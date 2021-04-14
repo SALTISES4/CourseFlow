@@ -302,6 +302,8 @@ class ProjectMenuUnconnected extends React.Component{
             )
             i++;
         }
+        let share;
+        if(!read_only)share = <button class="share-menu-button" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}>Sharing</button>
         
         return(
             <div class="project-menu">
@@ -317,6 +319,7 @@ class ProjectMenuUnconnected extends React.Component{
                             (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||"None")
                         }
                     </p>
+                    {share}
                     {this.state.published &&
                         <p>{"This project has been published and is visibile to all"}</p>
                     }

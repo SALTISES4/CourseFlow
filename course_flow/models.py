@@ -1024,9 +1024,37 @@ def set_permissions_to_project_objects(sender,instance, created, **kwargs):
     if created:
         if instance.content_type==ContentType.objects.get_for_model(Project):
             for workflow in instance.content_object.workflows.all():
-                ObjectPermission.objects.create(user=instance.user,content_object=workflow.get_subclass())
+                #If user already has edit permissions and we are adding view, do not override
+                if (instance.permission_type==ObjectPermission.PERMISSION_VIEW and 
+                    ObjectPermission.objects.filter(
+                        user=instance.user,
+                        content_type=ContentType.objects.get_for_model(workflow.get_subclass()),
+                        object_id=workflow.id,
+                        permission_type=ObjectPermission.PERMISSION_EDIT
+                    ).count()>0):
+                        pass
+                else: 
+                    ObjectPermission.objects.create(
+                        user=instance.user,
+                        content_object=workflow.get_subclass(),
+                        permission_type=instance.permission_type
+                    )
             for outcome in instance.content_object.outcomes.all():
-                ObjectPermission.objects.create(user=instance.user,content_object=outcome)
+                #If user already has edit permissions and we are adding view, do not override
+                if (instance.permission_type==ObjectPermission.PERMISSION_VIEW and 
+                    ObjectPermission.objects.filter(
+                        user=instance.user,
+                        content_type=ContentType.objects.get_for_model(outcome),
+                        object_id=workflow.id,
+                        permission_type=ObjectPermission.PERMISSION_EDIT
+                    ).count()>0):
+                        pass
+                else:
+                    ObjectPermission.objects.create(
+                        user=instance.user,
+                        content_object=outcome,
+                        permission_type=instance.permission_type
+                    )
     
 @receiver(pre_delete, sender=ObjectPermission)
 def remove_permissions_to_project_objects(sender, instance, **kwargs):
@@ -1155,8 +1183,9 @@ def set_publication_workflow(sender, instance, created, **kwargs):
         workflow.published = instance.project.published
         workflow.disciplines.set(instance.project.disciplines.all())
         if instance.project.author != workflow.get_subclass().author:
-            p = ObjectPermission.objects.create(content_object = workflow.get_subclass(),user=instance.project.author,permission_type=ObjectPermission.PERMISSION_EDIT)
-            p.save()
+            ObjectPermission.objects.create(content_object = workflow.get_subclass(),user=instance.project.author,permission_type=ObjectPermission.PERMISSION_EDIT)
+        for op in ObjectPermission.objects.filter(content_type==ContentType.objects.get_for_model(instance.project),object_id=instance.project.id):
+            ObjectPermission.objects.create(content_object = workflow.get_subclass(),user=op.user,permission_type=op.permission_type)
         workflow.save()
 
 
@@ -1168,8 +1197,9 @@ def set_publication_outcome(sender, instance, created, **kwargs):
         outcome.published = instance.project.published
         outcome.disciplines.set(instance.project.disciplines.all())
         if instance.project.author != outcome.author:
-            p = ObjectPermission.objects.create(content_object = outcome,user=instance.project.author,permission_type=ObjectPermission.PERMISSION_EDIT)
-            p.save()
+            ObjectPermission.objects.create(content_object = outcome,user=instance.project.author,permission_type=ObjectPermission.PERMISSION_EDIT)
+        for op in ObjectPermission.objects.filter(content_type==ContentType.objects.get_for_model(instance.project),object_id=instance.project.id):
+            ObjectPermission.objects.create(content_object = outcome,user=op.user,permission_type=op.permission_type)
         outcome.save()
 
 

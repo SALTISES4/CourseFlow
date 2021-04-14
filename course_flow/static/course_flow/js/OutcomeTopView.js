@@ -18,12 +18,15 @@ class OutcomeTopView extends ComponentJSON{
     render(){
         let data = this.props.data;
         var selector = this;
+        let share;
+        if(!read_only)share = <button class="share-menu-button" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}>Sharing</button>
         
         return(
             <div id="outcome-wrapper" class="workflow-wrapper">
                 <div class = "workflow-container">
                     <div class="workflow-details">
                         <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,selector)}}/>
+                        {share}
                         <OutcomeView objectID={data.id} renderer={this.props.renderer}/>
                     </div>
                 </div>
