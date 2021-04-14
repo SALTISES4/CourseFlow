@@ -1,12 +1,11 @@
 from typing import List
 
 import pytest
+from course_flow.lti import generate_password
+from course_flow.models import Course, Node
 from django.conf import settings
 from django.contrib.auth.models import User
 from lti import ToolConsumer
-
-from course_flow.lti import generate_password
-from course_flow.models import Course
 
 
 @pytest.fixture
@@ -54,3 +53,8 @@ def courses(users):
         )
         for i in range(10)
     ]
+
+
+@pytest.fixture
+def node(user) -> Node:
+    return Node.objects.create(author=user)
