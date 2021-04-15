@@ -19,7 +19,7 @@ def test_is_owner__known_model(node, settings, users):
     # Logged in and owner -> return view
     request = HttpRequest()
     request.method = "POST"
-    request.POST = {"nodePk": str(node.pk)}
+    request.POST = {"nodePk": json.dumps(node.pk)}
     request.user = node.author
     response = wrapped_view(request)
 
@@ -58,7 +58,7 @@ def test_is_owner__known_model(node, settings, users):
 
     # Logged in and missing key -> return 400
     request.method = "POST"
-    request.POST = {"missing": "key"}
+    request.POST = {"missing": json.dumps("key")}
     request.user = node.author
     response = wrapped_view(request)
 
@@ -71,7 +71,7 @@ def test_is_owner__unknown_model(node):
     # Logged in -> return 404
     request = HttpRequest()
     request.method = "POST"
-    request.POST = {"unknownModelPk": "1"}
+    request.POST = {"unknownModelPk": json.dumps("1")}
     request.user = node.author
     response = wrapped_view(request)
 
@@ -84,7 +84,10 @@ def test_is_owner__False(node):
     # Logged in -> return view
     request = HttpRequest()
     request.method = "POST"
-    request.POST = {"objectID": str(node.pk), "objectType": "node"}
+    request.POST = {
+        "objectID": json.dumps(node.pk),
+        "objectType": json.dumps("node"),
+    }
     request.user = node.author
     response = wrapped_view(request)
 

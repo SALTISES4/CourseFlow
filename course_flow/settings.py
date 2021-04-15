@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "course_flow"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -79,6 +79,10 @@ TEMPLATES = [
     }
 ]
 
+CSP_INCLUDE_NONCE_IN = [
+    "script-src",
+    "style-src",
+]
 CSP_DEFAULT_SRC = ["'self'", "*.mydalite.org"]
 CSP_SCRIPT_SRC = [
     "'self'",
@@ -99,9 +103,9 @@ CSP_FONT_SRC = [
     "*.mydalite.org",
 ]
 
-LOGIN_URL = "course_flow:login"
-
+LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "course_flow:home"
+LOGOUT_REDIRECT_URL = "login"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
