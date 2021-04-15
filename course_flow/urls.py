@@ -1,8 +1,7 @@
 from django.conf.urls import url
-from django.urls import include, path
 from rest_framework import routers
 
-from . import lti, views
+from . import views
 
 router = routers.SimpleRouter()
 router.register(r"workflow/read", views.WorkflowViewSet)
@@ -11,7 +10,7 @@ router.register(r"workflow/read", views.WorkflowViewSet)
 app_name = "course_flow"
 
 
-def flow_patterns():
+def course_flow_patterns():
     return [
         url(r"home/$", views.home_view, name="home"),
         url(r"import/$", views.import_view, name="import"),
@@ -196,15 +195,4 @@ def flow_patterns():
     ] + router.urls
 
 
-def lti_patterns():
-    return [path("course-list/", lti.get_course_list, name="course-list")]
-
-
-urlpatterns = sum(
-    [
-        [path("lti/", include("django_lti_tool_provider.urls"))],
-        flow_patterns(),
-        lti_patterns(),
-    ],
-    [],
-)
+urlpatterns = course_flow_patterns()
