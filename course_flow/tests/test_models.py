@@ -1907,7 +1907,7 @@ class ModelViewTest(TestCase):
             reverse("course_flow:set-linked-workflow"),
             {"nodePk": node.id, "workflowPk": activity.id},
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
     # Test for linking a workflow. Nothing should change except for the node
     def test_linked_wf_same_project(self):
@@ -1970,7 +1970,7 @@ class ModelViewTest(TestCase):
             reverse("course_flow:set-linked-workflow"),
             {"nodePk": node.id, "workflowPk": activity.id},
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(Node.objects.get(id=node.id).linked_workflow, None)
         project2.published = True
         activity.published = True
@@ -2017,7 +2017,7 @@ class ModelViewTest(TestCase):
                 "position": 1,
             },
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
     def test_add_strategy_same_columns(self):
         user = login(self)
@@ -2284,12 +2284,12 @@ class ModelViewTest(TestCase):
                 "newPosition": 1,
             },
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         response = self.client.post(
             reverse("course_flow:change-column"),
             {"nodePk": to_move.node.id, "columnID": columnworkflow1.id},
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         # Try to move from their stuff to your own
         week2 = make_object("week", user)
         node2 = week2.nodes.create(author=user)
@@ -2339,7 +2339,7 @@ class ModelViewTest(TestCase):
                 "newPosition": 1,
             },
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         # Finally, check to make sure these work when you own both
         week2b = make_object("week", user)
         column2b = make_object("column", user)
@@ -2409,7 +2409,7 @@ class ModelViewTest(TestCase):
                 .decode("utf-8"),
             },
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         response = self.client.post(
             reverse("course_flow:insert-sibling"),
             {
@@ -2420,7 +2420,7 @@ class ModelViewTest(TestCase):
                 .decode("utf-8"),
             },
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
     def test_new_nodelink_permissions_no_login(self):
         author = get_author()
@@ -2469,7 +2469,7 @@ class ModelViewTest(TestCase):
                 "targetPort": 0,
             },
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
     def test_add_remove_outcome_to_node_permissions_no_authorship(self):
         myself = login(self)
@@ -2480,25 +2480,25 @@ class ModelViewTest(TestCase):
             reverse("course_flow:add-outcome-to-node"),
             {"nodePk": node.id, "outcomePk": outcome.id},
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         outcomenode = OutcomeNode.objects.create(node=node, outcome=outcome)
         response = self.client.post(
             reverse("course_flow:unlink-outcome-from-node"),
             {"nodePk": node.id, "outcomePk": outcome.id},
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         myoutcome = make_object("outcome", myself)
         mynode = make_object("node", myself)
         response = self.client.post(
             reverse("course_flow:add-outcome-to-node"),
             {"nodePk": mynode.id, "outcomePk": outcome.id},
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         response = self.client.post(
             reverse("course_flow:add-outcome-to-node"),
             {"nodePk": node.id, "outcomePk": myoutcome.id},
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         response = self.client.post(
             reverse("course_flow:add-outcome-to-node"),
             {"nodePk": mynode.id, "outcomePk": myoutcome.id},
@@ -2556,7 +2556,7 @@ class ModelViewTest(TestCase):
                 "parentID": week.id,
             },
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
             {
@@ -2565,7 +2565,7 @@ class ModelViewTest(TestCase):
                 "parentID": activity.id,
             },
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
             {
@@ -2574,7 +2574,7 @@ class ModelViewTest(TestCase):
                 "parentID": activity.id,
             },
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
     def test_duplicate_self(self):
         author = login(self)
@@ -2696,7 +2696,7 @@ class ModelViewTest(TestCase):
             reverse("course_flow:duplicate-workflow"),
             {"workflowPk": activity.id, "projectPk": project.id},
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
 
     def test_duplicate_workflow(self):
         author = login(self)
@@ -2788,7 +2788,7 @@ class ModelViewTest(TestCase):
                 reverse("course_flow:duplicate-workflow"),
                 {"workflowPk": workflow.id, "projectPk": my_project.id},
             )
-            self.assertEqual(response.status_code, 401)
+            self.assertEqual(response.status_code, 403)
             workflow.published = True
             workflow.save()
             response = self.client.post(
@@ -2805,7 +2805,7 @@ class ModelViewTest(TestCase):
                 reverse("course_flow:duplicate-outcome"),
                 {"outcomePk": base_outcome.id, "projectPk": my_project.id},
             )
-            self.assertEqual(response.status_code, 401)
+            self.assertEqual(response.status_code, 403)
             base_outcome.published = True
             base_outcome.save()
             response = self.client.post(
@@ -2864,7 +2864,7 @@ class ModelViewTest(TestCase):
         response = self.client.post(
             reverse("course_flow:duplicate-project"), {"projectPk": project.id}
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         project.published = True
         project.save()
         response = self.client.post(

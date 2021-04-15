@@ -75,11 +75,6 @@ def is_owner(model):
                 if model[-2:] == "Pk":
                     id = request.POST.get(model)
                     model = model[:-2]
-                else:
-                    try:
-                        id = json.loads(request.POST.get("json"))["id"]
-                    except (TypeError, KeyError):
-                        return HttpResponseBadRequest
             else:
                 id = request.POST.get("objectID")
                 model = request.POST.get("objectType")
@@ -115,8 +110,6 @@ def is_owner_or_none(model):
                 if model[-2:] == "Pk":
                     id = json.loads(request.POST.get(model))
                     model = model[:-2]
-                else:
-                    id = json.loads(request.POST.get("json"))["id"]
             else:
                 id = json.loads(request.POST.get("objectID"))
                 model = json.loads(request.POST.get("objectType"))
@@ -132,7 +125,7 @@ def is_owner_or_none(model):
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 403
                 return response
-            if User.objects.get(id=request.user.id) == object.author:
+            if request.user == object.author:
                 return fct(request, *args, **kwargs)
             else:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
@@ -152,8 +145,6 @@ def is_owner_or_published(model):
                 if model[-2:] == "Pk":
                     id = json.loads(request.POST.get(model))
                     model = model[:-2]
-                else:
-                    id = json.loads(request.POST.get("json"))["id"]
             else:
                 id = json.loads(request.POST.get("objectID"))
                 model = json.loads(request.POST.get("objectType"))
@@ -168,7 +159,7 @@ def is_owner_or_published(model):
                 response.status_code = 403
                 return response
             if (
-                User.objects.get(id=request.user.id) == object.author
+                request.user == object.author
                 or object.published
             ):
                 return fct(request, *args, **kwargs)
@@ -190,8 +181,6 @@ def is_none_or_owner_or_published(model):
                 if model[-2:] == "Pk":
                     id = json.loads(request.POST.get(model))
                     model = model[:-2]
-                else:
-                    id = json.loads(request.POST.get("json"))["id"]
             else:
                 id = json.loads(request.POST.get("objectID"))
                 model = json.loads(request.POST.get("objectType"))
@@ -208,7 +197,7 @@ def is_none_or_owner_or_published(model):
                 response.status_code = 403
                 return response
             if (
-                User.objects.get(id=request.user.id) == object.author
+                request.user == object.author
                 or object.published
             ):
                 return fct(request, *args, **kwargs)
@@ -229,7 +218,7 @@ def is_strategy_owner_or_published(model):
             id = json.loads(request.POST.get(model))
             object = Workflow.objects.get_subclass(id=id)
             if (
-                User.objects.get(id=request.user.id) == object.author
+                request.user == object.author
                 or object.published
             ):
                 return fct(request, *args, **kwargs)
@@ -262,7 +251,7 @@ def is_parent_owner(view_func):
             response = JsonResponse({"login_url": settings.LOGIN_URL})
             response.status_code = 403
             return response
-        if User.objects.get(id=request.user.id) == parent.author:
+        if request.user == parent.author:
             return view_func(request, *args, **kwargs)
         else:
             response = JsonResponse({"login_url": settings.LOGIN_URL})
@@ -289,7 +278,7 @@ def is_throughmodel_parent_owner(view_func):
             response = JsonResponse({"login_url": settings.LOGIN_URL})
             response.status_code = 403
             return response
-        if User.objects.get(id=request.user.id) == parent.author:
+        if request.user == parent.author:
             return view_func(request, *args, **kwargs)
         else:
             response = JsonResponse({"login_url": settings.LOGIN_URL})
@@ -319,7 +308,7 @@ def new_parent_authorship(view_func):
             else:
                 parent_author = parent.author
 
-            if User.objects.get(id=request.user.id) != parent_author:
+            if request.user != parent_author:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 403
                 return response
@@ -340,7 +329,7 @@ def new_parent_authorship(view_func):
             else:
                 parent_author = parent.author
 
-            if User.objects.get(id=request.user.id) != parent_author:
+            if request.user != parent_author:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 403
                 return response
