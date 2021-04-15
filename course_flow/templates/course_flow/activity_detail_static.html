@@ -16,37 +16,9 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
-{% block scripts %}
+{% block scripts %} {{ block.super }}
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
-    const feedback = () => {
-      return user_feedback.h(user_feedback.App, {
-        acceptText: "{% trans 'Send' %}",
-        cancelText: "{% trans 'Cancel' %}",
-        charCountText: "{% trans 'characters remaining' %}",
-        description: "{% trans 'Leave feedback or get help' %}",
-        feedbackTypes: [
-          { value: 1, text: "Bug report" },
-          { value: 2, text: "Feature request" },
-          { value: 3, text: "General feedback" }
-        ],
-        menuFeedbackText: "{% trans 'Give Feedback' %}",
-        menuHelpText: "{% trans 'Tutorials and Forums' %}",
-        menuHelpUrl: "#",
-        placeholder: "{% trans 'Let us know what is on your mind...' %}",
-        snackbarError:
-          "{% trans 'An error occurred.  Please try again later.' %}",
-        snackbarSuccess: "{% trans 'Thanks for your feedback!' %}",
-        text: "",
-        title: "{% trans 'How can we improve your experience?' %}",
-        url: "{% url 'user_feedback:post' %}"
-      });
-    };
-    user_feedback.render(
-      feedback(),
-      document.getElementById("user-feedback-app")
-    );
-
     let activityJson = null;
 
     const svgParent = d3.select("svg").style("margin-top", "100px");
