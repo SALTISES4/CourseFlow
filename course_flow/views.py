@@ -1138,8 +1138,6 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
     serializer_class = DisciplineSerializer
 
 
-@require_POST
-@ajax_login_required
 @user_can_view("workflowPk")
 def get_workflow_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
@@ -1151,8 +1149,6 @@ def get_workflow_data(request: HttpRequest) -> HttpResponse:
         {"action": "posted", "data_package": data_package}
     )
 
-@require_POST
-@ajax_login_required
 @user_can_view("projectPk")
 def get_project_data(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
@@ -1169,8 +1165,6 @@ def get_project_data(request: HttpRequest) -> HttpResponse:
         {"action": "posted", "data_package": data_package,"project_data":project_data}
     )
 
-@require_POST
-@ajax_login_required
 @user_can_view("outcomePk")
 def get_outcome_data(request: HttpRequest) -> HttpResponse:
     outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
@@ -1182,8 +1176,6 @@ def get_outcome_data(request: HttpRequest) -> HttpResponse:
         {"action": "posted", "data_package": data_package}
     )
 
-@require_POST
-@ajax_login_required
 @user_can_edit("nodePk")
 def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
@@ -1350,8 +1342,6 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
     return new_workflow
 
 
-@require_POST
-@ajax_login_required
 @user_can_view("workflowPk")
 @user_can_edit("projectPk")
 def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
@@ -1375,8 +1365,6 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     )
 
 
-@require_POST
-@ajax_login_required
 @user_can_view("workflowPk")
 def duplicate_strategy_ajax(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
@@ -1415,8 +1403,6 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
     return new_outcome
 
 
-@require_POST
-@ajax_login_required
 @user_can_view("outcomePk")
 @user_can_edit("projectPk")
 def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
@@ -1475,8 +1461,6 @@ def duplicate_project(project: Project, author: User) -> Project:
     return new_project
 
 
-@require_POST
-@ajax_login_required
 @user_can_view("projectPk")
 def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
@@ -1518,9 +1502,6 @@ def cleanup_workflow_post_duplication(workflow, project, outcomes_set):
 Creation methods
 """
 
-
-@require_POST
-@ajax_login_required
 @user_can_edit("workflowPk")
 def new_column(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
@@ -1539,8 +1520,6 @@ def new_column(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted", "objectID": column.id})
 
 
-@require_POST
-@ajax_login_required
 @user_can_edit("weekPk")
 @user_can_view_or_none("columnPk")
 def new_node(request: HttpRequest) -> HttpResponse:
@@ -1592,8 +1571,6 @@ def new_node(request: HttpRequest) -> HttpResponse:
     )
 
 
-@require_POST
-@ajax_login_required
 @user_can_edit("workflowPk")
 @user_can_view(False)
 def add_strategy(request: HttpRequest) -> HttpResponse:
@@ -1720,8 +1697,6 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
 
-@require_POST
-@ajax_login_required
 @user_can_edit("nodePk")
 @user_can_edit(False)
 def new_node_link(request: HttpRequest) -> HttpResponse:
@@ -1750,8 +1725,6 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
 
 
 # Add a new child to a model
-@require_POST
-@ajax_login_required
 @user_can_edit(False)
 def insert_child(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -1788,8 +1761,6 @@ def insert_child(request: HttpRequest) -> HttpResponse:
 
 
 # Add a new sibling to a through model
-@require_POST
-@ajax_login_required
 @user_can_view(False)
 @user_can_edit(False,get_parent=True)
 def insert_sibling(request: HttpRequest) -> HttpResponse:
@@ -1852,8 +1823,6 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
 
 
 # Soft-duplicate the item
-@require_POST
-@ajax_login_required
 @user_can_view(False)
 @user_can_edit(False,get_parent=True)
 def duplicate_self(request: HttpRequest) -> HttpResponse:
@@ -1946,8 +1915,6 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     return JsonResponse(response)
 
 #favourite/unfavourite a project or workflow or outcome for a user
-@require_POST
-@ajax_login_required
 @user_can_view(False)
 def toggle_favourite(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -1970,8 +1937,6 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
     return JsonResponse(response)
 
 #change permissions on an object for a user
-@require_POST
-@ajax_login_required
 @user_can_edit(False)
 def set_permission(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -1996,8 +1961,6 @@ def set_permission(request: HttpRequest) -> HttpResponse:
     
     return JsonResponse(response)
 
-@require_POST
-@ajax_login_required
 @user_can_edit(False)
 def get_users_for_object(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -2018,9 +1981,7 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
         "editors":UserSerializer(editors,many=True).data,
     })
 
-@require_POST
-@ajax_login_required
-#@user_is_teacher(False)
+@user_is_teacher(False)
 def get_user_list(request: HttpRequest) -> HttpResponse:
     name_filter = json.loads(request.POST.get("filter"))
     print(name_filter)
@@ -2039,10 +2000,8 @@ Reorder methods
 """
 
 # Insert a model via its throughmodel
-@require_POST
-@ajax_login_required
-@user_can_edit(False)
-@user_can_edit(False,get_parent=True)
+#@user_can_edit(False)
+#@user_can_edit(False,get_parent=True)
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -2067,8 +2026,6 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 
 
 # Change a node's column
-@require_POST
-@ajax_login_required
 @user_can_edit("nodePk")
 @user_can_edit("columnPk")
 def change_column(request: HttpRequest) -> HttpResponse:
@@ -2086,8 +2043,6 @@ def change_column(request: HttpRequest) -> HttpResponse:
 
 
 # Add an outcome to a node
-@require_POST
-@ajax_login_required
 @user_can_edit("nodePk")
 @user_can_view("outcomePk")
 def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
@@ -2115,8 +2070,6 @@ Update Methods
 """
 
 # Updates an object's information using its serializer
-@require_POST
-@ajax_login_required
 @user_can_edit(False)
 def update_value(request: HttpRequest) -> HttpResponse:
     try:
@@ -2138,8 +2091,6 @@ def update_value(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-@require_POST
-@ajax_login_required
 @user_can_edit("nodePk")
 @user_can_view("outcomePk")
 def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
@@ -2188,8 +2139,6 @@ def set_linked_workflow(node: Node, workflow):
 
 
 # Sets the linked workflow for a node, adding it to the project if different.
-@require_POST
-@ajax_login_required
 @user_can_edit("nodePk")
 @user_can_view_or_none("workflowPk")
 def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
@@ -2228,8 +2177,6 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
 
 
 # Creates strategy from week or turns strategy into week
-@require_POST
-@ajax_login_required
 @user_can_edit("weekPk")
 def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
     try:
@@ -2283,8 +2230,6 @@ Delete methods
 """
 
 
-@require_POST
-@ajax_login_required
 @user_can_delete(False)
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))

@@ -1568,7 +1568,8 @@ class ModelViewTest(TestCase):
             reverse("course_flow:add-strategy"),
             {
                 "workflowPk": workflow.id,
-                "strategyPk": strategy.id,
+                "objectID": strategy.id,
+                "objectType": JSONRenderer().render("workflow").decode("utf-8"),
                 "position": 1,
             },
         )
@@ -1578,7 +1579,8 @@ class ModelViewTest(TestCase):
             reverse("course_flow:add-strategy"),
             {
                 "workflowPk": workflow.id,
-                "strategyPk": strategy.id,
+                "objectID": strategy.id,
+                "objectType": JSONRenderer().render("workflow").decode("utf-8"),
                 "position": 1,
             },
         )
@@ -1595,7 +1597,8 @@ class ModelViewTest(TestCase):
             reverse("course_flow:add-strategy"),
             {
                 "workflowPk": workflow.id,
-                "strategyPk": strategy.id,
+                "objectID": strategy.id,
+                "objectType": JSONRenderer().render("workflow").decode("utf-8"),
                 "position": 1,
             },
         )
@@ -1629,7 +1632,8 @@ class ModelViewTest(TestCase):
             reverse("course_flow:add-strategy"),
             {
                 "workflowPk": workflow.id,
-                "strategyPk": strategy.id,
+                "objectID": strategy.id,
+                "objectType": JSONRenderer().render("workflow").decode("utf-8"),
                 "position": 0,
             },
         )
@@ -1697,10 +1701,12 @@ class ModelViewTest(TestCase):
             reverse("course_flow:add-strategy"),
             {
                 "workflowPk": workflow.id,
-                "strategyPk": strategy.id,
+                "objectID": strategy.id,
+                "objectType": JSONRenderer().render("workflow").decode("utf-8"),
                 "position": 1,
             },
         )
+        self.assertEqual(response.status_code, 200)
         week = workflow.weeks.get(is_strategy=True)
         response = self.client.post(
             reverse("course_flow:toggle-strategy"),

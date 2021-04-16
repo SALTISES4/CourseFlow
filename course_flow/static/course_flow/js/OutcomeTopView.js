@@ -5,7 +5,7 @@ import {ComponentJSON} from "./ComponentJSON.js";
 import OutcomeView from "./OutcomeView.js";
 import {OutcomeBarOutcomeView} from "./OutcomeView.js";
 import {getOutcomeByID} from "./FindState.js";
-import {WorkflowForMenu} from './MenuComponents.js'
+import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents.js'
 
 //Basic component representing the outcome view
 class OutcomeTopView extends ComponentJSON{

@@ -1184,7 +1184,7 @@ def set_publication_workflow(sender, instance, created, **kwargs):
         workflow.disciplines.set(instance.project.disciplines.all())
         if instance.project.author != workflow.get_subclass().author:
             ObjectPermission.objects.create(content_object = workflow.get_subclass(),user=instance.project.author,permission_type=ObjectPermission.PERMISSION_EDIT)
-        for op in ObjectPermission.objects.filter(content_type==ContentType.objects.get_for_model(instance.project),object_id=instance.project.id):
+        for op in ObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(instance.project),object_id=instance.project.id):
             ObjectPermission.objects.create(content_object = workflow.get_subclass(),user=op.user,permission_type=op.permission_type)
         workflow.save()
 
@@ -1198,7 +1198,7 @@ def set_publication_outcome(sender, instance, created, **kwargs):
         outcome.disciplines.set(instance.project.disciplines.all())
         if instance.project.author != outcome.author:
             ObjectPermission.objects.create(content_object = outcome,user=instance.project.author,permission_type=ObjectPermission.PERMISSION_EDIT)
-        for op in ObjectPermission.objects.filter(content_type==ContentType.objects.get_for_model(instance.project),object_id=instance.project.id):
+        for op in ObjectPermission.objects.filter(content_type=ContentType.objects.get_for_model(instance.project),object_id=instance.project.id):
             ObjectPermission.objects.create(content_object = outcome,user=op.user,permission_type=op.permission_type)
         outcome.save()
 

@@ -4,6 +4,7 @@ from django.conf import settings
 import json
 from .models import User, NodeWeek, Week, Outcome, OutcomeOutcome, Workflow
 from django.contrib.contenttypes.models import ContentType
+from django.views.decorators.http import require_POST
 from .utils import *
 from functools import reduce
 from course_flow.models import (
@@ -65,14 +66,14 @@ program_level_owned_models = ["assessment", "program", "course", "program"]
 
 def is_owner(model):
     def wrapped_view(fct):
+        @require_POST
+        @ajax_login_required
         @wraps(fct)
         def _wrapped_view(request, model=model, *args, **kwargs):
             if model:
                 if model[-2:] == "Pk":
                     id = json.loads(request.POST.get(model))
                     model = model[:-2]
-                else:
-                    id = json.loads(request.POST.get("json"))["id"]
             else:
                 id = json.loads(request.POST.get("objectID"))
                 model = json.loads(request.POST.get("objectType"))
@@ -168,6 +169,8 @@ def get_permission_objects(model,request,**kwargs):
 
 def user_can_edit(model,**outer_kwargs):
     def wrapped_view(fct):
+        @require_POST
+        @ajax_login_required
         @wraps(fct)
         def _wrapped_view(request, model=model, outer_kwargs=outer_kwargs,*args, **kwargs):
             try:
@@ -190,6 +193,8 @@ def user_can_edit(model,**outer_kwargs):
 
 def user_can_view(model,**outer_kwargs):
     def wrapped_view(fct):
+        @require_POST
+        @ajax_login_required
         @wraps(fct)
         def _wrapped_view(request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs):
             try:
@@ -211,6 +216,8 @@ def user_can_view(model,**outer_kwargs):
 
 def user_can_view_or_none(model,**outer_kwargs):
     def wrapped_view(fct):
+        @require_POST
+        @ajax_login_required
         @wraps(fct)
         def _wrapped_view(request, model=model, outer_kwargs=outer_kwargs,*args, **kwargs):
             try:
@@ -236,6 +243,8 @@ delete_exceptions=["workflow","activity","course","program","outcome","project"]
 
 def user_can_delete(model,**outer_kwargs):
     def wrapped_view(fct):
+        @require_POST
+        @ajax_login_required
         @wraps(fct)
         def _wrapped_view(request, model=model, outer_kwargs=outer_kwargs,*args, **kwargs):
             try:
@@ -263,6 +272,8 @@ def user_can_delete(model,**outer_kwargs):
 
 def user_is_teacher(model):
     def wrapped_view(fct):
+        @require_POST
+        @ajax_login_required
         @wraps(fct)
         def _wrapped_view(request,*args, **kwargs):
             try:
