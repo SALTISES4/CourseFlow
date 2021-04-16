@@ -11,6 +11,7 @@
 .pytest_cache/
 .tern-port
 .venv
+*venv*/
 /CACHE
 /course_flow/local_settings.py
 /htmlcov

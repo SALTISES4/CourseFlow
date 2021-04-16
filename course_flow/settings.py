@@ -97,10 +97,12 @@ CSP_STYLE_SRC = [
     "*.mydalite.org",
     "ajax.googleapis.com",
     "cdn.quilljs.com",
+    "fonts.googleapis.com",
 ]
 CSP_FONT_SRC = [
     "'self'",
     "*.mydalite.org",
+    "fonts.gstatic.com",
 ]
 
 LOGIN_URL = "login"
