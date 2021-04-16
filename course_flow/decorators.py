@@ -4,6 +4,7 @@ from django.conf import settings
 import json
 from .models import User, NodeWeek, Week, Outcome, OutcomeOutcome, Workflow
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Group
 from django.views.decorators.http import require_POST
 from .utils import *
 from functools import reduce
@@ -277,7 +278,7 @@ def user_is_teacher(model):
         @wraps(fct)
         def _wrapped_view(request,*args, **kwargs):
             try:
-                if Group.objects.get(name=settings.TEACHER_GROUP) in self.request.user.groups.all():
+                if Group.objects.get(name=settings.TEACHER_GROUP) in request.user.groups.all():
                     return fct(request,*args,**kwargs)
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 401

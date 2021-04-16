@@ -19,14 +19,17 @@ class OutcomeTopView extends ComponentJSON{
         let data = this.props.data;
         var selector = this;
         let share;
-        if(!read_only)share = <button class="share-menu-button" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}>Sharing</button>
+        if(!read_only)share = <div class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
         
         return(
             <div id="outcome-wrapper" class="workflow-wrapper">
                 <div class = "workflow-container">
                     <div class="workflow-details">
                         <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,selector)}}/>
-                        {share}
+                        {reactDom.createPortal(
+                        share,
+                        $("#floatbar")[0]
+                        )}
                         <OutcomeView objectID={data.id} renderer={this.props.renderer}/>
                     </div>
                 </div>

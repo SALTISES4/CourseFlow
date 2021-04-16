@@ -38,7 +38,7 @@ class WorkflowView extends ComponentJSON{
         );
         var selector = this;
         let share;
-        if(!read_only)share = <button class="share-menu-button" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}>Sharing</button>
+        if(!read_only)share = <div class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
         
         
         
@@ -48,7 +48,10 @@ class WorkflowView extends ComponentJSON{
                     <div class="workflow-details">
                         <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{selection_manager.changeSelection(evt,selector)}}/>
                         {this.addEditable(data)}
-                        {share}
+                        {reactDom.createPortal(
+                        share,
+                        $("#floatbar")[0]
+                        )}
                         {reactDom.createPortal(
                         <div class="topdropwrapper" title="Show/Hide Legend">
                             <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>

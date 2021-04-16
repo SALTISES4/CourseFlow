@@ -303,7 +303,7 @@ class ProjectMenuUnconnected extends React.Component{
             i++;
         }
         let share;
-        if(!read_only)share = <button class="share-menu-button" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}>Sharing</button>
+        if(!read_only)share = <div class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
         
         return(
             <div class="project-menu">
@@ -319,7 +319,10 @@ class ProjectMenuUnconnected extends React.Component{
                             (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||"None")
                         }
                     </p>
-                    {share}
+                    {reactDom.createPortal(
+                    share,
+                    $("#floatbar")[0]
+                    )}
                     {this.state.published &&
                         <p>{"This project has been published and is visibile to all"}</p>
                     }
