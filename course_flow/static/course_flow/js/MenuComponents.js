@@ -303,7 +303,7 @@ class ProjectMenuUnconnected extends React.Component{
             i++;
         }
         let share;
-        if(!read_only)share = <div class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
+        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
         
         return(
             <div class="project-menu">

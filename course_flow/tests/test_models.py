@@ -821,6 +821,40 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         selenium.find_element_by_id("submit").click()
         self.assertEqual(len(selenium.find_elements_by_css_selector(".page-button")),15)
         self.assertEqual(len(selenium.find_elements_by_css_selector(".workflow-title")),10)
+        
+    def test_share_edit_view(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        user2 = get_author()
+        project = Project.objects.create(author=self.user)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:project-update", args=[project.pk])
+        )
+        selenium.find_element_by_id("share-button").click()
+        inputs = selenium.find_elements_by_css_selector(".user-add input")
+        adds = selenium.find_elements_by_css_selector(".user-add button")
+        inputs[0].send_keys("testuser2")
+        time.sleep(2);
+        selenium.find_elements_by_css_selector(".ui-autocomplete li")[0].click()
+        adds[0].click()
+        time.sleep(1)
+        self.assertEqual(ObjectPermission.objects.filter(user=user2,permission_type=ObjectPermission.PERMISSION_EDIT,content_type=ContentType.objects.get_for_model(project),object_id=project.id).count(),1)
+        self.assertEqual(ObjectPermission.objects.filter(user=user2,permission_type=ObjectPermission.PERMISSION_VIEW,content_type=ContentType.objects.get_for_model(project),object_id=project.id).count(),0)
+        inputs[1].send_keys("testuser2")
+        time.sleep(2);
+        selenium.find_elements_by_css_selector(".ui-autocomplete li")[1].click()
+        adds[1].click()
+        time.sleep(1)
+        self.assertEqual(ObjectPermission.objects.filter(user=user2,permission_type=ObjectPermission.PERMISSION_EDIT,content_type=ContentType.objects.get_for_model(project),object_id=project.id).count(),0)
+        self.assertEqual(ObjectPermission.objects.filter(user=user2,permission_type=ObjectPermission.PERMISSION_VIEW,content_type=ContentType.objects.get_for_model(project),object_id=project.id).count(),1)
+        selenium.find_element_by_css_selector(".user-label .window-close-button").click()
+        alert = wait.until(expected_conditions.alert_is_present())
+        selenium.switch_to.alert.accept()
+        time.sleep(2)
+        self.assertEqual(ObjectPermission.objects.filter(user=user2,content_type=ContentType.objects.get_for_model(project),object_id=project.id).count(),0)
+        selenium.find_element_by_css_selector(".message-wrap > .window-close-button").click()
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".message-wrap")),0)
 
 
 class ModelViewTest(TestCase):

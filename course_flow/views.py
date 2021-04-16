@@ -1954,7 +1954,12 @@ def set_permission(request: HttpRequest) -> HttpResponse:
             content_type=ContentType.objects.get_for_model(item),
             object_id=object_id
         ).delete()
-        p = ObjectPermission.objects.create(user=user,content_object=item,permission_type=permission_type)
+        if permission_type!=ObjectPermission.PERMISSION_NONE:
+            ObjectPermission.objects.create(
+                user=user,
+                content_object=item,
+                permission_type=permission_type
+            )
         response["action"]="posted"
     except:
         response["action"]="error"
@@ -2000,8 +2005,8 @@ Reorder methods
 """
 
 # Insert a model via its throughmodel
-#@user_can_edit(False)
-#@user_can_edit(False,get_parent=True)
+@user_can_edit(False)
+@user_can_edit(False,get_parent=True)
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
