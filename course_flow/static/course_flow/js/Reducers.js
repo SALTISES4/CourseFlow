@@ -430,6 +430,14 @@ export function nodeweekReducer(state={},action){
                 }
             }
             return state;
+        case 'nodeweek/movedTo':
+            new_state = state.slice();
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    new_state[i]={...state[i],week:action.payload.new_parent}
+                }
+            }
+            return new_state;
         case 'week/insertBelow':
             if(!action.payload.children_through)return state;
             new_state = state.slice();
