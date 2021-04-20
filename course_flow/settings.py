@@ -20,11 +20,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 SECRET_KEY = "course_flow"
+# For LTI tests
+PASSWORD_KEY = "course_flow"
+LTI_CLIENT_KEY = "course_flow"
+LTI_CLIENT_SECRET = "course_flow"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 CHROMEDRIVER_PATH = None
 
@@ -177,10 +181,6 @@ REST_FRAMEWORK = {
     ]
 }
 
-# For LTI tests
-PASSWORD_KEY = "course_flow"
-LTI_CLIENT_KEY = "course_flow"
-LTI_CLIENT_SECRET = "course_flow"
 
 """
 LOGGING = {
