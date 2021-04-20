@@ -14,7 +14,7 @@ deps =
   pytest-django
   selenium
   git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
-commands = python -m pytest {posargs}
+commands = python -m pytest {posargs} --ignore-glob=*functional*
 """
 
 [tool.black]
