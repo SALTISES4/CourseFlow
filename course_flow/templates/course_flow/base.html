@@ -90,14 +90,6 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'user_feedback/js/app.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
       src="{% static 'course_flow/js/scripts-wf-redux.min.js' %}"
       defer="true"
       charset="utf-8"
@@ -107,6 +99,14 @@
     {% compress js %}
     <script
       src="{% static 'course_flow/js/scripts-outcomes.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script
+      src="{% static 'user_feedback/js/app.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
@@ -122,13 +122,6 @@
     {% compress css %}
     <link
       rel="stylesheet"
-      href="{% static 'user_feedback/css/styles.min.css' %}"
-    />
-    {% endcompress %}
-    <!--  -->
-    {% compress css %}
-    <link
-      rel="stylesheet"
       href="{% static 'course_flow/css/workflow_styles.css' %}"
     />
     {% endcompress %}
@@ -137,6 +130,13 @@
     <link
       rel="stylesheet"
       href="{% static 'course_flow/css/base_style.css' %}"
+    />
+    {% endcompress %}
+    <!--  -->
+    {% compress css %}
+    <link
+      rel="stylesheet"
+      href="{% static 'user_feedback/css/styles.min.css' %}"
     />
     {% endcompress %}
     <style nonce="{{ request.csp_nonce }}">

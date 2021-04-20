@@ -219,18 +219,3 @@ LOGGING = {
     },
 }
 """
-try:
-    from .local_settings import *  # noqa F403
-
-    try:
-        INSTALLED_APPS += LOCAL_APPS  # noqa F405
-    except NameError:
-        pass
-except ImportError:
-    import warnings
-
-    warnings.warn(
-        "File local_settings.py not found. You probably want to add it -- "
-        "see README.md."
-    )
-    pass
