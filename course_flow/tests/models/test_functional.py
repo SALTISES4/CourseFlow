@@ -106,7 +106,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         wait = WebDriverWait(selenium, timeout=10)
         selenium.get(self.live_server_url + "/home/")
         home = selenium.current_url
-        for project_type in ["activity", "course", "project"]:
+        for project_type in ["project","activity", "course"]:
             if project_type == "project":
                 selenium.find_element_by_css_selector(
                     "a[href='#tabs-0']"
@@ -118,6 +118,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             selenium.find_elements_by_class_name(
                 "create-button-" + project_type
             )[0].click()
+            time.sleep(0.5)
             title = selenium.find_element_by_id("id_title")
             description = selenium.find_element_by_id("id_description")
             project_title = "test project title"
@@ -125,6 +126,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             title.send_keys(project_title)
             description.send_keys(project_description)
             selenium.find_element_by_id("save-button").click()
+            time.sleep(0.5)
             if project_type == "project":
                 assert (
                     project_title
@@ -157,6 +159,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             selenium.find_elements_by_class_name(
                 "create-button-" + workflow_type
             )[0].click()
+            time.sleep(0.5)
             title = selenium.find_element_by_id("id_title")
             if workflow_type != "outcome":
                 description = selenium.find_element_by_id("id_description")
@@ -166,6 +169,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             if workflow_type != "outcome":
                 description.send_keys(project_description)
             selenium.find_element_by_id("save-button").click()
+            time.sleep(0.5)
             assert (
                 project_title
                 in selenium.find_element_by_class_name("workflow-title").text
