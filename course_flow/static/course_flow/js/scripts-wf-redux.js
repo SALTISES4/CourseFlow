@@ -11,10 +11,8 @@ import {NodeBar, WorkflowView_Outcome} from"./WorkflowView.js";
 import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
 
-
-
-
-
+export {Loader} from './Constants';
+export {fail_function} from './PostFunctions';
 
 //Manages the current selection, ensuring we only have one at a time
 export class SelectionManager{
@@ -31,13 +29,12 @@ export class SelectionManager{
         });
         $(document).on("mouseup",(evt,newSelection)=>{
             if(selector.mouse_isclick){
-                selector.changeSelection(evt,newSelection);
+                selector.changeSelection(evt,null);
             }
         });
     }
     
     changeSelection(evt,newSelection){
-        console.log(evt);
         if(read_only)return;
         evt.stopPropagation();
         if(this.currentSelection)this.currentSelection.setState({selected:false});
@@ -116,4 +113,20 @@ export function renderProjectMenu(data_package,project){
     );
 }
 
+export class TinyLoader{
+    constructor(identifier){
+        this.identifier = identifier; 
+        this.loadings = 0;
+    }
+    
+    startLoad(){
+        $(this.identifier).addClass('waiting');
+        this.loadings++;
+    }
+        
+    endLoad(){
+        if(this.loadings>0)this.loadings--;
+        if(this.loadings<=0)$(this.identifier).removeClass('waiting');
+    }
+}
 

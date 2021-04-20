@@ -2,7 +2,14 @@
 export const getColumnByID = (state,id)=>{
     for(var i in state.column){
         var column = state.column[i];
-        if(column.id==id)return {data:column,sibling_count:state.workflow.columnworkflow_set.length,columnworkflows:state.workflow.columnworkflow_set};
+        if(column.id==id)return {
+            data:column,
+            sibling_count:state.workflow.columnworkflow_set.length,
+            columnworkflows:state.workflow.columnworkflow_set,
+            column_order:state.columnworkflow.sort(
+                (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
+            ).map(columnworkflow=>columnworkflow.column),
+        };
     }
 }
 export const getColumnWorkflowByID = (state,id)=>{
@@ -41,10 +48,6 @@ export const getTermByID = (state,id)=>{
                 let node = getNodeByID(state,node_week.node).data;
                 nodes_by_column[node.column].push(nodeweeks[j]);
             }
-            console.log("column_order");
-            console.log(column_order);
-            console.log("nodes_by_column");
-            console.log(nodes_by_column);
             return {
                 data:week,
                 column_order:column_order,
@@ -53,8 +56,6 @@ export const getTermByID = (state,id)=>{
             };
         }
     }
-    console.log("Did not find term");
-    console.log(state);
 }
 export const getWeekWorkflowByID = (state,id)=>{
     for(var i in state.weekworkflow){

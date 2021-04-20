@@ -165,16 +165,17 @@ export class ComponentJSON extends React.Component{
     }
     
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-    addDeleteSelf(data){
+    addDeleteSelf(data,alt_icon){
+        let icon=alt_icon || "rubbish.svg";
         return (
-            <ActionButton button_icon="delrect.svg" button_class="delete-self-button" handleClick={()=>{
+            <ActionButton button_icon={icon} button_class="delete-self-button" titletext="Delete" handleClick={()=>{
                 //Temporary confirmation; add better comfirmation dialogue later
                 if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
                     alert("You cannot delete the last "+this.objectType);
                     return;
                 }
                 if(window.confirm("Are you sure you want to delete this "+this.objectType+"?")){
-                    this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,this.props.columnworkflows));
+                    this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,this.props.column_order));
                 }
             }}/>
         );
@@ -185,12 +186,16 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         return (
-            <ActionButton button_icon="copy.svg" button_class="duplicate-self-button" handleClick={()=>duplicateSelf(data.id,this.objectType,this.props.parentID,
+            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext="Duplicate" handleClick={()=>{
+            tiny_loader.startLoad();
+            duplicateSelf(data.id,this.objectType,this.props.parentID,
                 (response_data)=>{
                     let action = insertBelowAction(response_data,type);
                     props.dispatch(action);
+                    tiny_loader.endLoad();
                 }
-            )}/>
+            );
+            }}/>
         );
     }
     //Adds a button that inserts a sibling below the item. The callback function unfortunately does NOT seem to be called after the item is added to the DOM
@@ -198,12 +203,15 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         return(
-            <ActionButton button_icon="add.svg" button_class="insert-sibling-button" handleClick={()=>insertSibling(data.id,this.objectType,this.props.parentID,
+            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext="Insert Below" handleClick={()=>{
+            tiny_loader.startLoad();
+            insertSibling(data.id,this.objectType,this.props.parentID,
                 (response_data)=>{
                     let action = insertBelowAction(response_data,type);
                     props.dispatch(action);
+                    tiny_loader.endLoad();
                 }
-            )}/>
+            )}}/>
         );
     }
     
@@ -213,12 +221,15 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         return(
-            <ActionButton button_icon="createchild.svg" button_class="insert-sibling-button" handleClick={()=>insertChild(data.id,this.objectType,
+            <ActionButton button_icon="create_new_child.svg" button_class="insert-child-button" titletext="Insert Child" handleClick={()=>{
+            tiny_loader.startLoad();
+            insertChild(data.id,this.objectType,
                 (response_data)=>{
                     let action = insertChildAction(response_data,type);
                     props.dispatch(action);
+                    tiny_loader.endLoad();
                 }
-            )}/>
+            )}}/>
         );
     }
     
@@ -230,26 +241,25 @@ export class ComponentJSON extends React.Component{
             let title_length="50";
             if(type=="outcome")title_length="500";
             var props = this.props;
-            console.log(no_delete);
             return reactDom.createPortal(
-                <div class="right-panel-inner">
+                <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
                     <h3>{"Edit "+type+":"}</h3>
                     {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Title:</h4>
-                            <input type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
+                            <input id="title-editor" type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Description:</h4>
-                            <textarea value={data.description} maxlength="500" onChange={this.inputChanged.bind(this,"description")}/>
+                            <QuillDiv text={data.description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
                         <div>
                             <h4>Context:</h4>
-                            <select value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
+                            <select  id="context-editor" value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
                                 {context_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
@@ -259,7 +269,7 @@ export class ComponentJSON extends React.Component{
                     {type=="node" && data.node_type<2 &&
                         <div>
                             <h4>Task:</h4>
-                            <select value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
+                            <select id="task-editor" value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
                                 {task_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
@@ -270,8 +280,8 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>Time:</h4>
                             <div>
-                                <input class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
-                                <select class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
+                                <input id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
+                                <select id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
                                     {time_choices.map((choice)=>
                                         <option value={choice.type}>{choice.name}</option>
                                     )}
@@ -283,7 +293,7 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>Linked Workflow:</h4>
                             <div>{data.linked_workflow_title}</div>
-                            <button onClick={()=>{getLinkedWorkflowMenu(data,(response_data)=>{
+                            <button  id="linked-workflow-editor" onClick={()=>{getLinkedWorkflowMenu(data,(response_data)=>{
                                 let action = setLinkedWorkflowAction(response_data);
                                 props.dispatch(action);
                             })}}>
@@ -303,12 +313,12 @@ export class ComponentJSON extends React.Component{
                     {type=="workflow" &&
                         <div>
                             <h4>Settings:</h4>
+                            <label for="outcomes_type">Outcomes Style</label>
                             <select name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
                                 {outcome_type_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
                             </select>
-                            <label for="outcomes_type">Outcomes Style</label>
                             {data.is_strategy && 
                                 [
                                 <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>,
@@ -320,24 +330,25 @@ export class ComponentJSON extends React.Component{
                     {type=="week" && data.week_type <2 &&
                         <div>
                             <h4>Strategy:</h4>
-                            {data.is_strategy &&
-                                <select value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
-                                    {strategy_classification_choices.map((choice)=>
-                                        <option value={choice.type}>{choice.name}</option>
-                                    )}
-                                </select>
-                            }
-                            <button onClick = {()=>{toggleStrategy(data.id,data.is_strategy,
+                            <select value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
+                                {strategy_classification_choices.map((choice)=>
+                                    <option value={choice.type}>{choice.name}</option>
+                                )}
+                            </select>
+                            <button id="toggle-strategy-editor" onClick = {()=>{
+                                let loader = new Constants.Loader('body');
+                                toggleStrategy(data.id,data.is_strategy,
                                 (response_data)=>{
                                     let action = toggleStrategyAction(response_data);
                                     props.dispatch(action);
+                                    loader.endLoad();
                                 })
                             }}>
                                 {data.is_strategy &&
                                     "Remove Strategy Status"
                                 }
                                 {!data.is_strategy &&
-                                    "Convert to New Strategy"
+                                    "Save as Template "
                                 }
                             </button>
                         </div>
@@ -353,13 +364,15 @@ export class ComponentJSON extends React.Component{
     }
     
     inputChanged(field,evt){
-        console.log(evt);
-        console.log(evt.target.value);
         this.props.dispatch(changeField(this.props.data.id,this.objectType,field,evt.target.value));
     }
 
     checkboxChanged(field,evt){
          this.props.dispatch(changeField(this.props.data.id,this.objectType,field,evt.target.checked));
+    }
+
+    valueChanged(field,new_value){
+        this.props.dispatch(changeField(this.props.data.id,this.objectType,field,new_value));
     }
 }
 
@@ -563,6 +576,7 @@ export class NodePorts extends React.Component{
     
     nodeLinkAdded(target,source_port,target_port){
         var props=this.props;
+        if(target==this.props.nodeID)return;
         newNodeLink(this.props.nodeID,target,Constants.port_keys.indexOf(source_port),Constants.port_keys.indexOf(target_port),(response_data)=>{
             let action = newNodeLinkAction(response_data);
             props.dispatch(action);
@@ -580,15 +594,59 @@ export class TitleText extends React.Component{
     render(){
         var text = this.props.text;
         if((this.props.text==null || this.props.text=="") && this.props.defaultText!=null){
-            text=(
-                <span class="default=text">{this.props.defaultText}</span>
-            );
+            text=this.props.defaultText;
         }
         return (
-            <div>{text}</div>
+            <div dangerouslySetInnerHTML={{ __html: text }}></div>
         )
     }
 
+}
+
+//Quill div
+export class QuillDiv extends React.Component{
+    constructor(props){
+        super(props);
+        this.maindiv = React.createRef();
+    }
+    
+    render(){
+        
+        return(
+            <div ref={this.maindiv} class="quill-div">
+                
+            </div>
+        );
+    }
+    
+    componentDidMount(){
+        let quill_container = this.maindiv.current;
+        let toolbarOptions = [['bold','italic','underline'],[{'script':'sub'},{'script':'super'}],[{'list':'bullet'},{'list':'ordered'}],['link']/*,['formula']*/];
+        let quill = new Quill(quill_container,{
+            theme:'snow',
+            modules:{
+                toolbar:toolbarOptions
+            },
+            placeholder:this.props.placeholder
+        });
+        if(this.props.text)quill.clipboard.dangerouslyPasteHTML(this.props.text);
+        console.log(quill);
+        quill.on('text-change',()=>{
+            this.props.textChangeFunction(quill_container.childNodes[0].innerHTML.replace(/\<p\>\<br\>\<\/p\>\<ul\>/g,"\<ul\>"));
+        });
+        let toolbar = quill.getModule('toolbar');
+        toolbar.defaultLinkFunction=toolbar.handlers['link'];
+        toolbar.addHandler("link",function customLinkFunction(value){
+            var select = quill.getSelection();
+            if(value&&select['length']==0&&!readOnly){
+                quill.insertText(select['index'],'link');
+                quill.setSelection(select['index'],4);
+            }
+            this.defaultLinkFunction(value);
+        });
+    }
+    
+    
 }
 
 
@@ -601,7 +659,7 @@ export class ActionButton extends React.Component{
     
     render(){
         return (
-            <div class={this.props.button_class+" action-button"} onClick={this.handleClick}>
+            <div class={this.props.button_class+" action-button"} title={this.props.titletext} onClick={this.handleClick}>
                 <img src={iconpath+this.props.button_icon}/>
             </div>
         )
@@ -726,3 +784,6 @@ export class PathGenerator{
         return joined;
     }
 }
+
+
+

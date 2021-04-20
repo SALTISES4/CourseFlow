@@ -13,6 +13,7 @@ import {OutcomeBar} from "./OutcomeTopView.js";
 import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
+import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
 
 
 
@@ -45,7 +46,7 @@ class WorkflowView extends ComponentJSON{
                         {this.addEditable(data)}
                         {reactDom.createPortal(
                         <div class="topdropwrapper" title="Show/Hide Legend">
-                            <img src={iconpath+"expand.svg"} onClick={this.toggleLegend.bind(this)}/>
+                            <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
                         </div>,
                         $("#viewbar")[0]
                         )}
@@ -102,7 +103,6 @@ class WorkflowView extends ComponentJSON{
     
     sortableMovedFunction(id,new_position,type){
         if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position))
-        console.log(type);
         if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position))
     }
                      
@@ -156,7 +156,6 @@ class NodeBarUnconnected extends ComponentJSON{
             <NodeBarWeekWorkflow key={weekworkflow} objectID={weekworkflow}/>
         );
         var sort_type;
-        console.log(this.props);
         if(this.props.outcomes_view)sort_type=(
             <div class="node-bar-sort-block">
                 <p>Sort Nodes By:</p>
@@ -248,13 +247,11 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="workflow";
+        this.state={};
     }
     
     render(){
         let data = this.props.data;
-        console.log("WORKFLOW DATA");
-        
-        console.log(data);
         
         var selector = this;
         
@@ -264,6 +261,15 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                     <div class="workflow-details">
                         <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
                         {this.addEditable(data)}
+                        {reactDom.createPortal(
+                        <div class="topdropwrapper" title="Show/Hide Legend">
+                            <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
+                        </div>,
+                        $("#viewbar")[0]
+                        )}
+                        {this.state.show_legend && 
+                            <WorkflowOutcomeLegend toggle={this.toggleLegend.bind(this)}/>
+                        }
                         <WorkflowOutcomeView selection_manager={this.props.selection_manager} outcomes_type={data.outcomes_type}/>
                     </div>
                     {!read_only &&
@@ -275,6 +281,14 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                 </div>
             </div>
         );
+    }
+                     
+    toggleLegend(){
+        if(this.state.show_legend){
+            this.setState({show_legend:false});
+        }else{
+            this.setState({show_legend:true});
+        }
     }
     
     

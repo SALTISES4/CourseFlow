@@ -24,11 +24,11 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
 5.  Install node modules.
 
-        yarn install
+        yarn install | npm i
 
 6.  Build minified JS files.
 
-        yarn run gulp build-js
+        yarn run gulp build-js | ./node_modules/gulp/bin/gulp.js build-js
 
 7.  Migrate
 
@@ -48,8 +48,16 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
 11. Create default strategies.
 
-        (dev_venv) python3 cousre_flow.py create_instances course_flow/initial_data/template_strategies.json <username you registered under>
+        (dev_venv) python3 course_flow.py create_saltise_strategies
 
 12. For testing before commits, run:
 
         (dev_venv) python3 course_flow.py test
+
+    or:
+
+        (dev_venv) pytest
+
+13. To package a version:
+
+        tox --recreate

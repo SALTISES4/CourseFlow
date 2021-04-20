@@ -1,3 +1,8 @@
+:root {
+  --mdc-theme-primary: #1976bc;
+  --mdc-theme-secondary: #46c443;
+}
+
 body, html{
     overflow:hidden;
     margin:0px;
@@ -6,6 +11,14 @@ body, html{
 
 body{
     background:#EEEEEE;
+}
+
+button{
+    cursor:pointer;
+}
+
+button:hover{
+    box-shadow:inset 0 0 0 99999px rgba(0,0,0,0.1);
 }
 
 .topnav{
@@ -134,6 +147,7 @@ body{
 .topdropwrapper{
     display:inline-block;
     padding:0px;
+    padding-top:3px;
     bottom:0px;
     vertical-align:top;
 }
@@ -228,16 +242,21 @@ body{
 }
 
 .home-tabs{
-    
+    height:100%;
+    display:flex;
 }
 
 .home-tabs .ui-tabs-nav{
     padding:0px;
-    width:100%;
-    display:flex;
     margin:0px;
     border:1px solid lightgray;
     overflow:hidden;
+    box-sizing:border-box;
+    background:white;
+    z-index:1;
+    width:20%;
+    height:100%;
+    min-width:250px;
 }
 
 .home-tabs .ui-tabs-tab{
@@ -272,15 +291,31 @@ body{
 }
 
 .home-tabs>div{
-    width:100%;
+    width:80%;
+    left:20%;
     background:white;
     padding:20px;
     box-sizing: border-box;
+    height:100%;
+    overflow-y:auto;
 }
 
 .project-header{
     padding:20px;
     background:white;
+    height:150px;
+    overflow:hidden;
+    box-sizing:border-box;
+}
+
+.project-header + .home-tabs{
+    height:calc(100% - 150px);
+    border:1px solid lightgrey;
+    box-sizing:border-box;
+}
+
+.project-menu{
+    height:100%;
 }
 
 .action-icon{
@@ -378,11 +413,47 @@ text {
     position:absolute;
 }
 
+.splash-page{
+    background:white;
+    height:100%;
+    width:100%;
+    position:relative;
+}
+
+.splash-wrapper{
+    position:absolute;
+    left: calc(50% - 135px);
+    top: calc(50% - 135px);
+    padding:20px;
+    transition:top 0.5s;
+    text-align:center;
+}
+
+.splash-image-wrapper img{
+    width:140px;
+    padding:10px;
+}
+
+.splash-image-wrapper div{
+    padding:10px;
+    font-size:20px;
+    color:#1976bc;
+    white-space:nowrap;
+}
+
+.splash-image-wrapper{
+    display:inline-block;
+    width:240px;
+    height:240px;
+    vertical-align:middle;
+    padding:20px;
+    margin:10px;
+    border-radius:20px;
+    border:0px;
+}
+
   .create-button {
     transform: translateY(10px);
-  }
-  img.link-image {
-    height: 35px;
   }
   .mdc-card {
     background-color: white;
@@ -461,3 +532,61 @@ text {
   .mdc-typography--title {
     color: #1976bc;
   }
+
+#user-feedback-app {
+  bottom: 0px;
+  display: inline;
+  right: 8px;
+  position: absolute;
+  text-align: left;
+}
+
+/*
+User feedback app; this can be factored out to its own file and loaded
+last to avoid need for !important
+*/
+#user-feedback-component .mdc-icon-button {
+  transform: translate(6px, -3px);
+}
+#user-feedback-component  .mdc-icon-button:after {
+  background-color: white!important;
+}
+#user-feedback-component  .mdc-icon-button:before {
+  background-color: white!important;
+}
+#user-feedback-component  .mdc-icon-button:hover:before {
+  opacity: 0.25 !important;
+}
+#user-feedback-component  .mdc-icon-button.mdc-ripple-upgraded:before {
+  height: 25px!important;
+  left: 12px!important;
+  top: 12px!important;
+  width: 25px!important;
+}
+#user-feedback-component  .mdc-icon-button.mdc-ripple-upgraded:after {
+  height: 25px!important;
+  left: 12px!important;
+  top: 12px!important;
+  width: 25px!important;
+}
+#user-feedback-component  .mdc-icon-button__icon {
+  vertical-align: baseline;
+}
+#user-feedback-component  .mdc-menu__items {
+  font-size: 14px !important;
+}
+#user-feedback-component  .mdc-button {
+  font-weight: bold !important;
+}
+#user-feedback-component  .mdc-button:not(:disabled) {
+  color: var(--mdc-theme-secondary) !important;
+}
+#user-feedback-component  .mdc-button:disabled {
+  color: rgba(0,0,0,.37) !important;
+}
+#user-feedback-component  .mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label {
+  color: var(--mdc-theme-primary) !important;
+}
+#user-feedback-component  .mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label :not(i) {
+  font-family: inherit;
+}

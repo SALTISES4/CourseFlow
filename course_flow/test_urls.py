@@ -1,15 +1,51 @@
-from django.urls import include, path
+from django.conf.urls import url
 from django.contrib import admin
-from . import urls
+from django.contrib.auth import views as auth_views
+from django.urls import include, path
 
-app_name = "test_course_flow"
+from . import lti, urls, views
 
-urlpatterns = [
-    path(
-        "", include((urls.urlpatterns, urls.app_name), namespace="course_flow")
-    ),
-    path(
-        "feedback/", include("user_feedback.urls", namespace="user_feedback")
-    ),
-    path("admin/", admin.site.urls),
-]
+app_name = "course_flow"
+
+
+def auth_patterns():
+    return [
+        url(r"^register/$", views.registration_view, name="registration"),
+        url(
+            r"^login/$",
+            auth_views.LoginView.as_view(
+                template_name="course_flow/registration/login.html"
+            ),
+            name="login",
+        ),
+        url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
+    ]
+
+
+def lti_patterns():
+    return [
+        path("lti/", include("django_lti_tool_provider.urls")),
+        path("course-list/", lti.get_course_list, name="course-list"),
+    ]
+
+
+urlpatterns = sum(
+    [
+        auth_patterns(),
+        [
+            path(
+                "",
+                include(
+                    (urls.urlpatterns + lti_patterns(), urls.app_name),
+                    namespace="course_flow",
+                ),
+            ),
+            path(
+                "feedback/",
+                include("user_feedback.urls", namespace="user_feedback"),
+            ),
+            path("admin/", admin.site.urls),
+        ],
+    ],
+    [],
+)

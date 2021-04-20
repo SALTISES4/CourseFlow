@@ -6,6 +6,7 @@ import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
 import OutcomeTopView from './OutcomeTopView.js'
 import * as Reducers from "./Reducers.js";
+export {fail_function} from './PostFunctions';
 
 
 const rootReducer = Redux.combineReducers({

@@ -9,7 +9,8 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id="content-container" class="body-wrapper"></div><div id="popup-container"></div>
+<div id="content-container" class="body-wrapper"></div>
+<div id="popup-container"></div>
 <!-- -->
 {% endblock %}
 <!-- -->
@@ -20,67 +21,40 @@
 {% block read_only_scripts %}
 
 <script nonce="{{request.csp_nonce}}">
-    
-    const read_only=false;
-    
+  const read_only = false;
 </script>
 
 {% endblock %}
 <!-- -->
-{% block scripts %}
-<script nonce="{{ request.csp_nonce }}">
-  window.addEventListener("load", function() {
-    userFeedback.injectDialog(
-      "{% trans 'Let us know how we can improve your experience!' %}",
-      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
-      "{% trans 'Thanks for your feedback!' %}",
-      "{% trans 'Sorry, please try again later!' %}",
-      "{% url 'user_feedback:post' %}"
-    );
-  });
-</script>
-
-
+{% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
-    
-    const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-    const update_path = {
-        outcome:"{% url 'course_flow:outcome-update' pk='0'%}",
-        activity:"{% url 'course_flow:workflow-update' pk='0'%}",
-        course:"{% url 'course_flow:workflow-update' pk='0'%}",
-        program:"{% url 'course_flow:workflow-update' pk='0'%}",
-    }
-    const detail_path = {
-        outcome:"{% url 'course_flow:outcome-detail-view' pk='0'%}",
-        activity:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
-        course:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
-        program:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
-    }
-    const create_path = {
-        outcome:"{% url 'course_flow:outcome-create' projectPk=object.pk %}",
-        activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
-        course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
-        program:"{% url 'course_flow:program-create' projectPk=object.pk %}"
-    }
-    const data_package = {{workflow_data_package|safe}};
-    const project_data= {{project_data|safe}};
-    console.log(data_package);
-    const project_title = "{{object.title|safe}}";
-    const user_id = {{ user.id }};
-    window.addEventListener("load",function(){
-        workflow_redux.renderProjectMenu(data_package,project_data);
-    });
-    
-    
-    //Publishes or unpublishes the project
-    function togglePublish(callBackFunction=()=>console.log("success")){
-        $.post("{% url 'course_flow:project-toggle-published' %}", {
-            projectPk:JSON.stringify({{object.pk|safe}})
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else console.log("Failed");
-        });
-    }
-    
+
+  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+  const update_path = {
+      outcome:"{% url 'course_flow:outcome-update' pk='0'%}",
+      activity:"{% url 'course_flow:workflow-update' pk='0'%}",
+      course:"{% url 'course_flow:workflow-update' pk='0'%}",
+      program:"{% url 'course_flow:workflow-update' pk='0'%}",
+  }
+  const detail_path = {
+      outcome:"{% url 'course_flow:outcome-detail-view' pk='0'%}",
+      activity:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
+      course:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
+      program:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
+  }
+  const create_path = {
+      outcome:"{% url 'course_flow:outcome-create' projectPk=object.pk %}",
+      activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
+      course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
+      program:"{% url 'course_flow:program-create' projectPk=object.pk %}"
+  }
+  const data_package = {{workflow_data_package|safe}};
+  const project_data= {{project_data|safe}};
+  console.log(data_package);
+  const project_title = "{{object.title|safe}}";
+  const user_id = {{ user.id }};
+  window.addEventListener("load",function(){
+      workflow_redux.renderProjectMenu(data_package,project_data);
+  });
 </script>
 {% endblock %}

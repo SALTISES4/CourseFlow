@@ -6,6 +6,7 @@ import {getWeekByID, getNodeWeekByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
 import {columnChangeNodeWeek, moveNodeWeek, newStrategyAction} from "./Reducers.js";
 import {addStrategy} from "./PostFunctions";
+import {Loader} from "./Constants.js";
 
 //Basic component to represent a Week
 export class WeekViewUnconnected extends ComponentJSON{
@@ -44,7 +45,7 @@ export class WeekViewUnconnected extends ComponentJSON{
                     {nodes}
                 </div>
                 {this.addEditable(data)}
-                {data.strategy_classification > 0 && data.is_strategy&&
+                {data.strategy_classification > 0 &&
                     <div class="strategy-tab">
                         <div class="strategy-tab-triangle"></div>
                         <div class="strategy-tab-square">
@@ -94,7 +95,6 @@ export class WeekViewUnconnected extends ComponentJSON{
     }
     
     sortableMovedFunction(id,new_position,type,new_parent){
-        console.log(type);
         this.props.dispatch(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column))
     }
 
@@ -133,10 +133,12 @@ export class WeekViewUnconnected extends ComponentJSON{
                 var drag_item = ui.draggable;
                 var new_index = drop_item.parent().prevAll().length+1;
                 if(drag_item.hasClass("new-strategy")){
+                    let loader = new Loader('body');
                     addStrategy(this.props.parentID,new_index,drag_item[0].dataDraggable.strategy,
                         (response_data)=>{
                             let action = newStrategyAction(response_data);
                             props.dispatch(action);
+                            loader.endLoad();
                         }
                     );
                 }

@@ -4,6 +4,7 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem} from "./PostFunctions.js";
 import {homeMenuItemAdded} from "./Reducers.js";
+import {Loader} from "./Constants.js";
 
 export class MessageBox extends React.Component{
     render(){
@@ -73,7 +74,7 @@ export class WorkflowsMenu extends React.Component{
             var text="link to node";
             if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text="copy to current project and "+text;
             actions.push(
-                <button disabled={!this.state.selected} onClick={()=>{
+                <button id="set-linked-workflow" disabled={!this.state.selected} onClick={()=>{
                     setLinkedWorkflow(this.props.data.node_id,this.state.selected,this.props.actionFunction)
                     closeMessageBox();
                 }}>
@@ -81,7 +82,7 @@ export class WorkflowsMenu extends React.Component{
                 </button>
             );
             actions.push(
-                <button onClick={()=>{
+                <button id="set-linked-workflow-none" onClick={()=>{
                     setLinkedWorkflow(this.props.data.node_id,-1,this.props.actionFunction)
                     closeMessageBox();
                 }}>
@@ -89,7 +90,7 @@ export class WorkflowsMenu extends React.Component{
                 </button>
             );
             actions.push(
-                <button onClick={closeMessageBox}>
+                <button id="set-linked-workflow-cancel" onClick={closeMessageBox}>
                     cancel
                 </button>
             );
@@ -125,7 +126,7 @@ export class WorkflowForMenu extends React.Component{
                 <div class="workflow-created">
                     { "Created"+(data.author && " by "+data.author)+" on "+data.created_on}
                 </div>
-                <div class="activity-description">
+                <div class="workflow-description">
                     {data.description}
                 </div>
             </div>
@@ -136,39 +137,46 @@ export class WorkflowForMenu extends React.Component{
         var buttons=[];
         if(this.props.type=="projectmenu"||this.props.type=="homemenu"){
             if(this.props.owned){
-                console.log(this.props);
                 buttons.push(
-                    <div onClick={(evt)=>{
+                    <div  class="workflow-delete-button" onClick={(evt)=>{
                         if(window.confirm("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone.")){
                             deleteSelf(this.props.workflow_data.id,this.props.objectType);
                             this.setState({hide:true});
                         }
                     }}>
-                        <img src={iconpath+'rubbish-bin-delete-button.svg'}/>
+                        <img src={iconpath+'rubbish.svg'} title="Delete"/>
                     </div>
                 );
                 buttons.push(
-                    <a href={update_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
-                        <img src={iconpath+'pencil-blue.svg'}/>
+                    <a href={update_path[this.props.objectType].replace("0",this.props.workflow_data.id)}  class="workflow-edit-button">
+                        <img src={iconpath+'edit_pencil.svg'} title="Edit"/>
                     </a>
                 );
             }else{
                 buttons.push(
-                    <a href={detail_path[this.props.objectType].replace("0",this.props.workflow_data.id)}>
-                        <img src={iconpath+'pageview-24px.svg'}/>
+                    <a href={detail_path[this.props.objectType].replace("0",this.props.workflow_data.id)}  class="workflow-view-button">
+                        <img src={iconpath+'page_view.svg'} title="View"/>
                     </a>
                 );
             }
             if(this.props.duplicate){
-                console.log(this.props);
                 let icon;
-                if(this.props.duplicate=="copy")icon = 'file_copy-24px.svg';
-                else icon = 'file_import-24px.svg';
+                let titletext;
+                if(this.props.duplicate=="copy"){
+                    icon = 'duplicate.svg';
+                    titletext="Duplicate";
+                }
+                else {
+                    icon = 'import.svg';
+                    if(this.props.type=="projectmenu")titletext="Import to current project";
+                    else titletext="Import to my files";
+                }
                 buttons.push(
-                    <div onClick={()=>{
-                        duplicateBaseItem(this.props.workflow_data.id,this.props.objectType,this.props.parentID,(response_data)=>{this.props.dispatch(homeMenuItemAdded(response_data))})
+                    <div class="workflow-duplicate-button" onClick={()=>{
+                        let loader = new Loader('body');
+                        duplicateBaseItem(this.props.workflow_data.id,this.props.objectType,this.props.parentID,(response_data)=>{this.props.dispatch(homeMenuItemAdded(response_data));loader.endLoad();})
                     }}>
-                        <img src={iconpath+icon}/>
+                        <img src={iconpath+icon} title={titletext}/>
                     </div>
                 );
             }
@@ -192,13 +200,13 @@ export class MenuSection extends React.Component{
         if(objects.length==0)objects="This category is currently empty."
 
         return (
-            <div>
+            <div class={"section-"+this.props.section_data.object_type}>
                 <h3>{this.props.section_data.title+":"}
                 {(create_path && this.props.add) &&
                   <a href={create_path[this.props.section_data.object_type]}
                     ><img
-                      class="create-button link-image"
-                      src={iconpath+"add-square-button.svg"}
+                      class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title="Add New"
+                      src={iconpath+"add_new.svg"}
                   /></a>
                 }
                 </h3>
@@ -226,7 +234,6 @@ export class MenuTab extends React.Component{
 
 class HomeMenuUnconnected extends React.Component{
     render(){
-        console.log(this.props);
         var tabs = [];
         var tab_li = [];
         var i = 0;
@@ -280,14 +287,14 @@ class ProjectMenuUnconnected extends React.Component{
             i++;
         }
         return(
-            <div>
+            <div class="project-menu">
                 <div class="project-header">
-                    <h2>{this.state.title} {this.props.project.author_id==user_id  &&
-                        <a onClick ={ this.openEdit.bind(this)}>
-                            <img src={iconpath+'pencil-blue.svg'}/>
+                    <h2 id="project-title">{this.state.title} {this.props.project.author_id==user_id  &&
+                        <a class="action-button" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
+                            <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
                         </a>
                     }</h2>
-                    <p>{this.state.description}</p>
+                    <p id="project-description">{this.state.description}</p>
                     {this.state.published &&
                         <p>{"This project has been published and is visibile to all"}</p>
                     }
@@ -326,7 +333,7 @@ export const ProjectMenu = connect(
 export class ProjectEditMenu extends React.Component{
     constructor(props){
         super(props);
-        this.state=props.data;
+        this.state={...props.data};
     }
     
     render(){
@@ -337,15 +344,15 @@ export class ProjectEditMenu extends React.Component{
                 <h3>{"Edit Project:"}</h3>
                 <div>
                     <h4>Title:</h4>
-                    <input value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
+                    <input id="project-title-input" value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
                 </div>
                 <div>
                     <h4>Description:</h4>
-                    <input value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
+                    <input id="project-description-input" value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
                 </div>
                 <div>
                     <h4>Published:</h4>
-                    <input type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
+                    <input id="project-publish-input" type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
                     <label for="published">Is Published (visible to all users)</label>
                 </div>
                 <div class="action-bar">
@@ -379,9 +386,8 @@ export class ProjectEditMenu extends React.Component{
     getActions(){
         var actions = [];
         actions.push(
-            <button onClick={()=>{
+            <button id="save-changes" onClick={()=>{
                 updateValueInstant(this.state.id,"project",this.state);
-                if(this.state.published!=this.props.data.published)togglePublish();
                 this.props.actionFunction(this.state);
                 closeMessageBox();
             }}>

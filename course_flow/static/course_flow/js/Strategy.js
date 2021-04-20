@@ -4,7 +4,7 @@ import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import * as Constants from "./Constants.js";
 import {getStrategyByID} from "./FindState.js";
 
-//Basic component to represent a Week
+//Basic component to represent a Strategy
 class StrategyView extends ComponentJSON{
     constructor(props){
         super(props);

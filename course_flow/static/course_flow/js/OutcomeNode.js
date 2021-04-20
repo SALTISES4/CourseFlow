@@ -23,7 +23,7 @@ class OutcomeNodeView extends ComponentJSON{
                 <NodeOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             
                 {!read_only && <div class="mouseover-actions">
-                    {this.addDeleteSelf(data)}
+                    {this.addDeleteSelf(data,"close.svg")}
                 </div>
                 }
             </div>
@@ -60,7 +60,7 @@ export class TableTotalCell extends ComponentJSON{
         );
     }
     
-    getContents(completion_status){
+    getContents(completion_status,self_completion){
         if(completion_status===0){
             return (
                 <img src={iconpath+'nocheck.svg'}/>
@@ -69,24 +69,33 @@ export class TableTotalCell extends ComponentJSON{
             return "";
         }
         if(this.props.outcomes_type==0 || completion_status & 1){
-            return (
+            if(self_completion)return(
+                <img class="self-completed" src={iconpath+'solid_check.svg'}/>
+            )
+            else return (
                 <img src={iconpath+'check.svg'}/>
             );
         }
         let contents=[];
         if(completion_status & 2){
+            let divclass="";
+            if(self_completion & 2)divclass=" self-completed";
             contents.push(
-                <div class="outcome-introduced outcome-degree">I</div>
+                <div class={"outcome-introduced outcome-degree"+divclass}>I</div>
             );
         }
         if(completion_status & 4){
+            let divclass="";
+            if(self_completion & 4)divclass=" self-completed";
             contents.push(
-                <div class="outcome-developed outcome-degree">D</div>
+                <div class={"outcome-developed outcome-degree"+divclass}>D</div>
             );
         }
         if(completion_status & 8){
+            let divclass="";
+            if(self_completion & 8)divclass=" self-completed";
             contents.push(
-                <div class="outcome-advanced outcome-degree">A</div>
+                <div class={"outcome-advanced outcome-degree"+divclass}>A</div>
             );
         }
         return contents;
@@ -108,7 +117,9 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
         let data = this.props.data;
         
         let completion_status;
-        if(data)completion_status|=data.degree;
+        let degree;
+        if(data!==null)degree=data.degree;
+        completion_status|=degree;
         completion_status|=this.props.completion_status_from_children|this.props.completion_status_from_parents;
         if(completion_status==0&&this.props.completion_status_from_children!==0)completion_status=null;
         let checked=false;
@@ -135,7 +146,7 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
         
         return (
             <div class="table-cell" ref={this.maindiv}>
-                {this.getContents(completion_status)}
+                {this.getContents(completion_status,degree)}
                 {input}
             </div>
         );
@@ -145,18 +156,26 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
         let props = this.props;
         let value;
         if(props.data){
-            value=0;
+            value=null;
             props.dispatch(deleteSelfAction(props.data.id,props.nodeID,"outcomenode"))
         }else{
             value=1;
+            tiny_loader.startLoad();
             addOutcomeToNode(props.nodeID,props.outcomeID,
                 (response_data)=>{
                     let action = addOutcomeToNodeAction(response_data);
                     props.dispatch(action);
+                    tiny_loader.endLoad();
                 }
             );
         }
-        if(props.updateParentCompletion)props.updateParentCompletion(props.nodeID,value);
+        if(props.updateParentCompletion){
+            let child_status = this.props.completion_status_from_children;
+            if(!child_status && child_status!==0)
+                props.updateParentCompletion(props.nodeID,value);
+            else
+                props.updateParentCompletion(props.nodeID,value|child_status);
+        }
         props.updateSelfCompletion(props.nodeID,value);
     }
 
@@ -164,7 +183,7 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
         let props = this.props;
         let value;
         if(props.data){
-            value=this.props.data.degree << 1;
+            value=props.data.degree << 1;
             if(value>15){
                 value=null;
                 props.dispatch(deleteSelfAction(props.data.id,props.nodeID,"outcomenode"));
@@ -180,7 +199,14 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
                 }
             );
         }
-        if(props.updateParentCompletion)props.updateParentCompletion(props.nodeID,value);
+       
+        if(props.updateParentCompletion){
+            let child_status = this.props.completion_status_from_children;
+            if(!child_status && child_status!==0)
+                props.updateParentCompletion(props.nodeID,value);
+            else
+                props.updateParentCompletion(props.nodeID,value|child_status);
+        }
         props.updateSelfCompletion(props.nodeID,value);
     }
 
@@ -225,7 +251,7 @@ export class TableOutcomeGroup extends ComponentJSON{
         for(let node_id in this.props.completion_status_from_children){
             if(this.props.nodes.indexOf(parseInt(node_id))>=0){
                 completion_status|=this.props.completion_status_from_children[node_id];
-                childnodes++;
+                if(this.props.completion_status_from_children[node_id]!==null)childnodes++;
             }
         }
         if(completion_status==0&&childnodes==0)completion_status=null;

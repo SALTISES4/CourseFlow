@@ -45,8 +45,8 @@ class NodeView extends ComponentJSON{
         if(outcomenodes.length>0){
             outcomeDiv = (
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column}>{outcomenodes.length}</div>
-                    <div class={"outcome-node-container column-"+data.column}>{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:column_colours[data.column]}}>{outcomenodes.length}</div>
+                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:column_colours[data.column]}}>{outcomenodes}</div>
                 </div>
             );
         }
@@ -63,7 +63,7 @@ class NodeView extends ComponentJSON{
         else dropIcon = "droptriangledown";
         let linkIcon;
         if(data.linked_workflow)linkIcon=(
-            <img src={iconpath+"wflink.svg"}/>
+            <img src={iconpath+"wflink.svg"} title={data.linked_workflow_title+", double click to visit"}/>
         );
         let dropText = "";
         if(data.description&&data.description.replace(/(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,'')!='')dropText="...";
@@ -76,11 +76,12 @@ class NodeView extends ComponentJSON{
         return (
             <div 
                 style={
-                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px"}
+                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:column_colours[data.column]}
                 } 
                 class={
                     "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
-                } 
+                }
+                onDoubleClick={this.doubleClick.bind(this)}
                 id={data.id} 
                 ref={this.maindiv} 
                 onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}
@@ -146,6 +147,14 @@ class NodeView extends ComponentJSON{
         this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
     }
 
+    doubleClick(evt){
+        evt.stopPropagation();
+        if(this.props.data.linked_workflow){
+            if(read_only)window.location=workflow_detail_path.replace("0",this.props.data.linked_workflow);
+            else window.location=workflow_update_path.replace("0",this.props.data.linked_workflow);
+        }
+    }
+
     makeDroppable(){
         var props = this.props;
         $(this.maindiv.current).droppable({
@@ -193,7 +202,7 @@ class NodeView extends ComponentJSON{
 
     mouseIn(evt){
         if(evt.which==1)return;
-        $("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
+        if(!read_only)$("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
         d3.selectAll(".node-ports").raise();
         var mycomponent = this;
         

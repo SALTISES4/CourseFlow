@@ -1,18 +1,25 @@
-pre-commit
 asgiref==3.2.3
 bleach
 Django<3.0.0
+django-csp
 django-filter
-djangorestframework==3.10.3
+djangorestframework>=3.10.3
+zipp==0.6.0
+django-compressor>=2.3
+django-model-utils
+SALTISE_user_feedback
+
+black
+pre-commit
+isort
 Markdown==3.1.1
 pytest-cov
 pytest-django
 safety
 selenium
-zipp==0.6.0
-django-compressor>=2.3
-django-model-utils
+tox
+twine
 
+-e file:./#egg=course_flow
 
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
--e git+https://github.com/aahilgert/UserFeedback@master#egg=user_feedback

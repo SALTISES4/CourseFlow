@@ -109,6 +109,7 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         super(props);
         this.objectType="outcome";
         this.children_block = React.createRef();
+        this.state={is_dropped:(props.data.depth<1)};
     }
     
     render(){
@@ -119,24 +120,24 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         );
                 
         let dropIcon;
-        if(data.is_dropped)dropIcon = "droptriangleup";
+        if(this.state.is_dropped)dropIcon = "droptriangleup";
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(data.is_dropped)droptext="hide";
+        if(this.state.is_dropped)droptext="hide";
         else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
         
         return(
             <div
             class={
-                "outcome"+((data.is_dropped && " dropped")||"")+" outcome-"+data.id
+                "outcome"+((this.state.is_dropped && " dropped")||"")+" outcome-"+data.id
             }
             
             ref={this.maindiv}>
                 <div class="outcome-title" >
                     <TitleText text={data.title} defaultText={"Click to edit"}/>
                 </div>
-                <input class="outcome-toggle-checkbox" type="checkbox" title="toggle highlighting" onChange={this.clickFunction.bind(this)}/>
+                <input class="outcome-toggle-checkbox" type="checkbox" title="Toggle highlighting" onChange={this.clickFunction.bind(this)}/>
                 {children.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
@@ -156,7 +157,8 @@ class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
     }
     
     toggleDrop(){
-        this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
+       
+        this.setState({is_dropped:(!this.state.is_dropped)});
     }
 
 
@@ -233,6 +235,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         super(props);
         this.objectType="outcome";
         this.children_block = React.createRef();
+        this.state={is_dropped:false};
     }
     
     render(){
@@ -243,17 +246,17 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         );
                 
         let dropIcon;
-        if(data.is_dropped)dropIcon = "droptriangleup";
+        if(this.state.is_dropped)dropIcon = "droptriangleup";
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(data.is_dropped)droptext="hide";
+        if(this.state.is_dropped)droptext="hide";
         else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
         
         return(
             <div
             class={
-                "outcome"+((data.is_dropped && " dropped")||"")+" outcome-"+data.id
+                "outcome"+((this.state.is_dropped && " dropped")||"")+" outcome-"+data.id
             }
             ref={this.maindiv}>
                 <div class="outcome-title">
@@ -278,7 +281,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
     }
     
     toggleDrop(){
-        this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
+        this.setState({is_dropped:(!this.state.is_dropped)});
     }
 
 }
@@ -328,13 +331,15 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         for(let node_id in this.props.completion_status_from_parents){
             completion_status|=this.props.completion_status_from_parents[node_id];
         }
+        let childnodes=0;
         for(let node_id in this.state.completion_status_from_children){
             completion_status|=this.state.completion_status_from_children[node_id];
+            if(this.state.completion_status_from_children[node_id]!==null)childnodes++;
         }
         for(let node_id in this.state.completion_status_from_self){
             completion_status|=this.state.completion_status_from_self[node_id];
         }
-        if(completion_status==0&&this.state.completion_status_from_children)completion_status=null;
+        if(completion_status==0&&childnodes==0)completion_status=null;
 
         
         return(
@@ -388,7 +393,6 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
             }
         }
         if(this.child_completion_status[node_id][index]!==value){
-            console.log("changing child completion status");
             this.child_completion_status[node_id][index]=value;
             this.updateCompletion(node_id);
         }
@@ -407,20 +411,20 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     }
 
     updateCompletion(node_id){
-        console.log("updating completion");
-        console.log(this.child_completion_status);
-        let new_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
-        console.log(new_completion);
-        console.log(this.state.completion_status_from_children);
-        if(this.state.completion_status_from_children[node_id]!==new_completion){
-            console.log("setting state");
+        let new_child_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
+        if(this.state.completion_status_from_children[node_id]!==new_child_completion){
             this.setState(function(state,props){
                 let new_completion_status_from_children = {...state.completion_status_from_children};
-                new_completion_status_from_children[node_id]=new_completion;
+                new_completion_status_from_children[node_id]=new_child_completion;
                 return {completion_status_from_children:new_completion_status_from_children}
             });
-            
-            if(this.props.updateParentCompletion)this.props.updateParentCompletion(node_id,new_completion);
+            if(this.props.updateParentCompletion){
+                let self_completion = this.state.completion_status_from_self[node_id];
+                if(!self_completion && new_child_completion ===null )
+                    this.props.updateParentCompletion(node_id,null);
+                else 
+                    this.props.updateParentCompletion(node_id,new_child_completion|this.state.completion_status_from_self[node_id]);
+            }
         }
     }
 

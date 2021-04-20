@@ -11,12 +11,10 @@ class ColumnView extends ComponentJSON{
         super(props);
         this.objectType="column";
         this.objectClass=".column";
-        //We add a style to the header to represent the column
-        $("<style>").prop("type","text/css").prop("id","column-"+this.props.objectID+"-CSS").appendTo("head");
     }
     
     render(){
-        $("#column-"+this.props.objectID+"-CSS").html(".node.column-"+this.props.objectID+"{background:"+this.getColour()+"}\n\n .node-bar-column.column-"+this.props.objectID+"{border-color:"+this.getColour()+"}\n\n .outcome-node-indicator-number.column-"+this.props.objectID+"{border-color:"+this.getColour()+"}\n\n .outcome-node-container.column-"+this.props.objectID+"{border-color:"+this.getColour()+"}");
+        column_colours[this.props.objectID] = this.getColour();
         let data = this.props.data;
         var title = data.title;
         if(!title)title=data.column_type_display;
@@ -63,7 +61,7 @@ class NodeBarColumnUnconnected extends ComponentJSON{
         if(data)title = data.title;
         if(!title)title=data.column_type_display;
         return(
-            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv}>
+            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:column_colours[this.props.objectID]}}>
                 {title}
             </div>
         );

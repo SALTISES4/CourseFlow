@@ -28,7 +28,7 @@ class ApplicationHookManager(AbstractApplicationHookManager):
         if course_list:
             redirect_url = reverse("course_flow:course-list")
         elif course_id is None or course_id == "":
-            redirect_url = reverse("home")
+            redirect_url = reverse("course_flow:home")
         else:
             redirect_url = reverse(
                 "course_flow:course-detail-view", kwargs={"pk": course_id}
