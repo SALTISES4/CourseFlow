@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="48.552628mm"
+   height="48.552628mm"
+   viewBox="0 0 172.03687 172.03687"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="two-stage-exam.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="-193.26728"
+     inkscape:cy="86.018422"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-120.42925,-265.36917)">
+    <rect
+       style="fill:#ffffff;stroke:#000000;stroke-width:10;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect17043"
+       width="162.03687"
+       height="162.03687"
+       x="125.42925"
+       y="270.36917"
+       inkscape:export-xdpi="25.110907"
+       inkscape:export-ydpi="25.110907"
+       inkscape:export-filename="C:\Users\Admin\Dropbox\Website\Workflows\data\group24.png" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect8258-3-4"
+       width="68.633087"
+       height="79.083122"
+       x="154.58398"
+       y="305.07217"
+       inkscape:export-filename="C:\Users\Jeremie\Dropbox\saltise\WorkflowMaker\resources\data\two-stage-exam24.png"
+       inkscape:export-xdpi="25.110907"
+       inkscape:export-ydpi="25.110907" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="rect8258-3-4-4"
+       width="68.627373"
+       height="79.451088"
+       x="189.68396"
+       y="312.53751"
+       inkscape:export-filename="C:\Users\Jeremie\Dropbox\saltise\WorkflowMaker\resources\data\two-stage-exam24.png"
+       inkscape:export-xdpi="25.110907"
+       inkscape:export-ydpi="25.110907" />
+    <text
+       sodipodi:linespacing="0%"
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="163.33319"
+       y="332.2742"
+       id="text8514"
+       inkscape:export-filename="C:\Users\Jeremie\Dropbox\saltise\WorkflowMaker\resources\data\two-stage-exam24.png"
+       inkscape:export-xdpi="25.110907"
+       inkscape:export-ydpi="25.110907"><tspan
+         sodipodi:role="line"
+         id="tspan8516"
+         x="163.33319"
+         y="332.2742"
+         style="font-weight:bold;font-size:25.57323074px;line-height:1.25;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none">B</tspan></text>
+    <text
+       sodipodi:linespacing="0%"
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;line-height:0%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       x="198.25775"
+       y="338.60245"
+       id="text8514-8"
+       inkscape:export-filename="C:\Users\Jeremie\Dropbox\saltise\WorkflowMaker\resources\data\two-stage-exam24.png"
+       inkscape:export-xdpi="25.110907"
+       inkscape:export-ydpi="25.110907"><tspan
+         sodipodi:role="line"
+         id="tspan8516-3"
+         x="198.25775"
+         y="338.60245"
+         style="font-weight:bold;font-size:25.32452011px;line-height:1.25;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none">A</tspan></text>
+  </g>
+</svg>

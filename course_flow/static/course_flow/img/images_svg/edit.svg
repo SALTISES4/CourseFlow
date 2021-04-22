@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="70.908325mm"
+   height="70.908325mm"
+   viewBox="0 0 251.24996 251.24996"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="edit.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="54.557205"
+     inkscape:cy="141.11136"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="72"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-204.65447,-523.83028)">
+    <circle
+       style="fill:#ffffff;stroke:#1976bc;stroke-width:9.375;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path476"
+       cx="330.27945"
+       cy="649.45526"
+       r="120.93748"
+       inkscape:export-xdpi="5.7313433"
+       inkscape:export-ydpi="5.7313433" />
+    <rect
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:12.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:5.80000067;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="rect8280"
+       width="181.01932"
+       height="181.01932"
+       x="229.84665"
+       y="547.96198"
+       inkscape:export-xdpi="5.7313433"
+       inkscape:export-ydpi="5.7313433" />
+    <path
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#1976bc;stroke-width:12.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 257.90472,676.13528 362.91475,553.1891 392.42186,578.39155 287.41183,701.33773 251.16399,714.22975 Z"
+       id="rect8454-7"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccc"
+       inkscape:export-filename="C:\Users\Jeremie\Dropbox\saltise\WorkflowMaker\resources\data\reflective-writing24.png"
+       inkscape:export-xdpi="5.7313433"
+       inkscape:export-ydpi="5.7313433" />
+    <path
+       sodipodi:nodetypes="cccc"
+       inkscape:connector-curvature="0"
+       id="path8457-5"
+       d="m 287.92078,700.46683 -26.94445,10.62642 -7.9965,-6.47612 5.0731,-28.96684"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#1976bc;stroke-width:12.5;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       inkscape:export-filename="C:\Users\Jeremie\Dropbox\saltise\WorkflowMaker\resources\data\reflective-writing24.png"
+       inkscape:export-xdpi="5.7313433"
+       inkscape:export-ydpi="5.7313433" />
+    <path
+       style="fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#1976bc;stroke-width:12.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 249.64562,723.32443 142.83556,0"
+       id="path8278"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-xdpi="5.7313433"
+       inkscape:export-ydpi="5.7313433" />
+  </g>
+</svg>

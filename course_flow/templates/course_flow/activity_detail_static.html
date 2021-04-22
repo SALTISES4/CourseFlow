@@ -37,16 +37,14 @@
     const nodeMidpointVertical = nodeHeight / 2.0;
     const nodeMidpointHorizontal = nodeWidth / 2.0;
 
-    const strategyPadding = 30.0;
-    const strategyInfoHeight = 200.0;
-    const strategyVerticalSpacing = 20.0;
+    const weekPadding = 30.0;
+    const weekInfoHeight = 200.0;
+    const weekVerticalSpacing = 20.0;
 
     const activityInfoHeight = 200.0;
 
-    const strategyWidth =
-      2 * strategyPadding +
-      nodeTotalSpacingHorizontal * 3 -
-      nodeSpacingHorizontal;
+    const weekWidth =
+      2 * weekPadding + nodeTotalSpacingHorizontal * 3 - nodeSpacingHorizontal;
 
     const classificationLabels = [
       "Out of Class",
@@ -82,7 +80,7 @@
         .append("svg")
         .attr("x", "0")
         .attr("y", "0")
-        .attr("width", `${strategyWidth}`)
+        .attr("width", `${weekWidth}`)
         .attr("class", "activity");
 
       svgActivity
@@ -118,7 +116,7 @@
             "{% url 'course_flow:activity-update' pk=object.pk %}";
         })
         .append("image")
-        .attr("x", `${strategyWidth - 40}`)
+        .attr("x", `${weekWidth - 40}`)
         .attr("y", `${55}`)
         .attr("width", `${31}`)
         .attr("height", `${31}`)
@@ -140,25 +138,24 @@
 
       var runningActivityHeight = activityInfoHeight;
 
-      svgActivity.selectAll(".strategy").remove();
+      svgActivity.selectAll(".week").remove();
 
       const strategies = svgActivity
-        .selectAll(".strategy")
-        .data(activityData.strategyactivity_set)
+        .selectAll(".week")
+        .data(activityData.weekactivity_set)
         .enter()
         .append("svg")
-        .attr("class", "strategy")
+        .attr("class", "week")
         .attr("x", "0")
         .attr(
           "height",
           (d, i) =>
-            `${d.strategy.nodestrategy_set.length *
-              (nodeHeight + nodeSpacingVertical) -
+            `${d.week.nodeweek_set.length * (nodeHeight + nodeSpacingVertical) -
               nodeSpacingVertical +
-              2 * strategyPadding +
-              strategyInfoHeight}`
+              2 * weekPadding +
+              weekInfoHeight}`
         )
-        .attr("width", `${strategyWidth}`)
+        .attr("width", `${weekWidth}`)
         .each(function(d, i) {
           d3.select(this)
             .append("rect")
@@ -173,19 +170,19 @@
             )
             .attr(
               "height",
-              `${d.strategy.nodestrategy_set.length *
+              `${d.week.nodeweek_set.length *
                 (nodeHeight + nodeSpacingVertical) -
                 nodeSpacingVertical +
-                2 * strategyPadding +
-                strategyInfoHeight}`
+                2 * weekPadding +
+                weekInfoHeight}`
             )
-            .attr("width", `${strategyWidth}`)
+            .attr("width", `${weekWidth}`)
             .attr("fill", "rgb(65,80,96)");
-          renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
+          renderWeek(d.week.nodeweek_set, d3.select(this));
         });
 
-      for (let i = 0; i < activityData.strategyactivity_set.length; i++) {
-        for (let j = 0; j < activityData.strategyactivity_set.length; j++) {
+      for (let i = 0; i < activityData.weekactivity_set.length; i++) {
+        for (let j = 0; j < activityData.weekactivity_set.length; j++) {
           if (strategies["_groups"][0][j].__data__.rank == i) {
             d3.select(strategies["_groups"][0][j]).attr(
               "y",
@@ -193,34 +190,34 @@
             );
             runningActivityHeight +=
               +d3.select(strategies["_groups"][0][j]).attr("height") +
-              strategyVerticalSpacing;
+              weekVerticalSpacing;
           }
         }
       }
 
       strategies
         .append("text")
-        .attr("class", "strategy-title")
+        .attr("class", "week-title")
         .attr("x", "15")
         .attr("y", "20")
         .attr("dy", 6)
-        .text(d => d.strategy.title);
+        .text(d => d.week.title);
 
       strategies
         .append("text")
-        .attr("class", "strategy-author")
+        .attr("class", "week-author")
         .attr("x", "15")
         .attr("y", "40")
         .attr("dy", 6)
-        .text(d => "created by " + d.strategy.author);
+        .text(d => "created by " + d.week.author);
 
       strategies
         .append("text")
-        .attr("class", "strategy-description")
+        .attr("class", "week-description")
         .attr("x", "15")
         .attr("y", "70")
         .attr("dy", 6)
-        .text(d => d.strategy.description);
+        .text(d => d.week.description);
     }
 
     function pathToNextSiblingRect(s, i) {
@@ -271,10 +268,10 @@
       }
     }
 
-    function renderStrategy(nodeStrategySet, svg) {
+    function renderWeek(nodeWeekSet, svg) {
       const nodes = svg
         .selectAll(".node")
-        .data(nodeStrategySet)
+        .data(nodeWeekSet)
         .enter()
         .append("svg")
         .attr("class", "node")
@@ -282,14 +279,14 @@
           "x",
           (d, i) =>
             `${nodeTotalSpacingHorizontal * d.node.classification +
-              strategyPadding}`
+              weekPadding}`
         )
         .attr(
           "y",
           (d, i) =>
             `${nodeTotalSpacingVertical * d.rank +
-              strategyPadding +
-              strategyInfoHeight}`
+              weekPadding +
+              weekInfoHeight}`
         );
 
       nodes

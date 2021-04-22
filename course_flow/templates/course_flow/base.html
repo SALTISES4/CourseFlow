@@ -14,30 +14,70 @@
 
     <!-- External resources -->
     <!-- * Fonts and icons -->
-    <link
-      href="https://fonts.googleapis.com/css?family=Material+Icons|Roboto|Fanwood+Text:400i|Quicksand:300,400|Rubik:200,300,300i,400"
-      rel="stylesheet"
-      type="text/css"
-    />
 
     <!-- * Scripts -->
     <!-- ** Preloads -->
-    <link
-      rel="preload"
-      href="https://cdn.polyfill.io/v2/polyfill.min.js"
-      as="script"
-    />
-    <link rel="preload" href="https://d3js.org/d3.v5.min.js" as="script" />
-    <!-- ** jquery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <!-- ** Polyfills for non-awesome browsers-->
-    <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+    <script
+      src="https://cdn.polyfill.io/v2/polyfill.min.js"
+      rel="preload"
+      integrity="sha384-83CYOGXsi59YYxBeS/ag/t615snxzc9UUt0t4ApSQHHKYmbmlQj/MuS9QywJHVDN"
+      crossorigin="anonymous"
+    ></script>
+    <!-- ** jquery -->
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+      integrity="sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"
+      integrity="sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX"
+      crossorigin="anonymous"
+    ></script>
     <!-- ** d3 -->
     <script
       src="https://d3js.org/d3.v5.min.js"
-      defer="true"
-      charset="utf-8"
+      integrity="sha384-M06Cb6r/Yrkprjr7ngOrJlzgekrkkdmGZDES/SUnkUpUol0/qjsaQWQfLzq0mcfg"
+      crossorigin="anonymous"
     ></script>
+    <!-- Quill Stylesheet-->
+    <link
+      rel="stylesheet"
+      href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+      integrity="sha384-07UbSXbd8HpaOfxZsiO6Y8H1HTX6v0J96b5qP6PKSpYEuSZSYD4GFFHlLRjvjVrL"
+      crossorigin="anonymous"
+    />
+    <!-- Include the Quill library -->
+    <script
+      src="https://cdn.quilljs.com/1.3.6/quill.min.js"
+      integrity="sha384-AOnYUgW6MQR78EvTqtkbNavz7dVI7dtLm7QdcIMBoy06adLIzNT40hHPYl9Rr5m5"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- * Icons -->
+    <!-- ** Preloads -->
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap"
+      as="style"
+    />
+    <!-- ** Loads -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap"
+      type="text/css"
+    />
+
+    <script nonce="{{ request.csp_nonce }}">
+      // HACK(keanulee): The Redux package assumes `process` exists - mock it here before
+      // the module is loaded.
+      window.process = {
+        env: {
+          NODE_ENV: "production"
+        }
+      };
+    </script>
 
     <!-- Internal resources -->
     {% compress js %}
@@ -50,8 +90,25 @@
     <!-- -->
     {% compress js %}
     <script
+      src="{% static 'course_flow/js/scripts-wf-redux.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script
+      src="{% static 'course_flow/js/scripts-outcomes.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script
       src="{% static 'user_feedback/js/app.min.js' %}"
       defer="true"
+      charset="utf-8"
     ></script>
     {% endcompress %}
     <!-- * CSS -->
@@ -62,6 +119,13 @@
     />
     {% endcompress %}
     <!--  -->
+    {% compress css %}
+    <link
+      rel="stylesheet"
+      href="{% static 'course_flow/css/workflow_styles.css' %}"
+    />
+    {% endcompress %}
+    <!-- -->
     {% compress css %}
     <link
       rel="stylesheet"
@@ -83,24 +147,6 @@
       #home-icon {
         height: 32px;
       }
-      #user-feedback-app {
-        bottom: 4px;
-        display: inline;
-        right: 8px;
-        position: absolute;
-      }
-      .topdropwrapper {
-        padding-top: 3px;
-      }
-      #username {
-        display: inline;
-        right: 40px;
-        position: absolute;
-      }
-      #username-container {
-        position: absolute;
-        right: 300px;
-      }
     </style>
     {% block header %}{% endblock %}
   </head>
@@ -116,27 +162,32 @@
         </div>
       </div>
       <div class="menubar">
-        <div class="topnavimage">
-          <a href="https://www.saltise.ca/"
-            ><img src="{% static 'course_flow/img/saltise_logo.svg'%}"
-          /></a>
-        </div>
-        <div class="topdropwrapper">
-          <button class="topdropbutton">
-            <a id="home-icon-link" href="{% url 'course_flow:home' %}"
-              ><img
-                id="home-icon"
-                src="{% static 'course_flow/img/home-24px.svg' %}"
+        <div class="mainmenu">
+          <div class="topnavimage">
+            <a href="https://www.saltise.ca/"
+              ><img src="{% static 'course_flow/img/saltise_logo.svg'%}"
             /></a>
-          </button>
+          </div>
+          <div class="topdropwrapper">
+            <button class="topdropbutton">
+              <a id="home-icon-link" href="{% url 'course_flow:home' %}"
+                ><img
+                  id="home-icon"
+                  src="{% static 'course_flow/img/home-24px.svg' %}"
+              /></a>
+            </button>
+          </div>
+          <div id="username-container" class="topdropwrapper">
+            <button id="username" class="topdropbutton">
+              {{ user.username }}
+            </button>
+          </div>
         </div>
-        <div id="username-container" class="topdropwrapper">
-          <button id="username" class="topdropbutton">
-            {{ user.username }}
-          </button>
-        </div>
-        <div class="topdropwrapper">
-          <div id="user-feedback-app"></div>
+        <div id="floatbar" class="floatbar"></div>
+        <div id="viewbar" class="viewbar">
+          <div class="topdropwrapper">
+            <div id="user-feedback-app"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -146,6 +197,68 @@
     {% csrf_token %}
   </body>
 
+  {% block common_scripts %}
+  <script nonce="{{request.csp_nonce}}">
+    //global paths for post/get
+    post_paths = {
+      get_possible_linked_workflows:
+        "{% url 'course_flow:get-possible-linked-workflows' %}",
+      set_linked_workflow: "{% url 'course_flow:set-linked-workflow' %}",
+      update_value: "{% url 'course_flow:update-value' %}",
+      new_column: "{% url 'course_flow:new-column' %}",
+      new_node: "{% url 'course_flow:new-node' %}",
+      add_strategy: "{% url 'course_flow:add-strategy' %}",
+      toggle_strategy: "{% url 'course_flow:toggle-strategy' %}",
+      new_node_link: "{% url 'course_flow:new-node-link' %}",
+      delete_self: "{% url 'course_flow:delete-self' %}",
+      unlink_outcome_from_node:
+        "{% url 'course_flow:unlink-outcome-from-node' %}",
+      duplicate_self: "{% url 'course_flow:duplicate-self' %}",
+      insert_sibling: "{% url 'course_flow:insert-sibling' %}",
+      insert_child: "{% url 'course_flow:insert-child' %}",
+      inserted_at: "{% url 'course_flow:inserted-at' %}",
+      column_changed: "{% url 'course_flow:change-column' %}",
+      add_outcome_to_node: "{% url 'course_flow:add-outcome-to-node' %}",
+      update_outcomenode_degree:
+        "{% url 'course_flow:update-outcomenode-degree' %}",
+      duplicate_project_ajax: "{% url 'course_flow:duplicate-project' %}",
+      duplicate_outcome_ajax: "{% url 'course_flow:duplicate-outcome' %}",
+      duplicate_workflow_ajax: "{% url 'course_flow:duplicate-workflow' %}",
+      duplicate_strategy_ajax: "{% url 'course_flow:duplicate-strategy' %}"
+    };
+
+    workflow_update_path = "{% url 'course_flow:workflow-update' pk='0'%}";
+    workflow_detail_path = "{% url 'course_flow:workflow-detail-view' pk='0'%}";
+
+    //reload if we got here using forward or back button
+    if (
+      window.performance &&
+      window.performance.navigation.type ===
+        window.performance.navigation.TYPE_BACK_FORWARD
+    ) {
+      location.reload();
+    }
+
+    // Broadcast that you're opening a page.
+    localStorage.openpages = "";
+    localStorage.openpages = window.location;
+    var onLocalStorageEvent = function(e) {
+      //Listen for whether the same page opens anywhere else, sending own page location back if they match
+      if (e.key == "openpages" && e.newValue == window.location) {
+        localStorage.page_used = "";
+        localStorage.page_used = window.location;
+      }
+      //Listen for ping back from other open pages, showing alert
+      if (e.key == "page_used" && e.newValue == window.location) {
+        alert(
+          "Warning: this page is already open in another tab or window. Editing the same page in multiple tabs or windows can lead to data loss on your file."
+        );
+      }
+    };
+    window.addEventListener("storage", onLocalStorageEvent, false);
+  </script>
+  {% endblock %} {% block read_only_scripts %} {% endblock %}
+  <!-- -->
   {% block scripts %}
   <script nonce="{{ request.csp_nonce }}">
     window.addEventListener("load", function() {

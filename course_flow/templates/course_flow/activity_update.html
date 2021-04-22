@@ -25,11 +25,7 @@
 <!-- -->
 {% block scripts %} {{ block.super }}
 <script nonce="{{ request.csp_nonce }}">
-
-
-
-          window.addEventListener("load", function() {
-
+  window.addEventListener("load", function() {
             root.injectDialogForm(
               "{% url 'course_flow:dialog-form-create' %}",
               "{% url 'course_flow:dialog-form-update' %}",
@@ -145,7 +141,7 @@
 
                         if((+strategy.attr("x")+(+strategy.attr("width")))>(+widget.attr("x")+(+widget.attr("width")))){
 
-                              addStrategy(widget.node().__data__.id);
+                              addWeek(widget.node().__data__.id);
                               widget.node().__data__.num_children++;
                               widget.select(".node-stats").text(d => `${d.title}s created: ${d.num_children}`);
 
@@ -266,7 +262,7 @@
                   .attr("id", "add-strategy")
                   .on("click", function(d,i){
                       root.currentComponentInstance.setState({
-                        isStrategy: true,
+                        isWeek: true,
                         objectType: "strategy",
                         parentID: activityJson.id
                       });
@@ -299,7 +295,7 @@
                 svgActivity.selectAll('.strategy').remove();
 
 
-                const strategies = svgActivity.selectAll('.strategy').data(activityData.strategyactivity_set).enter()
+                const strategies = svgActivity.selectAll('.strategy').data(activityData.strategyworkflow_set).enter()
                                   .append("svg").attr("class","strategy")
                                   .attr("x", "0")
                                   .attr("height", (d,i)=>`${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertical)-nodeSpacingVertical+2*strategyPadding+strategyInfoHeight}`)
@@ -311,11 +307,11 @@
                                           .attr("height", `${d.strategy.nodestrategy_set.length*(nodeHeight+nodeSpacingVertical)-nodeSpacingVertical+2*strategyPadding+strategyInfoHeight}`)
                                           .attr("width", `${strategyWidth}`)
                                           .attr("fill", "rgb(65,80,96)");
-                                      renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
+                                      renderWeek(d.strategy.nodestrategy_set, d3.select(this));
                                   });
 
-                    for(let i = 0; i<activityData.strategyactivity_set.length; i++){
-                      for(let j = 0; j<activityData.strategyactivity_set.length; j++){
+                    for(let i = 0; i<activityData.strategyworkflow_set.length; i++){
+                      for(let j = 0; j<activityData.strategyworkflow_set.length; j++){
                         if(strategies["_groups"][0][j].__data__.rank == i){
                             d3.select(strategies["_groups"][0][j]).attr("y", `${runningActivityHeight}`);
                             runningActivityHeight += +d3.select(strategies["_groups"][0][j]).attr("height")+strategyVerticalSpacing;
@@ -353,7 +349,7 @@
                           root.currentComponentInstance.setState({
                             object: d3.select(this.parentNode).node().__data__.strategy,
                             objectType: "strategy",
-                            isStrategy: true,
+                            isWeek: true,
                             isDeleteForm: true
                           });
                           root.currentComponentInstance.dlg.MDComponent.show();
@@ -371,7 +367,7 @@
                           root.currentComponentInstance.setState({
                             object: d3.select(this.parentNode).node().__data__.strategy,
                             objectType: "strategy",
-                            isStrategy: true,
+                            isWeek: true,
                             isUpdateForm: true
                           });
                           root.currentComponentInstance.dlg.MDComponent.show();
@@ -389,7 +385,8 @@
                             root.currentComponentInstance.setState({
                               objectType: "node",
                               parentID: d3.select(this.parentNode).node().__data__.strategy.id,
-                              isNode: true
+                              isNode: true,
+                              parentActivity:activityData
                             });
                             root.currentComponentInstance.dlg.MDComponent.show();
                         })
@@ -411,7 +408,7 @@
 
 
 
-                function makeDragDropStrategy() {
+                function makeDragDropWeek() {
                   let widget = undefined;
                   let color = undefined;
                   let widgetData = undefined;
@@ -468,7 +465,7 @@
                   drags(strategies);
                 }
 
-                makeDragDropStrategy();
+                makeDragDropWeek();
 
             }
 
@@ -516,10 +513,10 @@
             }
 
 
-            function renderStrategy(nodeStrategySet, svg){
+            function renderWeek(nodeWeekSet, svg){
 
 
-              const nodes = svg.selectAll('.node').data(nodeStrategySet).enter()
+              const nodes = svg.selectAll('.node').data(nodeWeekSet).enter()
                                 .append("svg").attr("class","node")
                                 .attr("x", (d,i) => `${nodeTotalSpacingHorizontal*d.node.classification+strategyPadding}`)
                                 .attr("y", (d,i) => `${nodeTotalSpacingVertical*d.rank+strategyPadding+strategyInfoHeight}`);
@@ -607,7 +604,8 @@
                         object: d3.select(this.parentNode).node().__data__.node,
                         objectType: "node",
                         isNode: true,
-                        isUpdateForm: true
+                        isUpdateForm: true,
+                        parentActivity:activityJson
                       });
                       root.currentComponentInstance.dlg.MDComponent.show();
                     })
@@ -701,7 +699,7 @@
                   if (widgetData.node.classification < 0) widgetData.node.classification = 0;
                   if (widgetData.node.classification > 2) widgetData.node.classification = 2;
                   if (widgetData.rank < 0) widgetData.rank = 0;
-                  if (widgetData.rank > nodeStrategySet.length-1) widgetData.rank = nodeStrategySet.length-1;
+                  if (widgetData.rank > nodeWeekSet.length-1) widgetData.rank = nodeWeekSet.length-1;
                   widget.select("rect").attr("fill", color).attr("y", 0).attr("x",0)
                     .attr("width", `${nodeWidth}`).attr("height", `${nodeHeight}`).attr("filter", "");
                   widget.attr("y",(d,i)=>`${d.rank*nodeTotalSpacingVertical+strategyPadding+strategyInfoHeight}`)
@@ -765,7 +763,7 @@
           });
       }
 
-        function addStrategy(strategyPk){
+        function addWeek(strategyPk){
           $.post("{% url 'course_flow:add-strategy' %}", {strategyPk: strategyPk, activityPk: activityJson.id})
           .done(function(data) {
           if (data.action == "posted") {

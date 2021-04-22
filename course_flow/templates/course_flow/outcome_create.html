@@ -1,0 +1,32 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block header %}{% endblock %}
+<!-- -->
+{% block body %}
+<svg width="500" height="100">
+  <defs>
+    <filter id="selection-shadow">
+      <feDropShadow dx="1" dy="1" stdDeviation="2" />
+    </filter>
+  </defs>
+</svg>
+<h1>
+  {% trans 'Create an outcome.' %}
+</h1>
+<form method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <input id="save-button" type="submit" value="Save" />
+</form>
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %} {{ block.super }} {% endblock %}

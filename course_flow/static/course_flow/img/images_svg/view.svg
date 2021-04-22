@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="140.49112mm"
+   height="140.49112mm"
+   viewBox="0 0 497.80318 497.80319"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="view.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="138.57065"
+     inkscape:cy="162.49544"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="-8"
+     inkscape:window-y="72"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-120.64101,-298.66119)">
+    <path
+       d="m 447.31271,547.11852 a 74.92878,74.92878 0 0 1 -75.33814,74.47204 74.92878,74.92878 0 0 1 -74.51714,-75.29353 74.92878,74.92878 0 0 1 75.24888,-74.56222 74.92878,74.92878 0 0 1 74.60728,75.20422"
+       sodipodi:open="true"
+       sodipodi:end="0.0036851929"
+       sodipodi:start="0.0060806573"
+       sodipodi:ry="74.92878"
+       sodipodi:rx="74.92878"
+       sodipodi:cy="546.6629"
+       sodipodi:cx="372.38531"
+       sodipodi:type="arc"
+       id="path8283-5"
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:23.58040428;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:5.80000067;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       inkscape:export-xdpi="4.3390651"
+       inkscape:export-ydpi="4.3390651" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:23.38334656;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 188.66952,542.20947 c 0,0 78.8134,-110.8319 181.6207,-112.9658 102.8074,-2.1339 185.3296,119.1774 185.3296,119.1774 0,0 -91.0472,127.5441 -188.9296,127.5441 -97.8824,0 -178.0207,-133.7557 -178.0207,-133.7557 z"
+       id="path8605"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="czczc"
+       inkscape:export-xdpi="4.3390651"
+       inkscape:export-ydpi="4.3390651" />
+    <rect
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:20;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:5.80000067;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       id="rect8624"
+       width="497.80316"
+       height="497.80316"
+       x="120.64101"
+       y="298.66119"
+       inkscape:export-xdpi="4.3390651"
+       inkscape:export-ydpi="4.3390651" />
+  </g>
+</svg>

@@ -1,0 +1,60 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block header %}{% endblock %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<div id="content-container" class="body-wrapper"></div>
+<div id="popup-container"></div>
+<!-- -->
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block read_only_scripts %}
+
+<script nonce="{{request.csp_nonce}}">
+  const read_only = false;
+</script>
+
+{% endblock %}
+<!-- -->
+{% block scripts %} {{ block.super }}
+<script nonce="{{request.csp_nonce}}">
+
+  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+  const update_path = {
+      outcome:"{% url 'course_flow:outcome-update' pk='0'%}",
+      activity:"{% url 'course_flow:workflow-update' pk='0'%}",
+      course:"{% url 'course_flow:workflow-update' pk='0'%}",
+      program:"{% url 'course_flow:workflow-update' pk='0'%}",
+  }
+  const detail_path = {
+      outcome:"{% url 'course_flow:outcome-detail-view' pk='0'%}",
+      activity:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
+      course:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
+      program:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
+  }
+  const create_path = {
+      outcome:"{% url 'course_flow:outcome-create' projectPk=object.pk %}",
+      activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
+      course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
+      program:"{% url 'course_flow:program-create' projectPk=object.pk %}"
+  }
+  const data_package = {{workflow_data_package|safe}};
+  const project_data= {{project_data|safe}};
+  console.log(data_package);
+  const project_title = "{{object.title|safe}}";
+  const user_id = {{ user.id }};
+  window.addEventListener("load",function(){
+      workflow_redux.renderProjectMenu(data_package,project_data);
+  });
+</script>
+{% endblock %}

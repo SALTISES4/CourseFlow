@@ -177,7 +177,7 @@
             )
             .attr("width", `${strategyWidth}`)
             .attr("fill", "#1976BC");
-          renderStrategy(d.strategy.nodestrategy_set, d3.select(this));
+          renderWeek(d.strategy.nodestrategy_set, d3.select(this));
         });
 
       for (let i = 0; i < activityData.strategyactivity_set.length; i++) {
@@ -267,10 +267,10 @@
       }
     }
 
-    function renderStrategy(nodeStrategySet, svg) {
+    function renderWeek(nodeWeekSet, svg) {
       const nodes = svg
         .selectAll(".node")
-        .data(nodeStrategySet)
+        .data(nodeWeekSet)
         .enter()
         .append("svg")
         .attr("class", "node")

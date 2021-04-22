@@ -1,0 +1,73 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block header %}{% endblock %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<div id="container" class="body-wrapper"></div>
+<div id="popup-container"></div>
+<div id="sidebar" class="side-bar">
+  <ul>
+    <li>
+      <a href="#edit-menu"
+        ><img
+          src="{% static 'course_flow/img/images_svg/edit_pencil_blue.svg' %}"
+      /></a>
+    </li>
+  </ul>
+  <div id="edit-menu" class="right-panel-container"></div>
+</div>
+<!-- -->
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block read_only_scripts %}
+
+<script nonce="{{request.csp_nonce}}">
+  const read_only = false;
+</script>
+
+{% endblock %}
+<!-- -->
+{% block scripts %} {{ block.super }}
+<script nonce="{{request.csp_nonce}}">
+
+  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+  var selection_manager;
+  var tiny_loader;
+
+  initial_data = {{data_flat|safe}}
+  console.log(initial_data);
+  const user_id = {{ user.id }};
+  const initial_loading=false;
+
+  $("#sidebar").tabs({collapsible:true,active:0,disabled:null});
+
+  $("#sidebar").on("mousedown",(evt)=>{evt.stopPropagation()});
+
+  if(read_only)$("#sidebar").hide();
+
+  {% if parent_project_pk %}
+      if(read_only){
+          $("#floatbar").append("<a href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+      }else{
+          $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+      }
+  {% endif %}
+
+  window.addEventListener("load",function(){
+      $(document).ajaxError(outcome_scripts.fail_function);
+      tiny_loader = new workflow_redux.TinyLoader('#container');
+      selection_manager = new workflow_redux.SelectionManager();
+      outcome_scripts.renderOutcomeView($("#container").get()[0]);
+  });
+</script>
+{% endblock %}
