@@ -215,7 +215,7 @@ def course_flow_patterns():
             views.ActivityDetailView.as_view(),
             name="activity-detail-view",
         ),
-        path(
+        url(
             "jsi18n/",
             JavaScriptCatalog.as_view(),
             name="javascript-catalog"
