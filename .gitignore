@@ -21,7 +21,6 @@
 /media
 /node_modules
 /sent_emails
-/server_static
 /static
 /server_static
 /*venv*/
