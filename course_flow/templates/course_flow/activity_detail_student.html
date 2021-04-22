@@ -17,20 +17,12 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
-{% block scripts %}
+{% block scripts %} {{ block.super }}
 <script nonce="{{ request.csp_nonce }}">
   window.addEventListener("load", function() {
     d3.select("#home-icon-link").attr("href", "{% url 'student-page' %}");
     d3.select("#username").text("{{ user.email }}");
     d3.select("body").style("background-color", "rgb(65,80,96)");
-
-    userFeedback.injectDialog(
-      "{% trans 'Let us know how we can improve your experience!' %}",
-      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
-      "{% trans 'Thanks for your feedback!' %}",
-      "{% trans 'Sorry, please try again later!' %}",
-      "{% url 'user_feedback:post' %}"
-    );
 
     root.injectStudentCompletionStatusDialog(
       "{% url 'course_flow:switch-node-completion-status' %}",

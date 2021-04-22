@@ -1,3 +1,4 @@
+*.egg-info
 *.ipynb
 *.ipynb_checkpoints/
 *.log
@@ -9,7 +10,9 @@
 .data/
 .pytest_cache/
 .tern-port
+.tox/
 .venv
+*venv*/
 /CACHE
 /course_flow/local_settings.py
 /htmlcov
@@ -19,6 +22,7 @@
 /node_modules
 /sent_emails
 /static
+/server_static
 /*venv*/
 locust*
 logs

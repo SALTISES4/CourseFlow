@@ -1,98 +1,84 @@
+import json
+import math
+from functools import reduce
+from itertools import chain
+
+from django.conf import settings
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import ProtectedError
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.views.decorators.http import require_POST
+from django.views.generic import DetailView, TemplateView, UpdateView
+from django.views.generic.edit import CreateView
+from rest_framework import viewsets
+from rest_framework.generics import ListAPIView
+from rest_framework.renderers import JSONRenderer
+
+from .decorators import (
+    ajax_login_required,
+    test_object_permission,
+    user_can_delete,
+    user_can_edit,
+    user_can_view,
+    user_can_view_or_none,
+    user_is_teacher,
+)
+from .forms import RegistrationForm
 from .models import (
-    User,
-    Project,
-    Course,
+    Activity,
     Column,
     ColumnWorkflow,
-    Workflow,
-    Activity,
-    Week,
+    Course,
+    Discipline,
+    Favourite,
     Node,
     NodeLink,
     NodeWeek,
-    WeekWorkflow,
-    Program,
-    NodeCompletionStatus,
-    WorkflowProject,
-    OutcomeProject,
-    Outcome,
-    OutcomeOutcome,
-    OutcomeNode,
-    Discipline,
-    Favourite,
     ObjectPermission,
+    Outcome,
+    OutcomeNode,
+    OutcomeOutcome,
+    OutcomeProject,
+    Program,
+    Project,
+    User,
+    Week,
+    WeekWorkflow,
+    Workflow,
+    WorkflowProject,
 )
 from .serializers import (
-    serializer_lookups,
-    serializer_lookups_shallow,
-    ActivitySerializer,
-    CourseSerializer,
-    WeekSerializer,
-    NodeSerializer,
-    ProgramSerializer,
-    WorkflowSerializer,
-    WorkflowSerializerShallow,
-    CourseSerializerShallow,
     ActivitySerializerShallow,
-    ProgramSerializerShallow,
-    WeekWorkflowSerializerShallow,
-    WeekSerializerShallow,
-    NodeWeekSerializerShallow,
+    ColumnSerializerShallow,
+    ColumnWorkflowSerializerShallow,
+    CourseSerializerShallow,
+    DisciplineSerializer,
+    InfoBoxSerializer,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
-    ColumnWorkflowSerializerShallow,
-    ColumnSerializerShallow,
-    WorkflowSerializerFinder,
-    ProjectSerializerShallow,
-    OutcomeSerializerShallow,
-    OutcomeOutcomeSerializerShallow,
+    NodeWeekSerializerShallow,
     OutcomeNodeSerializerShallow,
+    OutcomeOutcomeSerializerShallow,
     OutcomeProjectSerializerShallow,
-    DisciplineSerializer,
+    OutcomeSerializerShallow,
+    ProjectSerializerShallow,
     UserSerializer,
-    InfoBoxSerializer,
+    WeekSerializerShallow,
+    WeekWorkflowSerializerShallow,
+    WorkflowSerializerFinder,
+    WorkflowSerializerShallow,
     bleach_allowed_tags,
     bleach_sanitizer,
+    serializer_lookups_shallow,
 )
-from .decorators import (
-    ajax_login_required,
-    user_can_edit,
-    user_can_view,
-    user_can_delete,
-    user_can_view_or_none,
-    user_is_teacher,
-    test_object_permission
-)
-from django.urls import reverse
-from django.views.generic.edit import CreateView
-from django.views.generic import DetailView, UpdateView, TemplateView, ListView
-from rest_framework import viewsets
-from rest_framework.renderers import JSONRenderer
-from rest_framework.generics import ListAPIView
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from django.db.models import Count, Q
-import json
-from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import Group
-from .forms import RegistrationForm
-from django.shortcuts import render, redirect
-from django.db.models import ProtectedError
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
-import math
-from functools import reduce
-from itertools import chain, islice, tee
-from .utils import (
-    get_model_from_str,
-    get_parent_model_str,
-    get_parent_model,
-    get_project_outcomes,
-)
-
+from .utils import get_model_from_str, get_project_outcomes
 
 
 class UserCanViewMixin(UserPassesTestMixin):
@@ -100,16 +86,26 @@ class UserCanViewMixin(UserPassesTestMixin):
         return Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
-            test_object_permission(self.get_object(),self.request.user,ObjectPermission.PERMISSION_VIEW)
+            test_object_permission(
+                self.get_object(),
+                self.request.user,
+                ObjectPermission.PERMISSION_VIEW,
+            )
         )
-    
+
+
 class UserCanEditMixin(UserPassesTestMixin):
     def test_func(self):
         return Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
-            test_object_permission(self.get_object(),self.request.user,ObjectPermission.PERMISSION_EDIT)
+            test_object_permission(
+                self.get_object(),
+                self.request.user,
+                ObjectPermission.PERMISSION_EDIT,
+            )
         )
+
 
 class UserCanEditProjectMixin(UserPassesTestMixin):
     def test_func(self):
@@ -117,9 +113,11 @@ class UserCanEditProjectMixin(UserPassesTestMixin):
         return Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
-            test_object_permission(project,self.request.user,ObjectPermission.PERMISSION_EDIT)
-        )  
-    
+            test_object_permission(
+                project, self.request.user, ObjectPermission.PERMISSION_EDIT
+            )
+        )
+
 
 def registration_view(request):
 
@@ -142,69 +140,100 @@ def registration_view(request):
         request, "course_flow/registration/registration.html", {"form": form}
     )
 
-class ExploreView(LoginRequiredMixin,UserPassesTestMixin,TemplateView):
 
+class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def test_func(self):
         return (
             Group.objects.get(name=settings.TEACHER_GROUP)
             in self.request.user.groups.all()
         )
-    
+
     template_name = "course_flow/explore.html"
-    
+
     def get_context_data(self):
-        types = self.request.GET.getlist("types[]",None)
-        author = self.request.GET.get("auth",None)
-        disciplines = self.request.GET.getlist("disc[]",None)
-        title = self.request.GET.get("title",None)
-        description = self.request.GET.get("des",None)
-        sort = self.request.GET.get("sort",None)
-        page = self.request.GET.get("page",1)
-        results = self.request.GET.get("results",20)
+        types = self.request.GET.getlist("types[]", None)
+        author = self.request.GET.get("auth", None)
+        disciplines = self.request.GET.getlist("disc[]", None)
+        title = self.request.GET.get("title", None)
+        description = self.request.GET.get("des", None)
+        sort = self.request.GET.get("sort", None)
+        page = self.request.GET.get("page", 1)
+        results = self.request.GET.get("results", 20)
         filter_kwargs = {}
-        if title: filter_kwargs['title__icontains']=title
-        if description: filter_kwargs['description__icontains']=description
-        if author: filter_kwargs['author__username__icontains']=author
-        if page:page=int(page)
-        else: page=1
-        if results: results=int(results)
-        else: results = 10
+        if title:
+            filter_kwargs["title__icontains"] = title
+        if description:
+            filter_kwargs["description__icontains"] = description
+        if author:
+            filter_kwargs["author__username__icontains"] = author
+        if page:
+            page = int(page)
+        else:
+            page = 1
+        if results:
+            results = int(results)
+        else:
+            results = 10
         disciplines = Discipline.objects.filter(id__in=disciplines)
-        if len(disciplines)>0:
-            filter_kwargs['disciplines__in'] = disciplines
+        if len(disciplines) > 0:
+            filter_kwargs["disciplines__in"] = disciplines
         try:
-            queryset = reduce(lambda x,y: chain(x,y), [
-                get_model_from_str(model_type).objects.filter(published=True).filter(depth=0,**filter_kwargs).exclude(author=self.request.user).distinct() if model_type =="outcome" else get_model_from_str(model_type).objects.filter(published=True).filter(**filter_kwargs).exclude(author=self.request.user).distinct()
-                for model_type in types])
+            queryset = reduce(
+                lambda x, y: chain(x, y),
+                [
+                    get_model_from_str(model_type)
+                    .objects.filter(published=True)
+                    .filter(depth=0, **filter_kwargs)
+                    .exclude(author=self.request.user)
+                    .distinct()
+                    if model_type == "outcome"
+                    else get_model_from_str(model_type)
+                    .objects.filter(published=True)
+                    .filter(**filter_kwargs)
+                    .exclude(author=self.request.user)
+                    .distinct()
+                    for model_type in types
+                ],
+            )
         except:
             queryset = Project.objects.none()
         total_results = 0
         subqueryset = []
         for x in queryset:
-            if(total_results>=(page-1)*results and total_results<page*results):subqueryset.append(x)
-            total_results=total_results+1
-        page_number = math.ceil(float(total_results)/results)
-        object_list = JSONRenderer().render(
-            InfoBoxSerializer(subqueryset,many=True,context={'user':self.request.user}).data
-        ).decode('utf-8')
+            if (
+                total_results >= (page - 1) * results
+                and total_results < page * results
+            ):
+                subqueryset.append(x)
+            total_results = total_results + 1
+        page_number = math.ceil(float(total_results) / results)
+        object_list = (
+            JSONRenderer()
+            .render(
+                InfoBoxSerializer(
+                    subqueryset, many=True, context={"user": self.request.user}
+                ).data
+            )
+            .decode("utf-8")
+        )
         return {
-            'object_list':object_list,
-            'pages':JSONRenderer().render({
-                'total_results':total_results,
-                'page_count':page_number,
-                'current_page':page,
-                'results_per_page':results,
-            }).decode('utf-8'),
-            'disciplines':JSONRenderer().render(
-                DisciplineSerializer(Discipline.objects.all(),many=True).data
-            ).decode('utf-8')
+            "object_list": object_list,
+            "pages": JSONRenderer()
+            .render(
+                {
+                    "total_results": total_results,
+                    "page_count": page_number,
+                    "current_page": page,
+                    "results_per_page": results,
+                }
+            )
+            .decode("utf-8"),
+            "disciplines": JSONRenderer()
+            .render(
+                DisciplineSerializer(Discipline.objects.all(), many=True).data
+            )
+            .decode("utf-8"),
         }
-    
-    
-    
-        
-        
-        
 
 
 def get_all_outcomes(outcome, search_depth):
@@ -225,9 +254,9 @@ def get_project_data_package(user):
                     "title": "Add a Project",
                     "object_type": "project",
                     "objects": InfoBoxSerializer(
-                        Project.objects.filter(author=user), 
+                        Project.objects.filter(author=user),
                         many=True,
-                        context={'user':user},
+                        context={"user": user},
                     ).data,
                 }
             ],
@@ -243,7 +272,7 @@ def get_project_data_package(user):
                     "objects": InfoBoxSerializer(
                         Activity.objects.filter(author=user, is_strategy=True),
                         many=True,
-                        context={'user':user},
+                        context={"user": user},
                     ).data,
                 },
                 {
@@ -252,7 +281,7 @@ def get_project_data_package(user):
                     "objects": InfoBoxSerializer(
                         Course.objects.filter(author=user, is_strategy=True),
                         many=True,
-                        context={'user':user},
+                        context={"user": user},
                     ).data,
                 },
             ],
@@ -266,9 +295,14 @@ def get_project_data_package(user):
                     "title": "Your Favourite Projects",
                     "object_type": "project",
                     "objects": InfoBoxSerializer(
-                        [favourite.content_object for favourite in Favourite.objects.filter(user=user,project__published=True)],
+                        [
+                            favourite.content_object
+                            for favourite in Favourite.objects.filter(
+                                user=user, project__published=True
+                            )
+                        ],
                         many=True,
-                        context={'user':user},
+                        context={"user": user},
                     ).data,
                 }
             ],
@@ -281,18 +315,32 @@ def get_project_data_package(user):
                     "title": "Your Favourite Activity-Level Strategies",
                     "object_type": "activity",
                     "objects": InfoBoxSerializer(
-                        [favourite.content_object for favourite in Favourite.objects.filter(user=user,activity__published=True,activity__is_strategy=True)],
+                        [
+                            favourite.content_object
+                            for favourite in Favourite.objects.filter(
+                                user=user,
+                                activity__published=True,
+                                activity__is_strategy=True,
+                            )
+                        ],
                         many=True,
-                        context={'user':user},
+                        context={"user": user},
                     ).data,
                 },
                 {
                     "title": "Your Favourite Course-Level Strategies",
                     "object_type": "course",
                     "objects": InfoBoxSerializer(
-                        [favourite.content_object for favourite in Favourite.objects.filter(user=user,course__published=True,course__is_strategy=True)],
+                        [
+                            favourite.content_object
+                            for favourite in Favourite.objects.filter(
+                                user=user,
+                                course__published=True,
+                                course__is_strategy=True,
+                            )
+                        ],
                         many=True,
-                        context={'user':user},
+                        context={"user": user},
                     ).data,
                 },
             ],
@@ -314,34 +362,43 @@ def get_workflow_data_package(user, project, type_filter, self_only):
                 "objects": InfoBoxSerializer(
                     Program.objects.filter(project=project, is_strategy=False),
                     many=True,
-                    context={'user':user},
+                    context={"user": user},
                 ).data,
             }
         )
-        if not self_only: other_project_sections.append(
-            {
-                "title": "Programs",
-                "object_type": "program",
-                "objects": InfoBoxSerializer(
-                    Program.objects.filter(
-                        author=user, is_strategy=False
-                    ).exclude(project=project),
-                    many=True,
-                    context={'user':user},
-                ).data,
-            }
-        )
-        if not self_only: all_published_sections.append(
-            {
-                "title": "Your Favourite Programs",
-                "object_type": "program",
-                "objects": InfoBoxSerializer(
-                    [favourite.content_object for favourite in Favourite.objects.filter(user=user,program__published=True,program__is_strategy=False)],
-                    many=True,
-                    context={'user':user},
-                ).data,
-            }
-        )
+        if not self_only:
+            other_project_sections.append(
+                {
+                    "title": "Programs",
+                    "object_type": "program",
+                    "objects": InfoBoxSerializer(
+                        Program.objects.filter(
+                            author=user, is_strategy=False
+                        ).exclude(project=project),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
+        if not self_only:
+            all_published_sections.append(
+                {
+                    "title": "Your Favourite Programs",
+                    "object_type": "program",
+                    "objects": InfoBoxSerializer(
+                        [
+                            favourite.content_object
+                            for favourite in Favourite.objects.filter(
+                                user=user,
+                                program__published=True,
+                                program__is_strategy=False,
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
     if type_filter is None or type_filter == 1:
         this_project_sections.append(
             {
@@ -350,34 +407,43 @@ def get_workflow_data_package(user, project, type_filter, self_only):
                 "objects": InfoBoxSerializer(
                     Course.objects.filter(project=project, is_strategy=False),
                     many=True,
-                    context={'user':user},
+                    context={"user": user},
                 ).data,
             }
         )
-        if not self_only: other_project_sections.append(
-            {
-                "title": "Courses",
-                "object_type": "course",
-                "objects": InfoBoxSerializer(
-                    Course.objects.filter(
-                        author=user, is_strategy=False
-                    ).exclude(project=project),
-                    many=True,
-                    context={'user':user},
-                ).data,
-            }
-        )
-        if not self_only: all_published_sections.append(
-            {
-                "title": "Your Favourite Courses",
-                "object_type": "course",
-                "objects": InfoBoxSerializer(
-                    [favourite.content_object for favourite in Favourite.objects.filter(user=user,course__published=True,course__is_strategy=False)],
-                    many=True,
-                    context={'user':user},
-                ).data,
-            }
-        )
+        if not self_only:
+            other_project_sections.append(
+                {
+                    "title": "Courses",
+                    "object_type": "course",
+                    "objects": InfoBoxSerializer(
+                        Course.objects.filter(
+                            author=user, is_strategy=False
+                        ).exclude(project=project),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
+        if not self_only:
+            all_published_sections.append(
+                {
+                    "title": "Your Favourite Courses",
+                    "object_type": "course",
+                    "objects": InfoBoxSerializer(
+                        [
+                            favourite.content_object
+                            for favourite in Favourite.objects.filter(
+                                user=user,
+                                course__published=True,
+                                course__is_strategy=False,
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
 
     if type_filter is None or type_filter == 0:
         this_project_sections.append(
@@ -389,34 +455,43 @@ def get_workflow_data_package(user, project, type_filter, self_only):
                         project=project, is_strategy=False
                     ),
                     many=True,
-                    context={'user':user},
+                    context={"user": user},
                 ).data,
             }
         )
-        if not self_only: other_project_sections.append(
-            {
-                "title": "Activities",
-                "object_type": "activity",
-                "objects": InfoBoxSerializer(
-                    Activity.objects.filter(
-                        author=user, is_strategy=False
-                    ).exclude(project=project),
-                    many=True,
-                    context={'user':user},
-                ).data,
-            }
-        )
-        if not self_only: all_published_sections.append(
-            {
-                "title": "Your Favourite Activities",
-                "object_type": "activity",
-                "objects": InfoBoxSerializer(
-                    [favourite.content_object for favourite in Favourite.objects.filter(user=user,activity__published=True,activity__is_strategy=False)],
-                    many=True,
-                    context={'user':user},
-                ).data,
-            }
-        )
+        if not self_only:
+            other_project_sections.append(
+                {
+                    "title": "Activities",
+                    "object_type": "activity",
+                    "objects": InfoBoxSerializer(
+                        Activity.objects.filter(
+                            author=user, is_strategy=False
+                        ).exclude(project=project),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
+        if not self_only:
+            all_published_sections.append(
+                {
+                    "title": "Your Favourite Activities",
+                    "object_type": "activity",
+                    "objects": InfoBoxSerializer(
+                        [
+                            favourite.content_object
+                            for favourite in Favourite.objects.filter(
+                                user=user,
+                                activity__published=True,
+                                activity__is_strategy=False,
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
 
     if type_filter is None:
         this_project_sections.append(
@@ -426,34 +501,41 @@ def get_workflow_data_package(user, project, type_filter, self_only):
                 "objects": InfoBoxSerializer(
                     Outcome.objects.filter(project=project),
                     many=True,
-                    context={'user':user},
+                    context={"user": user},
                 ).data,
             }
         )
-        if not self_only: other_project_sections.append(
-            {
-                "title": "Outcomes",
-                "object_type": "outcome",
-                "objects": InfoBoxSerializer(
-                    Outcome.objects.filter(author=user)
-                    .exclude(project=project)
-                    .exclude(project=None),
-                    many=True,
-                    context={'user':user},
-                ).data,
-            }
-        )
-        if not self_only: all_published_sections.append(
-            {
-                "title": "Your Favourite Outcomes",
-                "object_type": "outcome",
-                "objects": InfoBoxSerializer(
-                    [favourite.content_object for favourite in Favourite.objects.filter(user=user,outcome__published=True)],
-                    many=True,
-                    context={'user':user},
-                ).data,
-            }
-        )
+        if not self_only:
+            other_project_sections.append(
+                {
+                    "title": "Outcomes",
+                    "object_type": "outcome",
+                    "objects": InfoBoxSerializer(
+                        Outcome.objects.filter(author=user)
+                        .exclude(project=project)
+                        .exclude(project=None),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
+        if not self_only:
+            all_published_sections.append(
+                {
+                    "title": "Your Favourite Outcomes",
+                    "object_type": "outcome",
+                    "objects": InfoBoxSerializer(
+                        [
+                            favourite.content_object
+                            for favourite in Favourite.objects.filter(
+                                user=user, outcome__published=True
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
     if project.author == user:
         current_copy_type = "copy"
         other_copy_type = "import"
@@ -469,13 +551,13 @@ def get_workflow_data_package(user, project, type_filter, self_only):
             "duplicate": current_copy_type,
         },
     }
-    if not self_only: 
-        data_package["other_projects"]={
+    if not self_only:
+        data_package["other_projects"] = {
             "title": "From Your Other Projects",
             "sections": other_project_sections,
             "duplicate": other_copy_type,
         }
-        data_package["all_published"]={
+        data_package["all_published"] = {
             "title": "Your Favourites",
             "sections": all_published_sections,
             "duplicate": other_copy_type,
@@ -530,7 +612,9 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         context["workflow_data_package"] = (
             JSONRenderer()
             .render(
-                get_workflow_data_package(self.request.user, project, None,False)
+                get_workflow_data_package(
+                    self.request.user, project, None, False
+                )
             )
             .decode("utf-8")
         )
@@ -554,7 +638,9 @@ class ProjectUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
         context["workflow_data_package"] = (
             JSONRenderer()
             .render(
-                get_workflow_data_package(self.request.user, project, None,False)
+                get_workflow_data_package(
+                    self.request.user, project, None, False
+                )
             )
             .decode("utf-8")
         )
@@ -567,7 +653,9 @@ class ProjectUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
         return context
 
 
-class OutcomeCreateView(LoginRequiredMixin, UserCanEditProjectMixin, CreateView):
+class OutcomeCreateView(
+    LoginRequiredMixin, UserCanEditProjectMixin, CreateView
+):
     model = Outcome
     fields = ["title"]
     template_name = "course_flow/outcome_create.html"
@@ -592,15 +680,14 @@ class OutcomeCreateView(LoginRequiredMixin, UserCanEditProjectMixin, CreateView)
             "course_flow:outcome-update", kwargs={"pk": self.object.pk}
         )
 
+
 def get_outcome_context_data(outcome, context, user):
     outcomes = get_all_outcomes(outcome, 0)
     outcomeoutcomes = []
     for oc in outcomes:
         outcomeoutcomes += list(oc.child_outcome_links.all())
 
-    parent_project_pk = OutcomeProject.objects.get(
-        outcome=outcome
-    ).project.pk
+    parent_project_pk = OutcomeProject.objects.get(outcome=outcome).project.pk
 
     data_flat = {
         "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
@@ -614,6 +701,7 @@ def get_outcome_context_data(outcome, context, user):
     )
     return context
 
+
 class OutcomeDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Outcome
     fields = ["title", "description", "published"]
@@ -621,7 +709,9 @@ class OutcomeDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        context = get_outcome_context_data(self.object,context,self.request.user)
+        context = get_outcome_context_data(
+            self.object, context, self.request.user
+        )
 
         return context
 
@@ -631,16 +721,17 @@ class OutcomeUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
     fields = ["title", "description", "published"]
     template_name = "course_flow/outcome_update.html"
 
-
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context = get_outcome_context_data(self.object,context,self.request.user)
-        
+        context = get_outcome_context_data(
+            self.object, context, self.request.user
+        )
+
         return context
 
 
 def get_workflow_context_data(workflow, context, user):
-    data_package={}
+    data_package = {}
     if not workflow.is_strategy:
         project = WorkflowProject.objects.get(workflow=workflow).project
     SerializerClass = serializer_lookups_shallow[workflow.type]
@@ -736,9 +827,7 @@ def get_workflow_context_data(workflow, context, user):
                 many=True,
             ).data
             data_flat["saltise_strategy"] = WorkflowSerializerShallow(
-                Activity.objects.filter(
-                    from_saltise=True, is_strategy=True
-                ),
+                Activity.objects.filter(from_saltise=True, is_strategy=True),
                 many=True,
             ).data
 
@@ -750,11 +839,17 @@ def get_workflow_context_data(workflow, context, user):
     data_package["time_choices"] = time_choices
     data_package["outcome_type_choices"] = outcome_type_choices
     data_package["outcome_sort_choices"] = outcome_sort_choices
-    data_package["strategy_classification_choices"] = strategy_classification_choices
+    data_package[
+        "strategy_classification_choices"
+    ] = strategy_classification_choices
     if not workflow.is_strategy:
         context["parent_project_pk"] = parent_project_pk
-    context["is_strategy"] = JSONRenderer().render(workflow.is_strategy).decode("utf-8")
-    context["data_package"] = JSONRenderer().render(data_package).decode("utf-8")
+    context["is_strategy"] = (
+        JSONRenderer().render(workflow.is_strategy).decode("utf-8")
+    )
+    context["data_package"] = (
+        JSONRenderer().render(data_package).decode("utf-8")
+    )
 
     return context
 
@@ -770,7 +865,6 @@ class WorkflowUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
     def get_object(self):
         workflow = super().get_object()
         return Workflow.objects.get_subclass(pk=workflow.pk)
-
 
     def get_success_url(self):
         return reverse(
@@ -788,9 +882,7 @@ class WorkflowUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
         return context
 
 
-class WorkflowDetailView(
-    LoginRequiredMixin, UserCanViewMixin, DetailView
-):
+class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Workflow
     fields = ["title", "description"]
     template_name = "course_flow/workflow_detail.html"
@@ -831,7 +923,9 @@ class ProgramDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     template_name = "course_flow/program_detail.html"
 
 
-class ProgramCreateView(LoginRequiredMixin, UserCanEditProjectMixin, CreateView):
+class ProgramCreateView(
+    LoginRequiredMixin, UserCanEditProjectMixin, CreateView
+):
     model = Program
     fields = ["title", "description"]
     template_name = "course_flow/program_create.html"
@@ -873,7 +967,9 @@ class CourseDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 #    template_name = "course_flow/course_detail_student.html"
 
 
-class CourseCreateView(LoginRequiredMixin, UserCanEditProjectMixin, CreateView):
+class CourseCreateView(
+    LoginRequiredMixin, UserCanEditProjectMixin, CreateView
+):
     model = Course
     fields = ["title", "description"]
     template_name = "course_flow/course_create.html"
@@ -924,9 +1020,7 @@ class CourseStrategyCreateView(
         )
 
 
-class ActivityDetailView(
-    LoginRequiredMixin, UserCanViewMixin, DetailView
-):
+class ActivityDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Activity
     template_name = "course_flow/activity_detail.html"
 
@@ -941,7 +1035,9 @@ class ActivityDetailView(
 #    template_name = "course_flow/activity_detail_student.html"
 
 
-class ActivityCreateView(LoginRequiredMixin, UserCanEditProjectMixin, CreateView):
+class ActivityCreateView(
+    LoginRequiredMixin, UserCanEditProjectMixin, CreateView
+):
     model = Activity
     fields = ["title", "description"]
     template_name = "course_flow/activity_create.html"
@@ -1133,8 +1229,9 @@ def save_serializer(serializer) -> HttpResponse:
 Contextual information methods
 """
 
+
 class DisciplineListView(LoginRequiredMixin, ListAPIView):
-    queryset = Discipline.objects.order_by('title')
+    queryset = Discipline.objects.order_by("title")
     serializer_class = DisciplineSerializer
 
 
@@ -1142,18 +1239,21 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
 def get_workflow_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
-        data_package = get_workflow_context_data(workflow.get_subclass(),{},request.user)["data_package"]
+        data_package = get_workflow_context_data(
+            workflow.get_subclass(), {}, request.user
+        )["data_package"]
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {"action": "posted", "data_package": data_package}
-    )
+    return JsonResponse({"action": "posted", "data_package": data_package})
+
 
 @user_can_view("projectPk")
 def get_project_data(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
-        data_package = get_workflow_data_package(request.user,project,None,True)
+        data_package = get_workflow_data_package(
+            request.user, project, None, True
+        )
         project_data = (
             JSONRenderer()
             .render(ProjectSerializerShallow(project).data)
@@ -1162,36 +1262,39 @@ def get_project_data(request: HttpRequest) -> HttpResponse:
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
-        {"action": "posted", "data_package": data_package,"project_data":project_data}
+        {
+            "action": "posted",
+            "data_package": data_package,
+            "project_data": project_data,
+        }
     )
+
 
 @user_can_view("outcomePk")
 def get_outcome_data(request: HttpRequest) -> HttpResponse:
     outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
     try:
-        data_package = get_outcome_context_data(outcome,{},request.user)["data_flat"]
+        data_package = get_outcome_context_data(outcome, {}, request.user)[
+            "data_flat"
+        ]
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {"action": "posted", "data_package": data_package}
-    )
+    return JsonResponse({"action": "posted", "data_package": data_package})
+
 
 @user_can_edit("nodePk")
 def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
-        project = (
-            node.get_workflow().get_project()
-        )
+        project = node.get_workflow().get_project()
         data_package = get_workflow_data_package(
-            request.user, project, node.node_type - 1,False
+            request.user, project, node.node_type - 1, False
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {"action": "posted", "data_package": data_package, "node_id": node.id}
     )
-
 
 
 """
@@ -1319,7 +1422,8 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
             rank=WeekWorkflow.objects.get(week=week, workflow=workflow).rank,
         )
 
-    # Handle all the nodelinks. These need to be handled here because they potentially span weeks
+    # Handle all the nodelinks. These need to be handled here because they
+    # potentially span weeks
     for week in new_workflow.weeks.all():
         for node in week.nodes.all():
             for node_link in NodeLink.objects.filter(
@@ -1359,7 +1463,9 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "new_item": InfoBoxSerializer(clone,context={'user':request.user}).data,
+            "new_item": InfoBoxSerializer(
+                clone, context={"user": request.user}
+            ).data,
             "type": clone.type,
         }
     )
@@ -1376,7 +1482,9 @@ def duplicate_strategy_ajax(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "new_item": InfoBoxSerializer(clone,context={'user':request.user}).data,
+            "new_item": InfoBoxSerializer(
+                clone, context={"user": request.user}
+            ).data,
             "type": clone.type,
         }
     )
@@ -1417,7 +1525,9 @@ def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "new_item": InfoBoxSerializer(clone,context={'user':request.user}).data,
+            "new_item": InfoBoxSerializer(
+                clone, context={"user": request.user}
+            ).data,
             "type": "outcome",
         }
     )
@@ -1450,7 +1560,7 @@ def duplicate_project(project: Project, author: User) -> Project:
                 workflow=workflow, project=project
             ).rank,
         )
-        
+
     for discipline in project.disciplines.all():
         new_project.disciplines.add(discipline)
 
@@ -1472,13 +1582,17 @@ def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "new_item": InfoBoxSerializer(clone,context={'user':request.user}).data,
+            "new_item": InfoBoxSerializer(
+                clone, context={"user": request.user}
+            ).data,
             "type": "project",
         }
     )
 
 
-# post-duplication cleanup. Setting the linked workflows and outcomes for nodes. This must be done after the fact because the workflows and outcomes have not necessarily been duplicated by the time the nodes are
+# post-duplication cleanup. Setting the linked workflows and outcomes for nodes.
+# This must be done after the fact because the workflows and outcomes have not
+# necessarily been duplicated by the time the nodes are
 def cleanup_workflow_post_duplication(workflow, project, outcomes_set):
     for node in Node.objects.filter(week__workflow=workflow):
         if node.linked_workflow is not None:
@@ -1501,6 +1615,7 @@ def cleanup_workflow_post_duplication(workflow, project, outcomes_set):
 """
 Creation methods
 """
+
 
 @user_can_edit("workflowPk")
 def new_column(request: HttpRequest) -> HttpResponse:
@@ -1588,7 +1703,9 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
             # first, check compatibility between types (activity/course)
             if strategy.type != workflow.type:
                 raise ValidationError("Mismatch between types")
-            # create a copy of the strategy (the first/only week in the strategy workflow). Note that all the nodes, at this point, are pointed at the columns from the OLD workflow
+            # create a copy of the strategy (the first/only week in the strategy
+            # workflow). Note that all the nodes, at this point, are pointed at
+            # the columns from the OLD workflow
             if position < 0 or position > workflow.weeks.count():
                 position = workflow.weeks.count()
             old_week = strategy.weeks.first()
@@ -1600,7 +1717,9 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
             new_through = WeekWorkflow.objects.create(
                 week=week, workflow=workflow, rank=position
             )
-            # now, check for missing columns. We try to create a one to one relationship between the columns, and then add in any that are still missing
+            # now, check for missing columns. We try to create a one to one
+            # relationship between the columns, and then add in any that are
+            # still missing
             old_columns = []
             for node in week.nodes.all():
                 if node.column not in old_columns:
@@ -1629,7 +1748,8 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
                     columns_added.append(added_column)
                     continue
                 if columns_type.count() > 1:
-                    # if we have multiple columns of that type, check to see if any have this one as their parent
+                    # if we have multiple columns of that type, check to see if
+                    # any have this one as their parent
                     columns_parent = columns_type.filter(parent_column=column)
                     if columns_parent.count() == 1:
                         new_columns.append(columns_parent.first())
@@ -1648,7 +1768,8 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
                 column_index = old_columns.index(node.column)
                 node.column = new_columns[column_index]
                 node.save()
-            # we have to copy all the nodelinks, since by default they are not duplicated when a week is duplicated
+            # we have to copy all the nodelinks, since by default they are not
+            # duplicated when a week is duplicated
             for node_link in NodeLink.objects.filter(
                 source_node__in=old_week.nodes.all(),
                 target_node__in=old_week.nodes.all(),
@@ -1762,7 +1883,7 @@ def insert_child(request: HttpRequest) -> HttpResponse:
 
 # Add a new sibling to a through model
 @user_can_view(False)
-@user_can_edit(False,get_parent=True)
+@user_can_edit(False, get_parent=True)
 def insert_sibling(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -1772,33 +1893,34 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
         parent = get_model_from_str(parent_type).objects.get(id=parent_id)
-        if parent_type==object_type:
-            old_through_kwargs = {"child":model,"parent":parent}
+        if parent_type == object_type:
+            old_through_kwargs = {"child": model, "parent": parent}
         else:
-            old_through_kwargs = {object_type:model,parent_type:parent}
-        through = get_model_from_str(through_type).objects.get(**old_through_kwargs)
+            old_through_kwargs = {object_type: model, parent_type: parent}
+        through = get_model_from_str(through_type).objects.get(
+            **old_through_kwargs
+        )
 
-        if object_type=="week":
-            defaults={"week_type":model.week_type}
-        elif object_type=="node":
-            defaults={"column":model.column,"node_type":model.node_type}
-        elif object_type=="column":
-            defaults={"column_type":math.floor(model.column_type / 10) * 10}
-        elif object_type=="outcome":
-            defaults={"depth":model.depth}
+        if object_type == "week":
+            defaults = {"week_type": model.week_type}
+        elif object_type == "node":
+            defaults = {"column": model.column, "node_type": model.node_type}
+        elif object_type == "column":
+            defaults = {"column_type": math.floor(model.column_type / 10) * 10}
+        elif object_type == "outcome":
+            defaults = {"depth": model.depth}
         else:
-            defaults={}
+            defaults = {}
 
         new_model = get_model_from_str(object_type).objects.create(
-            author = request.user,**defaults
+            author=request.user, **defaults
         )
-        if parent_type==object_type:
-            new_through_kwargs = {"child":new_model,"parent":parent}
+        if parent_type == object_type:
+            new_through_kwargs = {"child": new_model, "parent": parent}
         else:
-            new_through_kwargs = {object_type:new_model,parent_type:parent}
+            new_through_kwargs = {object_type: new_model, parent_type: parent}
         new_through_model = get_model_from_str(through_type).objects.create(
-            **new_through_kwargs,
-            rank=through.rank+1
+            **new_through_kwargs, rank=through.rank + 1
         )
         new_model_serialized = serializer_lookups_shallow[object_type](
             new_model
@@ -1806,8 +1928,6 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
         new_through_serialized = serializer_lookups_shallow[through_type](
             new_through_model
         ).data
-    
-    
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -1824,7 +1944,7 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
 
 # Soft-duplicate the item
 @user_can_view(False)
-@user_can_edit(False,get_parent=True)
+@user_can_edit(False, get_parent=True)
 def duplicate_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -1914,7 +2034,8 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     }
     return JsonResponse(response)
 
-#favourite/unfavourite a project or workflow or outcome for a user
+
+# favourite/unfavourite a project or workflow or outcome for a user
 @user_can_view(False)
 def toggle_favourite(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -1926,17 +2047,20 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
         Favourite.objects.filter(
             user=request.user,
             content_type=ContentType.objects.get_for_model(item),
-            object_id=object_id
+            object_id=object_id,
         ).delete()
         if favourite:
-            f = Favourite.objects.create(user=request.user,content_object=item)
-        response["action"]="posted"
+            f = Favourite.objects.create(
+                user=request.user, content_object=item
+            )
+        response["action"] = "posted"
     except:
-        response["action"]="error"
-    
+        response["action"] = "error"
+
     return JsonResponse(response)
 
-#change permissions on an object for a user
+
+# change permissions on an object for a user
 @user_can_edit(False)
 def set_permission(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -1947,24 +2071,23 @@ def set_permission(request: HttpRequest) -> HttpResponse:
     try:
         user = User.objects.get(id=user_id)
         item = get_model_from_str(objectType).objects.get(id=object_id)
-        if hasattr(item,"get_subclass"):
+        if hasattr(item, "get_subclass"):
             item = item.get_subclass()
         ObjectPermission.objects.filter(
             user=user,
             content_type=ContentType.objects.get_for_model(item),
-            object_id=object_id
+            object_id=object_id,
         ).delete()
-        if permission_type!=ObjectPermission.PERMISSION_NONE:
+        if permission_type != ObjectPermission.PERMISSION_NONE:
             ObjectPermission.objects.create(
-                user=user,
-                content_object=item,
-                permission_type=permission_type
+                user=user, content_object=item, permission_type=permission_type
             )
-        response["action"]="posted"
+        response["action"] = "posted"
     except:
-        response["action"]="error"
-    
+        response["action"] = "error"
+
     return JsonResponse(response)
+
 
 @user_can_edit(False)
 def get_users_for_object(request: HttpRequest) -> HttpResponse:
@@ -1973,18 +2096,29 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     content_type = ContentType.objects.get(model=object_type)
     try:
         editors = set()
-        for object_permission in ObjectPermission.objects.filter(content_type=content_type,object_id=object_id,permission_type=ObjectPermission.PERMISSION_EDIT).select_related('user'):
+        for object_permission in ObjectPermission.objects.filter(
+            content_type=content_type,
+            object_id=object_id,
+            permission_type=ObjectPermission.PERMISSION_EDIT,
+        ).select_related("user"):
             editors.add(object_permission.user)
         viewers = set()
-        for object_permission in ObjectPermission.objects.filter(content_type=content_type,object_id=object_id,permission_type=ObjectPermission.PERMISSION_VIEW).select_related('user'):
+        for object_permission in ObjectPermission.objects.filter(
+            content_type=content_type,
+            object_id=object_id,
+            permission_type=ObjectPermission.PERMISSION_VIEW,
+        ).select_related("user"):
             viewers.add(object_permission.user)
     except:
         return JsonResponse({"action": "error"})
-    return JsonResponse({
-        "action":"posted",
-        "viewers":UserSerializer(viewers,many=True).data,
-        "editors":UserSerializer(editors,many=True).data,
-    })
+    return JsonResponse(
+        {
+            "action": "posted",
+            "viewers": UserSerializer(viewers, many=True).data,
+            "editors": UserSerializer(editors, many=True).data,
+        }
+    )
+
 
 @user_is_teacher(False)
 def get_user_list(request: HttpRequest) -> HttpResponse:
@@ -1992,21 +2126,28 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
     print(name_filter)
     try:
         print(User.objects.filter(username__istartswith=name_filter))
-        user_list = User.objects.filter(username__istartswith=name_filter,groups=Group.objects.get(name=settings.TEACHER_GROUP))[:10]
+        user_list = User.objects.filter(
+            username__istartswith=name_filter,
+            groups=Group.objects.get(name=settings.TEACHER_GROUP),
+        )[:10]
     except:
         return JsonResponse({"action": "error"})
-    return JsonResponse({
-        "action":"posted",
-        "user_list":UserSerializer(user_list,many=True).data,
-    })
-    
+    return JsonResponse(
+        {
+            "action": "posted",
+            "user_list": UserSerializer(user_list, many=True).data,
+        }
+    )
+
+
 """
 Reorder methods
 """
 
+
 # Insert a model via its throughmodel
 @user_can_edit(False)
-@user_can_edit(False,get_parent=True)
+@user_can_edit(False, get_parent=True)
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -2014,15 +2155,17 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     parent_type = json.loads(request.POST.get("parentType"))
     new_position = json.loads(request.POST.get("newPosition"))
     through_type = json.loads(request.POST.get("throughType"))
-    
+
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
         parent = get_model_from_str(parent_type).objects.get(id=parent_id)
-        if object_type==parent_type:
-            creation_kwargs = {"child":model,"parent":parent}
+        if object_type == parent_type:
+            creation_kwargs = {"child": model, "parent": parent}
         else:
-            creation_kwargs = {object_type:model,parent_type:parent}
-        through = get_model_from_str(through_type).objects.create(rank=new_position,**creation_kwargs)
+            creation_kwargs = {object_type: model, parent_type: parent}
+        through = get_model_from_str(through_type).objects.create(
+            rank=new_position, **creation_kwargs
+        )
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -2073,6 +2216,7 @@ def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
 """
 Update Methods
 """
+
 
 # Updates an object's information using its serializer
 @user_can_edit(False)
@@ -2188,7 +2332,8 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("weekPk"))
         is_strategy = json.loads(request.POST.get("is_strategy"))
         week = Week.objects.get(id=object_id)
-        # This check is to prevent people from spamming the button, which would potentially create a bunch of superfluous strategies
+        # This check is to prevent people from spamming the button, which would
+        # potentially create a bunch of superfluous strategies
         if week.is_strategy != is_strategy:
             raise ValidationError("Request has already been processed")
         if week.is_strategy:
@@ -2247,7 +2392,6 @@ def delete_self(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
-
 
 
 """
@@ -2518,7 +2662,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 dashed=nodelink["style"] or False,
             )
 
-    except:
+    except Exception:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})

@@ -6,4 +6,7 @@ ignore = E203 \  # whitespace before ':'
          D101 \  # missing docstring in class
          D102 \  # missing docstring in method
          D103    # missing docstring in function
+per-file-ignores =
+  test_functional.py: F841
+  test_models.py: F841
 max-line-length = 88

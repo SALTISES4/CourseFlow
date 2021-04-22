@@ -1,3 +1,8 @@
+:root {
+  --mdc-theme-primary: #1976bc;
+  --mdc-theme-secondary: #46c443;
+}
+
 body, html{
     overflow:hidden;
     margin:0px;
@@ -142,6 +147,7 @@ button:hover{
 .topdropwrapper{
     display:inline-block;
     padding:0px;
+    padding-top:3px;
     bottom:0px;
     vertical-align:top;
 }
@@ -646,3 +652,61 @@ text {
   .mdc-typography--title {
     color: #1976bc;
   }
+
+#user-feedback-app {
+  bottom: 0px;
+  display: inline;
+  right: 8px;
+  position: absolute;
+  text-align: left;
+}
+
+/*
+User feedback app; this can be factored out to its own file and loaded
+last to avoid need for !important
+*/
+#user-feedback-component .mdc-icon-button {
+  transform: translate(6px, -3px);
+}
+#user-feedback-component  .mdc-icon-button:after {
+  background-color: white!important;
+}
+#user-feedback-component  .mdc-icon-button:before {
+  background-color: white!important;
+}
+#user-feedback-component  .mdc-icon-button:hover:before {
+  opacity: 0.25 !important;
+}
+#user-feedback-component  .mdc-icon-button.mdc-ripple-upgraded:before {
+  height: 25px!important;
+  left: 12px!important;
+  top: 12px!important;
+  width: 25px!important;
+}
+#user-feedback-component  .mdc-icon-button.mdc-ripple-upgraded:after {
+  height: 25px!important;
+  left: 12px!important;
+  top: 12px!important;
+  width: 25px!important;
+}
+#user-feedback-component  .mdc-icon-button__icon {
+  vertical-align: baseline;
+}
+#user-feedback-component  .mdc-menu__items {
+  font-size: 14px !important;
+}
+#user-feedback-component  .mdc-button {
+  font-weight: bold !important;
+}
+#user-feedback-component  .mdc-button:not(:disabled) {
+  color: var(--mdc-theme-secondary) !important;
+}
+#user-feedback-component  .mdc-button:disabled {
+  color: rgba(0,0,0,.37) !important;
+}
+#user-feedback-component  .mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label {
+  color: var(--mdc-theme-primary) !important;
+}
+#user-feedback-component  .mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label :not(i) {
+  font-family: inherit;
+}

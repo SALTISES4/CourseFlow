@@ -2,8 +2,7 @@
 <!-- -->
 {% load static i18n %}
 <!-- -->
-{% block header %}
-{% endblock %}
+{% block header %} {% endblock %}
 <!-- -->
 {% block title %}{% endblock %}
 <!-- -->
@@ -11,14 +10,17 @@
 <!-- -->
 {% block body %}
 <div id="content-container" class="body-wrapper">
-    <div class="splash-page">
-        <div class="splash-wrapper">
-            <button class="splash-image-wrapper">
-                <img id="import-json" src="{% static 'course_flow/img/images_svg/open_basic.svg' %}">
-                <div>Import Project<br><small>(May take some time)</small></div>
-            </button>
-        </div>
+  <div class="splash-page">
+    <div class="splash-wrapper">
+      <button class="splash-image-wrapper">
+        <img
+          id="import-json"
+          src="{% static 'course_flow/img/images_svg/open_basic.svg' %}"
+        />
+        <div>Import Project<br /><small>(May take some time)</small></div>
+      </button>
     </div>
+  </div>
 </div>
 <!-- -->
 {% endblock %}
@@ -27,66 +29,50 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
-{% block scripts %}
-<script nonce="{{ request.csp_nonce }}">
-  window.addEventListener("load", function() {
-    userFeedback.injectDialog(
-      "{% trans 'Let us know how we can improve your experience!' %}",
-      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
-      "{% trans 'Thanks for your feedback!' %}",
-      "{% trans 'Sorry, please try again later!' %}",
-      "{% url 'user_feedback:post' %}"
-    );
+{% block scripts %} {{ block.super }}
+<script nonce="{{request.csp_nonce}}">
+  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+  const detail_path = {
+      project:"{% url 'course_flow:project-detail-view' pk='0'%}",
+      activity:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
+      course:"{% url 'course_flow:workflow-detail-view' pk='0'%}"
+  };
+  const update_path = {
+      project:"{% url 'course_flow:project-update' pk='0'%}",
+      activity:"{% url 'course_flow:workflow-update' pk='0'%}",
+      course:"{% url 'course_flow:workflow-update' pk='0'%}"
+  };
+  const create_path = {
+      project:"{% url 'course_flow:project-create' %}",
+      activity:"{% url 'course_flow:activity-strategy-create' %}",
+      course:"{% url 'course_flow:course-strategy-create' %}"
+  };
+
+  const user_id = {{ user.id }};
+  const read_only=false;
+
+  fileLoader = document.createElement('input');
+  fileLoader.type="file";
+  fileLoader.accept=".json";
+  fileLoader.addEventListener('change',()=>{
+      let loader = new renderers.Loader('body');
+      let reader = new FileReader();
+      reader.readAsText(fileLoader.files[0]);
+      reader.onload = (evt)=>{
+          let readData = evt.target.result;
+          console.log(readData);
+          $.post("{% url 'course_flow:project-from-json' %}", {
+              jsonData:readData
+          }).done(function(data){
+              loader.endLoad();
+              if(data.action == "posted") window.location.href="{% url 'course_flow:home' %}";
+              else console.log("Failed");
+          });
+      }
+  });
+
+  $("#import-json").on("click",()=>{
+      fileLoader.click();
   });
 </script>
-
-<script nonce="{{request.csp_nonce}}">
-    
-    const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-    const detail_path = {
-        project:"{% url 'course_flow:project-detail-view' pk='0'%}",
-        activity:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
-        course:"{% url 'course_flow:workflow-detail-view' pk='0'%}"
-    };
-    const update_path = {
-        project:"{% url 'course_flow:project-update' pk='0'%}",
-        activity:"{% url 'course_flow:workflow-update' pk='0'%}",
-        course:"{% url 'course_flow:workflow-update' pk='0'%}"
-    };
-    const create_path = {
-        project:"{% url 'course_flow:project-create' %}",
-        activity:"{% url 'course_flow:activity-strategy-create' %}",
-        course:"{% url 'course_flow:course-strategy-create' %}"
-    };
-    
-    const user_id = {{ user.id }};
-    const read_only=false;
-    
-    fileLoader = document.createElement('input');
-    fileLoader.type="file";
-    fileLoader.accept=".json";
-    fileLoader.addEventListener('change',()=>{
-        let loader = new renderers.Loader('body');
-        let reader = new FileReader();
-        reader.readAsText(fileLoader.files[0]);
-        reader.onload = (evt)=>{
-            let readData = evt.target.result;
-            console.log(readData);
-            $.post("{% url 'course_flow:project-from-json' %}", {
-                jsonData:readData
-            }).done(function(data){
-                loader.endLoad();
-                if(data.action == "posted") window.location.href="{% url 'course_flow:home' %}";
-                else console.log("Failed");
-            });
-        }
-    });
-    
-    $("#import-json").on("click",()=>{
-        fileLoader.click();
-    });
-    
-</script>
-
-
 {% endblock %}

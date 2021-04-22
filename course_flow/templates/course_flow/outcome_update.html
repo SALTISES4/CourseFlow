@@ -9,15 +9,21 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id=container class="body-wrapper"></div><div id="popup-container"></div>
+<div id="container" class="body-wrapper"></div>
+<div id="popup-container"></div>
 <div id="sidebar" class="side-bar collapsed">
-    <ul>
-        <li><a href="#edit-menu"><img src="{% static 'course_flow/img/images_svg/edit_pencil_blue.svg' %}"/></a></li>
-    </ul>
-    <div id="edit-menu" class="right-panel-container"></div>
-    <div class="window-close-button" id="side-bar-close-button">
-        <img src = "{% static 'course_flow/img/images_svg/close.svg' %}"/>
-    </div>
+  <ul>
+    <li>
+      <a href="#edit-menu"
+        ><img
+          src="{% static 'course_flow/img/images_svg/edit_pencil_blue.svg' %}"
+      /></a>
+    </li>
+  </ul>
+  <div id="edit-menu" class="right-panel-container"></div>
+  <div class="window-close-button" id="side-bar-close-button">
+    <img src="{% static 'course_flow/img/images_svg/close.svg' %}" />
+  </div>
 </div>
 <!-- -->
 {% endblock %}
@@ -29,73 +35,61 @@
 {% block read_only_scripts %}
 
 <script nonce="{{request.csp_nonce}}">
-    
-    const read_only=false;
-    
+  const read_only = false;
 </script>
 
 {% endblock %}
 <!-- -->
-{% block scripts %}
-<script nonce="{{ request.csp_nonce }}">
-  window.addEventListener("load", function() {
-    userFeedback.injectDialog(
-      "{% trans 'Let us know how we can improve your experience!' %}",
-      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
-      "{% trans 'Thanks for your feedback!' %}",
-      "{% trans 'Sorry, please try again later!' %}",
-      "{% url 'user_feedback:post' %}"
-    );
-  });
-</script>
-
-
+{% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
-    
+
     const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-    
-    initial_data = {{data_flat|safe}}
-    console.log(initial_data);
-    var outcome_renderer;
-    const user_id = {{ user.id }};
-    
-    $("#sidebar").tabs({
-        active:false,
-        disabled:[0],
-        collapsible:true,
-        activate:(evt,ui)=>{
-            if(ui.oldTab.length==0)$("#sidebar").removeClass("collapsed");
-        else if(ui.newTab.length==0)$("#sidebar").addClass("collapsed");
-        }
-    });
+    var selection_manager;
+    var tiny_loader;
 
-    $("#sidebar").on("mousedown",(evt)=>{evt.stopPropagation()});    
+  <script nonce="{{request.csp_nonce}}">
 
-    if(read_only)$("#sidebar").hide();
-    else{
-        $("#side-bar-close-button").on("click",()=>{
-            $("#sidebar").addClass("collapsed");
-            $("#sidebar").tabs("option","active",false);
-        });
-    }
-        
-    
-    {% if parent_project_pk %}
-        if(read_only){
-            $("#floatbar").append("<a href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-        }else{
-            $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-        }
-    {% endif %}
-    
-    
-    window.addEventListener("load",function(){
-        outcome_renderer = new renderers.OutcomeRenderer(initial_data);
-        $(document).ajaxError(outcome_scripts.fail_function);
-        outcome_renderer.render($("#container"));
-    });
-    
-  
-    
+      const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+
+      initial_data = {{data_flat|safe}}
+      console.log(initial_data);
+      var outcome_renderer;
+      const user_id = {{ user.id }};
+
+      $("#sidebar").tabs({
+          active:false,
+          disabled:[0],
+          collapsible:true,
+          activate:(evt,ui)=>{
+              if(ui.oldTab.length==0)$("#sidebar").removeClass("collapsed");
+          else if(ui.newTab.length==0)$("#sidebar").addClass("collapsed");
+          }
+      });
+
+    $("#sidebar").tabs({collapsible:true,active:0,disabled:null});
+
+      if(read_only)$("#sidebar").hide();
+      else{
+          $("#side-bar-close-button").on("click",()=>{
+              $("#sidebar").addClass("collapsed");
+              $("#sidebar").tabs("option","active",false);
+          });
+      }
+
+
+      {% if parent_project_pk %}
+          if(read_only){
+              $("#floatbar").append("<a href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+          }else{
+              $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+          }
+      {% endif %}
+
+
+      window.addEventListener("load",function(){
+          outcome_renderer = new renderers.OutcomeRenderer(initial_data);
+          $(document).ajaxError(outcome_scripts.fail_function);
+          outcome_renderer.render($("#container"));
+      });
 </script>
 {% endblock %}

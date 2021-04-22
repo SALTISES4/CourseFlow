@@ -14,15 +14,8 @@ jobs:
             yarn install
             yarn run gulp build-js
       - run:
-          name: Setup local_settings.py
-          command: |
-            echo 'SECRET_KEY = "Bzch875rhtrJnfnYml9vMiB4M70NJZKy"' > course_flow/local_settings.py
-            echo 'PASSWORD_KEY = "Bzch875rhtrJnfnYml9vMiB4M70NJZKy"' >> course_flow/local_settings.py
-            echo 'LTI_CLIENT_KEY = "edx"' >> course_flow/local_settings.py
-            echo 'LTI_CLIENT_SECRET = "Bzch875rhtrJnfnYml9vMiB4M70NJZKy"' >> course_flow/local_settings.py
-      - run:
           name: Tests
           command: |
             . test_venv/bin/activate
             python3 course_flow.py migrate
-            python3 course_flow.py test
+            python3 -m pytest
