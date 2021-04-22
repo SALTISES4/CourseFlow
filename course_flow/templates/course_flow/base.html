@@ -71,6 +71,14 @@
       charset="utf-8"
     ></script>
     {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script nonce="{{ request.csp_nonce }}"
+      src="{% url 'course_flow:javascript-catalog' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
     <!-- * CSS -->
     {% compress css %}
     <link

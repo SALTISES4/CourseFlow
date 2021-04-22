@@ -86,23 +86,18 @@ def is_owner(model):
                     object = object_type.objects.get(id=id)
             except:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
             if User.objects.get(id=request.user.id) == object.author:
                 return fct(request, *args, **kwargs)
             else:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
 
         return _wrapped_view
 
     return wrapped_view
-
-
-
-
-
 
 
 
@@ -180,11 +175,11 @@ def user_can_edit(model,**outer_kwargs):
                     return fct(request, *args, **kwargs)
                 else:
                     response = JsonResponse({"login_url": settings.LOGIN_URL})
-                    response.status_code = 401
+                    response.status_code = 403
                     return response
             except:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
             
 
@@ -202,13 +197,13 @@ def user_can_view(model,**outer_kwargs):
                 permission_objects = get_permission_objects(model,request,**outer_kwargs)
             except:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
             if test_objects_permission(permission_objects,User.objects.get(id=request.user.id),ObjectPermission.PERMISSION_VIEW):
                 return fct(request, *args, **kwargs)
             else:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
 
         return _wrapped_view
@@ -227,13 +222,13 @@ def user_can_view_or_none(model,**outer_kwargs):
                 permission_objects = get_permission_objects(model,request,**outer_kwargs)
             except:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
             if test_objects_permission(permission_objects,User.objects.get(id=request.user.id),ObjectPermission.PERMISSION_VIEW):
                 return fct(request, *args, **kwargs)
             else:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
 
         return _wrapped_view
@@ -259,11 +254,11 @@ def user_can_delete(model,**outer_kwargs):
                         return fct(request,*args,**kwargs)
                     
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
             except:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
             
 
@@ -281,11 +276,11 @@ def user_is_teacher(model):
                 if Group.objects.get(name=settings.TEACHER_GROUP) in request.user.groups.all():
                     return fct(request,*args,**kwargs)
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
             except:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 401
+                response.status_code = 403
                 return response
             
 

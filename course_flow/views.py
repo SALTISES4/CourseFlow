@@ -72,6 +72,7 @@ from rest_framework.generics import ListAPIView
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.db.models import Count, Q
 import json
+from django.utils.translation import gettext as _
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import authenticate, login
@@ -219,10 +220,10 @@ def get_all_outcomes(outcome, search_depth):
 def get_project_data_package(user):
     data_package = {
         "owned_projects": {
-            "title": "Your Projects",
+            "title": _("Your Projects"),
             "sections": [
                 {
-                    "title": "Add a Project",
+                    "title": _("Add a Project"),
                     "object_type": "project",
                     "objects": InfoBoxSerializer(
                         Project.objects.filter(author=user), 
@@ -235,10 +236,10 @@ def get_project_data_package(user):
             "duplicate": "copy",
         },
         "owned_strategies": {
-            "title": "Your Strategies",
+            "title": _("Your Strategies"),
             "sections": [
                 {
-                    "title": "Add an Activity-Level Strategy",
+                    "title": _("Add an Activity-Level Strategy"),
                     "object_type": "activity",
                     "objects": InfoBoxSerializer(
                         Activity.objects.filter(author=user, is_strategy=True),
@@ -247,7 +248,7 @@ def get_project_data_package(user):
                     ).data,
                 },
                 {
-                    "title": "Add a Course-Level Strategy",
+                    "title": _("Add a Course-Level Strategy"),
                     "object_type": "course",
                     "objects": InfoBoxSerializer(
                         Course.objects.filter(author=user, is_strategy=True),
@@ -260,10 +261,10 @@ def get_project_data_package(user):
             "duplicate": "copy",
         },
         "other_projects": {
-            "title": "Favourite Projects",
+            "title": _("Favourite Projects"),
             "sections": [
                 {
-                    "title": "Your Favourite Projects",
+                    "title": _("Your Favourite Projects"),
                     "object_type": "project",
                     "objects": InfoBoxSerializer(
                         [favourite.content_object for favourite in Favourite.objects.filter(user=user,project__published=True)],
@@ -278,7 +279,7 @@ def get_project_data_package(user):
             "title": "Favourite Strategies",
             "sections": [
                 {
-                    "title": "Your Favourite Activity-Level Strategies",
+                    "title": _("Your Favourite Activity-Level Strategies"),
                     "object_type": "activity",
                     "objects": InfoBoxSerializer(
                         [favourite.content_object for favourite in Favourite.objects.filter(user=user,activity__published=True,activity__is_strategy=True)],
@@ -287,7 +288,7 @@ def get_project_data_package(user):
                     ).data,
                 },
                 {
-                    "title": "Your Favourite Course-Level Strategies",
+                    "title": _("Your Favourite Course-Level Strategies"),
                     "object_type": "course",
                     "objects": InfoBoxSerializer(
                         [favourite.content_object for favourite in Favourite.objects.filter(user=user,course__published=True,course__is_strategy=True)],
@@ -309,7 +310,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
     if type_filter is None:
         this_project_sections.append(
             {
-                "title": "Programs",
+                "title": _("Programs"),
                 "object_type": "program",
                 "objects": InfoBoxSerializer(
                     Program.objects.filter(project=project, is_strategy=False),
@@ -320,7 +321,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
         )
         if not self_only: other_project_sections.append(
             {
-                "title": "Programs",
+                "title": _("Programs"),
                 "object_type": "program",
                 "objects": InfoBoxSerializer(
                     Program.objects.filter(
@@ -333,7 +334,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
         )
         if not self_only: all_published_sections.append(
             {
-                "title": "Your Favourite Programs",
+                "title": _("Your Favourite Programs"),
                 "object_type": "program",
                 "objects": InfoBoxSerializer(
                     [favourite.content_object for favourite in Favourite.objects.filter(user=user,program__published=True,program__is_strategy=False)],
@@ -345,7 +346,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
     if type_filter is None or type_filter == 1:
         this_project_sections.append(
             {
-                "title": "Courses",
+                "title": _("Courses"),
                 "object_type": "course",
                 "objects": InfoBoxSerializer(
                     Course.objects.filter(project=project, is_strategy=False),
@@ -356,7 +357,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
         )
         if not self_only: other_project_sections.append(
             {
-                "title": "Courses",
+                "title": _("Courses"),
                 "object_type": "course",
                 "objects": InfoBoxSerializer(
                     Course.objects.filter(
@@ -369,7 +370,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
         )
         if not self_only: all_published_sections.append(
             {
-                "title": "Your Favourite Courses",
+                "title": _("Your Favourite Courses"),
                 "object_type": "course",
                 "objects": InfoBoxSerializer(
                     [favourite.content_object for favourite in Favourite.objects.filter(user=user,course__published=True,course__is_strategy=False)],
@@ -382,7 +383,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
     if type_filter is None or type_filter == 0:
         this_project_sections.append(
             {
-                "title": "Activities",
+                "title": _("Activities"),
                 "object_type": "activity",
                 "objects": InfoBoxSerializer(
                     Activity.objects.filter(
@@ -395,7 +396,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
         )
         if not self_only: other_project_sections.append(
             {
-                "title": "Activities",
+                "title": _("Activities"),
                 "object_type": "activity",
                 "objects": InfoBoxSerializer(
                     Activity.objects.filter(
@@ -408,7 +409,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
         )
         if not self_only: all_published_sections.append(
             {
-                "title": "Your Favourite Activities",
+                "title": _("Your Favourite Activities"),
                 "object_type": "activity",
                 "objects": InfoBoxSerializer(
                     [favourite.content_object for favourite in Favourite.objects.filter(user=user,activity__published=True,activity__is_strategy=False)],
@@ -421,7 +422,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
     if type_filter is None:
         this_project_sections.append(
             {
-                "title": "Outcomes",
+                "title": _("Outcomes"),
                 "object_type": "outcome",
                 "objects": InfoBoxSerializer(
                     Outcome.objects.filter(project=project),
@@ -432,7 +433,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
         )
         if not self_only: other_project_sections.append(
             {
-                "title": "Outcomes",
+                "title": _("Outcomes"),
                 "object_type": "outcome",
                 "objects": InfoBoxSerializer(
                     Outcome.objects.filter(author=user)
@@ -445,7 +446,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
         )
         if not self_only: all_published_sections.append(
             {
-                "title": "Your Favourite Outcomes",
+                "title": _("Your Favourite Outcomes"),
                 "object_type": "outcome",
                 "objects": InfoBoxSerializer(
                     [favourite.content_object for favourite in Favourite.objects.filter(user=user,outcome__published=True)],
@@ -463,7 +464,7 @@ def get_workflow_data_package(user, project, type_filter, self_only):
 
     data_package = {
         "current_project": {
-            "title": "This Project",
+            "title": _("This Project"),
             "sections": this_project_sections,
             "add": (project.author == user),
             "duplicate": current_copy_type,
@@ -471,12 +472,12 @@ def get_workflow_data_package(user, project, type_filter, self_only):
     }
     if not self_only: 
         data_package["other_projects"]={
-            "title": "From Your Other Projects",
+            "title": _("From Your Other Projects"),
             "sections": other_project_sections,
             "duplicate": other_copy_type,
         }
         data_package["all_published"]={
-            "title": "Your Favourites",
+            "title": _("Your Favourites"),
             "sections": all_published_sections,
             "duplicate": other_copy_type,
         }

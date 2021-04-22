@@ -2,6 +2,7 @@ from django.conf.urls import url
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from rest_framework import routers
+from django.views.i18n import JavaScriptCatalog
 
 from . import lti, views
 
@@ -235,6 +236,7 @@ def lti_patterns():
 urlpatterns = sum(
     [
         [path("lti/", include("django_lti_tool_provider.urls"))],
+        [path("jsi18n/",JavaScriptCatalog.as_view(),name="javascript-catalog")],
         flow_patterns(),
         lti_patterns(),
     ],
