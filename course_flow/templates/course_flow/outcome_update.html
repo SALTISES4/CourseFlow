@@ -42,54 +42,47 @@
 <!-- -->
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
-
     const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-    var selection_manager;
-    var tiny_loader;
 
-  <script nonce="{{request.csp_nonce}}">
+    initial_data = {{data_flat|safe}}
+    console.log(initial_data);
+    var outcome_renderer;
+    const user_id = {{ user.id }};
 
-      const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+    $("#sidebar").tabs({
+        active:false,
+        disabled:[0],
+        collapsible:true,
+        activate:(evt,ui)=>{
+            if(ui.oldTab.length==0)$("#sidebar").removeClass("collapsed");
+        else if(ui.newTab.length==0)$("#sidebar").addClass("collapsed");
+        }
+    });
 
-      initial_data = {{data_flat|safe}}
-      console.log(initial_data);
-      var outcome_renderer;
-      const user_id = {{ user.id }};
+  $("#sidebar").tabs({collapsible:true,active:0,disabled:null});
 
-      $("#sidebar").tabs({
-          active:false,
-          disabled:[0],
-          collapsible:true,
-          activate:(evt,ui)=>{
-              if(ui.oldTab.length==0)$("#sidebar").removeClass("collapsed");
-          else if(ui.newTab.length==0)$("#sidebar").addClass("collapsed");
-          }
-      });
-
-    $("#sidebar").tabs({collapsible:true,active:0,disabled:null});
-
-      if(read_only)$("#sidebar").hide();
-      else{
-          $("#side-bar-close-button").on("click",()=>{
-              $("#sidebar").addClass("collapsed");
-              $("#sidebar").tabs("option","active",false);
-          });
-      }
+    if(read_only)$("#sidebar").hide();
+    else{
+        $("#side-bar-close-button").on("click",()=>{
+            $("#sidebar").addClass("collapsed");
+            $("#sidebar").tabs("option","active",false);
+        });
+    }
 
 
-      {% if parent_project_pk %}
-          if(read_only){
-              $("#floatbar").append("<a href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-          }else{
-              $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-          }
-      {% endif %}
+    {% if parent_project_pk %}
+        if(read_only){
+            $("#floatbar").append("<a href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+        }else{
+            $("#floatbar").append("<a href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+        }
+    {% endif %}
 
 
-      window.addEventListener("load",function(){
-          outcome_renderer = new renderers.OutcomeRenderer(initial_data);
-          $(document).ajaxError(outcome_scripts.fail_function);
-          outcome_renderer.render($("#container"));
-      });
+    window.addEventListener("load",function(){
+        outcome_renderer = new renderers.OutcomeRenderer(initial_data);
+        $(document).ajaxError(outcome_scripts.fail_function);
+        outcome_renderer.render($("#container"));
+    });
 </script>
 {% endblock %}
