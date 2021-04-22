@@ -1,7 +1,16 @@
 include LICENSE
 include README.rst
-exclude course_flow/tests/*
-exclude course_flow/test*.py
-exclude course_flow/settings.py
-exclude course_flow/static/course_flow/js/scripts.js
-exclude course_flow/static/course_flow/template/registration/*
+
+include pytest.ini
+exclude course_flow/local_settings.py
+
+recursive-include course_flow/templates *
+recursive-exclude course_flow/templates/course_flow/registration *
+
+graft course_flow/tests
+graft course_flow/static/course_flow/css
+graft course_flow/static/course_flow/img
+graft course_flow/static/course_flow/js
+
+global-exclude *.pyc
+global-exclude __pycache__

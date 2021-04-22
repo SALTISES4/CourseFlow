@@ -1,10 +1,8 @@
 from django.conf.urls import url
-from django.contrib.auth import views as auth_views
-from django.urls import include, path
 from rest_framework import routers
 from django.views.i18n import JavaScriptCatalog
 
-from . import lti, views
+from . import views
 
 router = routers.SimpleRouter()
 router.register(r"workflow/read", views.WorkflowViewSet)
@@ -13,17 +11,8 @@ router.register(r"workflow/read", views.WorkflowViewSet)
 app_name = "course_flow"
 
 
-def flow_patterns():
+def course_flow_patterns():
     return [
-        url(r"^register/$", views.registration_view, name="registration"),
-        url(
-            r"^login/$",
-            auth_views.LoginView.as_view(
-                template_name="course_flow/registration/login.html"
-            ),
-            name="login",
-        ),
-        url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
         url(r"home/$", views.home_view, name="home"),
         url(r"explore/$", views.ExploreView.as_view(), name="explore"),
         url(r"import/$", views.import_view, name="import"),
@@ -116,11 +105,11 @@ def flow_patterns():
             name="get-disciplines",
         ),
         url(
-            r"^favourites/toggle", views.toggle_favourite, name="toggle-favourite"
+            r"^favourites/toggle",
+            views.toggle_favourite,
+            name="toggle-favourite",
         ),
-        url(
-            r"^permissions/set", views.set_permission, name="set-permission"
-        ),
+        url(r"^permissions/set", views.set_permission, name="set-permission"),
         url(
             r"^workflow/node/set-linked-workflow/$",
             views.set_linked_workflow_ajax,
@@ -226,19 +215,12 @@ def flow_patterns():
             views.ActivityDetailView.as_view(),
             name="activity-detail-view",
         ),
+        path(
+            "jsi18n/",
+            JavaScriptCatalog.as_view(),
+            name="javascript-catalog"
+        )
     ] + router.urls
 
 
-def lti_patterns():
-    return [path("course-list/", lti.get_course_list, name="course-list")]
-
-
-urlpatterns = sum(
-    [
-        [path("lti/", include("django_lti_tool_provider.urls"))],
-        [path("jsi18n/",JavaScriptCatalog.as_view(),name="javascript-catalog")],
-        flow_patterns(),
-        lti_patterns(),
-    ],
-    [],
-)
+urlpatterns = course_flow_patterns()

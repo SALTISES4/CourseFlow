@@ -20,12 +20,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 SECRET_KEY = "course_flow"
-
+# For LTI tests
+PASSWORD_KEY = "course_flow"
+LTI_CLIENT_KEY = "course_flow"
+LTI_CLIENT_SECRET = "course_flow"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
 CHROMEDRIVER_PATH = None
 
@@ -80,6 +83,10 @@ TEMPLATES = [
     }
 ]
 
+CSP_INCLUDE_NONCE_IN = [
+    "script-src",
+    "style-src",
+]
 CSP_DEFAULT_SRC = ["'self'", "*.mydalite.org"]
 CSP_SCRIPT_SRC = [
     "'self'",
@@ -94,19 +101,17 @@ CSP_STYLE_SRC = [
     "*.mydalite.org",
     "ajax.googleapis.com",
     "cdn.quilljs.com",
+    "fonts.googleapis.com",
 ]
 CSP_FONT_SRC = [
     "'self'",
     "*.mydalite.org",
-]
-CSP_INCLUDE_NONCE_IN = [
-    "script-src",
-    "style-src",
+    "fonts.gstatic.com",
 ]
 
-LOGIN_URL = "course_flow:login"
-
+LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "course_flow:home"
+LOGOUT_REDIRECT_URL = "login"
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
@@ -176,6 +181,7 @@ REST_FRAMEWORK = {
     ]
 }
 
+
 """
 LOGGING = {
     "version": 1,
@@ -213,6 +219,7 @@ LOGGING = {
     },
 }
 """
+
 try:
     from .local_settings import *  # noqa F403
 

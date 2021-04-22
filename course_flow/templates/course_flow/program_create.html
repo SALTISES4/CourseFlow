@@ -10,30 +10,18 @@
 <!-- -->
 {% block body %}
 <div class="workflow-create-wrapper">
-    <h1>
-      {% trans 'Create a program:' %}
-    </h1>
-    <form method="post">
-      {% csrf_token %} {{ form.as_p }}
-      <input id="save-button" type="submit" value="Save" />
-    </form>
-</div>    
+  <h1>
+    {% trans 'Create a program:' %}
+  </h1>
+  <form method="post">
+    {% csrf_token %} {{ form.as_p }}
+    <input id="save-button" type="submit" value="Save" />
+  </form>
+</div>
 {% endblock %}
 <!-- -->
 {% block foot %} {% endblock %}
 <!-- -->
 {% csrf_token %}
 <!-- -->
-{% block scripts %}
-<script nonce="{{ request.csp_nonce }}">
-  window.addEventListener("load", function() {
-    userFeedback.injectDialog(
-      "{% trans 'Let us know how we can improve your experience!' %}",
-      "{% static 'course_flow/brand/SCIVERO-LOGO-DARK.png' %}",
-      "{% trans 'Thanks for your feedback!' %}",
-      "{% trans 'Sorry, please try again later!' %}",
-      "{% url 'user_feedback:post' %}"
-    );
-  });
-</script>
-{% endblock %}
+{% block scripts %} {{ block.super }} {% endblock %}

@@ -1,8 +1,13 @@
 exclude: "^$"
 fail_fast: false
 repos:
+  - repo: https://github.com/pycqa/isort
+    rev: 5.6.4
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
   - repo: https://github.com/ambv/black
-    rev: 18.9b0
+    rev: 19.10b0
     hooks:
       - id: black
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -23,3 +28,4 @@ repos:
         entry: npm audit
         always_run: true
         exclude: ".*"
+        verbose: true
