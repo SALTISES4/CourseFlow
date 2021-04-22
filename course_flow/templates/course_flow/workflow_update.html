@@ -40,6 +40,12 @@
     </li>
     {% endif %}
   </ul>
+    <div id="edit-menu" class="right-panel-container"></div>
+    <div id="node-bar" class="right-panel-container"></div>
+    {% if is_strategy == "false" %}
+        <div id="outcome-bar" class="right-panel-container"></div>
+        <div id="strategy-bar" class="right-panel-container"></div>
+    {% endif %}
   <div class="window-close-button" id="side-bar-close-button">
     <img src="{% static 'course_flow/img/images_svg/close.svg' %}" />
   </div>
