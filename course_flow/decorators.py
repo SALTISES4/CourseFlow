@@ -3,6 +3,7 @@ from functools import reduce, wraps
 
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import (
     HttpResponseBadRequest,
@@ -13,7 +14,7 @@ from django.views.decorators.http import require_POST
 
 from course_flow.models import ObjectPermission, OutcomeProject, User
 
-from .utils import get_model_from_str
+from .utils import *
 
 
 # Ajax login required view decorator
@@ -35,36 +36,6 @@ def ajax_login_required(view_func):
     return _wrapped_view
 
 
-owned_models = [
-    "nodelink",
-    "node",
-    "week",
-    "workflow",
-    "project",
-    "column",
-    "workflow",
-    "project",
-    "outcome",
-    "outcome",
-]
-
-owned_throughmodels = [
-    "node",
-    "nodeweek",
-    "week",
-    "weekworkflow",
-    "workflow",
-    "workflowproject",
-    "project",
-    "columnworkflow",
-    "workflow",
-    "workflowproject",
-    "project",
-    "outcome",
-    "outcomeoutcome",
-    "outcome",
-]
-program_level_owned_models = ["assessment", "program", "course", "program"]
 
 
 def is_owner(model):
