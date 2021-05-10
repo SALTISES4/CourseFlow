@@ -9,7 +9,7 @@ import {NodeBarWeekWorkflow} from "./WeekWorkflowView.js";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents.js";
 import * as Constants from "./Constants.js";
 import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers.js";
-import {OutcomeBar} from "./OutcomeTopView.js";
+import {OutcomeBar} from "./OutcomeEditView.js";
 import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
@@ -27,6 +27,7 @@ class WorkflowView extends ComponentJSON{
     }
     
     render(){
+        console.log("Rendering workflow view");
         let data = this.props.data;
         let renderer = this.props.renderer;
         let selection_manager = renderer.selection_manager;
@@ -81,7 +82,7 @@ class WorkflowView extends ComponentJSON{
                         <NodeBar renderer={this.props.renderer}/>
                     }
                     {!read_only && !data.is_strategy &&
-                        <OutcomeBar/>
+                        <OutcomeBar renderer={this.props.renderer}/>
                     }
                     {!read_only && !data.is_strategy && data.type != "program" &&
                         <StrategyBar/>
@@ -286,7 +287,7 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                         <NodeBar renderer={renderer} outcomes_view={true}/>
                     }
                     {!read_only &&
-                        <OutcomeBar outcomes_view={true}/>
+                        <OutcomeBar  renderer={renderer} outcomes_view={true}/>
                     }
                 </div>
             </div>

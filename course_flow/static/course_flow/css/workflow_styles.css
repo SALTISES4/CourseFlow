@@ -387,7 +387,7 @@ button, input[type="submit"]{
     margin-left:20px;
     border:2px solid white;
     padding:2px;
-    min-width:600px;
+    min-width:300px;
     max-width:800px;
 }
 
@@ -493,6 +493,38 @@ ol.children-block{
 .outcome-drop-img img{
     width:12px;
     filter: invert(35%) sepia(85%) saturate(855%) hue-rotate(173deg) brightness(91%) contrast(90%);
+}
+
+.outcome-edit{
+    margin-top:5px;
+    display:inline-block;
+    vertical-align: top;
+}
+
+.outcome-edit .outcome{
+    
+}
+
+.right-panel-inner .parent-outcome-node{
+    position:relative;
+}
+
+.right-panel-inner .parent-outcome-node > *:first-child{
+    width:16px;
+    left:8px;
+    top:6px;
+    position:absolute;
+}
+
+.right-panel-inner .parent-outcome-node > .outcome{
+    margin-left:4px;
+    padding-left:24px;
+}
+
+
+.outcome-workflow{
+    border:2px solid #1976bc;
+    margin-bottom:2px;
 }
 
 .outcome-bar-outcome-block .outcome{

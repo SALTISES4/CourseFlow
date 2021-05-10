@@ -10,7 +10,8 @@ import {ProjectMenu, HomeMenu, ExploreMenu, renderMessageBox} from"./MenuCompone
 import {WorkflowView_Outcome} from"./WorkflowView.js";
 import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
-import OutcomeTopView from './OutcomeTopView.js'
+import OutcomeTopView from './OutcomeTopView.js';
+import OutcomeEditView from './OutcomeEditView.js';
 
 export {Loader} from './Constants';
 export {fail_function} from './PostFunctions';
@@ -137,7 +138,7 @@ export class WorkflowRenderer{
         this.column_colours = {}
     }
     
-    render(container,outcome_view){
+    render(container,view_type){
         var renderer = this;
         this.initial_loading=true;
         this.container = container;
@@ -175,9 +176,15 @@ export class WorkflowRenderer{
     
         this.selection_manager = new SelectionManager(); 
         this.tiny_loader = new TinyLoader(container);
-        if(outcome_view)reactDom.render(
+        if(view_type=="outcometable")reactDom.render(
             <Provider store = {this.store}>
                 <WorkflowView_Outcome renderer={this}/>
+            </Provider>,
+            container[0]
+        );
+        else if(view_type=="outcomeedit")reactDom.render(
+        <Provider store = {this.store}>
+                <OutcomeEditView renderer={this}/>
             </Provider>,
             container[0]
         );

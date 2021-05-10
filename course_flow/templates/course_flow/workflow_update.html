@@ -109,7 +109,8 @@
       $("#viewbar").append("<div id='outcomeviewbar'><div class='outcomeviewtext'>Outcome View:</div><label class='switch'><input type='checkbox'><span class ='slider round'></span></label></div>");
 
       $("#outcomeviewbar input").on("change",(evt)=>{
-          workflow_renderer.render($("#container"),evt.target.checked)
+          if(evt.target.checked)workflow_renderer.render($("#container"),"outcometable");
+          else workflow_renderer.render($("#container"));
       });
   {% endif %}
 
@@ -118,6 +119,7 @@
 
   window.addEventListener("load", function(){
       workflow_renderer = new renderers.WorkflowRenderer(workflow_data_package);
+      console.log(workflow_data_package);
       $(document).ajaxError(renderers.fail_function);
       workflow_renderer.render($("#container"));
   });

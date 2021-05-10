@@ -100,6 +100,21 @@ export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunc
         fail_function();
     }
 }
+
+    
+//Add a new outcome to a workflow
+export function newOutcome(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.new_outcome, {
+            workflowPk:JSON.stringify(workflowPk),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
   
 //Create a nodelink from the source to the target, at the given ports
 export function newNodeLink(source_node,target_node,source_port,target_port,callBackFunction=()=>console.log("success")){
@@ -284,6 +299,22 @@ export function addOutcomeToNode(nodePk,outcome,callBackFunction=()=>console.log
         $.post(post_paths.add_outcome_to_node, {
             nodePk:JSON.stringify(nodePk),
             outcomePk:JSON.stringify(outcome),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Add an outcome from the parent workflow to an outcome from the current one
+export function addParentOutcomeToOutcome(outcomePk,outcome2Pk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.add_parent_outcome_to_outcome, {
+            outcomePk:JSON.stringify(outcomePk),
+            objectID:JSON.stringify(outcome2Pk),
+            objectType:JSON.stringify("outcome")
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else fail_function();

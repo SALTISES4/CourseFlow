@@ -60,7 +60,7 @@ export const OutcomeBarOutcomeOutcomeView = connect(
 
 
 //Basic component representing an outcome to outcome link
-class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
+export class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
     
     constructor(props){
         super(props);
@@ -72,8 +72,15 @@ class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
         
         return (
             <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
-                <NodeOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
+                {this.getChildType()}
             </div>
+        );
+    }
+    
+    getChildType(){
+        let data = this.props.data;
+        return (
+            <NodeOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
         );
     }
     

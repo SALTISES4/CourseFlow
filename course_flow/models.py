@@ -78,6 +78,18 @@ class OutcomeProject(models.Model):
         verbose_name = "Outcome-Project Link"
         verbose_name_plural = "Outcome-Project Links"
 
+class OutcomeWorkflow(models.Model):
+    workflow = models.ForeignKey("Workflow", on_delete=models.CASCADE)
+    outcome = models.ForeignKey("Outcome", on_delete=models.CASCADE)
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    def get_permission_objects(self):
+        return [self.project,self.outcome]
+    
+    class Meta:
+        verbose_name = "Outcome-Workflow Link"
+        verbose_name_plural = "Outcome-Workflow Links"
 
 class Column(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
@@ -198,6 +210,13 @@ class Outcome(models.Model):
         related_name="parent_outcomes",
     )
     
+    horizontal_outcomes = models.ManyToManyField(
+        "Outcome",
+        through="OutcomeHorizontalLink",
+        blank=True,
+        related_name="reverse_horizontal_outcomes"
+    )
+    
     disciplines = models.ManyToManyField(
             "Discipline", blank=True
     )
@@ -247,6 +266,26 @@ class OutcomeOutcome(models.Model):
     
     def get_top_outcome(self):
         return self.parent.get_top_outcome()
+        
+    class Meta:
+        verbose_name = "Outcome-Outcome Link"
+        verbose_name_plural = "Outcome-Outcome Links"
+
+class OutcomeHorizontalLink(models.Model):
+    outcome = models.ForeignKey(
+        Outcome, on_delete=models.CASCADE, related_name="outcome_horizontal_links"
+    )
+    parent_outcome = models.ForeignKey(
+        Outcome, on_delete=models.CASCADE, related_name="reverse_outcome_horizontal_links"
+    )
+    added_on = models.DateTimeField(auto_now_add=True)
+    rank = models.PositiveIntegerField(default=0)
+
+    def get_permission_objects(self):
+        return [self.get_top_outcome()]
+    
+    def get_top_outcome(self):
+        return self.outcome.get_top_outcome()
         
     class Meta:
         verbose_name = "Outcome-Outcome Link"
@@ -391,7 +430,7 @@ class Node(models.Model):
 
     represents_workflow = models.BooleanField(default=False)
     linked_workflow = models.ForeignKey(
-        "Workflow", on_delete=models.SET_NULL, null=True
+        "Workflow", on_delete=models.SET_NULL, null=True, related_name='linked_nodes'
     )
 
     column = models.ForeignKey(
@@ -574,6 +613,10 @@ class Workflow(models.Model):
 
     columns = models.ManyToManyField(
         Column, through="ColumnWorkflow", blank=True
+    )
+    
+    outcomes = models.ManyToManyField(
+        Outcome, through="OutcomeWorkflow", blank=True
     )
 
     OUTCOMES_NORMAL = 0
@@ -923,10 +966,34 @@ def reorder_for_deleted_column_workflow(sender, instance, **kwargs):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
 
+@receiver(pre_delete, sender=OutcomeWorkflow)
+def reorder_for_deleted_outcome_workflow(sender, instance, **kwargs):
+    for out_of_order_link in OutcomeWorkflow.objects.filter(
+        workflow=instance.workflow, rank__gt=instance.rank
+    ):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
 @receiver(pre_delete, sender=OutcomeOutcome)
 def reorder_for_deleted_outcome_outcome(sender, instance, **kwargs):
     for out_of_order_link in OutcomeOutcome.objects.filter(
         parent=instance.parent, rank__gt=instance.rank
+    ):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+@receiver(pre_delete, sender=OutcomeNode)
+def reorder_for_deleted_outcome_node(sender, instance, **kwargs):
+    for out_of_order_link in OutcomeNode.objects.filter(
+        node=instance.node, rank__gt=instance.rank
+    ):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+@receiver(pre_delete, sender=OutcomeHorizontalLink)
+def reorder_for_deleted_outcome_horizontal_link(sender, instance, **kwargs):
+    for out_of_order_link in OutcomeNode.objects.filter(
+        outcome=instance.outcome, rank__gt=instance.rank
     ):
         out_of_order_link.rank -= 1
         out_of_order_link.save()
@@ -985,6 +1052,23 @@ def reorder_for_created_column_workflow(sender, instance, created, **kwargs):
         ).exclude(column=instance.column):
             out_of_order_link.rank += 1
             out_of_order_link.save()
+        
+@receiver(pre_save, sender=OutcomeWorkflow)
+def delete_existing_outcome_workflow(sender, instance, **kwargs):
+    if instance.pk is None:
+        OutcomeWorkflow.objects.filter(outcome=instance.outcome).delete()
+        if instance.rank<0:instance.rank=0
+        new_parent_count = OutcomeWorkflow.objects.filter(workflow=instance.workflow).count()
+        if instance.rank>new_parent_count:instance.rank=new_parent_count
+
+@receiver(post_save, sender=OutcomeWorkflow)
+def reorder_for_created_outcome_workflow(sender, instance, created, **kwargs):
+    if created:
+        for out_of_order_link in OutcomeWorkflow.objects.filter(
+            workflow=instance.workflow, rank__gte=instance.rank
+        ).exclude(outcome=instance.outcome):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
 
         
 @receiver(pre_save, sender=OutcomeOutcome)
@@ -1004,6 +1088,14 @@ def reorder_for_created_outcome_outcome(sender, instance, created, **kwargs):
             out_of_order_link.rank += 1
             out_of_order_link.save()
 
+@receiver(pre_save, sender=OutcomeNode)
+def delete_existing_outcome_node(sender, instance, **kwargs):
+    if instance.pk is None:
+        OutcomeNode.objects.filter(node=instance.node,outcome=instance.outcome).delete()
+        if instance.rank<0:instance.rank=0
+        new_parent_count = OutcomeNode.objects.filter(node=instance.node).count()
+        if instance.rank>new_parent_count:instance.rank=new_parent_count
+        
 
 @receiver(post_save, sender=OutcomeNode)
 def reorder_for_created_outcome_node(sender, instance, created, **kwargs):
@@ -1011,6 +1103,23 @@ def reorder_for_created_outcome_node(sender, instance, created, **kwargs):
         for out_of_order_link in OutcomeNode.objects.filter(
             node=instance.node, rank__gte=instance.rank
         ).exclude(outcome=instance.outcome):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
+
+@receiver(pre_save, sender=OutcomeHorizontalLink)
+def delete_existing_horizontal_link(sender, instance, **kwargs):
+    if instance.pk is None:
+        OutcomeHorizontalLink.objects.filter(outcome=instance.outcome,parent_outcome=instance.parent_outcome).delete()
+        if instance.rank<0:instance.rank=0
+        new_parent_count = OutcomeHorizontalLink.objects.filter(outcome=instance.outcome).count()
+        if instance.rank>new_parent_count:instance.rank=new_parent_count
+        
+@receiver(post_save, sender=OutcomeHorizontalLink)
+def reorder_for_created_horizontal_outcome_link(sender, instance, created, **kwargs):
+    if created:
+        for out_of_order_link in OutcomeHorizontalLink.objects.filter(
+            outcome=instance.outcome, rank__gte=instance.rank
+        ).exclude(parent_outcome=instance.parent_outcome):
             out_of_order_link.rank += 1
             out_of_order_link.save()
 

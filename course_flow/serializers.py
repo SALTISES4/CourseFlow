@@ -17,11 +17,13 @@ from .models import (
     NodeLink,
     Outcome,
     OutcomeNode,
+    OutcomeHorizontalLink,
     OutcomeOutcome,
     OutcomeProject,
     NodeCompletionStatus,
     User,
-    Favourite
+    Favourite,
+    OutcomeWorkflow,
 )
 
 import bleach
@@ -850,6 +852,16 @@ class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class OutcomeWorkflowSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = OutcomeWorkflow
+        fields = ["workflow", "outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get("rank", instance.rank)
+        instance.save()
+        return instance
+
 
 class WorkflowSerializerFinder(serializers.ModelSerializer):
     class Meta:
@@ -926,6 +938,7 @@ class OutcomeSerializerShallow(
             "created_on",
             "last_modified",
             "child_outcome_links",
+            "outcome_horizontal_links",
             "is_dropped",
             "depth",
             "type",
@@ -975,6 +988,16 @@ class OutcomeNodeSerializerShallow(serializers.ModelSerializer):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
         return instance
+    
+class OutcomeHorizontalLinkSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model = OutcomeHorizontalLink
+        fields = ["outcome", "parent_outcome", "added_on", "rank", "id"]
+
+    def update(self, instance, validated_data):
+        instance.rank = validated_data.get("rank", instance.rank)
+        instance.save()
+        return instance
 
 
 class OutcomeProjectSerializerShallow(serializers.ModelSerializer):
@@ -1012,6 +1035,7 @@ class WorkflowSerializerShallow(
             "parent_workflow",
             "outcomes_type",
             "outcomes_sort",
+            "outcomeworkflow_set",
             "author_id",
             "is_strategy",
             "strategy_icon",
@@ -1022,6 +1046,8 @@ class WorkflowSerializerShallow(
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     weekworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
+    outcomeworkflow_set = serializers.SerializerMethodField()
+    
     strategy_icon = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
@@ -1045,6 +1071,10 @@ class WorkflowSerializerShallow(
 
     def get_columnworkflow_set(self, instance):
         links = instance.columnworkflow_set.all().order_by("rank")
+        return list(map(linkIDMap, links))
+    
+    def get_outcomeworkflow_set(self, instance):
+        links = instance.outcomeworkflow_set.all().order_by("rank")
         return list(map(linkIDMap, links))
 
 
@@ -1087,6 +1117,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "parent_workflow",
             "outcomes_type",
             "outcomes_sort",
+            "outcomeworkflow_set",
             "is_strategy",
             "published",
             "type",
@@ -1127,6 +1158,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "parent_workflow",
             "outcomes_type",
             "outcomes_sort",
+            "outcomeworkflow_set",
             "is_strategy",
             "published",
             "type",
@@ -1167,6 +1199,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "parent_workflow",
             "outcomes_sort",
             "outcomes_type",
+            "outcomeworkflow_set",
             "is_strategy",
             "published",
             "type",

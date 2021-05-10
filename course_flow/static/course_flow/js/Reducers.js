@@ -51,6 +51,13 @@ export const newNodeAction = (response_data) => {
     }
 }
 
+export const newOutcomeAction = (response_data) => {
+    return {
+        type: "outcome/newOutcome",
+        payload:response_data
+    }
+}
+
 export const columnChangeNodeWeek = (id,delta_x,columns) => {
     return {
         type: 'node/movedColumnBy',
@@ -89,6 +96,12 @@ export const moveOutcomeOutcome = (id,new_position,new_parent,child_id) => {
 export const addOutcomeToNodeAction = (response_data) => {
     return {
         type: "outcome/addToNode",
+        payload:response_data
+    }
+}
+export const addParentOutcomeToOutcomeAction = (response_data) => {
+    return {
+        type: "outcome/addParentOutcome",
         payload:response_data
     }
 }
@@ -141,6 +154,19 @@ export function workflowReducer(state={},action){
                 ...state,
                 weekworkflow_set:new_weekworkflow_set
             }
+        case 'outcomeworkflow/movedTo':
+            var new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
+            for(var i=0;i<new_outcomeworkflow_set.length;i++){
+                if(new_outcomeworkflow_set[i]==action.payload.id){
+                    new_outcomeworkflow_set.splice(action.payload.new_index,0,new_outcomeworkflow_set.splice(i,1)[0]);
+                    break;
+                }
+            }
+            insertedAt(action.payload.child_id,"outcome",action.payload.new_parent,"workflow",action.payload.new_index,"outcomeworkflow");
+            return {
+                ...state,
+                outcomeworkflow_set:new_outcomeworkflow_set
+            }
         case 'week/deleteSelf':
             if(state.weekworkflow_set.indexOf(action.payload.parent_id)>=0){
                 var new_state = {...state};
@@ -154,6 +180,20 @@ export function workflowReducer(state={},action){
             var new_weekworkflow_set = state.weekworkflow_set.slice();
             new_weekworkflow_set.splice(action.payload.new_through.rank,0,action.payload.new_through.id);
             new_state.weekworkflow_set = new_weekworkflow_set;
+            return new_state;
+        case 'outcome/deleteSelf':
+            if(state.outcomeworkflow_set.indexOf(action.payload.parent_id)>=0){
+                var new_state = {...state};
+                new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
+                new_state.outcomeworkflow_set.splice(new_state.outcomeworkflow_set.indexOf(action.payload.parent_id),1);
+                return new_state;
+            }
+            return state;
+        case 'outcome/newOutcome':
+            new_state = {...state}
+            var new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
+            new_outcomeworkflow_set.splice(action.payload.new_through.rank,0,action.payload.new_through.id);
+            new_state.outcomeworkflow_set = new_outcomeworkflow_set;
             return new_state;
         case 'strategy/addStrategy':
             new_state = {...state}
@@ -193,6 +233,26 @@ export function workflowReducer(state={},action){
             let json = {};
             json[action.payload.field]=action.payload.value;
             if(!read_only)updateValue(action.payload.id,"workflow",json);
+            return new_state;
+        default:
+            return state;
+    }
+}
+
+export function outcomeworkflowReducer(state={},action){
+    switch(action.type){
+        case 'outcome/deleteSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.parent_id){
+                    var new_state=state.slice();
+                    new_state.splice(i,1);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'outcome/newOutcome':
+            new_state = state.slice();
+            new_state.push(action.payload.new_through);
             return new_state;
         default:
             return state;
@@ -670,6 +730,10 @@ export function outcomeReducer(state={},action){
                 }
             }
             return new_state;
+        case 'outcome/newOutcome':
+            var new_state=state.slice();
+            new_state.push(action.payload.new_model);
+            return new_state;
         case 'outcome/insertChild':
         case 'outcome/insertBelow':
             for(var i=0;i<state.length;i++){
@@ -700,6 +764,17 @@ export function outcomeReducer(state={},action){
                     let json = {};
                     json[action.payload.field]=action.payload.value;
                     if(!read_only)updateValue(action.payload.id,"outcome",json);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'outcome/addParentOutcome':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.outcomehorizontallink.outcome){
+                    var new_state=state.slice();
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].outcome_horizontal_links = new_state[i].outcome_horizontal_links.slice();
+                    new_state[i].outcome_horizontal_links.push(action.payload.outcomehorizontallink.id);
                     return new_state;
                 }
             }
@@ -765,6 +840,41 @@ export function outcomeNodeReducer(state={},action){
         default:
             return state;
     }
+}
+export function parentOutcomeReducer(state={},action){
+    return state;
+}
+export function parentOutcomeoutcomeReducer(state={},action){
+    return state;
+}
+export function parentOutcomeworkflowReducer(state={},action){
+    return state;
+}
+export function parentOutcomenodeReducer(state={},action){
+    return state;
+}
+export function outcomeHorizontalLinkReducer(state={},action){
+    switch(action.type){
+        case 'outcome/addParentOutcome':
+            var new_state = state.slice();
+            new_state.push(action.payload.outcomehorizontallink);
+            return new_state;
+        case 'outcomehorizontallink/deleteSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    deleteSelf(action.payload.id,"outcomehorizontallink");
+                    new_state.splice(i,1);
+                    return new_state;
+                }
+            }
+            return state;
+        default:
+        return state;
+    }
+}
+export function parentWorkflowReducer(state={},action){
+    return state;
 }
 export function outcomeProjectReducer(state={},action){
     switch(action.type){
@@ -836,8 +946,10 @@ export function projectMenuReducer(state={},action){
     }
 }
 
+
 export const rootWorkflowReducer = Redux.combineReducers({
     workflow:workflowReducer,
+    outcomeworkflow:outcomeworkflowReducer,
     columnworkflow:columnworkflowReducer,
     column:columnReducer,
     weekworkflow:weekworkflowReducer,
@@ -848,6 +960,12 @@ export const rootWorkflowReducer = Redux.combineReducers({
     outcome:outcomeReducer,
     outcomeoutcome:outcomeOutcomeReducer,
     outcomenode:outcomeNodeReducer,
+    parent_outcome:parentOutcomeReducer,
+    parent_outcomeoutcome:parentOutcomeoutcomeReducer,
+    parent_outcomeworkflow:parentOutcomeworkflowReducer,
+    parent_outcomenode:parentOutcomenodeReducer,
+    parent_workflow:parentWorkflowReducer,
+    outcomehorizontallink:outcomeHorizontalLinkReducer,
     outcomeproject:outcomeProjectReducer,
     strategy:strategyReducer,
     saltise_strategy:saltiseStrategyReducer,

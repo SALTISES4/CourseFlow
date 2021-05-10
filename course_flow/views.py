@@ -45,6 +45,7 @@ from .models import (
     ObjectPermission,
     Outcome,
     OutcomeNode,
+    OutcomeHorizontalLink,
     OutcomeOutcome,
     OutcomeProject,
     Program,
@@ -54,6 +55,7 @@ from .models import (
     WeekWorkflow,
     Workflow,
     WorkflowProject,
+    OutcomeWorkflow,
 )
 from .serializers import (
     ActivitySerializerShallow,
@@ -66,9 +68,11 @@ from .serializers import (
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
     OutcomeNodeSerializerShallow,
+    OutcomeHorizontalLinkSerializerShallow,
     OutcomeOutcomeSerializerShallow,
     OutcomeProjectSerializerShallow,
     OutcomeSerializerShallow,
+    OutcomeWorkflowSerializerShallow,
     ProjectSerializerShallow,
     UserSerializer,
     WeekSerializerShallow,
@@ -748,15 +752,34 @@ def get_workflow_context_data(workflow, context, user):
     )
     nodelinks = NodeLink.objects.filter(source_node__in=nodes)
     if not workflow.is_strategy:
-        outcomeprojects = project.outcomeproject_set.all()
-        base_outcomes = project.outcomes.all()
+        outcomeworkflows = workflow.outcomeworkflow_set.all()
+        base_outcomes = workflow.outcomes.all()
         outcomes = []
         for oc in base_outcomes:
             outcomes += get_all_outcomes(oc, 0)
         outcomeoutcomes = []
+        outcomehorizontallinks=[]
         for oc in outcomes:
             outcomeoutcomes += list(oc.child_outcome_links.all())
+            outcomehorizontallinks+=list(oc.outcome_horizontal_links.all())
         outcomenodes = OutcomeNode.objects.filter(node__in=nodes)
+        parent_outcomes = []
+        parent_outcomeoutcomes = []
+        parent_workflows = []
+        parent_outcomeworkflows =[]
+        parent_outcomenodes = []
+        for parent_node in workflow.linked_nodes.all():
+            parent_outcomenodes += parent_node.outcomenode_set.all()
+            parent_workflow = parent_node.get_workflow()
+            if parent_workflow in parent_workflows:continue
+            parent_workflows += [parent_workflow]
+        parent_node_base_outcomes = [ocn.outcome for ocn in parent_outcomenodes]
+        for oc in parent_node_base_outcomes:
+            parent_outcomes += get_all_outcomes(oc,0)
+        for oc in parent_outcomes:
+            parent_outcomeoutcomes += list(oc.child_outcome_links.all())
+            
+            
     column_choices = [
         {"type": choice[0], "name": choice[1]}
         for choice in Column._meta.get_field("column_type").choices
@@ -803,17 +826,32 @@ def get_workflow_context_data(workflow, context, user):
         "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
     }
     if not workflow.is_strategy:
+        data_flat["outcomeworkflow"] = OutcomeWorkflowSerializerShallow(
+            outcomeworkflows, many=True
+        ).data
         data_flat["outcome"] = OutcomeSerializerShallow(
             outcomes, many=True
         ).data
         data_flat["outcomeoutcome"] = OutcomeOutcomeSerializerShallow(
             outcomeoutcomes, many=True
         ).data
+        data_flat["parent_outcome"] = OutcomeSerializerShallow(
+            parent_outcomes, many=True
+        ).data
+        data_flat["parent_outcomeoutcome"] = OutcomeOutcomeSerializerShallow(
+            parent_outcomeoutcomes, many=True
+        ).data
+        data_flat["parent_outcomenode"] = OutcomeNodeSerializerShallow(
+            parent_outcomenodes, many=True
+        ).data
+        data_flat["parent_workflow"] = WorkflowSerializerShallow(
+            parent_workflows, many=True
+        ).data
+        data_flat["outcomehorizontallink"] = OutcomeHorizontalLinkSerializerShallow(
+            outcomehorizontallinks, many=True
+        ).data
         data_flat["outcomenode"] = OutcomeNodeSerializerShallow(
             outcomenodes, many=True
-        ).data
-        data_flat["outcomeproject"] = OutcomeProjectSerializerShallow(
-            outcomeprojects, many=True
         ).data
         if workflow.type == "course":
             data_flat["strategy"] = WorkflowSerializerShallow(
@@ -1689,6 +1727,29 @@ def new_node(request: HttpRequest) -> HttpResponse:
     )
 
 
+#@user_can_edit("workflowPk")
+def new_outcome_for_workflow(request: HttpRequest) -> HttpResponse:
+    workflow_id = json.loads(request.POST.get("workflowPk"))
+    workflow = Workflow.objects.get(pk=workflow_id)
+    print(workflow_id)
+    #try:
+    outcome = Outcome.objects.create(
+        author=request.user
+    )
+    outcome_workflow = OutcomeWorkflow.objects.create(
+        workflow=workflow, outcome=outcome, rank=workflow.outcomes.count()
+    )
+    #except ValidationError:
+    #    return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_model": OutcomeSerializerShallow(outcome).data,
+            "new_through": OutcomeWorkflowSerializerShallow(outcome_workflow).data,
+            "parentID": workflow_id,
+        }
+    )
+
 @user_can_edit("workflowPk")
 @user_can_view(False)
 def add_strategy(request: HttpRequest) -> HttpResponse:
@@ -2212,6 +2273,26 @@ def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
         {
             "action": "posted",
             "outcomenode": OutcomeNodeSerializerShallow(outcomenode).data,
+        }
+    )
+
+# Add a parent outcome to an outcome
+#@user_can_edit("outcomePk")
+#@user_can_view(False)
+def add_parent_outcome_to_outcome(request: HttpRequest) -> HttpResponse:
+    outcome_id = json.loads(request.POST.get("outcomePk"))
+    parent_id = json.loads(request.POST.get("objectID"))
+    try:
+        outcome = Outcome.objects.get(id=outcome_id)
+        parent_outcome = Outcome.objects.get(id=parent_id)
+        outcomehorizontallink = OutcomeHorizontalLink.objects.create(outcome=outcome, parent_outcome=parent_outcome)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse(
+        {
+            "action": "posted",
+            "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(outcomehorizontallink).data,
         }
     )
 

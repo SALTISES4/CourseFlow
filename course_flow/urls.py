@@ -84,8 +84,14 @@ def course_flow_patterns():
             views.add_outcome_to_node,
             name="add-outcome-to-node",
         ),
+        url(
+            r"^node/add-parent-outcome-to-outcome/$",
+            views.add_parent_outcome_to_outcome,
+            name="add-parent-outcome-to-outcome",
+        ),
         url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
+        url(r"^workflow/outcome/new", views.new_outcome_for_workflow, name="new-outcome-for-workflow"),
         url(
             r"^workflow/strategy/add", views.add_strategy, name="add-strategy"
         ),
