@@ -768,6 +768,17 @@ export function outcomeReducer(state={},action){
                 }
             }
             return state;
+        case 'outcomehorizontallink/deleteSelf':
+            console.log("payload")
+            console.log(action.payload);
+            var new_state = state.slice();
+            for(var i=0;i<new_state.length;i++){
+                if(new_state[i].outcome_horizontal_links.indexOf(action.payload.id)>=0){
+                    new_state[i]={...new_state[i], outcome_horizontal_links:new_state[i].outcome_horizontal_links.slice()};
+                    new_state[i].outcome_horizontal_links.splice(new_state[i].outcome_horizontal_links.indexOf(action.payload.id),1);
+                }
+            }
+            return new_state;
         case 'outcome/addParentOutcome':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.outcomehorizontallink.outcome){
