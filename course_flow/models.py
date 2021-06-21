@@ -870,6 +870,31 @@ class ObjectPermission(models.Model):
 Other receivers
 """
 
+def get_allowed_parent_outcomes(workflow,**kwargs):
+    exclude_node = kwargs.get('exclude_node',None)
+    exclude_outcomenode = kwargs.get('exclude_outcomenode',None)
+    parent_outcomes = []
+    parent_outcomenodes = []
+    for parent_node in workflow.linked_nodes.exclude(id=exclude_node):
+        parent_outcomenodes += parent_node.outcomenode_set.exclude(id=exclude_outcomenode)
+    parent_node_base_outcomes = [
+        ocn.outcome for ocn in parent_outcomenodes
+    ]
+    for oc in parent_node_base_outcomes:
+        parent_outcomes += get_all_outcomes(oc, 0)
+    return parent_outcomes
+
+@receiver(pre_delete, sender=OutcomeNode)
+def remove_horizontal_outcome_links_on_outcomenode_delete(sender,instance,**kwargs):
+    workflow = instance.node.linked_workflow
+    if workflow is not None:
+        linked_outcomes = list(workflow.outcomes.all())
+        parent_outcomes = get_allowed_parent_outcomes(workflow,exclude_outcomenode=instance.pk)
+        OutcomeHorizontalLink.objects.filter(
+            outcome__in=linked_outcomes
+        ).exclude(parent_outcome__in=parent_outcomes).delete()
+        
+    
 
 @receiver(pre_save, sender=Node)
 def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
@@ -881,15 +906,7 @@ def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
         new_workflow is None or new_workflow.pk == old_workflow.pk
     ):
         linked_outcomes = list(old_workflow.outcomes.all())
-        parent_outcomes = []
-        parent_outcomenodes = []
-        for parent_node in old_workflow.linked_nodes.exclude(id=instance.pk):
-            parent_outcomenodes += parent_node.outcomenode_set.all()
-        parent_node_base_outcomes = [
-            ocn.outcome for ocn in parent_outcomenodes
-        ]
-        for oc in parent_node_base_outcomes:
-            parent_outcomes += get_all_outcomes(oc, 0)
+        parent_outcomes = get_allowed_parent_outcomes(old_workflow,exclude_node=instance.pk)
         OutcomeHorizontalLink.objects.filter(
             outcome__in=linked_outcomes
         ).exclude(parent_outcome__in=parent_outcomes).delete()
