@@ -109,8 +109,8 @@ export const getOutcomeByID = (state,id,display_parent_outcomes)=>{
     for(var i in state.outcome){
         var outcome = state.outcome[i];
         if(outcome.id==id){
-            if(display_parent_outcomes)return {data:outcome,parent_outcomes:state.parent_outcomes};
-            else return {data:outcome};
+            if(display_parent_outcomes)return {data:outcome,parent_outcomes:state.parent_outcomes,outcomenodes:state.outcomenode};
+            else return {data:outcome,outcomenodes:state.outcomenode};
         }
     }
 }

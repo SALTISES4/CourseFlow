@@ -89,17 +89,26 @@ export const default_column_settings = {
     14:{colour:"#f7ba2a",icon:"assessment"},
     20:{colour:"#369934",icon:"other"}
 }
+export const object_dictionary = {
+    node:"node",
+    week:"week",
+    column:"column",
+    outcome:"outcome",
+    outcome_base:"outcome",
+}
 export const parent_dictionary = {
     node:"week",
     week:"workflow",
     column:"workflow",
     outcome:"outcome",
+    outcome_base:"workflow"
 }
 export const through_parent_dictionary = {
     node:"nodeweek",
     week:"weekworkflow",
     column:"columnworkflow",
     outcome:"outcomeoutcome",
+    outcome_base:"outcomeworkflow"
 }
 
 

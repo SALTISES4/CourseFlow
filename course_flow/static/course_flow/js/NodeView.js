@@ -66,7 +66,10 @@ class NodeView extends ComponentJSON{
         else dropIcon = "droptriangledown";
         let linkIcon;
         if(data.linked_workflow)linkIcon=(
-            <img src={iconpath+"wflink.svg"} title={data.linked_workflow_title+", double click to visit"}/>
+            <div class="hover-shade linked-workflow" onClick={this.doubleClick.bind(this)}>
+                <img src={iconpath+"wflink.svg"}/>
+                <div>Visit linked workflow</div>
+            </div>
         );
         let dropText = "";
         if(data.description&&data.description.replace(/(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,'')!='')dropText="...";
@@ -99,15 +102,15 @@ class NodeView extends ComponentJSON{
                         {righticon}
                     </div>
                 </div>
+                {linkIcon}
                 <div class = "node-details">
                     <TitleText text={descriptionText} defaultText="Click to edit"/>
                 </div>
-                <div class = "node-drop-row" onClick={this.toggleDrop.bind(this)}>
+                <div class = "node-drop-row hover-shade" onClick={this.toggleDrop.bind(this)}>
                     <div class = "node-drop-side node-drop-left">{dropText}</div>
                     <div class = "node-drop-middle"><img src={iconpath+dropIcon+".svg"}/></div>
                     <div class = "node-drop-side node-drop-right">
                         <div class="node-drop-time">{data.time_required && (data.time_required+" "+this.props.renderer.time_choices[data.time_units].name)}</div>
-                        {linkIcon}
                     </div>
                 </div> 
                 {!read_only && <div class="mouseover-actions">

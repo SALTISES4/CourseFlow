@@ -16,24 +16,24 @@
 <div id="popup-container"></div>
 <div id="sidebar" class="side-bar">
   <ul>
-    <li>
+    <li class="hover-shade">
       <a href="#edit-menu"
         ><img
           src="{% static 'course_flow/img/images_svg/edit_pencil_blue.svg' %}"
       /></a>
     </li>
-    <li>
+    <li class="hover-shade">
       <a href="#node-bar"
         ><img src="{% static 'course_flow/img/images_svg/add_new_blue.svg' %}"
       /></a>
     </li>
     {% if is_strategy == "false" %}
-    <li>
+    <li class="hover-shade">
       <a href="#outcome-bar"
         ><img src="{% static 'course_flow/img/images_svg/outcomes_blue.svg' %}"
       /></a>
     </li>
-    <li>
+    <li class="hover-shade">
       <a href="#strategy-bar"
         ><img src="{% static 'course_flow/img/images_svg/strategy_blue.svg' %}"
       /></a>

@@ -21,11 +21,11 @@ def course_flow_patterns():
             views.ProjectUpdateView.as_view(),
             name="project-update",
         ),
-        url(
-            r"^outcome/(?P<pk>[0-9]+)/update/$",
-            views.OutcomeUpdateView.as_view(),
-            name="outcome-update",
-        ),
+#        url(
+#            r"^outcome/(?P<pk>[0-9]+)/update/$",
+#            views.OutcomeUpdateView.as_view(),
+#            name="outcome-update",
+#        ),
         url(
             r"^workflow/(?P<pk>[0-9]+)/update/$",
             views.WorkflowUpdateView.as_view(),
@@ -50,11 +50,11 @@ def course_flow_patterns():
             views.duplicate_workflow_ajax,
             name="duplicate-workflow",
         ),
-        url(
-            r"^project/duplicate-outcome/$",
-            views.duplicate_outcome_ajax,
-            name="duplicate-outcome",
-        ),
+#        url(
+#            r"^project/duplicate-outcome/$",
+#            views.duplicate_outcome_ajax,
+#            name="duplicate-outcome",
+#        ),
         url(
             r"^project/duplicate-project/$",
             views.duplicate_project_ajax,
@@ -171,16 +171,16 @@ def course_flow_patterns():
             views.ProjectDetailView.as_view(),
             name="project-detail-view",
         ),
-        url(
-            r"^outcome/(?P<projectPk>[0-9]+)/create/$",
-            views.OutcomeCreateView.as_view(),
-            name="outcome-create",
-        ),
-        url(
-            r"^outcome/(?P<pk>[0-9]+)/$",
-            views.OutcomeDetailView.as_view(),
-            name="outcome-detail-view",
-        ),
+#        url(
+#            r"^outcome/(?P<projectPk>[0-9]+)/create/$",
+#            views.OutcomeCreateView.as_view(),
+#            name="outcome-create",
+#        ),
+#        url(
+#            r"^outcome/(?P<pk>[0-9]+)/$",
+#            views.OutcomeDetailView.as_view(),
+#            name="outcome-detail-view",
+#        ),
         url(
             r"^program/(?P<projectPk>[0-9]+)/create/$",
             views.ProgramCreateView.as_view(),

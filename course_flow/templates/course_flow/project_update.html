@@ -31,19 +31,16 @@
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
   const update_path = {
-      outcome:"{% url 'course_flow:outcome-update' pk='0'%}",
       activity:"{% url 'course_flow:workflow-update' pk='0'%}",
       course:"{% url 'course_flow:workflow-update' pk='0'%}",
       program:"{% url 'course_flow:workflow-update' pk='0'%}",
   }
   const detail_path = {
-      outcome:"{% url 'course_flow:outcome-detail-view' pk='0'%}",
       activity:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
       course:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
       program:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
   }
   const create_path = {
-      outcome:"{% url 'course_flow:outcome-create' projectPk=object.pk %}",
       activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
       course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
       program:"{% url 'course_flow:program-create' projectPk=object.pk %}"

@@ -179,8 +179,10 @@ export class ComponentJSON extends React.Component{
             alert("You cannot delete the last "+this.objectType);
             return;
         }
-        if(window.confirm("Are you sure you want to delete this "+this.objectType+"?")){
-            this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,this.props.column_order));
+        let extra_data = this.props.column_order;
+        if(Constants.object_dictionary[this.objectType]=="outcome")extra_data=this.props.outcomenodes;
+        if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
+            this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,extra_data));
         }
     }
     
@@ -197,7 +199,7 @@ export class ComponentJSON extends React.Component{
         props.renderer.tiny_loader.startLoad();
         duplicateSelf(
             data.id,
-            type,
+            Constants.object_dictionary[type],
             props.parentID,
             Constants.parent_dictionary[type],
             Constants.through_parent_dictionary[type],
@@ -222,7 +224,7 @@ export class ComponentJSON extends React.Component{
         props.renderer.tiny_loader.startLoad();
         insertSibling(
             data.id,
-            type,
+            Constants.object_dictionary[type],
             props.parentID,
             Constants.parent_dictionary[type],
             Constants.through_parent_dictionary[type],
@@ -246,9 +248,9 @@ export class ComponentJSON extends React.Component{
         var props = this.props;
         var type = this.objectType;
         props.renderer.tiny_loader.startLoad();
-        insertChild(data.id,type,
+        insertChild(data.id,Constants.object_dictionary[type],
             (response_data)=>{
-                let action = insertChildAction(response_data,type);
+                let action = insertChildAction(response_data,Constants.object_dictionary[type]);
                 props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             }
@@ -259,7 +261,7 @@ export class ComponentJSON extends React.Component{
     addEditable(data,no_delete=false){
         if(read_only)return null;
         if(this.state.selected){
-            var type=this.objectType;
+            var type=Constants.object_dictionary[this.objectType];
             let title_length="50";
             if(type=="outcome")title_length="500";
             var props = this.props;
@@ -386,15 +388,15 @@ export class ComponentJSON extends React.Component{
     }
     
     inputChanged(field,evt){
-        this.props.dispatch(changeField(this.props.data.id,this.objectType,field,evt.target.value));
+        this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.value));
     }
 
     checkboxChanged(field,evt){
-         this.props.dispatch(changeField(this.props.data.id,this.objectType,field,evt.target.checked));
+         this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked));
     }
 
     valueChanged(field,new_value){
-        this.props.dispatch(changeField(this.props.data.id,this.objectType,field,new_value));
+        this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,new_value));
     }
 }
 

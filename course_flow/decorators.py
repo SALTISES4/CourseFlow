@@ -12,7 +12,7 @@ from django.http import (
 )
 from django.views.decorators.http import require_POST
 
-from course_flow.models import ObjectPermission, OutcomeProject, User
+from course_flow.models import ObjectPermission, OutcomeWorkflow, User
 
 from .utils import *
 
@@ -117,14 +117,14 @@ def test_special_case_delete_permission(model_data, user):
     instance = get_model_from_str(model_data["model"]).objects.get(
         id=model_data["id"]
     )
-    if (
-        model_data["model"] == "outcome"
-        and OutcomeProject.objects.filter(outcome=instance).count() == 0
-    ):
-        permission_objects = instance.get_permission_objects()
-        return test_objects_permission(
-            permission_objects, user, ObjectPermission.PERMISSION_EDIT
-        )
+#    if (
+#        model_data["model"] == "outcome"
+#        and OutcomeWorkflow.objects.filter(outcome=instance).count() == 0
+#    ):
+#        permission_objects = instance.get_permission_objects()
+#        return test_objects_permission(
+#            permission_objects, user, ObjectPermission.PERMISSION_EDIT
+#        )
     if model_data["model"] == "project":
         return instance.author == user
     else:
@@ -268,7 +268,6 @@ delete_exceptions = [
     "activity",
     "course",
     "program",
-    "outcome",
     "project",
 ]
 

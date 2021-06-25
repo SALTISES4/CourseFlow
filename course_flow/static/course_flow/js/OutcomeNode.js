@@ -17,6 +17,9 @@ class OutcomeNodeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        console.log("Rendering an outcomenode");
+        console.log(data);
+        if(data.outcome==-1)return null;
         
         return (
             <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>

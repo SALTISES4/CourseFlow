@@ -49,7 +49,7 @@ from .models import (
     OutcomeHorizontalLink,
     OutcomeNode,
     OutcomeOutcome,
-    OutcomeProject,
+    #OutcomeProject,
     OutcomeWorkflow,
     Program,
     Project,
@@ -72,7 +72,7 @@ from .serializers import (
     OutcomeHorizontalLinkSerializerShallow,
     OutcomeNodeSerializerShallow,
     OutcomeOutcomeSerializerShallow,
-    OutcomeProjectSerializerShallow,
+#    OutcomeProjectSerializerShallow,
     OutcomeSerializerShallow,
     OutcomeWorkflowSerializerShallow,
     ProjectSerializerShallow,
@@ -496,49 +496,49 @@ def get_workflow_data_package(user, project, type_filter, self_only):
                 }
             )
 
-    if type_filter is None:
-        this_project_sections.append(
-            {
-                "title": _("Outcomes"),
-                "object_type": "outcome",
-                "objects": InfoBoxSerializer(
-                    Outcome.objects.filter(project=project),
-                    many=True,
-                    context={"user": user},
-                ).data,
-            }
-        )
-        if not self_only:
-            other_project_sections.append(
-                {
-                    "title": _("Outcomes"),
-                    "object_type": "outcome",
-                    "objects": InfoBoxSerializer(
-                        Outcome.objects.filter(author=user)
-                        .exclude(project=project)
-                        .exclude(project=None),
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            )
-        if not self_only:
-            all_published_sections.append(
-                {
-                    "title": _("Your Favourite Outcomes"),
-                    "object_type": "outcome",
-                    "objects": InfoBoxSerializer(
-                        [
-                            favourite.content_object
-                            for favourite in Favourite.objects.filter(
-                                user=user, outcome__published=True
-                            )
-                        ],
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            )
+#    if type_filter is None:
+#        this_project_sections.append(
+#            {
+#                "title": _("Outcomes"),
+#                "object_type": "outcome",
+#                "objects": InfoBoxSerializer(
+#                    Outcome.objects.filter(project=project),
+#                    many=True,
+#                    context={"user": user},
+#                ).data,
+#            }
+#        )
+#        if not self_only:
+#            other_project_sections.append(
+#                {
+#                    "title": _("Outcomes"),
+#                    "object_type": "outcome",
+#                    "objects": InfoBoxSerializer(
+#                        Outcome.objects.filter(author=user)
+#                        .exclude(project=project)
+#                        .exclude(project=None),
+#                        many=True,
+#                        context={"user": user},
+#                    ).data,
+#                }
+#            )
+#        if not self_only:
+#            all_published_sections.append(
+#                {
+#                    "title": _("Your Favourite Outcomes"),
+#                    "object_type": "outcome",
+#                    "objects": InfoBoxSerializer(
+#                        [
+#                            favourite.content_object
+#                            for favourite in Favourite.objects.filter(
+#                                user=user, outcome__published=True
+#                            )
+#                        ],
+#                        many=True,
+#                        context={"user": user},
+#                    ).data,
+#                }
+#            )
     if project.author == user:
         current_copy_type = "copy"
         other_copy_type = "import"
@@ -655,82 +655,82 @@ class ProjectUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
 
         return context
 
-
-class OutcomeCreateView(
-    LoginRequiredMixin, UserCanEditProjectMixin, CreateView
-):
-    model = Outcome
-    fields = ["title"]
-    template_name = "course_flow/outcome_create.html"
-
-    def test_func(self):
-        project = Project.objects.get(pk=self.kwargs["projectPk"])
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-            and project.author == self.request.user
-        )
-
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        project = Project.objects.get(pk=self.kwargs["projectPk"])
-        response = super(CreateView, self).form_valid(form)
-        OutcomeProject.objects.create(project=project, outcome=form.instance)
-        return response
-
-    def get_success_url(self):
-        return reverse(
-            "course_flow:outcome-update", kwargs={"pk": self.object.pk}
-        )
-
-
-def get_outcome_context_data(outcome, context, user):
-    outcomes = get_all_outcomes(outcome, 0)
-    outcomeoutcomes = []
-    for oc in outcomes:
-        outcomeoutcomes += list(oc.child_outcome_links.all())
-
-    parent_project_pk = OutcomeProject.objects.get(outcome=outcome).project.pk
-
-    data_flat = {
-        "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
-        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
-            outcomeoutcomes, many=True
-        ).data,
-    }
-    context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
-    context["parent_project_pk"] = (
-        JSONRenderer().render(parent_project_pk).decode("utf-8")
-    )
-    return context
-
-
-class OutcomeDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model = Outcome
-    fields = ["title", "description", "published"]
-    template_name = "course_flow/outcome_detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(DetailView, self).get_context_data(**kwargs)
-        context = get_outcome_context_data(
-            self.object, context, self.request.user
-        )
-
-        return context
-
-
-class OutcomeUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
-    model = Outcome
-    fields = ["title", "description", "published"]
-    template_name = "course_flow/outcome_update.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(UpdateView, self).get_context_data(**kwargs)
-        context = get_outcome_context_data(
-            self.object, context, self.request.user
-        )
-
-        return context
+#
+#class OutcomeCreateView(
+#    LoginRequiredMixin, UserCanEditProjectMixin, CreateView
+#):
+#    model = Outcome
+#    fields = ["title"]
+#    template_name = "course_flow/outcome_create.html"
+#
+#    def test_func(self):
+#        project = Project.objects.get(pk=self.kwargs["projectPk"])
+#        return (
+#            Group.objects.get(name=settings.TEACHER_GROUP)
+#            in self.request.user.groups.all()
+#            and project.author == self.request.user
+#        )
+#
+#    def form_valid(self, form):
+#        form.instance.author = self.request.user
+#        project = Project.objects.get(pk=self.kwargs["projectPk"])
+#        response = super(CreateView, self).form_valid(form)
+#        OutcomeProject.objects.create(project=project, outcome=form.instance)
+#        return response
+#
+#    def get_success_url(self):
+#        return reverse(
+#            "course_flow:outcome-update", kwargs={"pk": self.object.pk}
+#        )
+#
+#
+#def get_outcome_context_data(outcome, context, user):
+#    outcomes = get_all_outcomes(outcome, 0)
+#    outcomeoutcomes = []
+#    for oc in outcomes:
+#        outcomeoutcomes += list(oc.child_outcome_links.all())
+#
+#    parent_project_pk = OutcomeProject.objects.get(outcome=outcome).project.pk
+#
+#    data_flat = {
+#        "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
+#        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
+#            outcomeoutcomes, many=True
+#        ).data,
+#    }
+#    context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
+#    context["parent_project_pk"] = (
+#        JSONRenderer().render(parent_project_pk).decode("utf-8")
+#    )
+#    return context
+#
+#
+#class OutcomeDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
+#    model = Outcome
+#    fields = ["title", "description", "published"]
+#    template_name = "course_flow/outcome_detail.html"
+#
+#    def get_context_data(self, **kwargs):
+#        context = super(DetailView, self).get_context_data(**kwargs)
+#        context = get_outcome_context_data(
+#            self.object, context, self.request.user
+#        )
+#
+#        return context
+#
+#
+#class OutcomeUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
+#    model = Outcome
+#    fields = ["title", "description", "published"]
+#    template_name = "course_flow/outcome_update.html"
+#
+#    def get_context_data(self, **kwargs):
+#        context = super(UpdateView, self).get_context_data(**kwargs)
+#        context = get_outcome_context_data(
+#            self.object, context, self.request.user
+#        )
+#
+#        return context
 
 
 def get_workflow_context_data(workflow, context, user):
@@ -1361,7 +1361,7 @@ def duplicate_nodelink(
     return new_nodelink
 
 
-def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
+def duplicate_node(node: Node, author: User, new_workflow: Workflow, outcome_ids) -> Node:
     if new_workflow is not None:
         for new_column in new_workflow.columns.all():
             if (
@@ -1390,8 +1390,12 @@ def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
     )
 
     for outcome in node.outcomes.all():
+        if new_workflow is not None:
+            new_outcome = Outcome.objects.get(parent_outcome=outcome,id__in=outcome_ids)
+        else:
+            new_outcome = outcome
         OutcomeNode.objects.create(
-            outcome=outcome,
+            outcome=new_outcome,
             node=new_node,
             rank=OutcomeNode.objects.get(node=node, outcome=outcome).rank,
         )
@@ -1399,7 +1403,7 @@ def duplicate_node(node: Node, author: User, new_workflow: Workflow) -> Node:
     return new_node
 
 
-def duplicate_week(week: Week, author: User, new_workflow: Workflow) -> Week:
+def duplicate_week(week: Week, author: User, new_workflow: Workflow, outcome_ids) -> Week:
     new_week = Week.objects.create(
         title=week.title,
         description=week.description,
@@ -1414,7 +1418,7 @@ def duplicate_week(week: Week, author: User, new_workflow: Workflow) -> Week:
 
     for node in week.nodes.all():
         NodeWeek.objects.create(
-            node=duplicate_node(node, author, new_workflow),
+            node=duplicate_node(node, author, new_workflow, outcome_ids),
             week=new_week,
             rank=NodeWeek.objects.get(node=node, week=week).rank,
         )
@@ -1447,6 +1451,14 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
         parent_workflow=workflow,
         is_strategy=workflow.is_strategy,
     )
+    for outcome in workflow.outcomes.all():
+        OutcomeWorkflow.objects.create(
+            outcome=duplicate_outcome(outcome, author),
+            workflow=new_workflow,
+            rank=OutcomeWorkflow.objects.get(
+                outcome=outcome, workflow=workflow
+            ).rank,
+        )
 
     for column in workflow.columns.all():
         ColumnWorkflow.objects.create(
@@ -1456,12 +1468,15 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
                 column=column, workflow=workflow
             ).rank,
         )
+        
     for week in workflow.weeks.all():
         WeekWorkflow.objects.create(
-            week=duplicate_week(week, author, new_workflow),
+            week=duplicate_week(week, author, new_workflow, new_workflow.get_all_outcome_ids()),
             workflow=new_workflow,
             rank=WeekWorkflow.objects.get(week=week, workflow=workflow).rank,
         )
+        
+    
 
     # Handle all the nodelinks. These need to be handled here because they
     # potentially span weeks
@@ -1496,8 +1511,7 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
         clone = duplicate_workflow(workflow, request.user)
         WorkflowProject.objects.create(project=project, workflow=clone)
         if workflow.get_project() != clone.get_project():
-            outcomes_set = get_project_outcomes(project)
-            cleanup_workflow_post_duplication(clone, project, outcomes_set)
+            cleanup_workflow_post_duplication(clone, project)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -1552,26 +1566,26 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
     return new_outcome
 
 
-@user_can_view("outcomePk")
-@user_can_edit("projectPk")
-def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
-    outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
-    project = Project.objects.get(pk=request.POST.get("projectPk"))
-    try:
-        clone = duplicate_outcome(outcome, request.user)
-        OutcomeProject.objects.create(project=project, outcome=clone)
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "new_item": InfoBoxSerializer(
-                clone, context={"user": request.user}
-            ).data,
-            "type": "outcome",
-        }
-    )
+#@user_can_view("outcomePk")
+#@user_can_edit("workflowPk")
+#def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
+#    outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
+#    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+#    try:
+#        clone = duplicate_outcome(outcome, request.user)
+#        OutcomeWorkflow.objects.create(workflow=workflow, outcome=clone)
+#    except ValidationError:
+#        return JsonResponse({"action": "error"})
+#
+#    return JsonResponse(
+#        {
+#            "action": "posted",
+#            "new_item": InfoBoxSerializer(
+#                clone, context={"user": request.user}
+#            ).data,
+#            "type": "outcome",
+#        }
+#    )
 
 
 def duplicate_project(project: Project, author: User) -> Project:
@@ -1584,14 +1598,14 @@ def duplicate_project(project: Project, author: User) -> Project:
         parent_project=project,
     )
 
-    for outcome in project.outcomes.all():
-        OutcomeProject.objects.create(
-            outcome=duplicate_outcome(outcome, author),
-            project=new_project,
-            rank=OutcomeProject.objects.get(
-                outcome=outcome, project=project
-            ).rank,
-        )
+#    for outcome in project.outcomes.all():
+#        OutcomeProject.objects.create(
+#            outcome=duplicate_outcome(outcome, author),
+#            project=new_project,
+#            rank=OutcomeProject.objects.get(
+#                outcome=outcome, project=project
+#            ).rank,
+#        )
 
     for workflow in project.workflows.all():
         WorkflowProject.objects.create(
@@ -1605,9 +1619,8 @@ def duplicate_project(project: Project, author: User) -> Project:
     for discipline in project.disciplines.all():
         new_project.disciplines.add(discipline)
 
-    outcomes_set = get_project_outcomes(new_project)
     for workflow in new_project.workflows.all():
-        cleanup_workflow_post_duplication(workflow, new_project, outcomes_set)
+        cleanup_workflow_post_duplication(workflow, new_project)
 
     return new_project
 
@@ -1631,10 +1644,10 @@ def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     )
 
 
-# post-duplication cleanup. Setting the linked workflows and outcomes for nodes.
-# This must be done after the fact because the workflows and outcomes have not
+# post-duplication cleanup. Setting the linked workflows.
+# This must be done after the fact because the workflows have not
 # necessarily been duplicated by the time the nodes are
-def cleanup_workflow_post_duplication(workflow, project, outcomes_set):
+def cleanup_workflow_post_duplication(workflow, project):
     for node in Node.objects.filter(week__workflow=workflow):
         if node.linked_workflow is not None:
             new_linked_workflow = project.workflows.filter(
@@ -1642,15 +1655,15 @@ def cleanup_workflow_post_duplication(workflow, project, outcomes_set):
             ).last()
             node.linked_workflow = new_linked_workflow
             node.save()
-        for outcomenode in node.outcomenode_set.all():
-            new_outcome = outcomes_set.filter(
-                parent_outcome=outcomenode.outcome
-            ).last()
-            if new_outcome is None:
-                outcomenode.delete()
-            else:
-                outcomenode.outcome = new_outcome
-                outcomenode.save()
+#        for outcomenode in node.outcomenode_set.all():
+#            new_outcome = outcomes_set.filter(
+#                parent_outcome=outcomenode.outcome
+#            ).last()
+#            if new_outcome is None:
+#                outcomenode.delete()
+#            else:
+#                outcomenode.outcome = new_outcome
+#                outcomenode.save()
 
 
 """
@@ -1774,7 +1787,7 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
             if position < 0 or position > workflow.weeks.count():
                 position = workflow.weeks.count()
             old_week = strategy.weeks.first()
-            week = duplicate_week(old_week, request.user, None)
+            week = duplicate_week(old_week, request.user, None, None)
             week.title = strategy.title
             week.is_strategy = True
             week.original_strategy = strategy
@@ -1913,6 +1926,7 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
 # Add a new child to a model
 @user_can_edit(False)
 def insert_child(request: HttpRequest) -> HttpResponse:
+    print(request.POST)
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
 
@@ -2021,7 +2035,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             model = Week.objects.get(id=object_id)
             parent = Workflow.objects.get(id=parent_id)
             through = WeekWorkflow.objects.get(week=model, workflow=parent)
-            newmodel = duplicate_week(model, request.user, None)
+            newmodel = duplicate_week(model, request.user, None, None)
             newthroughmodel = WeekWorkflow.objects.create(
                 workflow=parent, week=newmodel, rank=through.rank + 1
             )
@@ -2039,7 +2053,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             model = Node.objects.get(id=object_id)
             parent = Week.objects.get(id=parent_id)
             through = NodeWeek.objects.get(node=model, week=parent)
-            newmodel = duplicate_node(model, request.user, None)
+            newmodel = duplicate_node(model, request.user, None, None)
             newthroughmodel = NodeWeek.objects.create(
                 week=parent, node=newmodel, rank=through.rank + 1
             )
@@ -2065,16 +2079,27 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             new_child_through_serialized = None
         elif object_type == "outcome":
             model = Outcome.objects.get(id=object_id)
-            parent = Outcome.objects.get(id=parent_id)
-            through = OutcomeOutcome.objects.get(child=model, parent=parent)
             newmodel = duplicate_outcome(model, request.user)
-            newthroughmodel = OutcomeOutcome.objects.create(
-                parent=parent, child=newmodel, rank=through.rank + 1
-            )
+            if parent_type == "outcome":
+                parent = Outcome.objects.get(id=parent_id)
+                through = OutcomeOutcome.objects.get(child=model, parent=parent)
+                newthroughmodel = OutcomeOutcome.objects.create(
+                    parent=parent, child=newmodel, rank=through.rank + 1
+                )
+                new_through_serialized = OutcomeOutcomeSerializerShallow(
+                    newthroughmodel
+                ).data
+            elif parent_type =="workflow":
+                parent = Workflow.objects.get(id=parent_id)
+                through = OutcomeWorkflow.objects.get(outcome=model, workflow=parent)
+                newthroughmodel = OutcomeWorkflow.objects.create(
+                    workflow=parent, outcome=newmodel, rank=through.rank + 1
+                )
+                new_through_serialized = OutcomeWorkflowSerializerShallow(
+                    newthroughmodel
+                ).data
+            
             new_model_serialized = OutcomeSerializerShallow(newmodel).data
-            new_through_serialized = OutcomeOutcomeSerializerShallow(
-                newthroughmodel
-            ).data
             outcomes = get_all_outcomes(newmodel, 0)
             outcomeoutcomes = []
             for oc in outcomes:
@@ -2265,7 +2290,7 @@ def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
         node = Node.objects.get(id=node_id)
         outcome = Outcome.objects.get(id=outcome_id)
         if OutcomeNode.objects.filter(node=node, outcome=outcome).count() > 0:
-            return JsonResponse({"action": "error"})
+            return JsonResponse({"action": "posted","outcomenode":-1})
         outcomenode = OutcomeNode.objects.create(outcome=outcome, node=node)
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -2287,6 +2312,8 @@ def add_parent_outcome_to_outcome(request: HttpRequest) -> HttpResponse:
     try:
         outcome = Outcome.objects.get(id=outcome_id)
         parent_outcome = Outcome.objects.get(id=parent_id)
+        if OutcomeHorizontalLink.objects.filter(parent_outcome=parent_outcome, outcome=outcome).count() > 0:
+            return JsonResponse({"action": "posted","outcomehorizontallink":-1})
         outcomehorizontallink = OutcomeHorizontalLink.objects.create(
             outcome=outcome, parent_outcome=parent_outcome
         )
@@ -2568,14 +2595,14 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 ),
             )
             id_dict["project"][project["id"]] = new_project
-        for outcome in json_data["outcome"]:
-            new_outcome = Outcome.objects.create(
-                author=request.user,
-                title=bleach_sanitizer(
-                    outcome["title"], tags=bleach_allowed_tags
-                ),
-            )
-            id_dict["outcome"][outcome["id"]] = new_outcome
+#        for outcome in json_data["outcome"]:
+#            new_outcome = Outcome.objects.create(
+#                author=request.user,
+#                title=bleach_sanitizer(
+#                    outcome["title"], tags=bleach_allowed_tags
+#                ),
+#            )
+#            id_dict["outcome"][outcome["id"]] = new_outcome
         for activity in json_data["activity"]:
             new_activity = Activity.objects.create(
                 author=request.user,
@@ -2683,20 +2710,20 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                     project=project_model,
                     workflow=id_dict["workflow"][program_id],
                 )
-            for outcome_id in project["outcomes"]:
-                OutcomeProject.objects.create(
-                    project=project_model,
-                    outcome=id_dict["outcome"][outcome_id],
-                )
+#            for outcome_id in project["outcomes"]:
+#                OutcomeProject.objects.create(
+#                    project=project_model,
+#                    outcome=id_dict["outcome"][outcome_id],
+#                )
 
-        for outcome in json_data["outcome"]:
-            outcome_model = id_dict["outcome"][outcome["id"]]
-            for i, child in enumerate(outcome["children"]):
-                OutcomeOutcome.objects.create(
-                    parent=outcome_model,
-                    child=id_dict["outcome"][child],
-                    rank=i,
-                )
+#        for outcome in json_data["outcome"]:
+#            outcome_model = id_dict["outcome"][outcome["id"]]
+#            for i, child in enumerate(outcome["children"]):
+#                OutcomeOutcome.objects.create(
+#                    parent=outcome_model,
+#                    child=id_dict["outcome"][child],
+#                    rank=i,
+#                )
 
         for workflow in (
             json_data["activity"] + json_data["course"] + json_data["program"]
@@ -2735,12 +2762,12 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             node_model.has_autolink = node_model.node_type == 0
             node_model.save()
 
-        for outcomenode in json_data["outcomenode"]:
-            OutcomeNode.objects.create(
-                outcome=id_dict["outcome"][outcomenode["outcome"]],
-                node=id_dict["node"][outcomenode["node"]],
-                degree=outcomenode["degree"],
-            )
+#        for outcomenode in json_data["outcomenode"]:
+#            OutcomeNode.objects.create(
+#                outcome=id_dict["outcome"][outcomenode["outcome"]],
+#                node=id_dict["node"][outcomenode["node"]],
+#                degree=outcomenode["degree"],
+#            )
 
         for nodelink in json_data["nodelink"]:
             NodeLink.objects.create(

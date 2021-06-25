@@ -19,7 +19,7 @@ from .models import (
     OutcomeNode,
     OutcomeHorizontalLink,
     OutcomeOutcome,
-    OutcomeProject,
+#    OutcomeProject,
     NodeCompletionStatus,
     User,
     Favourite,
@@ -934,7 +934,6 @@ class OutcomeSerializerShallow(
             "description",
             "author",
             "author_id",
-            "published",
             "created_on",
             "last_modified",
             "child_outcome_links",
@@ -999,16 +998,16 @@ class OutcomeHorizontalLinkSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
-class OutcomeProjectSerializerShallow(serializers.ModelSerializer):
-    class Meta:
-        model = OutcomeProject
-        fields = ["project", "outcome", "added_on", "rank", "id"]
-
-    def update(self, instance, validated_data):
-        instance.rank = validated_data.get("rank", instance.rank)
-        instance.save()
-        return instance
+#
+#class OutcomeProjectSerializerShallow(serializers.ModelSerializer):
+#    class Meta:
+#        model = OutcomeProject
+#        fields = ["project", "outcome", "added_on", "rank", "id"]
+#
+#    def update(self, instance, validated_data):
+#        instance.rank = validated_data.get("rank", instance.rank)
+#        instance.save()
+#        return instance
 
 
 class WorkflowSerializerShallow(
@@ -1278,4 +1277,5 @@ serializer_lookups_shallow = {
     "project": ProjectSerializerShallow,
     "outcome": OutcomeSerializerShallow,
     "outcomeoutcome": OutcomeOutcomeSerializerShallow,
+    "outcomeworkflow":OutcomeWorkflowSerializerShallow,
 }

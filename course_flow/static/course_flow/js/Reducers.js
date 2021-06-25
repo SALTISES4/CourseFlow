@@ -181,7 +181,7 @@ export function workflowReducer(state={},action){
             new_weekworkflow_set.splice(action.payload.new_through.rank,0,action.payload.new_through.id);
             new_state.weekworkflow_set = new_weekworkflow_set;
             return new_state;
-        case 'outcome/deleteSelf':
+        case 'outcome_base/deleteSelf':
             if(state.outcomeworkflow_set.indexOf(action.payload.parent_id)>=0){
                 var new_state = {...state};
                 new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
@@ -189,6 +189,7 @@ export function workflowReducer(state={},action){
                 return new_state;
             }
             return state;
+        case 'outcome_base/insertBelow':
         case 'outcome/newOutcome':
             new_state = {...state}
             var new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
@@ -241,15 +242,19 @@ export function workflowReducer(state={},action){
 
 export function outcomeworkflowReducer(state={},action){
     switch(action.type){
-        case 'outcome/deleteSelf':
+        case 'outcome_base/deleteSelf':
             for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.parent_id){
+                if(state[i].outcome==action.payload.id){
                     var new_state=state.slice();
                     new_state.splice(i,1);
                     return new_state;
                 }
             }
             return state;
+        case 'outcome_base/insertBelow':
+            new_state = state.slice();
+            new_state.push(action.payload.new_through);
+            return new_state;
         case 'outcome/newOutcome':
             new_state = state.slice();
             new_state.push(action.payload.new_through);
@@ -641,6 +646,8 @@ export function nodeReducer(state={},action){
             }
             return state;
         case 'outcome/addToNode':
+            //Returns -1 if the outcome had already been added to the node
+            if(action.payload.outcomenode==-1)return state;
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.outcomenode.node){
                     var new_state=state.slice();
@@ -655,6 +662,32 @@ export function nodeReducer(state={},action){
             if(action.payload.nodes_added.length==0)return state;
             new_state=state.slice();
             new_state.push(...action.payload.nodes_added);
+            return new_state;
+        case 'outcome/deleteSelf':
+        case 'outcome_base/deleteSelf':
+            new_state=state.slice();
+            for(var i=0;i<action.payload.extra_data.length;i++){
+                console.log("iteration "+i);
+                console.log(action.payload.extra_data[i]);
+                console.log(action.payload);
+                if(action.payload.extra_data[i].outcome==action.payload.id){
+                    console.log("found an outcomenode for the deleted outcome");
+                    let outcomenode = action.payload.extra_data[i];
+                    for(var j=0;j<new_state.length;j++){
+                        console.log("sub-iteration "+j);
+                        console.log(new_state[j])
+                        let outcomenode_index=new_state[j].outcomenode_set.indexOf(outcomenode.id);
+                        if(outcomenode_index>=0){
+                            console.log("removing outcomenode from state");
+                            console.log(new_state[j].outcomenode_set);
+                            new_state[j]={...new_state[j]};
+                            new_state[j].outcomenode_set=new_state[j].outcomenode_set.slice();
+                            new_state[j].outcomenode_set.splice(outcomenode_index,1);
+                            console.log(new_state[j].outcomenode_set);
+                        }
+                    }
+                }
+            }
             return new_state;
         default:
             return state;
@@ -717,6 +750,16 @@ export function outcomeReducer(state={},action){
             new_state.splice(old_parent_index,1,old_parent);
             insertedAt(action.payload.child_id,"outcome",new_parent.id,"outcome",new_index,"outcomeoutcome");
             return new_state;
+        case 'outcome_base/deleteSelf':
+            var new_state=state.slice();
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    new_state.splice(i,1);
+                    deleteSelf(action.payload.id,"outcome");
+                    return new_state;
+                }
+            }
+            return state;
         case 'outcome/deleteSelf':
             var new_state=state.slice();
             for(var i=0;i<state.length;i++){
@@ -730,11 +773,18 @@ export function outcomeReducer(state={},action){
                 }
             }
             return new_state;
+        case "outcome_base/insertBelow":
         case 'outcome/newOutcome':
             var new_state=state.slice();
             new_state.push(action.payload.new_model);
+            if(action.payload.children){
+                for(var i=0;i<action.payload.children.length;i++){
+                    new_state.push(action.payload.children[i]);
+                }
+            }
             return new_state;
         case 'outcome/insertChild':
+        case 'outcome_base/insertChild':
         case 'outcome/insertBelow':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parentID){
@@ -780,6 +830,8 @@ export function outcomeReducer(state={},action){
             }
             return new_state;
         case 'outcome/addParentOutcome':
+            //Returns -1 if the outcome had already been added to the node
+            if(action.payload.outcomenode==-1)return state;
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.outcomehorizontallink.outcome){
                     var new_state=state.slice();
@@ -805,6 +857,14 @@ export function outcomeOutcomeReducer(state={},action){
                 }
             }
             return state;
+        case 'outcome_base/insertBelow':
+            var new_state = state.slice();
+            if(action.payload.children_through){
+                for(var i=0;i<action.payload.children_through.length;i++){
+                    new_state.push(action.payload.children_through[i]);
+                }
+            }
+            return new_state;
         case 'outcome/insertChild':
         case 'outcome/insertBelow':
             var new_state = state.slice();
@@ -822,6 +882,8 @@ export function outcomeOutcomeReducer(state={},action){
 export function outcomeNodeReducer(state={},action){
     switch(action.type){
         case 'outcome/addToNode':
+            //Returns -1 if the outcome had already been added to the node
+            if(action.payload.outcomenode==-1)return state;
             var new_state = state.slice();
             new_state.push(action.payload.outcomenode);
             return new_state;
@@ -848,6 +910,16 @@ export function outcomeNodeReducer(state={},action){
                 }
             }
             return state;
+        case 'outcome/deleteSelf':
+        case 'outcome_base/deleteSelf':
+            new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                if(new_state[i].outcome==action.payload.id){
+                    new_state.splice(i,1);
+                    i--;
+                }
+            }
+            return new_state;
         default:
             return state;
     }
@@ -867,6 +939,8 @@ export function parentOutcomenodeReducer(state={},action){
 export function outcomeHorizontalLinkReducer(state={},action){
     switch(action.type){
         case 'outcome/addParentOutcome':
+            //Returns -1 if the outcome had already been added to the outcome
+            if(action.payload.outcomehorizontallink==-1)return state;
             var new_state = state.slice();
             new_state.push(action.payload.outcomehorizontallink);
             return new_state;

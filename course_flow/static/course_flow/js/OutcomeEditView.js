@@ -41,7 +41,7 @@ class OutcomeEditView extends ComponentJSON{
                         <div class="outcome-edit">
                             <h4>For This Workflow</h4>
                             {outcomes}
-                            <button onClick={this.addNew.bind(this)}>Add new</button>
+                            <button id="add-new-outcome" onClick={this.addNew.bind(this)}>Add new</button>
                         </div>
                     </div>
                 </div>
@@ -245,7 +245,7 @@ class OutcomeBarUnconnected extends ComponentJSON{
                     {outcomebaroutcomes}
                 </div>
                 {!read_only &&
-                    <button onClick={this.editOutcomesClick.bind(this)}>Edit Outcomes</button>
+                    <button id="edit-outcomes-button" onClick={this.editOutcomesClick.bind(this)}>Edit Outcomes</button>
                 }
             </div>
         ,$("#outcome-bar")[0]);

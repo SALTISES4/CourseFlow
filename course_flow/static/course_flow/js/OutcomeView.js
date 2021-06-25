@@ -15,6 +15,7 @@ class OutcomeView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="outcome";
+        if(props.data.depth==0)this.objectType="outcome_base";
         this.children_block = React.createRef();
     }
     
@@ -40,7 +41,7 @@ class OutcomeView extends ComponentJSON{
         
         let actions=[];
         if(!read_only && data.depth<2)actions.push(this.addInsertChild(data));
-        if(!read_only && data.depth>0){
+        if(!read_only){
             actions.push(this.addInsertSibling(data));
             actions.push(this.addDuplicateSelf(data));
             actions.push(this.addDeleteSelf(data));
@@ -98,7 +99,7 @@ class OutcomeView extends ComponentJSON{
     postMountFunction(){
         
         this.makeSortable($(this.children_block.current),this.props.objectID,"outcomeoutcome",".outcomeoutcome",false,false,".children-block",false);
-        this.makeDroppable();
+        if(this.props.data.depth==0)this.makeDroppable();
     }
 
 
@@ -138,7 +139,7 @@ class OutcomeView extends ComponentJSON{
                 var drag_item = ui.draggable;
                 var drag_helper = ui.helper;
                 var drop_item = $(e.target);
-                if(drag_item.hasClass("new-node")){
+                if(drag_item.hasClass("outcome")){
                     drag_helper.removeClass("valid-drop");
                     drop_item.removeClass("new-node-drop-over");
                 }
@@ -148,7 +149,7 @@ class OutcomeView extends ComponentJSON{
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 if(drag_item.hasClass("outcome")){
-                    addParentOutcomeToOutcome(this.props.objectID,drag_item[0].dataDraggable.outcome,
+                    addParentOutcomeToOutcome(props.objectID,drag_item[0].dataDraggable.outcome,
                         (response_data)=>{
                             let action = addParentOutcomeToOutcomeAction(response_data);
                             props.dispatch(action);

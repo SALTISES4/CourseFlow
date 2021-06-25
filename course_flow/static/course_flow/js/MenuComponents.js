@@ -535,7 +535,6 @@ export class ExploreMenu extends React.Component{
                                 <li><label><input class = "fillable"  type="checkbox" name="types[]" value="activity"/>Activity</label></li>
                                 <li><label><input class = "fillable"  type="checkbox" name="types[]" value="course"/>Course</label></li>
                                 <li><label><input class = "fillable"  type="checkbox" name="types[]" value="program"/>Program</label></li>
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="outcome"/>Outcome</label></li>
                                 <li><label><input class = "fillable"  type="checkbox" name="types[]" value="project"/>Project</label></li>
                             </ul>
                         </div>
