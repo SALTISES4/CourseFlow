@@ -40,6 +40,7 @@ class Project(models.Model):
     disciplines = models.ManyToManyField("Discipline", blank=True)
 
     favourited_by = GenericRelation("Favourite", related_query_name="project")
+    user_permissions = GenericRelation("ObjectPermission", related_query_name="project")
 
     @property
     def type(self):
@@ -713,6 +714,7 @@ class Activity(Workflow):
     )
 
     favourited_by = GenericRelation("Favourite", related_query_name="activity")
+    user_permissions = GenericRelation("ObjectPermission", related_query_name="activity")
 
     DEFAULT_CUSTOM_COLUMN = 0
     DEFAULT_COLUMNS = [1, 2, 3, 4]
@@ -749,6 +751,7 @@ class Course(Workflow):
     )
 
     favourited_by = GenericRelation("Favourite", related_query_name="course")
+    user_permissions = GenericRelation("ObjectPermission", related_query_name="course")
 
     DEFAULT_CUSTOM_COLUMN = 10
     DEFAULT_COLUMNS = [11, 12, 13, 14]
@@ -776,6 +779,7 @@ class Program(Workflow):
     WORKFLOW_TYPE = 2
 
     favourited_by = GenericRelation("Favourite", related_query_name="program")
+    user_permissions = GenericRelation("ObjectPermission", related_query_name="program")
 
     @property
     def type(self):

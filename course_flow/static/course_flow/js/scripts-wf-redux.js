@@ -6,7 +6,7 @@ import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
 import {ComponentJSON} from "./ComponentJSON.js";
 import WorkflowView from"./WorkflowView.js";
-import {ProjectMenu, HomeMenu, ExploreMenu, renderMessageBox} from"./MenuComponents.js";
+import {ProjectMenu, WorkflowGridMenu, ExploreMenu, renderMessageBox} from"./MenuComponents.js";
 import {WorkflowView_Outcome} from"./WorkflowView.js";
 import * as Constants from "./Constants.js";
 import * as Reducers from "./Reducers.js";
@@ -87,7 +87,7 @@ export class TinyLoader{
 export class HomeRenderer{
     constructor(data_package){
         this.initial_data = data_package;
-        this.store = createStore(Reducers.homeMenuReducer,data_package);
+        this.store = createStore(Reducers.gridMenuReducer,data_package);
     }
     
     render(container){
@@ -95,7 +95,7 @@ export class HomeRenderer{
         
         reactDom.render(
             <Provider store = {this.store}>
-                <HomeMenu/>
+                <WorkflowGridMenu/>
             </Provider>,
             container[0]
         );

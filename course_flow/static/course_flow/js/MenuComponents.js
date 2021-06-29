@@ -3,7 +3,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite} from "./PostFunctions";
-import {homeMenuItemAdded} from "./Reducers";
+import {gridMenuItemAdded} from "./Reducers";
 import {Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
 
@@ -116,11 +116,17 @@ export class WorkflowForMenu extends React.Component{
     
     render(){
         var data = this.props.workflow_data;
-        var css_class = "workflow-for-menu";
+        var css_class = "workflow-for-menu hover-shade";
         if(this.props.selected)css_class+=" selected";
         if(this.state.hide)return null;
+        let publish_icon = iconpath+'view_none.svg';
+        let publish_text = "PRIVATE";
+        if(data.published){
+            publish_icon = iconpath+'published.svg';
+            publish_text = "PUBLISHED";
+        }
         return(
-            <div class={css_class} onClick={this.props.selectAction}>
+            <div class={css_class} onClick={this.clickAction.bind(this)}>
                 <div class="workflow-top-row">
                     <div class="workflow-title">
                         {data.title}
@@ -133,15 +139,28 @@ export class WorkflowForMenu extends React.Component{
                 <div class="workflow-description">
                     {data.description}
                 </div>
+                <div class="workflow-publication">
+                    <img src={publish_icon}/><div>{publish_text}</div>
+                </div>
             </div>
         );
+    }
+    
+    clickAction(){
+        console.log(this.props.selectAction);
+        if(this.props.selectAction){
+            this.props.selectAction(this.props.workflow_data.id);
+        }else{
+            console.log(this.props);
+            window.location.href=update_path[this.props.objectType].replace("0",this.props.workflow_data.id);
+        }
     }
     
     getButtons(){
         var buttons=[];
         let favourite_img = "no_favourite.svg";
         if(this.state.favourite)favourite_img = "favourite.svg";
-        if(this.props.type=="projectmenu"||this.props.type=="homemenu"||this.props.type=="exploremenu"){
+        if(this.props.type=="projectmenu"||this.props.type=="gridmenu"||this.props.type=="exploremenu"){
             if(this.props.workflow_data.is_owned){
                 buttons.push(
                     <div  class="workflow-delete-button" onClick={(evt)=>{
@@ -149,6 +168,7 @@ export class WorkflowForMenu extends React.Component{
                             deleteSelf(this.props.workflow_data.id,this.props.objectType);
                             this.setState({hide:true});
                         }
+                        evt.stopPropagation();
                     }}>
                         <img src={iconpath+'rubbish.svg'} title="Delete"/>
                     </div>
@@ -169,7 +189,7 @@ export class WorkflowForMenu extends React.Component{
                         toggleFavourite(this.props.workflow_data.id,this.props.objectType,(!this.state.favourite));
                         let state=this.state;
                         this.setState({favourite:!(state.favourite)})
-                    
+                        evt.stopPropagation();
                     }}>
                         <img src={iconpath+favourite_img} title="Favourite"/>
                     </div>
@@ -188,9 +208,10 @@ export class WorkflowForMenu extends React.Component{
                     else titletext="Import to my files";
                 }
                 buttons.push(
-                    <div class="workflow-duplicate-button" onClick={()=>{
+                    <div class="workflow-duplicate-button" onClick={(evt)=>{
                         let loader = new Loader('body');
-                        duplicateBaseItem(this.props.workflow_data.id,this.props.objectType,this.props.parentID,(response_data)=>{this.props.dispatch(homeMenuItemAdded(response_data));loader.endLoad();})
+                        duplicateBaseItem(this.props.workflow_data.id,this.props.objectType,this.props.parentID,(response_data)=>{this.props.dispatch(gridMenuItemAdded(response_data));loader.endLoad();});
+                        evt.stopPropagation();
                     }}>
                         <img src={iconpath+icon} title={titletext}/>
                     </div>
@@ -209,7 +230,7 @@ export class WorkflowForMenu extends React.Component{
 export class MenuSection extends React.Component{
     render(){
         var objects = this.props.section_data.objects.map((object)=>
-            <WorkflowForMenu key={object.id} type={this.props.type} workflow_data={object} objectType={this.props.section_data.object_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={()=>{this.props.selectAction(object.id)}} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
+            <WorkflowForMenu key={object.id} type={this.props.type} workflow_data={object} objectType={this.props.section_data.object_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
         );
         
         
@@ -217,16 +238,16 @@ export class MenuSection extends React.Component{
 
         return (
             <div class={"section-"+this.props.section_data.object_type}>
-                <h3>{this.props.section_data.title+":"}
                 {(create_path && this.props.add) &&
-                  <a href={create_path[this.props.section_data.object_type]}
+                  <a class="menu-create" href={create_path[this.props.section_data.object_type]}
                     ><img
                       class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title="Add New"
-                      src={iconpath+"add_new.svg"}
-                  /></a>
+                      src={iconpath+"add_new_white.svg"}
+                  /><div>{this.props.section_data.title}</div></a>
                 }
-                </h3>
-                {objects}
+                <div class="menu-grid">
+                    {objects}
+                </div>
             </div>
         );
         
@@ -241,14 +262,13 @@ export class MenuTab extends React.Component{
         
         return (
             <div id={"tabs-"+this.props.identifier}>
-                <h2>{this.props.data.title}</h2>
                 {sections}
             </div>
         );
     }
 }
 
-class HomeMenuUnconnected extends React.Component{
+class WorkflowGridMenuUnconnected extends React.Component{
     render(){
         var tabs = [];
         var tab_li = [];
@@ -258,7 +278,7 @@ class HomeMenuUnconnected extends React.Component{
                 <li><a href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
             )
             tabs.push(
-                <MenuTab data={this.props.data_package[prop]} dispatch={this.props.dispatch} type="homemenu" identifier={i}/>
+                <MenuTab data={this.props.data_package[prop]} dispatch={this.props.dispatch} type="gridmenu" identifier={i}/>
             )
             i++;
         }
@@ -277,10 +297,10 @@ class HomeMenuUnconnected extends React.Component{
         $("#home-tabs").tabs();
     }
 }
-export const HomeMenu = connect(
+export const WorkflowGridMenu = connect(
     state=>({data_package:state}),
     null
-)(HomeMenuUnconnected)
+)(WorkflowGridMenuUnconnected)
 
 
 class ProjectMenuUnconnected extends React.Component{
@@ -305,14 +325,20 @@ class ProjectMenuUnconnected extends React.Component{
         let share;
         if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
         
+        let publish_icon = iconpath+'view_none.svg';
+        let publish_text = "PRIVATE";
+        if(this.props.project.published){
+            publish_icon = iconpath+'published.svg';
+            publish_text = "PUBLISHED";
+        }
+        
         return(
             <div class="project-menu">
                 <div class="project-header">
-                    <h2 id="project-title">{this.state.title} {this.props.project.author_id==user_id  &&
-                        <a class="action-button" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-                            <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
-                        </a>
-                    }</h2>
+                    {reactDom.createPortal(
+                        <div>{this.state.title||"Unnamed Project"}</div>,
+                        $("#workflowtitle")[0]
+                    )}
                     <p id="project-description">{this.state.description}</p>
                     <p>
                         Disciplines: {
@@ -320,14 +346,23 @@ class ProjectMenuUnconnected extends React.Component{
                         }
                     </p>
                     {reactDom.createPortal(
-                    share,
-                    $("#floatbar")[0]
+                        share,
+                        $("#floatbar")[0]
                     )}
-                    {this.state.published &&
-                        <p>{"This project has been published and is visibile to all"}</p>
-                    }
-                    {!this.state.published &&
-                        <p>{"This project has not been published, only you can see it"}</p>
+                    {reactDom.createPortal(
+                        <div class="workflow-publication">
+                            <img src={publish_icon}/><div>{publish_text}</div>
+                        </div>,
+                        $("#floatbar")[0]
+                    )}
+                    
+                    {this.props.project.author_id==user_id  &&
+                        reactDom.createPortal(
+                            <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
+                                <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
+                            </div>,
+                            $("#viewbar")[0]
+                        )
                     }
                 </div>
                 <div class="home-tabs" id="home-tabs">

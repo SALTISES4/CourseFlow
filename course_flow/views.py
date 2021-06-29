@@ -352,6 +352,150 @@ def get_project_data_package(user):
     }
     return data_package
 
+def get_my_projects(user):
+    data_package = {
+        "owned_projects": {
+            "title": _("My Projects"),
+            "sections": [
+                {
+                    "title": _("Create a project"),
+                    "object_type": "project",
+                    "objects": InfoBoxSerializer(
+                        Project.objects.filter(author=user),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "add": True,
+            "duplicate": "copy",
+        },
+        "edit_projects": {
+            "title": _("Editable By Me"),
+            "sections": [
+                {
+                    "title": _("Projects I've Been Added To"),
+                    "object_type": "project",
+                    "objects": InfoBoxSerializer(
+                        [
+                            user_permission.content_object
+                            for user_permission in ObjectPermission.objects.filter(
+                                user=user, content_type=ContentType.objects.get_for_model(Project)
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+        },
+    }
+    return data_package
+
+def get_my_templates(user):
+    data_package = {
+        "owned_activity_templates": {
+            "title": _("My Activity Templates"),
+            "sections": [
+                {
+                    "title": _("Create an activity template"),
+                    "object_type": "activity",
+                    "objects": InfoBoxSerializer(
+                        Activity.objects.filter(author=user, is_strategy=True),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "add": True,
+            "duplicate": "copy",
+        },
+        "owned_course_templates": {
+            "title": _("My Course Templates"),
+            "sections": [
+                {
+                    "title": _("Create a course template"),
+                    "object_type": "course",
+                    "objects": InfoBoxSerializer(
+                        Course.objects.filter(author=user, is_strategy=True),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "add": True,
+            "duplicate": "copy",
+        },
+        "edit_templates": {
+            "title": _("Editable By Me"),
+            "sections": [
+                {
+                    "title": _("Templates I've Been Added To"),
+                    "object_type": "activity",
+                    "objects": InfoBoxSerializer(
+                        [
+                            user_permission.content_object
+                            for user_permission in ObjectPermission.objects.filter(
+                                user=user, activity__is_strategy=True
+                            )
+                        ]+[
+                            user_permission.content_object
+                            for user_permission in ObjectPermission.objects.filter(
+                                user=user, course__is_strategy=True
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+        },
+    }
+    return data_package
+
+def get_data_package_for_project(user, project):
+    data_package = {
+        "current_project": {
+            "title": _("All Workflows"),
+            "sections": [
+                {
+                    "title": _("Create a program"),
+                    "object_type": "program",
+                    "objects": InfoBoxSerializer(
+                        Program.objects.filter(project=project),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                },
+                {
+                    "title": _("Create a course"),
+                    "object_type": "course",
+                    "objects": InfoBoxSerializer(
+                        Course.objects.filter(project=project),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                },
+                {
+                    "title": _("Create an activity"),
+                    "object_type": "activity",
+                    "objects": InfoBoxSerializer(
+                        Activity.objects.filter(project=project),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                },
+            ],
+            "add": True,
+            "duplicate": "copy",
+        },
+    }
+    return data_package
+    
+
+
 
 def get_workflow_data_package(user, project, type_filter, self_only):
     this_project_sections = []
@@ -577,6 +721,23 @@ def home_view(request):
     }
     return render(request, "course_flow/home.html", context)
 
+@login_required
+def myprojects_view(request):
+    context = {
+        "project_data_package": JSONRenderer()
+        .render(get_my_projects(request.user))
+        .decode("utf-8")
+    }
+    return render(request, "course_flow/myprojects.html", context)
+
+@login_required
+def mytemplates_view(request):
+    context = {
+        "project_data_package": JSONRenderer()
+        .render(get_my_templates(request.user))
+        .decode("utf-8")
+    }
+    return render(request, "course_flow/mytemplates.html", context)
 
 @login_required
 def import_view(request):
@@ -615,7 +776,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         context["workflow_data_package"] = (
             JSONRenderer()
             .render(
-                get_workflow_data_package(
+                get_data_package_for_project(
                     self.request.user, project, None, False
                 )
             )
@@ -641,8 +802,8 @@ class ProjectUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
         context["workflow_data_package"] = (
             JSONRenderer()
             .render(
-                get_workflow_data_package(
-                    self.request.user, project, None, False
+                get_data_package_for_project(
+                    self.request.user, project
                 )
             )
             .decode("utf-8")

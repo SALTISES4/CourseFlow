@@ -13,7 +13,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="home-24px.svg">
+   sodipodi:docname="home_black.svg">
   <metadata
      id="metadata12">
     <rdf:RDF>
@@ -41,10 +41,10 @@
      id="namedview8"
      showgrid="false"
      inkscape:zoom="9.8333333"
-     inkscape:cx="-1.5254237"
+     inkscape:cx="-21.40678"
      inkscape:cy="12"
-     inkscape:window-x="-8"
-     inkscape:window-y="72"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <path
@@ -55,5 +55,5 @@
      fill="#1976bc"
      d="M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z"
      id="path6"
-     style="fill:#ffffff" />
+     style="fill:#000000" />
 </svg>

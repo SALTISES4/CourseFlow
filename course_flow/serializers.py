@@ -54,7 +54,7 @@ def bleach_sanitizer(value, **kwargs):
 
 
 def dateTimeFormat():
-    return "%B %d, %Y at %X %Z"
+    return "%Y/%m/%d"
 
 
 def linkIDMap(link):
@@ -1231,6 +1231,7 @@ class InfoBoxSerializer(serializers.Serializer,TitleSerializerMixin,DescriptionS
     object_type = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     is_owned = serializers.SerializerMethodField()
+    published = serializers.ReadOnlyField()
     
     def get_is_owned(self,instance):
         user = self.context.get("user")

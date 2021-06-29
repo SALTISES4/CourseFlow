@@ -14,6 +14,8 @@ app_name = "course_flow"
 def course_flow_patterns():
     return [
         url(r"home/$", views.home_view, name="home"),
+        url(r"myprojects/$", views.myprojects_view, name="my-projects"),
+        url(r"mytemplates/$", views.mytemplates_view, name="my-templates"),
         url(r"explore/$", views.ExploreView.as_view(), name="explore"),
         url(r"import/$", views.import_view, name="import"),
         url(

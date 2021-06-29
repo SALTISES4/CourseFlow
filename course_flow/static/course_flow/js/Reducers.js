@@ -118,9 +118,9 @@ export const toggleStrategyAction = (response_data) => {
         payload:response_data
     }
 }
-export const homeMenuItemAdded = (response_data) => {
+export const gridMenuItemAdded = (response_data) => {
     return {
-        type: "homemenu/itemAdded",
+        type: "gridmenu/itemAdded",
         payload:response_data
     }
 }
@@ -985,9 +985,9 @@ export function saltiseStrategyReducer(state={},action){
     }
 }
 
-export function homeMenuReducer(state={},action){
+export function gridMenuReducer(state={},action){
     switch(action.type){
-        case 'homemenu/itemAdded':
+        case 'gridmenu/itemAdded':
             var new_state = {...state}
             if(action.payload.type!="project"){
                 new_state.owned_strategies = {...new_state.owned_strategies };
@@ -1015,11 +1015,17 @@ export function homeMenuReducer(state={},action){
 }
 export function projectMenuReducer(state={},action){
     switch(action.type){
-        case 'homemenu/itemAdded':
+        case 'gridmenu/itemAdded':
             var new_state = {...state}
+            console.log("item has been added");
+            console.log("the old state is:")
+            console.log(state);
             new_state.current_project = {...new_state.current_project};
             new_state.current_project.sections = new_state.current_project.sections.slice();
+            console.log("we are looking to add:");
+            console.log(action.payload);
             for(var i=0;i<new_state.current_project.sections.length;i++){
+                console.log(new_state.current_project.sections[i].object_type);
                 if(new_state.current_project.sections[i].object_type==action.payload.type){
                     new_state.current_project.sections[i].objects=new_state.current_project.sections[i].objects.slice()
                     new_state.current_project.sections[i].objects.push(action.payload.new_item);

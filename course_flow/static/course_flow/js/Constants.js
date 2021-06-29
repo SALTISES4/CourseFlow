@@ -95,6 +95,7 @@ export const object_dictionary = {
     column:"column",
     outcome:"outcome",
     outcome_base:"outcome",
+    workflow:"workflow"
 }
 export const parent_dictionary = {
     node:"week",

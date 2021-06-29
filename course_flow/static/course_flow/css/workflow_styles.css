@@ -1243,48 +1243,6 @@ circle.mouseover{
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
 }
 
-.workflow-for-menu{
-    max-width:400px;
-    background-color:white;
-    margin-bottom:8px;
-    padding:10px;
-    color:#1976bc;
-    border-radius:10px;
-    border:2px solid #1976bc;
-}
-
-.workflow-description{
-    font-size:16px;
-}
-
-.workflow-created{
-    font-size:14px;
-    margin-bottom:6px;
-}
-
-.workflow-title{
-    font-weight:600;
-    font-size:16px;
-    margin-bottom:6px;
-    display:inline-block;
-    width:75%;
-}
-
-.workflow-buttons{
-    width:25%;
-    display:inline-block;
-    text-align:right;
-}
-
-.workflow-buttons > *{
-    display:inline-block;
-    padding:2px;
-    cursor:pointer;
-}
-
-.workflow-buttons img{
-    width:24px;
-}
 
 .message-wrap{
     width:100%;
@@ -1412,12 +1370,6 @@ h4.drag-and-drop::after{
 
 .workflow-legend *:is(h4, h5), .right-panel-container *:is(h3, h4, h5){
     color:#1976bc;
-}
-
-.create-button{
-    width:32px;
-    height:32px;
-    margin-left:4px;
 }
 
 .load-screen{

@@ -163,19 +163,12 @@
     <div class="topnav">
       <div class="titlebar">
         <div class="title">
-          <font size="6">
-            <b>
-              CourseFlow
-            </b>
-          </font>
         </div>
-      </div>
-      <div class="menubar">
-        <div class="mainmenu">
-          <div class="topnavimage">
-            <a href="https://www.saltise.ca/"
-              ><img src="{% static 'course_flow/img/saltise_logo.svg'%}"
-            /></a>
+        <div class="floatbar">
+          <div id="username-container" class="topdropwrapper">
+            <button id="username" class="topdropbutton">
+              {{ user.username }}
+            </button>
           </div>
           <div class="topdropwrapper">
             <button class="topdropbutton">
@@ -195,19 +188,45 @@
               /></a>
             </button>
           </div>
-          <div id="username-container" class="topdropwrapper">
-            <button id="username" class="topdropbutton">
-              {{ user.username }}
-            </button>
-          </div>
-        </div>
-        <div id="floatbar" class="floatbar"></div>
-        <div id="viewbar" class="viewbar">
           <div class="topdropwrapper">
             <div id="user-feedback-app"></div>
           </div>
         </div>
+      </div>  
+        <div class="menubar">
+            <div id="workflowtitle" class="workflow-title-bar">
+            </div>
+            <div id="floatbar" class="floatbar">
+            </div>
+            <div id="viewbar" class="viewbar">
+            </div>
+          </div>
+    </div>
+    <div class="left-panel">
+      <img class="title-image" src="{% static 'course_flow/img/images_svg/logo-courseflow-beta.svg' %}"/>
+      <a class="panel-item hover-shade" href="{% url 'course_flow:home' %}">
+        <img src="{% static 'course_flow/img/images_svg/home_black.svg' %}"/>
+        <div>Home</div>
+      </a>
+      <a class="panel-item hover-shade" href="{% url 'course_flow:my-projects' %}">
+        <img src="{% static 'course_flow/img/images_svg/layoutnav.svg' %}"/>
+        <div>My Projects</div>
+      </a>
+      <a class="panel-item hover-shade" href="{% url 'course_flow:my-templates' %}">
+        <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
+        <div>My Templates</div>
+      </a>
+      <hr>
+      <div class="panel-item">
+        My Favourites
       </div>
+        {% for favourite in user.favourite_set.all|slice:":5" %}
+        
+          <a class="panel-favourite hover-shade">
+            {{ favourite.content_object }}
+          </a>
+        {% endfor %}
+      
     </div>
 
     {% block body %}{% endblock %}

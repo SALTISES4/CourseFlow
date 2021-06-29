@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON.js";
+import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import ColumnWorkflowView from "./ColumnWorkflowView.js";
 import WeekWorkflowView from "./WeekWorkflowView.js";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView.js";
@@ -38,6 +38,12 @@ class WorkflowView extends ComponentJSON{
             <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
         );
         var selector = this;
+        let publish_icon = iconpath+'view_none.svg';
+        let publish_text = "PRIVATE";
+        if(data.published){
+            publish_icon = iconpath+'published.svg';
+            publish_text = "PUBLISHED";
+        }
         let share;
         if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
         
@@ -47,11 +53,21 @@ class WorkflowView extends ComponentJSON{
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class = "workflow-container">
                     <div class="workflow-details">
-                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{selection_manager.changeSelection(evt,selector)}}/>
+                        <TitleText text={data.description} defaultText={"Add a description"}/>
+                        {reactDom.createPortal(
+                            <div>{this.state.title||"Unnamed Workflow"}</div>,
+                            $("#workflowtitle")[0]
+                        )}
                         {this.addEditable(data)}
                         {reactDom.createPortal(
-                        share,
-                        $("#floatbar")[0]
+                            share,
+                            $("#floatbar")[0]
+                        )}
+                        {reactDom.createPortal(
+                            <div class="workflow-publication">
+                                <img src={publish_icon}/><div>{publish_text}</div>
+                            </div>,
+                            $("#floatbar")[0]
                         )}
                         {reactDom.createPortal(
                         <div class="topdropwrapper" title="Show/Hide Legend">
@@ -59,6 +75,14 @@ class WorkflowView extends ComponentJSON{
                         </div>,
                         $("#viewbar")[0]
                         )}
+                        {!read_only &&
+                            reactDom.createPortal(
+                                <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
+                                    <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
+                                </div>,
+                                $("#viewbar")[0]
+                            )
+                        }
                         {this.state.show_legend && 
                             <WorkflowLegend toggle={this.toggleLegend.bind(this)}/>
                         }
@@ -91,7 +115,11 @@ class WorkflowView extends ComponentJSON{
             </div>
         );
     }
-    
+                     
+    openEdit(evt){
+        this.props.renderer.selection_manager.changeSelection(evt,this);
+    }
+                     
     postMountFunction(){
         this.makeSortable($(".column-row"),
           this.props.objectID,
@@ -265,13 +293,35 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
         var selector = this;
         let renderer = this.props.renderer;
         let selection_manager = renderer.selection_manager;
+        let publish_icon = iconpath+'view_none.svg';
+        let publish_text = "PRIVATE";
+        if(data.published){
+            publish_icon = iconpath+'published.svg';
+            publish_text = "PUBLISHED";
+        }
+        let share;
+        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
         
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class = "workflow-container">
                     <div class="workflow-details">
-                        <WorkflowForMenu renderer={renderer} workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{selection_manager.changeSelection(evt,selector)}}/>
+                        <TitleText text={data.description} defaultText={"Add a description"}/>
+                        {reactDom.createPortal(
+                            <div>{this.state.title||"Unnamed Workflow"}</div>,
+                            $("#workflowtitle")[0]
+                        )}
                         {this.addEditable(data)}
+                        {reactDom.createPortal(
+                            share,
+                            $("#floatbar")[0]
+                        )}
+                        {reactDom.createPortal(
+                            <div class="workflow-publication">
+                                <img src={publish_icon}/><div>{publish_text}</div>
+                            </div>,
+                            $("#floatbar")[0]
+                        )}
                         {reactDom.createPortal(
                         <div class="topdropwrapper" title="Show/Hide Legend">
                             <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
@@ -280,6 +330,14 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                         )}
                         {this.state.show_legend && 
                             <WorkflowOutcomeLegend renderer={renderer} toggle={this.toggleLegend.bind(this)}/>
+                        }
+                        {!read_only &&
+                            reactDom.createPortal(
+                                <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
+                                    <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
+                                </div>,
+                                $("#viewbar")[0]
+                            )
                         }
                         <WorkflowOutcomeView renderer={renderer} outcomes_type={data.outcomes_type}/>
                     </div>
@@ -292,6 +350,10 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                 </div>
             </div>
         );
+    }
+                     
+    openEdit(evt){
+        this.props.renderer.selection_manager.changeSelection(evt,this);
     }
                      
     toggleLegend(){
