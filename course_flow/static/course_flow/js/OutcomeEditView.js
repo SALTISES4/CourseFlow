@@ -53,7 +53,6 @@ class OutcomeEditView extends ComponentJSON{
     
     returnToWorkflow(){
         let outcomeview = $("#outcomeviewbar .switch input").is(":checked");
-        console.log(outcomeview);
         if(outcomeview){
             this.props.renderer.render($("#container"),"outcometable");
         }else{
@@ -129,8 +128,6 @@ export const ParentOutcomeNodeView = connect(
 class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected{
     render(){
         let data = this.props.data;
-        console.log("data from parentoutcomeview");
-        console.log(data);
         let children = data.child_outcome_links.map((outcomeoutcome)=>
             <ParentOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} />
         );
@@ -211,7 +208,6 @@ class ParentWorkflowViewUnconnected extends ComponentJSON{
         let outcomeworkflows = data.outcomeworkflow_set.map(outcomeworkflow=>
             <OutcomeWorkflowView objectID={outcomeworkflow} renderer={this.props.renderer}/>
         );
-        console.log("trying to render parent workflow")
         return (
             <div>
                 <div>From parent workflow: {data.title}</div>

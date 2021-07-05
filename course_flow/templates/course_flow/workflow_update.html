@@ -57,20 +57,12 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
-{% block read_only_scripts %}
-
-<script nonce="{{request.csp_nonce}}">
-  const read_only = false;
-</script>
-
-{% endblock %}
-<!-- -->
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
   const workflow_paths = {
-      activity:'{% url "course_flow:activity-detail-view" pk=object.pk %}',
-      course:'{% url "course_flow:course-detail-view" pk=object.pk %}',
-      program:'{% url "course_flow:program-detail-view" pk=object.pk %}',
+      activity:'{% url "course_flow:workflow-update" pk=object.pk %}',
+      course:'{% url "course_flow:workflow-update" pk=object.pk %}',
+      program:'{% url "course_flow:workflow-update" pk=object.pk %}',
   }
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 
@@ -86,6 +78,9 @@
 
   $("#sidebar").on("mouseup dblclick mousedown",(evt)=>{evt.stopPropagation();});
 
+    
+  const read_only = {{read_only|safe}};
+    
   if(read_only)$("#sidebar").hide();
   else{
       $("#side-bar-close-button").on("click",()=>{
@@ -95,15 +90,9 @@
   }
 
   {% if parent_project_pk %}
-      if(read_only){
-          $("#floatbar").append("<a id='project-return' href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-      }else{
-          $("#floatbar").append("<a id='project-return' href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-      }
+        $("#floatbar").append("<a id='project-return' href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
   {% endif %}
 
-  workflow_data_package = {{data_package|safe}}
-  var workflow_renderer;
 
   {% if is_strategy == "false" %}
       $("#viewbar").append("<div id='outcomeviewbar'><div class='outcomeviewtext'>Outcome View:</div><label class='switch'><input type='checkbox'><span class ='slider round'></span></label></div>");
@@ -117,6 +106,9 @@
   const user_id = {{ user.id }};
   const create_path=null;
 
+  workflow_data_package = {{data_package|safe}}
+  var workflow_renderer;
+   
   window.addEventListener("load", function(){
       workflow_renderer = new renderers.WorkflowRenderer(workflow_data_package);
       console.log(workflow_data_package);

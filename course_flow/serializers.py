@@ -1,33 +1,31 @@
-from rest_framework import serializers
-from .utils import get_model_from_str
+import bleach
 from django.contrib.contenttypes.models import ContentType
-from .models import (
-    Project,
-    Workflow,
-    Program,
-    Course,
+from rest_framework import serializers
+
+from .models import (  # OutcomeProject,
     Activity,
     Column,
     ColumnWorkflow,
-    Node,
-    NodeWeek,
-    WeekWorkflow,
+    Course,
     Discipline,
-    Week,
-    NodeLink,
-    Outcome,
-    OutcomeNode,
-    OutcomeHorizontalLink,
-    OutcomeOutcome,
-#    OutcomeProject,
-    NodeCompletionStatus,
-    User,
     Favourite,
+    Node,
+    NodeCompletionStatus,
+    NodeLink,
+    NodeWeek,
+    Outcome,
+    OutcomeHorizontalLink,
+    OutcomeNode,
+    OutcomeOutcome,
     OutcomeWorkflow,
+    Program,
+    Project,
+    User,
+    Week,
+    WeekWorkflow,
+    Workflow,
 )
-
-import bleach
-
+from .utils import get_model_from_str
 
 bleach_allowed_tags = [
     "b",
@@ -441,7 +439,6 @@ class ColumnWorkflowSerializer(serializers.ModelSerializer):
         return instance
 
 
-
 class DisciplineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discipline
@@ -468,7 +465,6 @@ class WorkflowSerializer(
     def get_columnworkflow_set(self, instance):
         links = instance.columnworkflow_set.all().order_by("rank")
         return ColumnWorkflowSerializer(links, many=True).data
-
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -513,8 +509,6 @@ class ProgramSerializer(WorkflowSerializer):
 
 
 class CourseSerializer(WorkflowSerializer):
-
-
     class Meta:
         model = Course
         fields = [
@@ -852,6 +846,7 @@ class ColumnWorkflowSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 class OutcomeWorkflowSerializerShallow(serializers.ModelSerializer):
     class Meta:
         model = OutcomeWorkflow
@@ -892,7 +887,6 @@ class ProjectSerializerShallow(
             "disciplines",
             "type",
         ]
-        
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
@@ -914,9 +908,9 @@ class ProjectSerializerShallow(
         instance.published = validated_data.get(
             "published", instance.published
         )
-        instance.disciplines.set(validated_data.get(
-            "disciplines",instance.disciplines.all()
-        ))
+        instance.disciplines.set(
+            validated_data.get("disciplines", instance.disciplines.all())
+        )
         instance.save()
         return instance
 
@@ -987,7 +981,8 @@ class OutcomeNodeSerializerShallow(serializers.ModelSerializer):
         instance.rank = validated_data.get("rank", instance.rank)
         instance.save()
         return instance
-    
+
+
 class OutcomeHorizontalLinkSerializerShallow(serializers.ModelSerializer):
     class Meta:
         model = OutcomeHorizontalLink
@@ -998,8 +993,9 @@ class OutcomeHorizontalLinkSerializerShallow(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
 #
-#class OutcomeProjectSerializerShallow(serializers.ModelSerializer):
+# class OutcomeProjectSerializerShallow(serializers.ModelSerializer):
 #    class Meta:
 #        model = OutcomeProject
 #        fields = ["project", "outcome", "added_on", "rank", "id"]
@@ -1046,7 +1042,7 @@ class WorkflowSerializerShallow(
     weekworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
-    
+
     strategy_icon = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
@@ -1071,11 +1067,10 @@ class WorkflowSerializerShallow(
     def get_columnworkflow_set(self, instance):
         links = instance.columnworkflow_set.all().order_by("rank")
         return list(map(linkIDMap, links))
-    
+
     def get_outcomeworkflow_set(self, instance):
         links = instance.outcomeworkflow_set.all().order_by("rank")
         return list(map(linkIDMap, links))
-
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -1220,8 +1215,11 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
 
         return activity
 
-class InfoBoxSerializer(serializers.Serializer,TitleSerializerMixin,DescriptionSerializerMixin):
-    
+
+class InfoBoxSerializer(
+    serializers.Serializer, TitleSerializerMixin, DescriptionSerializerMixin
+):
+
     id = serializers.ReadOnlyField()
     author = serializers.SerializerMethodField()
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -1231,28 +1229,39 @@ class InfoBoxSerializer(serializers.Serializer,TitleSerializerMixin,DescriptionS
     object_type = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     is_owned = serializers.SerializerMethodField()
+    is_strategy = serializers.SerializerMethodField()
     published = serializers.ReadOnlyField()
-    
-    def get_is_owned(self,instance):
+
+    def get_is_owned(self, instance):
         user = self.context.get("user")
         if user == instance.author:
             return True
         else:
             return False
-        
-    
-    def get_favourite(self,instance):
+
+    def get_favourite(self, instance):
         user = self.context.get("user")
-        if Favourite.objects.filter(user=user,content_type=ContentType.objects.get_for_model(instance),object_id=instance.id):
+        if Favourite.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(instance),
+            object_id=instance.id,
+        ):
             return True
         else:
             return False
-    
-    def get_object_type(self,instance):
+
+    def get_object_type(self, instance):
         return instance.type
-    
-    def get_author(self,instance):
+
+    def get_is_strategy(self, instance):
+        if hasattr(instance, "is_strategy"):
+            return instance.is_strategy
+        else:
+            return False
+
+    def get_author(self, instance):
         return str(instance.author)
+
 
 serializer_lookups = {
     "node": NodeSerializer,
@@ -1278,5 +1287,5 @@ serializer_lookups_shallow = {
     "project": ProjectSerializerShallow,
     "outcome": OutcomeSerializerShallow,
     "outcomeoutcome": OutcomeOutcomeSerializerShallow,
-    "outcomeworkflow":OutcomeWorkflowSerializerShallow,
+    "outcomeworkflow": OutcomeWorkflowSerializerShallow,
 }

@@ -28,9 +28,9 @@ class Project(models.Model):
     workflows = models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
     )
-#    outcomes = models.ManyToManyField(
-#        "Outcome", through="OutcomeProject", blank=True
-#    )
+    #    outcomes = models.ManyToManyField(
+    #        "Outcome", through="OutcomeProject", blank=True
+    #    )
 
     is_original = models.BooleanField(default=False)
     parent_project = models.ForeignKey(
@@ -40,7 +40,9 @@ class Project(models.Model):
     disciplines = models.ManyToManyField("Discipline", blank=True)
 
     favourited_by = GenericRelation("Favourite", related_query_name="project")
-    user_permissions = GenericRelation("ObjectPermission", related_query_name="project")
+    user_permissions = GenericRelation(
+        "ObjectPermission", related_query_name="project"
+    )
 
     @property
     def type(self):
@@ -68,7 +70,7 @@ class WorkflowProject(models.Model):
         verbose_name_plural = "Workflow-Project Links"
 
 
-#class OutcomeProject(models.Model):
+# class OutcomeProject(models.Model):
 #    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 #    outcome = models.ForeignKey("Outcome", on_delete=models.CASCADE)
 #    added_on = models.DateTimeField(auto_now_add=True)
@@ -232,21 +234,21 @@ class Outcome(models.Model):
             return self.parent_outcome_links.first().parent.get_top_outcome()
         else:
             return self
-        
+
     def get_workflow(self):
         return self.get_top_outcome().workflow_set.first().get_subclass()
-        
-#
-#    def get_project(self):
-#        return self.project_set.first()
+
+    #
+    #    def get_project(self):
+    #        return self.project_set.first()
 
     def get_permission_objects(self):
         return [self.get_workflow()]
 
     def __str__(self):
         return self.title
-    
-    def get_all_outcome_ids(self,ids):
+
+    def get_all_outcome_ids(self, ids):
         ids.append(self.id)
         for outcome in self.children.all():
             outcome.get_all_outcome_ids(ids)
@@ -686,13 +688,12 @@ class Workflow(models.Model):
         except AttributeError:
             pass
         return subclass
-    
+
     def get_all_outcome_ids(self):
         ids = []
         for outcome in self.outcomes.all():
             outcome.get_all_outcome_ids(ids)
         return ids
-            
 
     def __str__(self):
         if self.title is not None:
@@ -714,7 +715,9 @@ class Activity(Workflow):
     )
 
     favourited_by = GenericRelation("Favourite", related_query_name="activity")
-    user_permissions = GenericRelation("ObjectPermission", related_query_name="activity")
+    user_permissions = GenericRelation(
+        "ObjectPermission", related_query_name="activity"
+    )
 
     DEFAULT_CUSTOM_COLUMN = 0
     DEFAULT_COLUMNS = [1, 2, 3, 4]
@@ -751,7 +754,9 @@ class Course(Workflow):
     )
 
     favourited_by = GenericRelation("Favourite", related_query_name="course")
-    user_permissions = GenericRelation("ObjectPermission", related_query_name="course")
+    user_permissions = GenericRelation(
+        "ObjectPermission", related_query_name="course"
+    )
 
     DEFAULT_CUSTOM_COLUMN = 10
     DEFAULT_COLUMNS = [11, 12, 13, 14]
@@ -779,7 +784,9 @@ class Program(Workflow):
     WORKFLOW_TYPE = 2
 
     favourited_by = GenericRelation("Favourite", related_query_name="program")
-    user_permissions = GenericRelation("ObjectPermission", related_query_name="program")
+    user_permissions = GenericRelation(
+        "ObjectPermission", related_query_name="program"
+    )
 
     @property
     def type(self):
@@ -885,31 +892,36 @@ class ObjectPermission(models.Model):
 Other receivers
 """
 
-def get_allowed_parent_outcomes(workflow,**kwargs):
-    exclude_node = kwargs.get('exclude_node',None)
-    exclude_outcomenode = kwargs.get('exclude_outcomenode',None)
+
+def get_allowed_parent_outcomes(workflow, **kwargs):
+    exclude_node = kwargs.get("exclude_node", None)
+    exclude_outcomenode = kwargs.get("exclude_outcomenode", None)
     parent_outcomes = []
     parent_outcomenodes = []
     for parent_node in workflow.linked_nodes.exclude(id=exclude_node):
-        parent_outcomenodes += parent_node.outcomenode_set.exclude(id=exclude_outcomenode)
-    parent_node_base_outcomes = [
-        ocn.outcome for ocn in parent_outcomenodes
-    ]
+        parent_outcomenodes += parent_node.outcomenode_set.exclude(
+            id=exclude_outcomenode
+        )
+    parent_node_base_outcomes = [ocn.outcome for ocn in parent_outcomenodes]
     for oc in parent_node_base_outcomes:
         parent_outcomes += get_all_outcomes(oc, 0)
     return parent_outcomes
 
+
 @receiver(pre_delete, sender=OutcomeNode)
-def remove_horizontal_outcome_links_on_outcomenode_delete(sender,instance,**kwargs):
+def remove_horizontal_outcome_links_on_outcomenode_delete(
+    sender, instance, **kwargs
+):
     workflow = instance.node.linked_workflow
     if workflow is not None:
         linked_outcomes = list(workflow.outcomes.all())
-        parent_outcomes = get_allowed_parent_outcomes(workflow,exclude_outcomenode=instance.pk)
+        parent_outcomes = get_allowed_parent_outcomes(
+            workflow, exclude_outcomenode=instance.pk
+        )
         OutcomeHorizontalLink.objects.filter(
             outcome__in=linked_outcomes
         ).exclude(parent_outcome__in=parent_outcomes).delete()
-        
-    
+
 
 @receiver(pre_save, sender=Node)
 def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
@@ -921,7 +933,9 @@ def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
         new_workflow is None or new_workflow.pk == old_workflow.pk
     ):
         linked_outcomes = list(old_workflow.outcomes.all())
-        parent_outcomes = get_allowed_parent_outcomes(old_workflow,exclude_node=instance.pk)
+        parent_outcomes = get_allowed_parent_outcomes(
+            old_workflow, exclude_node=instance.pk
+        )
         OutcomeHorizontalLink.objects.filter(
             outcome__in=linked_outcomes
         ).exclude(parent_outcome__in=parent_outcomes).delete()
@@ -1259,28 +1273,22 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                         content_object=workflow.get_subclass(),
                         permission_type=instance.permission_type,
                     )
-#            for outcome in instance.content_object.outcomes.all():
-#                # If user already has edit permissions and we are adding view, do not override
-#                if (
-#                    instance.permission_type
-#                    == ObjectPermission.PERMISSION_VIEW
-#                    and ObjectPermission.objects.filter(
-#                        user=instance.user,
-#                        content_type=ContentType.objects.get_for_model(
-#                            outcome
-#                        ),
-#                        object_id=workflow.id,
-#                        permission_type=ObjectPermission.PERMISSION_EDIT,
-#                    ).count()
-#                    > 0
-#                ):
-#                    pass
-#                else:
-#                    ObjectPermission.objects.create(
-#                        user=instance.user,
-#                        content_object=outcome,
-#                        permission_type=instance.permission_type,
-#                    )
+
+
+#        elif instance.content_type == ContentType.objects.get_for_model(Workflow):
+#            workflow = instance.content_object
+#            if not workflow.is_strategy:
+#                project = workflow.project
+#                ObjectPermission.objects.create(content_object=project, user=instance.user,permission_type=ObjectPermission.PERMISSION_VIEW)
+
+
+@receiver(pre_save, sender=ObjectPermission)
+def delete_existing_permission(sender, instance, **kwargs):
+    ObjectPermission.objects.filter(
+        user=instance.user,
+        content_type=instance.content_type,
+        object_id=instance.object_id,
+    ).delete()
 
 
 @receiver(pre_delete, sender=ObjectPermission)
@@ -1294,12 +1302,6 @@ def remove_permissions_to_project_objects(sender, instance, **kwargs):
                 ),
                 object_id=workflow.get_subclass().id,
             ).delete()
-#        for outcome in instance.content_object.outcomes.all():
-#            ObjectPermission.objects.filter(
-#                user=instance.user,
-#                content_type=ContentType.objects.get_for_model(outcome),
-#                object_id=outcome.id,
-#            ).delete()
 
 
 @receiver(post_save, sender=Project)
@@ -1308,6 +1310,8 @@ def set_publication_of_project_objects(sender, instance, created, **kwargs):
         workflow.published = instance.published
         workflow.disciplines.set(instance.disciplines.all())
         workflow.save()
+
+
 #    for outcome in instance.outcomes.all():
 #        outcome.published = instance.published
 #        outcome.disciplines.set(instance.disciplines.all())
@@ -1438,8 +1442,8 @@ def set_publication_workflow(sender, instance, created, **kwargs):
         workflow.save()
 
 
-#@receiver(post_save, sender=OutcomeProject)
-#def set_publication_outcome(sender, instance, created, **kwargs):
+# @receiver(post_save, sender=OutcomeProject)
+# def set_publication_outcome(sender, instance, created, **kwargs):
 #    if created:
 #        # Set the workflow's publication status to that of the project
 #        outcome = instance.outcome

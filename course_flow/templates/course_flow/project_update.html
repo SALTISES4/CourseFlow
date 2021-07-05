@@ -20,10 +20,6 @@
 <!-- -->
 {% block read_only_scripts %}
 
-<script nonce="{{request.csp_nonce}}">
-  const read_only = false;
-</script>
-
 {% endblock %}
 <!-- -->
 {% block scripts %} {{ block.super }}
@@ -35,11 +31,6 @@
       course:"{% url 'course_flow:workflow-update' pk='0'%}",
       program:"{% url 'course_flow:workflow-update' pk='0'%}",
   }
-  const detail_path = {
-      activity:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
-      course:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
-      program:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
-  }
   const create_path = {
       activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
       course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
@@ -47,6 +38,7 @@
   }
   const data_package = {{workflow_data_package|safe}};
   const project_data= {{project_data|safe}};
+  const read_only = {{read_only|safe}};
   var project_renderer;
 
   console.log(data_package);

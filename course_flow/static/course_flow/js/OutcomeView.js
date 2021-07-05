@@ -354,7 +354,6 @@ export class NodeOutcomeViewUnconnected extends ComponentJSON{
     }
 
     getChildType(outcomeoutcome){
-        console.log("getting child type")
         let data = this.props.data;
         return(
             <NodeOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer}/>
@@ -408,9 +407,6 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         for(let node_id in this.props.completion_status_from_parents){
             completion_status|=this.props.completion_status_from_parents[node_id];
         }
-        console.log("Calculating the total completion");
-        console.log(this.props.outcomeID);
-        console.log(this.props.child_completion_status);
         let childnodes=0;
         let sub_outcomes_completion;
         for(let node_id in this.child_completion_status){
@@ -469,9 +465,6 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     }
 
     childUpdatedFunction(through_id,node_id,value){
-        console.log("A child has been updated");
-        console.log(node_id);
-        console.log(value);
         let index = this.props.data.child_outcome_links.indexOf(through_id);
         if(!this.child_completion_status[node_id]){
             if(value!==null){
@@ -482,16 +475,11 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         }
         if(this.child_completion_status[node_id][index]!==value){
             this.child_completion_status[node_id][index]=value;
-            console.log("calling update completion with node "+node_id+" at index "+index+" and value "+value);
-            console.log(this.child_completion_status);
             this.updateCompletion(node_id);
         }
     }
 
     selfUpdatedFunction(node_id,value){
-        console.log("received a node update");
-        console.log(node_id);
-        console.log(value);
         if(this.state.completion_status_from_self[node_id]!=value){
             
             
@@ -505,9 +493,6 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
 
     updateCompletion(node_id){
         let new_child_completion = this.child_completion_status[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
-        console.log("updating completion");
-        console.log(node_id);
-        console.log(new_child_completion);
         if(this.state.completion_status_from_children[node_id]!==new_child_completion){
             this.setState(function(state,props){
                 let new_completion_status_from_children = {...state.completion_status_from_children};
@@ -543,13 +528,10 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="outcomehorizontallink";
-        console.log("outcomehorizontallink:");
-        console.log(props);
     }
     
     render(){
         let data = this.props.data;
-        console.log("trying to render horizontal link");
         return (
             <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
                 <OutcomeViewForHorizontal objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
@@ -626,7 +608,6 @@ class OutcomeViewForHorizontalUnconnected extends NodeOutcomeViewUnconnected{
     
     getChildType(outcomeoutcome){
         let data = this.props.data;
-        console.log("getting child type);")
         return (
             <OutcomeOutcomeViewForHorizontal key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer}/>
         );

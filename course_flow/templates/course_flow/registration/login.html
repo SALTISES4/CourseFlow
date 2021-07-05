@@ -14,12 +14,14 @@
     </filter>
   </defs>
 </svg>
-<h2>Login</h2>
-<a href="{% url 'registration' %}">Don't Have An Account?</a>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Login</button>
-</form>
+<div class="body-wrapper">
+    <h2>Login</h2>
+    <a href="{% url 'registration' %}">Don't Have An Account?</a>
+    <form method="post">
+      {% csrf_token %} {{ form.as_p }}
+      <button type="submit">Login</button>
+    </form>
+</div>
 {% endblock %}
 <!-- -->
 {% block foot %} {% endblock %}

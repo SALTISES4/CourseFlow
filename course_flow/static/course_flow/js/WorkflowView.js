@@ -27,7 +27,6 @@ class WorkflowView extends ComponentJSON{
     }
     
     render(){
-        console.log("Rendering workflow view");
         let data = this.props.data;
         let renderer = this.props.renderer;
         let selection_manager = renderer.selection_manager;
@@ -55,7 +54,7 @@ class WorkflowView extends ComponentJSON{
                     <div class="workflow-details">
                         <TitleText text={data.description} defaultText={"Add a description"}/>
                         {reactDom.createPortal(
-                            <div>{this.state.title||"Unnamed Workflow"}</div>,
+                            <div>{data.title||"Unnamed Workflow"}</div>,
                             $("#workflowtitle")[0]
                         )}
                         {this.addEditable(data)}
@@ -308,7 +307,7 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                     <div class="workflow-details">
                         <TitleText text={data.description} defaultText={"Add a description"}/>
                         {reactDom.createPortal(
-                            <div>{this.state.title||"Unnamed Workflow"}</div>,
+                            <div>{data.title||"Unnamed Workflow"}</div>,
                             $("#workflowtitle")[0]
                         )}
                         {this.addEditable(data)}

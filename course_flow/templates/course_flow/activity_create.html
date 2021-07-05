@@ -9,14 +9,16 @@
 {% block header %}{% endblock %}
 <!-- -->
 {% block body %}
-<div class="workflow-create-wrapper">
-  <h1>
-    {% trans 'Create an activity:' %}
-  </h1>
-  <form method="post">
-    {% csrf_token %} {{ form.as_p }}
-    <input id="save-button" type="submit" value="Save" />
-  </form>
+<div class="body-wrapper">
+    <div class="workflow-create-wrapper">
+      <h1>
+        {% trans 'Create an activity:' %}
+      </h1>
+      <form method="post">
+        {% csrf_token %} {{ form.as_p }}
+        <input id="save-button" type="submit" value="Save" />
+      </form>
+    </div>
 </div>
 {% endblock %}
 <!-- -->

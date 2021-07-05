@@ -17,8 +17,6 @@ class OutcomeNodeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log("Rendering an outcomenode");
-        console.log(data);
         if(data.outcome==-1)return null;
         
         return (
@@ -266,11 +264,7 @@ export class TableOutcomeGroup extends ComponentJSON{
                 if(this.props.completion_status_from_children[node_id].reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;})!==null)childnodes++;
             }
         }
-        console.log("Checking for completion status before/after");
-        console.log(completion_status);
         if(sub_outcomes_completion)completion_status|=sub_outcomes_completion.reduce((accumulator, current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;});
-        console.log(completion_status);
-        console.log(childnodes);
         if(completion_status==0&&childnodes==0)completion_status=null;
         
         

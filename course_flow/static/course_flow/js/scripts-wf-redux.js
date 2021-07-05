@@ -107,6 +107,7 @@ export class ProjectRenderer{
         this.initial_project_data = data_package;
         this.project_data = project_data;
         this.store = createStore(Reducers.projectMenuReducer,data_package);
+        this.read_only = data_package.read_only;
     }
     
     render(container){
@@ -136,6 +137,7 @@ export class WorkflowRenderer{
         this.is_strategy = data_package.is_strategy;
         this.store = createStore(Reducers.rootWorkflowReducer,this.initial_workflow_data);
         this.column_colours = {}
+        this.read_only = data_package.read_only;
     }
     
     render(container,view_type){

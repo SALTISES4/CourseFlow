@@ -1,11 +1,11 @@
 from django.conf.urls import url
-from rest_framework import routers
 from django.views.i18n import JavaScriptCatalog
+from rest_framework import routers
 
 from . import views
 
 router = routers.SimpleRouter()
-router.register(r"workflow/read", views.WorkflowViewSet)
+# router.register(r"workflow/read", views.WorkflowViewSet)
 
 
 app_name = "course_flow"
@@ -16,21 +16,22 @@ def course_flow_patterns():
         url(r"home/$", views.home_view, name="home"),
         url(r"myprojects/$", views.myprojects_view, name="my-projects"),
         url(r"mytemplates/$", views.mytemplates_view, name="my-templates"),
+        url(r"myfavourites/$", views.myfavourites_view, name="my-favourites"),
         url(r"explore/$", views.ExploreView.as_view(), name="explore"),
         url(r"import/$", views.import_view, name="import"),
         url(
-            r"^project/(?P<pk>[0-9]+)/update/$",
-            views.ProjectUpdateView.as_view(),
+            r"^project/(?P<pk>[0-9]+)/$",
+            views.ProjectDetailView.as_view(),
             name="project-update",
         ),
-#        url(
-#            r"^outcome/(?P<pk>[0-9]+)/update/$",
-#            views.OutcomeUpdateView.as_view(),
-#            name="outcome-update",
-#        ),
+        #        url(
+        #            r"^outcome/(?P<pk>[0-9]+)/update/$",
+        #            views.OutcomeUpdateView.as_view(),
+        #            name="outcome-update",
+        #        ),
         url(
-            r"^workflow/(?P<pk>[0-9]+)/update/$",
-            views.WorkflowUpdateView.as_view(),
+            r"^workflow/(?P<pk>[0-9]+)/$",
+            views.WorkflowDetailView.as_view(),
             name="workflow-update",
         ),
         url(
@@ -52,11 +53,11 @@ def course_flow_patterns():
             views.duplicate_workflow_ajax,
             name="duplicate-workflow",
         ),
-#        url(
-#            r"^project/duplicate-outcome/$",
-#            views.duplicate_outcome_ajax,
-#            name="duplicate-outcome",
-#        ),
+        #        url(
+        #            r"^project/duplicate-outcome/$",
+        #            views.duplicate_outcome_ajax,
+        #            name="duplicate-outcome",
+        #        ),
         url(
             r"^project/duplicate-project/$",
             views.duplicate_project_ajax,
@@ -93,7 +94,11 @@ def course_flow_patterns():
         ),
         url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
-        url(r"^workflow/outcome/new", views.new_outcome_for_workflow, name="new-outcome-for-workflow"),
+        url(
+            r"^workflow/outcome/new",
+            views.new_outcome_for_workflow,
+            name="new-outcome-for-workflow",
+        ),
         url(
             r"^workflow/strategy/add", views.add_strategy, name="add-strategy"
         ),
@@ -134,6 +139,16 @@ def course_flow_patterns():
             name="get-possible-linked-workflows",
         ),
         url(
+            r"^workflow/get-possible-added-workflows/",
+            views.get_possible_added_workflows,
+            name="get-possible-added-workflows",
+        ),
+        url(
+            r"^workflow/get-target-projects/",
+            views.get_target_projects,
+            name="get-target-projects",
+        ),
+        url(
             r"^workflow/get-workflow-data/",
             views.get_workflow_data,
             name="get-workflow-data",
@@ -159,39 +174,24 @@ def course_flow_patterns():
             name="get-user-list",
         ),
         url(
-            r"^workflow/(?P<pk>[0-9]+)/$",
-            views.WorkflowDetailView.as_view(),
-            name="workflow-detail-view",
-        ),
-        url(
             r"^project/create/$",
             views.ProjectCreateView.as_view(),
             name="project-create",
         ),
-        url(
-            r"^project/(?P<pk>[0-9]+)/$",
-            views.ProjectDetailView.as_view(),
-            name="project-detail-view",
-        ),
-#        url(
-#            r"^outcome/(?P<projectPk>[0-9]+)/create/$",
-#            views.OutcomeCreateView.as_view(),
-#            name="outcome-create",
-#        ),
-#        url(
-#            r"^outcome/(?P<pk>[0-9]+)/$",
-#            views.OutcomeDetailView.as_view(),
-#            name="outcome-detail-view",
-#        ),
+        #        url(
+        #            r"^outcome/(?P<projectPk>[0-9]+)/create/$",
+        #            views.OutcomeCreateView.as_view(),
+        #            name="outcome-create",
+        #        ),
+        #        url(
+        #            r"^outcome/(?P<pk>[0-9]+)/$",
+        #            views.OutcomeDetailView.as_view(),
+        #            name="outcome-detail-view",
+        #        ),
         url(
             r"^program/(?P<projectPk>[0-9]+)/create/$",
             views.ProgramCreateView.as_view(),
             name="program-create",
-        ),
-        url(
-            r"^program/(?P<pk>[0-9]+)/$",
-            views.ProgramDetailView.as_view(),
-            name="program-detail-view",
         ),
         url(
             r"^course/(?P<projectPk>[0-9]+)/create/$",
@@ -204,11 +204,6 @@ def course_flow_patterns():
             name="course-strategy-create",
         ),
         url(
-            r"^course/(?P<pk>[0-9]+)/$",
-            views.CourseDetailView.as_view(),
-            name="course-detail-view",
-        ),
-        url(
             r"^activity/(?P<projectPk>[0-9]+)/create/$",
             views.ActivityCreateView.as_view(),
             name="activity-create",
@@ -218,16 +213,7 @@ def course_flow_patterns():
             views.ActivityStrategyCreateView.as_view(),
             name="activity-strategy-create",
         ),
-        url(
-            r"^activity/(?P<pk>[0-9]+)/$",
-            views.ActivityDetailView.as_view(),
-            name="activity-detail-view",
-        ),
-        url(
-            "jsi18n/",
-            JavaScriptCatalog.as_view(),
-            name="javascript-catalog"
-        )
+        url("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
     ] + router.urls
 
 

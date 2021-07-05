@@ -76,8 +76,6 @@ export const getParentOutcomeWorkflowByID = (state,id)=>{
     }
 }
 export const getParentWorkflowByID = (state,id)=>{
-    console.log(id);
-    console.log(state);
     for(var i in state.parent_workflow){
         var workflow = state.parent_workflow[i];
         if(workflow.id==id)return {data:workflow}
@@ -92,9 +90,6 @@ export const getNodeByID = (state,id)=>{
 export const getNodeWeekByID = (state,id)=>{
     for(var i in state.nodeweek){
         var nodeweek = state.nodeweek[i];
-        console.log(nodeweek.id);
-        console.log(nodeweek.week);
-        console.log(state);
         if(nodeweek.id==id)return {data:nodeweek,order:getWeekByID(state,nodeweek.week).nodeweek_set};
     }
 }
@@ -105,7 +100,6 @@ export const getNodeLinkByID = (state,id)=>{
     }
 }
 export const getOutcomeByID = (state,id,display_parent_outcomes)=>{
-    console.log("looking for outcome with id "+id);
     for(var i in state.outcome){
         var outcome = state.outcome[i];
         if(outcome.id==id){
@@ -115,7 +109,6 @@ export const getOutcomeByID = (state,id,display_parent_outcomes)=>{
     }
 }
 export const getParentOutcomeByID = (state,id)=>{
-    console.log("looking for outcome with id "+id);
     for(var i in state.parent_outcome){
         var outcome = state.parent_outcome[i];
         if(outcome.id==id)return {data:outcome};

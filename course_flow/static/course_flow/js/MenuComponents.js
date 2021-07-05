@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite} from "./PostFunctions";
+import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu} from "./PostFunctions";
 import {gridMenuItemAdded} from "./Reducers";
 import {Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
@@ -10,7 +10,7 @@ import {ShareMenu} from "./ShareMenu";
 export class MessageBox extends React.Component{
     render(){
         var menu;
-        if(this.props.message_type=="linked_workflow_menu")menu=(
+        if(this.props.message_type=="linked_workflow_menu"||this.props.message_type=="target_project_menu" || this.props.message_type=="added_workflow_menu")menu=(
             <WorkflowsMenu type={this.props.message_type} data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
         if(this.props.message_type=="project_edit_menu")menu=(
@@ -34,7 +34,7 @@ export class WorkflowsMenu extends React.Component{
     constructor(props){
         super(props);
         this.state={};
-        this.project_workflows = props.data.data_package.current_project.sections[0].objects.map((object)=>object.id);
+        if(this.props.type=="linked_workflow_menu"||this.props.type=="added_workflow_menu")this.project_workflows = props.data.data_package.current_project.sections[0].objects.map((object)=>object.id);
     }
     
     render(){
@@ -54,7 +54,7 @@ export class WorkflowsMenu extends React.Component{
         }
         return(
             <div class="message-wrap">
-                <div class="home-tabs" id="home-tabs">
+                <div class="home-tabs" id="workflow-tabs">
                     <ul>
                         {tab_li}
                     </ul>
@@ -98,13 +98,44 @@ export class WorkflowsMenu extends React.Component{
                     cancel
                 </button>
             );
+        }else if(this.props.type=="added_workflow_menu"){
+            var text="duplicate";
+            if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text="copy to current project";
+            actions.push(
+                <button id="set-linked-workflow" disabled={!this.state.selected} onClick={()=>{
+                    
+                    this.props.actionFunction({workflowID:this.state.selected});
+                    closeMessageBox();
+                }}>
+                    {text}
+                </button>
+            );
+            actions.push(
+                <button id="set-linked-workflow-cancel" onClick={closeMessageBox}>
+                    cancel
+                </button>
+            );
+        }else if(this.props.type=="target_project_menu"){
+            actions.push(
+                <button id="set-linked-workflow" disabled={!this.state.selected} onClick={()=>{
+                    this.props.actionFunction({parentID:this.state.selected});
+                    closeMessageBox();
+                }}>
+                    add to project
+                </button>
+            );
+            actions.push(
+                <button id="set-linked-workflow-cancel" onClick={closeMessageBox}>
+                    cancel
+                </button>
+            );
         }
         return actions;
     }
     
     componentDidMount(){
-        $("#home-tabs").tabs();
-        $(".tab-header").on("click",()=>{this.setState({selected:null})})
+        $("#workflow-tabs").tabs();
+        $("#workflow-tabs .tab-header").on("click",()=>{this.setState({selected:null})})
     }
 }
 
@@ -116,7 +147,7 @@ export class WorkflowForMenu extends React.Component{
     
     render(){
         var data = this.props.workflow_data;
-        var css_class = "workflow-for-menu hover-shade";
+        var css_class = "workflow-for-menu hover-shade "+data.object_type;
         if(this.props.selected)css_class+=" selected";
         if(this.state.hide)return null;
         let publish_icon = iconpath+'view_none.svg';
@@ -132,12 +163,12 @@ export class WorkflowForMenu extends React.Component{
                         {data.title}
                     </div>
                     {this.getButtons()}
+                    {this.getTypeIndicator()}
                 </div>
                 <div class="workflow-created">
                     { "Created"+(data.author && " by "+data.author)+" on "+data.created_on}
                 </div>
-                <div class="workflow-description">
-                    {data.description}
+                <div class="workflow-description" dangerouslySetInnerHTML={{ __html: data.description }}>
                 </div>
                 <div class="workflow-publication">
                     <img src={publish_icon}/><div>{publish_text}</div>
@@ -146,13 +177,20 @@ export class WorkflowForMenu extends React.Component{
         );
     }
     
+    getTypeIndicator(){
+        let type=this.props.workflow_data.object_type
+        let type_text = type;
+        if(this.props.workflow_data.is_strategy)type_text+=" strategy";
+        return (
+            <div class={"workflow-type-indicator "+type}>{type_text}</div>
+        );
+    }
+    
     clickAction(){
-        console.log(this.props.selectAction);
         if(this.props.selectAction){
             this.props.selectAction(this.props.workflow_data.id);
         }else{
-            console.log(this.props);
-            window.location.href=update_path[this.props.objectType].replace("0",this.props.workflow_data.id);
+            window.location.href=update_path[this.props.workflow_data.object_type].replace("0",this.props.workflow_data.id);
         }
     }
     
@@ -163,9 +201,9 @@ export class WorkflowForMenu extends React.Component{
         if(this.props.type=="projectmenu"||this.props.type=="gridmenu"||this.props.type=="exploremenu"){
             if(this.props.workflow_data.is_owned){
                 buttons.push(
-                    <div  class="workflow-delete-button" onClick={(evt)=>{
+                    <div  class="workflow-delete-button hover-shade" onClick={(evt)=>{
                         if(window.confirm("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone.")){
-                            deleteSelf(this.props.workflow_data.id,this.props.objectType);
+                            deleteSelf(this.props.workflow_data.id,this.props.workflow_data.object_type);
                             this.setState({hide:true});
                         }
                         evt.stopPropagation();
@@ -173,20 +211,10 @@ export class WorkflowForMenu extends React.Component{
                         <img src={iconpath+'rubbish.svg'} title="Delete"/>
                     </div>
                 );
-                buttons.push(
-                    <a href={update_path[this.props.objectType].replace("0",this.props.workflow_data.id)}  class="workflow-edit-button">
-                        <img src={iconpath+'edit_pencil.svg'} title="Edit"/>
-                    </a>
-                );
             }else{
                 buttons.push(
-                    <a href={detail_path[this.props.objectType].replace("0",this.props.workflow_data.id)}  class="workflow-view-button">
-                        <img src={iconpath+'page_view.svg'} title="View"/>
-                    </a>
-                );
-                buttons.push(
-                    <div class="workflow-toggle-favourite" onClick={(evt)=>{
-                        toggleFavourite(this.props.workflow_data.id,this.props.objectType,(!this.state.favourite));
+                    <div class="workflow-toggle-favourite hover-shade" onClick={(evt)=>{
+                        toggleFavourite(this.props.workflow_data.id,this.props.workflow_data.object_type,(!this.state.favourite));
                         let state=this.state;
                         this.setState({favourite:!(state.favourite)})
                         evt.stopPropagation();
@@ -201,22 +229,66 @@ export class WorkflowForMenu extends React.Component{
                 if(this.props.duplicate=="copy"){
                     icon = 'duplicate.svg';
                     titletext="Duplicate";
+                    buttons.push(
+                        <div class="workflow-duplicate-button hover-shade" onClick={(evt)=>{
+                            let loader = new Loader('body');
+                            duplicateBaseItem(this.props.workflow_data.id,this.props.workflow_data.object_type,this.props.parentID,(response_data)=>{this.props.dispatch(gridMenuItemAdded(response_data));loader.endLoad();});
+                            evt.stopPropagation();
+                        }}>
+                            <img src={iconpath+icon} title={titletext}/>
+                        </div>
+                    );
                 }
                 else {
                     icon = 'import.svg';
-                    if(this.props.type=="projectmenu")titletext="Import to current project";
-                    else titletext="Import to my files";
+                    titletext="Import to my files";
+                    buttons.push(
+                        <div class="workflow-duplicate-button hover-shade" onClick={(evt)=>{
+                            var target_parent;
+                            if(this.props.workflow_data.object_type=="project"||this.props.workflow_data.is_strategy){
+                                let loader = new Loader('body');
+                                duplicateBaseItem(
+                                    this.props.workflow_data.id,this.props.workflow_data.object_type,
+                                    target_parent,(response_data)=>{
+                                        try{
+                                            this.props.dispatch(gridMenuItemAdded(response_data));
+                                        } catch(err){console.log("Couldn't (or didn't need to) update grid");}
+                                        loader.endLoad();
+                                    }
+                                );
+                            }else{
+                                getTargetProjectMenu(this.props.workflow_data.id,(response_data)=>{
+                                    if(response_data.parentID!=null){
+                                        let loader = new Loader('body');
+                                        duplicateBaseItem(
+                                            this.props.workflow_data.id,this.props.workflow_data.object_type,
+                                            response_data.parentID,(duplication_response_data)=>{
+                                               try{
+                                                   this.props.dispatch(gridMenuItemAdded(duplication_response_data));
+                                                } catch(err){console.log("Couldn't (or didn't need to) update grid");}
+                                                loader.endLoad();
+                                            }
+                                        );
+                                    }
+                                });
+                            }
+                            evt.stopPropagation();
+                        }}>
+                            <img src={iconpath+icon} title={titletext}/>
+                        </div>
+                    );
                 }
-                buttons.push(
-                    <div class="workflow-duplicate-button" onClick={(evt)=>{
-                        let loader = new Loader('body');
-                        duplicateBaseItem(this.props.workflow_data.id,this.props.objectType,this.props.parentID,(response_data)=>{this.props.dispatch(gridMenuItemAdded(response_data));loader.endLoad();});
-                        evt.stopPropagation();
-                    }}>
-                        <img src={iconpath+icon} title={titletext}/>
-                    </div>
-                );
             }
+        }
+        if(this.props.previewAction){
+            buttons.push(
+                <div class="workflow-view-button hover-shade" onClick={(evt)=>{
+                    this.props.previewAction(evt);
+                    evt.stopPropagation();
+                }}>
+                    <img src={iconpath+"page_view.svg"} title="Preview"/>
+                </div>
+            );
         }
         return (
             <div class="workflow-buttons">
@@ -310,6 +382,7 @@ class ProjectMenuUnconnected extends React.Component{
     }
     
     render(){
+        let data = this.props.project;
         var tabs = [];
         var tab_li = [];
         var i = 0;
@@ -345,6 +418,7 @@ class ProjectMenuUnconnected extends React.Component{
                             (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||"None")
                         }
                     </p>
+                    
                     {reactDom.createPortal(
                         share,
                         $("#floatbar")[0]
@@ -364,7 +438,24 @@ class ProjectMenuUnconnected extends React.Component{
                             $("#viewbar")[0]
                         )
                     }
+                    
                 </div>
+                <div class="project-import menu-create hover-shade" onClick={()=>{
+                    getAddedWorkflowMenu(data.id,(response_data)=>{
+                        if(response_data.workflowID!=null){
+                            let loader = new Loader('body');
+                            duplicateBaseItem(
+                                response_data.workflowID,"workflow",
+                                data.id,(duplication_response_data)=>{
+                                   try{
+                                       this.props.dispatch(gridMenuItemAdded(duplication_response_data));
+                                    } catch(err){console.log("Couldn't (or didn't need to) update grid");}
+                                    loader.endLoad();
+                                }
+                            );
+                        }
+                    });          
+                }}><img class="create-button" src={iconpath+"add_new_white.svg"}/><div>Import a workflow</div></div>
                 <div class="home-tabs" id="home-tabs">
                     <ul>
                         {tab_li}
@@ -540,7 +631,7 @@ export class ExploreMenu extends React.Component{
         
         
         let objects = this.props.data_package.map(object=>
-            <WorkflowForMenu selected={(this.state.selected==object.id)} key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.object_type} selectAction={this.selectItem.bind(this,object.id,object.object_type)}/>  
+            <WorkflowForMenu selected={(this.state.selected==object.id)} key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.object_type} previewAction={this.selectItem.bind(this,object.id,object.object_type)}/>  
         )
         let disciplines = this.props.disciplines.map(discipline=>
             <li><label><input class = "fillable"  type="checkbox" name="disc[]" value={discipline.id}/>{discipline.title}</label></li>                                            

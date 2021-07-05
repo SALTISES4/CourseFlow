@@ -217,15 +217,21 @@
         <div>My Templates</div>
       </a>
       <hr>
-      <div class="panel-item">
+      <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
         My Favourites
-      </div>
+      </a>
         {% for favourite in user.favourite_set.all|slice:":5" %}
-        
-          <a class="panel-favourite hover-shade">
+          <a class="panel-favourite hover-shade"
+             {% if favourite.content_type == "project" %}
+                href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
+             {% else %}
+                href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
+             {% endif %}
+             >
             {{ favourite.content_object }}
           </a>
         {% endfor %}
+      <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... see all</a>
       
     </div>
 
@@ -240,6 +246,10 @@
     post_paths = {
       get_possible_linked_workflows:
         "{% url 'course_flow:get-possible-linked-workflows' %}",
+      get_possible_added_workflows:
+        "{% url 'course_flow:get-possible-added-workflows' %}",
+      get_target_projects:
+        "{% url 'course_flow:get-target-projects' %}",
       set_linked_workflow: "{% url 'course_flow:set-linked-workflow' %}",
       update_value: "{% url 'course_flow:update-value' %}",
       new_column: "{% url 'course_flow:new-column' %}",
@@ -274,7 +284,6 @@
     };
 
     workflow_update_path = "{% url 'course_flow:workflow-update' pk='0'%}";
-    workflow_detail_path = "{% url 'course_flow:workflow-detail-view' pk='0'%}";
 
     //reload if we got here using forward or back button
     if (

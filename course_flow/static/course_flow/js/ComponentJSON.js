@@ -140,7 +140,6 @@ export class ComponentJSON extends React.Component{
                 var placeholder_index = ui.placeholder.prevAll().not(".ui-sortable-helper").length;
                 if(ui.placeholder.parent()[0]!=ui.item.parent()[0]||ui.item.prevAll().not(".ui-sortable-placeholder").length!=placeholder_index){
                     var new_parent_id = parseInt(ui.placeholder.parent().attr("id"));
-                    console.log(ui.placeholder.parent().attr("id"))
                     this.sortableMovedFunction(parseInt(ui.item.attr("id")),placeholder_index,draggable_type,new_parent_id,ui.item.attr("data-child-id"));
                 }
                 

@@ -667,23 +667,14 @@ export function nodeReducer(state={},action){
         case 'outcome_base/deleteSelf':
             new_state=state.slice();
             for(var i=0;i<action.payload.extra_data.length;i++){
-                console.log("iteration "+i);
-                console.log(action.payload.extra_data[i]);
-                console.log(action.payload);
                 if(action.payload.extra_data[i].outcome==action.payload.id){
-                    console.log("found an outcomenode for the deleted outcome");
                     let outcomenode = action.payload.extra_data[i];
                     for(var j=0;j<new_state.length;j++){
-                        console.log("sub-iteration "+j);
-                        console.log(new_state[j])
                         let outcomenode_index=new_state[j].outcomenode_set.indexOf(outcomenode.id);
                         if(outcomenode_index>=0){
-                            console.log("removing outcomenode from state");
-                            console.log(new_state[j].outcomenode_set);
                             new_state[j]={...new_state[j]};
                             new_state[j].outcomenode_set=new_state[j].outcomenode_set.slice();
                             new_state[j].outcomenode_set.splice(outcomenode_index,1);
-                            console.log(new_state[j].outcomenode_set);
                         }
                     }
                 }
@@ -819,8 +810,6 @@ export function outcomeReducer(state={},action){
             }
             return state;
         case 'outcomehorizontallink/deleteSelf':
-            console.log("payload")
-            console.log(action.payload);
             var new_state = state.slice();
             for(var i=0;i<new_state.length;i++){
                 if(new_state[i].outcome_horizontal_links.indexOf(action.payload.id)>=0){
@@ -1017,15 +1006,9 @@ export function projectMenuReducer(state={},action){
     switch(action.type){
         case 'gridmenu/itemAdded':
             var new_state = {...state}
-            console.log("item has been added");
-            console.log("the old state is:")
-            console.log(state);
             new_state.current_project = {...new_state.current_project};
             new_state.current_project.sections = new_state.current_project.sections.slice();
-            console.log("we are looking to add:");
-            console.log(action.payload);
             for(var i=0;i<new_state.current_project.sections.length;i++){
-                console.log(new_state.current_project.sections[i].object_type);
                 if(new_state.current_project.sections[i].object_type==action.payload.type){
                     new_state.current_project.sections[i].objects=new_state.current_project.sections[i].objects.slice()
                     new_state.current_project.sections[i].objects.push(action.payload.new_item);

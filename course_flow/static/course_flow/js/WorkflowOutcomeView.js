@@ -40,8 +40,6 @@ class WorkflowOutcomeView extends ComponentJSON{
                 <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
             </div>
         );
-        console.log("Outcomeworkflows:");
-        console.log(this.props.outcomeworkflows);
         let outcomes = this.props.outcomeworkflows.map((outcomeworkflow)=>
             <TableOutcomeWorkflowView renderer={this.props.renderer} objectID={outcomeworkflow} nodecategory={this.props.data} outcomes_type={this.props.outcomes_type}/>                                          
         );

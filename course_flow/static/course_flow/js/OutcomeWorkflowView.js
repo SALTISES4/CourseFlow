@@ -35,7 +35,6 @@ export default connect(
 class TableOutcomeWorkflowViewUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
-        console.log("Creating tableoutcomeworkflowview");
         return (
             <div>
                 <TableOutcomeView renderer={this.props.renderer} objectID={data.outcome} nodecategory={this.props.nodecategory} outcomes_type={this.props.outcomes_type}/> 

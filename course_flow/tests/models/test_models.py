@@ -45,23 +45,32 @@ class ModelViewTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    def test_project_detail_view(self):
-        author = get_author()
-        project = Project.objects.create(author=author)
-        response = self.client.get(
-            reverse("course_flow:project-detail-view", args=[project.pk])
-        )
+    def test_home_view(self):
+        response = self.client.get(reverse("course_flow:home"))
         self.assertEqual(response.status_code, 302)
         login(self)
-        response = self.client.get(
-            reverse("course_flow:project-detail-view", args=[project.pk])
-        )
-        self.assertEqual(response.status_code, 403)
-        project.published = True
-        project.save()
-        response = self.client.get(
-            reverse("course_flow:project-detail-view", args=[project.pk])
-        )
+        response = self.client.get(reverse("course_flow:home"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_myprojects_view(self):
+        response = self.client.get(reverse("course_flow:my-projects"))
+        self.assertEqual(response.status_code, 302)
+        login(self)
+        response = self.client.get(reverse("course_flow:my-projects"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_myfavourites_view(self):
+        response = self.client.get(reverse("course_flow:my-favourites"))
+        self.assertEqual(response.status_code, 302)
+        login(self)
+        response = self.client.get(reverse("course_flow:my-favourites"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_mytemplates_view(self):
+        response = self.client.get(reverse("course_flow:my-templates"))
+        self.assertEqual(response.status_code, 302)
+        login(self)
+        response = self.client.get(reverse("course_flow:my-templates"))
         self.assertEqual(response.status_code, 200)
 
     def test_project_update_view(self):
@@ -71,7 +80,7 @@ class ModelViewTest(TestCase):
             reverse("course_flow:project-update", args=[project.pk])
         )
         self.assertEqual(response.status_code, 302)
-        login(self)
+        user = login(self)
         response = self.client.get(
             reverse("course_flow:project-update", args=[project.pk])
         )
@@ -81,85 +90,88 @@ class ModelViewTest(TestCase):
         response = self.client.get(
             reverse("course_flow:project-update", args=[project.pk])
         )
+        self.assertEqual(response.status_code, 200)
+        project.published = False
+        project.save()
+        ObjectPermission.objects.create(
+            user=user,
+            content_object=project,
+            permission_type=ObjectPermission.PERMISSION_VIEW,
+        )
+        response = self.client.get(
+            reverse("course_flow:project-update", args=[project.pk])
+        )
+        self.assertEqual(response.status_code, 200)
+        ObjectPermission.objects.create(
+            user=user,
+            content_object=project,
+            permission_type=ObjectPermission.PERMISSION_EDIT,
+        )
+        response = self.client.get(
+            reverse("course_flow:project-update", args=[project.pk])
+        )
+        self.assertEqual(response.status_code, 200)
+        ObjectPermission.objects.create(
+            user=user,
+            content_object=project,
+            permission_type=ObjectPermission.PERMISSION_NONE,
+        )
+        response = self.client.get(
+            reverse("course_flow:project-update", args=[project.pk])
+        )
         self.assertEqual(response.status_code, 403)
 
-#    def test_outcome_detail_view(self):
-#        author = get_author()
-#        project = Project.objects.create(author=author)
-#        outcome = make_object("outcome", author)
-#        OutcomeProject.objects.create(outcome=outcome, project=project)
-#        response = self.client.get(
-#            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
-#        )
-#        self.assertEqual(response.status_code, 302)
-#        login(self)
-#        project = Project.objects.create(author=author)
-#        outcome = make_object("outcome", author)
-#        OutcomeProject.objects.create(outcome=outcome, project=project)
-#        response = self.client.get(
-#            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
-#        )
-#        self.assertEqual(response.status_code, 403)
-#        outcome.published = True
-#        outcome.save()
-#        response = self.client.get(
-#            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
-#        )
-#        self.assertEqual(response.status_code, 200)
-#
-#    def test_outcome_update_view(self):
-#        author = get_author()
-#        project = Project.objects.create(author=author)
-#        outcome = make_object("outcome", author)
-#        OutcomeProject.objects.create(outcome=outcome, project=project)
-#        response = self.client.get(
-#            reverse("course_flow:outcome-update", args=[outcome.pk])
-#        )
-#        self.assertEqual(response.status_code, 302)
-#        login(self)
-#        project = Project.objects.create(author=author)
-#        outcome = make_object("outcome", author)
-#        OutcomeProject.objects.create(outcome=outcome, project=project)
-#        response = self.client.get(
-#            reverse("course_flow:outcome-update", args=[outcome.pk])
-#        )
-#        self.assertEqual(response.status_code, 403)
-#
-#    def test_outcome_update_view_is_owner(self):
-#        user = login(self)
-#        project = Project.objects.create(author=user)
-#        outcome = make_object("outcome", user)
-#        OutcomeProject.objects.create(outcome=outcome, project=project)
-#        response = self.client.get(
-#            reverse("course_flow:outcome-update", args=[outcome.pk])
-#        )
-#        self.assertEqual(response.status_code, 200)
-
-    def test_workflow_detail_view(self):
-        author = get_author()
-        for workflow_type in ["activity", "course", "program"]:
-            project = Project.objects.create(author=author)
-            workflow = make_object(workflow_type, author)
-            WorkflowProject.objects.create(workflow=workflow, project=project)
-            response = self.client.get(
-                reverse("course_flow:workflow-detail", args=[workflow.pk])
-            )
-            self.assertEqual(response.status_code, 302)
-        login(self)
-        for workflow_type in ["activity", "course", "program"]:
-            project = Project.objects.create(author=author)
-            workflow = make_object(workflow_type, author)
-            WorkflowProject.objects.create(workflow=workflow, project=project)
-            response = self.client.get(
-                reverse("course_flow:workflow-detail", args=[workflow.pk])
-            )
-            self.assertEqual(response.status_code, 403)
-            workflow.published = True
-            workflow.save()
-            response = self.client.get(
-                reverse("course_flow:workflow-detail", args=[workflow.pk])
-            )
-            self.assertEqual(response.status_code, 200)
+    #    def test_outcome_detail_view(self):
+    #        author = get_author()
+    #        project = Project.objects.create(author=author)
+    #        outcome = make_object("outcome", author)
+    #        OutcomeProject.objects.create(outcome=outcome, project=project)
+    #        response = self.client.get(
+    #            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
+    #        )
+    #        self.assertEqual(response.status_code, 302)
+    #        login(self)
+    #        project = Project.objects.create(author=author)
+    #        outcome = make_object("outcome", author)
+    #        OutcomeProject.objects.create(outcome=outcome, project=project)
+    #        response = self.client.get(
+    #            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
+    #        )
+    #        self.assertEqual(response.status_code, 403)
+    #        outcome.published = True
+    #        outcome.save()
+    #        response = self.client.get(
+    #            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
+    #        )
+    #        self.assertEqual(response.status_code, 200)
+    #
+    #    def test_outcome_update_view(self):
+    #        author = get_author()
+    #        project = Project.objects.create(author=author)
+    #        outcome = make_object("outcome", author)
+    #        OutcomeProject.objects.create(outcome=outcome, project=project)
+    #        response = self.client.get(
+    #            reverse("course_flow:outcome-update", args=[outcome.pk])
+    #        )
+    #        self.assertEqual(response.status_code, 302)
+    #        login(self)
+    #        project = Project.objects.create(author=author)
+    #        outcome = make_object("outcome", author)
+    #        OutcomeProject.objects.create(outcome=outcome, project=project)
+    #        response = self.client.get(
+    #            reverse("course_flow:outcome-update", args=[outcome.pk])
+    #        )
+    #        self.assertEqual(response.status_code, 403)
+    #
+    #    def test_outcome_update_view_is_owner(self):
+    #        user = login(self)
+    #        project = Project.objects.create(author=user)
+    #        outcome = make_object("outcome", user)
+    #        OutcomeProject.objects.create(outcome=outcome, project=project)
+    #        response = self.client.get(
+    #            reverse("course_flow:outcome-update", args=[outcome.pk])
+    #        )
+    #        self.assertEqual(response.status_code, 200)
 
     def test_workflow_update_view(self):
         author = get_author()
@@ -171,11 +183,43 @@ class ModelViewTest(TestCase):
                 reverse("course_flow:workflow-update", args=[workflow.pk])
             )
             self.assertEqual(response.status_code, 302)
-        login(self)
+        user = login(self)
         for workflow_type in ["activity", "course", "program"]:
             project = Project.objects.create(author=author)
             workflow = make_object(workflow_type, author)
             WorkflowProject.objects.create(workflow=workflow, project=project)
+            response = self.client.get(
+                reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            self.assertEqual(response.status_code, 403)
+        project = Project.objects.create(author=author)
+
+        for workflow_type in ["activity", "course", "program"]:
+            workflow = make_object(workflow_type, author)
+            ObjectPermission.objects.create(
+                user=user,
+                content_object=workflow,
+                permission_type=ObjectPermission.PERMISSION_VIEW,
+            )
+            WorkflowProject.objects.create(workflow=workflow, project=project)
+            response = self.client.get(
+                reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            self.assertEqual(response.status_code, 200)
+            ObjectPermission.objects.create(
+                user=user,
+                content_object=workflow,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+            )
+            response = self.client.get(
+                reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            self.assertEqual(response.status_code, 200)
+            ObjectPermission.objects.create(
+                user=user,
+                content_object=workflow,
+                permission_type=ObjectPermission.PERMISSION_NONE,
+            )
             response = self.client.get(
                 reverse("course_flow:workflow-update", args=[workflow.pk])
             )
@@ -199,23 +243,23 @@ class ModelViewTest(TestCase):
         response = self.client.get(reverse("course_flow:project-create"))
         self.assertEqual(response.status_code, 200)
 
-#    def test_outcome_create_view(self):
-#        author = get_author()
-#        project = Project.objects.create(author=author)
-#        response = self.client.get(
-#            reverse("course_flow:outcome-create", args=[project.id])
-#        )
-#        self.assertEqual(response.status_code, 302)
-#        user = login(self)
-#        response = self.client.get(
-#            reverse("course_flow:outcome-create", args=[project.id])
-#        )
-#        self.assertEqual(response.status_code, 403)
-#        project2 = Project.objects.create(author=user)
-#        response = self.client.get(
-#            reverse("course_flow:outcome-create", args=[project2.id])
-#        )
-#        self.assertEqual(response.status_code, 200)
+    #    def test_outcome_create_view(self):
+    #        author = get_author()
+    #        project = Project.objects.create(author=author)
+    #        response = self.client.get(
+    #            reverse("course_flow:outcome-create", args=[project.id])
+    #        )
+    #        self.assertEqual(response.status_code, 302)
+    #        user = login(self)
+    #        response = self.client.get(
+    #            reverse("course_flow:outcome-create", args=[project.id])
+    #        )
+    #        self.assertEqual(response.status_code, 403)
+    #        project2 = Project.objects.create(author=user)
+    #        response = self.client.get(
+    #            reverse("course_flow:outcome-create", args=[project2.id])
+    #        )
+    #        self.assertEqual(response.status_code, 200)
 
     def test_program_create_view(self):
         author = get_author()
@@ -310,7 +354,7 @@ class ModelViewTest(TestCase):
         user = login(self)
         base_outcome = make_object("outcome", user)
         workflow = make_object("course", user)
-        OutcomeWorkflow.objects.create(outcome=base_outcome,workflow=workflow)
+        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=workflow)
         self.assertEqual(base_outcome.depth, 0)
         response = self.client.post(
             reverse("course_flow:insert-child"),
@@ -1183,21 +1227,19 @@ class ModelViewTest(TestCase):
         author = get_author()
         activity = make_object("activity", author)
         week = activity.weeks.create(author=author)
-        node = week.nodes.create(author=author,column=activity.columns.first())
+        node = week.nodes.create(
+            author=author, column=activity.columns.first()
+        )
         response = self.client.post(
             reverse("course_flow:insert-sibling"),
             {
                 "objectID": node.id,
                 "parentID": week.id,
-                "parentType": JSONRenderer()
-                .render("week")
-                .decode("utf-8"),
+                "parentType": JSONRenderer().render("week").decode("utf-8"),
                 "throughType": JSONRenderer()
                 .render("nodeweek")
                 .decode("utf-8"),
-                "objectType": JSONRenderer()
-                .render("node")
-                .decode("utf-8"),
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 401)
@@ -1212,9 +1254,7 @@ class ModelViewTest(TestCase):
                 "throughType": JSONRenderer()
                 .render("weekworkflow")
                 .decode("utf-8"),
-                "objectType": JSONRenderer()
-                .render("week")
-                .decode("utf-8"),
+                "objectType": JSONRenderer().render("week").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 401)
@@ -1224,15 +1264,11 @@ class ModelViewTest(TestCase):
             {
                 "objectID": node.id,
                 "parentID": week.id,
-                "parentType": JSONRenderer()
-                .render("week")
-                .decode("utf-8"),
+                "parentType": JSONRenderer().render("week").decode("utf-8"),
                 "throughType": JSONRenderer()
                 .render("nodeweek")
                 .decode("utf-8"),
-                "objectType": JSONRenderer()
-                .render("node")
-                .decode("utf-8"),
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 403)
@@ -1247,18 +1283,18 @@ class ModelViewTest(TestCase):
                 "throughType": JSONRenderer()
                 .render("weekworkflow")
                 .decode("utf-8"),
-                "objectType": JSONRenderer()
-                .render("week")
-                .decode("utf-8"),
+                "objectType": JSONRenderer().render("week").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 403)
-        
+
     def test_insert_sibling(self):
         author = login(self)
         activity = make_object("activity", author)
         week = activity.weeks.create(author=author)
-        node = week.nodes.create(author=author,column=activity.columns.first())
+        node = week.nodes.create(
+            author=author, column=activity.columns.first()
+        )
         base_outcome = activity.outcomes.create(author=author)
         child_outcome = base_outcome.children.create(author=author)
         response = self.client.post(
@@ -1266,19 +1302,15 @@ class ModelViewTest(TestCase):
             {
                 "objectID": node.id,
                 "parentID": week.id,
-                "parentType": JSONRenderer()
-                .render("week")
-                .decode("utf-8"),
+                "parentType": JSONRenderer().render("week").decode("utf-8"),
                 "throughType": JSONRenderer()
                 .render("nodeweek")
                 .decode("utf-8"),
-                "objectType": JSONRenderer()
-                .render("node")
-                .decode("utf-8"),
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Node.objects.all().count(),2)
+        self.assertEqual(Node.objects.all().count(), 2)
         response = self.client.post(
             reverse("course_flow:insert-sibling"),
             {
@@ -1290,13 +1322,11 @@ class ModelViewTest(TestCase):
                 "throughType": JSONRenderer()
                 .render("weekworkflow")
                 .decode("utf-8"),
-                "objectType": JSONRenderer()
-                .render("week")
-                .decode("utf-8"),
+                "objectType": JSONRenderer().render("week").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Week.objects.all().count(),3)
+        self.assertEqual(Week.objects.all().count(), 3)
         response = self.client.post(
             reverse("course_flow:insert-sibling"),
             {
@@ -1308,13 +1338,11 @@ class ModelViewTest(TestCase):
                 "throughType": JSONRenderer()
                 .render("columnworkflow")
                 .decode("utf-8"),
-                "objectType": JSONRenderer()
-                .render("column")
-                .decode("utf-8"),
+                "objectType": JSONRenderer().render("column").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Column.objects.all().count(),5)
+        self.assertEqual(Column.objects.all().count(), 5)
         response = self.client.post(
             reverse("course_flow:insert-sibling"),
             {
@@ -1326,33 +1354,27 @@ class ModelViewTest(TestCase):
                 "throughType": JSONRenderer()
                 .render("outcomeworkflow")
                 .decode("utf-8"),
-                "objectType": JSONRenderer()
-                .render("outcome")
-                .decode("utf-8"),
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Outcome.objects.all().count(),3)
-        self.assertEqual(OutcomeWorkflow.objects.all().count(),2)
+        self.assertEqual(Outcome.objects.all().count(), 3)
+        self.assertEqual(OutcomeWorkflow.objects.all().count(), 2)
         response = self.client.post(
             reverse("course_flow:insert-sibling"),
             {
                 "objectID": child_outcome.id,
                 "parentID": base_outcome.id,
-                "parentType": JSONRenderer()
-                .render("outcome")
-                .decode("utf-8"),
+                "parentType": JSONRenderer().render("outcome").decode("utf-8"),
                 "throughType": JSONRenderer()
                 .render("outcomeoutcome")
                 .decode("utf-8"),
-                "objectType": JSONRenderer()
-                .render("outcome")
-                .decode("utf-8"),
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Outcome.objects.all().count(),4)
-        self.assertEqual(OutcomeOutcome.objects.all().count(),2)
+        self.assertEqual(Outcome.objects.all().count(), 4)
+        self.assertEqual(OutcomeOutcome.objects.all().count(), 2)
 
     def test_new_nodelink_permissions_no_login(self):
         author = get_author()
@@ -1412,7 +1434,7 @@ class ModelViewTest(TestCase):
         NodeWeek.objects.create(node=node, week=week)
         WeekWorkflow.objects.create(week=week, workflow=activity)
         outcome = make_object("outcome", author)
-        OutcomeWorkflow.objects.create(outcome=outcome,workflow=activity)
+        OutcomeWorkflow.objects.create(outcome=outcome, workflow=activity)
         response = self.client.post(
             reverse("course_flow:add-outcome-to-node"),
             {"nodePk": node.id, "outcomePk": outcome.id},
@@ -1429,7 +1451,7 @@ class ModelViewTest(TestCase):
         mynode = make_object("node", myself)
         myweek = make_object("week", myself)
         myactivity = make_object("activity", myself)
-        OutcomeWorkflow.objects.create(outcome=myoutcome,workflow=myactivity)
+        OutcomeWorkflow.objects.create(outcome=myoutcome, workflow=myactivity)
         NodeWeek.objects.create(node=mynode, week=myweek)
         WeekWorkflow.objects.create(week=myweek, workflow=myactivity)
         response = self.client.post(
@@ -1566,7 +1588,7 @@ class ModelViewTest(TestCase):
         # deleting a node
         node2.delete()
         self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
-        
+
     def test_horizontal_outcome_link_on_outcomenode_delete(self):
         author = login(self)
         program = make_object("program", author)
@@ -1579,16 +1601,20 @@ class ModelViewTest(TestCase):
         horizontal_link = OutcomeHorizontalLink.objects.create(
             outcome=course_outcome, parent_outcome=program_outcome
         )
-        outcomenode = OutcomeNode.objects.create(node=node, outcome=program_outcome)
+        outcomenode = OutcomeNode.objects.create(
+            node=node, outcome=program_outcome
+        )
 
         # test basic scenario
         outcomenode.delete()
         self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
-        outcomenode = OutcomeNode.objects.create(node=node, outcome=program_outcome)
+        outcomenode = OutcomeNode.objects.create(
+            node=node, outcome=program_outcome
+        )
         horizontal_link = OutcomeHorizontalLink.objects.create(
             outcome=course_outcome, parent_outcome=program_outcome
         )
-        
+
         # more complex scenario with multiple linked nodes
         node2 = program.weeks.first().nodes.create(author=author)
         node2.linked_workflow = course
@@ -1596,7 +1622,7 @@ class ModelViewTest(TestCase):
         OutcomeNode.objects.create(node=node2, outcome=program_outcome)
         outcomenode.delete()
         self.assertEqual(OutcomeHorizontalLink.objects.count(), 1)
-        
+
     def test_horizontal_outcome_link_on_outcome_delete(self):
         author = login(self)
         program = make_object("program", author)
@@ -1609,12 +1635,13 @@ class ModelViewTest(TestCase):
         horizontal_link = OutcomeHorizontalLink.objects.create(
             outcome=course_outcome, parent_outcome=program_outcome
         )
-        outcomenode = OutcomeNode.objects.create(node=node, outcome=program_outcome)
+        outcomenode = OutcomeNode.objects.create(
+            node=node, outcome=program_outcome
+        )
 
         # test basic scenario
         course_outcome.delete()
         self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
-        
 
     def test_duplicate_self_permissions_no_login_no_authorship(self):
         author = get_author()
@@ -1729,10 +1756,14 @@ class ModelViewTest(TestCase):
         node2 = week.nodes.create(author=author, title="test_title")
         node2.column = activity.columnworkflow_set.first().column
         node2.save()
-        base_outcome = Outcome.objects.create(author=author, title="test_title")
-        child_outcome = Outcome.objects.create(author=author, title="test_child")
-        OutcomeWorkflow.objects.create(workflow=activity,outcome=base_outcome)
-        OutcomeOutcome.objects.create(parent=base_outcome,child=child_outcome)
+        base_outcome = Outcome.objects.create(
+            author=author, title="test_title"
+        )
+        child_outcome = Outcome.objects.create(
+            author=author, title="test_child"
+        )
+        OutcomeWorkflow.objects.create(workflow=activity, outcome=base_outcome)
+        OutcomeOutcome.objects.create(parent=base_outcome, child=child_outcome)
         nodelink = NodeLink.objects.create(
             source_node=node, target_node=node2, source_port=2, target_port=0
         )
@@ -1786,9 +1817,7 @@ class ModelViewTest(TestCase):
             {
                 "objectID": child_outcome.id,
                 "objectType": JSONRenderer().render("outcome").decode("utf-8"),
-                "parentType": JSONRenderer()
-                .render("outcome")
-                .decode("utf-8"),
+                "parentType": JSONRenderer().render("outcome").decode("utf-8"),
                 "throughType": JSONRenderer()
                 .render("outcomeoutcome")
                 .decode("utf-8"),
@@ -1796,9 +1825,11 @@ class ModelViewTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Outcome.objects.all().count(),3)
-        self.assertEqual(OutcomeOutcome.objects.all().count(),2)
-        self.assertEqual(Outcome.objects.filter(depth=1).last().title,"test_child")
+        self.assertEqual(Outcome.objects.all().count(), 3)
+        self.assertEqual(OutcomeOutcome.objects.all().count(), 2)
+        self.assertEqual(
+            Outcome.objects.filter(depth=1).last().title, "test_child"
+        )
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
             {
@@ -1814,11 +1845,12 @@ class ModelViewTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(Outcome.objects.all().count(),6)
-        self.assertEqual(OutcomeOutcome.objects.all().count(),4)
-        self.assertEqual(OutcomeWorkflow.objects.all().count(),2)
-        self.assertEqual(Outcome.objects.filter(depth=0).last().title,"test_title")
-        
+        self.assertEqual(Outcome.objects.all().count(), 6)
+        self.assertEqual(OutcomeOutcome.objects.all().count(), 4)
+        self.assertEqual(OutcomeWorkflow.objects.all().count(), 2)
+        self.assertEqual(
+            Outcome.objects.filter(depth=0).last().title, "test_title"
+        )
 
     def test_publish_permissions_no_login_no_authorship(self):
         author = get_author()
@@ -2061,14 +2093,16 @@ class ModelViewTest(TestCase):
     def test_duplicate_workflow(self):
         author = login(self)
         project = make_object("project", author)
-       
+
         for type in ["activity", "course", "program"]:
             workflow = make_object(type, author)
             WorkflowProject.objects.create(workflow=workflow, project=project)
             base_outcome = Outcome.objects.create(
                 title="new outcome", author=author
             )
-            OutcomeWorkflow.objects.create(workflow=workflow, outcome=base_outcome)
+            OutcomeWorkflow.objects.create(
+                workflow=workflow, outcome=base_outcome
+            )
             child_outcome = base_outcome.children.create(
                 title="child outcome", author=author
             )
@@ -2111,7 +2145,8 @@ class ModelViewTest(TestCase):
             self.assertEqual(second_nodelink.target_node.is_original, False)
             # Check that outcomes have been correctly duplicated
             self.assertEqual(
-                second_nodelink.source_node.outcomes.first(), Outcome.objects.get(parent_outcome=child_outcome)
+                second_nodelink.source_node.outcomes.first(),
+                Outcome.objects.get(parent_outcome=child_outcome),
             )
             if type == "course" or type == "program":
                 self.assertEqual(
@@ -2130,7 +2165,9 @@ class ModelViewTest(TestCase):
             base_outcome = Outcome.objects.create(
                 title="new outcome", author=author
             )
-            OutcomeWorkflow.objects.create(workflow=workflow, outcome=base_outcome)
+            OutcomeWorkflow.objects.create(
+                workflow=workflow, outcome=base_outcome
+            )
             child_outcome = base_outcome.children.create(
                 title="child outcome", author=author
             )
@@ -2162,7 +2199,9 @@ class ModelViewTest(TestCase):
             new_node = Node.objects.get(week__workflow=new_workflow)
             self.assertEqual(new_node.outcomes.count(), 1)
             # Check that outcomes have been correctly duplicated
-            new_child_outcome = Outcome.objects.get(parent_outcome=child_outcome)
+            new_child_outcome = Outcome.objects.get(
+                parent_outcome=child_outcome
+            )
             new_node = Node.objects.get(week__workflow=new_workflow)
             self.assertEqual(new_node.outcomes.first(), new_child_outcome)
             if type == "course" or type == "program":
@@ -2181,7 +2220,9 @@ class ModelViewTest(TestCase):
             base_outcome = Outcome.objects.create(
                 title="new outcome", author=author
             )
-            OutcomeWorkflow.objects.create(workflow=workflow, outcome=base_outcome)
+            OutcomeWorkflow.objects.create(
+                workflow=workflow, outcome=base_outcome
+            )
             child_outcome = base_outcome.children.create(
                 title="child outcome", author=author
             )
@@ -2342,8 +2383,8 @@ class PermissionsTests(TestCase):
         author = get_author()
         user = login(self)
         project = make_object("project", author)
-        workflow = make_object("course",author)
-        WorkflowProject.objects.create(workflow=workflow,project=project)
+        workflow = make_object("course", author)
+        WorkflowProject.objects.create(workflow=workflow, project=project)
         outcome = workflow.outcomes.create(author=author)
         child = outcome.children.create(author=author)
         response = self.client.post(

@@ -4,16 +4,40 @@ export function fail_function(){
     alert("Something went wrong. Please reload the page.")
 }
 
+export function getAddedWorkflowMenu(projectPk,updateFunction){
+    $.post(post_paths.get_possible_added_workflows,{
+        projectPk:JSON.stringify(projectPk),
+    },(data)=>openAddedWorkflowMenu(data,updateFunction));
+}
+
 export function getLinkedWorkflowMenu(nodeData,updateFunction){
     $.post(post_paths.get_possible_linked_workflows,{
         nodePk:JSON.stringify(nodeData.id),
     },(data)=>openLinkedWorkflowMenu(data,updateFunction));
 }
 
+export function getTargetProjectMenu(workflowPk,updateFunction){
+    $.post(post_paths.get_target_projects,{
+        workflowPk:JSON.stringify(workflowPk)
+    },(data)=>openTargetProjectMenu(data,updateFunction));
+}
+
 export function openLinkedWorkflowMenu(response,updateFunction){
     if(response.action=="posted"){
         renderMessageBox(response,"linked_workflow_menu",updateFunction);
     }else alert("Failed to find the parent project. Is this workflow in a project?");
+}
+
+export function openAddedWorkflowMenu(response,updateFunction){
+    if(response.action=="posted"){
+        renderMessageBox(response,"added_workflow_menu",updateFunction);
+    }else alert("Failed to find your workflows.");
+}
+
+export function openTargetProjectMenu(response,updateFunction){
+    if(response.action=="posted"){
+        renderMessageBox(response,"target_project_menu",updateFunction);
+    }else alert("Failed to find potential projects.");
 }
 
 export function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>console.log("success")){
@@ -250,8 +274,6 @@ export function insertChild(objectID,objectType,callBackFunction=()=>console.log
     
 //Called when an object in a list is reordered
 export function insertedAt(objectID,objectType,parentID,parentType,newPosition,throughType,callBackFunction=()=>console.log("success")){
-    console.log(parentID);
-    console.log(parentType);
     $(document).off(throughType+"-dropped.insert");
     $(document).on(throughType+"-dropped.insert",()=>{
         try{
@@ -396,7 +418,6 @@ export function getDisciplines(callBackFunction=()=>console.log("success")){
 
 //set the permission for a user
 export function setUserPermission(user_id,objectID,objectType,permission_type,callBackFunction=()=>console.log("success")){
-    console.log(user_id);
     try{
         $.post(post_paths.set_permission,{
             objectID:JSON.stringify(objectID),
@@ -413,7 +434,6 @@ export function setUserPermission(user_id,objectID,objectType,permission_type,ca
 
 //Get the list of users for a project
 export function getUsersForObject(objectID,objectType,callBackFunction=()=>console.log("success")){
-    console.log(objectType);
     try{
         $.post(post_paths.get_users_for_object,{
             objectID:JSON.stringify(objectID),
@@ -428,7 +448,6 @@ export function getUsersForObject(objectID,objectType,callBackFunction=()=>conso
 
 //Get a list of users, filtered by name
 export function getUserList(filter,callBackFunction=()=>console.log("success")){
-    console.log(filter);
     try{
         $.post(post_paths.get_user_list,{filter:JSON.stringify(filter)}).done(function(data){
             callBackFunction(data);

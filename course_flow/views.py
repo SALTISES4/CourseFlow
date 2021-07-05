@@ -34,7 +34,7 @@ from .decorators import (
     user_is_teacher,
 )
 from .forms import RegistrationForm
-from .models import (
+from .models import (  # OutcomeProject,
     Activity,
     Column,
     ColumnWorkflow,
@@ -49,7 +49,6 @@ from .models import (
     OutcomeHorizontalLink,
     OutcomeNode,
     OutcomeOutcome,
-    #OutcomeProject,
     OutcomeWorkflow,
     Program,
     Project,
@@ -59,7 +58,7 @@ from .models import (
     Workflow,
     WorkflowProject,
 )
-from .serializers import (
+from .serializers import (  # OutcomeProjectSerializerShallow,
     ActivitySerializerShallow,
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
@@ -72,7 +71,6 @@ from .serializers import (
     OutcomeHorizontalLinkSerializerShallow,
     OutcomeNodeSerializerShallow,
     OutcomeOutcomeSerializerShallow,
-#    OutcomeProjectSerializerShallow,
     OutcomeSerializerShallow,
     OutcomeWorkflowSerializerShallow,
     ProjectSerializerShallow,
@@ -352,7 +350,8 @@ def get_project_data_package(user):
     }
     return data_package
 
-def get_my_projects(user):
+
+def get_my_projects(user, add):
     data_package = {
         "owned_projects": {
             "title": _("My Projects"),
@@ -367,7 +366,7 @@ def get_my_projects(user):
                     ).data,
                 }
             ],
-            "add": True,
+            "add": add,
             "duplicate": "copy",
         },
         "edit_projects": {
@@ -380,7 +379,10 @@ def get_my_projects(user):
                         [
                             user_permission.content_object
                             for user_permission in ObjectPermission.objects.filter(
-                                user=user, content_type=ContentType.objects.get_for_model(Project)
+                                user=user,
+                                content_type=ContentType.objects.get_for_model(
+                                    Project
+                                ),
                             )
                         ],
                         many=True,
@@ -392,6 +394,7 @@ def get_my_projects(user):
         },
     }
     return data_package
+
 
 def get_my_templates(user):
     data_package = {
@@ -439,7 +442,8 @@ def get_my_templates(user):
                             for user_permission in ObjectPermission.objects.filter(
                                 user=user, activity__is_strategy=True
                             )
-                        ]+[
+                        ]
+                        + [
                             user_permission.content_object
                             for user_permission in ObjectPermission.objects.filter(
                                 user=user, course__is_strategy=True
@@ -454,6 +458,105 @@ def get_my_templates(user):
         },
     }
     return data_package
+
+
+def get_my_favourites(user):
+    favourites = Favourite.objects.filter(user=user)
+
+    def get_content_objects(favourite_list):
+        return list(map(lambda x: x.content_object, favourite_list))
+
+    print(get_content_objects(favourites))
+    print(favourites.filter(activity__pk__gt=0))
+    print(get_content_objects(favourites.filter(activity__pk__gt=0)))
+
+    data_package = {
+        "favourites_all": {
+            "title": _("My Favourites"),
+            "sections": [
+                {
+                    "title": _(""),
+                    "object_type": "project",
+                    "objects": InfoBoxSerializer(
+                        get_content_objects(favourites),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+        },
+        "favourites_project": {
+            "title": _("Projects"),
+            "sections": [
+                {
+                    "title": _(""),
+                    "object_type": "project",
+                    "objects": InfoBoxSerializer(
+                        get_content_objects(
+                            favourites.filter(project__pk__gt=0)
+                        ),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+        },
+        "favourites_activity": {
+            "title": _("Activities"),
+            "sections": [
+                {
+                    "title": _(""),
+                    "object_type": "activity",
+                    "objects": InfoBoxSerializer(
+                        get_content_objects(
+                            favourites.filter(activity__pk__gt=0)
+                        ),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+        },
+        "favourites_course": {
+            "title": _("Courses"),
+            "sections": [
+                {
+                    "title": _(""),
+                    "object_type": "course",
+                    "objects": InfoBoxSerializer(
+                        get_content_objects(
+                            favourites.filter(course__pk__gt=0)
+                        ),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+        },
+        "favourites_program": {
+            "title": _("Program"),
+            "sections": [
+                {
+                    "title": _(""),
+                    "object_type": "program",
+                    "objects": InfoBoxSerializer(
+                        get_content_objects(
+                            favourites.filter(program__pk__gt=0)
+                        ),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+        },
+    }
+    return data_package
+
 
 def get_data_package_for_project(user, project):
     data_package = {
@@ -493,8 +596,6 @@ def get_data_package_for_project(user, project):
         },
     }
     return data_package
-    
-
 
 
 def get_workflow_data_package(user, project, type_filter, self_only):
@@ -640,49 +741,49 @@ def get_workflow_data_package(user, project, type_filter, self_only):
                 }
             )
 
-#    if type_filter is None:
-#        this_project_sections.append(
-#            {
-#                "title": _("Outcomes"),
-#                "object_type": "outcome",
-#                "objects": InfoBoxSerializer(
-#                    Outcome.objects.filter(project=project),
-#                    many=True,
-#                    context={"user": user},
-#                ).data,
-#            }
-#        )
-#        if not self_only:
-#            other_project_sections.append(
-#                {
-#                    "title": _("Outcomes"),
-#                    "object_type": "outcome",
-#                    "objects": InfoBoxSerializer(
-#                        Outcome.objects.filter(author=user)
-#                        .exclude(project=project)
-#                        .exclude(project=None),
-#                        many=True,
-#                        context={"user": user},
-#                    ).data,
-#                }
-#            )
-#        if not self_only:
-#            all_published_sections.append(
-#                {
-#                    "title": _("Your Favourite Outcomes"),
-#                    "object_type": "outcome",
-#                    "objects": InfoBoxSerializer(
-#                        [
-#                            favourite.content_object
-#                            for favourite in Favourite.objects.filter(
-#                                user=user, outcome__published=True
-#                            )
-#                        ],
-#                        many=True,
-#                        context={"user": user},
-#                    ).data,
-#                }
-#            )
+    #    if type_filter is None:
+    #        this_project_sections.append(
+    #            {
+    #                "title": _("Outcomes"),
+    #                "object_type": "outcome",
+    #                "objects": InfoBoxSerializer(
+    #                    Outcome.objects.filter(project=project),
+    #                    many=True,
+    #                    context={"user": user},
+    #                ).data,
+    #            }
+    #        )
+    #        if not self_only:
+    #            other_project_sections.append(
+    #                {
+    #                    "title": _("Outcomes"),
+    #                    "object_type": "outcome",
+    #                    "objects": InfoBoxSerializer(
+    #                        Outcome.objects.filter(author=user)
+    #                        .exclude(project=project)
+    #                        .exclude(project=None),
+    #                        many=True,
+    #                        context={"user": user},
+    #                    ).data,
+    #                }
+    #            )
+    #        if not self_only:
+    #            all_published_sections.append(
+    #                {
+    #                    "title": _("Your Favourite Outcomes"),
+    #                    "object_type": "outcome",
+    #                    "objects": InfoBoxSerializer(
+    #                        [
+    #                            favourite.content_object
+    #                            for favourite in Favourite.objects.filter(
+    #                                user=user, outcome__published=True
+    #                            )
+    #                        ],
+    #                        many=True,
+    #                        context={"user": user},
+    #                    ).data,
+    #                }
+    #            )
     if project.author == user:
         current_copy_type = "copy"
         other_copy_type = "import"
@@ -721,14 +822,16 @@ def home_view(request):
     }
     return render(request, "course_flow/home.html", context)
 
+
 @login_required
 def myprojects_view(request):
     context = {
         "project_data_package": JSONRenderer()
-        .render(get_my_projects(request.user))
+        .render(get_my_projects(request.user, True))
         .decode("utf-8")
     }
     return render(request, "course_flow/myprojects.html", context)
+
 
 @login_required
 def mytemplates_view(request):
@@ -738,6 +841,17 @@ def mytemplates_view(request):
         .decode("utf-8")
     }
     return render(request, "course_flow/mytemplates.html", context)
+
+
+@login_required
+def myfavourites_view(request):
+    context = {
+        "project_data_package": JSONRenderer()
+        .render(get_my_favourites(request.user))
+        .decode("utf-8")
+    }
+    return render(request, "course_flow/mytemplates.html", context)
+
 
 @login_required
 def import_view(request):
@@ -768,18 +882,14 @@ class ProjectCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Project
     fields = ["title", "description", "published"]
-    template_name = "course_flow/project_detail.html"
+    template_name = "course_flow/project_update.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         project = self.object
         context["workflow_data_package"] = (
             JSONRenderer()
-            .render(
-                get_data_package_for_project(
-                    self.request.user, project, None, False
-                )
-            )
+            .render(get_data_package_for_project(self.request.user, project))
             .decode("utf-8")
         )
         context["project_data"] = (
@@ -787,39 +897,24 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             .render(ProjectSerializerShallow(project).data)
             .decode("utf-8")
         )
+        context["read_only"] = JSONRenderer().render(True).decode("utf-8")
+        if (
+            project.author == self.request.user
+            or ObjectPermission.objects.filter(
+                user=self.request.user,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+            ).count()
+            > 0
+        ):
+            context["read_only"] = JSONRenderer().render(False).decode("utf-8")
 
         return context
 
-
-class ProjectUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
-    model = Project
-    fields = ["title", "description", "published"]
-    template_name = "course_flow/project_update.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(UpdateView, self).get_context_data(**kwargs)
-        project = self.object
-        context["workflow_data_package"] = (
-            JSONRenderer()
-            .render(
-                get_data_package_for_project(
-                    self.request.user, project
-                )
-            )
-            .decode("utf-8")
-        )
-        context["project_data"] = (
-            JSONRenderer()
-            .render(ProjectSerializerShallow(project).data)
-            .decode("utf-8")
-        )
-
-        return context
 
 #
-#class OutcomeCreateView(
+# class OutcomeCreateView(
 #    LoginRequiredMixin, UserCanEditProjectMixin, CreateView
-#):
+# ):
 #    model = Outcome
 #    fields = ["title"]
 #    template_name = "course_flow/outcome_create.html"
@@ -845,7 +940,7 @@ class ProjectUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
 #        )
 #
 #
-#def get_outcome_context_data(outcome, context, user):
+# def get_outcome_context_data(outcome, context, user):
 #    outcomes = get_all_outcomes(outcome, 0)
 #    outcomeoutcomes = []
 #    for oc in outcomes:
@@ -866,7 +961,7 @@ class ProjectUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
 #    return context
 #
 #
-#class OutcomeDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
+# class OutcomeDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 #    model = Outcome
 #    fields = ["title", "description", "published"]
 #    template_name = "course_flow/outcome_detail.html"
@@ -880,7 +975,7 @@ class ProjectUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
 #        return context
 #
 #
-#class OutcomeUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
+# class OutcomeUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
 #    model = Outcome
 #    fields = ["title", "description", "published"]
 #    template_name = "course_flow/outcome_update.html"
@@ -1041,6 +1136,7 @@ def get_workflow_context_data(workflow, context, user):
     data_package["time_choices"] = time_choices
     data_package["outcome_type_choices"] = outcome_type_choices
     data_package["outcome_sort_choices"] = outcome_sort_choices
+
     data_package[
         "strategy_classification_choices"
     ] = strategy_classification_choices
@@ -1052,42 +1148,23 @@ def get_workflow_context_data(workflow, context, user):
     context["data_package"] = (
         JSONRenderer().render(data_package).decode("utf-8")
     )
+    context["read_only"] = JSONRenderer().render(True).decode("utf-8")
+    if (
+        workflow.author == user
+        or ObjectPermission.objects.filter(
+            user=user, permission_type=ObjectPermission.PERMISSION_EDIT
+        ).count()
+        > 0
+    ):
+        context["read_only"] = JSONRenderer().render(False).decode("utf-8")
 
     return context
-
-
-class WorkflowUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
-    model = Workflow
-    fields = ["title", "description"]
-    template_name = "course_flow/workflow_update.html"
-
-    def get_queryset(self):
-        return self.model.objects.select_subclasses()
-
-    def get_object(self):
-        workflow = super().get_object()
-        return Workflow.objects.get_subclass(pk=workflow.pk)
-
-    def get_success_url(self):
-        return reverse(
-            "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
-        )
-
-    def get_context_data(self, **kwargs):
-        context = super(UpdateView, self).get_context_data(**kwargs)
-        workflow = self.get_object()
-
-        context = get_workflow_context_data(
-            workflow, context, self.request.user
-        )
-
-        return context
 
 
 class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Workflow
     fields = ["title", "description"]
-    template_name = "course_flow/workflow_detail.html"
+    template_name = "course_flow/workflow_update.html"
 
     def get_queryset(self):
         return self.model.objects.select_subclasses()
@@ -1110,19 +1187,6 @@ class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         )
 
         return context
-
-
-class WorkflowViewSet(
-    LoginRequiredMixin, UserCanViewMixin, viewsets.ReadOnlyModelViewSet
-):
-    serializer_class = WorkflowSerializerFinder
-    renderer_classes = [JSONRenderer]
-    queryset = Workflow.objects.select_subclasses()
-
-
-class ProgramDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model = Program
-    template_name = "course_flow/program_detail.html"
 
 
 class ProgramCreateView(
@@ -1152,21 +1216,6 @@ class ProgramCreateView(
         return reverse(
             "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
-
-
-class CourseDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model = Course
-    template_name = "course_flow/course_detail.html"
-
-
-# class StaticCourseDetailView(LoginRequiredMixin, DetailView):
-#    model = Course
-#    template_name = "course_flow/course_detail_static.html"
-#
-#
-# class StudentCourseDetailView(LoginRequiredMixin, DetailView):
-#    model = Course
-#    template_name = "course_flow/course_detail_student.html"
 
 
 class CourseCreateView(
@@ -1220,21 +1269,6 @@ class CourseStrategyCreateView(
         return reverse(
             "course_flow:workflow-update", kwargs={"pk": self.object.pk}
         )
-
-
-class ActivityDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model = Activity
-    template_name = "course_flow/activity_detail.html"
-
-
-# class StaticActivityDetailView(LoginRequiredMixin, DetailView):
-#    model = Activity
-#    template_name = "course_flow/activity_detail_static.html"
-#
-#
-# class StudentActivityDetailView(LoginRequiredMixin, DetailView):
-#    model = Activity
-#    template_name = "course_flow/activity_detail_student.html"
 
 
 class ActivityCreateView(
@@ -1484,6 +1518,42 @@ def get_outcome_data(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
+@user_can_view("workflowPk")
+def get_target_projects(request: HttpRequest) -> HttpResponse:
+    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    print(workflow.id)
+    try:
+        data_package = get_my_projects(request.user, False)
+        print(data_package)
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+            "workflow_id": workflow.id,
+        }
+    )
+
+
+@user_can_edit("projectPk")
+def get_possible_added_workflows(request: HttpRequest) -> HttpResponse:
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    try:
+        data_package = get_workflow_data_package(
+            request.user, project, None, False
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+            "project_id": project.id,
+        }
+    )
+
+
 @user_can_edit("nodePk")
 def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
@@ -1522,7 +1592,9 @@ def duplicate_nodelink(
     return new_nodelink
 
 
-def duplicate_node(node: Node, author: User, new_workflow: Workflow, outcome_ids) -> Node:
+def duplicate_node(
+    node: Node, author: User, new_workflow: Workflow, outcome_ids
+) -> Node:
     if new_workflow is not None:
         for new_column in new_workflow.columns.all():
             if (
@@ -1552,7 +1624,9 @@ def duplicate_node(node: Node, author: User, new_workflow: Workflow, outcome_ids
 
     for outcome in node.outcomes.all():
         if new_workflow is not None:
-            new_outcome = Outcome.objects.get(parent_outcome=outcome,id__in=outcome_ids)
+            new_outcome = Outcome.objects.get(
+                parent_outcome=outcome, id__in=outcome_ids
+            )
         else:
             new_outcome = outcome
         OutcomeNode.objects.create(
@@ -1564,7 +1638,9 @@ def duplicate_node(node: Node, author: User, new_workflow: Workflow, outcome_ids
     return new_node
 
 
-def duplicate_week(week: Week, author: User, new_workflow: Workflow, outcome_ids) -> Week:
+def duplicate_week(
+    week: Week, author: User, new_workflow: Workflow, outcome_ids
+) -> Week:
     new_week = Week.objects.create(
         title=week.title,
         description=week.description,
@@ -1629,15 +1705,15 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
                 column=column, workflow=workflow
             ).rank,
         )
-        
+
     for week in workflow.weeks.all():
         WeekWorkflow.objects.create(
-            week=duplicate_week(week, author, new_workflow, new_workflow.get_all_outcome_ids()),
+            week=duplicate_week(
+                week, author, new_workflow, new_workflow.get_all_outcome_ids()
+            ),
             workflow=new_workflow,
             rank=WeekWorkflow.objects.get(week=week, workflow=workflow).rank,
         )
-        
-    
 
     # Handle all the nodelinks. These need to be handled here because they
     # potentially span weeks
@@ -1668,6 +1744,7 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
 def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     project = Project.objects.get(pk=request.POST.get("projectPk"))
+    print("attempting to duplicate a workflow into a project")
     try:
         clone = duplicate_workflow(workflow, request.user)
         WorkflowProject.objects.create(project=project, workflow=clone)
@@ -1727,9 +1804,9 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
     return new_outcome
 
 
-#@user_can_view("outcomePk")
-#@user_can_edit("workflowPk")
-#def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
+# @user_can_view("outcomePk")
+# @user_can_edit("workflowPk")
+# def duplicate_outcome_ajax(request: HttpRequest) -> HttpResponse:
 #    outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
 #    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
 #    try:
@@ -1759,14 +1836,14 @@ def duplicate_project(project: Project, author: User) -> Project:
         parent_project=project,
     )
 
-#    for outcome in project.outcomes.all():
-#        OutcomeProject.objects.create(
-#            outcome=duplicate_outcome(outcome, author),
-#            project=new_project,
-#            rank=OutcomeProject.objects.get(
-#                outcome=outcome, project=project
-#            ).rank,
-#        )
+    #    for outcome in project.outcomes.all():
+    #        OutcomeProject.objects.create(
+    #            outcome=duplicate_outcome(outcome, author),
+    #            project=new_project,
+    #            rank=OutcomeProject.objects.get(
+    #                outcome=outcome, project=project
+    #            ).rank,
+    #        )
 
     for workflow in project.workflows.all():
         WorkflowProject.objects.create(
@@ -1816,6 +1893,8 @@ def cleanup_workflow_post_duplication(workflow, project):
             ).last()
             node.linked_workflow = new_linked_workflow
             node.save()
+
+
 #        for outcomenode in node.outcomenode_set.all():
 #            new_outcome = outcomes_set.filter(
 #                parent_outcome=outcomenode.outcome
@@ -2243,23 +2322,27 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             newmodel = duplicate_outcome(model, request.user)
             if parent_type == "outcome":
                 parent = Outcome.objects.get(id=parent_id)
-                through = OutcomeOutcome.objects.get(child=model, parent=parent)
+                through = OutcomeOutcome.objects.get(
+                    child=model, parent=parent
+                )
                 newthroughmodel = OutcomeOutcome.objects.create(
                     parent=parent, child=newmodel, rank=through.rank + 1
                 )
                 new_through_serialized = OutcomeOutcomeSerializerShallow(
                     newthroughmodel
                 ).data
-            elif parent_type =="workflow":
+            elif parent_type == "workflow":
                 parent = Workflow.objects.get(id=parent_id)
-                through = OutcomeWorkflow.objects.get(outcome=model, workflow=parent)
+                through = OutcomeWorkflow.objects.get(
+                    outcome=model, workflow=parent
+                )
                 newthroughmodel = OutcomeWorkflow.objects.create(
                     workflow=parent, outcome=newmodel, rank=through.rank + 1
                 )
                 new_through_serialized = OutcomeWorkflowSerializerShallow(
                     newthroughmodel
                 ).data
-            
+
             new_model_serialized = OutcomeSerializerShallow(newmodel).data
             outcomes = get_all_outcomes(newmodel, 0)
             outcomeoutcomes = []
@@ -2451,7 +2534,7 @@ def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
         node = Node.objects.get(id=node_id)
         outcome = Outcome.objects.get(id=outcome_id)
         if OutcomeNode.objects.filter(node=node, outcome=outcome).count() > 0:
-            return JsonResponse({"action": "posted","outcomenode":-1})
+            return JsonResponse({"action": "posted", "outcomenode": -1})
         outcomenode = OutcomeNode.objects.create(outcome=outcome, node=node)
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -2473,8 +2556,15 @@ def add_parent_outcome_to_outcome(request: HttpRequest) -> HttpResponse:
     try:
         outcome = Outcome.objects.get(id=outcome_id)
         parent_outcome = Outcome.objects.get(id=parent_id)
-        if OutcomeHorizontalLink.objects.filter(parent_outcome=parent_outcome, outcome=outcome).count() > 0:
-            return JsonResponse({"action": "posted","outcomehorizontallink":-1})
+        if (
+            OutcomeHorizontalLink.objects.filter(
+                parent_outcome=parent_outcome, outcome=outcome
+            ).count()
+            > 0
+        ):
+            return JsonResponse(
+                {"action": "posted", "outcomehorizontallink": -1}
+            )
         outcomehorizontallink = OutcomeHorizontalLink.objects.create(
             outcome=outcome, parent_outcome=parent_outcome
         )
@@ -2756,14 +2846,14 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 ),
             )
             id_dict["project"][project["id"]] = new_project
-#        for outcome in json_data["outcome"]:
-#            new_outcome = Outcome.objects.create(
-#                author=request.user,
-#                title=bleach_sanitizer(
-#                    outcome["title"], tags=bleach_allowed_tags
-#                ),
-#            )
-#            id_dict["outcome"][outcome["id"]] = new_outcome
+        #        for outcome in json_data["outcome"]:
+        #            new_outcome = Outcome.objects.create(
+        #                author=request.user,
+        #                title=bleach_sanitizer(
+        #                    outcome["title"], tags=bleach_allowed_tags
+        #                ),
+        #            )
+        #            id_dict["outcome"][outcome["id"]] = new_outcome
         for activity in json_data["activity"]:
             new_activity = Activity.objects.create(
                 author=request.user,
@@ -2871,20 +2961,20 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                     project=project_model,
                     workflow=id_dict["workflow"][program_id],
                 )
-#            for outcome_id in project["outcomes"]:
-#                OutcomeProject.objects.create(
-#                    project=project_model,
-#                    outcome=id_dict["outcome"][outcome_id],
-#                )
+        #            for outcome_id in project["outcomes"]:
+        #                OutcomeProject.objects.create(
+        #                    project=project_model,
+        #                    outcome=id_dict["outcome"][outcome_id],
+        #                )
 
-#        for outcome in json_data["outcome"]:
-#            outcome_model = id_dict["outcome"][outcome["id"]]
-#            for i, child in enumerate(outcome["children"]):
-#                OutcomeOutcome.objects.create(
-#                    parent=outcome_model,
-#                    child=id_dict["outcome"][child],
-#                    rank=i,
-#                )
+        #        for outcome in json_data["outcome"]:
+        #            outcome_model = id_dict["outcome"][outcome["id"]]
+        #            for i, child in enumerate(outcome["children"]):
+        #                OutcomeOutcome.objects.create(
+        #                    parent=outcome_model,
+        #                    child=id_dict["outcome"][child],
+        #                    rank=i,
+        #                )
 
         for workflow in (
             json_data["activity"] + json_data["course"] + json_data["program"]
@@ -2923,12 +3013,12 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             node_model.has_autolink = node_model.node_type == 0
             node_model.save()
 
-#        for outcomenode in json_data["outcomenode"]:
-#            OutcomeNode.objects.create(
-#                outcome=id_dict["outcome"][outcomenode["outcome"]],
-#                node=id_dict["node"][outcomenode["node"]],
-#                degree=outcomenode["degree"],
-#            )
+        #        for outcomenode in json_data["outcomenode"]:
+        #            OutcomeNode.objects.create(
+        #                outcome=id_dict["outcome"][outcomenode["outcome"]],
+        #                node=id_dict["node"][outcomenode["node"]],
+        #                degree=outcomenode["degree"],
+        #            )
 
         for nodelink in json_data["nodelink"]:
             NodeLink.objects.create(
