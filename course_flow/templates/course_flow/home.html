@@ -9,7 +9,54 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id="content-container" class="body-wrapper"></div>
+<div id="content-container" class="body-wrapper">
+    <div class="home-menu-container">
+        <h1>CourseFlow</h1>
+        <hr>
+        <p>Welcome to CourseFlow, a course, curriculum, and activity planning tool by SALTISE.</p>
+        <h3>Quick Links:</h3>
+        <div class="home-menu-grid">
+            <div class="home-item">
+                <a class="hover-shade" href='{% url "course_flow:my-projects" %}'><h4>My Projects</h4>
+                <p>Explore and create your projects</p></a>
+                {% for project in user.project_set.all|slice:":7" %}
+                  <a class="hover-shade"
+                        href="{% url 'course_flow:project-update' pk=project.pk %}"
+                     >
+                    {{ project.title }}
+                  </a>
+                {% endfor %}
+                <a class="hover-shade" href="{% url 'course_flow:project-create' %}">+Create new project</a>
+            </div>
+            <div class="home-item">
+                <a class="hover-shade" href='{% url "course_flow:my-favourites" %}'><h4>My Favourites</h4>
+                <p>Your favourited items</p></a>
+                {% for favourite in user.favourite_set.all|slice:":5" %}
+                  <a class="panel-favourite hover-shade"
+                     {% if favourite.content_type == "project" %}
+                        href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
+                     {% else %}
+                        href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
+                     {% endif %}
+                     >
+                    {{ favourite.content_object }}
+                  </a>
+                {% endfor %}
+            </div>
+            <div class="home-item">
+                <a class="hover-shade" href='{% url "course_flow:my-projects" %}'><h4>Explore</h4>
+                <p>Explore published material by other users</p>
+                <div class="home-item-icon-container">
+                <img src = "{% static 'course_flow/img/images_svg/explore.svg' %}"/>
+                    </div>
+                </a>
+                
+            </div>
+        </div>
+    </div>
+
+
+</div>
 <!-- -->
 {% endblock %}
 <!-- -->
@@ -31,16 +78,10 @@
       activity:"{% url 'course_flow:activity-strategy-create' %}",
       course:"{% url 'course_flow:course-strategy-create' %}"
   };
-  const data_package = {{project_data_package|safe}}
-  var home_renderer;
   const user_id = {{ user.id }};
   const read_only=false;
-  window.addEventListener("load",function(){
-      home_renderer = new renderers.HomeRenderer(data_package);
-      $(document).ajaxError(renderers.fail_function);
-      home_renderer.render($("#content-container"));
-  });
 
+  
 
 
 

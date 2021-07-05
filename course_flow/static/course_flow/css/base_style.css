@@ -319,7 +319,49 @@ button:hover{
     margin-top:20px;
 }
 
+.home-menu-container{
+    padding:70px;
+    background:white;
+    height:calc(100% - 100px);
+}
 
+.home-menu-container hr{
+    margin-left:0;
+    margin-right:0;
+}
+
+.home-menu-grid{
+    display:flex;
+    flex-wrap:wrap;
+}
+
+.home-item{
+    border-radius:10px;
+    border:1px solid lightgrey;
+    padding:10px;
+    margin-right:10px;
+    width:300px;
+}
+
+.home-item a{
+    display:block;
+    width:100%;
+}
+
+.home-item h4{
+    text-decoration: underline;
+}
+
+.home-item-icon-container{
+    border-radius:10px;
+    background:#1976bc;
+    width:fit-content;
+    margin-left:126px;
+}
+
+.home-item-icon-container img{
+    width:48px;
+}
 
 .home-tabs{
     
