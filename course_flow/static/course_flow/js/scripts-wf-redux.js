@@ -4,14 +4,14 @@ import * as Redux from "redux";
 import * as React from "react";
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
-import {ComponentJSON} from "./ComponentJSON.js";
-import WorkflowView from"./WorkflowView.js";
-import {ProjectMenu, WorkflowGridMenu, ExploreMenu, renderMessageBox} from"./MenuComponents.js";
-import {WorkflowView_Outcome} from"./WorkflowView.js";
-import * as Constants from "./Constants.js";
-import * as Reducers from "./Reducers.js";
-import OutcomeTopView from './OutcomeTopView.js';
-import OutcomeEditView from './OutcomeEditView.js';
+import {ComponentJSON} from "./ComponentJSON";
+import {WorkflowBaseView} from"./WorkflowView";
+import {ProjectMenu, WorkflowGridMenu, ExploreMenu, renderMessageBox} from"./MenuComponents";
+import {WorkflowView_Outcome} from"./WorkflowView";
+import * as Constants from "./Constants";
+import * as Reducers from "./Reducers";
+import OutcomeTopView from './OutcomeTopView';
+import {getWorkflowParentData, getWorkflowChildData} from './PostFunctions';
 
 export {Loader} from './Constants';
 export {fail_function} from './PostFunctions';
@@ -140,7 +140,11 @@ export class WorkflowRenderer{
         this.read_only = data_package.read_only;
     }
     
-    render(container,view_type){
+    render(container,view_type="workflowview"){
+        console.log("rendering a view");
+        this.view_type=view_type;
+        reactDom.render(null,container[0]);
+        let store = this.store;
         var renderer = this;
         this.initial_loading=true;
         this.container = container;
@@ -178,24 +182,42 @@ export class WorkflowRenderer{
     
         this.selection_manager = new SelectionManager(); 
         this.tiny_loader = new TinyLoader(container);
-        if(view_type=="outcometable")reactDom.render(
-            <Provider store = {this.store}>
-                <WorkflowView_Outcome renderer={this}/>
-            </Provider>,
-            container[0]
-        );
-        else if(view_type=="outcomeedit")reactDom.render(
-        <Provider store = {this.store}>
-                <OutcomeEditView renderer={this}/>
-            </Provider>,
-            container[0]
-        );
-        else reactDom.render(
-            <Provider store = {this.store}>
-                <WorkflowView renderer={this}/>
-            </Provider>,
-            container[0]
-        );
+        console.log("view type is "+view_type);
+        if(view_type=="outcomeedit"){
+            //get additional data about parent workflow prior to render
+            getWorkflowParentData(this.initial_workflow_data.workflow.id,(response)=>{
+                console.log(response)
+                store.dispatch(Reducers.replaceStoreData(response.data_package));
+                console.log(store.getState());
+                reactDom.render(
+                    <Provider store = {store}>
+                        <WorkflowBaseView view_type={view_type} renderer={this}/>
+                    </Provider>,
+                    container[0]
+                );
+            });
+            
+        }else if(view_type=="horizontaloutcometable"){
+            //get additional data about child workflows prior to render
+            getWorkflowChildData(this.initial_workflow_data.workflow.id,(response)=>{
+                console.log(response)
+                store.dispatch(Reducers.replaceStoreData(response.data_package));
+                console.log(store.getState());
+                reactDom.render(
+                    <Provider store = {store}>
+                        <WorkflowBaseView view_type={view_type} renderer={this}/>
+                    </Provider>,
+                    container[0]
+                );
+            });
+        }else {
+            reactDom.render(
+                <Provider store = {this.store}>
+                    <WorkflowBaseView view_type={view_type} renderer={this}/>
+                </Provider>,
+                container[0]
+            );
+        }
         
     }
     

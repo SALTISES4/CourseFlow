@@ -24,11 +24,6 @@ def course_flow_patterns():
             views.ProjectDetailView.as_view(),
             name="project-update",
         ),
-        #        url(
-        #            r"^outcome/(?P<pk>[0-9]+)/update/$",
-        #            views.OutcomeUpdateView.as_view(),
-        #            name="outcome-update",
-        #        ),
         url(
             r"^workflow/(?P<pk>[0-9]+)/$",
             views.WorkflowDetailView.as_view(),
@@ -53,11 +48,6 @@ def course_flow_patterns():
             views.duplicate_workflow_ajax,
             name="duplicate-workflow",
         ),
-        #        url(
-        #            r"^project/duplicate-outcome/$",
-        #            views.duplicate_outcome_ajax,
-        #            name="duplicate-outcome",
-        #        ),
         url(
             r"^project/duplicate-project/$",
             views.duplicate_project_ajax,
@@ -154,6 +144,16 @@ def course_flow_patterns():
             name="get-workflow-data",
         ),
         url(
+            r"^workflow/get-workflow-parent-data/",
+            views.get_workflow_parent_data,
+            name="get-workflow-parent-data",
+        ),
+        url(
+            r"^workflow/get-workflow-child-data/",
+            views.get_workflow_child_data,
+            name="get-workflow-child-data",
+        ),
+        url(
             r"^project/get-project-data/",
             views.get_project_data,
             name="get-project-data",
@@ -178,16 +178,6 @@ def course_flow_patterns():
             views.ProjectCreateView.as_view(),
             name="project-create",
         ),
-        #        url(
-        #            r"^outcome/(?P<projectPk>[0-9]+)/create/$",
-        #            views.OutcomeCreateView.as_view(),
-        #            name="outcome-create",
-        #        ),
-        #        url(
-        #            r"^outcome/(?P<pk>[0-9]+)/$",
-        #            views.OutcomeDetailView.as_view(),
-        #            name="outcome-detail-view",
-        #        ),
         url(
             r"^program/(?P<projectPk>[0-9]+)/create/$",
             views.ProgramCreateView.as_view(),

@@ -406,6 +406,32 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
 }
 
 //Get the list of possible disciplines
+export function getWorkflowParentData(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_workflow_parent_data,{
+            workflowPk:JSON.stringify(workflowPk)
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the list of possible disciplines
+export function getWorkflowChildData(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_workflow_child_data,{
+            workflowPk:JSON.stringify(workflowPk)
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the list of possible disciplines
 export function getDisciplines(callBackFunction=()=>console.log("success")){
     try{
         $.get(get_paths.get_disciplines).done(function(data){

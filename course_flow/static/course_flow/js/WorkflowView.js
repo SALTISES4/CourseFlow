@@ -14,28 +14,17 @@ import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
+import OutcomeEditView from './OutcomeEditView';
 
 
-
-//Basic component representing the workflow
-class WorkflowView extends ComponentJSON{
-    
-    constructor(props){
-        super(props);
-        this.objectType="workflow";
-        this.state={};
-    }
+//Container for common elements for workflows
+class WorkflowBaseViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
         let renderer = this.props.renderer;
         let selection_manager = renderer.selection_manager;
-        var columnworkflows = data.columnworkflow_set.map((columnworkflow)=>
-            <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={data.id} renderer={renderer}/>
-        );
-        var weekworkflows = data.weekworkflow_set.map((weekworkflow)=>
-            <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
-        );
+        
         var selector = this;
         let publish_icon = iconpath+'view_none.svg';
         let publish_text = "PRIVATE";
@@ -45,62 +34,71 @@ class WorkflowView extends ComponentJSON{
         }
         let share;
         if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
+        console.log("rendering base view with type "+renderer.view_type);
+        let workflow_content = (
+            <WorkflowView renderer={renderer}/>
+        );
+        if(renderer.view_type=="outcometable")workflow_content=(
+            <WorkflowView_Outcome renderer={renderer}/>
+        );
+        if(renderer.view_type=="outcomeedit")workflow_content=(
+            <OutcomeEditView renderer={renderer}/>
+        );
+        if(renderer.view_type=="horizontaloutcometable")workflow_content=(
+            <div></div>
+        );
         
-        
-        
+        let view_buttons = [
+            {type:"workflowview",name:"Workflow View"},
+            {type:"outcomeedit",name:"Edit Outcomes"},
+            {type:"outcometable",name:"Outcomes Table"},
+            {type:"horizontaloutcometable",name:"Child Outcome Table"}
+        ].map(
+            (item)=>{
+                let view_class = "hover-shade";
+                if(item.type==renderer.view_type){
+                    view_class += " active";
+                }
+                return <div class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</div>;
+            }
+        );
+            
+            
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
-                <div class = "workflow-container">
-                    <div class="workflow-details">
-                        <TitleText text={data.description} defaultText={"Add a description"}/>
-                        {reactDom.createPortal(
-                            <div>{data.title||"Unnamed Workflow"}</div>,
-                            $("#workflowtitle")[0]
-                        )}
-                        {this.addEditable(data)}
-                        {reactDom.createPortal(
-                            share,
-                            $("#floatbar")[0]
-                        )}
-                        {reactDom.createPortal(
-                            <div class="workflow-publication">
-                                <img src={publish_icon}/><div>{publish_text}</div>
-                            </div>,
-                            $("#floatbar")[0]
-                        )}
-                        {reactDom.createPortal(
-                        <div class="topdropwrapper" title="Show/Hide Legend">
-                            <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
-                        </div>,
-                        $("#viewbar")[0]
-                        )}
-                        {!read_only &&
-                            reactDom.createPortal(
-                                <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-                                    <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
-                                </div>,
-                                $("#viewbar")[0]
-                            )
-                        }
-                        {this.state.show_legend && 
-                            <WorkflowLegend toggle={this.toggleLegend.bind(this)}/>
-                        }
-                        <div class="column-row" id={data.id+"-column-block"}>
-                            {columnworkflows}
-                        </div>
-                        <div class="week-block" id={data.id+"-week-block"}>
-                            {weekworkflows}
-                        </div>
-                        <svg class="workflow-canvas" width="100%" height="100%">
-                            <defs>
-                                <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5"
-                                    markerWidth="4" markerHeight="4"
-                                    orient="auto-start-reverse">
-                                  <path d="M 0 0 L 10 5 L 0 10 z" />
-                                </marker>
-                            </defs>
-                        </svg>
+                <div class="workflow-header">
+                    <TitleText text={data.description} defaultText={"Add a description"}/>
+                    <div class="workflow-view-select">
+                        {view_buttons}
                     </div>
+                </div>
+                <div class = "workflow-container">
+                    {reactDom.createPortal(
+                        <div>{data.title||"Unnamed Workflow"}</div>,
+                        $("#workflowtitle")[0]
+                    )}
+                    {this.addEditable(data)}
+                    {reactDom.createPortal(
+                        share,
+                        $("#floatbar")[0]
+                    )}
+                    {reactDom.createPortal(
+                        <div class="workflow-publication">
+                            <img src={publish_icon}/><div>{publish_text}</div>
+                        </div>,
+                        $("#floatbar")[0]
+                    )}
+                    {!read_only &&
+                        reactDom.createPortal(
+                            <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
+                                <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
+                            </div>,
+                            $("#viewbar")[0]
+                        )
+                    }
+                    
+                    {workflow_content}
+                    
                     {!read_only &&
                         <NodeBar renderer={this.props.renderer}/>
                     }
@@ -112,12 +110,82 @@ class WorkflowView extends ComponentJSON{
                     }
                 </div>
             </div>
+        
         );
+    }
+                     
+    changeView(type){
+        console.log("rendering "+type);
+        this.props.renderer.render(this.props.renderer.container,type);
     }
                      
     openEdit(evt){
         this.props.renderer.selection_manager.changeSelection(evt,this);
     }
+    
+}
+const mapWorkflowStateToProps = state=>({
+    data:state.workflow
+})
+const mapWorkflowDispatchToProps = {};
+export const WorkflowBaseView = connect(
+    mapWorkflowStateToProps,
+    null
+)(WorkflowBaseViewUnconnected)
+
+
+//Basic component representing the workflow
+class WorkflowViewUnconnected extends ComponentJSON{
+    
+    constructor(props){
+        super(props);
+        this.objectType="workflow";
+        this.state={};
+    }
+    
+    render(){
+        let data = this.props.data;
+        let renderer = this.props.renderer;
+        var columnworkflows = data.columnworkflow_set.map((columnworkflow)=>
+            <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={data.id} renderer={renderer}/>
+        );
+        var weekworkflows = data.weekworkflow_set.map((weekworkflow)=>
+            <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
+        );
+        
+        
+        
+        return(
+            <div class="workflow-details">
+                {reactDom.createPortal(
+                <div class="topdropwrapper" title="Show/Hide Legend">
+                    <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
+                </div>,
+                $("#viewbar")[0]
+                )}
+                {this.state.show_legend && 
+                    <WorkflowLegend toggle={this.toggleLegend.bind(this)}/>
+                }
+                <div class="column-row" id={data.id+"-column-block"}>
+                    {columnworkflows}
+                </div>
+                <div class="week-block" id={data.id+"-week-block"}>
+                    {weekworkflows}
+                </div>
+                <svg class="workflow-canvas" width="100%" height="100%">
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5"
+                            markerWidth="4" markerHeight="4"
+                            orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" />
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        );
+    }
+                     
+    
                      
     postMountFunction(){
         this.makeSortable($(".column-row"),
@@ -150,14 +218,10 @@ class WorkflowView extends ComponentJSON{
         }
     }
 }
-const mapWorkflowStateToProps = state=>({
-    data:state.workflow
-})
-const mapWorkflowDispatchToProps = {};
-export default connect(
+export const WorkflowView =  connect(
     mapWorkflowStateToProps,
     null
-)(WorkflowView)
+)(WorkflowViewUnconnected)
 
 
 
@@ -292,61 +356,17 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
         var selector = this;
         let renderer = this.props.renderer;
         let selection_manager = renderer.selection_manager;
-        let publish_icon = iconpath+'view_none.svg';
-        let publish_text = "PRIVATE";
-        if(data.published){
-            publish_icon = iconpath+'published.svg';
-            publish_text = "PUBLISHED";
-        }
-        let share;
-        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
+        
         
         return(
-            <div id="workflow-wrapper" class="workflow-wrapper">
-                <div class = "workflow-container">
-                    <div class="workflow-details">
-                        <TitleText text={data.description} defaultText={"Add a description"}/>
-                        {reactDom.createPortal(
-                            <div>{data.title||"Unnamed Workflow"}</div>,
-                            $("#workflowtitle")[0]
-                        )}
-                        {this.addEditable(data)}
-                        {reactDom.createPortal(
-                            share,
-                            $("#floatbar")[0]
-                        )}
-                        {reactDom.createPortal(
-                            <div class="workflow-publication">
-                                <img src={publish_icon}/><div>{publish_text}</div>
-                            </div>,
-                            $("#floatbar")[0]
-                        )}
-                        {reactDom.createPortal(
-                        <div class="topdropwrapper" title="Show/Hide Legend">
-                            <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
-                        </div>,
-                        $("#viewbar")[0]
-                        )}
-                        {this.state.show_legend && 
-                            <WorkflowOutcomeLegend renderer={renderer} toggle={this.toggleLegend.bind(this)}/>
-                        }
-                        {!read_only &&
-                            reactDom.createPortal(
-                                <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-                                    <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
-                                </div>,
-                                $("#viewbar")[0]
-                            )
-                        }
-                        <WorkflowOutcomeView renderer={renderer} outcomes_type={data.outcomes_type}/>
-                    </div>
-                    {!read_only &&
-                        <NodeBar renderer={renderer} outcomes_view={true}/>
-                    }
-                    {!read_only &&
-                        <OutcomeBar  renderer={renderer} outcomes_view={true}/>
-                    }
-                </div>
+            <div class="workflow-details">
+                {reactDom.createPortal(
+                    <div class="topdropwrapper" title="Show/Hide Legend">
+                        <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
+                    </div>,
+                    $("#viewbar")[0]
+                )}
+                <WorkflowOutcomeView renderer={renderer} outcomes_type={data.outcomes_type}/>
             </div>
         );
     }

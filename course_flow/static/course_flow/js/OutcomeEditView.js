@@ -21,44 +21,23 @@ class OutcomeEditView extends ComponentJSON{
     render(){
         let data = this.props.data;
         var selector = this;
-        let share;
-        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
         
         let outcomes = data.outcomeworkflow_set.map(outcomeworkflow=>
             <OutcomeWorkflowView objectID={outcomeworkflow} parentID={data.id} renderer={this.props.renderer}/>
         ); 
             
         return(
-            <div id="outcome-wrapper" class="workflow-wrapper">
-                <div class = "workflow-container">
-                    <button onClick={this.returnToWorkflow.bind(this)}>Return</button>
-                    <div class="workflow-details">
-                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,selector)}}/>
-                        {reactDom.createPortal(
-                        share,
-                        $("#floatbar")[0]
-                        )}
-                        <div class="outcome-edit">
-                            <h4>For This Workflow</h4>
-                            {outcomes}
-                            <button id="add-new-outcome" onClick={this.addNew.bind(this)}>Add new</button>
-                        </div>
-                    </div>
+            <div class="workflow-details">
+                <div class="outcome-edit">
+                    <h4>For This Workflow</h4>
+                    {outcomes}
+                    <button id="add-new-outcome" onClick={this.addNew.bind(this)}>Add new</button>
+                    <ParentOutcomeBar/>
                 </div>
-                {this.addEditable(data)}
-                <ParentOutcomeBar/>
             </div>
         );
     }
     
-    returnToWorkflow(){
-        let outcomeview = $("#outcomeviewbar .switch input").is(":checked");
-        if(outcomeview){
-            this.props.renderer.render($("#container"),"outcometable");
-        }else{
-            this.props.renderer.render($("#container"));
-        }
-    }
     
     addNew(){
         newOutcome(this.props.data.id,(response)=>{this.props.dispatch(newOutcomeAction(response))});

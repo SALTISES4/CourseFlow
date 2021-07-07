@@ -125,9 +125,19 @@ export const gridMenuItemAdded = (response_data) => {
     }
 }
 
+export const replaceStoreData = (data_package) =>{
+    return {
+        type: 'replaceStoreData',
+        payload: data_package
+    }
+}
+
 
 export function workflowReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.workflow)return action.payload.workflow;
+            return state;
         case 'columnworkflow/movedTo':
             var new_columnworkflow_set = state.columnworkflow_set.slice();
             for(var i=0;i<new_columnworkflow_set.length;i++){
@@ -242,6 +252,9 @@ export function workflowReducer(state={},action){
 
 export function outcomeworkflowReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.outcomeworkflow)return action.payload.outcomeworkflow;
+            return state;
         case 'outcome_base/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].outcome==action.payload.id){
@@ -266,6 +279,9 @@ export function outcomeworkflowReducer(state={},action){
 
 export function columnworkflowReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.columnworkflow)return action.payload.columnworkflow;
+            return state;
         case 'column/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parent_id){
@@ -298,6 +314,9 @@ export function columnworkflowReducer(state={},action){
 
 export function columnReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.column)return action.payload.column;
+            return state;
         case 'column/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
@@ -344,6 +363,9 @@ export function columnReducer(state={},action){
 
 export function weekworkflowReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.weekworkflow)return action.payload.weekworkflow;
+            return state;
         case 'week/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parent_id){
@@ -367,6 +389,9 @@ export function weekworkflowReducer(state={},action){
 }
 export function weekReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.week)return action.payload.week;
+            return state;
         case 'nodeweek/movedTo':
             let old_parent,old_parent_index,new_parent,new_parent_index;
             for(var i=0;i<state.length;i++){
@@ -487,6 +512,9 @@ export function weekReducer(state={},action){
 }
 export function nodeweekReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.nodeweek)return action.payload.nodeweek;
+            return state;
         case 'node/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parent_id){
@@ -527,6 +555,9 @@ export function nodeweekReducer(state={},action){
 }
 export function nodeReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.node)return action.payload.node;
+            return state;
         case 'column/deleteSelf':
             var new_state = state.slice();
             var new_column;
@@ -686,6 +717,9 @@ export function nodeReducer(state={},action){
 }
 export function nodelinkReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.nodelink)return action.payload.nodelink;
+            return state;
         case 'node/insertBelow':
         case 'node/newNode':
         case 'node/deleteSelf':
@@ -715,6 +749,9 @@ export function nodelinkReducer(state={},action){
 }
 export function outcomeReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.outcome)return action.payload.outcome;
+            return state;
         case 'outcomeoutcome/movedTo':
             let old_parent, old_parent_index,new_parent,new_parent_index;
             for(var i=0;i<state.length;i++){
@@ -837,6 +874,9 @@ export function outcomeReducer(state={},action){
 }
 export function outcomeOutcomeReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.outcomeoutcome)return action.payload.outcomeoutcome;
+            return state;
         case 'outcome/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parent_id){
@@ -870,6 +910,9 @@ export function outcomeOutcomeReducer(state={},action){
 }
 export function outcomeNodeReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.outcomenode)return action.payload.outcomenode;
+            return state;
         case 'outcome/addToNode':
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomenode==-1)return state;
@@ -914,19 +957,47 @@ export function outcomeNodeReducer(state={},action){
     }
 }
 export function parentOutcomeReducer(state={},action){
-    return state;
+    switch(action.type){
+        case 'replaceStoreData':
+            console.log("Replacing store data");
+            if(action.payload.parent_outcome)return action.payload.parent_outcome;
+            return state;
+        default:
+            return state;
+    }
 }
 export function parentOutcomeoutcomeReducer(state={},action){
-    return state;
+    switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.parent_outcomeoutcome)return action.payload.parent_outcomeoutcome;
+            return state;
+        default:
+            return state;
+    }
 }
 export function parentOutcomeworkflowReducer(state={},action){
-    return state;
+    switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.parent_outcomeworkflow)return action.payload.parent_outcomeworkflow;
+            return state;
+        default:
+            return state;
+    }
 }
 export function parentOutcomenodeReducer(state={},action){
-    return state;
+    switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.parent_outcomenode)return action.payload.parent_outcomenode;
+            return state;
+        default:
+            return state;
+    }
 }
 export function outcomeHorizontalLinkReducer(state={},action){
     switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.outcomehorizontallink)return action.payload.outcomehorizontallink;
+            return state;
         case 'outcome/addParentOutcome':
             //Returns -1 if the outcome had already been added to the outcome
             if(action.payload.outcomehorizontallink==-1)return state;
@@ -948,7 +1019,40 @@ export function outcomeHorizontalLinkReducer(state={},action){
     }
 }
 export function parentWorkflowReducer(state={},action){
-    return state;
+    switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.parent_workflow)return action.payload.parent_workflow;
+            return state;
+        default:
+            return state;
+    }
+}
+export function childWorkflowReducer(state={},action){
+    switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.child_workflow)return action.payload.child_workflow;
+            return state;
+        default:
+            return state;
+    }
+}
+export function childOutcomeReducer(state={},action){
+    switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.child_outcome)return action.payload.child_outcome;
+            return state;
+        default:
+            return state;
+    }
+}
+export function childOutcomeWorkflowReducer(state={},action){
+    switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.child_outcomeworkflow)return action.payload.child_outcomeworkflow;
+            return state;
+        default:
+            return state;
+    }
 }
 export function outcomeProjectReducer(state={},action){
     switch(action.type){
@@ -1040,6 +1144,9 @@ export const rootWorkflowReducer = Redux.combineReducers({
     parent_outcomenode:parentOutcomenodeReducer,
     parent_workflow:parentWorkflowReducer,
     outcomehorizontallink:outcomeHorizontalLinkReducer,
+    child_workflow:childWorkflowReducer,
+    child_outcome:childOutcomeReducer,
+    child_outcomeworkflow:childOutcomeWorkflowReducer,
     outcomeproject:outcomeProjectReducer,
     strategy:strategyReducer,
     saltise_strategy:saltiseStrategyReducer,
