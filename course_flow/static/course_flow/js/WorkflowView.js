@@ -45,7 +45,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             <OutcomeEditView renderer={renderer}/>
         );
         if(renderer.view_type=="horizontaloutcometable")workflow_content=(
-            <div></div>
+            <WorkflowView_Outcome renderer={renderer}/>
         );
         
         let view_buttons = [

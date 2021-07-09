@@ -227,7 +227,7 @@ export const TableOutcomeNode = connect(
     null
 )(TableOutcomeNodeUnconnected)
 
-//Component representing a cell in a totals column
+//Component representing a group of cells
 export class TableOutcomeGroup extends ComponentJSON{
     
     constructor(props){
