@@ -292,12 +292,49 @@ class OutcomeHorizontalLink(models.Model):
     )
     added_on = models.DateTimeField(auto_now_add=True)
     rank = models.PositiveIntegerField(default=0)
+    degree = models.PositiveIntegerField(default=1)
 
     def get_permission_objects(self):
         return self.get_top_outcome().get_permission_objects()
 
     def get_top_outcome(self):
         return self.outcome.get_top_outcome()
+    
+    
+    #Check to see if the parent has all its children the same, and add it if necessary
+    def check_parent_outcomes(self):
+        if self.parent_outcome.parent_outcomes.count()>0:
+            parent_outcome = self.parent_outcome.parent_outcomes.first()
+            if OutcomeHorizontalLink.objects.filter(
+                parent_outcome__in=parent_outcome.children.all().values_list('id',flat=True),
+                degree=self.degree,
+                outcome=self.outcome
+            ).count()==parent_outcome.children.all().count():
+                new_outcomehorizontallink = OutcomeHorizontalLink.objects.create(
+                    outcome=self.outcome,degree=self.degree,parent_outcome=parent_outcome
+                )
+                return [new_outcomehorizontallink]+new_outcomehorizontallink.check_parent_outcomes()
+            elif OutcomeHorizontalLink.objects.filter(parent_outcome=parent_outcome,outcome=self.outcome).count()>0:
+                new_outcomehorizontallink = OutcomeHorizontalLink.objects.create(
+                    outcome=self.outcome,degree=0,parent_outcome=parent_outcome
+                )
+                return [new_outcomehorizontallink]+new_outcomehorizontallink.check_parent_outcomes()
+                
+        return []
+    #Check to see if the children already exist, and if not, add them
+    def check_child_outcomes(self):
+        new_children = []
+        for child in self.parent_outcome.children.all():
+            if OutcomeHorizontalLink.objects.filter(
+                parent_outcome=child,
+                outcome=self.outcome,
+                degree=self.degree
+            ).count()==0:
+                new_child=OutcomeHorizontalLink.objects.create(
+                    parent_outcome=child,outcome=self.outcome,degree=self.degree
+                )
+                new_children+=[new_child]+new_child.check_child_outcomes()
+        return new_children
 
     class Meta:
         verbose_name = "Outcome-Outcome Link"
@@ -507,6 +544,42 @@ class OutcomeNode(models.Model):
     class Meta:
         verbose_name = "Outcome-Node Link"
         verbose_name_plural = "Outcome-Node Links"
+        
+    #Check to see if the parent has all its children the same, and add it if necessary
+    def check_parent_outcomes(self):
+        if self.outcome.parent_outcomes.count()>0:
+            parent_outcome = self.outcome.parent_outcomes.first()
+            if OutcomeNode.objects.filter(
+                outcome__in=parent_outcome.children.all().values_list('id',flat=True),
+                degree=self.degree,
+                node=self.node
+            ).count()==parent_outcome.children.all().count():
+                new_outcomenode = OutcomeNode.objects.create(
+                    node=self.node,degree=self.degree,outcome=parent_outcome
+                )
+                return [new_outcomenode]+new_outcomenode.check_parent_outcomes()
+            elif OutcomeNode.objects.filter(outcome=parent_outcome,node=self.node).count()>0:
+                new_outcomenode = OutcomeNode.objects.create(
+                    node=self.node,degree=0,outcome=parent_outcome
+                )
+                return [new_outcomenode]+new_outcomenode.check_parent_outcomes()
+                
+        return []
+    #Check to see if the children already exist, and if not, add them
+    def check_child_outcomes(self):
+        new_children = []
+        for child in self.outcome.children.all():
+            if OutcomeNode.objects.filter(
+                outcome=child,
+                node=self.node,
+                degree=self.degree
+            ).count()==0:
+                new_child=OutcomeNode.objects.create(
+                    outcome=child,node=self.node,degree=self.degree
+                )
+                new_children+=[new_child]+new_child.check_child_outcomes()
+        return new_children
+                
 
 
 class Week(models.Model):
@@ -1002,11 +1075,11 @@ def move_nodes(sender, instance, **kwargs):
     else:
         print("couldn't find a column")
 
-
-@receiver(post_save, sender=OutcomeNode)
-def delete_outcomenode_no_degree(sender, instance, created, **kwargs):
-    if instance.degree == 0:
-        instance.delete()
+# Removed, this interferes with automatic adding/removing of ndoes
+#@receiver(post_save, sender=OutcomeNode)
+#def delete_outcomenode_no_degree(sender, instance, created, **kwargs):
+#    if instance.degree == 0:
+#        instance.delete()
 
 
 """

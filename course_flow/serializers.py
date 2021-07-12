@@ -25,7 +25,7 @@ from .models import (  # OutcomeProject,
     WeekWorkflow,
     Workflow,
 )
-from .utils import get_model_from_str
+from .utils import get_model_from_str, get_descendant_outcomes,linkIDMap, get_unique_outcomenodes, get_unique_outcomehorizontallinks
 
 bleach_allowed_tags = [
     "b",
@@ -54,9 +54,6 @@ def bleach_sanitizer(value, **kwargs):
 def dateTimeFormat():
     return "%Y/%m/%d"
 
-
-def linkIDMap(link):
-    return link.id
 
 
 class DescriptionSerializerMixin:
@@ -616,6 +613,7 @@ class NodeSerializerShallow(
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     outcomenode_set = serializers.SerializerMethodField()
+    outcomenode_unique_set = serializers.SerializerMethodField()
     columnworkflow = serializers.SerializerMethodField()
     outgoing_links = serializers.SerializerMethodField()
     linked_workflow_title = serializers.SerializerMethodField()
@@ -638,6 +636,7 @@ class NodeSerializerShallow(
             "context_classification",
             "task_classification",
             "outcomenode_set",
+            "outcomenode_unique_set",
             "outgoing_links",
             "is_original",
             "parent_node",
@@ -661,6 +660,9 @@ class NodeSerializerShallow(
     def get_outcomenode_set(self, instance):
         links = instance.outcomenode_set.all().order_by("rank")
         return list(map(linkIDMap, links))
+        
+    def get_outcomenode_unique_set(self, instance):
+        return list(map(linkIDMap, get_unique_outcomenodes(instance)))
 
     def get_outgoing_links(self, instance):
         links = instance.outgoing_links.all()
@@ -932,6 +934,7 @@ class OutcomeSerializerShallow(
             "last_modified",
             "child_outcome_links",
             "outcome_horizontal_links",
+            "outcome_horizontal_links_unique",
             "is_dropped",
             "depth",
             "type",
@@ -940,10 +943,14 @@ class OutcomeSerializerShallow(
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     child_outcome_links = serializers.SerializerMethodField()
+    outcome_horizontal_links_unique = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
+    
+    def get_outcome_horizontal_links_unique(self, instance):
+        return list(map(linkIDMap, get_unique_outcomehorizontallinks(instance)))
 
     def get_child_outcome_links(self, instance):
         links = instance.child_outcome_links.all().order_by("rank")
@@ -986,7 +993,7 @@ class OutcomeNodeSerializerShallow(serializers.ModelSerializer):
 class OutcomeHorizontalLinkSerializerShallow(serializers.ModelSerializer):
     class Meta:
         model = OutcomeHorizontalLink
-        fields = ["outcome", "parent_outcome", "added_on", "rank", "id"]
+        fields = ["outcome", "parent_outcome", "added_on", "rank", "degree", "id"]
 
     def update(self, instance, validated_data):
         instance.rank = validated_data.get("rank", instance.rank)

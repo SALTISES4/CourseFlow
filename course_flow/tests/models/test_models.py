@@ -1476,6 +1476,63 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeNode.objects.count(), 0)
+        
+    def test_update_outcomenode_degree_parents_children(self):
+        user = login(self)
+        node = make_object("node", user)
+        week = make_object("week", user)
+        activity = make_object("activity", user)
+        NodeWeek.objects.create(node=node, week=week)
+        WeekWorkflow.objects.create(week=week, workflow=activity)
+        base_outcome = make_object("outcome", user)
+        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=activity)
+        oc1 = base_outcome.children.create(author=user)
+        oc11 = oc1.children.create(author=user)
+        oc12 = oc1.children.create(author=user)
+        oc13 = oc1.children.create(author=user)
+        oc2 = base_outcome.children.create(author=user)
+        oc3 = base_outcome.children.create(author=user)
+        #Add the base outcome, which should add all outcomes
+        response = self.client.post(
+            reverse("course_flow:add-outcome-to-node"),
+            {"nodePk": node.id, "outcomePk": base_outcome.id},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeNode.objects.all().count(),7)
+        #Remove the base outcome, which should remove all outcomes
+        response = self.client.post(
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": base_outcome.id,"degree":0},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeNode.objects.all().count(),0)
+        OutcomeNode.objects.create(outcome=oc2,node=node)
+        OutcomeNode.objects.create(outcome=oc3,node=node)
+        response = self.client.post(
+            reverse("course_flow:add-outcome-to-node"),
+            {"nodePk": node.id, "outcomePk": oc11.id},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeNode.objects.all().count(),3)
+        response = self.client.post(
+            reverse("course_flow:add-outcome-to-node"),
+            {"nodePk": node.id, "outcomePk": oc12.id},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeNode.objects.all().count(),4)
+        response = self.client.post(
+            reverse("course_flow:add-outcome-to-node"),
+            {"nodePk": node.id, "outcomePk": oc13.id},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeNode.objects.all().count(),7)
+        response = self.client.post(
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": oc11.id,"degree":0},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeNode.objects.all().count(),4)
+        
 
     def test_add_remove_horizontal_outcome_link_permissions_no_authorship(
         self,
@@ -2608,3 +2665,6 @@ class PermissionsTests(TestCase):
                 },
             )
             self.assertEqual(response.status_code, 200)
+
+            
+    

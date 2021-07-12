@@ -315,28 +315,14 @@ export function columnChanged(objectID,columnID,callBackFunction=()=>console.log
 }
 
 
-//Add an outcome to a node
-export function addOutcomeToNode(nodePk,outcome,callBackFunction=()=>console.log("success")){
-    try{
-        $.post(post_paths.add_outcome_to_node, {
-            nodePk:JSON.stringify(nodePk),
-            outcomePk:JSON.stringify(outcome),
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else fail_function();
-        });
-    }catch(err){
-        fail_function();
-    }
-}
-
 //Add an outcome from the parent workflow to an outcome from the current one
-export function addParentOutcomeToOutcome(outcomePk,outcome2Pk,callBackFunction=()=>console.log("success")){
+export function updateOutcomehorizontallinkDegree(outcomePk,outcome2Pk,degree,callBackFunction=()=>console.log("success")){
     try{
-        $.post(post_paths.add_parent_outcome_to_outcome, {
+        $.post(post_paths.update_outcomehorizontallink_degree, {
             outcomePk:JSON.stringify(outcomePk),
             objectID:JSON.stringify(outcome2Pk),
-            objectType:JSON.stringify("outcome")
+            objectType:JSON.stringify("outcome"),
+            degree:JSON.stringify(degree),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else fail_function();

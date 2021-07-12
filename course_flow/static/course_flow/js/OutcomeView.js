@@ -6,8 +6,9 @@ import OutcomeOutcomeView from "./OutcomeOutcomeView.js";
 import {OutcomeBarOutcomeOutcomeView, NodeOutcomeOutcomeView, NodeOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode.js";
 import {getOutcomeByID, getOutcomeHorizontalLinkByID, getParentOutcomeByID, getParentOutcomeOutcomeByID} from "./FindState.js";
-import {changeField, moveOutcomeOutcome, addParentOutcomeToOutcomeAction} from "./Reducers.js";
-import {addParentOutcomeToOutcome} from "./PostFunctions"
+import {changeField, moveOutcomeOutcome, updateOutcomehorizontallinkDegreeAction} from "./Reducers.js";
+import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
+import * as Constants from "./Constants";
 
 //Basic component representing an outcome
 class OutcomeView extends ComponentJSON{
@@ -26,7 +27,7 @@ class OutcomeView extends ComponentJSON{
             <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} />
         );
         
-        let outcomehorizontallinks = data.outcome_horizontal_links.map((horizontal_link)=>
+        let outcomehorizontallinks = data.outcome_horizontal_links_unique.map((horizontal_link)=>
             <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link}/>
         );
         let outcomeDiv;
@@ -149,9 +150,9 @@ class OutcomeView extends ComponentJSON{
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 if(drag_item.hasClass("outcome")){
-                    addParentOutcomeToOutcome(props.objectID,drag_item[0].dataDraggable.outcome,
+                    updateOutcomehorizontallinkDegree(props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
-                            let action = addParentOutcomeToOutcomeAction(response_data);
+                            let action = updateOutcomehorizontallinkDegreeAction(response_data);
                             props.dispatch(action);
                         }
                     );
@@ -367,6 +368,8 @@ export const NodeOutcomeView = connect(
 )(NodeOutcomeViewUnconnected)
 
 //Basic component representing an outcome inside a table
+//The component must keep track of both the completion status it receives from child outcomes (for each node) and that it gets from its own table cells (also for each node). The completion status it receives from its own table cells is then combined with that it receives from its child outcomes to compute whether or not an outcome is achieved in the grand total column.
+//To receive updates from the child outcomes, the updateParentCompletion function is passed to the child outcomes. This is called any time a table cell is updated, adding the the node-outcome pair. completion_status_from_children has the format {node_id:{outcomeoutcome_id:degree}}.
 class TableOutcomeViewUnconnected extends ComponentJSON{
     
     constructor(props){
@@ -379,17 +382,13 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        let completion_status_to_pass = {...this.props.completion_status_from_parents};
-        for(let node_id in this.state.completion_status_from_self){
-            completion_status_to_pass[node_id] |= this.state.completion_status_from_self[node_id];
-        }
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <TableOutcomeOutcomeView renderer={this.props.renderer} key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.childUpdatedFunction.bind(this,outcomeoutcome)} completion_status_from_parents={completion_status_to_pass} outcomes_type={this.props.outcomes_type}/>
+            <TableOutcomeOutcomeView renderer={this.props.renderer} key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.childUpdatedFunction.bind(this,outcomeoutcome)}  outcomes_type={this.props.outcomes_type}/>
         );
 
         let outcomeGroups = this.props.nodecategory.map((nodecategory)=>
-            <TableOutcomeGroup renderer={this.props.renderer} nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.selfUpdatedFunction.bind(this)} completion_status_from_children={this.child_completion_status} completion_status_from_parents={this.props.completion_status_from_parents} completion_status_from_self = {this.state.completion_status_from_self} outcomes_type={this.props.outcomes_type}/>
+            <TableOutcomeGroup renderer={this.props.renderer} nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.selfUpdatedFunction.bind(this)} completion_status_from_children={this.child_completion_status} completion_status_from_self = {this.state.completion_status_from_self} outcomes_type={this.props.outcomes_type}/>
                                                         
                                                          
         );
@@ -404,9 +403,6 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         
 
         let completion_status=0;
-        for(let node_id in this.props.completion_status_from_parents){
-            completion_status|=this.props.completion_status_from_parents[node_id];
-        }
         let childnodes=0;
         let sub_outcomes_completion;
         for(let node_id in this.child_completion_status){
@@ -465,6 +461,10 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     }
 
     childUpdatedFunction(through_id,node_id,value){
+        console.log("child updated function");
+        console.log(through_id);
+        console.log(node_id);
+        console.log(value);
         let index = this.props.data.child_outcome_links.indexOf(through_id);
         if(!this.child_completion_status[node_id]){
             if(value!==null){
@@ -542,6 +542,18 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
                 }
             </div>
         );
+    }
+    
+    deleteSelf(data){
+        let props=this.props;
+        //Temporary confirmation; add better confirmation dialogue later
+        if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
+            updateOutcomehorizontallinkDegree(data.outcome,data.parent_outcome,0,(response_data)=>{
+                let action = updateOutcomehorizontallinkDegreeAction(response_data);
+                props.dispatch(action);
+            });
+           
+        }
     }
 }
 const mapOutcomeHorizontalLinkStateToProps = (state,own_props)=>(

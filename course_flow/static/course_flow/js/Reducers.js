@@ -93,15 +93,15 @@ export const moveOutcomeOutcome = (id,new_position,new_parent,child_id) => {
     }
 }
 
-export const addOutcomeToNodeAction = (response_data) => {
+export const updateOutcomenodeDegreeAction = (response_data) => {
     return {
-        type: "outcome/addToNode",
+        type: "outcomenode/updateDegree",
         payload:response_data
     }
 }
-export const addParentOutcomeToOutcomeAction = (response_data) => {
+export const updateOutcomehorizontallinkDegreeAction = (response_data) => {
     return {
-        type: "outcome/addParentOutcome",
+        type: "outcomehorizontallink/updateDegree",
         payload:response_data
     }
 }
@@ -616,17 +616,6 @@ export function nodeReducer(state={},action){
                 }
             }
             return state;
-        case 'outcomenode/deleteSelf':
-            for(var i=0;i<state.length;i++){
-                if(state[i].outcomenode_set.indexOf(action.payload.id)>=0){
-                    var new_state=state.slice();
-                    new_state[i] = {...new_state[i]};
-                    new_state[i].outcomenode_set = state[i].outcomenode_set.slice();
-                    new_state[i].outcomenode_set.splice(new_state[i].outcomenode_set.indexOf(action.payload.id),1);
-                    return new_state;
-                }
-            }
-            return state;
         case 'week/insertBelow':
             if(!action.payload.children)return state;
             new_state = state.slice();
@@ -676,15 +665,15 @@ export function nodeReducer(state={},action){
                 }
             }
             return state;
-        case 'outcome/addToNode':
-            //Returns -1 if the outcome had already been added to the node
+        case 'outcomenode/updateDegree':
+            //Returns -1 if the outcome had already been added to the node at the given degree
             if(action.payload.outcomenode==-1)return state;
             for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.outcomenode.node){
+                if(state[i].id==action.payload.data_package[0].node){
                     var new_state=state.slice();
                     new_state[i] = {...new_state[i]};
-                    new_state[i].outcomenode_set = new_state[i].outcomenode_set.slice();
-                    new_state[i].outcomenode_set.push(action.payload.outcomenode.id);
+                    new_state[i].outcomenode_set = action.payload.new_outcomenode_set;
+                    new_state[i].outcomenode_unique_set = action.payload.new_outcomenode_unique_set;
                     return new_state;
                 }
             }
@@ -846,24 +835,15 @@ export function outcomeReducer(state={},action){
                 }
             }
             return state;
-        case 'outcomehorizontallink/deleteSelf':
-            var new_state = state.slice();
-            for(var i=0;i<new_state.length;i++){
-                if(new_state[i].outcome_horizontal_links.indexOf(action.payload.id)>=0){
-                    new_state[i]={...new_state[i], outcome_horizontal_links:new_state[i].outcome_horizontal_links.slice()};
-                    new_state[i].outcome_horizontal_links.splice(new_state[i].outcome_horizontal_links.indexOf(action.payload.id),1);
-                }
-            }
-            return new_state;
-        case 'outcome/addParentOutcome':
+        case 'outcomehorizontallink/updateDegree':
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomenode==-1)return state;
             for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.outcomehorizontallink.outcome){
+                if(state[i].id==action.payload.data_package[0].outcome){
                     var new_state=state.slice();
                     new_state[i] = {...new_state[i]};
-                    new_state[i].outcome_horizontal_links = new_state[i].outcome_horizontal_links.slice();
-                    new_state[i].outcome_horizontal_links.push(action.payload.outcomehorizontallink.id);
+                    new_state[i].outcome_horizontal_links = action.payload.new_outcome_horizontal_links;
+                    new_state[i].outcome_horizontal_links_unique = action.payload.new_outcome_horizontal_links_unique;
                     return new_state;
                 }
             }
@@ -913,35 +893,30 @@ export function outcomeNodeReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.outcomenode)return action.payload.outcomenode;
             return state;
-        case 'outcome/addToNode':
+        case 'outcomenode/updateDegree':
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomenode==-1)return state;
             var new_state = state.slice();
-            new_state.push(action.payload.outcomenode);
+            console.log(new_state);
+            let new_outcomenode_outcomes = action.payload.data_package.map((outcomenode)=>
+                Constants.cantorPairing(outcomenode.node,outcomenode.outcome)
+            )
+            for(var i=0;i<new_state.length;i++){
+                let new_outcomenode_index = new_outcomenode_outcomes.indexOf(Constants.cantorPairing(new_state[i].node,new_state[i].outcome));
+                if(new_outcomenode_index>=0){
+                    new_state[i]=action.payload.data_package[new_outcomenode_index];
+                    action.payload.data_package[new_outcomenode_index]=null;
+                }
+            }
+            console.log(new_state);
+            console.log(action.payload.data_package);
+            for(var i=0;i<action.payload.data_package.length;i++){
+                if(action.payload.data_package[i]!=null)new_state.push(action.payload.data_package[i]);
+            }
+            console.log(new_state);
+            new_state = new_state.filter(outcomenode => outcomenode.degree>0);
+            console.log(new_state);
             return new_state;
-        case 'outcomenode/deleteSelf':
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.id){
-                    var new_state = state.slice();
-                    updateOutcomenodeDegree(state[i].node,state[i].outcome,0)
-                    new_state.splice(i,1);
-                    return new_state;
-                }
-            }
-            return state;
-        case 'outcomenode/changeField':
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.id){
-                    var new_state = state.slice();
-                    new_state[i] = {...state[i]};
-                    new_state[i][action.payload.field]=action.payload.value;
-                    let json = {};
-                    json[action.payload.field]=action.payload.value;
-                    if(!read_only)updateOutcomenodeDegree(new_state[i].node,new_state[i].outcome,action.payload.value);
-                    return new_state;
-                }
-            }
-            return state;
         case 'outcome/deleteSelf':
         case 'outcome_base/deleteSelf':
             new_state=state.slice();
@@ -998,22 +973,30 @@ export function outcomeHorizontalLinkReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.outcomehorizontallink)return action.payload.outcomehorizontallink;
             return state;
-        case 'outcome/addParentOutcome':
-            //Returns -1 if the outcome had already been added to the outcome
+        case 'outcomehorizontallink/updateDegree':
+            //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomehorizontallink==-1)return state;
             var new_state = state.slice();
-            new_state.push(action.payload.outcomehorizontallink);
-            return new_state;
-        case 'outcomehorizontallink/deleteSelf':
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.id){
-                    var new_state = state.slice();
-                    deleteSelf(action.payload.id,"outcomehorizontallink");
-                    new_state.splice(i,1);
-                    return new_state;
+            console.log(new_state);
+            let new_outcomehorizontallink_outcomes = action.payload.data_package.map((outcomehorizontallink)=>
+                Constants.cantorPairing(outcomehorizontallink.outcome,outcomehorizontallink.parent_outcome)
+            )
+            for(var i=0;i<new_state.length;i++){
+                let new_outcomehorizontallink_index = new_outcomehorizontallink_outcomes.indexOf(Constants.cantorPairing(new_state[i].outcome,new_state[i].parent_outcome));
+                if(new_outcomehorizontallink_index>=0){
+                    new_state[i]=action.payload.data_package[new_outcomehorizontallink_index];
+                    action.payload.data_package[new_outcomehorizontallink_index]=null;
                 }
             }
-            return state;
+            console.log(new_state);
+            console.log(action.payload.data_package);
+            for(var i=0;i<action.payload.data_package.length;i++){
+                if(action.payload.data_package[i]!=null)new_state.push(action.payload.data_package[i]);
+            }
+            console.log(new_state);
+            new_state = new_state.filter(outcomehorizontallink => outcomehorizontallink.degree>0);
+            console.log(new_state);
+            return new_state;
         default:
         return state;
     }

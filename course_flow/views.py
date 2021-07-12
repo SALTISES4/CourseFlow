@@ -22,7 +22,6 @@ from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
-from course_flow.utils import get_all_outcomes
 
 from .decorators import (
     ajax_login_required,
@@ -88,6 +87,10 @@ from .utils import (
     get_parent_model,
     get_parent_model_str,
     get_project_outcomes,
+    linkIDMap,
+    get_all_outcomes,
+    get_descendant_outcomes,
+    get_unique_outcomenodes,
 )
 
 
@@ -1000,7 +1003,9 @@ def get_parent_outcome_data(workflow, user):
     parent_outcomeworkflows = []
     parent_outcomenodes = []
     for parent_node in workflow.linked_nodes.all():
-        parent_outcomenodes += parent_node.outcomenode_set.all()
+        #Get only top-level outcomes
+        parent_outcomenodes += get_unique_outcomenodes(parent_node)
+        
         parent_workflow = parent_node.get_workflow()
         if parent_workflow in parent_workflows:
             continue
@@ -2571,61 +2576,7 @@ def change_column(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-# Add an outcome to a node
-@user_can_edit("nodePk")
-@user_can_view("outcomePk")
-def add_outcome_to_node(request: HttpRequest) -> HttpResponse:
-    node_id = json.loads(request.POST.get("nodePk"))
-    outcome_id = json.loads(request.POST.get("outcomePk"))
-    try:
-        node = Node.objects.get(id=node_id)
-        outcome = Outcome.objects.get(id=outcome_id)
-        if OutcomeNode.objects.filter(node=node, outcome=outcome).count() > 0:
-            return JsonResponse({"action": "posted", "outcomenode": -1})
-        outcomenode = OutcomeNode.objects.create(outcome=outcome, node=node)
-    except ValidationError:
-        return JsonResponse({"action": "error"})
 
-    return JsonResponse(
-        {
-            "action": "posted",
-            "outcomenode": OutcomeNodeSerializerShallow(outcomenode).data,
-        }
-    )
-
-
-# Add a parent outcome to an outcome
-@user_can_edit("outcomePk")
-@user_can_view(False)
-def add_parent_outcome_to_outcome(request: HttpRequest) -> HttpResponse:
-    outcome_id = json.loads(request.POST.get("outcomePk"))
-    parent_id = json.loads(request.POST.get("objectID"))
-    try:
-        outcome = Outcome.objects.get(id=outcome_id)
-        parent_outcome = Outcome.objects.get(id=parent_id)
-        if (
-            OutcomeHorizontalLink.objects.filter(
-                parent_outcome=parent_outcome, outcome=outcome
-            ).count()
-            > 0
-        ):
-            return JsonResponse(
-                {"action": "posted", "outcomehorizontallink": -1}
-            )
-        outcomehorizontallink = OutcomeHorizontalLink.objects.create(
-            outcome=outcome, parent_outcome=parent_outcome
-        )
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
-                outcomehorizontallink
-            ).data,
-        }
-    )
 
 
 """
@@ -2662,27 +2613,71 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     outcome_id = json.loads(request.POST.get("outcomePk"))
     degree = json.loads(request.POST.get("degree"))
     try:
-        if (
-            OutcomeNode.objects.filter(
-                node__id=node_id, outcome__id=outcome_id
-            ).count()
-            > 0
-        ):
-            model = OutcomeNode.objects.get(
-                node__id=node_id, outcome__id=outcome_id
-            )
-        else:
-            model = OutcomeNode.objects.create(
-                node=Node.objects.get(id=node_id),
-                outcome=Outcome.objects.get(id=outcome_id),
-            )
-        model.degree = degree
-        model.save()
+        if OutcomeNode.objects.filter(node__id=node_id, outcome__id=outcome_id,degree=degree).count() > 0:
+            return JsonResponse({"action": "posted", "outcomenode": -1})
+        model = OutcomeNode.objects.create(
+            node=Node.objects.get(id=node_id),
+            outcome=Outcome.objects.get(id=outcome_id),
+            degree=degree,
+        )
+        new_outcomenodes = OutcomeNodeSerializerShallow(
+            [model]+model.check_parent_outcomes()+model.check_child_outcomes(),many=True
+        ).data
+        if degree==0:
+            OutcomeNode.objects.filter(node=model.node,degree=0).delete()
+        new_node_data = NodeSerializerShallow(model.node).data
+        new_outcomenode_set = new_node_data["outcomenode_set"]
+        new_outcomenode_unique_set = new_node_data["outcomenode_unique_set"]
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
 
-    return JsonResponse({"action": "posted"})
+    return JsonResponse({"action": "posted","data_package":new_outcomenodes,"new_outcomenode_set":new_outcomenode_set,"new_outcomenode_unique_set":new_outcomenode_unique_set})
 
+# Add a parent outcome to an outcome
+#@user_can_edit("outcomePk")
+#@user_can_view(False)
+def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
+    print("updating degree")
+    outcome_id = json.loads(request.POST.get("outcomePk"))
+    parent_id = json.loads(request.POST.get("objectID"))
+    degree = json.loads(request.POST.get("degree"))
+    print(degree)
+    try:
+        outcome = Outcome.objects.get(id=outcome_id)
+        parent_outcome = Outcome.objects.get(id=parent_id)
+        if (
+            OutcomeHorizontalLink.objects.filter(
+                parent_outcome=parent_outcome, outcome=outcome, degree=degree
+            ).count()
+            > 0
+        ):
+            return JsonResponse(
+                {"action": "posted", "outcomehorizontallink": -1}
+            )
+        model = OutcomeHorizontalLink.objects.create(
+            outcome=outcome, parent_outcome=parent_outcome, degree=degree
+        )
+        new_outcomehorizontallinks = OutcomeHorizontalLinkSerializerShallow(
+            [model]+model.check_parent_outcomes()+model.check_child_outcomes(),many=True
+        ).data
+        print(new_outcomehorizontallinks);
+        if degree==0:
+            OutcomeHorizontalLink.objects.filter(outcome=outcome,degree=0).delete()
+        print(OutcomeHorizontalLink.objects.filter(outcome=outcome))
+        new_outcome_data = OutcomeSerializerShallow(model.outcome).data
+        new_outcome_horizontal_links = new_outcome_data["outcome_horizontal_links"]
+        new_outcome_horizontal_links_unique = new_outcome_data["outcome_horizontal_links_unique"]
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": new_outcomehorizontallinks,
+            "new_outcome_horizontal_links":new_outcome_horizontal_links,
+            "new_outcome_horizontal_links_unique":new_outcome_horizontal_links_unique
+        }
+    )
 
 # Do not call if duplicating the parent workflow
 def set_linked_workflow(node: Node, workflow):

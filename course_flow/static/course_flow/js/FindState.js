@@ -147,7 +147,10 @@ export const getParentOutcomeNodeByID = (state,id)=>{
 export const getTableOutcomeNodeByID = (state,node_id, outcome_id)=>{
     for(var i in state.outcomenode){
         var outcomenode = state.outcomenode[i];
-        if(outcomenode.outcome==outcome_id && outcomenode.node==node_id)return {data:outcomenode};
+        if(outcomenode.outcome==outcome_id && outcomenode.node==node_id){
+            
+            return {data:outcomenode};
+        }
     }
     return {data:null}
 }

@@ -6,8 +6,8 @@ import NodeLinkView from "./NodeLinkView.js";
 import OutcomeNodeView from "./OutcomeNode.js";
 import {getNodeByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
-import {changeField, addOutcomeToNodeAction} from "./Reducers.js";
-import {addOutcomeToNode} from "./PostFunctions.js"
+import {changeField, updateOutcomenodeDegreeAction} from "./Reducers.js";
+import {updateOutcomenodeDegree} from "./PostFunctions.js"
 
 
 //Basic component to represent a Node
@@ -41,7 +41,7 @@ class NodeView extends ComponentJSON{
                 <AutoLinkView nodeID={this.props.objectID} node_div={this.maindiv}/>
             );
         }
-        let outcomenodes = data.outcomenode_set.map((outcomenode)=>
+        let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
             <OutcomeNodeView key={outcomenode} objectID={outcomenode}/>
         );
         let outcomeDiv;
@@ -195,9 +195,9 @@ class NodeView extends ComponentJSON{
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 if(drag_item.hasClass("outcome")){
-                    addOutcomeToNode(this.props.objectID,drag_item[0].dataDraggable.outcome,
+                    updateOutcomenodeDegree(this.props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
-                            let action = addOutcomeToNodeAction(response_data);
+                            let action = updateOutcomenodeDegreeAction(response_data);
                             props.dispatch(action);
                         }
                     );

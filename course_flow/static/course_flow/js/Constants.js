@@ -150,6 +150,9 @@ export function pushOrCreate(obj,index,value){
     else obj[index]=[value];
 }
 
+export function cantorPairing(k1,k2){
+    return parseInt((k1+k2)*(k1+k2+1)/2+k2);
+}
 
 
 export class Loader{

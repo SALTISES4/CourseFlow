@@ -73,14 +73,9 @@ def course_flow_patterns():
             r"^node/change-column/$", views.change_column, name="change-column"
         ),
         url(
-            r"^node/add-outcome-to-node/$",
-            views.add_outcome_to_node,
-            name="add-outcome-to-node",
-        ),
-        url(
-            r"^node/add-parent-outcome-to-outcome/$",
-            views.add_parent_outcome_to_outcome,
-            name="add-parent-outcome-to-outcome",
+            r"^outcome/update-outcomehorizontallink-degree/$",
+            views.update_outcomehorizontallink_degree,
+            name="update-outcomehorizontallink-degree",
         ),
         url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),

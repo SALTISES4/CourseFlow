@@ -1,11 +1,12 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON.js";
-import {NodeOutcomeView} from "./OutcomeView.js";
-import {getOutcomeNodeByID, getTableOutcomeNodeByID} from "./FindState.js";
-import {deleteSelfAction, addOutcomeToNodeAction, changeField} from "./Reducers.js";
-import {addOutcomeToNode} from "./PostFunctions.js";
+import {ComponentJSON} from "./ComponentJSON";
+import {NodeOutcomeView} from "./OutcomeView";
+import {getOutcomeNodeByID, getTableOutcomeNodeByID} from "./FindState";
+import {updateOutcomenodeDegreeAction} from "./Reducers";
+import {updateOutcomenodeDegree} from "./PostFunctions";
+import * as Constants from "./Constants";
 
 //Basic component representing an outcome to node link
 class OutcomeNodeView extends ComponentJSON{
@@ -29,6 +30,18 @@ class OutcomeNodeView extends ComponentJSON{
                 }
             </div>
         );
+    }
+    
+    deleteSelf(data){
+        let props=this.props;
+        //Temporary confirmation; add better confirmation dialogue later
+        if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
+            updateOutcomenodeDegree(data.node,data.outcome,0,(response_data)=>{
+                let action = updateOutcomenodeDegreeAction(response_data);
+                props.dispatch(action);
+            });
+           
+        }
     }
     
 }
@@ -121,7 +134,7 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
         let degree;
         if(data!==null)degree=data.degree;
         completion_status|=degree;
-        completion_status|=this.props.completion_status_from_children|this.props.completion_status_from_parents;
+        completion_status|=this.props.completion_status_from_children;
         if(completion_status==0&&this.props.completion_status_from_children!==0)completion_status=null;
         let checked=false;
         if(data)checked=true;
@@ -154,22 +167,21 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
     }
     
     toggleFunction(){
+        console.log("Togglefunction");
         let props = this.props;
+        console.log(props.data);
         let value;
-        if(props.data){
-            value=null;
-            props.dispatch(deleteSelfAction(props.data.id,props.nodeID,"outcomenode"))
-        }else{
-            value=1;
-            props.renderer.tiny_loader.startLoad();
-            addOutcomeToNode(props.nodeID,props.outcomeID,
-                (response_data)=>{
-                    let action = addOutcomeToNodeAction(response_data);
-                    props.dispatch(action);
-                    props.renderer.tiny_loader.endLoad();
-                }
-            );
-        }
+        if(props.data)value=0;
+        else value=1;
+        updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
+            (response_data)=>{
+                props.dispatch(updateOutcomenodeDegreeAction(response_data));
+            }
+        );
+            
+        if(value==0)value=null;
+        
+        
         if(props.updateParentCompletion){
             let child_status = this.props.completion_status_from_children;
             if(!child_status && child_status!==0)
@@ -185,22 +197,14 @@ class TableOutcomeNodeUnconnected extends TableTotalCell{
         let value;
         if(props.data){
             value=props.data.degree << 1;
-            if(value>15){
-                value=null;
-                props.dispatch(deleteSelfAction(props.data.id,props.nodeID,"outcomenode"));
-            }else{
-                props.dispatch(changeField(props.data.id,"outcomenode","degree",value));
+            if(value>15)value=0;
+        }else value=1;
+        updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
+            (response_data)=>{
+                props.dispatch(updateOutcomenodeDegreeAction(response_data));
             }
-        }else{
-            value=1;
-            addOutcomeToNode(props.nodeID,props.outcomeID,
-                (response_data)=>{
-                    let action = addOutcomeToNodeAction(response_data);
-                    props.dispatch(action);
-                }
-            );
-        }
-       
+        );
+        if(value==0)value=null;
         if(props.updateParentCompletion){
             let child_status = this.props.completion_status_from_children;
             if(!child_status && child_status!==0)
@@ -235,8 +239,6 @@ export class TableOutcomeGroup extends ComponentJSON{
     }
     
     render(){
-        let completion_status_from_parents={};
-        if(this.props.completion_status_from_parents)completion_status_from_parents=this.props.completion_status_from_parents;
         
         let tableCells = this.props.nodes.map((node)=>
             <TableOutcomeNode renderer={this.props.renderer} nodeID={node} outcomeID={this.props.outcomeID} updateParentCompletion={this.props.updateParentCompletion} updateSelfCompletion={this.props.updateSelfCompletion} completion_status_from_children={
@@ -244,14 +246,11 @@ export class TableOutcomeGroup extends ComponentJSON{
                 this.props.completion_status_from_children[node].reduce(
                     (accumulator,current_value)=>{if(current_value===null && accumulator==null)return accumulator; else return accumulator & current_value;}
                 )
-            } completion_status_from_parents={completion_status_from_parents[node]} outcomes_type={this.props.outcomes_type}/>
+            } outcomes_type={this.props.outcomes_type}/>
          )
         let completion_status =0;
         for(let node_id in this.props.completion_status_from_self){
             if(this.props.nodes.indexOf(parseInt(node_id))>=0)completion_status |= this.props.completion_status_from_self[node_id];
-        }
-        for(let node_id in this.props.completion_status_from_parents){
-            if(this.props.nodes.indexOf(parseInt(node_id))>=0)completion_status|=this.props.completion_status_from_parents[node_id];
         }
         let childnodes=0;
         let sub_outcomes_completion;
