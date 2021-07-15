@@ -16,8 +16,8 @@ class NodeWeekView extends ComponentJSON{
     render(){
         let data = this.props.data;
         return (
-            <div class="node-week" id={data.id} ref={this.maindiv}>
-                <NodeView objectID={data.node} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager} column_order={this.props.column_order}/>
+            <div class="node-week" id={data.id} data-child-id={data.node} ref={this.maindiv}>
+                <NodeView objectID={data.node} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer} column_order={this.props.column_order}/>
             </div>
         );
     }

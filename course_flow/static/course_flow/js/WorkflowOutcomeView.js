@@ -4,7 +4,9 @@ import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON.js";
 import {NodeOutcomeView} from "./NodeView.js";
 import {TableOutcomeView} from "./OutcomeView.js";
+import {TableOutcomeWorkflowView} from "./OutcomeWorkflowView"
 import {pushOrCreate} from "./Constants.js"
+import {TableChildWorkflowHeader} from "./OutcomeHorizontalLink";
 
 
 //Represents the entire outcomeview, barring top level workflow stuff
@@ -28,20 +30,29 @@ class WorkflowOutcomeView extends ComponentJSON{
                 )
             }
         }*/
-        let nodes = this.props.data.map((nodecategory)=>
+        let nodes;
+        if(this.props.renderer.view_type=="outcometable")nodes = this.props.data.map((nodecategory)=>
             <div class="table-group">
                 <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
                 {nodecategory.nodes.map((node)=>
                     <div class="table-cell nodewrapper">
-                        <NodeOutcomeView objectID={node} selection_manager={this.props.selection_manager}/>
+                        <NodeOutcomeView renderer={this.props.renderer} objectID={node}/>
                     </div>
                 )}
                 <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
             </div>
         );
-        
-        let outcomes = this.props.outcomeproject.map((outcomeproject)=>
-            <TableOutcomeView objectID={outcomeproject.outcome} nodecategory={this.props.data} outcomes_type={this.props.outcomes_type}/>                                          
+        else nodes = nodes = this.props.data.map((nodecategory)=>
+            <div class="table-group">
+                <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
+                {nodecategory.nodes.map((node)=>
+                    <TableChildWorkflowHeader renderer={this.props.renderer} nodeID={node}/>
+                )}
+                <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
+            </div>
+        );
+        let outcomes = this.props.outcomeworkflows.map((outcomeworkflow)=>
+            <TableOutcomeWorkflowView renderer={this.props.renderer} objectID={outcomeworkflow} nodecategory={this.props.data} outcomes_type={this.props.outcomes_type}/>                                          
         );
         
         
@@ -71,7 +82,7 @@ const mapStateToProps = (state,own_props)=>{
                 let nodeweek = nodeweeks_ordered[i];
                 pushOrCreate(nodes_by_week,nodeweek.week,nodeweek.node);
             }
-            return {data:weeks_ordered.map((week,index)=>{return {title:(week.title||week.week_type_display+" "+(index+1)),nodes:(nodes_by_week[week.id]||[])};}),outcomeproject:state.outcomeproject};
+            return {data:weeks_ordered.map((week,index)=>{return {title:(week.title||week.week_type_display+" "+(index+1)),nodes:(nodes_by_week[week.id]||[])};}),outcomeworkflows:state.workflow.outcomeworkflow_set};
         case 1:
             let columnworkflow_order = state.workflow.columnworkflow_set;
             let column_order = state.columnworkflow.slice().sort(function(a,b){return(columnworkflow_order.indexOf(a.id)-columnworkflow_order.indexOf(b.id))}).map((columnworkflow)=>columnworkflow.week);
@@ -81,25 +92,25 @@ const mapStateToProps = (state,own_props)=>{
                 let node = nodes_ordered[i];
                 pushOrCreate(nodes_by_column,node.columnworkflow,node.id);
             }
-            return {data:columns_ordered.map((column,index)=>{return {title:(column.title||column.column_type_display),nodes:(nodes_by_column[columnworkflow_order[index]]||[])};}),outcomeproject:state.outcomeproject};
+            return {data:columns_ordered.map((column,index)=>{return {title:(column.title||column.column_type_display),nodes:(nodes_by_column[columnworkflow_order[index]]||[])};}),outcomeworkflows:state.workflow.outcomeworkflow_set};
         case 2:
             var workflow_type = ["activity","course","program"].indexOf(state.workflow.type)
-            let context_ordered = context_choices.filter((x)=> (x.type==0 || (x.type>100*workflow_type &&x.type<100*(workflow_type+1))));
-            let nodes_by_context={};
-            for(let i=0;i<nodes_ordered.length;i++){
-                let node = nodes_ordered[i];
-                pushOrCreate(nodes_by_context,node.context_classification,node.id);
-            }
-            return {data:context_ordered.map((context)=>{return {title:context.name,nodes:(nodes_by_context[context.type]||[])};}),outcomeproject:state.outcomeproject};
-        case 3:
-            var workflow_type = ["activity","course","program"].indexOf(state.workflow.type)
-            let task_ordered = task_choices.filter((x)=> (x.type==0 || (x.type>100*workflow_type &&x.type<100*(workflow_type+1))));
+            let task_ordered = own_props.renderer.task_choices.filter((x)=> (x.type==0 || (x.type>100*workflow_type &&x.type<100*(workflow_type+1))));
             let nodes_by_task={};
             for(let i=0;i<nodes_ordered.length;i++){
                 let node = nodes_ordered[i];
                 pushOrCreate(nodes_by_task,node.task_classification,node.id);
             }
-            return {data:task_ordered.map((task)=>{return {title:task.name,nodes:(nodes_by_task[task.type]||[])};}),outcomeproject:state.outcomeproject};
+            return {data:task_ordered.map((task)=>{return {title:task.name,nodes:(nodes_by_task[task.type]||[])};}),outcomeworkflows:state.workflow.outcomeworkflow_set};
+        case 3:
+            var workflow_type = ["activity","course","program"].indexOf(state.workflow.type)
+            let context_ordered = own_props.renderer.context_choices.filter((x)=> (x.type==0 || (x.type>100*workflow_type &&x.type<100*(workflow_type+1))));
+            let nodes_by_context={};
+            for(let i=0;i<nodes_ordered.length;i++){
+                let node = nodes_ordered[i];
+                pushOrCreate(nodes_by_context,node.context_classification,node.id);
+            }
+            return {data:context_ordered.map((context)=>{return {title:context.name,nodes:(nodes_by_context[context.type]||[])};}),outcomeworkflows:state.workflow.outcomeworkflow_set};
     }
 }
 const mapDispatchToProps = {};
@@ -107,3 +118,5 @@ export default connect(
     mapStateToProps,
     null
 )(WorkflowOutcomeView)
+
+

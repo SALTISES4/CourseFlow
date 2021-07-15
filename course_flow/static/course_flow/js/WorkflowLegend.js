@@ -26,13 +26,13 @@ class WorkflowLegend extends React.Component{
     
     render(){
         let contexts = this.props.contexts.map((value)=>
-            <LegendLine icon={Constants.context_keys[value]} text = {context_choices.find((obj)=>obj.type==value).name}/>
+            <LegendLine icon={Constants.context_keys[value]} text = {this.props.renderer.context_choices.find((obj)=>obj.type==value).name}/>
         );
         let tasks = this.props.tasks.map((value)=>
-            <LegendLine icon={Constants.task_keys[value]} text = {task_choices.find((obj)=>obj.type==value).name}/>
+            <LegendLine icon={Constants.task_keys[value]} text = {this.props.renderer.task_choices.find((obj)=>obj.type==value).name}/>
         );
         let strategies = this.props.strategies.map((value)=>
-            <LegendLine icon={Constants.strategy_keys[value]} text = {strategy_classification_choices.find((obj)=>obj.type==value).name}/>
+            <LegendLine icon={Constants.strategy_keys[value]} text = {this.props.renderer.strategy_classification_choices.find((obj)=>obj.type==value).name}/>
         );
 
         return (

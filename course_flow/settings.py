@@ -26,7 +26,7 @@ LTI_CLIENT_KEY = "course_flow"
 LTI_CLIENT_SECRET = "course_flow"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 

@@ -62,17 +62,7 @@ export default [
     input: "course_flow/static/course_flow/js/scripts-wf-redux.js",
     output: {
       file: "course_flow/static/course_flow/js/scripts-wf-redux.min.js",
-      name: "workflow_redux",
-      format: "iife",
-      sourceMap: "inline"
-    },
-    plugins: plugins
-  },
-  {
-    input: "course_flow/static/course_flow/js/scripts-outcomes.js",
-    output: {
-      file: "course_flow/static/course_flow/js/scripts-outcomes.min.js",
-      name: "outcome_scripts",
+      name: "renderers",
       format: "iife",
       sourceMap: "inline"
     },

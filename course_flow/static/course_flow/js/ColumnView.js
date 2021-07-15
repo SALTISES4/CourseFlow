@@ -14,12 +14,12 @@ class ColumnView extends ComponentJSON{
     }
     
     render(){
-        column_colours[this.props.objectID] = this.getColour();
+        this.props.renderer.column_colours[this.props.objectID] = this.getColour();
         let data = this.props.data;
         var title = data.title;
         if(!title)title=data.column_type_display;
         return (
-            <div class={"column"+((this.state.selected && " selected")||"")} onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}>
+            <div class={"column"+((this.state.selected && " selected")||"")} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="column-line">
                     <img src={this.getIcon()}/>
                     <div>{title}</div>
@@ -61,7 +61,7 @@ class NodeBarColumnUnconnected extends ComponentJSON{
         if(data)title = data.title;
         if(!title)title=data.column_type_display;
         return(
-            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:column_colours[this.props.objectID]}}>
+            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:this.props.renderer.column_colours[this.props.objectID]}}>
                 {title}
             </div>
         );
@@ -108,9 +108,9 @@ export const NodeBarColumn = connect(
 export class NodeBarColumnCreator extends NodeBarColumnUnconnected{
     render(){
         var title="New ";
-        for(var i=0;i<column_choices.length;i++){
-            if(column_choices[i].type==this.props.columnType){
-                title+=column_choices[i].name;
+        for(var i=0;i<this.props.renderer.column_choices.length;i++){
+            if(this.props.renderer.column_choices[i].type==this.props.columnType){
+                title+=this.props.renderer.column_choices[i].name;
                 break;
             }
         }

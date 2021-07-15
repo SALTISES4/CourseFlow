@@ -19,9 +19,9 @@ class OutcomeOutcomeView extends ComponentJSON{
         let data = this.props.data;
         
         return (
-            <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
-                <OutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
-            </div>
+            <li class="outcome-outcome" id={data.id} ref={this.maindiv} data-child-id={data.child}>
+                <OutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
+            </li>
         );
     }
     
@@ -60,7 +60,7 @@ export const OutcomeBarOutcomeOutcomeView = connect(
 
 
 //Basic component representing an outcome to outcome link
-class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
+export class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
     
     constructor(props){
         super(props);
@@ -72,8 +72,15 @@ class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
         
         return (
             <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
-                <NodeOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
+                {this.getChildType()}
             </div>
+        );
+    }
+    
+    getChildType(){
+        let data = this.props.data;
+        return (
+            <NodeOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
         );
     }
     
@@ -97,7 +104,7 @@ class TableOutcomeOutcomeViewUnconnected extends ComponentJSON{
         
         return (
             <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
-                <TableOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.props.updateParentCompletion} completion_status_from_parents={this.props.completion_status_from_parents} outcomes_type={this.props.outcomes_type}/>
+                <TableOutcomeView renderer={this.props.renderer} objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.props.updateParentCompletion} completion_status_from_parents={this.props.completion_status_from_parents} outcomes_type={this.props.outcomes_type}/>
             </div>
         );
     }

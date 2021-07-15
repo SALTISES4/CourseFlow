@@ -63,6 +63,24 @@ export const getWeekWorkflowByID = (state,id)=>{
         if(weekworkflow.id==id)return {data:weekworkflow,order:state.workflow.weekworkflow_set};
     }
 }
+export const getOutcomeWorkflowByID = (state,id)=>{
+    for(var i in state.outcomeworkflow){
+        var outcomeworkflow = state.outcomeworkflow[i];
+        if(outcomeworkflow.id==id)return {data:outcomeworkflow,order:state.workflow.outcomeworkflow_set};
+    }
+}
+export const getParentOutcomeWorkflowByID = (state,id)=>{
+    for(var i in state.parent_outcomeworkflow){
+        var outcomeworkflow = state.parent_outcomeworkflow[i];
+        if(outcomeworkflow.id==id)return {data:outcomeworkflow,order:state.workflow.outcomeworkflow_set};
+    }
+}
+export const getParentWorkflowByID = (state,id)=>{
+    for(var i in state.parent_workflow){
+        var workflow = state.parent_workflow[i];
+        if(workflow.id==id)return {data:workflow}
+    }
+}
 export const getNodeByID = (state,id)=>{
     for(var i in state.node){
         var node = state.node[i];
@@ -81,9 +99,36 @@ export const getNodeLinkByID = (state,id)=>{
         if(nodelink.id==id)return {data:nodelink};
     }
 }
-export const getOutcomeByID = (state,id)=>{
+export const getOutcomeByID = (state,id,display_parent_outcomes)=>{
     for(var i in state.outcome){
         var outcome = state.outcome[i];
+        if(outcome.id==id){
+            if(display_parent_outcomes)return {data:outcome,parent_outcomes:state.parent_outcomes,outcomenodes:state.outcomenode};
+            else return {data:outcome,outcomenodes:state.outcomenode};
+        }
+    }
+}
+export const getParentOutcomeByID = (state,id)=>{
+    for(var i in state.parent_outcome){
+        var outcome = state.parent_outcome[i];
+        if(outcome.id==id)return {data:outcome};
+    }
+}
+export const getChildWorkflowByID = (state,id)=>{
+    for(var i in state.child_workflow){
+        var workflow = state.child_workflow[i];
+        if(workflow.id==id)return {data:workflow};
+    }
+}
+export const getChildOutcomeWorkflowByID = (state,id)=>{
+    for(var i in state.child_outcomeworkflow){
+        var outcomeworkflow = state.child_outcomeworkflow[i];
+        if(outcomeworkflow.id==id)return {data:outcomeworkflow};
+    }
+}
+export const getChildOutcomeByID = (state,id)=>{
+    for(var i in state.child_outcome){
+        var outcome = state.child_outcome[i];
         if(outcome.id==id)return {data:outcome};
     }
 }
@@ -93,9 +138,27 @@ export const getOutcomeOutcomeByID = (state,id)=>{
         if(outcomeoutcome.id==id)return {data:outcomeoutcome};
     }
 }
+export const getParentOutcomeOutcomeByID = (state,id)=>{
+    for(var i in state.parent_outcomeoutcome){
+        var outcomeoutcome = state.parent_outcomeoutcome[i];
+        if(outcomeoutcome.id==id)return {data:outcomeoutcome};
+    }
+}
 export const getOutcomeNodeByID = (state,id)=>{
     for(var i in state.outcomenode){
         var outcomenode = state.outcomenode[i];
+        if(outcomenode.id==id)return {data:outcomenode};
+    }
+}
+export const getOutcomeHorizontalLinkByID = (state,id)=>{
+    for(var i in state.outcomehorizontallink){
+        var outcomehorizontallink = state.outcomehorizontallink[i];
+        if(outcomehorizontallink.id==id)return {data:outcomehorizontallink};
+    }
+}
+export const getParentOutcomeNodeByID = (state,id)=>{
+    for(var i in state.parent_outcomenode){
+        var outcomenode = state.parent_outcomenode[i];
         if(outcomenode.id==id)return {data:outcomenode};
     }
 }
