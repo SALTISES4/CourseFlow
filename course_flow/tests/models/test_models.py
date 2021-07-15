@@ -1428,16 +1428,18 @@ class ModelViewTest(TestCase):
     def test_add_remove_outcome_to_node_permissions_no_authorship(self):
         myself = login(self)
         author = get_author()
-        node = make_object("node", author)
-        week = make_object("week", author)
         activity = make_object("activity", author)
+        node = make_object("node", author)
+        node.column=activity.columns.first()
+        node.save()
+        week = make_object("week", author)
         NodeWeek.objects.create(node=node, week=week)
         WeekWorkflow.objects.create(week=week, workflow=activity)
         outcome = make_object("outcome", author)
         OutcomeWorkflow.objects.create(outcome=outcome, workflow=activity)
         response = self.client.post(
-            reverse("course_flow:add-outcome-to-node"),
-            {"nodePk": node.id, "outcomePk": outcome.id},
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": outcome.id,"degree":1},
         )
         self.assertEqual(response.status_code, 403)
         outcomenode = OutcomeNode.objects.create(node=node, outcome=outcome)
@@ -1451,22 +1453,24 @@ class ModelViewTest(TestCase):
         mynode = make_object("node", myself)
         myweek = make_object("week", myself)
         myactivity = make_object("activity", myself)
+        mynode.column=myactivity.columns.first()
+        mynode.save()
         OutcomeWorkflow.objects.create(outcome=myoutcome, workflow=myactivity)
         NodeWeek.objects.create(node=mynode, week=myweek)
         WeekWorkflow.objects.create(week=myweek, workflow=myactivity)
         response = self.client.post(
-            reverse("course_flow:add-outcome-to-node"),
-            {"nodePk": mynode.id, "outcomePk": outcome.id},
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": mynode.id, "outcomePk": outcome.id,"degree":1},
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
-            reverse("course_flow:add-outcome-to-node"),
-            {"nodePk": node.id, "outcomePk": myoutcome.id},
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": myoutcome.id,"degree":1},
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
-            reverse("course_flow:add-outcome-to-node"),
-            {"nodePk": mynode.id, "outcomePk": myoutcome.id},
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": mynode.id, "outcomePk": myoutcome.id, "degree":1},
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeNode.objects.count(), 1)
@@ -1482,6 +1486,8 @@ class ModelViewTest(TestCase):
         node = make_object("node", user)
         week = make_object("week", user)
         activity = make_object("activity", user)
+        node.column = activity.columns.first()
+        node.save()
         NodeWeek.objects.create(node=node, week=week)
         WeekWorkflow.objects.create(week=week, workflow=activity)
         base_outcome = make_object("outcome", user)
@@ -1494,8 +1500,8 @@ class ModelViewTest(TestCase):
         oc3 = base_outcome.children.create(author=user)
         #Add the base outcome, which should add all outcomes
         response = self.client.post(
-            reverse("course_flow:add-outcome-to-node"),
-            {"nodePk": node.id, "outcomePk": base_outcome.id},
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": base_outcome.id,"degree":1},
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeNode.objects.all().count(),7)
@@ -1509,20 +1515,20 @@ class ModelViewTest(TestCase):
         OutcomeNode.objects.create(outcome=oc2,node=node)
         OutcomeNode.objects.create(outcome=oc3,node=node)
         response = self.client.post(
-            reverse("course_flow:add-outcome-to-node"),
-            {"nodePk": node.id, "outcomePk": oc11.id},
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": oc11.id,"degree":1},
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeNode.objects.all().count(),3)
         response = self.client.post(
-            reverse("course_flow:add-outcome-to-node"),
-            {"nodePk": node.id, "outcomePk": oc12.id},
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": oc12.id,"degree":1},
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeNode.objects.all().count(),4)
         response = self.client.post(
-            reverse("course_flow:add-outcome-to-node"),
-            {"nodePk": node.id, "outcomePk": oc13.id},
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": oc13.id,"degree":1},
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeNode.objects.all().count(),7)
@@ -1548,28 +1554,31 @@ class ModelViewTest(TestCase):
         myprogram_outcome = myprogram.outcomes.create(author=myself)
         mycourse_outcome = mycourse.outcomes.create(author=myself)
         response = self.client.post(
-            reverse("course_flow:add-parent-outcome-to-outcome"),
+            reverse("course_flow:update-outcomehorizontallink-degree"),
             {
                 "outcomePk": course_outcome.id,
                 "objectID": program_outcome.id,
+                "degree": JSONRenderer().render(1).decode("utf-8"),
                 "objectType": JSONRenderer().render("outcome").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
-            reverse("course_flow:add-parent-outcome-to-outcome"),
+            reverse("course_flow:update-outcomehorizontallink-degree"),
             {
                 "outcomePk": course_outcome.id,
                 "objectID": myprogram_outcome.id,
+                "degree": JSONRenderer().render(1).decode("utf-8"),
                 "objectType": JSONRenderer().render("outcome").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
-            reverse("course_flow:add-parent-outcome-to-outcome"),
+            reverse("course_flow:update-outcomehorizontallink-degree"),
             {
                 "outcomePk": mycourse_outcome.id,
                 "objectID": program_outcome.id,
+                "degree": JSONRenderer().render(1).decode("utf-8"),
                 "objectType": JSONRenderer().render("outcome").decode("utf-8"),
             },
         )
@@ -1578,20 +1587,21 @@ class ModelViewTest(TestCase):
             outcome=course_outcome, parent_outcome=program_outcome
         )
         response = self.client.post(
-            reverse("course_flow:delete-self"),
+            reverse("course_flow:update-outcomehorizontallink-degree"),
             {
-                "objectID": horizontal_link.id,
-                "objectType": JSONRenderer()
-                .render("outcomehorizontallink")
-                .decode("utf-8"),
+                "outcomePk": mycourse_outcome.id,
+                "objectID": program_outcome.id,
+                "degree": JSONRenderer().render(0).decode("utf-8"),
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
-            reverse("course_flow:add-parent-outcome-to-outcome"),
+            reverse("course_flow:update-outcomehorizontallink-degree"),
             {
                 "outcomePk": mycourse_outcome.id,
                 "objectID": myprogram_outcome.id,
+                "degree": JSONRenderer().render(1).decode("utf-8"),
                 "objectType": JSONRenderer().render("outcome").decode("utf-8"),
             },
         )
@@ -1599,16 +1609,75 @@ class ModelViewTest(TestCase):
         response = self.client.post(
             reverse("course_flow:delete-self"),
             {
-                "objectID": OutcomeHorizontalLink.objects.get(
-                    outcome=mycourse_outcome
-                ).id,
-                "objectType": JSONRenderer()
-                .render("outcomehorizontallink")
-                .decode("utf-8"),
+                "outcomePk": mycourse_outcome.id,
+                "objectID": myprogram_outcome.id,
+                "degree": JSONRenderer().render(0).decode("utf-8"),
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
 
+    def test_update_outcomehorizontallink_degree_parents_children(self):
+        user = login(self)
+        activity = make_object("activity", user)
+        course = make_object("course",user)
+        base_outcome = make_object("outcome", user)
+        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=course)
+        oc1 = base_outcome.children.create(author=user)
+        oc11 = oc1.children.create(author=user)
+        oc12 = oc1.children.create(author=user)
+        oc13 = oc1.children.create(author=user)
+        oc2 = base_outcome.children.create(author=user)
+        oc3 = base_outcome.children.create(author=user)
+        child_outcome = make_object("outcome", user)
+        OutcomeWorkflow.objects.create(outcome=child_outcome, workflow=activity)
+        #Add the base outcome, which should add all outcomes
+        response = self.client.post(
+            reverse("course_flow:update-outcomehorizontallink-degree"),
+            {"outcomePk": child_outcome.id, "objectID": base_outcome.id,"degree":1,
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeHorizontalLink.objects.all().count(),7)
+        #Remove the base outcome, which should remove all outcomes
+        response = self.client.post(
+            reverse("course_flow:update-outcomehorizontallink-degree"),
+            {"outcomePk": child_outcome.id, "objectID": base_outcome.id,"degree":0,
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeHorizontalLink.objects.all().count(),0)
+        OutcomeHorizontalLink.objects.create(parent_outcome=oc2,outcome=child_outcome)
+        OutcomeHorizontalLink.objects.create(parent_outcome=oc3,outcome=child_outcome)
+        response = self.client.post(
+            reverse("course_flow:update-outcomehorizontallink-degree"),
+            {"outcomePk": child_outcome.id, "objectID": oc11.id,"degree":1,
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeHorizontalLink.objects.all().count(),3)
+        response = self.client.post(
+            reverse("course_flow:update-outcomehorizontallink-degree"),
+            {"outcomePk": child_outcome.id, "objectID": oc12.id,"degree":1,
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeHorizontalLink.objects.all().count(),4)
+        response = self.client.post(
+            reverse("course_flow:update-outcomehorizontallink-degree"),
+            {"outcomePk": child_outcome.id, "objectID": oc13.id,"degree":1,
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeHorizontalLink.objects.all().count(),7)
+        response = self.client.post(
+            reverse("course_flow:update-outcomehorizontallink-degree"),
+            {"outcomePk": child_outcome.id, "objectID": oc11.id,"degree":0,
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(OutcomeHorizontalLink.objects.all().count(),4)        
+        
     def test_horizontal_outcome_link_on_node_unlink(self):
         author = login(self)
         program = make_object("program", author)

@@ -6,7 +6,7 @@ import {TableOutcomeView} from "./OutcomeView";
 import {getOutcomeWorkflowByID} from "./FindState";
 
 
-//Basic component to represent a columnworkflow
+//Basic component to represent a outcomeworkflow
 class OutcomeWorkflowView extends ComponentJSON{
     constructor(props){
         super(props);

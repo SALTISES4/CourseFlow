@@ -210,7 +210,16 @@ export class WorkflowRenderer{
                     container[0]
                 );
             });
-        }else {
+        }else if(view_type=="outcometable") {
+            setTimeout(()=>{
+                reactDom.render(
+                    <Provider store = {this.store}>
+                        <WorkflowBaseView view_type={view_type} renderer={this}/>
+                    </Provider>,
+                    container[0]
+                );
+            },50);
+        }else{
             reactDom.render(
                 <Provider store = {this.store}>
                     <WorkflowBaseView view_type={view_type} renderer={this}/>

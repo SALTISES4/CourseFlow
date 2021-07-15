@@ -20,6 +20,11 @@ import OutcomeEditView from './OutcomeEditView';
 //Container for common elements for workflows
 class WorkflowBaseViewUnconnected extends ComponentJSON{
     
+    constructor(props){
+        super(props);
+        this.objectType="workflow";
+    }
+    
     render(){
         let data = this.props.data;
         let renderer = this.props.renderer;
@@ -39,13 +44,13 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             <WorkflowView renderer={renderer}/>
         );
         if(renderer.view_type=="outcometable")workflow_content=(
-            <WorkflowView_Outcome renderer={renderer}/>
+            <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
         );
         if(renderer.view_type=="outcomeedit")workflow_content=(
             <OutcomeEditView renderer={renderer}/>
         );
         if(renderer.view_type=="horizontaloutcometable")workflow_content=(
-            <WorkflowView_Outcome renderer={renderer}/>
+            <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
         );
         
         let view_buttons = [
@@ -59,7 +64,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                 if(item.type==renderer.view_type){
                     view_class += " active";
                 }
-                return <div class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</div>;
+                return <div id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</div>;
             }
         );
             
@@ -252,11 +257,11 @@ class NodeBarUnconnected extends ComponentJSON{
         
         
         var nodebarweekworkflows;
-        if(!this.props.outcomes_view)nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
+        if(this.props.renderer.view_type=="workflowview")nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
             <NodeBarWeekWorkflow key={weekworkflow} renderer={this.props.renderer} objectID={weekworkflow}/>
         );
         var sort_type;
-        if(this.props.outcomes_view)sort_type=(
+        if(this.props.renderer.view_type=="outcometable"||this.props.renderer.view_type=="horizontaloutcometable")sort_type=(
             <div class="node-bar-sort-block">
                 <p>Sort Nodes By:</p>
                 {this.props.renderer.outcome_sort_choices.map((choice)=>

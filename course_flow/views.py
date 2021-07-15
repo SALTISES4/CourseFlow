@@ -600,220 +600,220 @@ def get_data_package_for_project(user, project):
     }
     return data_package
 
-#
-#def get_workflow_data_package(user, project, type_filter, self_only):
-#    this_project_sections = []
-#    other_project_sections = []
-#    all_published_sections = []
-#    if type_filter is None:
-#        this_project_sections.append(
-#            {
-#                "title": _("Programs"),
-#                "object_type": "program",
-#                "objects": InfoBoxSerializer(
-#                    Program.objects.filter(project=project, is_strategy=False),
-#                    many=True,
-#                    context={"user": user},
-#                ).data,
-#            }
-#        )
-#        if not self_only:
-#            other_project_sections.append(
-#                {
-#                    "title": _("Programs"),
-#                    "object_type": "program",
-#                    "objects": InfoBoxSerializer(
-#                        Program.objects.filter(
-#                            author=user, is_strategy=False
-#                        ).exclude(project=project),
-#                        many=True,
-#                        context={"user": user},
-#                    ).data,
-#                }
-#            )
-#        if not self_only:
-#            all_published_sections.append(
-#                {
-#                    "title": _("Your Favourite Programs"),
-#                    "object_type": "program",
-#                    "objects": InfoBoxSerializer(
-#                        [
-#                            favourite.content_object
-#                            for favourite in Favourite.objects.filter(
-#                                user=user,
-#                                program__published=True,
-#                                program__is_strategy=False,
-#                            )
-#                        ],
-#                        many=True,
-#                        context={"user": user},
-#                    ).data,
-#                }
-#            )
-#    if type_filter is None or type_filter == 1:
-#        this_project_sections.append(
-#            {
-#                "title": _("Courses"),
-#                "object_type": "course",
-#                "objects": InfoBoxSerializer(
-#                    Course.objects.filter(project=project, is_strategy=False),
-#                    many=True,
-#                    context={"user": user},
-#                ).data,
-#            }
-#        )
-#        if not self_only:
-#            other_project_sections.append(
-#                {
-#                    "title": _("Courses"),
-#                    "object_type": "course",
-#                    "objects": InfoBoxSerializer(
-#                        Course.objects.filter(
-#                            author=user, is_strategy=False
-#                        ).exclude(project=project),
-#                        many=True,
-#                        context={"user": user},
-#                    ).data,
-#                }
-#            )
-#        if not self_only:
-#            all_published_sections.append(
-#                {
-#                    "title": _("Your Favourite Courses"),
-#                    "object_type": "course",
-#                    "objects": InfoBoxSerializer(
-#                        [
-#                            favourite.content_object
-#                            for favourite in Favourite.objects.filter(
-#                                user=user,
-#                                course__published=True,
-#                                course__is_strategy=False,
-#                            )
-#                        ],
-#                        many=True,
-#                        context={"user": user},
-#                    ).data,
-#                }
-#            )
-#
-#    if type_filter is None or type_filter == 0:
-#        this_project_sections.append(
-#            {
-#                "title": _("Activities"),
-#                "object_type": "activity",
-#                "objects": InfoBoxSerializer(
-#                    Activity.objects.filter(
-#                        project=project, is_strategy=False
-#                    ),
-#                    many=True,
-#                    context={"user": user},
-#                ).data,
-#            }
-#        )
-#        if not self_only:
-#            other_project_sections.append(
-#                {
-#                    "title": _("Activities"),
-#                    "object_type": "activity",
-#                    "objects": InfoBoxSerializer(
-#                        Activity.objects.filter(
-#                            author=user, is_strategy=False
-#                        ).exclude(project=project),
-#                        many=True,
-#                        context={"user": user},
-#                    ).data,
-#                }
-#            )
-#        if not self_only:
-#            all_published_sections.append(
-#                {
-#                    "title": _("Your Favourite Activities"),
-#                    "object_type": "activity",
-#                    "objects": InfoBoxSerializer(
-#                        [
-#                            favourite.content_object
-#                            for favourite in Favourite.objects.filter(
-#                                user=user,
-#                                activity__published=True,
-#                                activity__is_strategy=False,
-#                            )
-#                        ],
-#                        many=True,
-#                        context={"user": user},
-#                    ).data,
-#                }
-#            )
-#
-#    #    if type_filter is None:
-#    #        this_project_sections.append(
-#    #            {
-#    #                "title": _("Outcomes"),
-#    #                "object_type": "outcome",
-#    #                "objects": InfoBoxSerializer(
-#    #                    Outcome.objects.filter(project=project),
-#    #                    many=True,
-#    #                    context={"user": user},
-#    #                ).data,
-#    #            }
-#    #        )
-#    #        if not self_only:
-#    #            other_project_sections.append(
-#    #                {
-#    #                    "title": _("Outcomes"),
-#    #                    "object_type": "outcome",
-#    #                    "objects": InfoBoxSerializer(
-#    #                        Outcome.objects.filter(author=user)
-#    #                        .exclude(project=project)
-#    #                        .exclude(project=None),
-#    #                        many=True,
-#    #                        context={"user": user},
-#    #                    ).data,
-#    #                }
-#    #            )
-#    #        if not self_only:
-#    #            all_published_sections.append(
-#    #                {
-#    #                    "title": _("Your Favourite Outcomes"),
-#    #                    "object_type": "outcome",
-#    #                    "objects": InfoBoxSerializer(
-#    #                        [
-#    #                            favourite.content_object
-#    #                            for favourite in Favourite.objects.filter(
-#    #                                user=user, outcome__published=True
-#    #                            )
-#    #                        ],
-#    #                        many=True,
-#    #                        context={"user": user},
-#    #                    ).data,
-#    #                }
-#    #            )
-#    if project.author == user:
-#        current_copy_type = "copy"
-#        other_copy_type = "import"
-#    else:
-#        current_copy_type = False
-#        other_copy_type = False
-#
-#    data_package = {
-#        "current_project": {
-#            "title": _("This Project"),
-#            "sections": this_project_sections,
-#            "add": (project.author == user),
-#            "duplicate": current_copy_type,
-#        },
-#    }
-#    if not self_only:
-#        data_package["other_projects"] = {
-#            "title": _("From Your Other Projects"),
-#            "sections": other_project_sections,
-#            "duplicate": other_copy_type,
-#        }
-#        data_package["all_published"] = {
-#            "title": _("Your Favourites"),
-#            "sections": all_published_sections,
-#            "duplicate": other_copy_type,
-#        }
-#    return data_package
+
+def get_workflow_data_package(user, project, type_filter, self_only):
+    this_project_sections = []
+    other_project_sections = []
+    all_published_sections = []
+    if type_filter is None:
+        this_project_sections.append(
+            {
+                "title": _("Programs"),
+                "object_type": "program",
+                "objects": InfoBoxSerializer(
+                    Program.objects.filter(project=project, is_strategy=False),
+                    many=True,
+                    context={"user": user},
+                ).data,
+            }
+        )
+        if not self_only:
+            other_project_sections.append(
+                {
+                    "title": _("Programs"),
+                    "object_type": "program",
+                    "objects": InfoBoxSerializer(
+                        Program.objects.filter(
+                            author=user, is_strategy=False
+                        ).exclude(project=project),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
+        if not self_only:
+            all_published_sections.append(
+                {
+                    "title": _("Your Favourite Programs"),
+                    "object_type": "program",
+                    "objects": InfoBoxSerializer(
+                        [
+                            favourite.content_object
+                            for favourite in Favourite.objects.filter(
+                                user=user,
+                                program__published=True,
+                                program__is_strategy=False,
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
+    if type_filter is None or type_filter == 1:
+        this_project_sections.append(
+            {
+                "title": _("Courses"),
+                "object_type": "course",
+                "objects": InfoBoxSerializer(
+                    Course.objects.filter(project=project, is_strategy=False),
+                    many=True,
+                    context={"user": user},
+                ).data,
+            }
+        )
+        if not self_only:
+            other_project_sections.append(
+                {
+                    "title": _("Courses"),
+                    "object_type": "course",
+                    "objects": InfoBoxSerializer(
+                        Course.objects.filter(
+                            author=user, is_strategy=False
+                        ).exclude(project=project),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
+        if not self_only:
+            all_published_sections.append(
+                {
+                    "title": _("Your Favourite Courses"),
+                    "object_type": "course",
+                    "objects": InfoBoxSerializer(
+                        [
+                            favourite.content_object
+                            for favourite in Favourite.objects.filter(
+                                user=user,
+                                course__published=True,
+                                course__is_strategy=False,
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
+
+    if type_filter is None or type_filter == 0:
+        this_project_sections.append(
+            {
+                "title": _("Activities"),
+                "object_type": "activity",
+                "objects": InfoBoxSerializer(
+                    Activity.objects.filter(
+                        project=project, is_strategy=False
+                    ),
+                    many=True,
+                    context={"user": user},
+                ).data,
+            }
+        )
+        if not self_only:
+            other_project_sections.append(
+                {
+                    "title": _("Activities"),
+                    "object_type": "activity",
+                    "objects": InfoBoxSerializer(
+                        Activity.objects.filter(
+                            author=user, is_strategy=False
+                        ).exclude(project=project),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
+        if not self_only:
+            all_published_sections.append(
+                {
+                    "title": _("Your Favourite Activities"),
+                    "object_type": "activity",
+                    "objects": InfoBoxSerializer(
+                        [
+                            favourite.content_object
+                            for favourite in Favourite.objects.filter(
+                                user=user,
+                                activity__published=True,
+                                activity__is_strategy=False,
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            )
+
+    #    if type_filter is None:
+    #        this_project_sections.append(
+    #            {
+    #                "title": _("Outcomes"),
+    #                "object_type": "outcome",
+    #                "objects": InfoBoxSerializer(
+    #                    Outcome.objects.filter(project=project),
+    #                    many=True,
+    #                    context={"user": user},
+    #                ).data,
+    #            }
+    #        )
+    #        if not self_only:
+    #            other_project_sections.append(
+    #                {
+    #                    "title": _("Outcomes"),
+    #                    "object_type": "outcome",
+    #                    "objects": InfoBoxSerializer(
+    #                        Outcome.objects.filter(author=user)
+    #                        .exclude(project=project)
+    #                        .exclude(project=None),
+    #                        many=True,
+    #                        context={"user": user},
+    #                    ).data,
+    #                }
+    #            )
+    #        if not self_only:
+    #            all_published_sections.append(
+    #                {
+    #                    "title": _("Your Favourite Outcomes"),
+    #                    "object_type": "outcome",
+    #                    "objects": InfoBoxSerializer(
+    #                        [
+    #                            favourite.content_object
+    #                            for favourite in Favourite.objects.filter(
+    #                                user=user, outcome__published=True
+    #                            )
+    #                        ],
+    #                        many=True,
+    #                        context={"user": user},
+    #                    ).data,
+    #                }
+    #            )
+    if project.author == user:
+        current_copy_type = "copy"
+        other_copy_type = "import"
+    else:
+        current_copy_type = False
+        other_copy_type = False
+
+    data_package = {
+        "current_project": {
+            "title": _("This Project"),
+            "sections": this_project_sections,
+            "add": (project.author == user),
+            "duplicate": current_copy_type,
+        },
+    }
+    if not self_only:
+        data_package["other_projects"] = {
+            "title": _("From Your Other Projects"),
+            "sections": other_project_sections,
+            "duplicate": other_copy_type,
+        }
+        data_package["all_published"] = {
+            "title": _("Your Favourites"),
+            "sections": all_published_sections,
+            "duplicate": other_copy_type,
+        }
+    return data_package
 
 
 @login_required
@@ -1046,6 +1046,10 @@ def get_child_outcome_data(workflow, user):
     for linked_workflow in linked_workflows:
         child_workflow_outcomeworkflows += linked_workflow.outcomeworkflow_set.all()
         child_workflow_outcomes += linked_workflow.outcomes.all()
+        
+    outcomehorizontallinks = [];
+    for child_outcome in child_workflow_outcomes:
+        outcomehorizontallinks += child_outcome.outcome_horizontal_links.all();
     
     return {
         "child_workflow":WorkflowSerializerShallow(
@@ -1056,6 +1060,9 @@ def get_child_outcome_data(workflow, user):
         ).data,
         "child_outcome":OutcomeSerializerShallow(
             child_workflow_outcomes, many=True
+        ).data,
+        "outcomehorizontallink":OutcomeHorizontalLinkSerializerShallow(
+            outcomehorizontallinks, many=True
         ).data,
     }
         
@@ -1607,7 +1614,7 @@ def get_possible_added_workflows(request: HttpRequest) -> HttpResponse:
     )
 
 
-@user_can_edit("nodePk")
+user_can_edit("nodePk")
 def get_possible_linked_workflows(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
@@ -2033,7 +2040,7 @@ def new_node(request: HttpRequest) -> HttpResponse:
     )
 
 
-# @user_can_edit("workflowPk")
+@user_can_edit("workflowPk")
 def new_outcome_for_workflow(request: HttpRequest) -> HttpResponse:
     workflow_id = json.loads(request.POST.get("workflowPk"))
     workflow = Workflow.objects.get(pk=workflow_id)
@@ -2634,8 +2641,8 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted","data_package":new_outcomenodes,"new_outcomenode_set":new_outcomenode_set,"new_outcomenode_unique_set":new_outcomenode_unique_set})
 
 # Add a parent outcome to an outcome
-#@user_can_edit("outcomePk")
-#@user_can_view(False)
+@user_can_edit("outcomePk")
+@user_can_view(False)
 def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
     print("updating degree")
     outcome_id = json.loads(request.POST.get("outcomePk"))

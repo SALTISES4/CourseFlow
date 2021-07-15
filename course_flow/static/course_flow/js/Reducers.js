@@ -695,6 +695,11 @@ export function nodeReducer(state={},action){
                             new_state[j]={...new_state[j]};
                             new_state[j].outcomenode_set=new_state[j].outcomenode_set.slice();
                             new_state[j].outcomenode_set.splice(outcomenode_index,1);
+                            let outcomenode_unique_index=new_state[j].outcomenode_unique_set.indexOf(outcomenode.id);
+                            if(outcomenode_unique_index>=0){
+                                new_state[j].outcomenode_unique_set=new_state[j].outcomenode_unique_set.slice();
+                                new_state[j].outcomenode_unique_set.splice(outcomenode_unique_index,1);
+                            }
                         }
                     }
                 }

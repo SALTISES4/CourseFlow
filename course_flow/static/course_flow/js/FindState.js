@@ -114,6 +114,24 @@ export const getParentOutcomeByID = (state,id)=>{
         if(outcome.id==id)return {data:outcome};
     }
 }
+export const getChildWorkflowByID = (state,id)=>{
+    for(var i in state.child_workflow){
+        var workflow = state.child_workflow[i];
+        if(workflow.id==id)return {data:workflow};
+    }
+}
+export const getChildOutcomeWorkflowByID = (state,id)=>{
+    for(var i in state.child_outcomeworkflow){
+        var outcomeworkflow = state.child_outcomeworkflow[i];
+        if(outcomeworkflow.id==id)return {data:outcomeworkflow};
+    }
+}
+export const getChildOutcomeByID = (state,id)=>{
+    for(var i in state.child_outcome){
+        var outcome = state.child_outcome[i];
+        if(outcome.id==id)return {data:outcome};
+    }
+}
 export const getOutcomeOutcomeByID = (state,id)=>{
     for(var i in state.outcomeoutcome){
         var outcomeoutcome = state.outcomeoutcome[i];
@@ -147,10 +165,7 @@ export const getParentOutcomeNodeByID = (state,id)=>{
 export const getTableOutcomeNodeByID = (state,node_id, outcome_id)=>{
     for(var i in state.outcomenode){
         var outcomenode = state.outcomenode[i];
-        if(outcomenode.outcome==outcome_id && outcomenode.node==node_id){
-            
-            return {data:outcomenode};
-        }
+        if(outcomenode.outcome==outcome_id && outcomenode.node==node_id)return {data:outcomenode};
     }
     return {data:null}
 }
