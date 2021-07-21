@@ -4,9 +4,11 @@ export function fail_function(){
     alert("Something went wrong. Please reload the page.")
 }
 
-export function getAddedWorkflowMenu(projectPk,updateFunction){
+export function getAddedWorkflowMenu(projectPk,type_filter,get_strategies,updateFunction){
     $.post(post_paths.get_possible_added_workflows,{
         projectPk:JSON.stringify(projectPk),
+        type_filter:JSON.stringify(type_filter),
+        get_strategies:JSON.stringify(get_strategies),
     },(data)=>openAddedWorkflowMenu(data,updateFunction));
 }
 

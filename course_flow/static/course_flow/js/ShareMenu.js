@@ -21,7 +21,6 @@ export class ShareMenu extends React.Component{
             <UserLabel user={user} removeClick={this.setUserPermission.bind(this,0)}/>
         );
         if(viewers.length==0)viewers=<li>None</li>;
-        console.log(this.props);
         return(
             <div class="message-wrap">
                 <h3>Sharing Options:</h3>
@@ -51,8 +50,6 @@ export class ShareMenu extends React.Component{
     }
     
     setUserPermission(permission_type,user){
-        console.log(user);
-        console.log(user.id);
         setUserPermission(user.id,this.props.data.id,this.props.data.type,permission_type,()=>{
             getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
                 this.setState({view:response.viewers,edit:response.editors});
@@ -61,7 +58,6 @@ export class ShareMenu extends React.Component{
     }
     
     componentDidMount(){
-        console.log(this.props.data);
         getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
             this.setState({view:response.viewers,edit:response.editors});
         });
@@ -134,8 +130,6 @@ class UserAdd extends React.Component{
     }
 
     addClick(evt){
-        console.log(this.state.selected);
-        console.log(this.state);
         this.props.addFunction(this.state.selected);
     }
     

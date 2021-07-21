@@ -39,7 +39,6 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         }
         let share;
         if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
-        console.log("rendering base view with type "+renderer.view_type);
         let workflow_content = (
             <WorkflowView renderer={renderer}/>
         );
@@ -120,7 +119,6 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     }
                      
     changeView(type){
-        console.log("rendering "+type);
         this.props.renderer.render(this.props.renderer.container,type);
     }
                      

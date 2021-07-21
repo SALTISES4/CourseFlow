@@ -134,7 +134,7 @@ export class WorkflowsMenu extends React.Component{
     }
     
     componentDidMount(){
-        $("#workflow-tabs").tabs();
+        $("#workflow-tabs").tabs({active:0});
         $("#workflow-tabs .tab-header").on("click",()=>{this.setState({selected:null})})
     }
 }
@@ -232,7 +232,10 @@ export class WorkflowForMenu extends React.Component{
                     buttons.push(
                         <div class="workflow-duplicate-button hover-shade" onClick={(evt)=>{
                             let loader = new Loader('body');
-                            duplicateBaseItem(this.props.workflow_data.id,this.props.workflow_data.object_type,this.props.parentID,(response_data)=>{this.props.dispatch(gridMenuItemAdded(response_data));loader.endLoad();});
+                            duplicateBaseItem(this.props.workflow_data.id,this.props.workflow_data.object_type,this.props.parentID,(response_data)=>{
+                                //this.props.dispatch(gridMenuItemAdded(response_data));
+                                loader.endLoad();
+                                window.reload();});
                             evt.stopPropagation();
                         }}>
                             <img src={iconpath+icon} title={titletext}/>
@@ -300,29 +303,92 @@ export class WorkflowForMenu extends React.Component{
 
 
 export class MenuSection extends React.Component{
+    
+    constructor(props){
+        super(props);
+        this.dropdownDiv=React.createRef();
+    }
+    
     render(){
+        let section_type = this.props.section_data.object_type;
+        let is_strategy = this.props.section_data.is_strategy;
+        let parentID = this.props.parentID;
+        
         var objects = this.props.section_data.objects.map((object)=>
-            <WorkflowForMenu key={object.id} type={this.props.type} workflow_data={object} objectType={this.props.section_data.object_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
+            <WorkflowForMenu key={object.id} type={this.props.type} workflow_data={object} objectType={section_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
         );
         
         
         if(objects.length==0)objects="This category is currently empty."
 
+        let add_button;
+        if(create_path && this.props.add){
+            let types;
+            if(section_type=="workflow")types=["program","course","activity"];
+            else types=[section_type];
+            let adds=types.map((this_type)=>
+                <a class="hover-shade" href={create_path[this_type]}>
+                    {"Create new "+this_type}
+                </a>
+            );
+            let import_text = "Import "+section_type;
+            if(is_strategy)import_text+=" strategy"
+            adds.push(
+                <a class="hover-shade" onClick={()=>{
+                    getAddedWorkflowMenu(parentID,section_type,is_strategy,(response_data)=>{
+                        if(response_data.workflowID!=null){
+                            let loader = new Loader('body');
+                            duplicateBaseItem(
+                                response_data.workflowID,section_type,
+                                parentID,(duplication_response_data)=>{
+//                                   try{
+//                                       this.props.dispatch(gridMenuItemAdded(duplication_response_data));
+//                                    } catch(err){console.log("Couldn't (or didn't need to) update grid");}
+                                    loader.endLoad();
+                                    location.reload();
+                                }
+                            );
+                        }
+                    });          
+                }}>{import_text}</a>
+            );
+            add_button=(
+                [
+                    <div class="menu-create hover-shade" onClick={this.clickAdd.bind(this)}>
+                        <img
+                          class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title="Add New"
+                          src={iconpath+"add_new_white.svg"}
+                        /><div>{this.props.section_data.title}</div>
+                    </div>,
+                    <div class="create-dropdown" ref={this.dropdownDiv}>
+                        {adds}
+                    </div>
+                ]
+            )
+            
+        }
+
         return (
             <div class={"section-"+this.props.section_data.object_type}>
-                {(create_path && this.props.add) &&
-                  <a class="menu-create" href={create_path[this.props.section_data.object_type]}
-                    ><img
-                      class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title="Add New"
-                      src={iconpath+"add_new_white.svg"}
-                  /><div>{this.props.section_data.title}</div></a>
-                }
+                {add_button}
                 <div class="menu-grid">
                     {objects}
                 </div>
             </div>
         );
         
+    }
+    
+    clickAdd(evt){
+        $(this.dropdownDiv.current)[0].classList.toggle("active");
+    }
+
+    componentDidMount(){
+        window.addEventListener("click",(evt)=>{
+            if($(evt.target).closest(".menu-create").length==0){
+                $(".create-dropdown").removeClass("active");
+            }
+        });
     }
 }
 
@@ -366,7 +432,11 @@ class WorkflowGridMenuUnconnected extends React.Component{
     }
     
     componentDidMount(){
-        $("#home-tabs").tabs();
+        $("#home-tabs").tabs({
+            activate:(evt,ui)=>{
+                window.location.hash=ui.newPanel[0].id;
+            }
+        });
     }
 }
 export const WorkflowGridMenu = connect(
@@ -440,22 +510,6 @@ class ProjectMenuUnconnected extends React.Component{
                     }
                     
                 </div>
-                <div class="project-import menu-create hover-shade" onClick={()=>{
-                    getAddedWorkflowMenu(data.id,(response_data)=>{
-                        if(response_data.workflowID!=null){
-                            let loader = new Loader('body');
-                            duplicateBaseItem(
-                                response_data.workflowID,"workflow",
-                                data.id,(duplication_response_data)=>{
-                                   try{
-                                       this.props.dispatch(gridMenuItemAdded(duplication_response_data));
-                                    } catch(err){console.log("Couldn't (or didn't need to) update grid");}
-                                    loader.endLoad();
-                                }
-                            );
-                        }
-                    });          
-                }}><img class="create-button" src={iconpath+"add_new_white.svg"}/><div>Import a workflow</div></div>
                 <div class="home-tabs" id="home-tabs">
                     <ul>
                         {tab_li}
@@ -471,7 +525,11 @@ class ProjectMenuUnconnected extends React.Component{
     }
     
     componentDidMount(){
-        $("#home-tabs").tabs();
+        $("#home-tabs").tabs({
+            activate:(evt,ui)=>{
+                window.location.hash=ui.newPanel[0].id;
+            }
+        });
         getDisciplines((response)=>{
             this.setState({all_disciplines:response});
         });
@@ -516,11 +574,11 @@ export class ProjectEditMenu extends React.Component{
                 <h3>{"Edit Project:"}</h3>
                 <div>
                     <h4>Title:</h4>
-                    <input id="project-title-input" value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
+                    <input autocomplete="off" id="project-title-input" value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
                 </div>
                 <div>
                     <h4>Description:</h4>
-                    <input id="project-description-input" value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
+                    <input autocomplete="off" id="project-description-input" value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
                 </div>
                 <div>
                     <h4>Disciplines:</h4>
@@ -651,9 +709,9 @@ export class ExploreMenu extends React.Component{
                     <div>
                         <div>
                             <h4>Filters:</h4>
-                            <label><div>Title:</div><input class = "fillable" id="search-title" name="title"/></label>
-                            <label><div>Description:</div><input class = "fillable"  id="search-description" name="des"/></label>
-                            <label><div>Author (Username):</div><input class = "fillable"  id="search-author" name="auth"/></label>
+                            <label><div>Title:</div><input autocomplete="off" class = "fillable" id="search-title" name="title"/></label>
+                            <label><div>Description:</div><input autocomplete="off" class = "fillable"  id="search-description" name="des"/></label>
+                            <label><div>Author (Username):</div><input autocomplete="off" class = "fillable"  id="search-author" name="auth"/></label>
                         </div>
                         <div>
                             <h4>Allowed Types:</h4>

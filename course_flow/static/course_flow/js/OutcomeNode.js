@@ -282,8 +282,6 @@ class TableOutcomeGroupUnconnected extends ComponentJSON{
             <TableOutcomeNode renderer={this.props.renderer} nodeID={node} outcomeID={this.props.outcomeID} updateParentCompletion={this.props.updateParentCompletion} descendant_completion_status={this.props.descendant_completion_status} outcomes_type={this.props.outcomes_type}/>
         )
         
-        console.log("child outcomes");
-        console.log(this.props.child_outcomes);
         let total_list;
         if(this.props.child_outcomes)total_list = this.props.child_outcomes;
         else total_list = this.props.nodes;
@@ -302,11 +300,8 @@ const mapTableOutcomeGroupStateToProps = (state,own_props)=>{
     if(own_props.renderer.view_type=="horizontaloutcometable"){
         let nodes=own_props.nodes;
         let child_outcomes=[];
-        console.log("Looking for a child outcome list");
         for(let i=0;i<nodes.length;i++){
-            console.log("checking a node");
             let linked_workflow = getNodeByID(state,nodes[i]).data.linked_workflow;
-            console.log(linked_workflow);
             if(linked_workflow==null)continue;
             let outcomeworkflows = getChildWorkflowByID(state,linked_workflow).data.outcomeworkflow_set;
             for(let j=0;j<outcomeworkflows.length;j++){

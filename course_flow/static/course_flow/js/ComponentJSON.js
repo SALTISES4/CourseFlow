@@ -270,7 +270,7 @@ export class ComponentJSON extends React.Component{
                     {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Title:</h4>
-                            <input id="title-editor" type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
+                            <input autocomplete="off" id="title-editor" type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
@@ -303,7 +303,7 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>Time:</h4>
                             <div>
-                                <input id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
+                                <input autocomplete="off" id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
                                 <select id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
                                     {this.props.renderer.time_choices.map((choice)=>
                                         <option value={choice.type}>{choice.name}</option>
@@ -387,6 +387,8 @@ export class ComponentJSON extends React.Component{
     }
     
     inputChanged(field,evt){
+        let value=evt.target.value;
+        if(!value)value="";
         this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.value));
     }
 

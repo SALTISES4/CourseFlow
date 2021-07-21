@@ -17,13 +17,13 @@ from course_flow.models import (
     Favourite,
     ObjectPermission,
     Outcome,
+    OutcomeNode,
     OutcomeOutcome,
     OutcomeWorkflow,
     Program,
     Project,
     Workflow,
     WorkflowProject,
-    OutcomeNode,
 )
 from course_flow.utils import get_model_from_str
 
@@ -430,7 +430,10 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:project-update", args=[my_project.pk])
         )
-        selenium.find_element_by_css_selector(".project-import").click()
+        selenium.find_element_by_css_selector("#tabs-0 .menu-create").click()
+        selenium.find_element_by_css_selector(
+            ".create-dropdown.active a:last-child"
+        ).click()
         time.sleep(0.5)
         selenium.find_element_by_css_selector(
             "#popup-container a[href='#tabs-2']"
@@ -440,7 +443,10 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         )[0].click()
         selenium.find_element_by_css_selector("#set-linked-workflow").click()
         time.sleep(1)
-        selenium.find_element_by_css_selector(".project-import").click()
+        selenium.find_element_by_css_selector("#tabs-0 .menu-create").click()
+        selenium.find_element_by_css_selector(
+            ".create-dropdown.active a:last-child"
+        ).click()
         time.sleep(0.5)
         selenium.find_element_by_css_selector(
             "#popup-container a[href='#tabs-2']"
@@ -450,7 +456,10 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         )[1].click()
         selenium.find_element_by_css_selector("#set-linked-workflow").click()
         time.sleep(1)
-        selenium.find_element_by_css_selector(".project-import").click()
+        selenium.find_element_by_css_selector("#tabs-0 .menu-create").click()
+        selenium.find_element_by_css_selector(
+            ".create-dropdown.active a:last-child"
+        ).click()
         time.sleep(0.5)
         selenium.find_element_by_css_selector(
             "#popup-container a[href='#tabs-2']"
@@ -461,7 +470,36 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         selenium.find_element_by_css_selector("#set-linked-workflow").click()
         time.sleep(1)
         assert (
-            len(selenium.find_elements_by_css_selector(".workflow-title")) == 3
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-0 .workflow-title"
+                )
+            )
+            == 3
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-1 .workflow-title"
+                )
+            )
+            == 1
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-2 .workflow-title"
+                )
+            )
+            == 1
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-3 .workflow-title"
+                )
+            )
+            == 1
         )
 
         for workflow_type in ["activity", "course", "program"]:
@@ -1327,25 +1365,19 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert_image(outcome2_img2, "solid_check")
             assert_image(outcome2_total_img, "/check")
             assert_image(outcome2_grandtotal_img, "/check")
-            
+
     def test_horizontal_outcome_view(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
             author=self.user, title="project title"
         )
-        course = Course.objects.create(
-            author=self.user
-        )
-        program = Program.objects.create(
-            author=self.user
-        )
+        course = Course.objects.create(author=self.user)
+        program = Program.objects.create(author=self.user)
         WorkflowProject.objects.create(workflow=course, project=project)
         WorkflowProject.objects.create(workflow=program, project=project)
         base_outcome = Outcome.objects.create(author=self.user)
-        OutcomeWorkflow.objects.create(
-            outcome=base_outcome, workflow=program
-        )
+        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=program)
         OutcomeOutcome.objects.create(
             parent=base_outcome,
             child=Outcome.objects.create(author=self.user),
@@ -1359,13 +1391,12 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         node = program.weeks.first().nodes.create(
             author=self.user,
             linked_workflow=course,
-            column=program.columns.first()
+            column=program.columns.first(),
         )
         response = self.client.post(
             reverse("course_flow:update-outcomenode-degree"),
-            {"nodePk": node.id, "outcomePk": base_outcome.id,"degree":1},
+            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
         )
-        
 
         selenium.get(
             self.live_server_url
@@ -1375,8 +1406,12 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             "#button_horizontaloutcometable"
         ).click()
         time.sleep(10)
-        base_outcome_row_select = ".outcome-table > div > .outcome > .outcome-row > .outcome-cells"
-        outcome1_row_select = ".outcome .outcome-outcome:first-of-type .outcome > .outcome-row"
+        base_outcome_row_select = (
+            ".outcome-table > div > .outcome > .outcome-row > .outcome-cells"
+        )
+        outcome1_row_select = (
+            ".outcome .outcome-outcome:first-of-type .outcome > .outcome-row"
+        )
         outcome2_row_select = ".outcome .outcome-outcome+.outcome-outcome .outcome > .outcome-row"
         base_cell = (
             base_outcome_row_select
@@ -1494,10 +1529,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
 
         def assert_no_image(element_string):
             self.assertEqual(
-                len(
-                    selenium.find_elements_by_css_selector(element_string)
-                ),
-                0,
+                len(selenium.find_elements_by_css_selector(element_string)), 0,
             )
 
         # Toggle the base outcome. Check to make sure the children and totals columns behave as expected
@@ -1634,7 +1666,6 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                     "#workflowtitle div"
                 ).text
             )
-            print(this_url)
             selenium.get(this_url)
             selenium.find_element_by_css_selector(
                 ".workflow-details .node .node-title"

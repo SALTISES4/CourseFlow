@@ -902,7 +902,6 @@ export function outcomeNodeReducer(state={},action){
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomenode==-1)return state;
             var new_state = state.slice();
-            console.log(new_state);
             let new_outcomenode_outcomes = action.payload.data_package.map((outcomenode)=>
                 Constants.cantorPairing(outcomenode.node,outcomenode.outcome)
             )
@@ -913,14 +912,10 @@ export function outcomeNodeReducer(state={},action){
                     action.payload.data_package[new_outcomenode_index]=null;
                 }
             }
-            console.log(new_state);
-            console.log(action.payload.data_package);
             for(var i=0;i<action.payload.data_package.length;i++){
                 if(action.payload.data_package[i]!=null)new_state.push(action.payload.data_package[i]);
             }
-            console.log(new_state);
             new_state = new_state.filter(outcomenode => outcomenode.degree>0);
-            console.log(new_state);
             return new_state;
         case 'outcome/deleteSelf':
         case 'outcome_base/deleteSelf':
@@ -939,7 +934,6 @@ export function outcomeNodeReducer(state={},action){
 export function parentOutcomeReducer(state={},action){
     switch(action.type){
         case 'replaceStoreData':
-            console.log("Replacing store data");
             if(action.payload.parent_outcome)return action.payload.parent_outcome;
             return state;
         default:
@@ -982,7 +976,6 @@ export function outcomeHorizontalLinkReducer(state={},action){
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomehorizontallink==-1)return state;
             var new_state = state.slice();
-            console.log(new_state);
             let new_outcomehorizontallink_outcomes = action.payload.data_package.map((outcomehorizontallink)=>
                 Constants.cantorPairing(outcomehorizontallink.outcome,outcomehorizontallink.parent_outcome)
             )
@@ -993,14 +986,10 @@ export function outcomeHorizontalLinkReducer(state={},action){
                     action.payload.data_package[new_outcomehorizontallink_index]=null;
                 }
             }
-            console.log(new_state);
-            console.log(action.payload.data_package);
             for(var i=0;i<action.payload.data_package.length;i++){
                 if(action.payload.data_package[i]!=null)new_state.push(action.payload.data_package[i]);
             }
-            console.log(new_state);
             new_state = new_state.filter(outcomehorizontallink => outcomehorizontallink.degree>0);
-            console.log(new_state);
             return new_state;
         default:
         return state;

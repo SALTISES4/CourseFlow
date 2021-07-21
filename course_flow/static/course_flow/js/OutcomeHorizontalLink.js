@@ -9,10 +9,6 @@ import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
 
 export class TableHorizontalOutcomeLinkUnconnected extends ComponentJSON{
     render(){
-        console.log("rendering horizontal link with outcomes");
-        console.log(this.props.outcomeID);
-        console.log(this.props.parent_outcomeID);
-        console.log(this.props.descendant_completion_status);
         let data = this.props.data;
         let outcomenode = this.props.outcomenode;
         
@@ -144,8 +140,6 @@ export const TableHorizontalOutcomeLink = connect(
 
 export class TableChildWorkflowViewUnconnected extends ComponentJSON{
     render(){
-        console.log("creating tablechildworkflowview");
-        console.log(this.props);
         
         if(!this.props.data || this.props.data.outcomeworkflow_set.length==0){
             return (
@@ -165,8 +159,6 @@ export class TableChildWorkflowViewUnconnected extends ComponentJSON{
 }
 const mapTableChildWorkflowStateToProps = (state,own_props)=>{
     let node = getNodeByID(state,own_props.nodeID).data
-    console.log("mapping child workflow state to props");
-    console.log(node);
     let linked_workflow = node.linked_workflow;
     if(linked_workflow)for(var i=0;i<state.child_workflow.length;i++){
         if(linked_workflow==state.child_workflow[i].id){
@@ -211,7 +203,6 @@ export const TableChildWorkflowHeader = connect(
 class TableChildOutcomeHeaderUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
-        console.log(this.props);
         let class_name="table-cell nodewrapper";
         if(this.props.index>0)class_name+=" not-first-child-outcome";
         return(
