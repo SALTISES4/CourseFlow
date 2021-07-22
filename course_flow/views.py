@@ -1514,15 +1514,15 @@ def get_possible_added_workflows(request: HttpRequest) -> HttpResponse:
         project = Project.objects.get(pk=request.POST.get("projectPk"))
     else:
         project = None
-    # try:
-    data_package = get_workflow_data_package(
-        request.user,
-        project,
-        type_filter=type_filter,
-        get_strategies=get_strategies,
-    )
-    #    except AttributeError:
-    #        return JsonResponse({"action": "error"})
+    try:
+        data_package = get_workflow_data_package(
+            request.user,
+            project,
+            type_filter=type_filter,
+            get_strategies=get_strategies,
+        )
+        except AttributeError:
+            return JsonResponse({"action": "error"})
     return JsonResponse(
         {
             "action": "posted",
