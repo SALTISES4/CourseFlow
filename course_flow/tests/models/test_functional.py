@@ -254,12 +254,14 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
         discipline = Discipline.objects.create(title="discipline")
+        discipline2 = Discipline.objects.create(title="discipline2")
+        discipline3 = Discipline.objects.create(title="discipline3")
         selenium.get(
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
         )
+        time.sleep(1)
         selenium.find_element_by_id("edit-project-button").click()
-        time.sleep(5)
         selenium.find_element_by_id("project-title-input").send_keys(
             "new title"
         )
@@ -275,7 +277,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         selenium.switch_to.alert.accept()
         time.sleep(1)
         selenium.find_element_by_id("save-changes").click()
-        assert "new title" in selenium.find_element_by_id("project-title").text
+        assert "new title" in selenium.find_element_by_css_selector("#workflowtitle div").text
         assert (
             "new description"
             in selenium.find_element_by_id("project-description").text
@@ -615,7 +617,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".node .insert-sibling-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
-            time.sleep(1)
+            time.sleep(2)
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -761,7 +763,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".node .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
-            time.sleep(1)
+            time.sleep(2)
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(

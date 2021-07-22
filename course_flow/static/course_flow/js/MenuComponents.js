@@ -531,6 +531,7 @@ class ProjectMenuUnconnected extends React.Component{
             }
         });
         getDisciplines((response)=>{
+            console.log(response);
             this.setState({all_disciplines:response});
         });
     }
