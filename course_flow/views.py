@@ -29,6 +29,7 @@ from .decorators import (
     user_can_edit,
     user_can_view,
     user_can_view_or_none,
+    user_can_edit_or_none,
     user_is_teacher,
 )
 from .forms import RegistrationForm
