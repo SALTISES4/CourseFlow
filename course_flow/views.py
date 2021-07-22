@@ -1505,7 +1505,7 @@ def get_target_projects(request: HttpRequest) -> HttpResponse:
     )
 
 
-# @user_can_edit_or_none("projectPk")
+@user_can_edit_or_none("projectPk")
 def get_possible_added_workflows(request: HttpRequest) -> HttpResponse:
     type_filter = json.loads(request.POST.get("type_filter"))
     get_strategies = json.loads(request.POST.get("get_strategies", "false"))

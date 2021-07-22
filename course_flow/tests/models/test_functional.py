@@ -277,7 +277,10 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         selenium.switch_to.alert.accept()
         time.sleep(1)
         selenium.find_element_by_id("save-changes").click()
-        assert "new title" in selenium.find_element_by_css_selector("#workflowtitle div").text
+        assert (
+            "new title"
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
+        )
         assert (
             "new description"
             in selenium.find_element_by_id("project-description").text
