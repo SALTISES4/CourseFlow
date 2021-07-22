@@ -1521,8 +1521,8 @@ def get_possible_added_workflows(request: HttpRequest) -> HttpResponse:
             type_filter=type_filter,
             get_strategies=get_strategies,
         )
-        except AttributeError:
-            return JsonResponse({"action": "error"})
+    except AttributeError:
+        return JsonResponse({"action": "error"})
     return JsonResponse(
         {
             "action": "posted",
