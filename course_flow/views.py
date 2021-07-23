@@ -216,7 +216,7 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                     for model_type in types
                 ],
             )
-        except ValidationError:
+        except TypeError:
             queryset = Project.objects.none()
         total_results = 0
         subqueryset = []
