@@ -27,9 +27,9 @@ from .decorators import (
     test_object_permission,
     user_can_delete,
     user_can_edit,
+    user_can_edit_or_none,
     user_can_view,
     user_can_view_or_none,
-    user_can_edit_or_none,
     user_is_teacher,
 )
 from .forms import RegistrationForm
@@ -216,7 +216,7 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                     for model_type in types
                 ],
             )
-        except:
+        except ValidationError:
             queryset = Project.objects.none()
         total_results = 0
         subqueryset = []
@@ -1378,7 +1378,7 @@ def save_serializer(serializer) -> HttpResponse:
 #            status.is_completed = False
 #
 #        status.save()
-#    except:
+#    except ValidationError:
 #        return JsonResponse({"action": "error"})
 #
 #    return JsonResponse({"action": "posted"})
@@ -1654,6 +1654,87 @@ def duplicate_column(column: Column, author: User) -> Column:
     )
 
     return new_column
+
+
+# def fast_column_copy(column: Column, author: User) -> Column:
+#    return Column(
+#        title=column.title,
+#        author=author,
+#        is_original=False,
+#        parent_column=column,
+#        column_type=column.column_type,
+#    )
+#
+#
+# def fast_week_copy(week,author):
+#    return Week(
+#        title=week.title,
+#        description=week.description,
+#        author=author,
+#        is_original=False,
+#        parent_week=week,
+#        week_type=week.week_type,
+#        is_strategy=week.is_strategy,
+#        original_strategy=week.original_strategy,
+#        strategy_classification=week.strategy_classification,
+#    )
+#
+# def fast_node_copy(node,column,author):
+#    return Node(title=node.title,
+#        description=node.description,
+#        author=author,
+#        node_type=node.node_type,
+#        column=column,
+#        task_classification=node.task_classification,
+#        context_classification=node.context_classification,
+#        has_autolink=node.has_autolink,
+#        represents_workflow=node.represents_workflow,
+#        time_required=node.time_required,
+#        time_units=node.time_units,
+#        is_original=False,
+#        parent_node=node,
+#        linked_workflow=node.linked_workflow,
+#    )
+#
+# def fast_duplicate_workflow(workflow:Workflow, author: User) -> Workflow:
+#    model = get_model_from_str(workflow.type)
+#
+#    new_workflow = model.objects.create(
+#        title=workflow.title,
+#        description=workflow.description,
+#        outcomes_type=workflow.outcomes_type,
+#        outcomes_sort=workflow.outcomes_sort,
+#        author=author,
+#        is_original=False,
+#        parent_workflow=workflow,
+#        is_strategy=workflow.is_strategy,
+#    )
+#
+#    columnworkflows = workflow.columnworkflow_set.order_by("rank").select_related("column")
+#    columns = [columnworkflow.column for columnworkflow in columnworkflows]
+#    weeks = Week.objects.filter(workflow=workflow).prefetch_related("nodes__column")
+#    nodes = [list(week.nodes.all()) for week in weeks]
+#    print(nodes)
+#    nodes_flat = [{"node":node,"week_index":i,"column_index":columns.index(node.column)} for i,sublist in enumerate(nodes) for node in sublist]
+#
+#    print(nodes_flat)
+#
+#    new_columns = Column.objects.bulk_create([fast_column_copy(column,author) for column in columns])
+#    print(new_columns)
+#    print("made columns")
+#    ColumnWorkflow.objects.bulk_create(
+#        [ColumnWorkflow(
+#            rank=i,
+#            column=column,
+#            workflow=workflow
+#        ) for i,column in enumerate(new_columns)]
+#    )
+#    #new_weeks = Week.objects.bulk_create([fast_week_copy(week,author) for week in weeks])
+#    #new_nodes = Node.objects.bulk_create([fast_node_copy(node["node"],node["column"],author) for node in nodes_flat])
+#
+#    print("returning")
+#
+#    return new_workflow
 
 
 def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
@@ -2362,11 +2443,9 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
             object_id=object_id,
         ).delete()
         if favourite:
-            Favourite.objects.create(
-                user=request.user, content_object=item
-            )
+            Favourite.objects.create(user=request.user, content_object=item)
         response["action"] = "posted"
-    except:
+    except ValidationError:
         response["action"] = "error"
 
     return JsonResponse(response)
@@ -2395,7 +2474,7 @@ def set_permission(request: HttpRequest) -> HttpResponse:
                 user=user, content_object=item, permission_type=permission_type
             )
         response["action"] = "posted"
-    except:
+    except ValidationError:
         response["action"] = "error"
 
     return JsonResponse(response)
@@ -2421,7 +2500,7 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
             permission_type=ObjectPermission.PERMISSION_VIEW,
         ).select_related("user"):
             viewers.add(object_permission.user)
-    except:
+    except ValidationError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {
@@ -2440,7 +2519,7 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
             username__istartswith=name_filter,
             groups=Group.objects.get(name=settings.TEACHER_GROUP),
         )[:10]
-    except:
+    except ValidationError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {

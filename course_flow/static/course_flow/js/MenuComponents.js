@@ -235,7 +235,8 @@ export class WorkflowForMenu extends React.Component{
                             duplicateBaseItem(this.props.workflow_data.id,this.props.workflow_data.object_type,this.props.parentID,(response_data)=>{
                                 //this.props.dispatch(gridMenuItemAdded(response_data));
                                 loader.endLoad();
-                                window.reload();});
+                                window.location.reload();
+                            });
                             evt.stopPropagation();
                         }}>
                             <img src={iconpath+icon} title={titletext}/>

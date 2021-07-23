@@ -766,7 +766,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".node .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
-            time.sleep(2)
+            time.sleep(3)
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(

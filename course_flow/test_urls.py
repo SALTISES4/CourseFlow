@@ -1,3 +1,4 @@
+import debug_toolbar
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
@@ -45,6 +46,7 @@ urlpatterns = sum(
                 include("user_feedback.urls", namespace="user_feedback"),
             ),
             path("admin/", admin.site.urls),
+            path("__debug__/", include(debug_toolbar.urls)),
         ],
     ],
     [],
