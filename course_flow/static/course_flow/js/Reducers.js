@@ -533,10 +533,10 @@ export function nodeweekReducer(state={},action){
             }
             return new_state;
         case 'week/insertBelow':
-            if(!action.payload.children_through)return state;
+            if(!action.payload.children)return state;
             new_state = state.slice();
-            for(var i=0;i<action.payload.children_through.length;i++){
-                new_state.push(action.payload.children_through[i]);
+            for(var i=0;i<action.payload.children.nodeweek.length;i++){
+                new_state.push(action.payload.children.nodeweek[i]);
             }
             return new_state;
         case 'node/insertBelow':
@@ -619,8 +619,8 @@ export function nodeReducer(state={},action){
         case 'week/insertBelow':
             if(!action.payload.children)return state;
             new_state = state.slice();
-            for(var i=0;i<action.payload.children.length;i++){
-                new_state.push(action.payload.children[i]);
+            for(var i=0;i<action.payload.children.node.length;i++){
+                new_state.push(action.payload.children.node[i]);
             }
             return new_state;
         case 'node/insertBelow':
@@ -732,6 +732,13 @@ export function nodelinkReducer(state={},action){
                 }
             }
             return state;
+        case 'week/insertBelow':
+            if(!action.payload.children)return state;
+            new_state = state.slice();
+            for(var i=0;i<action.payload.children.nodelink.length;i++){
+                new_state.push(action.payload.children.nodelink[i]);
+            }
+            return new_state;
         case 'strategy/addStrategy':
             if(action.payload.nodelinks_added.length==0)return state;
             new_state=state.slice();
@@ -800,8 +807,8 @@ export function outcomeReducer(state={},action){
             var new_state=state.slice();
             new_state.push(action.payload.new_model);
             if(action.payload.children){
-                for(var i=0;i<action.payload.children.length;i++){
-                    new_state.push(action.payload.children[i]);
+                for(var i=0;i<action.payload.children.outcome.length;i++){
+                    new_state.push(action.payload.children.outcome[i]);
                 }
             }
             return new_state;
@@ -819,8 +826,8 @@ export function outcomeReducer(state={},action){
                     new_state[i].child_outcome_links = new_child_outcome_links;
                     new_state.push(action.payload.new_model);
                     if(action.payload.children){
-                        for(var i=0;i<action.payload.children.length;i++){
-                            new_state.push(action.payload.children[i]);
+                        for(var i=0;i<action.payload.children.outcome.length;i++){
+                            new_state.push(action.payload.children.outcome[i]);
                         }
                     }
                     return new_state;
@@ -873,9 +880,9 @@ export function outcomeOutcomeReducer(state={},action){
             return state;
         case 'outcome_base/insertBelow':
             var new_state = state.slice();
-            if(action.payload.children_through){
-                for(var i=0;i<action.payload.children_through.length;i++){
-                    new_state.push(action.payload.children_through[i]);
+            if(action.payload.children){
+                for(var i=0;i<action.payload.children.outcomeoutcome.length;i++){
+                    new_state.push(action.payload.children.outcomeoutcome[i]);
                 }
             }
             return new_state;
@@ -883,9 +890,9 @@ export function outcomeOutcomeReducer(state={},action){
         case 'outcome/insertBelow':
             var new_state = state.slice();
             new_state.push(action.payload.new_through);
-            if(action.payload.children_through){
-                for(var i=0;i<action.payload.children_through.length;i++){
-                    new_state.push(action.payload.children_through[i]);
+            if(action.payload.children){
+                for(var i=0;i<action.payload.children.outcomeoutcome.length;i++){
+                    new_state.push(action.payload.children.outcomeoutcome[i]);
                 }
             }
             return new_state;
@@ -925,6 +932,13 @@ export function outcomeNodeReducer(state={},action){
                     new_state.splice(i,1);
                     i--;
                 }
+            }
+            return new_state;
+        case 'week/insertBelow':
+            if(!action.payload.children)return state;
+            new_state = state.slice();
+            for(var i=0;i<action.payload.children.outcomenode.length;i++){
+                new_state.push(action.payload.children.outcomenode[i]);
             }
             return new_state;
         default:

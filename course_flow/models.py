@@ -9,6 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
@@ -21,7 +22,7 @@ class Project(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.CharField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
 
@@ -59,7 +60,7 @@ class Project(models.Model):
 class WorkflowProject(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     workflow = models.ForeignKey("Workflow", on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
     def get_permission_objects(self):
@@ -73,7 +74,7 @@ class WorkflowProject(models.Model):
 # class OutcomeProject(models.Model):
 #    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 #    outcome = models.ForeignKey("Outcome", on_delete=models.CASCADE)
-#    added_on = models.DateTimeField(auto_now_add=True)
+#    added_on = models.DateTimeField(default=timezone.now)
 #    rank = models.PositiveIntegerField(default=0)
 #
 #    def get_permission_objects(self):
@@ -87,7 +88,7 @@ class WorkflowProject(models.Model):
 class OutcomeWorkflow(models.Model):
     workflow = models.ForeignKey("Workflow", on_delete=models.CASCADE)
     outcome = models.ForeignKey("Outcome", on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
     def get_permission_objects(self):
@@ -101,7 +102,7 @@ class OutcomeWorkflow(models.Model):
 class Column(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
@@ -174,7 +175,7 @@ class NodeLink(models.Model):
     target_port = models.PositiveIntegerField(choices=TARGET_PORTS, default=0)
 
     dashed = models.BooleanField(default=False)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
     is_original = models.BooleanField(default=True)
@@ -199,7 +200,7 @@ class Outcome(models.Model):
     title = models.CharField(max_length=500)
     description = models.TextField(max_length=500)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     parent_outcome = models.ForeignKey(
         "Outcome", on_delete=models.SET_NULL, null=True
@@ -265,7 +266,7 @@ class OutcomeOutcome(models.Model):
     child = models.ForeignKey(
         Outcome, on_delete=models.CASCADE, related_name="parent_outcome_links"
     )
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
     def get_permission_objects(self):
@@ -290,7 +291,7 @@ class OutcomeHorizontalLink(models.Model):
         on_delete=models.CASCADE,
         related_name="reverse_outcome_horizontal_links",
     )
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
     degree = models.PositiveIntegerField(default=1)
 
@@ -373,7 +374,7 @@ class Node(models.Model):
         on_delete=models.SET_NULL,
         null=True,
     )
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
 
@@ -551,7 +552,7 @@ class NodeCompletionStatus(models.Model):
 class OutcomeNode(models.Model):
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
     degree = models.PositiveIntegerField(default=1)
 
@@ -624,7 +625,7 @@ class Week(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     default = models.BooleanField(default=False)
     parent_week = models.ForeignKey(
@@ -694,7 +695,7 @@ class Week(models.Model):
 class NodeWeek(models.Model):
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
     def get_workflow(self):
@@ -714,7 +715,7 @@ class Workflow(models.Model):
 
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
     static = models.BooleanField(default=False)
@@ -916,7 +917,7 @@ class Program(Workflow):
 class ColumnWorkflow(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     column = models.ForeignKey(Column, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
     def get_workflow():
@@ -933,7 +934,7 @@ class ColumnWorkflow(models.Model):
 class WeekWorkflow(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
     def get_workflow():

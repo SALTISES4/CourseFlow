@@ -1,3 +1,5 @@
+import time
+
 from django.contrib.contenttypes.models import ContentType
 
 owned_throughmodels = [
@@ -76,3 +78,11 @@ def get_unique_outcomehorizontallinks(outcome):
     for link in links:
         outcomes_used+= map(linkIDMap,get_descendant_outcomes(link.parent_outcome))
     return outcome.outcome_horizontal_links.exclude(parent_outcome__id__in=outcomes_used)
+
+
+def benchmark(identifier,last_time):
+    current_time=time.time()
+    print("Completed "+identifier+" in "+str(current_time-last_time))
+    return current_time
+
+

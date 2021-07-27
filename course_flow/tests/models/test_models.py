@@ -1937,7 +1937,7 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Node.objects.all().count(), 6)
-        self.assertEqual(NodeLink.objects.all().count(), 1)
+        self.assertEqual(NodeLink.objects.all().count(), 2)
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
             {
