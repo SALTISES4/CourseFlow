@@ -226,15 +226,15 @@ export class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         );
     }
     
-    toggleDrop(){
-       
+    toggleDrop(evt){
+        evt.stopPropagation();
         this.setState({is_dropped:(!this.state.is_dropped)});
     }
 
 
     makeDraggable(){
-        let draggable_selector = "outcome"
-        let draggable_type = "outcome"
+        let draggable_selector = "outcome";
+        let draggable_type = "outcome";
         $(this.maindiv.current).draggable({
             helper:(e,item)=>{
                 var helper = $(document.createElement('div'));

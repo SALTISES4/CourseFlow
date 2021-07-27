@@ -19,6 +19,7 @@ owned_throughmodels = [
     "outcome",
 ]
 
+
 def get_model_from_str(model_str: str):
     return ContentType.objects.get(model=model_str).model_class()
 
@@ -63,26 +64,30 @@ def get_all_outcomes(outcome, search_depth):
         outcomes += get_all_outcomes(child_link.child, search_depth + 1)
     return outcomes
 
+
 def get_unique_outcomenodes(node):
     links = node.outcomenode_set.all().order_by("rank")
-    #Filter out lower level outcomes that are included by higher up ones
+    # Filter out lower level outcomes that are included by higher up ones
     outcomes_used = []
     for link in links:
-        outcomes_used+= map(linkIDMap,get_descendant_outcomes(link.outcome))
+        outcomes_used += map(linkIDMap, get_descendant_outcomes(link.outcome))
     return node.outcomenode_set.exclude(outcome__id__in=outcomes_used)
+
 
 def get_unique_outcomehorizontallinks(outcome):
     links = outcome.outcome_horizontal_links.all().order_by("rank")
-    #Filter out lower level outcomes that are included by higher up ones
+    # Filter out lower level outcomes that are included by higher up ones
     outcomes_used = []
     for link in links:
-        outcomes_used+= map(linkIDMap,get_descendant_outcomes(link.parent_outcome))
-    return outcome.outcome_horizontal_links.exclude(parent_outcome__id__in=outcomes_used)
+        outcomes_used += map(
+            linkIDMap, get_descendant_outcomes(link.parent_outcome)
+        )
+    return outcome.outcome_horizontal_links.exclude(
+        parent_outcome__id__in=outcomes_used
+    )
 
 
-def benchmark(identifier,last_time):
-    current_time=time.time()
-    print("Completed "+identifier+" in "+str(current_time-last_time))
+def benchmark(identifier, last_time):
+    current_time = time.time()
+    print("Completed " + identifier + " in " + str(current_time - last_time))
     return current_time
-
-

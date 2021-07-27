@@ -935,6 +935,7 @@ export function outcomeNodeReducer(state={},action){
             }
             return new_state;
         case 'week/insertBelow':
+        case 'node/insertBelow':
             if(!action.payload.children)return state;
             new_state = state.slice();
             for(var i=0;i<action.payload.children.outcomenode.length;i++){

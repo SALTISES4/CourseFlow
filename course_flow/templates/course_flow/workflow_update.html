@@ -76,7 +76,7 @@
       }
   });
 
-  $("#sidebar").on("mouseup dblclick mousedown",(evt)=>{evt.stopPropagation();});
+  $("#sidebar").on("dblclick mousedown",(evt)=>{evt.stopPropagation();});
 
     
   const read_only = {{read_only|safe}};

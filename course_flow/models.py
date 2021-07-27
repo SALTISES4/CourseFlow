@@ -1077,6 +1077,7 @@ def delete_node_objects(sender, instance, **kwargs):
     if instance.linked_workflow is not None:
         instance.linked_workflow = None
         instance.save()
+    
 
 
 @receiver(pre_delete, sender=Outcome)

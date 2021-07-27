@@ -34,5 +34,5 @@ class Command(BaseCommand):
         orphaned_columns.delete()
         orphaned_workflows = Workflow.objects.filter(workflowproject=None,is_strategy=False)
         orphaned_workflows.delete()
-        orphaned_outcomes = Outcome.objects.filter(outcomeproject=None,parent_outcome_links=False)
+        orphaned_outcomes = Outcome.objects.filter(outcomeworkflow=None,parent_outcome_links=False)
         orphaned_outcomes.delete()
