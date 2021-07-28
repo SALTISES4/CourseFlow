@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "debug_toolbar",
 ]
 
 
@@ -65,7 +64,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "csp.middleware.CSPMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "course_flow.test_urls"
@@ -238,3 +236,13 @@ except ImportError:
         "see README.md."
     )
     pass
+
+#Run this AFTER importing local settings, because this is where debug will usually be set to true
+if DEBUG:
+    INSTALLED_APPS+=[
+        "debug_toolbar",
+    ]
+
+    MIDDLEWARE+=[
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ]

@@ -1,4 +1,5 @@
 import uuid
+import time
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import (
@@ -7,13 +8,14 @@ from django.contrib.contenttypes.fields import (
 )
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from course_flow.utils import get_all_outcomes
+from course_flow.utils import get_all_outcomes, benchmark
 
 User = get_user_model()
 
@@ -179,9 +181,6 @@ class NodeLink(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     is_original = models.BooleanField(default=True)
-    parent_nodelink = models.ForeignKey(
-        "NodeLink", on_delete=models.SET_NULL, null=True
-    )
 
     def get_permission_objects(self):
         return [self.get_workflow().get_subclass()]
@@ -1055,14 +1054,145 @@ def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=Project)
 def delete_project_objects(sender, instance, **kwargs):
-    instance.workflows.all().delete()
-
+    
+    #Pick up all non-linking instances, which need to be saved (and their querysets evaluated) before continuing, otherwise we won't be able to find them again.
+    nodes = Node.objects.filter(week__workflow__project=instance)
+    len(nodes)
+    weeks = Week.objects.filter(workflow__project=instance)
+    len(weeks)
+    columns = Column.objects.filter(workflow__project=instance)
+    len(columns)
+    outcomes = Outcome.objects.filter(
+        Q(workflow__project=instance)
+        | Q(parent_outcomes__workflow__project=instance)
+        | Q(parent_outcomes__parent_outcomes__workflow__project=instance)
+    )
+    len(outcomes)
+    workflows = Workflow.objects.filter(project=instance)
+    len(workflows)
+    
+    #Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
+    outcomenodes = OutcomeNode.objects.filter(node__week__workflow__project=instance)
+    outcomenodes._raw_delete(outcomenodes.db)
+    nodelinks = NodeLink.objects.filter(source_node__week__workflow__project=instance)
+    nodelinks._raw_delete(nodelinks.db)
+    outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
+        Q(outcome__workflow__project=instance)
+        | Q(outcome__parent_outcomes__workflow__project=instance)
+        | Q(
+            outcome__parent_outcomes__parent_outcomes__workflow__project=instance
+        )
+    )
+    outcomehorizontallinks._raw_delete(outcomehorizontallinks.db)
+    nodeweeks = NodeWeek.objects.filter(week__workflow__project=instance)
+    nodeweeks._raw_delete(nodeweeks.db)
+    weekworkflows = WeekWorkflow.objects.filter(workflow__project=instance)
+    weekworkflows._raw_delete(weekworkflows.db)
+    columnworkflows = ColumnWorkflow.objects.filter(workflow__project=instance)
+    columnworkflows._raw_delete(columnworkflows.db)
+    outcomeoutcomes = OutcomeOutcome.objects.filter(
+        Q(parent__workflow__project=instance)
+        | Q(parent__parent_outcomes__workflow__project=instance)
+    )
+    outcomeoutcomes._raw_delete(outcomeoutcomes.db)
+    workflowprojects = WorkflowProject.objects.filter(project=instance)
+    workflowprojects._raw_delete(workflowprojects.db)
+    
+    #remove all FKs pointing to our objects from outside project. The raw deletes don't cascade, so we will get integrity errors if we fail to do this
+    workflow_subclasses = [workflow.get_subclass() for workflow in workflows]
+    activities = filter(lambda x: x.type=="activity", workflow_subclasses)
+    courses = filter(lambda x: x.type=="course", workflow_subclasses)
+    programs = filter(lambda x: x.type=="program", workflow_subclasses)
+    objectpermissions = ObjectPermission.objects.filter(
+        Q(activity__in=activities)
+        | Q(course__in=courses)
+        | Q(program__in=programs)
+    )
+    favourites = Favourite.objects.filter(
+        Q(activity__in=activities)
+        | Q(course__in=courses)
+        | Q(program__in=programs)
+    )
+    Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
+    Node.objects.filter(linked_workflow__in=workflows).update(linked_workflow=None)
+    Week.objects.filter(parent_week__in=weeks).update(parent_week=None)
+    Week.objects.filter(original_strategy__in=workflows).update(original_strategy=None)
+    Column.objects.filter(parent_column__in=columns).update(parent_column=None)
+    Workflow.objects.filter(parent_workflow__in=workflows).update(parent_workflow=None)
+    Outcome.objects.filter(parent_outcome__in=outcomes).update(parent_outcome=None)
+    
+        
+        
+    
+    
+    #Delete nonlinking instances
+    nodes._raw_delete(nodes.db)
+    weeks._raw_delete(weeks.db)
+    columns._raw_delete(columns.db)
+    outcomes._raw_delete(outcomes.db)
+    workflows._raw_delete(workflows.db)
+    
+    
+    
+    #instance.workflows.all().delete()
 
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
-    instance.weeks.all().delete()
-    instance.columns.all().delete()
-    instance.outcomes.all().delete()
+    
+    #Pick up all non-linking instances, which need to be saved (and their querysets evaluated) before continuing, otherwise we won't be able to find them again.
+    nodes = Node.objects.filter(week__workflow=instance)
+    len(nodes)
+    weeks = Week.objects.filter(workflow=instance)
+    len(weeks)
+    columns = Column.objects.filter(workflow=instance)
+    len(columns)
+    outcomes = Outcome.objects.filter(
+        Q(workflow=instance)
+        | Q(parent_outcomes__workflow=instance)
+        | Q(parent_outcomes__parent_outcomes__workflow=instance)
+    )
+    len(outcomes)
+    
+    #Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
+    outcomenodes = OutcomeNode.objects.filter(node__week__workflow=instance)
+    outcomenodes._raw_delete(outcomenodes.db)
+    nodelinks = NodeLink.objects.filter(source_node__week__workflow=instance)
+    nodelinks._raw_delete(nodelinks.db)
+    outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
+        Q(outcome__workflow=instance)
+        | Q(outcome__parent_outcomes__workflow=instance)
+        | Q(
+            outcome__parent_outcomes__parent_outcomes__workflow=instance
+        )
+    )
+    outcomehorizontallinks._raw_delete(outcomehorizontallinks.db)
+    nodeweeks = NodeWeek.objects.filter(week__workflow=instance)
+    nodeweeks._raw_delete(nodeweeks.db)
+    weekworkflows = WeekWorkflow.objects.filter(workflow=instance)
+    weekworkflows._raw_delete(weekworkflows.db)
+    columnworkflows = ColumnWorkflow.objects.filter(workflow=instance)
+    columnworkflows._raw_delete(columnworkflows.db)
+    outcomeoutcomes = OutcomeOutcome.objects.filter(
+        Q(parent__workflow=instance)
+        | Q(parent__parent_outcomes__workflow=instance)
+    )
+    outcomeoutcomes._raw_delete(outcomeoutcomes.db)
+    
+    
+    
+    #remove all FKs pointing to our objects from outside project. The raw deletes don't cascade, so we will get integrity errors if we fail to do this
+    Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
+    Week.objects.filter(parent_week__in=weeks).update(parent_week=None)
+    Column.objects.filter(parent_column__in=columns).update(parent_column=None)
+    Outcome.objects.filter(parent_outcome__in=outcomes).update(parent_outcome=None)
+    
+    
+    
+    #Delete nonlinking instances
+    nodes._raw_delete(nodes.db)
+    weeks._raw_delete(weeks.db)
+    columns._raw_delete(columns.db)
+    outcomes._raw_delete(outcomes.db)
 
 
 @receiver(pre_delete, sender=Week)
@@ -1077,7 +1207,6 @@ def delete_node_objects(sender, instance, **kwargs):
     if instance.linked_workflow is not None:
         instance.linked_workflow = None
         instance.save()
-    
 
 
 @receiver(pre_delete, sender=Outcome)

@@ -4,7 +4,6 @@ import time
 from functools import reduce
 from itertools import chain, islice, tee
 
-from django.db import transaction
 from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
@@ -12,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db import transaction
 from django.db.models import Count, ProtectedError, Q
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
@@ -27,7 +27,7 @@ from rest_framework.renderers import JSONRenderer
 
 from .decorators import (
     ajax_login_required,
-    test_object_permission,
+    check_object_permission,
     user_can_delete,
     user_can_edit,
     user_can_edit_or_none,
@@ -103,7 +103,7 @@ class UserCanViewMixin(UserPassesTestMixin):
         return Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
-            test_object_permission(
+            check_object_permission(
                 self.get_object(),
                 self.request.user,
                 ObjectPermission.PERMISSION_VIEW,
@@ -116,7 +116,7 @@ class UserCanEditMixin(UserPassesTestMixin):
         return Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
-            test_object_permission(
+            check_object_permission(
                 self.get_object(),
                 self.request.user,
                 ObjectPermission.PERMISSION_EDIT,
@@ -130,7 +130,7 @@ class UserCanEditProjectMixin(UserPassesTestMixin):
         return Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
-            test_object_permission(
+            check_object_permission(
                 project, self.request.user, ObjectPermission.PERMISSION_EDIT
             )
         )
@@ -280,7 +280,7 @@ def get_my_projects(user, add):
             "duplicate": "copy",
         },
         "edit_projects": {
-            "title": _("Editable By Me"),
+            "title": _("Shared With Me"),
             "sections": [
                 {
                     "title": _("Projects I've Been Added To"),
@@ -343,7 +343,7 @@ def get_my_templates(user):
             "duplicate": "copy",
         },
         "edit_templates": {
-            "title": _("Editable By Me"),
+            "title": _("Shared With Me"),
             "sections": [
                 {
                     "title": _("Templates I've Been Added To"),
@@ -913,8 +913,9 @@ def get_parent_outcome_data(workflow, user):
     parent_outcomeworkflows = []
     parent_outcomenodes = []
     for parent_node in workflow.linked_nodes.all():
-        #On the off-chance we have an orphaned node, this would crash. Double check to make sure that isn't the case first.
-        if(NodeWeek.objects.filter(node=parent_node).count()==0):continue
+        # On the off-chance we have an orphaned node, this would crash. Double check to make sure that isn't the case first.
+        if NodeWeek.objects.filter(node=parent_node).count() == 0:
+            continue
         # Get only top-level outcomes
         parent_outcomenodes += get_unique_outcomenodes(parent_node)
 
@@ -1573,7 +1574,6 @@ def duplicate_nodelink(
         target_port=nodelink.target_port,
         dashed=nodelink.dashed,
         is_original=False,
-        parent_nodelink=nodelink,
     )
 
     return new_nodelink
@@ -1689,11 +1689,11 @@ def fast_week_copy(week, author, now):
 
 
 def fast_node_copy(node, column, author, now, **kwargs):
-    workflow_dict=kwargs.get("workflow_dict",None)
+    workflow_dict = kwargs.get("workflow_dict", None)
     linked_workflow = node.linked_workflow
     if linked_workflow is not None and workflow_dict is not None:
-        linked_workflow=workflow_dict[linked_workflow.id]
-        
+        linked_workflow = workflow_dict[linked_workflow.id]
+
     return Node(
         title=node.title,
         description=node.description,
@@ -1723,7 +1723,6 @@ def fast_nodelink_copy(nodelink, author, source_node, target_node):
         target_port=nodelink.target_port,
         dashed=nodelink.dashed,
         is_original=False,
-        parent_nodelink=nodelink,
     )
 
 
@@ -2149,12 +2148,14 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
             Q(parent__workflow__project=project)
             | Q(parent__parent_outcomes__workflow__project=project)
         ).select_related("child", "parent")
-        
+
         outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
             Q(outcome__workflow__project=project)
             | Q(outcome__parent_outcomes__workflow__project=project)
-            | Q(outcome__parent_outcomes__parent_outcomes__workflow__project=project)
-        ).select_related("outcome","parent_outcome")
+            | Q(
+                outcome__parent_outcomes__parent_outcomes__workflow__project=project
+            )
+        ).select_related("outcome", "parent_outcome")
 
         columnworkflows = ColumnWorkflow.objects.filter(
             workflow__project=project
@@ -2214,7 +2215,11 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
         Node.objects.bulk_create(
             [
                 fast_node_copy(
-                    node, id_dict["column"][node.column.id], author, now, workflow_dict=id_dict["workflow"]
+                    node,
+                    id_dict["column"][node.column.id],
+                    author,
+                    now,
+                    workflow_dict=id_dict["workflow"],
                 )
                 for node in nodes
             ]
@@ -2322,13 +2327,17 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
                 for outcomeoutcome in outcomeoutcomes
             ]
         )
-        
+
         OutcomeHorizontalLink.objects.bulk_create(
             [
                 OutcomeHorizontalLink(
                     rank=outcomehorizontallink.rank,
-                    outcome=id_dict["outcome"][outcomehorizontallink.outcome.id],
-                    parent_outcome=id_dict["outcome"][outcomehorizontallink.parent_outcome.id],
+                    outcome=id_dict["outcome"][
+                        outcomehorizontallink.outcome.id
+                    ],
+                    parent_outcome=id_dict["outcome"][
+                        outcomehorizontallink.parent_outcome.id
+                    ],
                 )
                 for outcomehorizontallink in outcomehorizontallinks
             ]
@@ -2338,8 +2347,7 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
 
     for discipline in project.disciplines.all():
         new_project.disciplines.add(discipline)
-    
-    
+
     return new_project
 
 
@@ -2405,6 +2413,7 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
                         )
 
     return new_workflow
+
 
 @user_can_view("workflowPk")
 @user_can_edit("projectPk")
@@ -2499,7 +2508,7 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 #    )
 
 #
-#def duplicate_project(project: Project, author: User) -> Project:
+# def duplicate_project(project: Project, author: User) -> Project:
 #
 #    new_project = Project.objects.create(
 #        title=project.title,
@@ -2959,12 +2968,15 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                     newthroughmodel
                 ).data
                 new_children_serialized = {
-                    "node": NodeSerializerShallow(newmodel.nodes, many=True).data,
+                    "node": NodeSerializerShallow(
+                        newmodel.nodes, many=True
+                    ).data,
                     "nodeweek": NodeWeekSerializerShallow(
                         newmodel.nodeweek_set, many=True
                     ).data,
                     "outcomenode": OutcomeNodeSerializerShallow(
-                        OutcomeNode.objects.filter(node__week=newmodel), many=True
+                        OutcomeNode.objects.filter(node__week=newmodel),
+                        many=True,
                     ).data,
                     "nodelink": NodeLinkSerializerShallow(
                         NodeLink.objects.filter(source_node__week=newmodel),
@@ -2991,7 +3003,9 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             elif object_type == "column":
                 model = Column.objects.get(id=object_id)
                 parent = Workflow.objects.get(id=parent_id)
-                through = ColumnWorkflow.objects.get(column=model, workflow=parent)
+                through = ColumnWorkflow.objects.get(
+                    column=model, workflow=parent
+                )
                 newmodel = duplicate_column(model, request.user)
                 newthroughmodel = ColumnWorkflow.objects.create(
                     workflow=parent, column=newmodel, rank=through.rank + 1
@@ -3021,7 +3035,9 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                         outcome=model, workflow=parent
                     )
                     newthroughmodel = OutcomeWorkflow.objects.create(
-                        workflow=parent, outcome=newmodel, rank=through.rank + 1
+                        workflow=parent,
+                        outcome=newmodel,
+                        rank=through.rank + 1,
                     )
                     new_through_serialized = OutcomeWorkflowSerializerShallow(
                         newthroughmodel
@@ -3137,7 +3153,7 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     )
 
 
-@user_is_teacher(False)
+@user_is_teacher()
 def get_user_list(request: HttpRequest) -> HttpResponse:
     name_filter = json.loads(request.POST.get("filter"))
     try:
@@ -3444,7 +3460,8 @@ def delete_self(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
-        model.delete()
+        with transaction.atomic():
+            model.delete()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
 

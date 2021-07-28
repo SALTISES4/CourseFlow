@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.db.models import Q
 from django.http import (
     HttpResponseBadRequest,
     HttpResponseNotFound,
@@ -75,7 +76,7 @@ def is_owner(model):
     return wrapped_view
 
 
-def test_object_permission(instance, user, permission):
+def check_object_permission(instance, user, permission):
     if hasattr(instance, "get_subclass"):
         instance = instance.get_subclass()
     if instance.author == user:
@@ -83,35 +84,28 @@ def test_object_permission(instance, user, permission):
     if permission == ObjectPermission.PERMISSION_VIEW:
         if instance.published == True:
             return True
-        if (
-            ObjectPermission.objects.filter(
-                user=user,
-                object_id=instance.id,
-                content_type=ContentType.objects.get_for_model(instance),
-                permission_type=ObjectPermission.PERMISSION_EDIT,
-            ).count()
-            > 0
-        ):
-            return True
-    return (
+        permission_check = Q(permission_type=ObjectPermission.PERMISSION_EDIT)|Q(permission_type=ObjectPermission.PERMISSION_VIEW)
+    else:
+        permission_check = Q(permission_type=permission)
+    if (
         ObjectPermission.objects.filter(
             user=user,
             object_id=instance.id,
             content_type=ContentType.objects.get_for_model(instance),
-            permission_type=permission,
-        ).count()
+        ).filter(permission_check).count()
         > 0
-    )
+    ):
+        return True
 
 
-def test_objects_permission(instances, user, permission):
+def check_objects_permission(instances, user, permission):
     object_permissions = [
-        test_object_permission(x, user, permission) for x in instances
+        check_object_permission(x, user, permission) for x in instances
     ]
     return reduce(lambda a, b: a | b, object_permissions)
 
 
-def test_special_case_delete_permission(model_data, user):
+def check_special_case_delete_permission(model_data, user):
     instance = get_model_from_str(model_data["model"]).objects.get(
         id=model_data["id"]
     )
@@ -120,7 +114,7 @@ def test_special_case_delete_permission(model_data, user):
     #        and OutcomeWorkflow.objects.filter(outcome=instance).count() == 0
     #    ):
     #        permission_objects = instance.get_permission_objects()
-    #        return test_objects_permission(
+    #        return check_objects_permission(
     #            permission_objects, user, ObjectPermission.PERMISSION_EDIT
     #        )
     if model_data["model"] == "project":
@@ -138,13 +132,11 @@ def get_model_from_request(model, request, **kwargs):
         if model[-2:] == "Pk":
             id = json.loads(request.POST.get(model))
             model = model[:-2]
-        else:
-            id = json.loads(request.POST.get("json"))["id"]
     else:
-        if "get_parent" in kwargs:
-            if kwargs["get_parent"] == True:
-                id = json.loads(request.POST.get("parentID"))
-                model = json.loads(request.POST.get("parentType"))
+        get_parent = kwargs.get("get_parent",False)
+        if get_parent:
+            id = json.loads(request.POST.get("parentID"))
+            model = json.loads(request.POST.get("parentType"))
         else:
             id = json.loads(request.POST.get("objectID"))
             model = json.loads(request.POST.get("objectType"))
@@ -172,7 +164,7 @@ def user_can_edit(model, **outer_kwargs):
                 permission_objects = get_permission_objects(
                     model, request, **outer_kwargs
                 )
-                if test_objects_permission(
+                if check_objects_permission(
                     permission_objects,
                     User.objects.get(id=request.user.id),
                     ObjectPermission.PERMISSION_EDIT,
@@ -208,7 +200,7 @@ def user_can_view(model, **outer_kwargs):
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 403
                 return response
-            if test_objects_permission(
+            if check_objects_permission(
                 permission_objects,
                 User.objects.get(id=request.user.id),
                 ObjectPermission.PERMISSION_VIEW,
@@ -245,7 +237,7 @@ def user_can_view_or_none(model, **outer_kwargs):
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 403
                 return response
-            if test_objects_permission(
+            if check_objects_permission(
                 permission_objects,
                 User.objects.get(id=request.user.id),
                 ObjectPermission.PERMISSION_VIEW,
@@ -282,7 +274,7 @@ def user_can_edit_or_none(model, **outer_kwargs):
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 403
                 return response
-            if test_objects_permission(
+            if check_objects_permission(
                 permission_objects,
                 User.objects.get(id=request.user.id),
                 ObjectPermission.PERMISSION_EDIT,
@@ -320,7 +312,7 @@ def user_can_delete(model, **outer_kwargs):
                     model, request, **outer_kwargs
                 )
                 if model_data["model"] in delete_exceptions:
-                    if test_special_case_delete_permission(
+                    if check_special_case_delete_permission(
                         model_data, User.objects.get(id=request.user.id)
                     ):
                         return fct(request, *args, **kwargs)
@@ -328,7 +320,7 @@ def user_can_delete(model, **outer_kwargs):
                     permission_objects = get_permission_objects(
                         model, request, **outer_kwargs
                     )
-                    if test_objects_permission(
+                    if check_objects_permission(
                         permission_objects,
                         User.objects.get(id=request.user.id),
                         ObjectPermission.PERMISSION_EDIT,
@@ -348,7 +340,7 @@ def user_can_delete(model, **outer_kwargs):
     return wrapped_view
 
 
-def user_is_teacher(model):
+def user_is_teacher():
     def wrapped_view(fct):
         @require_POST
         @ajax_login_required
