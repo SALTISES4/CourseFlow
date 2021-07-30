@@ -1,16 +1,14 @@
-
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
-from . import lti, urls, views, settings
+from . import lti, settings, urls, views
 
 app_name = "course_flow"
 
 if settings.DEBUG:
     import debug_toolbar
-    
 
 
 def auth_patterns():
@@ -33,6 +31,7 @@ def lti_patterns():
         path("course-list/", lti.get_course_list, name="course-list"),
     ]
 
+
 def app_patterns():
     patterns = [
         path(
@@ -49,14 +48,8 @@ def app_patterns():
         path("admin/", admin.site.urls),
     ]
     if settings.DEBUG:
-        patterns+= [path("__debug__/", include(debug_toolbar.urls))]
+        patterns += [path("__debug__/", include(debug_toolbar.urls))]
     return patterns
 
 
-urlpatterns = sum(
-    [
-        auth_patterns(),
-        app_patterns(),
-    ],
-    [],
-)
+urlpatterns = sum([auth_patterns(), app_patterns(),], [],)

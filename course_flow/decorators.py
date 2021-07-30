@@ -84,7 +84,9 @@ def check_object_permission(instance, user, permission):
     if permission == ObjectPermission.PERMISSION_VIEW:
         if instance.published == True:
             return True
-        permission_check = Q(permission_type=ObjectPermission.PERMISSION_EDIT)|Q(permission_type=ObjectPermission.PERMISSION_VIEW)
+        permission_check = Q(
+            permission_type=ObjectPermission.PERMISSION_EDIT
+        ) | Q(permission_type=ObjectPermission.PERMISSION_VIEW)
     else:
         permission_check = Q(permission_type=permission)
     if (
@@ -92,7 +94,9 @@ def check_object_permission(instance, user, permission):
             user=user,
             object_id=instance.id,
             content_type=ContentType.objects.get_for_model(instance),
-        ).filter(permission_check).count()
+        )
+        .filter(permission_check)
+        .count()
         > 0
     ):
         return True
@@ -133,7 +137,7 @@ def get_model_from_request(model, request, **kwargs):
             id = json.loads(request.POST.get(model))
             model = model[:-2]
     else:
-        get_parent = kwargs.get("get_parent",False)
+        get_parent = kwargs.get("get_parent", False)
         if get_parent:
             id = json.loads(request.POST.get("parentID"))
             model = json.loads(request.POST.get("parentType"))

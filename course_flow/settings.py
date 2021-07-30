@@ -237,12 +237,12 @@ except ImportError:
     )
     pass
 
-#Run this AFTER importing local settings, because this is where debug will usually be set to true
+# Run this AFTER importing local settings, because this is where debug will usually be set to true
 if DEBUG:
-    INSTALLED_APPS+=[
+    INSTALLED_APPS += [
         "debug_toolbar",
     ]
 
-    MIDDLEWARE+=[
+    MIDDLEWARE += [
         "debug_toolbar.middleware.DebugToolbarMiddleware",
     ]

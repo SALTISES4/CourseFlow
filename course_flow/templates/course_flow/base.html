@@ -98,14 +98,6 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/scripts-outcomes.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
       src="{% static 'user_feedback/js/app.min.js' %}"
       defer="true"
       charset="utf-8"
@@ -130,14 +122,7 @@
     {% compress css %}
     <link
       rel="stylesheet"
-      href="{% static 'course_flow/css/workflow_styles.css' %}"
-    />
-    {% endcompress %}
-    <!-- -->
-    {% compress css %}
-    <link
-      rel="stylesheet"
-      href="{% static 'course_flow/css/base_style.css' %}"
+      href="{% static 'course_flow/js/scripts-wf-redux.min.css' %}"
     />
     {% endcompress %}
     <!--  -->

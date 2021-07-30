@@ -1,5 +1,6 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
+import autoprefixer from 'autoprefixer';
 import babel from "rollup-plugin-babel";
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
@@ -10,7 +11,11 @@ import reactDom from 'react-dom';
 
 const plugins = [
   postcss({
-    extensions: [".css"]
+    extensions: [".css"],
+      extract:true,
+      plugins:[
+          autoprefixer,
+      ]
   }),
   resolve({
     mainFields: ["browser", "module", "main"]

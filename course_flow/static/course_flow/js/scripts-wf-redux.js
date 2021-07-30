@@ -12,6 +12,8 @@ import * as Constants from "./Constants";
 import * as Reducers from "./Reducers";
 import OutcomeTopView from './OutcomeTopView';
 import {getWorkflowParentData, getWorkflowChildData} from './PostFunctions';
+import '../css/base_style.css';
+import '../css/workflow_styles.css';
 
 export {Loader} from './Constants';
 export {fail_function} from './PostFunctions';
