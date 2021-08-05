@@ -201,10 +201,12 @@ class AlignmentHorizontalBlockUnconnected extends React.Component{
             let child_outcomes = [];
             for(let i=0;i<obj.child_outcomes.length;i++){
                 let node_title_text;
-                if(obj.nodes[i]){
-                    if(obj.nodes[i].represents_workflow)node_title_text=obj.nodes[i].linked_workflow_title;
-                    else node_title_text = obj.nodes[i].title;
+                if(!obj.nodes[i] || !obj.outcomenodes[i])continue;
+                if(obj.nodes[i].represents_workflow){
+                    node_title_text=obj.nodes[i].linked_workflow_title;
                 }
+                else node_title_text = obj.nodes[i].title;
+                
                 child_outcomes.push(
                     <div class="alignment-row">
                         {this.getContents(obj.outcomenodes[i].degree)}

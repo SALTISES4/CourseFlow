@@ -7,6 +7,7 @@ from django.contrib.contenttypes.fields import (
     GenericRelation,
 )
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save, pre_delete, pre_save
@@ -15,7 +16,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from course_flow.utils import benchmark, get_all_outcomes
+from course_flow.utils import benchmark
 
 User = get_user_model()
 
@@ -919,7 +920,7 @@ class ColumnWorkflow(models.Model):
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
-    def get_workflow():
+    def get_workflow(self):
         return self.workflow
 
     def get_permission_objects(self):
@@ -936,7 +937,7 @@ class WeekWorkflow(models.Model):
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
-    def get_workflow():
+    def get_workflow(self):
         return self.workflow
 
     def get_permission_objects(self):
@@ -1007,15 +1008,12 @@ Other receivers
 def get_allowed_parent_outcomes(workflow, **kwargs):
     exclude_node = kwargs.get("exclude_node", None)
     exclude_outcomenode = kwargs.get("exclude_outcomenode", None)
-    parent_outcomes = []
     parent_outcomenodes = []
     for parent_node in workflow.linked_nodes.exclude(id=exclude_node):
         parent_outcomenodes += parent_node.outcomenode_set.exclude(
             id=exclude_outcomenode
         )
-    parent_node_base_outcomes = [ocn.outcome for ocn in parent_outcomenodes]
-    for oc in parent_node_base_outcomes:
-        parent_outcomes += get_all_outcomes(oc, 0)
+    parent_outcomes = [ocn.outcome for ocn in parent_outcomenodes]
     return parent_outcomes
 
 
@@ -1138,6 +1136,8 @@ def delete_project_objects(sender, instance, **kwargs):
     weeks._raw_delete(weeks.db)
     columns._raw_delete(columns.db)
     outcomes._raw_delete(outcomes.db)
+    objectpermissions._raw_delete(objectpermissions.db)
+    favourites._raw_delete(favourites.db)
     workflows._raw_delete(workflows.db)
 
     # instance.workflows.all().delete()
@@ -1570,7 +1570,7 @@ def set_node_type_default(sender, instance, created, **kwargs):
     try:
         node.node_type = instance.week.week_type
         node.save()
-    except:
+    except ValidationError:
         print("couldn't set default node type")
 
 
@@ -1580,7 +1580,7 @@ def set_week_type_default(sender, instance, created, **kwargs):
     try:
         week.week_type = instance.workflow.get_subclass().WORKFLOW_TYPE
         week.save()
-    except:
+    except ValidationError:
         print("couldn't set default week type")
 
 
@@ -1590,7 +1590,7 @@ def set_outcome_depth_default(sender, instance, created, **kwargs):
     try:
         child.depth = instance.parent.depth + 1
         child.save()
-    except:
+    except ValidationError:
         print("couldn't set default outcome depth")
 
 

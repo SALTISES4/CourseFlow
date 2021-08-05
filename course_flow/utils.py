@@ -2,6 +2,7 @@ import time
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+
 import course_flow.models as models
 
 owned_throughmodels = [
@@ -20,7 +21,6 @@ owned_throughmodels = [
     "outcomeoutcome",
     "outcome",
 ]
-
 
 
 def get_model_from_str(model_str: str):
@@ -58,6 +58,7 @@ def get_descendant_outcomes(outcome):
         outcomes = outcomes | get_descendant_outcomes(child)
     return outcomes
 
+
 def get_all_outcomes_for_outcome(outcome):
     outcomes = models.Outcome.objects.filter(
         Q(parent_outcomes=outcome)
@@ -66,9 +67,10 @@ def get_all_outcomes_for_outcome(outcome):
     outcomeoutcomes = models.OutcomeOutcome.objects.filter(
         Q(parent=outcome) | Q(parent__parent_outcomes=outcome)
     )
-    return outcomes,outcomeoutcomes
-    
-def get_all_outcomes_for_workflow(workflow):    
+    return outcomes, outcomeoutcomes
+
+
+def get_all_outcomes_for_workflow(workflow):
     outcomes = models.Outcome.objects.filter(
         Q(workflow=workflow)
         | Q(parent_outcomes__workflow=workflow)
@@ -78,15 +80,7 @@ def get_all_outcomes_for_workflow(workflow):
         Q(parent__workflow=workflow)
         | Q(parent__parent_outcomes__workflow=workflow)
     )
-    return outcomes,outcomeoutcomes
-    
-def get_all_outcomes(outcome, search_depth):
-    if search_depth > 10:
-        return
-    outcomes = [outcome]
-    for child_link in outcome.child_outcome_links.all():
-        outcomes += get_all_outcomes(child_link.child, search_depth + 1)
-    return outcomes
+    return outcomes, outcomeoutcomes
 
 
 def get_unique_outcomenodes(node):
