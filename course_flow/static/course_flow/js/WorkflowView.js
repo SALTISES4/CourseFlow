@@ -15,6 +15,7 @@ import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
 import OutcomeEditView from './OutcomeEditView';
+import AlignmentView from './AlignmentView';
 
 
 //Container for common elements for workflows
@@ -51,12 +52,16 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         if(renderer.view_type=="horizontaloutcometable")workflow_content=(
             <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
         );
+        if(renderer.view_type=="alignmentanalysis")workflow_content=(
+            <AlignmentView renderer={renderer} view_type={renderer.view_type}/>
+        );
         
         let view_buttons = [
             {type:"workflowview",name:"Workflow View"},
             {type:"outcomeedit",name:"Edit Outcomes"},
             {type:"outcometable",name:"Outcomes Table"},
-            {type:"horizontaloutcometable",name:"Alignment Table"}
+            {type:"horizontaloutcometable",name:"Alignment Table"},
+            {type:"alignmentanalysis",name:"Outcome Analytics"}
         ].map(
             (item)=>{
                 let view_class = "hover-shade";

@@ -87,7 +87,8 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
 )
 from .utils import (
     benchmark,
-    get_all_outcomes,
+    get_all_outcomes_for_workflow,
+    get_all_outcomes_for_outcome,
     get_descendant_outcomes,
     get_model_from_str,
     get_parent_model,
@@ -848,6 +849,8 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 #        )
 #
 #
+#
+#
 # def get_outcome_context_data(outcome, context, user):
 #    outcomes = get_all_outcomes(outcome, 0)
 #    outcomeoutcomes = []
@@ -869,10 +872,12 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 #    return context
 #
 #
+#
+#
 # class OutcomeDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 #    model = Outcome
-#    fields = ["title", "description", "published"]
-#    template_name = "course_flow/outcome_detail.html"
+#    fields = ["title", "description"]
+#    template_name = "course_flow/outcome_alignment.html"
 #
 #    def get_context_data(self, **kwargs):
 #        context = super(DetailView, self).get_context_data(**kwargs)
@@ -881,53 +886,53 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 #        )
 #
 #        return context
-#
-#
-# class OutcomeUpdateView(LoginRequiredMixin, UserCanEditMixin, UpdateView):
-#    model = Outcome
-#    fields = ["title", "description", "published"]
-#    template_name = "course_flow/outcome_update.html"
-#
-#    def get_context_data(self, **kwargs):
-#        context = super(UpdateView, self).get_context_data(**kwargs)
-#        context = get_outcome_context_data(
-#            self.object, context, self.request.user
-#        )
-#
-#        return context
 
+class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
+    model = Workflow
+    fields = ["title", "description"]
+    template_name = "course_flow/workflow_update.html"
+
+    def get_queryset(self):
+        return self.model.objects.select_subclasses()
+
+    def get_object(self):
+        workflow = super().get_object()
+        return Workflow.objects.get_subclass(pk=workflow.pk)
+
+    def get_success_url(self):
+        return reverse(
+            "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        workflow = self.get_object()
+
+        context = get_workflow_context_data(
+            workflow, context, self.request.user
+        )
+
+        return context
 
 def get_parent_outcome_data(workflow, user):
-    base_outcomes = workflow.outcomes.all()
-    outcomes = []
-    for oc in base_outcomes:
-        outcomes += get_all_outcomes(oc, 0)
-    outcomeoutcomes = []
-    outcomehorizontallinks = []
+    outcomes,outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
+    outcomehorizontallinks=[]
     for oc in outcomes:
-        outcomeoutcomes += list(oc.child_outcome_links.all())
         outcomehorizontallinks += list(oc.outcome_horizontal_links.all())
+    parent_workflows = map(
+        lambda x: x.get_workflow(),Node.objects.filter(linked_workflow=workflow)
+    ) 
     parent_outcomes = []
     parent_outcomeoutcomes = []
-    parent_workflows = []
-    parent_outcomeworkflows = []
     parent_outcomenodes = []
-    for parent_node in workflow.linked_nodes.all():
-        # On the off-chance we have an orphaned node, this would crash. Double check to make sure that isn't the case first.
-        if NodeWeek.objects.filter(node=parent_node).count() == 0:
-            continue
-        # Get only top-level outcomes
-        parent_outcomenodes += get_unique_outcomenodes(parent_node)
-
-        parent_workflow = parent_node.get_workflow()
-        if parent_workflow in parent_workflows:
-            continue
-        parent_workflows += [parent_workflow]
-    parent_node_base_outcomes = [ocn.outcome for ocn in parent_outcomenodes]
-    for oc in parent_node_base_outcomes:
-        parent_outcomes += get_all_outcomes(oc, 0)
-    for oc in parent_outcomes:
-        parent_outcomeoutcomes += list(oc.child_outcome_links.all())
+    for parent_workflow in parent_workflows:
+        new_outcomes,new_outcomeoutcomes=get_all_outcomes_for_workflow(parent_workflow)
+        parent_outcomes+=new_outcomes
+        parent_outcomeoutcomes+=new_outcomeoutcomes
+    for parent_outcome in parent_outcomes:
+        parent_outcomenodes+=OutcomeNode.objects.filter(outcome=parent_outcome)
+        
+        
     return {
         "parent_workflow": WorkflowSerializerShallow(
             parent_workflows, many=True
@@ -947,12 +952,42 @@ def get_parent_outcome_data(workflow, user):
     }
 
 
+#def get_child_outcome_data(workflow, user):
+#    nodes = Node.objects.filter(week__workflow=workflow)
+#    linked_workflows = []
+#    for node in nodes:
+#        if node.linked_workflow is not None:
+#            linked_workflows.append(node.linked_workflow)
+#    child_workflow_outcomeworkflows = []
+#    child_workflow_outcomes = []
+#    for linked_workflow in linked_workflows:
+#        child_workflow_outcomeworkflows += (
+#            linked_workflow.outcomeworkflow_set.all()
+#        )
+#        child_workflow_outcomes += linked_workflow.outcomes.all()
+#
+#    outcomehorizontallinks = []
+#    for child_outcome in child_workflow_outcomes:
+#        outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
+#
+#    return {
+#        "child_workflow": WorkflowSerializerShallow(
+#            linked_workflows, many=True
+#        ).data,
+#        "child_outcomeworkflow": OutcomeWorkflowSerializerShallow(
+#            child_workflow_outcomeworkflows, many=True
+#        ).data,
+#        "child_outcome": OutcomeSerializerShallow(
+#            child_workflow_outcomes, many=True
+#        ).data,
+#        "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
+#            outcomehorizontallinks, many=True
+#        ).data,
+#    }
+
 def get_child_outcome_data(workflow, user):
     nodes = Node.objects.filter(week__workflow=workflow)
-    linked_workflows = []
-    for node in nodes:
-        if node.linked_workflow is not None:
-            linked_workflows.append(node.linked_workflow)
+    linked_workflows = Workflow.objects.filter(linked_nodes__week__workflow=workflow).prefetch_related("outcomeworkflow_set","outcomes")
     child_workflow_outcomeworkflows = []
     child_workflow_outcomes = []
     for linked_workflow in linked_workflows:
@@ -964,7 +999,6 @@ def get_child_outcome_data(workflow, user):
     outcomehorizontallinks = []
     for child_outcome in child_workflow_outcomes:
         outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
-
     return {
         "child_workflow": WorkflowSerializerShallow(
             linked_workflows, many=True
@@ -979,7 +1013,6 @@ def get_child_outcome_data(workflow, user):
             outcomehorizontallinks, many=True
         ).data,
     }
-
 
 def get_workflow_context_data(workflow, context, user):
     data_package = {}
@@ -997,13 +1030,7 @@ def get_workflow_context_data(workflow, context, user):
     nodelinks = NodeLink.objects.filter(source_node__in=nodes)
     if not workflow.is_strategy:
         outcomeworkflows = workflow.outcomeworkflow_set.all()
-        base_outcomes = workflow.outcomes.all()
-        outcomes = []
-        for oc in base_outcomes:
-            outcomes += get_all_outcomes(oc, 0)
-        outcomeoutcomes = []
-        for oc in outcomes:
-            outcomeoutcomes += list(oc.child_outcome_links.all())
+        outcomes,outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
         outcomenodes = OutcomeNode.objects.filter(node__in=nodes)
 
     column_choices = [
@@ -1429,6 +1456,9 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
 @user_can_view("workflowPk")
 def get_workflow_parent_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    print(get_parent_outcome_data(
+        workflow.get_subclass(), request.user
+    ))
     try:
         data_package = get_parent_outcome_data(
             workflow.get_subclass(), request.user
@@ -1442,9 +1472,11 @@ def get_workflow_parent_data(request: HttpRequest) -> HttpResponse:
 def get_workflow_child_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
+        last_time=time.time()
         data_package = get_child_outcome_data(
             workflow.get_subclass(), request.user
         )
+        benchmark("finished view",last_time)
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted", "data_package": data_package})
@@ -1888,13 +1920,7 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
         # Speed is critical here. querying through __ has come out much faster (by a factor of up to 100) in testing than moving vertically through the heirarchy, even when prefetc_related is used.
         # In order to speed the creation of the throughmodels, select_related is used for any foreignkeys that need to be traversed
 
-        outcomes = Outcome.objects.filter(
-            Q(parent_outcomes=outcome)
-            | Q(parent_outcomes__parent_outcomes=outcome)
-        )
-        outcomeoutcomes = OutcomeOutcome.objects.filter(
-            Q(parent=outcome) | Q(parent__parent_outcomes=outcome)
-        ).select_related("child", "parent")
+        outcomes,outcomeoutcomes = get_all_outcomes_for_outcome(outcome)
 
         # Create the new content, and keep track of old_id:new_instance pairs in a dict
         id_dict = {}
@@ -1953,15 +1979,7 @@ def fast_duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
         outcomeworkflows = OutcomeWorkflow.objects.filter(
             workflow=workflow
         ).select_related("outcome")
-        outcomes = Outcome.objects.filter(
-            Q(workflow=workflow)
-            | Q(parent_outcomes__workflow=workflow)
-            | Q(parent_outcomes__parent_outcomes__workflow=workflow)
-        )
-        outcomeoutcomes = OutcomeOutcome.objects.filter(
-            Q(parent__workflow=workflow)
-            | Q(parent__parent_outcomes__workflow=workflow)
-        ).select_related("child", "parent")
+        outcomes,outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
 
         columnworkflows = ColumnWorkflow.objects.filter(
             workflow=workflow
@@ -3044,13 +3062,10 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                     ).data
 
                 new_model_serialized = OutcomeSerializerShallow(newmodel).data
-                outcomes = get_all_outcomes(newmodel, 0)
-                outcomeoutcomes = []
-                for oc in outcomes:
-                    outcomeoutcomes += list(oc.child_outcome_links.all())
+                outcomes,outcomeoutcomes = get_all_outcomes_for_outcome(newmodel)
                 new_children_serialized = {
                     "outcome": OutcomeSerializerShallow(
-                        outcomes[1:], many=True
+                        outcomes, many=True
                     ).data,
                     "outcomeoutcome": OutcomeOutcomeSerializerShallow(
                         outcomeoutcomes, many=True

@@ -154,6 +154,20 @@ export function cantorPairing(k1,k2){
     return parseInt((k1+k2)*(k1+k2+1)/2+k2);
 }
 
+export function hasIntersection(list1,list2){
+    return list1.filter(value=>list2.includes(value)).length>0;
+}
+
+//Gets intersection between two lists. Note that items appear in the same order as in list 1.
+export function getIntersection(list1,list2){
+    return list1.filter(value=>list2.includes(value));
+}
+
+//take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
+export function filterThenSortByID(object_list,id_list){
+    return object_list.filter(obj=>id_list.includes(obj.id)).sort((a,b)=> id_list.indexOf(a.id)-id_list.indexOf(b.id));
+}
+
 
 export class Loader{
     constructor(identifier){
@@ -164,3 +178,4 @@ export class Loader{
         this.load_screen.remove();
     }
 }
+

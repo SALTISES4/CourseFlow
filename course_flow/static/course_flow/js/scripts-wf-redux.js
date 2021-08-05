@@ -199,7 +199,7 @@ export class WorkflowRenderer{
                 );
             });
             
-        }else if(view_type=="horizontaloutcometable"){
+        }else if(view_type=="horizontaloutcometable" || view_type=="alignmentanalysis"){
             //get additional data about child workflows prior to render
             getWorkflowChildData(this.initial_workflow_data.workflow.id,(response)=>{
                 console.log(response)

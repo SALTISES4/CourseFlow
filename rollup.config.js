@@ -12,10 +12,10 @@ import reactDom from 'react-dom';
 const plugins = [
   postcss({
     extensions: [".css"],
-      extract:true,
-      plugins:[
-          autoprefixer,
-      ]
+    extract:true,
+    plugins:[
+      autoprefixer,
+    ]
   }),
   resolve({
     mainFields: ["browser", "module", "main"]
@@ -55,6 +55,7 @@ const plugins = [
 export default [
   {
     input: "course_flow/static/course_flow/js/scripts.js",
+    external:['jquery'],
     output: {
       file: "course_flow/static/course_flow/js/scripts.min.js",
       name: "root",
