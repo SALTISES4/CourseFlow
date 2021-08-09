@@ -232,7 +232,7 @@ export default connect(
 
 
 
-//Basic component to represent a Node
+//Basic component to represent a node in the outcomes table
 class NodeOutcomeViewUnconnected extends ComponentJSON{
     constructor(props){
         super(props);

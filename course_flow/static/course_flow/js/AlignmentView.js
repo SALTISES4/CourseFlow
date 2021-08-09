@@ -5,6 +5,7 @@ import {ComponentJSON, TitleText} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {getOutcomeByID,getOutcomeOutcomeByID} from "./FindState";
 import OutcomeView from "./OutcomeView";
+import {SimpleOutcomeView} from "./OutcomeView";
 import OutcomeNodeView from "./OutcomeNode";
 
 //Basic component representing an outcome
@@ -30,18 +31,22 @@ class AlignmentView extends ComponentJSON{
         let outcomes_block;
         let terms_block;
         let alignment_block;
+        let alignment_reverse_block;
 
         if(view_buttons.length==0){
             view_buttons="No outcomes have been added yet. Use the Edit Outcomes menu to get started";
         }else{
             outcomes_block=(
-                <AlignmentOutcomesBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data}/>
+                <AlignmentOutcomesBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
             );
             terms_block=(
-                <AlignmentTermsBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data}/>
+                <AlignmentTermsBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
             );
-            alignment_block=(
-                <AlignmentHorizontalBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data}/>
+//            alignment_block=(
+//                <AlignmentHorizontalBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
+//            );
+            alignment_reverse_block=(
+                <AlignmentHorizontalReverseBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
             );
         }
     
@@ -53,6 +58,7 @@ class AlignmentView extends ComponentJSON{
                 {outcomes_block}
                 {terms_block}
                 {alignment_block}
+                {alignment_reverse_block}
                 
             </div>
         );
@@ -64,7 +70,7 @@ class AlignmentView extends ComponentJSON{
 }
 const mapAlignmentStateToProps = state=>({
     data:state.workflow,
-    outcomes:state.outcomeworkflow.map(outcomeworkflow=>getOutcomeByID(state,outcomeworkflow.outcome,true))
+    outcomes:state.outcomeworkflow.map(outcomeworkflow=>getOutcomeByID(state,outcomeworkflow.outcome,null,true))
 });
 export default connect(
     mapAlignmentStateToProps,
@@ -209,7 +215,7 @@ class AlignmentHorizontalBlockUnconnected extends React.Component{
                 
                 child_outcomes.push(
                     <div class="alignment-row">
-                        {this.getContents(obj.outcomenodes[i].degree)}
+                        {Constants.getCompletionImg(obj.outcomenodes[i].degree,this.props.outcomes_type)}
                         <TitleText text={node_title_text} default_text="Unnamed"/>
                         <TitleText text={obj.child_outcomes[i].title} default_text="Unnamed"/>
                     </div>
@@ -236,35 +242,6 @@ class AlignmentHorizontalBlockUnconnected extends React.Component{
                 {parent_outcomes}
             </div>
         );
-    }
-    
-    getContents(completion_status){
-        if(this.props.outcomes_type==0 || completion_status & 1){
-            return (
-                <img class="self-completed" src={iconpath+'solid_check.svg'}/>
-            )
-        }
-        let contents=[];
-        if(completion_status & 2){
-            let divclass="";
-            contents.push(
-                <div class={"outcome-introduced outcome-degree"+divclass}>I</div>
-            );
-        }
-        if(completion_status & 4){
-            let divclass="";
-            contents.push(
-                <div class={"outcome-developed outcome-degree"+divclass}>D</div>
-            );
-        }
-        if(completion_status & 8){
-            let divclass="";
-            contents.push(
-                <div class={"outcome-advanced outcome-degree"+divclass}>A</div>
-            );
-        }
-        return contents;
-        
     }
     
 }
@@ -317,4 +294,125 @@ export const AlignmentHorizontalBlock = connect(
     null
 )(AlignmentHorizontalBlockUnconnected)
 
+
+class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
+    render(){
+        let data = this.props.data;
+        console.log(this.props);
+        
+        let nodes = this.props.nodes.map(obj=>{
+            let node = obj.node;
+            let node_title_text;
+            if(node.represents_workflow){
+                node_title_text=node.linked_workflow_title;
+            }
+            else node_title_text = node.title;
+                
+            let child_outcomes = obj.child_outcomes.map((child_outcome,i)=>{
+               
+                let parent_outcomes = obj.parent_outcomes[i].parent_outcomes.map((parent_outcome,j)=>
+                    <div class="alignment-row">
+                        {Constants.getCompletionImg(obj.parent_outcomes[i].outcomenodes[j].degree,this.props.outcomes_type)}
+                        <SimpleOutcomeView objectID={parent_outcome.id}/>
+                    </div>
+                );
+                
+                if(parent_outcomes.length==0)return null;
+                
+                return (
+                    <div class="child-outcome">
+                        <div class="half-width">
+                            <SimpleOutcomeView get_alternate="child" objectID={child_outcome.id}/>
+                        </div>
+                        <div class="half-width">
+                            {parent_outcomes}
+                        </div>
+                    </div>
+                );
+                
+            });
+            
+            return (
+                <div style={{backgroundColor:this.props.renderer.column_colours[node.column]}} class={"node column-"+node.column}>
+                    <div class="node-top-row">
+                        <div class="node-title">
+                            <TitleText text={node_title_text} defaultText="Unnamed"/>
+                        </div>
+                    </div>
+                    <div class="outcome-block">
+                        {child_outcomes}
+                    </div>
+                    <div class="node-drop-row"></div>
+                </div>
+            )
+        });
+        
+        return(
+            <div class="alignment-block">
+                <h3>Alignment:</h3>
+                {nodes}
+            </div>
+        );
+    }
+    
+    
+    
+}
+const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
+    let outcome = own_props.data;
+    let all_outcome_ids = [outcome.id];
+    getDescendantOutcomes(state,outcome,all_outcome_ids);
+    let all_outcomes = state.outcome.filter(outcome=>all_outcome_ids.includes(outcome.id));
+    
+    let node_ids = state.outcomenode.filter(outcomenode=>all_outcome_ids.includes(outcomenode.outcome)).map(outcomenode=>outcomenode.node);
+    let nodes = state.node.filter(node=>node_ids.includes(node.id)).map(node=>{
+        let child_outcomes=[];
+        let parent_outcomes=[];
+        if(node.linked_workflow){
+            let child_outcome_ids = [];
+            for(let i=0;i<state.child_workflow.length;i++){
+                if(state.child_workflow[i].id==node.linked_workflow){
+                    child_outcome_ids=state.child_workflow[i].outcomeworkflow_set.map(outcomeworkflow_id=>{
+                        for(let j=0;j<state.child_outcomeworkflow.length;j++){
+                            if(state.child_outcomeworkflow[j].id==outcomeworkflow_id)return state.child_outcomeworkflow[j].outcome;
+                        }
+                        return null;
+                    })
+                    break;
+                
+                }
+            }
+            
+            child_outcomes = Constants.filterThenSortByID(state.child_outcome,child_outcome_ids);
+            parent_outcomes = child_outcomes.map(child_outcome=>{
+                let horizontallinks = Constants.filterThenSortByID(state.outcomehorizontallink,child_outcome.outcome_horizontal_links_unique);
+                let my_parent_outcomes=horizontallinks.map(link=>{
+                    for(let i=0;i<all_outcomes.length;i++){
+                        if(all_outcomes[i].id==link.parent_outcome)return all_outcomes[i];
+                    }
+                    return null;
+                });
+                my_parent_outcomes=my_parent_outcomes.filter(parent_outcome=>parent_outcome!==null);
+                let my_outcomenodes = my_parent_outcomes.map(parent_outcome=>{
+                    for(let i=0;i<state.outcomenode.length;i++){
+                        if(state.outcomenode[i].outcome==parent_outcome.id && state.outcomenode[i].node==node.id)return state.outcomenode[i];
+                    } 
+                    return null;
+                });
+                
+                return {parent_outcomes:my_parent_outcomes,outcomenodes:my_outcomenodes};
+            });
+        }
+        
+        return {node:node,child_outcomes:child_outcomes,parent_outcomes:parent_outcomes}
+    })
+    
+    
+    return {nodes:nodes};
+    
+}
+export const AlignmentHorizontalReverseBlock = connect(
+    mapAlignmentHorizontalReverseStateToProps,
+    null
+)(AlignmentHorizontalReverseBlockUnconnected)
 

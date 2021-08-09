@@ -3,9 +3,9 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import OutcomeOutcomeView from "./OutcomeOutcomeView.js";
-import {OutcomeBarOutcomeOutcomeView, NodeOutcomeOutcomeView, NodeOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
+import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode.js";
-import {getOutcomeByID, getOutcomeHorizontalLinkByID, getParentOutcomeByID, getParentOutcomeOutcomeByID} from "./FindState.js";
+import {getOutcomeByID, getOutcomeHorizontalLinkByID} from "./FindState.js";
 import {changeField, moveOutcomeOutcome, updateOutcomehorizontallinkDegreeAction} from "./Reducers.js";
 import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
 import * as Constants from "./Constants";
@@ -164,7 +164,7 @@ class OutcomeView extends ComponentJSON{
     
 }
 const mapOutcomeStateToProps = (state,own_props)=>(
-    getOutcomeByID(state,own_props.objectID,own_props.display_parent_outcomes)
+    getOutcomeByID(state,own_props.objectID,own_props.get_alternate,own_props.display_parent_outcomes)
 )
 export default connect(
     mapOutcomeStateToProps,
@@ -298,8 +298,8 @@ export const OutcomeBarOutcomeView = connect(
 )(OutcomeBarOutcomeViewUnconnected)
 
 
-//Basic component representing an outcome in a node
-export class NodeOutcomeViewUnconnected extends ComponentJSON{
+//Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
+export class SimpleOutcomeViewUnconnected extends ComponentJSON{
     
     constructor(props){
         super(props);
@@ -357,15 +357,15 @@ export class NodeOutcomeViewUnconnected extends ComponentJSON{
     getChildType(outcomeoutcome){
         let data = this.props.data;
         return(
-            <NodeOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer}/>
+            <SimpleOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} get_alternate={this.props.get_alternate}/>
         );
     }
 
 }
-export const NodeOutcomeView = connect(
+export const SimpleOutcomeView = connect(
     mapOutcomeStateToProps,
     null
-)(NodeOutcomeViewUnconnected)
+)(SimpleOutcomeViewUnconnected)
 
 //Basic component representing an outcome inside a table
 //The component must keep track of both the completion status it receives from descendant outcomes (for each node) and that it gets from its own table cells (also for each node). The completion status it receives from its own table cells is then combined with that it receives from its descendant outcomes to compute whether or not an outcome is achieved in the grand total column.
@@ -489,7 +489,7 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
         let data = this.props.data;
         return (
             <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
-                <OutcomeViewForHorizontal objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
+                <SimpleOutcomeView get_alternate="parent" objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             
                 {!read_only && <div class="mouseover-actions">
                     {this.addDeleteSelf(data,"close.svg")}
@@ -519,90 +519,90 @@ export const OutcomeHorizontalLinkView = connect(
     null
 )(OutcomeHorizontalLinkViewUnconnected)
 
-class OutcomeViewForHorizontalUnconnected extends NodeOutcomeViewUnconnected{
-    constructor(props){
-        super(props);
-        this.objectType="outcome";
-        this.children_block = React.createRef();
-        this.state={is_dropped:false};
-    }
-    
-    render(){
-        let data = this.props.data;
-        
-        var children = data.child_outcome_links.map((outcomeoutcome)=>
-            this.getChildType(outcomeoutcome)
-        );
-                
-        let dropIcon;
-        if(this.state.is_dropped)dropIcon = "droptriangleup";
-        else dropIcon = "droptriangledown";
-        
-        let droptext;
-        if(this.state.is_dropped)droptext="hide";
-        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
-        
-        return(
-            <div
-            class={
-                "outcome"+((this.state.is_dropped && " dropped")||"")+" outcome-"+data.id
-            }
-            ref={this.maindiv}>
-                <div class="outcome-title">
-                    <TitleText text={data.title} defaultText={"Click to edit"}/>
-                </div>
-                {children.length>0 && 
-                    <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
-                        <div class = "outcome-drop-img">
-                            <img src={iconpath+dropIcon+".svg"}/>
-                        </div>
-                        <div class = "outcome-drop-text">
-                            {droptext}
-                        </div>
-                    </div>
-                }
-                <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
-                    {children}
-                </div>
-            </div>
-            
-        );
-    }
-    
-    toggleDrop(){
-        this.setState({is_dropped:(!this.state.is_dropped)});
-    }
-    
-    getChildType(outcomeoutcome){
-        let data = this.props.data;
-        return (
-            <OutcomeOutcomeViewForHorizontal key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer}/>
-        );
-    }
-}
-const mapParentOutcomeStateToProps = (state,own_props)=>(
-    getParentOutcomeByID(state,own_props.objectID)
-)
-export const OutcomeViewForHorizontal = connect(
-    mapParentOutcomeStateToProps,
-    null
-)(OutcomeViewForHorizontalUnconnected)
-
-class OutcomeOutcomeViewForHorizontalUnconnected extends NodeOutcomeOutcomeViewUnconnected{
-    getChildType(){
-        let data = this.props.data;
-        return (
-            <OutcomeViewForHorizontal objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
-        )
-    }
-}
-const mapParentOutcomeOutcomeStateToProps = (state,own_props)=>(
-    getParentOutcomeOutcomeByID(state,own_props.objectID)
-)
-export const OutcomeOutcomeViewForHorizontal = connect(
-    mapParentOutcomeOutcomeStateToProps,
-    null
-)(OutcomeOutcomeViewForHorizontalUnconnected)
+//class OutcomeViewForHorizontalUnconnected extends SimpleOutcomeViewUnconnected{
+//    constructor(props){
+//        super(props);
+//        this.objectType="outcome";
+//        this.children_block = React.createRef();
+//        this.state={is_dropped:false};
+//    }
+//    
+//    render(){
+//        let data = this.props.data;
+//        
+//        var children = data.child_outcome_links.map((outcomeoutcome)=>
+//            this.getChildType(outcomeoutcome)
+//        );
+//                
+//        let dropIcon;
+//        if(this.state.is_dropped)dropIcon = "droptriangleup";
+//        else dropIcon = "droptriangledown";
+//        
+//        let droptext;
+//        if(this.state.is_dropped)droptext="hide";
+//        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+//        
+//        return(
+//            <div
+//            class={
+//                "outcome"+((this.state.is_dropped && " dropped")||"")+" outcome-"+data.id
+//            }
+//            ref={this.maindiv}>
+//                <div class="outcome-title">
+//                    <TitleText text={data.title} defaultText={"Click to edit"}/>
+//                </div>
+//                {children.length>0 && 
+//                    <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+//                        <div class = "outcome-drop-img">
+//                            <img src={iconpath+dropIcon+".svg"}/>
+//                        </div>
+//                        <div class = "outcome-drop-text">
+//                            {droptext}
+//                        </div>
+//                    </div>
+//                }
+//                <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
+//                    {children}
+//                </div>
+//            </div>
+//            
+//        );
+//    }
+//    
+//    toggleDrop(){
+//        this.setState({is_dropped:(!this.state.is_dropped)});
+//    }
+//    
+//    getChildType(outcomeoutcome){
+//        let data = this.props.data;
+//        return (
+//            <OutcomeOutcomeViewForHorizontal key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer}/>
+//        );
+//    }
+//}
+//const mapParentOutcomeStateToProps = (state,own_props)=>(
+//    getParentOutcomeByID(state,own_props.objectID)
+//)
+//export const OutcomeViewForHorizontal = connect(
+//    mapParentOutcomeStateToProps,
+//    null
+//)(OutcomeViewForHorizontalUnconnected)
+//
+//class OutcomeOutcomeViewForHorizontalUnconnected extends SimpleOutcomeOutcomeViewUnconnected{
+//    getChildType(){
+//        let data = this.props.data;
+//        return (
+//            <OutcomeViewForHorizontal objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
+//        )
+//    }
+//}
+//const mapParentOutcomeOutcomeStateToProps = (state,own_props)=>(
+//    getParentOutcomeOutcomeByID(state,own_props.objectID)
+//)
+//export const OutcomeOutcomeViewForHorizontal = connect(
+//    mapParentOutcomeOutcomeStateToProps,
+//    null
+//)(OutcomeOutcomeViewForHorizontalUnconnected)
 
 
 

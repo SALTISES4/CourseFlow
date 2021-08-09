@@ -4,7 +4,7 @@ import {Provider, connect} from "react-redux";
 import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import OutcomeView from "./OutcomeView.js";
 import {OutcomeBarOutcomeView} from "./OutcomeView.js";
-import {NodeOutcomeView, TableOutcomeView} from "./OutcomeView.js";
+import {SimpleOutcomeView, TableOutcomeView} from "./OutcomeView.js";
 import {getOutcomeOutcomeByID} from "./FindState.js";
 
 //Basic component representing an outcome to outcome link
@@ -27,7 +27,7 @@ class OutcomeOutcomeView extends ComponentJSON{
     
 }
 const mapOutcomeOutcomeStateToProps = (state,own_props)=>(
-    getOutcomeOutcomeByID(state,own_props.objectID)
+    getOutcomeOutcomeByID(state,own_props.objectID,own_props.get_alternate)
 )
 export default connect(
     mapOutcomeOutcomeStateToProps,
@@ -59,8 +59,8 @@ export const OutcomeBarOutcomeOutcomeView = connect(
 )(OutcomeBarOutcomeOutcomeViewUnconnected)
 
 
-//Basic component representing an outcome to outcome link
-export class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
+//Basic component representing an outcome to outcome link for a simple non-editable block
+export class SimpleOutcomeOutcomeViewUnconnected extends ComponentJSON{
     
     constructor(props){
         super(props);
@@ -80,15 +80,15 @@ export class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
     getChildType(){
         let data = this.props.data;
         return (
-            <NodeOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
+            <SimpleOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} get_alternate={this.props.get_alternate}/>
         );
     }
     
 }
-export const NodeOutcomeOutcomeView = connect(
+export const SimpleOutcomeOutcomeView = connect(
     mapOutcomeOutcomeStateToProps,
     null
-)(NodeOutcomeOutcomeViewUnconnected)
+)(SimpleOutcomeOutcomeViewUnconnected)
 
 
 //Basic component representing an outcome to outcome link

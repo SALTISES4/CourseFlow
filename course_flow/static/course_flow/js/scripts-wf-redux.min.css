@@ -531,7 +531,7 @@ button:hover{
 
 .workflow-top-row{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content: space-between;
 }
 
@@ -544,6 +544,8 @@ button:hover{
 
 .workflow-buttons{
     text-align:right;
+    white-space:nowrap;
+    vertical-align:top;
 }
 
 .workflow-buttons > *{
@@ -1044,7 +1046,15 @@ button, input[type="submit"]{
     background:white;
 }
 
+.workflow-view-select{
+    display:flex;
+    max-width:1000px;
+    flex-wrap:wrap;
+}
+
 .workflow-view-select > *{
+    max-width:200px;
+    overflow:hidden;
     display:inline-block;
     padding:10px; 
     font-size:18px;
@@ -2278,7 +2288,7 @@ circle.mouseover{
     border-color:gray;
 }
 
-.alignment-block .outcome-alignment img{
+.alignment-block img{
     width:16px;
 }
 
@@ -2292,8 +2302,25 @@ circle.mouseover{
     margin-right:4px;
 }
 
-.alignment-row *:not(img){
+.alignment-row > *:not(img){
     width:calc(50% - 14px);
+}
+
+.alignment-block .outcome-block{
+    background-color:white;
+}
+
+.alignment-block .child-outcome{
+    padding-bottom:5px;
+    border-top:2px solid lightgrey;
+}
+
+.alignment-block .child-outcome .half-width{
+    vertical-align: top;
+}
+
+.alignment-block .child-outcome .half-width img{
+    margin-top:6px;
 }
 
 #popup-container{

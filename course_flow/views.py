@@ -87,15 +87,14 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
 )
 from .utils import (
     benchmark,
-    get_all_outcomes_for_workflow,
     get_all_outcomes_for_outcome,
+    get_all_outcomes_for_workflow,
     get_descendant_outcomes,
     get_model_from_str,
     get_parent_model,
     get_parent_model_str,
     get_project_outcomes,
     get_unique_outcomenodes,
-    linkIDMap,
 )
 
 
@@ -887,6 +886,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 #
 #        return context
 
+
 class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = Workflow
     fields = ["title", "description"]
@@ -914,29 +914,36 @@ class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 
         return context
 
+
 def get_parent_outcome_data(workflow, user):
-    outcomes,outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
-    outcomehorizontallinks=[]
+    last_time = time.time()
+    outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
+    outcomehorizontallinks = []
     for oc in outcomes:
         outcomehorizontallinks += list(oc.outcome_horizontal_links.all())
-    parent_workflows = map(
-        lambda x: x.get_workflow(),Node.objects.filter(linked_workflow=workflow)
-    ) 
+    parent_nodes = Node.objects.filter(
+        linked_workflow=workflow
+    ).prefetch_related("outcomenode_set")
+    parent_workflows = map(lambda x: x.get_workflow(), parent_nodes)
     parent_outcomes = []
     parent_outcomeoutcomes = []
     parent_outcomenodes = []
     for parent_workflow in parent_workflows:
-        new_outcomes,new_outcomeoutcomes=get_all_outcomes_for_workflow(parent_workflow)
-        parent_outcomes+=new_outcomes
-        parent_outcomeoutcomes+=new_outcomeoutcomes
+        new_outcomes, new_outcomeoutcomes = get_all_outcomes_for_workflow(
+            parent_workflow
+        )
+        parent_outcomes += new_outcomes
+        parent_outcomeoutcomes += new_outcomeoutcomes
     for parent_outcome in parent_outcomes:
-        parent_outcomenodes+=OutcomeNode.objects.filter(outcome=parent_outcome)
-        
-        
+        parent_outcomenodes += OutcomeNode.objects.filter(
+            outcome=parent_outcome
+        )
+
     return {
         "parent_workflow": WorkflowSerializerShallow(
             parent_workflows, many=True
         ).data,
+        "parent_node": NodeSerializerShallow(parent_nodes, many=True).data,
         "parent_outcomenode": OutcomeNodeSerializerShallow(
             parent_outcomenodes, many=True
         ).data,
@@ -952,53 +959,29 @@ def get_parent_outcome_data(workflow, user):
     }
 
 
-#def get_child_outcome_data(workflow, user):
-#    nodes = Node.objects.filter(week__workflow=workflow)
-#    linked_workflows = []
-#    for node in nodes:
-#        if node.linked_workflow is not None:
-#            linked_workflows.append(node.linked_workflow)
-#    child_workflow_outcomeworkflows = []
-#    child_workflow_outcomes = []
-#    for linked_workflow in linked_workflows:
-#        child_workflow_outcomeworkflows += (
-#            linked_workflow.outcomeworkflow_set.all()
-#        )
-#        child_workflow_outcomes += linked_workflow.outcomes.all()
-#
-#    outcomehorizontallinks = []
-#    for child_outcome in child_workflow_outcomes:
-#        outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
-#
-#    return {
-#        "child_workflow": WorkflowSerializerShallow(
-#            linked_workflows, many=True
-#        ).data,
-#        "child_outcomeworkflow": OutcomeWorkflowSerializerShallow(
-#            child_workflow_outcomeworkflows, many=True
-#        ).data,
-#        "child_outcome": OutcomeSerializerShallow(
-#            child_workflow_outcomes, many=True
-#        ).data,
-#        "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
-#            outcomehorizontallinks, many=True
-#        ).data,
-#    }
-
 def get_child_outcome_data(workflow, user):
     nodes = Node.objects.filter(week__workflow=workflow)
-    linked_workflows = Workflow.objects.filter(linked_nodes__week__workflow=workflow).prefetch_related("outcomeworkflow_set","outcomes")
+    linked_workflows = Workflow.objects.filter(
+        linked_nodes__week__workflow=workflow
+    ).prefetch_related("outcomeworkflow_set")
     child_workflow_outcomeworkflows = []
     child_workflow_outcomes = []
+    child_workflow_outcomeoutcomes = []
     for linked_workflow in linked_workflows:
         child_workflow_outcomeworkflows += (
             linked_workflow.outcomeworkflow_set.all()
         )
-        child_workflow_outcomes += linked_workflow.outcomes.all()
+        (
+            new_child_workflow_outcomes,
+            new_child_workflow_outcomeoutcomes,
+        ) = get_all_outcomes_for_workflow(linked_workflow)
+        child_workflow_outcomes += new_child_workflow_outcomes
+        child_workflow_outcomeoutcomes += new_child_workflow_outcomeoutcomes
 
     outcomehorizontallinks = []
     for child_outcome in child_workflow_outcomes:
         outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
+
     return {
         "child_workflow": WorkflowSerializerShallow(
             linked_workflows, many=True
@@ -1009,10 +992,14 @@ def get_child_outcome_data(workflow, user):
         "child_outcome": OutcomeSerializerShallow(
             child_workflow_outcomes, many=True
         ).data,
+        "child_outcomeoutcome": OutcomeOutcomeSerializerShallow(
+            child_workflow_outcomeoutcomes, many=True
+        ).data,
         "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
             outcomehorizontallinks, many=True
         ).data,
     }
+
 
 def get_workflow_context_data(workflow, context, user):
     data_package = {}
@@ -1023,15 +1010,17 @@ def get_workflow_context_data(workflow, context, user):
     weekworkflows = workflow.weekworkflow_set.all()
     columns = workflow.columns.all()
     weeks = workflow.weeks.all()
-    nodeweeks = NodeWeek.objects.filter(week__in=weeks)
-    nodes = Node.objects.filter(
-        pk__in=nodeweeks.values_list("node__pk", flat=True)
+    nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
+    nodes = Node.objects.filter(week__workflow=workflow).prefetch_related(
+        "outcomenode_set"
     )
     nodelinks = NodeLink.objects.filter(source_node__in=nodes)
     if not workflow.is_strategy:
         outcomeworkflows = workflow.outcomeworkflow_set.all()
-        outcomes,outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
-        outcomenodes = OutcomeNode.objects.filter(node__in=nodes)
+        outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
+        outcomenodes = OutcomeNode.objects.filter(
+            node__week__workflow=workflow
+        )
 
     column_choices = [
         {"type": choice[0], "name": choice[1]}
@@ -1097,7 +1086,9 @@ def get_workflow_context_data(workflow, context, user):
                 many=True,
             ).data
             data_flat["saltise_strategy"] = WorkflowSerializerShallow(
-                Course.objects.filter(from_saltise=True, is_strategy=True),
+                Course.objects.filter(
+                    from_saltise=True, is_strategy=True, published=True
+                ),
                 many=True,
             ).data
         elif workflow.type == "activity":
@@ -1106,7 +1097,9 @@ def get_workflow_context_data(workflow, context, user):
                 many=True,
             ).data
             data_flat["saltise_strategy"] = WorkflowSerializerShallow(
-                Activity.objects.filter(from_saltise=True, is_strategy=True),
+                Activity.objects.filter(
+                    from_saltise=True, is_strategy=True, published=True
+                ),
                 many=True,
             ).data
 
@@ -1456,9 +1449,6 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
 @user_can_view("workflowPk")
 def get_workflow_parent_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
-    print(get_parent_outcome_data(
-        workflow.get_subclass(), request.user
-    ))
     try:
         data_package = get_parent_outcome_data(
             workflow.get_subclass(), request.user
@@ -1472,11 +1462,9 @@ def get_workflow_parent_data(request: HttpRequest) -> HttpResponse:
 def get_workflow_child_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
-        last_time=time.time()
         data_package = get_child_outcome_data(
             workflow.get_subclass(), request.user
         )
-        benchmark("finished view",last_time)
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted", "data_package": data_package})
@@ -1920,7 +1908,7 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
         # Speed is critical here. querying through __ has come out much faster (by a factor of up to 100) in testing than moving vertically through the heirarchy, even when prefetc_related is used.
         # In order to speed the creation of the throughmodels, select_related is used for any foreignkeys that need to be traversed
 
-        outcomes,outcomeoutcomes = get_all_outcomes_for_outcome(outcome)
+        outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(outcome)
 
         # Create the new content, and keep track of old_id:new_instance pairs in a dict
         id_dict = {}
@@ -1979,7 +1967,7 @@ def fast_duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
         outcomeworkflows = OutcomeWorkflow.objects.filter(
             workflow=workflow
         ).select_related("outcome")
-        outcomes,outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
+        outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
 
         columnworkflows = ColumnWorkflow.objects.filter(
             workflow=workflow
@@ -3062,7 +3050,9 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                     ).data
 
                 new_model_serialized = OutcomeSerializerShallow(newmodel).data
-                outcomes,outcomeoutcomes = get_all_outcomes_for_outcome(newmodel)
+                outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
+                    newmodel
+                )
                 new_children_serialized = {
                     "outcome": OutcomeSerializerShallow(
                         outcomes, many=True

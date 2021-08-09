@@ -5,7 +5,7 @@ import {ComponentJSON, TitleText} from "./ComponentJSON";
 import OutcomeWorkflowView from "./OutcomeWorkflowView";
 import {OutcomeBarOutcomeView, OutcomeBarOutcomeViewUnconnected} from "./OutcomeView";
 import OutcomeView from "./OutcomeView";
-import {getParentOutcomeByID, getParentOutcomeOutcomeByID, getParentWorkflowByID,getParentOutcomeNodeByID} from "./FindState";
+import {getParentWorkflowByID,getParentOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID} from "./FindState";
 import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents';
 import {newOutcome} from "./PostFunctions";
 import {newOutcomeAction} from "./Reducers";
@@ -151,7 +151,7 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected{
     
 }
 const mapParentOutcomeStateToProps = (state,own_props)=>(
-    getParentOutcomeByID(state,own_props.objectID)
+    getOutcomeByID(state,own_props.objectID,"parent")
 )
 export const ParentOutcomeView = connect(
     mapParentOutcomeStateToProps,
@@ -170,7 +170,7 @@ class ParentOutcomeOutcomeViewUnconnected extends ComponentJSON{
     }
 }
 const mapParentOutcomeOutcomeStateToProps = (state,own_props)=>(
-    getParentOutcomeOutcomeByID(state,own_props.objectID)
+    getOutcomeOutcomeByID(state,own_props.objectID,"parent")
 )
 export const ParentOutcomeOutcomeView = connect(
     mapParentOutcomeOutcomeStateToProps,
@@ -243,9 +243,9 @@ export const OutcomeBar = connect(
 class ParentOutcomeBarUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
-        var outcomebaroutcomes = data.map((outcomenode)=>
-            <ParentOutcomeNodeView key={outcomenode.id} objectID={outcomenode.id}/>
-        );
+        var outcomebaroutcomes = data.map((node)=>node.outcomenode_unique_set.map(outcomenode=>
+            <ParentOutcomeNodeView key={outcomenode} objectID={outcomenode}/>
+        ));
         
         
         return reactDom.createPortal(
@@ -260,7 +260,7 @@ class ParentOutcomeBarUnconnected extends ComponentJSON{
     
 }
 const mapParentOutcomeBarStateToProps = state =>(
-    {data:state.parent_outcomenode}
+    {data:state.parent_node}
 )
 export const ParentOutcomeBar = connect(
     mapParentOutcomeBarStateToProps,

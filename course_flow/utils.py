@@ -53,17 +53,17 @@ def get_project_outcomes(project):
 
 
 def get_descendant_outcomes(outcome):
-    outcomes = outcome.children.all()
-    for child in outcomes:
-        outcomes = outcomes | get_descendant_outcomes(child)
-    return outcomes
+    return models.Outcome.objects.filter(
+        Q(parent_outcomes=outcome)
+        | Q(parent_outcomes__parent_outcomes=outcome)
+    )
 
 
 def get_all_outcomes_for_outcome(outcome):
     outcomes = models.Outcome.objects.filter(
         Q(parent_outcomes=outcome)
         | Q(parent_outcomes__parent_outcomes=outcome)
-    )
+    ).prefetch_related("outcome_horizontal_links", "child_outcome_links")
     outcomeoutcomes = models.OutcomeOutcome.objects.filter(
         Q(parent=outcome) | Q(parent__parent_outcomes=outcome)
     )
@@ -75,7 +75,7 @@ def get_all_outcomes_for_workflow(workflow):
         Q(workflow=workflow)
         | Q(parent_outcomes__workflow=workflow)
         | Q(parent_outcomes__parent_outcomes__workflow=workflow)
-    )
+    ).prefetch_related("outcome_horizontal_links", "child_outcome_links")
     outcomeoutcomes = models.OutcomeOutcome.objects.filter(
         Q(parent__workflow=workflow)
         | Q(parent__parent_outcomes__workflow=workflow)
@@ -84,25 +84,25 @@ def get_all_outcomes_for_workflow(workflow):
 
 
 def get_unique_outcomenodes(node):
-    links = node.outcomenode_set.all().order_by("rank")
-    # Filter out lower level outcomes that are included by higher up ones
-    outcomes_used = []
-    for link in links:
-        outcomes_used += map(linkIDMap, get_descendant_outcomes(link.outcome))
-    return node.outcomenode_set.exclude(outcome__id__in=outcomes_used)
+    exclude_outcomes = models.Outcome.objects.filter(
+        Q(parent_outcomes__node=node)
+        | Q(parent_outcomes__parent_outcomes__node=node)
+    )
+    return node.outcomenode_set.exclude(outcome__in=exclude_outcomes).order_by(
+        "rank"
+    )
 
 
 def get_unique_outcomehorizontallinks(outcome):
-    links = outcome.outcome_horizontal_links.all().order_by("rank")
-    # Filter out lower level outcomes that are included by higher up ones
-    outcomes_used = []
-    for link in links:
-        outcomes_used += map(
-            linkIDMap, get_descendant_outcomes(link.parent_outcome)
+    exclude_outcomes = models.Outcome.objects.filter(
+        Q(parent_outcomes__reverse_horizontal_outcomes=outcome)
+        | Q(
+            parent_outcomes__parent_outcomes__reverse_horizontal_outcomes=outcome
         )
-    return outcome.outcome_horizontal_links.exclude(
-        parent_outcome__id__in=outcomes_used
     )
+    return outcome.outcome_horizontal_links.exclude(
+        parent_outcome__in=exclude_outcomes
+    ).order_by("rank")
 
 
 def benchmark(identifier, last_time):

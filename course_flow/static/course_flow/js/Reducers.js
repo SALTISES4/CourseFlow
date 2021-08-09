@@ -1010,6 +1010,15 @@ export function outcomeHorizontalLinkReducer(state={},action){
         return state;
     }
 }
+export function parentNodeReducer(state={},action){
+    switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.parent_node)return action.payload.parent_node;
+            return state;
+        default:
+            return state;
+    }
+}
 export function parentWorkflowReducer(state={},action){
     switch(action.type){
         case 'replaceStoreData':
@@ -1032,6 +1041,15 @@ export function childOutcomeReducer(state={},action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.child_outcome)return action.payload.child_outcome;
+            return state;
+        default:
+            return state;
+    }
+}
+export function childOutcomeOutcomeReducer(state={},action){
+    switch(action.type){
+        case 'replaceStoreData':
+            if(action.payload.child_outcomeoutcome)return action.payload.child_outcomeoutcome;
             return state;
         default:
             return state;
@@ -1134,10 +1152,12 @@ export const rootWorkflowReducer = Redux.combineReducers({
     parent_outcomeoutcome:parentOutcomeoutcomeReducer,
     parent_outcomeworkflow:parentOutcomeworkflowReducer,
     parent_outcomenode:parentOutcomenodeReducer,
+    parent_node:parentNodeReducer,
     parent_workflow:parentWorkflowReducer,
     outcomehorizontallink:outcomeHorizontalLinkReducer,
     child_workflow:childWorkflowReducer,
     child_outcome:childOutcomeReducer,
+    child_outcomeoutcome:childOutcomeOutcomeReducer,
     child_outcomeworkflow:childOutcomeWorkflowReducer,
     outcomeproject:outcomeProjectReducer,
     strategy:strategyReducer,

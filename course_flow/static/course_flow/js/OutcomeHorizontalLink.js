@@ -2,7 +2,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON";
-import {getNodeByID, getChildOutcomeByID, getChildOutcomeWorkflowByID} from "./FindState";
+import {getNodeByID, getChildOutcomeWorkflowByID, getOutcomeByID} from "./FindState";
 import {updateOutcomehorizontallinkDegreeAction} from "./Reducers";
 import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
 
@@ -215,7 +215,7 @@ class TableChildOutcomeHeaderUnconnected extends ComponentJSON{
     }
 }
 const mapTableChildOutcomeHeaderStateToProps = (state,own_props)=>(
-    getChildOutcomeByID(state,getChildOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome)
+    getOutcomeByID(state,getChildOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome,"child")
 )
 export const TableChildOutcomeHeader = connect(
     mapTableChildOutcomeHeaderStateToProps,

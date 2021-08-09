@@ -2,7 +2,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON";
-import {NodeOutcomeView} from "./OutcomeView";
+import {SimpleOutcomeView} from "./OutcomeView";
 import {getOutcomeNodeByID, getTableOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getNodeByID, getChildWorkflowByID, getChildOutcomeWorkflowByID} from "./FindState";
 import {updateOutcomenodeDegreeAction} from "./Reducers";
 import {updateOutcomenodeDegree} from "./PostFunctions";
@@ -23,7 +23,7 @@ class OutcomeNodeView extends ComponentJSON{
         
         return (
             <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
-                <NodeOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id}/>
+                <SimpleOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             
                 {!read_only && <div class="mouseover-actions">
                     {this.addDeleteSelf(data,"close.svg")}

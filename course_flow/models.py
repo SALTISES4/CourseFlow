@@ -1039,7 +1039,7 @@ def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
     old_workflow = Node.objects.get(id=instance.pk).linked_workflow
     new_workflow = instance.linked_workflow
     if old_workflow is not None and (
-        new_workflow is None or new_workflow.pk == old_workflow.pk
+        new_workflow is None or new_workflow.pk != old_workflow.pk
     ):
         linked_outcomes = list(old_workflow.outcomes.all())
         parent_outcomes = get_allowed_parent_outcomes(

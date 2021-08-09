@@ -99,19 +99,17 @@ export const getNodeLinkByID = (state,id)=>{
         if(nodelink.id==id)return {data:nodelink};
     }
 }
-export const getOutcomeByID = (state,id,display_parent_outcomes)=>{
-    for(var i in state.outcome){
-        var outcome = state.outcome[i];
+export const getOutcomeByID = (state,id,get_alternate,display_parent_outcomes)=>{
+    let state_section;
+    if(get_alternate=="child")state_section=state.child_outcome;
+    else if(get_alternate=="parent")state_section=state.parent_outcome;
+    else state_section=state.outcome;
+    for(var i in state_section){
+        var outcome = state_section[i];
         if(outcome.id==id){
             if(display_parent_outcomes)return {data:outcome,parent_outcomes:state.parent_outcomes,outcomenodes:state.outcomenode};
             else return {data:outcome,outcomenodes:state.outcomenode};
         }
-    }
-}
-export const getParentOutcomeByID = (state,id)=>{
-    for(var i in state.parent_outcome){
-        var outcome = state.parent_outcome[i];
-        if(outcome.id==id)return {data:outcome};
     }
 }
 export const getChildWorkflowByID = (state,id)=>{
@@ -126,21 +124,13 @@ export const getChildOutcomeWorkflowByID = (state,id)=>{
         if(outcomeworkflow.id==id)return {data:outcomeworkflow};
     }
 }
-export const getChildOutcomeByID = (state,id)=>{
-    for(var i in state.child_outcome){
-        var outcome = state.child_outcome[i];
-        if(outcome.id==id)return {data:outcome};
-    }
-}
-export const getOutcomeOutcomeByID = (state,id)=>{
-    for(var i in state.outcomeoutcome){
-        var outcomeoutcome = state.outcomeoutcome[i];
-        if(outcomeoutcome.id==id)return {data:outcomeoutcome};
-    }
-}
-export const getParentOutcomeOutcomeByID = (state,id)=>{
-    for(var i in state.parent_outcomeoutcome){
-        var outcomeoutcome = state.parent_outcomeoutcome[i];
+export const getOutcomeOutcomeByID = (state,id,get_alternate)=>{
+    let state_section;
+    if(get_alternate=="child")state_section=state.child_outcomeoutcome;
+    else if(get_alternate=="parent")state_section=state.parent_outcomeoutcome;
+    else state_section=state.outcomeoutcome;
+    for(var i in state_section){
+        var outcomeoutcome = state_section[i];
         if(outcomeoutcome.id==id)return {data:outcomeoutcome};
     }
 }
