@@ -460,12 +460,13 @@ li.outcome-outcome::before{
     margin-top:-2px;
     position:absolute;
     top:15px;
-    left:-40px;
+    left:-12px;
 }
 
 li.outcome-outcome{
     position:relative;
-    margin-left:40px;
+    margin-left:12px;
+    list-style-type:none;
 }
 
 li.outcome-outcome > .outcome{
@@ -1270,6 +1271,10 @@ circle.mouseover{
     border-color:#1976bc;
 }
 
+.alignment-block{
+    max-width:1000px;
+}
+
 .alignment-block > .outcome > .mouseover-actions{
     display:none !important;
 }
@@ -1333,7 +1338,7 @@ circle.mouseover{
     margin-bottom:4px;
 }
 
-.alignment-row *{
+.alignment-row > *{
     display:inline-block;
     vertical-align:top;
     margin-right:4px;

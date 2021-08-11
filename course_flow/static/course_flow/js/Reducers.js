@@ -835,6 +835,7 @@ export function outcomeReducer(state={},action){
             }
             return state;
         case 'outcome/changeField':
+        case 'outcome_base/changeField':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();

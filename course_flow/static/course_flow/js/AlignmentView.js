@@ -39,9 +39,9 @@ class AlignmentView extends ComponentJSON{
             outcomes_block=(
                 <AlignmentOutcomesBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
             );
-            terms_block=(
-                <AlignmentTermsBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
-            );
+//            terms_block=(
+//                <AlignmentTermsBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
+//            );
 //            alignment_block=(
 //                <AlignmentHorizontalBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
 //            );
@@ -83,7 +83,7 @@ class AlignmentOutcomesBlock extends React.Component{
         return(
             <div class="alignment-block">
                 <h3>Outcome:</h3>
-                <OutcomeView renderer={this.props.renderer} objectID={data.id}/>
+                <SimpleOutcomeView renderer={this.props.renderer} objectID={data.id}/>
             </div>
         );
     }
@@ -128,8 +128,6 @@ class AlignmentTermsBlockUnconnected extends React.Component{
                             </div>
                         );
                     });
-                    console.log("node_react");
-                    console.log(node_react);
                     return(
                         <div class="node-week">{node_react}</div>
                     );
@@ -299,58 +297,78 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         console.log(this.props);
-        
-        let nodes = this.props.nodes.map(obj=>{
-            let node = obj.node;
-            let node_title_text;
-            if(node.represents_workflow){
-                node_title_text=node.linked_workflow_title;
-            }
-            else node_title_text = node.title;
-                
-            let child_outcomes = obj.child_outcomes.map((child_outcome,i)=>{
-               
-                let parent_outcomes = obj.parent_outcomes[i].parent_outcomes.map((parent_outcome,j)=>
-                    <div class="alignment-row">
-                        {Constants.getCompletionImg(obj.parent_outcomes[i].outcomenodes[j].degree,this.props.outcomes_type)}
-                        <SimpleOutcomeView objectID={parent_outcome.id}/>
-                    </div>
-                );
-                
-                if(parent_outcomes.length==0)return null;
-                
-                return (
-                    <div class="child-outcome">
-                        <div class="half-width">
-                            <SimpleOutcomeView get_alternate="child" objectID={child_outcome.id}/>
-                        </div>
-                        <div class="half-width">
-                            {parent_outcomes}
-                        </div>
-                    </div>
-                );
-                
-            });
+        let weekworkflows = this.props.weekworkflows.map(weekworkflow=>{
+            let week = weekworkflow.week;
+            let week_rank=weekworkflow.rank;
             
-            return (
-                <div style={{backgroundColor:this.props.renderer.column_colours[node.column]}} class={"node column-"+node.column}>
-                    <div class="node-top-row">
-                        <div class="node-title">
-                            <TitleText text={node_title_text} defaultText="Unnamed"/>
+            let nodeweeks = weekworkflow.nodes.map((obj,k)=>{
+                let node = obj.node;
+                let nodeweek = weekworkflow.nodeweeks[k];
+                let node_title_text;
+                if(node.represents_workflow){
+                    node_title_text=node.linked_workflow_title;
+                }
+                else node_title_text = node.title;
+
+                let child_outcomes = obj.child_outcomes.map((child_outcome,i)=>{
+
+                    let parent_outcomes = obj.parent_outcomes[i].parent_outcomes.map((parent_outcome,j)=>
+                        <div class="alignment-row">
+                            {Constants.getCompletionImg(obj.parent_outcomes[i].outcomenodes[j].degree,this.props.outcomes_type)}
+                            <SimpleOutcomeView objectID={parent_outcome.id}/>
+                        </div>
+                    );
+
+                    if(parent_outcomes.length==0)return null;
+
+                    return (
+                        <div class="child-outcome">
+                            <div class="half-width">
+                                <SimpleOutcomeView get_alternate="child" objectID={child_outcome.id}/>
+                            </div>
+                            <div class="half-width">
+                                {parent_outcomes}
+                            </div>
+                        </div>
+                    );
+
+                });
+
+                return (
+                    <div class="node-week">
+                        <div style={{backgroundColor:this.props.renderer.column_colours[node.column]}} class={"node column-"+node.column}>
+                            <div class="node-top-row">
+                                <div class="node-title">
+                                    <TitleText text={node_title_text} defaultText="Unnamed"/>
+                                </div>
+                            </div>
+                            <div class="outcome-block">
+                                {child_outcomes}
+                            </div>
+                            <div class="node-drop-row"></div>
                         </div>
                     </div>
-                    <div class="outcome-block">
-                        {child_outcomes}
+                )
+            });
+        
+            let default_text = week.week_type_display+" "+(+1);
+        
+            return(
+                <div class="week-workflow">
+                    <div class="week">
+                        <TitleText text={week.title} defaultText={default_text}/>
+                        <div class="node-block">
+                            {nodeweeks}
+                        </div>
                     </div>
-                    <div class="node-drop-row"></div>
                 </div>
-            )
+            );
         });
         
         return(
             <div class="alignment-block">
                 <h3>Alignment:</h3>
-                {nodes}
+                {weekworkflows}
             </div>
         );
     }
@@ -407,8 +425,29 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
         return {node:node,child_outcomes:child_outcomes,parent_outcomes:parent_outcomes}
     })
     
+    let nodeweeks = state.nodeweek.filter(nodeweek=>node_ids.includes(nodeweek.node));
+    let week_ids = nodeweeks.map(nodeweek=>nodeweek.week);
+    let weekworkflows = state.weekworkflow.filter(weekworkflow=>week_ids.includes(weekworkflow.week)).sort((a,b)=>state.workflow.weekworkflow_set.indexOf(b.id)-state.workflow.weekworkflow_set.indexOf(a.id)).map(weekworkflow=>{
+        let week;
+        for(let i=0;i<state.week.length;i++){
+            if(weekworkflow.week==state.week[i].id)week=state.week[i];
+        }
+        if(!week)return null;
+        let nodeweeks_included = Constants.filterThenSortByID(nodeweeks,week.nodeweek_set);
+        let nodes_included = nodeweeks_included.map(nodeweek=>{
+            for(let i=0;i<nodes.length;i++){
+                if(nodes[i].node.id==nodeweek.node){
+                    return {...nodes[i]};
+                }
+            }
+            return null;
+            
+        });
+        
+        return {weekworkflow:weekworkflow,rank:state.workflow.weekworkflow_set.indexOf(weekworkflow.id),week:week,nodeweeks:nodeweeks_included,nodes:nodes_included}
+    });
     
-    return {nodes:nodes};
+    return {weekworkflows:weekworkflows};
     
 }
 export const AlignmentHorizontalReverseBlock = connect(

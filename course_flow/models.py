@@ -197,8 +197,9 @@ class NodeLink(models.Model):
 
 
 class Outcome(models.Model):
-    title = models.CharField(max_length=500)
-    description = models.TextField(max_length=500)
+    title = models.CharField(max_length=500, null=True, blank=True)
+    code = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)

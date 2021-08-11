@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, TitleText} from "./ComponentJSON";
+import {ComponentJSON, OutcomeTitle} from "./ComponentJSON";
 import OutcomeWorkflowView from "./OutcomeWorkflowView";
 import {OutcomeBarOutcomeView, OutcomeBarOutcomeViewUnconnected} from "./OutcomeView";
 import OutcomeView from "./OutcomeView";
@@ -128,7 +128,7 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected{
             
             ref={this.maindiv}>
                 <div class="outcome-title">
-                    <TitleText text={data.title} defaultText={"Click to edit"}/>
+                    <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
                 </div>
                 <input class="outcome-toggle-checkbox" type="checkbox" title="Toggle highlighting" onChange={this.clickFunction.bind(this)}/>
                 {children.length>0 && 

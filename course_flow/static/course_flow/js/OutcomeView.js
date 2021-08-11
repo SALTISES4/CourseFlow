@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, TitleText} from "./ComponentJSON.js";
+import {ComponentJSON, TitleText, OutcomeTitle} from "./ComponentJSON.js";
 import OutcomeOutcomeView from "./OutcomeOutcomeView.js";
 import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode.js";
@@ -56,7 +56,9 @@ class OutcomeView extends ComponentJSON{
         if(data.is_dropped)droptext="hide";
         else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
         
-           
+        console.log(this.props);
+        
+        
         
         return(
             <div
@@ -66,7 +68,7 @@ class OutcomeView extends ComponentJSON{
             ref={this.maindiv} 
             onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="outcome-title">
-                    <TitleText text={data.title} defaultText={"Click to edit"}/>
+                    <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
                 </div>
                 {children.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
@@ -205,7 +207,7 @@ export class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
             
             ref={this.maindiv}>
                 <div class="outcome-title" >
-                    <TitleText text={data.title} defaultText={"Click to edit"}/>
+                    <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
                 </div>
                 <input class="outcome-toggle-checkbox" type="checkbox" title="Toggle highlighting" onChange={this.clickFunction.bind(this)}/>
                 {children.length>0 && 
@@ -314,6 +316,8 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         var children = data.child_outcome_links.map((outcomeoutcome)=>
             this.getChildType(outcomeoutcome)
         );
+        
+        console.log(this.props);
                 
         let dropIcon;
         if(this.state.is_dropped)dropIcon = "droptriangleup";
@@ -330,7 +334,7 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
             }
             ref={this.maindiv}>
                 <div class="outcome-title">
-                    <TitleText text={data.title} defaultText={"Click to edit"}/>
+                    <OutcomeTitle data={data} rank={this.props.rank} titles={this.props.titles}/>
                 </div>
                 {children.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
@@ -411,7 +415,7 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
                 <div class = "outcome-row">
                     <div class="outcome-head" style={{width:400-data.depth*44}}>
                         <div class="outcome-title">
-                            <TitleText text={data.title} defaultText={"Click to edit"}/>
+                            <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
                         </div>
                         {children.length>0 && 
                             <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>

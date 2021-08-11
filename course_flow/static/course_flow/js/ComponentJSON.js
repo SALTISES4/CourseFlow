@@ -267,13 +267,19 @@ export class ComponentJSON extends React.Component{
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
                     <h3>{"Edit "+type+":"}</h3>
+                    {type=="outcome" && data.depth==0 &&
+                        <div>
+                            <h4>Code (Optional):</h4>
+                            <input autocomplete="off" id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
+                        </div>
+                    }
                     {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Title:</h4>
                             <input autocomplete="off" id="title-editor" type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
-                    {["node","workflow"].indexOf(type)>=0 && !data.represents_workflow &&
+                    {["node","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
                             <h4>Description:</h4>
                             <QuillDiv text={data.description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
@@ -623,6 +629,29 @@ export class TitleText extends React.Component{
         }
         return (
             <div class="title-text" dangerouslySetInnerHTML={{ __html: text }}></div>
+        )
+    }
+
+}
+
+//Title for an outcome
+export class OutcomeTitle extends React.Component{
+    render(){
+        let data = this.props.data
+        let text = data.title;
+        if(data.title==null || data.title==""){
+            text="Untitled outcome";
+        }
+        
+        let hovertext = this.props.rank.map((rank,i)=>
+            rank+". "+this.props.titles[i]
+        ).join(" -> ");
+        
+        return (
+            <div title={hovertext} class="title-text">
+                <span>{this.props.rank.join(".")+" - "}</span>
+                <span dangerouslySetInnerHTML={{ __html: text }}></span>
+            </div>
         )
     }
 

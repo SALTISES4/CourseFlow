@@ -872,42 +872,6 @@ class ProjectSerializerShallow(
         return instance
 
 
-# class OutcomeSerializerShallow(
-#    TitleSerializerMixin,
-#    DescriptionSerializerMixin,
-# ):
-#    def __init__(self,objects,**kwargs):
-#        many=kwargs.get("many",False)
-#        if(many):
-#            self.data = [self.process_single(x) for x in objects]
-#        else:
-#            self.data = self.process_single(objects)
-#
-#    def process_single(self,obj):
-#        return {
-#            "id":obj.id,
-#            "title":self.get_title(obj),
-#            "description":self.get_description(obj),
-#            "child_outcome_links":self.get_child_outcome_links(obj),
-#            "outcome_horizontal_links":self.get_outcome_horizontal_links(obj),
-#            "outcome_horizontal_links_unique":self.get_outcome_horizontal_links_unique(obj),
-#            "is_dropped":obj.is_dropped,
-#            "depth":obj.depth,
-#            "type":obj.type,
-#        }
-#
-#
-#    def get_outcome_horizontal_links_unique(self, instance):
-#        return list(map(linkIDMap, get_unique_outcomehorizontallinks(instance)))
-#
-#    def get_outcome_horizontal_links(self, instance):
-#        return list(map(linkIDMap, instance.outcome_horizontal_links.all().order_by("rank")))
-#
-#    def get_child_outcome_links(self, instance):
-#        links = instance.child_outcome_links.all().order_by("rank")
-#        return list(map(linkIDMap, links))
-
-
 class OutcomeSerializerShallow(
     serializers.ModelSerializer,
     TitleSerializerMixin,
@@ -918,6 +882,7 @@ class OutcomeSerializerShallow(
         fields = [
             "id",
             "title",
+            "code",
             "description",
             "child_outcome_links",
             "outcome_horizontal_links",
@@ -955,6 +920,7 @@ class OutcomeSerializerShallow(
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
+        instance.code = validated_data.get("code", instance.code)
         instance.description = validated_data.get(
             "description", instance.description
         )
