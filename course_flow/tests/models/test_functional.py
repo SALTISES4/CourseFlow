@@ -24,6 +24,7 @@ from course_flow.models import (
     Project,
     Workflow,
     WorkflowProject,
+    OutcomeHorizontalLink
 )
 from course_flow.utils import get_model_from_str
 
@@ -1618,6 +1619,57 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         assert_image(outcome2_img2, "solid_check")
         assert_image(outcome2_total_img, "/check")
         assert_image(outcome2_grandtotal_img, "/check")
+        
+    def test_outcome_analytics(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(
+            author=self.user, title="project title"
+        )
+        course = Course.objects.create(author=self.user)
+        program = Program.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=course, project=project)
+        WorkflowProject.objects.create(workflow=program, project=project)
+        base_outcome = Outcome.objects.create(author=self.user)
+        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=program)
+        poo1 = OutcomeOutcome.objects.create(
+            parent=base_outcome,
+            child=Outcome.objects.create(author=self.user),
+        )
+        poo2 = OutcomeOutcome.objects.create(
+            parent=base_outcome,
+            child=Outcome.objects.create(author=self.user),
+        )
+        coc1 = course.outcomes.create(author=self.user)
+        coc2 = course.outcomes.create(author=self.user)
+        node = program.weeks.first().nodes.create(
+            author=self.user,
+            linked_workflow=course,
+            column=program.columns.first(),
+        )
+        response = self.client.post(
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
+        )
+        
+        OutcomeHorizontalLink.objects.create(outcome = coc1, parent_outcome=poo1.child);
+        OutcomeHorizontalLink.objects.create(outcome = coc2, parent_outcome=poo2.child);
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[program.pk])
+        )
+        selenium.find_element_by_css_selector(
+            "#button_alignmentanalysis"
+        ).click()
+        time.sleep(5)
+        
+        assert(selenium.find_element_by_css_selector(".week .title-text").text=="Term 1")
+        assert(len(selenium.find_elements_by_css_selector(".week .node"))==1)
+        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome"))==2)
+        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome .half-width>.outcome"))==2)
+        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome .alignment-row .outcome"))==2)
+        
 
     def test_linked_workflow(self):
         selenium = self.selenium

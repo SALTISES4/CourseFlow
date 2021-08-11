@@ -60,8 +60,8 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             {type:"workflowview",name:"Workflow View"},
             {type:"outcomeedit",name:"Edit Outcomes"},
             {type:"outcometable",name:"Outcomes Table"},
-            {type:"horizontaloutcometable",name:"Alignment Table"},
-            {type:"alignmentanalysis",name:"Outcome Analytics"}
+            {type:"alignmentanalysis",name:"Outcome Analytics"},
+            {type:"horizontaloutcometable",name:"Alignment Table"}
         ].map(
             (item)=>{
                 let view_class = "hover-shade";

@@ -23,7 +23,7 @@ class AlignmentView extends ComponentJSON{
             if(i==this.state.active)view_class+=" active";
             return(
                 <div id={"button_"+outcome.data.id} class={view_class} onClick={this.changeView.bind(this,i)}>
-                    {outcome.data.title}
+                    {outcome.rank[0]+" - "+outcome.data.title}
                 </div>
             );
         });
