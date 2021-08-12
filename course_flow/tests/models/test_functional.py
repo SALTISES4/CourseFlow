@@ -759,11 +759,16 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".workflow-details .week"
             )
             click_item = selenium.find_element_by_css_selector(
-                ".week .duplicate-self-button img"
+                ".week > .mouseover-container-bypass > .mouseover-actions > .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             time.sleep(5)
             print(Week.objects.all().count())
+            print(len(
+                selenium.find_elements_by_css_selector(
+                    ".workflow-details .week"
+                )
+            ))
             hover_item = selenium.find_element_by_css_selector(
                 ".workflow-details .node"
             )
