@@ -754,6 +754,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".column .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
+            time.sleep(2)
             hover_item = selenium.find_element_by_css_selector(
                 ".workflow-details .week"
             )
@@ -761,7 +762,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".week .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
-            time.sleep(3)
+            time.sleep(5)
             print(Week.objects.all().count())
             hover_item = selenium.find_element_by_css_selector(
                 ".workflow-details .node"
@@ -770,7 +771,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".node .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
-            time.sleep(3)
+            time.sleep(2)
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
