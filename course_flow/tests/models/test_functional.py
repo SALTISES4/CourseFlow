@@ -24,7 +24,8 @@ from course_flow.models import (
     Project,
     Workflow,
     WorkflowProject,
-    OutcomeHorizontalLink
+    OutcomeHorizontalLink,
+    Week
 )
 from course_flow.utils import get_model_from_str
 
@@ -760,6 +761,8 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".week .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
+            time.sleep(3)
+            print(Week.objects.all().count())
             hover_item = selenium.find_element_by_css_selector(
                 ".workflow-details .node"
             )
