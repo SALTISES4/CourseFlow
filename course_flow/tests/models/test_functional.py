@@ -1409,9 +1409,13 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             + reverse("course_flow:workflow-update", args=[program.pk])
         )
         selenium.find_element_by_css_selector(
+            "#sidebar .window-close-button"
+        ).click()
+        time.sleep(0.5)
+        selenium.find_element_by_css_selector(
             "#button_horizontaloutcometable"
         ).click()
-        time.sleep(10)
+        time.sleep(5)
         base_outcome_row_select = (
             ".outcome-table > div > .outcome > .outcome-row > .outcome-cells"
         )
