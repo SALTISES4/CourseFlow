@@ -761,6 +761,10 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             click_item = selenium.find_element_by_css_selector(
                 ".week > .mouseover-container-bypass > .mouseover-actions > .duplicate-self-button img"
             )
+            selenium.find_element_by_css_selector(
+                "#sidebar .window-close-button"
+            ).click()
+            time.sleep(0.5)
             action_hover_click(selenium, hover_item, click_item).perform()
             time.sleep(5)
             print(Week.objects.all().count())
