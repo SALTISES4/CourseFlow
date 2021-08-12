@@ -678,6 +678,10 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             click_item = selenium.find_element_by_css_selector(
                 ".week .delete-self-button img"
             )
+            selenium.find_element_by_css_selector(
+                "#sidebar .window-close-button"
+            ).click()
+            time.sleep(0.5)
             action_hover_click(selenium, hover_item, click_item).perform()
             alert = wait.until(expected_conditions.alert_is_present())
             selenium.switch_to.alert.accept()
