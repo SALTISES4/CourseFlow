@@ -104,13 +104,11 @@
     ></script>
     {% endcompress %}
     <!-- -->
-    {% compress js %}
     <script nonce="{{ request.csp_nonce }}"
       src="{% url 'course_flow:javascript-catalog' %}"
       defer="true"
       charset="utf-8"
     ></script>
-    {% endcompress %}
     <!-- * CSS -->
     {% compress css %}
     <link
@@ -301,6 +299,8 @@
   {% endblock %} {% block read_only_scripts %} {% endblock %}
   <!-- -->
   {% block scripts %}
+<!--    Removed userfeedback app, does not function correctly -->
+<!--
   <script nonce="{{ request.csp_nonce }}">
     window.addEventListener("load", function() {
       const feedback = () => {
@@ -332,5 +332,6 @@
       );
     });
   </script>
+-->
   {% endblock %}
 </html>

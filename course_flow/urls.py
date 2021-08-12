@@ -197,7 +197,9 @@ def course_flow_patterns():
             views.ActivityStrategyCreateView.as_view(),
             name="activity-strategy-create",
         ),
-        url("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
+        url(
+            r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
+        ),
     ] + router.urls
 
 
