@@ -2959,7 +2959,6 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     parent_id = json.loads(request.POST.get("parentID"))
     parent_type = json.loads(request.POST.get("parentType"))
     through_type = json.loads(request.POST.get("throughType"))
-    print(object_type)
     try:
         with transaction.atomic():
             if object_type == "week":

@@ -299,8 +299,6 @@
   {% endblock %} {% block read_only_scripts %} {% endblock %}
   <!-- -->
   {% block scripts %}
-<!--    Removed userfeedback app, does not function correctly -->
-<!--
   <script nonce="{{ request.csp_nonce }}">
     window.addEventListener("load", function() {
       const feedback = () => {
@@ -332,6 +330,5 @@
       );
     });
   </script>
--->
   {% endblock %}
 </html>

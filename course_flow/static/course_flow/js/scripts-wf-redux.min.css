@@ -169,6 +169,7 @@ button:hover{
     padding-top:3px;
     bottom:0px;
     vertical-align:top;
+    min-width:48px;
 }
 
 /* A button at the top of the menu that will open the div below it */
