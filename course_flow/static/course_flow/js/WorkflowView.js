@@ -1,24 +1,149 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON.js";
+import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import ColumnWorkflowView from "./ColumnWorkflowView.js";
 import WeekWorkflowView from "./WeekWorkflowView.js";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView.js";
 import {NodeBarWeekWorkflow} from "./WeekWorkflowView.js";
-import {WorkflowForMenu} from "./MenuComponents.js";
+import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents.js";
 import * as Constants from "./Constants.js";
 import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers.js";
-import {OutcomeBar} from "./OutcomeTopView.js";
+import {OutcomeBar} from "./OutcomeEditView.js";
 import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
+import OutcomeEditView from './OutcomeEditView';
+import AlignmentView from './AlignmentView';
 
+
+//Container for common elements for workflows
+class WorkflowBaseViewUnconnected extends ComponentJSON{
+    
+    constructor(props){
+        super(props);
+        this.objectType="workflow";
+    }
+    
+    render(){
+        let data = this.props.data;
+        let renderer = this.props.renderer;
+        let selection_manager = renderer.selection_manager;
+        
+        var selector = this;
+        let publish_icon = iconpath+'view_none.svg';
+        let publish_text = "PRIVATE";
+        if(data.published){
+            publish_icon = iconpath+'published.svg';
+            publish_text = "PUBLISHED";
+        }
+        let share;
+        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
+        let workflow_content = (
+            <WorkflowView renderer={renderer}/>
+        );
+        if(renderer.view_type=="outcometable")workflow_content=(
+            <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
+        );
+        if(renderer.view_type=="outcomeedit")workflow_content=(
+            <OutcomeEditView renderer={renderer}/>
+        );
+        if(renderer.view_type=="horizontaloutcometable")workflow_content=(
+            <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
+        );
+        if(renderer.view_type=="alignmentanalysis")workflow_content=(
+            <AlignmentView renderer={renderer} view_type={renderer.view_type}/>
+        );
+        
+        let view_buttons = [
+            {type:"workflowview",name:"Workflow View"},
+            {type:"outcomeedit",name:"Edit Outcomes"},
+            {type:"outcometable",name:"Outcomes Table"},
+            {type:"alignmentanalysis",name:"Outcome Analytics"},
+            {type:"horizontaloutcometable",name:"Alignment Table"}
+        ].map(
+            (item)=>{
+                let view_class = "hover-shade";
+                if(item.type==renderer.view_type){
+                    view_class += " active";
+                }
+                return <div id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</div>;
+            }
+        );
+            
+            
+        return(
+            <div id="workflow-wrapper" class="workflow-wrapper">
+                <div class="workflow-header">
+                    <TitleText text={data.description} defaultText={"Add a description"}/>
+                    <div class="workflow-view-select">
+                        {view_buttons}
+                    </div>
+                </div>
+                <div class = "workflow-container">
+                    {reactDom.createPortal(
+                        <div>{data.title||"Unnamed Workflow"}</div>,
+                        $("#workflowtitle")[0]
+                    )}
+                    {this.addEditable(data)}
+                    {reactDom.createPortal(
+                        share,
+                        $("#floatbar")[0]
+                    )}
+                    {reactDom.createPortal(
+                        <div class="workflow-publication">
+                            <img src={publish_icon}/><div>{publish_text}</div>
+                        </div>,
+                        $("#floatbar")[0]
+                    )}
+                    {!read_only &&
+                        reactDom.createPortal(
+                            <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
+                                <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
+                            </div>,
+                            $("#viewbar")[0]
+                        )
+                    }
+                    
+                    {workflow_content}
+                    
+                    {!read_only &&
+                        <NodeBar renderer={this.props.renderer}/>
+                    }
+                    {!read_only && !data.is_strategy &&
+                        <OutcomeBar renderer={this.props.renderer}/>
+                    }
+                    {!read_only && !data.is_strategy && data.type != "program" &&
+                        <StrategyBar/>
+                    }
+                </div>
+            </div>
+        
+        );
+    }
+                     
+    changeView(type){
+        this.props.renderer.render(this.props.renderer.container,type);
+    }
+                     
+    openEdit(evt){
+        this.props.renderer.selection_manager.changeSelection(evt,this);
+    }
+    
+}
+const mapWorkflowStateToProps = state=>({
+    data:state.workflow
+})
+const mapWorkflowDispatchToProps = {};
+export const WorkflowBaseView = connect(
+    mapWorkflowStateToProps,
+    null
+)(WorkflowBaseViewUnconnected)
 
 
 //Basic component representing the workflow
-class WorkflowView extends ComponentJSON{
+class WorkflowViewUnconnected extends ComponentJSON{
     
     constructor(props){
         super(props);
@@ -28,61 +153,48 @@ class WorkflowView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        let renderer = this.props.renderer;
         var columnworkflows = data.columnworkflow_set.map((columnworkflow)=>
-            <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
+            <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={data.id} renderer={renderer}/>
         );
         var weekworkflows = data.weekworkflow_set.map((weekworkflow)=>
-            <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} selection_manager={this.props.selection_manager}/>
+            <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
         );
-        var selector = this;
         
         
         
         return(
-            <div id="workflow-wrapper" class="workflow-wrapper">
-                <div class = "workflow-container">
-                    <div class="workflow-details">
-                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
-                        {this.addEditable(data)}
-                        {reactDom.createPortal(
-                        <div class="topdropwrapper" title="Show/Hide Legend">
-                            <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
-                        </div>,
-                        $("#viewbar")[0]
-                        )}
-                        {this.state.show_legend && 
-                            <WorkflowLegend toggle={this.toggleLegend.bind(this)}/>
-                        }
-                        <div class="column-row">
-                            {columnworkflows}
-                        </div>
-                        <div class="week-block">
-                            {weekworkflows}
-                        </div>
-                        <svg class="workflow-canvas" width="100%" height="100%">
-                            <defs>
-                                <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5"
-                                    markerWidth="4" markerHeight="4"
-                                    orient="auto-start-reverse">
-                                  <path d="M 0 0 L 10 5 L 0 10 z" />
-                                </marker>
-                            </defs>
-                        </svg>
-                    </div>
-                    {!read_only &&
-                        <NodeBar/>
-                    }
-                    {!read_only && !data.is_strategy &&
-                        <OutcomeBar/>
-                    }
-                    {!read_only && !data.is_strategy && data.type != "program" &&
-                        <StrategyBar/>
-                    }
+            <div class="workflow-details">
+                {reactDom.createPortal(
+                <div class="topdropwrapper" title="Show/Hide Legend">
+                    <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
+                </div>,
+                $("#viewbar")[0]
+                )}
+                {this.state.show_legend && 
+                    <WorkflowLegend toggle={this.toggleLegend.bind(this)}/>
+                }
+                <div class="column-row" id={data.id+"-column-block"}>
+                    {columnworkflows}
                 </div>
+                <div class="week-block" id={data.id+"-week-block"}>
+                    {weekworkflows}
+                </div>
+                <svg class="workflow-canvas" width="100%" height="100%">
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5"
+                            markerWidth="4" markerHeight="4"
+                            orient="auto-start-reverse">
+                          <path d="M 0 0 L 10 5 L 0 10 z" />
+                        </marker>
+                    </defs>
+                </svg>
             </div>
         );
     }
+                     
     
+                     
     postMountFunction(){
         this.makeSortable($(".column-row"),
           this.props.objectID,
@@ -101,9 +213,9 @@ class WorkflowView extends ComponentJSON{
     }
     
     
-    sortableMovedFunction(id,new_position,type){
-        if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position))
-        if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position))
+    sortableMovedFunction(id,new_position,type,new_parent,child_id){
+        if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position,new_parent,child_id))
+        if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position,new_parent,child_id))
     }
                      
     toggleLegend(){
@@ -114,14 +226,10 @@ class WorkflowView extends ComponentJSON{
         }
     }
 }
-const mapWorkflowStateToProps = state=>({
-    data:state.workflow
-})
-const mapWorkflowDispatchToProps = {};
-export default connect(
+export const WorkflowView =  connect(
     mapWorkflowStateToProps,
     null
-)(WorkflowView)
+)(WorkflowViewUnconnected)
 
 
 
@@ -136,30 +244,30 @@ class NodeBarUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
         var nodebarcolumnworkflows = data.columnworkflow_set.map((columnworkflow)=>
-            <NodeBarColumnWorkflow key={columnworkflow} objectID={columnworkflow}/>
+            <NodeBarColumnWorkflow key={columnworkflow} renderer={this.props.renderer} objectID={columnworkflow}/>
         );
         var columns_present = this.props.columns.map(col=>col.column_type);
         for(var i=0;i<data.DEFAULT_COLUMNS.length;i++){
             if(columns_present.indexOf(data.DEFAULT_COLUMNS[i])<0){
                 nodebarcolumnworkflows.push(
-                    <NodeBarColumnWorkflow key={"default"+i} columnType={data.DEFAULT_COLUMNS[i]}/>
+                    <NodeBarColumnWorkflow key={"default"+i} renderer={this.props.renderer} columnType={data.DEFAULT_COLUMNS[i]}/>
                 )
             }
         }
         nodebarcolumnworkflows.push(
-            <NodeBarColumnWorkflow key={"default"+i} columnType={data.DEFAULT_CUSTOM_COLUMN}/>
+            <NodeBarColumnWorkflow key={"default"+i} renderer={this.props.renderer} columnType={data.DEFAULT_CUSTOM_COLUMN}/>
         )
         
         
         var nodebarweekworkflows;
-        if(!this.props.outcomes_view)nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
-            <NodeBarWeekWorkflow key={weekworkflow} objectID={weekworkflow}/>
+        if(this.props.renderer.view_type=="workflowview")nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
+            <NodeBarWeekWorkflow key={weekworkflow} renderer={this.props.renderer} objectID={weekworkflow}/>
         );
         var sort_type;
-        if(this.props.outcomes_view)sort_type=(
+        if(this.props.renderer.view_type=="outcometable"||this.props.renderer.view_type=="horizontaloutcometable")sort_type=(
             <div class="node-bar-sort-block">
                 <p>Sort Nodes By:</p>
-                {outcome_sort_choices.map((choice)=>
+                {this.props.renderer.outcome_sort_choices.map((choice)=>
                     <span><input type="radio" id={"sort_type_choice"+choice.type} name="sort_type" value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.inputChanged.bind(this,"outcomes_sort")}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></span>
                     
                 )}
@@ -254,33 +362,25 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
         let data = this.props.data;
         
         var selector = this;
+        let renderer = this.props.renderer;
+        let selection_manager = renderer.selection_manager;
+        
         
         return(
-            <div id="workflow-wrapper" class="workflow-wrapper">
-                <div class = "workflow-container">
-                    <div class="workflow-details">
-                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
-                        {this.addEditable(data)}
-                        {reactDom.createPortal(
-                        <div class="topdropwrapper" title="Show/Hide Legend">
-                            <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
-                        </div>,
-                        $("#viewbar")[0]
-                        )}
-                        {this.state.show_legend && 
-                            <WorkflowOutcomeLegend toggle={this.toggleLegend.bind(this)}/>
-                        }
-                        <WorkflowOutcomeView selection_manager={this.props.selection_manager} outcomes_type={data.outcomes_type}/>
-                    </div>
-                    {!read_only &&
-                        <NodeBar outcomes_view={true}/>
-                    }
-                    {!read_only &&
-                        <OutcomeBar outcomes_view={true}/>
-                    }
-                </div>
+            <div class="workflow-details">
+                {reactDom.createPortal(
+                    <div class="topdropwrapper" title="Show/Hide Legend">
+                        <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
+                    </div>,
+                    $("#viewbar")[0]
+                )}
+                <WorkflowOutcomeView renderer={renderer} outcomes_type={data.outcomes_type}/>
             </div>
         );
+    }
+                     
+    openEdit(evt){
+        this.props.renderer.selection_manager.changeSelection(evt,this);
     }
                      
     toggleLegend(){

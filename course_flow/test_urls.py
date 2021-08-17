@@ -3,9 +3,12 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
-from . import lti, urls, views
+from . import lti, settings, urls, views
 
 app_name = "course_flow"
+
+if settings.DEBUG:
+    import debug_toolbar
 
 
 def auth_patterns():
@@ -29,23 +32,24 @@ def lti_patterns():
     ]
 
 
-urlpatterns = sum(
-    [
-        auth_patterns(),
-        [
-            path(
-                "",
-                include(
-                    (urls.urlpatterns + lti_patterns(), urls.app_name),
-                    namespace="course_flow",
-                ),
+def app_patterns():
+    patterns = [
+        path(
+            "",
+            include(
+                (urls.urlpatterns + lti_patterns(), urls.app_name),
+                namespace="course_flow",
             ),
-            path(
-                "feedback/",
-                include("user_feedback.urls", namespace="user_feedback"),
-            ),
-            path("admin/", admin.site.urls),
-        ],
-    ],
-    [],
-)
+        ),
+        path(
+            "feedback/",
+            include("user_feedback.urls", namespace="user_feedback"),
+        ),
+        path("admin/", admin.site.urls),
+    ]
+    if settings.DEBUG:
+        patterns += [path("__debug__/", include(debug_toolbar.urls))]
+    return patterns
+
+
+urlpatterns = sum([auth_patterns(), app_patterns(),], [],)

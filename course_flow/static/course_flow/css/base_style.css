@@ -7,7 +7,15 @@ body, html{
     overflow:hidden;
     margin:0px;
     height:100%;
+    font-family:'Open Sans',sans-serif;
 }
+
+
+a{
+    color:#444444;
+    text-decoration: none;
+}
+
 
 body{
     background:#EEEEEE;
@@ -22,11 +30,11 @@ button:hover{
 }
 
 .topnav{
-    width:100%;
+    width:calc(100% - 240px);
     position: fixed;
     z-index: 6;
     top: 0;
-    left: 0;
+    left: 240px;
     color: #1976bc;
     background: white;
 }
@@ -45,17 +53,18 @@ button:hover{
 
 .titlebar{
     background:rgb(25,118,188);
-    display:block;
     height:50px;
     width:100%;
     color:white;
     position:relative;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .title{
     padding-left:20px;
-    position:absolute;
-    bottom:5px;
+    display:inline-block;
 }
 
 .title *{
@@ -68,19 +77,29 @@ button:hover{
     width:100%;
     font-family:'Open Sans',sans-serif;
     overflow:hidden;
-    height:50px;
 }
 
-.mainmenu{
+.workflow-title-bar{
     display:inline-block;
+    max-width:400px;
+    max-height:50px;
+    overflow:hidden;
+    color:#444444;
+    font-size:20px;
+    font-weight:600;
+    margin-left:20px;
+}
+
+.workflow-title-bar > div{
+    padding:10px;
 }
 
 .floatbar{
     flex-shrink:99;
     color:white;
-    height:50px;
     overflow:hidden;
     color:white;
+    
 }
 
 .floatbardiv{
@@ -90,6 +109,7 @@ button:hover{
     margin:5px;
     padding:5px;
     height:36px;
+    color:white;
     box-sizing:border-box;
     white-space:nowrap;
     cursor:pointer;
@@ -106,7 +126,6 @@ button:hover{
     vertical-align: middle;
     padding-left:6px;
     padding-right:6px;
-    color:white;
 }
 
 .viewbar{
@@ -123,8 +142,8 @@ button:hover{
 }
 
 .viewbar > div >img{
-    width:36px;
-    height:36px;
+    width:30px;
+    height:30px;
 }
 
 .topnavimage{
@@ -150,6 +169,7 @@ button:hover{
     padding-top:3px;
     bottom:0px;
     vertical-align:top;
+    min-width:48px;
 }
 
 /* A button at the top of the menu that will open the div below it */
@@ -161,10 +181,14 @@ button:hover{
     height:48px;
     left:0;
     bottom:0;
-    min-width:100px;
+    min-width:50px;
     padding-left:20px;
     padding-right:20px;
     font-weight:600;
+}
+
+.titlebar .topdropbutton{
+    color:white;
 }
 
 .topdropbutton > a{
@@ -241,28 +265,122 @@ button:hover{
     color: rgb(25,118,188);
 }
 
-.home-tabs{
+.left-panel{
+    background:white;
+    width:240px;
+    border-right:1px solid lightgray;
+    position:absolute;
+    left:0px;
+    top:0px;
     height:100%;
+    box-sizing:border-box;
+    color:#444444;
+    position:fixed;
+}
+
+.title-image{
+    padding:8px;
+    margin-bottom:40px;
+    height:36px;
+}
+
+.panel-item{
+    padding-left:14px;
+    padding-right:14px;
+    margin-left:6px;
+    margin-right:6px;
+    padding-top:8px;
+    padding-bottom:8px;
+    display:block;
+}
+
+.panel-item > img{
+    margin-right:10px;
+}
+
+.panel-item > *{
+    display:inline-block;
+    vertical-align: middle;
+}
+
+.panel-item img{
+    width:24px;
+}
+
+.panel-favourite{
+    padding:2px;
+    font-size:14px;
+    display:block;
+    margin-left:22px;
+    margin-right:20px;
+}
+
+.left-panel hr{
+    margin-bottom:20px;
+    margin-top:20px;
+}
+
+.home-menu-container{
+    padding:70px;
+    background:white;
+    height:calc(100% - 100px);
+}
+
+.home-menu-container hr{
+    margin-left:0;
+    margin-right:0;
+}
+
+.home-menu-grid{
     display:flex;
+    flex-wrap:wrap;
+}
+
+.home-item{
+    border-radius:10px;
+    border:1px solid lightgrey;
+    padding:10px;
+    margin-right:10px;
+    width:300px;
+}
+
+.home-item a{
+    display:block;
+    width:100%;
+}
+
+.home-item h4{
+    text-decoration: underline;
+}
+
+.home-item-icon-container{
+    border-radius:10px;
+    background:#1976bc;
+    width:fit-content;
+    margin-left:126px;
+}
+
+.home-item-icon-container img{
+    width:48px;
+}
+
+.home-tabs{
+    
 }
 
 .home-tabs .ui-tabs-nav{
     padding:0px;
-    margin:0px;
-    border:1px solid lightgray;
+    margin:10px;
     overflow:hidden;
     box-sizing:border-box;
-    background:white;
     z-index:1;
-    width:20%;
-    height:100%;
     min-width:250px;
+    display:flex;
+    margin-left:20px;
 }
 
 .home-tabs .ui-tabs-tab{
-    display:block;
-    flex-grow:1;
-    margin:3px 2px -2px 2px;
+    margin:3px 2px 2px 2px;
     line-height:1.3;
     font-size:20px;
     font-weight:600;
@@ -279,10 +397,9 @@ button:hover{
 
 
 .home-tabs .ui-tabs-tab a{
-    color:black;
-    text-decoration: none;
     width:100%;
     padding:10px;
+    font-size:18px;
     display:block;
 }
 
@@ -291,32 +408,290 @@ button:hover{
 }
 
 .home-tabs>div{
-    width:80%;
-    left:20%;
-    background:white;
+    width:100%;
     padding:20px;
     box-sizing: border-box;
-    height:100%;
     overflow-y:auto;
 }
 
-.project-header{
-    padding:20px;
+
+.menu-create{
+    padding:8px;
+    background:#1976bc;
+    color:white;
+    display:block;
+    border-radius:5px;
+    width:fit-content;
+    margin-bottom:20px;
+    margin-top:20px;
+}
+
+.menu-create>*{
+    vertical-align:middle;
+    display:inline-block;
+}
+
+.create-dropdown{
+    display:none;
+    z-index:1;
+    margin-top:-20px;
     background:white;
-    height:150px;
-    overflow:hidden;
-    box-sizing:border-box;
+    position:absolute;
+    padding:10px;
+    border-radius:5px;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+    
+}
+
+.create-dropdown a{
+    display:block;
+    padding:2px;
+    margin:0px;
+}
+
+.create-dropdown.active{
+    display:block;
+}
+
+.menu-grid{
+    display:flex;
+    flex-wrap:wrap;
+}
+
+
+.menu-grid > .workflow-for-menu{
+    margin-right:10px;
+}
+
+.workflow-for-menu{
+    position:relative;
+    width:400px;
+    background-color:white;
+    margin-bottom:8px;
+    padding:10px;
+    color:#1976bc;
+    border-radius:10px;
+    border:2px solid white;
+}
+
+.workflow-description{
+    font-size:16px;
+    color:#444444;
+    margin-bottom:2px;
+}
+
+.workflow-publication{
+    font-size:14px;
+    color:gray;
+}
+
+.workflow-publication>*{
+    display:inline-block;
+    vertical-align: middle;   
+}
+
+.workflow-publication>img{
+    width:24px;
+    margin-right:5px;
+}
+
+.workflow-created{
+    font-size:12px;
+    margin-bottom:6px;
+    color:gray;
+}
+
+.workflow-type-indicator{
+    font-size:12px;
+    color:white;
+    border-radius:4px;
+    padding:5px;
+    padding-left:12px;
+    padding-right:12px;
+    margin-left:8px;
+    height:fit-content;
+}
+
+.workflow-type-indicator.activity{
+    background-color:#11b3d4;
+}
+
+.workflow-type-indicator.course{
+    background-color:#ff5f3d;
+}
+
+.workflow-type-indicator.program{
+    background-color:#04ba74;
+}
+
+.workflow-top-row{
+    display:flex;
+    align-items:flex-start;
+    justify-content: space-between;
+}
+
+.workflow-title{
+    font-weight:600;
+    font-size:16px;
+    margin-bottom:6px;
+    flex-grow:1;
+}
+
+.workflow-buttons{
+    text-align:right;
+    white-space:nowrap;
+    vertical-align:top;
+}
+
+.workflow-buttons > *{
+    display:inline-block;
+    padding:2px;
+    cursor:pointer;
+}
+
+.workflow-buttons img{
+    width:24px;
+}
+
+.project-header{
+    margin:20px;
+    margin-top:70px;
+    padding:20px;
+    border-radius:10px;
+    background:white;
+}
+
+.project-import{
+    margin-left:20px;
 }
 
 .project-header + .home-tabs{
     height:calc(100% - 150px);
-    border:1px solid lightgrey;
     box-sizing:border-box;
 }
 
 .project-menu{
     height:100%;
 }
+
+.explore-menu{
+    width:100%;
+    background-color:white;
+    padding:50px;
+}
+
+.explore-menu .explore-results, .explore-menu .explore-preview{
+    display:inline-block;
+    vertical-align: top;
+}
+
+.explore-menu .explore-preview{
+    overflow-x:auto;
+}
+
+.explore-menu .explore-main{
+    white-space: nowrap;
+}
+
+.search-checklist-block{
+    
+}
+
+.page-button{
+    border-radius:0;
+}
+
+.active-page-button{
+    background:#1976bc;
+    color:white;
+}
+
+#search-parameters > div{
+    display:flex;
+    flex-wrap:wrap;
+}
+#search-parameters > div >div+div{
+    margin-left:50px;
+}
+
+#search-discipline{
+    column-count:4;
+}
+#search-parameters label div{
+    width:200px;
+}
+
+#search-parameters label{
+    display:block;
+}
+
+#search-parameters ul{
+    padding-left:0;
+}
+#search-parameters li{
+    list-style:none;
+    text-indent: 0;
+}
+
+.ui-autocomplete{
+    position:absolute;
+    z-index:100;
+    background:white;
+    border:1px solid lightgrey;
+    list-style:none;
+    padding:0;
+    margin:0;
+}
+
+.ui-menu .ui-menu-item{
+    margin:0;
+    cursor:pointer;
+}
+
+.ui-menu .ui-menu-item-wrapper{
+    position:relative;
+    padding:3px 1em 3px .4em;
+}
+
+.user-list{
+    list-style:none;
+    padding:0;
+    margin:0;
+    width:200px;
+}
+
+.user-list .user-label{
+    padding:2px;
+    border:1px solid #1976bc;
+    position:relative;
+}
+
+.user-list .user-label .workflow-delete-button{
+    display:block;
+    position:absolute;
+    top:2px;
+    right:2px;
+}
+
+.user-panel{
+    padding-right:20px;
+    vertical-align:top;
+    border:none;
+    display:inline-block;
+}
+
+.user-add button{
+    padding:0;
+    margin:0;
+    border:0;
+    vertical-align:middle;
+}
+
+.user-label .window-close-button{
+    top:2px;
+    right:2px;
+}
+
 
 .action-icon{
   cursor: pointer;
@@ -369,7 +744,6 @@ button:hover{
   width: 50vw;
 }
 text {
-  font-family: Roboto;
   pointer-events: none;
   fill: white;
 }
@@ -406,9 +780,10 @@ text {
 
 
 .body-wrapper{
-    top:100px;
-    width:100%;
-    height:calc(100% - 100px);
+    top:50px;
+    left:240px;
+    width:calc(100% - 240px);
+    height:calc(100% - 50px);
     overflow:auto;
     position:absolute;
 }
@@ -452,9 +827,6 @@ text {
     border:0px;
 }
 
-  .create-button {
-    transform: translateY(10px);
-  }
   .mdc-card {
     background-color: white;
     margin-bottom: 10px;

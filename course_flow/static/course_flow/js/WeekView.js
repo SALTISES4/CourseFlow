@@ -19,8 +19,10 @@ export class WeekViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        let renderer = this.props.renderer;
+        let selection_manager = renderer.selection_manager;
         var nodes = data.nodeweek_set.map((nodeweek)=>
-            <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} selection_manager={this.props.selection_manager}  column_order={this.props.column_order}/>
+            <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} renderer={renderer}  column_order={this.props.column_order}/>
         );
         if(nodes.length==0)nodes.push(
             <div class="node-week" style={{height:"100%"}}></div>
@@ -29,10 +31,10 @@ export class WeekViewUnconnected extends ComponentJSON{
         if(this.state.selected)css_class+=" selected";
         if(data.is_strategy)css_class+=" strategy";
         let default_text;
-        if(!is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
+        if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
         return (
-            <div class={css_class} ref={this.maindiv} onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}>
-                {!read_only && !is_strategy && <div class="mouseover-container-bypass">
+            <div class={css_class} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
+                {!read_only && !renderer.is_strategy && <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}
                         {this.addDuplicateSelf(data)}
@@ -94,8 +96,8 @@ export class WeekViewUnconnected extends ComponentJSON{
         
     }
     
-    sortableMovedFunction(id,new_position,type,new_parent){
-        this.props.dispatch(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column))
+    sortableMovedFunction(id,new_position,type,new_parent,child_id){
+        this.props.dispatch(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column,child_id))
     }
 
     makeDroppable(){

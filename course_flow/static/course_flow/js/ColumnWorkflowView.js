@@ -16,8 +16,8 @@ class ColumnWorkflowView extends ComponentJSON{
     render(){
         let data = this.props.data;
         return (
-            <div class={"column-workflow column-"+data.id} ref={this.maindiv} id={data.id}>
-                <ColumnView objectID={data.column} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
+            <div class={"column-workflow column-"+data.id} ref={this.maindiv} id={data.id} data-child-id={data.column}>
+                <ColumnView objectID={data.column} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
             </div>
         )
     }
@@ -37,12 +37,12 @@ class NodeBarColumnWorkflowUnconnected extends ComponentJSON{
         let data = this.props.data;
         if(data)return(
             <div class="node-bar-column-workflow" ref={this.maindiv}>
-                <NodeBarColumn objectID={data.column} throughParentID={data.id} parentID={this.props.parentID}/>
+                <NodeBarColumn objectID={data.column} renderer={this.props.renderer} throughParentID={data.id} parentID={this.props.parentID}/>
             </div>
         );
         else return(
             <div class="node-bar-column-workflow" ref={this.maindiv}>
-                <NodeBarColumnCreator columnType={this.props.columnType}/>
+                <NodeBarColumnCreator renderer={this.props.renderer} columnType={this.props.columnType}/>
             </div>
         );
     }

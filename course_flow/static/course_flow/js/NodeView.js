@@ -6,8 +6,8 @@ import NodeLinkView from "./NodeLinkView.js";
 import OutcomeNodeView from "./OutcomeNode.js";
 import {getNodeByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
-import {changeField, addOutcomeToNodeAction} from "./Reducers.js";
-import {addOutcomeToNode} from "./PostFunctions.js"
+import {changeField, updateOutcomenodeDegreeAction} from "./Reducers.js";
+import {updateOutcomenodeDegree} from "./PostFunctions.js"
 
 
 //Basic component to represent a Node
@@ -23,30 +23,33 @@ class NodeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        let renderer = this.props.renderer;
+        let selection_manager=renderer.selection_manager;
         var nodePorts;
         var node_links;
         var auto_link;
+        
         if(!this.state.initial_render)nodePorts = reactDom.createPortal(
-                <NodePorts nodeID={this.props.objectID} node_div={this.maindiv} dispatch={this.props.dispatch}/>
+                <NodePorts renderer={renderer} nodeID={this.props.objectID} node_div={this.maindiv} dispatch={this.props.dispatch}/>
             ,$(".workflow-canvas")[0]
         );
-        if(ports_rendered&&!this.state.port_render){
+        if(renderer.ports_rendered&&!this.state.port_render){
             node_links = data.outgoing_links.map((link)=>
-                <NodeLinkView key={link} objectID={link} node_div={this.maindiv} selection_manager={this.props.selection_manager}/>
+                <NodeLinkView key={link} objectID={link} node_div={this.maindiv} renderer={renderer}/>
             );
             if(data.has_autolink)auto_link = (
                 <AutoLinkView nodeID={this.props.objectID} node_div={this.maindiv}/>
             );
         }
-        let outcomenodes = data.outcomenode_set.map((outcomenode)=>
+        let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
             <OutcomeNodeView key={outcomenode} objectID={outcomenode}/>
         );
         let outcomeDiv;
         if(outcomenodes.length>0){
             outcomeDiv = (
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:column_colours[data.column]}}>{outcomenodes.length}</div>
-                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:column_colours[data.column]}}>{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:this.props.renderer.column_colours[data.column]}}>{outcomenodes.length}</div>
+                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:this.props.renderer.column_colours[data.column]}}>{outcomenodes}</div>
                 </div>
             );
         }
@@ -63,7 +66,10 @@ class NodeView extends ComponentJSON{
         else dropIcon = "droptriangledown";
         let linkIcon;
         if(data.linked_workflow)linkIcon=(
-            <img src={iconpath+"wflink.svg"} title={data.linked_workflow_title+", double click to visit"}/>
+            <div class="hover-shade linked-workflow" onClick={this.doubleClick.bind(this)}>
+                <img src={iconpath+"wflink.svg"}/>
+                <div>Visit linked workflow</div>
+            </div>
         );
         let dropText = "";
         if(data.description&&data.description.replace(/(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,'')!='')dropText="...";
@@ -76,15 +82,14 @@ class NodeView extends ComponentJSON{
         return (
             <div 
                 style={
-                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:column_colours[data.column]}
+                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:this.props.renderer.column_colours[data.column]}
                 } 
                 class={
                     "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
                 }
-                onDoubleClick={this.doubleClick.bind(this)}
                 id={data.id} 
                 ref={this.maindiv} 
-                onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}
+                onClick={(evt)=>selection_manager.changeSelection(evt,this)}
             >
                 <div class = "node-top-row">
                     <div class = "node-icon">
@@ -97,15 +102,15 @@ class NodeView extends ComponentJSON{
                         {righticon}
                     </div>
                 </div>
+                {linkIcon}
                 <div class = "node-details">
                     <TitleText text={descriptionText} defaultText="Click to edit"/>
                 </div>
-                <div class = "node-drop-row" onClick={this.toggleDrop.bind(this)}>
+                <div class = "node-drop-row hover-shade" onClick={this.toggleDrop.bind(this)}>
                     <div class = "node-drop-side node-drop-left">{dropText}</div>
                     <div class = "node-drop-middle"><img src={iconpath+dropIcon+".svg"}/></div>
                     <div class = "node-drop-side node-drop-right">
-                        <div class="node-drop-time">{data.time_required && (data.time_required+" "+time_choices[data.time_units].name)}</div>
-                        {linkIcon}
+                        <div class="node-drop-time">{data.time_required && (data.time_required+" "+this.props.renderer.time_choices[data.time_units].name)}</div>
                     </div>
                 </div> 
                 {!read_only && <div class="mouseover-actions">
@@ -130,6 +135,7 @@ class NodeView extends ComponentJSON{
         $(document).on("render-ports render-links",()=>{this.setState({})});
         if(this.state.initial_render)this.setState({initial_render:false,port_render:true});
         this.makeDroppable();
+        $(this.maindiv.current).on("dblclick",this.doubleClick.bind(this));
     }
 
     componentDidUpdate(prevProps){
@@ -189,9 +195,9 @@ class NodeView extends ComponentJSON{
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 if(drag_item.hasClass("outcome")){
-                    addOutcomeToNode(this.props.objectID,drag_item[0].dataDraggable.outcome,
+                    updateOutcomenodeDegree(this.props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
-                            let action = addOutcomeToNodeAction(response_data);
+                            let action = updateOutcomenodeDegreeAction(response_data);
                             props.dispatch(action);
                         }
                     );
@@ -226,7 +232,7 @@ export default connect(
 
 
 
-//Basic component to represent a Node
+//Basic component to represent a node in the outcomes table
 class NodeOutcomeViewUnconnected extends ComponentJSON{
     constructor(props){
         super(props);
@@ -240,6 +246,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
         let titleText = data.title;
+        let selection_manager = this.props.renderer.selection_manager;
         if(data.represents_workflow)titleText = data.linked_workflow_title;
         let descriptionText = data.description;
         if(data.represents_workflow)descriptionText = data.linked_workflow_description;
@@ -249,10 +256,13 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
                 
                 class={
                     "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
-                } 
+                }
+                style={
+                    {backgroundColor:this.props.renderer.column_colours[data.column]}
+                }
                 id={data.id} 
                 ref={this.maindiv} 
-                onClick={(evt)=>this.props.selection_manager.changeSelection(evt,this)}
+                onClick={(evt)=>selection_manager.changeSelection(evt,this)}
             >
                 <div class = "node-top-row">
                     <div class = "node-title">

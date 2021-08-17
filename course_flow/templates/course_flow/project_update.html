@@ -20,10 +20,6 @@
 <!-- -->
 {% block read_only_scripts %}
 
-<script nonce="{{request.csp_nonce}}">
-  const read_only = false;
-</script>
-
 {% endblock %}
 <!-- -->
 {% block scripts %} {{ block.super }}
@@ -31,30 +27,30 @@
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
   const update_path = {
-      outcome:"{% url 'course_flow:outcome-update' pk='0'%}",
       activity:"{% url 'course_flow:workflow-update' pk='0'%}",
       course:"{% url 'course_flow:workflow-update' pk='0'%}",
       program:"{% url 'course_flow:workflow-update' pk='0'%}",
   }
-  const detail_path = {
-      outcome:"{% url 'course_flow:outcome-detail-view' pk='0'%}",
-      activity:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
-      course:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
-      program:"{% url 'course_flow:workflow-detail-view' pk='0'%}",
-  }
   const create_path = {
-      outcome:"{% url 'course_flow:outcome-create' projectPk=object.pk %}",
       activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
       course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
       program:"{% url 'course_flow:program-create' projectPk=object.pk %}"
   }
   const data_package = {{workflow_data_package|safe}};
   const project_data= {{project_data|safe}};
+  const read_only = {{read_only|safe}};
+  var project_renderer;
+
   console.log(data_package);
-  const project_title = "{{object.title|safe}}";
+
+
+
   const user_id = {{ user.id }};
+
   window.addEventListener("load",function(){
-      workflow_redux.renderProjectMenu(data_package,project_data);
+      project_renderer = new renderers.ProjectRenderer(data_package,project_data);
+      $(document).ajaxError(renderers.fail_function);
+      project_renderer.render($("#content-container"));
   });
 </script>
 {% endblock %}

@@ -1,6 +1,7 @@
 import time
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import tag
 from django.urls import reverse
@@ -12,13 +13,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from course_flow.models import (
     Activity,
     Course,
+    Discipline,
+    Favourite,
+    ObjectPermission,
     Outcome,
+    OutcomeNode,
     OutcomeOutcome,
-    OutcomeProject,
+    OutcomeWorkflow,
     Program,
     Project,
     Workflow,
     WorkflowProject,
+    OutcomeHorizontalLink,
+    Week
 )
 from course_flow.utils import get_model_from_str
 
@@ -76,7 +83,6 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
         self.assertEqual(self.live_server_url + "/home/", selenium.current_url)
 
 
-@tag("selenium")
 class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
@@ -101,154 +107,162 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         self.selenium.quit()
         super(SeleniumWorkflowsTestCase, self).tearDown()
 
-    def test_create_project_and_workflows(self):
-        selenium = self.selenium
-        wait = WebDriverWait(selenium, timeout=10)
-        selenium.get(self.live_server_url + "/home/")
-        home = selenium.current_url
-        for project_type in ["project","activity", "course"]:
-            if project_type == "project":
-                selenium.find_element_by_css_selector(
-                    "a[href='#tabs-0']"
-                ).click()
-            else:
-                selenium.find_element_by_css_selector(
-                    "a[href='#tabs-1']"
-                ).click()
-            selenium.find_elements_by_class_name(
-                "create-button-" + project_type
-            )[0].click()
-            time.sleep(0.5)
-            title = selenium.find_element_by_id("id_title")
-            description = selenium.find_element_by_id("id_description")
-            project_title = "test project title"
-            project_description = "test project description"
-            title.send_keys(project_title)
-            description.send_keys(project_description)
-            selenium.find_element_by_id("save-button").click()
-            time.sleep(0.5)
-            if project_type == "project":
-                assert (
-                    project_title
-                    in selenium.find_element_by_id("project-title").text
-                )
-                assert (
-                    project_description
-                    in selenium.find_element_by_id("project-description").text
-                )
-                project_url = selenium.current_url
-            else:
+        def test_create_project_and_workflows(self):
+            selenium = self.selenium
+            wait = WebDriverWait(selenium, timeout=10)
+            selenium.get(self.live_server_url + "/home/")
+            home = selenium.current_url
+            for project_type in ["activity", "course", "project"]:
+                if project_type == "project":
+                    selenium.find_element_by_css_selector(
+                        "a[href='#tabs-0']"
+                    ).click()
+                else:
+                    selenium.find_element_by_css_selector(
+                        "a[href='#tabs-1']"
+                    ).click()
+                selenium.find_elements_by_class_name(
+                    "create-button-" + project_type
+                )[0].click()
+                time.sleep(0.5)
+                title = selenium.find_element_by_id("id_title")
+                description = selenium.find_element_by_id("id_description")
+                project_title = "test project title"
+                project_description = "test project description"
+                title.send_keys(project_title)
+                description.send_keys(project_description)
+                selenium.find_element_by_id("save-button").click()
+                if project_type == "project":
+                    assert (
+                        project_title
+                        in selenium.find_element_by_id("project-title").text
+                    )
+                    assert (
+                        project_description
+                        in selenium.find_element_by_id(
+                            "project-description"
+                        ).text
+                    )
+                    project_url = selenium.current_url
+                else:
+                    assert (
+                        project_title
+                        in selenium.find_element_by_class_name(
+                            "workflow-title"
+                        ).text
+                    )
+                    assert (
+                        project_description
+                        in selenium.find_element_by_class_name(
+                            "workflow-description"
+                        ).text
+                    )
+
+                selenium.get(home)
+            selenium.get(project_url)
+
+            for workflow_type in ["activity", "course", "program", "outcome"]:
+                # Create the workflow
+                selenium.find_elements_by_class_name(
+                    "create-button-" + workflow_type
+                )[0].click()
+                time.sleep(0.5)
+                title = selenium.find_element_by_id("id_title")
+                if workflow_type != "outcome":
+                    description = selenium.find_element_by_id("id_description")
+                project_title = "test " + workflow_type + " title"
+                project_description = "test " + workflow_type + " description"
+                title.send_keys(project_title)
+                if workflow_type != "outcome":
+                    description.send_keys(project_description)
+                selenium.find_element_by_id("save-button").click()
                 assert (
                     project_title
                     in selenium.find_element_by_class_name(
                         "workflow-title"
                     ).text
                 )
-                assert (
-                    project_description
-                    in selenium.find_element_by_class_name(
-                        "workflow-description"
-                    ).text
-                )
-
-            selenium.get(home)
-        selenium.get(project_url)
-
-        for workflow_type in ["activity", "course", "program", "outcome"]:
-            # Create the workflow
-            selenium.find_elements_by_class_name(
-                "create-button-" + workflow_type
-            )[0].click()
-            time.sleep(0.5)
-            title = selenium.find_element_by_id("id_title")
-            if workflow_type != "outcome":
-                description = selenium.find_element_by_id("id_description")
-            project_title = "test " + workflow_type + " title"
-            project_description = "test " + workflow_type + " description"
-            title.send_keys(project_title)
-            if workflow_type != "outcome":
-                description.send_keys(project_description)
-            selenium.find_element_by_id("save-button").click()
-            time.sleep(0.5)
-            assert (
-                project_title
-                in selenium.find_element_by_class_name("workflow-title").text
-            )
-            if workflow_type != "outcome":
-                assert (
-                    project_description
-                    in selenium.find_element_by_class_name(
-                        "workflow-description"
-                    ).text
-                )
-            selenium.get(project_url)
-            # edit link
-            selenium.find_element_by_css_selector(
-                ".section-" + workflow_type + " .workflow-edit-button"
-            ).click()
-            assert (
-                project_title
-                in selenium.find_element_by_class_name("workflow-title").text
-            )
-            selenium.get(project_url)
-            selenium.find_element_by_css_selector(
-                ".section-" + workflow_type + " .workflow-duplicate-button"
-            ).click()
-            wait.until(
-                lambda driver: len(
-                    driver.find_elements_by_css_selector(
-                        ".section-" + workflow_type + " .workflow-title"
+                if workflow_type != "outcome":
+                    assert (
+                        project_description
+                        in selenium.find_element_by_class_name(
+                            "workflow-description"
+                        ).text
                     )
+                selenium.get(project_url)
+                # edit link
+                selenium.find_element_by_css_selector(
+                    ".section-" + workflow_type + " .workflow-edit-button"
+                ).click()
+                assert (
+                    project_title
+                    in selenium.find_element_by_class_name(
+                        "workflow-title"
+                    ).text
                 )
-                > 1
-            )
-            assert (
-                project_title
-                in selenium.find_elements_by_css_selector(
-                    ".section-" + workflow_type + " .workflow-title"
-                )[1].text
-            )
-            if workflow_type != "outcome":
-                self.assertEqual(
-                    get_model_from_str(workflow_type)
-                    .objects.exclude(parent_workflow=None)
-                    .count(),
-                    1,
+                selenium.get(project_url)
+                selenium.find_element_by_css_selector(
+                    ".section-" + workflow_type + " .workflow-duplicate-button"
+                ).click()
+                wait.until(
+                    lambda driver: len(
+                        driver.find_elements_by_css_selector(
+                            ".section-" + workflow_type + " .workflow-title"
+                        )
+                    )
+                    > 1
                 )
-            else:
-                self.assertEqual(
-                    get_model_from_str(workflow_type)
-                    .objects.exclude(parent_outcome=None)
-                    .count(),
-                    1,
+                assert (
+                    project_title
+                    in selenium.find_elements_by_css_selector(
+                        ".section-" + workflow_type + " .workflow-title"
+                    )[1].text
                 )
-            selenium.find_elements_by_css_selector(
-                ".section-" + workflow_type + " .workflow-delete-button"
-            )[0].click()
-            alert = wait.until(expected_conditions.alert_is_present())
-            selenium.switch_to.alert.accept()
-            time.sleep(2)
+                if workflow_type != "outcome":
+                    self.assertEqual(
+                        get_model_from_str(workflow_type)
+                        .objects.exclude(parent_workflow=None)
+                        .count(),
+                        1,
+                    )
+                else:
+                    self.assertEqual(
+                        get_model_from_str(workflow_type)
+                        .objects.exclude(parent_outcome=None)
+                        .count(),
+                        1,
+                    )
+                selenium.find_elements_by_css_selector(
+                    ".section-" + workflow_type + " .workflow-delete-button"
+                )[0].click()
+                alert = wait.until(expected_conditions.alert_is_present())
+                selenium.switch_to.alert.accept()
+                time.sleep(2)
 
-            if workflow_type == "outcome":
-                self.assertEqual(
-                    get_model_from_str(workflow_type).objects.count(), 1
-                )
-            else:
-                self.assertEqual(
-                    get_model_from_str(workflow_type)
-                    .objects.filter(is_strategy=False)
-                    .count(),
-                    1,
-                )
+                if workflow_type == "outcome":
+                    self.assertEqual(
+                        get_model_from_str(workflow_type).objects.count(), 1
+                    )
+                else:
+                    self.assertEqual(
+                        get_model_from_str(workflow_type)
+                        .objects.filter(is_strategy=False)
+                        .count(),
+                        1,
+                    )
 
     def test_edit_project_details(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
+        discipline = Discipline.objects.create(title="discipline")
+        discipline2 = Discipline.objects.create(title="discipline2")
+        discipline3 = Discipline.objects.create(title="discipline3")
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:project-update", args=str(project.pk))
+            + reverse("course_flow:project-update", args=[project.pk])
         )
+        time.sleep(1)
         selenium.find_element_by_id("edit-project-button").click()
         selenium.find_element_by_id("project-title-input").send_keys(
             "new title"
@@ -256,12 +270,19 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         selenium.find_element_by_id("project-description-input").send_keys(
             "new description"
         )
+        selenium.find_elements_by_css_selector("#disciplines_all option")[
+            0
+        ].click()
+        selenium.find_element_by_css_selector("#add-discipline").click()
         selenium.find_element_by_id("project-publish-input").click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
         time.sleep(1)
         selenium.find_element_by_id("save-changes").click()
-        assert "new title" in selenium.find_element_by_id("project-title").text
+        assert (
+            "new title"
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
+        )
         assert (
             "new description"
             in selenium.find_element_by_id("project-description").text
@@ -270,8 +291,9 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         self.assertEqual(project.title, "new title")
         self.assertEqual(project.description, "new description")
         self.assertEqual(project.published, True)
+        self.assertEqual(project.disciplines.first(), discipline)
 
-    def test_import_published(self):
+    def test_import_favourite(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         author = get_author()
@@ -290,82 +312,250 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             workflow=Program.objects.create(author=author, published=True),
             project=project,
         )
-        OutcomeProject.objects.create(
-            outcome=Outcome.objects.create(author=author, published=True),
-            project=project,
+        Favourite.objects.create(user=self.user, content_object=project)
+        Favourite.objects.create(
+            user=self.user, content_object=Activity.objects.first()
         )
-        selenium.get(self.live_server_url + reverse("course_flow:home"))
-        home = selenium.current_url
-        selenium.find_element_by_css_selector("a[href='#tabs-2']").click()
-        selenium.find_element_by_css_selector(
-            ".section-project .workflow-view-button"
-        ).click()
+        Favourite.objects.create(
+            user=self.user, content_object=Course.objects.first()
+        )
+        Favourite.objects.create(
+            user=self.user, content_object=Program.objects.first()
+        )
+
+        # View the favourites
+        selenium.get(
+            self.live_server_url + reverse("course_flow:my-favourites")
+        )
+        favourites = selenium.current_url
+
         assert (
-            "published project"
-            in selenium.find_element_by_id("project-title").text
-        )
-        project_url = selenium.current_url
-        for workflow_type in ["activity", "course", "program", "outcome"]:
-            selenium.find_element_by_css_selector(
-                ".section-" + workflow_type + " .workflow-view-button"
-            ).click()
-            self.assertTrue(
-                len(selenium.find_elements_by_css_selector(".workflow-title"))
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-0 .workflow-title"
+                )
             )
-            selenium.get(project_url)
-        selenium.get(home)
+            == 4
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-1 .workflow-title"
+                )
+            )
+            == 1
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-2 .workflow-title"
+                )
+            )
+            == 1
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-3 .workflow-title"
+                )
+            )
+            == 1
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-4 .workflow-title"
+                )
+            )
+            == 1
+        )
+        # Import the project
+        selenium.find_element_by_css_selector(
+            "#tabs-0 .project .workflow-duplicate-button"
+        ).click()
+        time.sleep(2)
+        new_project = Project.objects.get(parent_project=project)
+        for workflow_type in ["activity", "course", "program"]:
+            assert WorkflowProject.objects.get(
+                workflow=get_model_from_str(workflow_type).objects.get(
+                    author=self.user,
+                    parent_workflow=get_model_from_str(
+                        workflow_type
+                    ).objects.get(author=author),
+                ),
+                project=new_project,
+            )
+
+        # Create a project, then import the favourites one at a time
+        my_project1 = Project.objects.create(author=self.user)
         selenium.find_element_by_css_selector("a[href='#tabs-2']").click()
         selenium.find_element_by_css_selector(
-            ".section-project .workflow-duplicate-button"
+            "#tabs-2 .workflow-duplicate-button"
         ).click()
-        selenium.find_element_by_css_selector("a[href='#tabs-0']").click()
+        time.sleep(0.5)
+        selenium.find_elements_by_css_selector(
+            "#popup-container #tabs-0 .workflow-for-menu"
+        )[1].click()
+        selenium.find_element_by_css_selector("#set-linked-workflow").click()
+        time.sleep(1)
+        selenium.find_element_by_css_selector("a[href='#tabs-3']").click()
         selenium.find_element_by_css_selector(
-            ".section-project .workflow-edit-button"
+            "#tabs-3 .workflow-duplicate-button"
         ).click()
-        assert (
-            "published project"
-            in selenium.find_element_by_id("project-title").text
-        )
-        selenium.get(home)
-        self.assertEqual(
-            Project.objects.get(author=self.user).title, "published project"
-        )
-        Project.objects.get(author=self.user).delete()
+        time.sleep(0.5)
+        selenium.find_elements_by_css_selector(
+            "#popup-container #tabs-0 .workflow-for-menu"
+        )[1].click()
+        selenium.find_element_by_css_selector("#set-linked-workflow").click()
+        time.sleep(1)
+        selenium.find_element_by_css_selector("a[href='#tabs-4']").click()
+        selenium.find_element_by_css_selector(
+            "#tabs-4 .workflow-duplicate-button"
+        ).click()
+        time.sleep(0.5)
+        selenium.find_elements_by_css_selector(
+            "#popup-container #tabs-0 .workflow-for-menu"
+        )[1].click()
+        selenium.find_element_by_css_selector("#set-linked-workflow").click()
+        time.sleep(1)
+        for workflow_type in ["activity", "course", "program"]:
+            assert WorkflowProject.objects.get(
+                workflow=get_model_from_str(workflow_type)
+                .objects.filter(
+                    author=self.user,
+                    parent_workflow=get_model_from_str(
+                        workflow_type
+                    ).objects.get(author=author),
+                )
+                .last(),
+                project=my_project1,
+            )
 
-        my_project = Project.objects.create(
-            author=self.user, published=True, title="project to be filled"
-        )
-        selenium.get(home)
-
+        # Import the workflows from a project rather than from the favourites menu
+        my_project = Project.objects.create(author=self.user)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:project-update", args=str(my_project.pk))
+            + reverse("course_flow:project-update", args=[my_project.pk])
         )
-        selenium.find_element_by_css_selector("a[href='#tabs-2']").click()
+        selenium.find_element_by_css_selector("#tabs-0 .menu-create").click()
+        selenium.find_element_by_css_selector(
+            ".create-dropdown.active a:last-child"
+        ).click()
+        time.sleep(0.5)
+        selenium.find_element_by_css_selector(
+            "#popup-container a[href='#tabs-2']"
+        ).click()
+        selenium.find_elements_by_css_selector(
+            "#popup-container #tabs-2 .workflow-for-menu"
+        )[0].click()
+        selenium.find_element_by_css_selector("#set-linked-workflow").click()
+        time.sleep(1)
+        selenium.find_element_by_css_selector("#tabs-0 .menu-create").click()
+        selenium.find_element_by_css_selector(
+            ".create-dropdown.active a:last-child"
+        ).click()
+        time.sleep(0.5)
+        selenium.find_element_by_css_selector(
+            "#popup-container a[href='#tabs-2']"
+        ).click()
+        selenium.find_elements_by_css_selector(
+            "#popup-container #tabs-2 .workflow-for-menu"
+        )[1].click()
+        selenium.find_element_by_css_selector("#set-linked-workflow").click()
+        time.sleep(1)
+        selenium.find_element_by_css_selector("#tabs-0 .menu-create").click()
+        selenium.find_element_by_css_selector(
+            ".create-dropdown.active a:last-child"
+        ).click()
+        time.sleep(0.5)
+        selenium.find_element_by_css_selector(
+            "#popup-container a[href='#tabs-2']"
+        ).click()
+        selenium.find_elements_by_css_selector(
+            "#popup-container #tabs-2 .workflow-for-menu"
+        )[2].click()
+        selenium.find_element_by_css_selector("#set-linked-workflow").click()
+        time.sleep(1)
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-0 .workflow-title"
+                )
+            )
+            == 3
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-1 .workflow-title"
+                )
+            )
+            == 1
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-2 .workflow-title"
+                )
+            )
+            == 1
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    "#tabs-3 .workflow-title"
+                )
+            )
+            == 1
+        )
 
-        for workflow_type in ["activity", "course", "program", "outcome"]:
-            selenium.find_element_by_css_selector(
-                ".section-" + workflow_type + " .workflow-duplicate-button"
-            ).click()
-            time.sleep(1)
-            if workflow_type == "outcome":
-                assert OutcomeProject.objects.get(
-                    outcome=get_model_from_str(workflow_type).objects.get(
-                        author=self.user,
-                        parent_outcome=Outcome.objects.get(author=author),
-                    ),
-                    project=my_project,
+        for workflow_type in ["activity", "course", "program"]:
+            assert WorkflowProject.objects.get(
+                workflow=get_model_from_str(workflow_type)
+                .objects.filter(
+                    author=self.user,
+                    parent_workflow=get_model_from_str(
+                        workflow_type
+                    ).objects.get(author=author),
                 )
-            else:
-                assert WorkflowProject.objects.get(
-                    workflow=get_model_from_str(workflow_type).objects.get(
-                        author=self.user,
-                        parent_workflow=get_model_from_str(
-                            workflow_type
-                        ).objects.get(author=author),
-                    ),
-                    project=my_project,
-                )
+                .last(),
+                project=my_project,
+            )
+
+    def test_workflow_read_only(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        author = get_author()
+        project = Project.objects.create(author=author, published=True)
+        for workflow_type in ["activity", "course", "program"]:
+            workflow = get_model_from_str(workflow_type).objects.create(
+                author=author
+            )
+            WorkflowProject.objects.create(workflow=workflow, project=project)
+            workflow.weeks.first().nodes.create(
+                author=self.user, column=workflow.columns.first()
+            )
+
+            selenium.get(
+                self.live_server_url
+                + reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            time.sleep(2)
+
+            self.assertEqual(
+                len(selenium.find_elements_by_css_selector(".action-button")),
+                0,
+            )
+            selenium.find_elements_by_css_selector(".week")[0].click()
+            time.sleep(0.3)
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        "#edit-menu .right-panel-inner"
+                    )
+                ),
+                0,
+            )
 
     def test_workflow_editing(self):
         selenium = self.selenium
@@ -424,6 +614,10 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             click_item = selenium.find_element_by_css_selector(
                 ".week .insert-sibling-button img"
             )
+            selenium.find_element_by_css_selector(
+                "#sidebar .window-close-button"
+            ).click()
+            time.sleep(0.5)
             action_hover_click(selenium, hover_item, click_item).perform()
             hover_item = selenium.find_element_by_css_selector(
                 ".workflow-details .node"
@@ -432,6 +626,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".node .insert-sibling-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
+            time.sleep(2)
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -483,6 +678,10 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             click_item = selenium.find_element_by_css_selector(
                 ".week .delete-self-button img"
             )
+            selenium.find_element_by_css_selector(
+                "#sidebar .window-close-button"
+            ).click()
+            time.sleep(0.5)
             action_hover_click(selenium, hover_item, click_item).perform()
             alert = wait.until(expected_conditions.alert_is_present())
             selenium.switch_to.alert.accept()
@@ -563,13 +762,19 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".column .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
+            time.sleep(1)
             hover_item = selenium.find_element_by_css_selector(
                 ".workflow-details .week"
             )
             click_item = selenium.find_element_by_css_selector(
-                ".week .duplicate-self-button img"
+                ".week > .mouseover-container-bypass > .mouseover-actions > .duplicate-self-button img"
             )
+            selenium.find_element_by_css_selector(
+                "#sidebar .window-close-button"
+            ).click()
+            time.sleep(0.5)
             action_hover_click(selenium, hover_item, click_item).perform()
+            time.sleep(1)
             hover_item = selenium.find_element_by_css_selector(
                 ".workflow-details .node"
             )
@@ -577,6 +782,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".node .duplicate-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
+            time.sleep(1)
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -606,12 +812,17 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
+        workflow = Course.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=workflow, project=project)
         base_outcome = Outcome.objects.create(author=self.user)
-        OutcomeProject.objects.create(outcome=base_outcome, project=project)
+        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=workflow)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:outcome-update", args=str(base_outcome.pk))
+            + reverse("course_flow:workflow-update", args=[workflow.pk])
         )
+        selenium.find_element_by_css_selector("a[href='#outcome-bar']").click()
+        selenium.find_element_by_css_selector("#edit-outcomes-button").click()
+        time.sleep(1)
         hover_item = selenium.find_element_by_css_selector(
             ".workflow-details .outcome"
         )
@@ -672,11 +883,86 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         self.assertEqual(
             OutcomeOutcome.objects.filter(parent=base_outcome).count(), 1
         )
+        selenium.find_element_by_css_selector(
+            ".children-block:not(:empty)+.outcome-create-child"
+        ).click()
+        time.sleep(1)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".workflow-details .outcome .outcome"
+                )
+            ),
+            2,
+        )
+        hover_item = selenium.find_element_by_css_selector(
+            ".workflow-details .outcome .outcome"
+        )
+        click_item = selenium.find_element_by_css_selector(
+            ".outcome .outcome .duplicate-self-button img"
+        )
+        action_hover_click(selenium, hover_item, click_item).perform()
+        time.sleep(1)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".workflow-details .outcome .outcome"
+                )
+            ),
+            3,
+        )
+        self.assertEqual(
+            OutcomeOutcome.objects.filter(parent=base_outcome).count(), 3
+        )
+        selenium.find_element_by_css_selector("#add-new-outcome").click()
+        time.sleep(2)
+        self.assertEqual(Outcome.objects.filter(depth=0).count(), 2)
+        self.assertEqual(
+            OutcomeWorkflow.objects.filter(workflow=workflow).count(), 2
+        )
+        hover_item = selenium.find_element_by_css_selector(
+            ".workflow-details .outcome-workflow > .outcome"
+        )
+        click_item = selenium.find_element_by_css_selector(
+            ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .insert-sibling-button img"
+        )
+        action_hover_click(selenium, hover_item, click_item).perform()
+        time.sleep(1)
+
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".workflow-details .outcome-workflow"
+                )
+            ),
+            3,
+        )
+        self.assertEqual(
+            OutcomeWorkflow.objects.filter(workflow=workflow).count(), 3
+        )
+        hover_item = selenium.find_element_by_css_selector(
+            ".workflow-details .outcome-workflow > .outcome"
+        )
+        click_item = selenium.find_element_by_css_selector(
+            ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .duplicate-self-button img"
+        )
+        action_hover_click(selenium, hover_item, click_item).perform()
+        time.sleep(1)
+
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".workflow-details .outcome-workflow"
+                )
+            ),
+            4,
+        )
+        self.assertEqual(
+            OutcomeWorkflow.objects.filter(workflow=workflow).count(), 4
+        )
 
     def test_edit_menu(self):
-        # Note that we don't test ALL parts of the edit menu, and we test only
-        # for nodes. This will catch the vast majority of potential issues.
-        # Linked workflows are tested in a different test
+        # Note that we don't test ALL parts of the edit menu, and we test only for nodes. This will catch the vast majority of potential issues. Linked workflows are tested in a different test
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user)
@@ -780,7 +1066,9 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             selenium.find_element_by_id("project-return").click()
             assert (
                 "project title"
-                in selenium.find_element_by_id("project-title").text
+                in selenium.find_element_by_css_selector(
+                    "#workflowtitle div"
+                ).text
             )
 
     def test_strategy_convert(self):
@@ -824,15 +1112,17 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                     ".strategy-bar-strategy div"
                 ).text
             )
-            selenium.get(self.live_server_url + reverse("course_flow:home"))
-            selenium.find_element_by_css_selector("a[href='#tabs-1']").click()
+            selenium.get(
+                self.live_server_url + reverse("course_flow:my-templates")
+            )
             selenium.find_element_by_css_selector(
-                ".section-" + workflow_type + " .workflow-edit-button"
+                "a[href='#tabs-" + str(i) + "']"
             ).click()
+            selenium.find_element_by_css_selector(".workflow-title").click()
             assert (
                 "new strategy"
                 in selenium.find_element_by_css_selector(
-                    ".workflow-title"
+                    "#workflowtitle div"
                 ).text
             )
             self.assertEqual(
@@ -852,19 +1142,23 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         project = Project.objects.create(
             author=self.user, title="project title"
         )
-        base_outcome = Outcome.objects.create(author=self.user)
-        OutcomeProject.objects.create(outcome=base_outcome, project=project)
-        OutcomeOutcome.objects.create(
-            parent=base_outcome, child=Outcome.objects.create(author=self.user)
-        )
-        OutcomeOutcome.objects.create(
-            parent=base_outcome, child=Outcome.objects.create(author=self.user)
-        )
         for i, workflow_type in enumerate(["activity", "course", "program"]):
             workflow = get_model_from_str(workflow_type).objects.create(
                 author=self.user
             )
             WorkflowProject.objects.create(workflow=workflow, project=project)
+            base_outcome = Outcome.objects.create(author=self.user)
+            OutcomeWorkflow.objects.create(
+                outcome=base_outcome, workflow=workflow
+            )
+            OutcomeOutcome.objects.create(
+                parent=base_outcome,
+                child=Outcome.objects.create(author=self.user),
+            )
+            OutcomeOutcome.objects.create(
+                parent=base_outcome,
+                child=Outcome.objects.create(author=self.user),
+            )
             workflow.weeks.first().nodes.create(
                 author=self.user,
                 column=workflow.columns.first(),
@@ -883,31 +1177,35 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
             selenium.find_element_by_css_selector(
-                "#outcomeviewbar span"
+                "#button_outcometable"
             ).click()
-            base_outcome_row_select = (
-                ".outcome-table > .outcome > .outcome-row"
+            time.sleep(1)
+            base_outcome_row_select = ".outcome-table > div > .outcome > .outcome-row > .outcome-cells"
+            outcome1_row_select = ".outcome .outcome-outcome:first-of-type .outcome > .outcome-row"
+            outcome2_row_select = ".outcome .outcome-outcome+.outcome-outcome .outcome > .outcome-row"
+            base_cell = (
+                base_outcome_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell"
             )
-            outcome1_row_select = (
-                ".outcome .outcome-outcome .outcome > .outcome-row"
-            )
-            outcome2_row_select = ".outcome .outcome-outcome+.outcome-outcome .outcome > .outcome-row"  # noqa E501
-            base_cell = base_outcome_row_select + " .blank-cell+.table-cell"
             base_cell2 = (
                 base_outcome_row_select
-                + " .blank-cell+.table-cell+.table-cell"
+                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
             )
             base_input = (
-                base_outcome_row_select + " .blank-cell+.table-cell input"
+                base_outcome_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell input"
             )
             base_input2 = (
                 base_outcome_row_select
-                + " .blank-cell+.table-cell+.table-cell input"
+                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
             )
-            base_img = base_outcome_row_select + " .blank-cell+.table-cell img"
+            base_img = (
+                base_outcome_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell img"
+            )
             base_img2 = (
                 base_outcome_row_select
-                + " .blank-cell+.table-cell+.table-cell img"
+                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
             )
             base_total_img = (
                 base_outcome_row_select
@@ -921,21 +1219,29 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 selenium.find_element_by_css_selector(base_cell),
                 selenium.find_element_by_css_selector(base_input),
             )
-            outcome1_cell = outcome1_row_select + " .blank-cell+.table-cell"
+            outcome1_cell = (
+                outcome1_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell"
+            )
             outcome1_cell2 = (
-                outcome1_row_select + " .blank-cell+.table-cell+.table-cell"
+                outcome1_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
             )
             outcome1_input = (
-                outcome1_row_select + " .blank-cell+.table-cell input"
+                outcome1_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell input"
             )
             outcome1_input2 = (
                 outcome1_row_select
-                + " .blank-cell+.table-cell+.table-cell input"
+                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
             )
-            outcome1_img = outcome1_row_select + " .blank-cell+.table-cell img"
+            outcome1_img = (
+                outcome1_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell img"
+            )
             outcome1_img2 = (
                 outcome1_row_select
-                + " .blank-cell+.table-cell+.table-cell img"
+                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
             )
             outcome1_total_img = (
                 outcome1_row_select
@@ -949,21 +1255,29 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 selenium.find_element_by_css_selector(outcome1_cell),
                 selenium.find_element_by_css_selector(outcome1_input),
             )
-            outcome2_cell = outcome2_row_select + " .blank-cell+.table-cell"
+            outcome2_cell = (
+                outcome2_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell"
+            )
             outcome2_cell2 = (
-                outcome2_row_select + " .blank-cell+.table-cell+.table-cell"
+                outcome2_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
             )
             outcome2_input = (
-                outcome2_row_select + " .blank-cell+.table-cell input"
+                outcome2_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell input"
             )
             outcome2_input2 = (
                 outcome2_row_select
-                + " .blank-cell+.table-cell+.table-cell input"
+                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
             )
-            outcome2_img = outcome2_row_select + " .blank-cell+.table-cell img"
+            outcome2_img = (
+                outcome2_row_select
+                + " .table-group:first-of-type .blank-cell+.table-cell img"
+            )
             outcome2_img2 = (
                 outcome2_row_select
-                + " .blank-cell+.table-cell+.table-cell img"
+                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
             )
             outcome2_total_img = (
                 outcome2_row_select
@@ -991,57 +1305,57 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                     0,
                 )
 
-            # Toggle the base outcome. Check to make sure the children and
-            # totals columns behave as expected
+            # Toggle the base outcome. Check to make sure the children and totals columns behave as expected
             base_toggle.perform()
             time.sleep(1)
             assert_image(base_img, "solid_check")
             assert_image(base_total_img, "/check")
             assert_image(base_grandtotal_img, "/check")
-            assert_image(outcome1_img, "/check")
+            assert_image(outcome1_img, "/solid_check")
             assert_image(outcome1_total_img, "/check")
             assert_image(outcome1_grandtotal_img, "/check")
-            assert_image(outcome2_img, "/check")
+            assert_image(outcome2_img, "/solid_check")
             assert_image(outcome2_total_img, "/check")
             assert_image(outcome2_grandtotal_img, "/check")
 
-            # Toggle one of the children
+            # Toggle one of the children. We expect to lose the top outcome to partial completion
+            outcome1_toggle.perform()
+            time.sleep(1)
+            assert_image(base_img, "/nocheck")
+            assert_image(base_total_img, "/nocheck")
+            assert_image(base_grandtotal_img, "/nocheck")
+            assert_no_image(outcome1_img)
+            assert_no_image(outcome1_total_img)
+            assert_no_image(outcome1_grandtotal_img)
+            assert_image(outcome2_img, "/solid_check")
+            assert_image(outcome2_total_img, "/check")
+            assert_image(outcome2_grandtotal_img, "/check")
+            # check that re-toggling outcome 1 adds the parent
             outcome1_toggle.perform()
             time.sleep(1)
             assert_image(base_img, "solid_check")
             assert_image(base_total_img, "/check")
             assert_image(base_grandtotal_img, "/check")
-            assert_image(outcome1_img, "solid_check")
+            assert_image(outcome1_img, "/solid_check")
             assert_image(outcome1_total_img, "/check")
             assert_image(outcome1_grandtotal_img, "/check")
-            assert_image(outcome2_img, "/check")
+            assert_image(outcome2_img, "/solid_check")
             assert_image(outcome2_total_img, "/check")
             assert_image(outcome2_grandtotal_img, "/check")
-            outcome2_toggle.perform()
-            time.sleep(1)
-            assert_image(base_img, "solid_check")
-            assert_image(base_total_img, "/check")
-            assert_image(base_grandtotal_img, "/check")
-            assert_image(outcome1_img, "solid_check")
-            assert_image(outcome1_total_img, "/check")
-            assert_image(outcome1_grandtotal_img, "/check")
-            assert_image(outcome2_img, "solid_check")
-            assert_image(outcome2_total_img, "/check")
-            assert_image(outcome2_grandtotal_img, "/check")
-            # check completion when all children are toggled but not parent
+            # check that removing the base outcome clears all
             base_toggle.perform()
             time.sleep(1)
-            assert_image(base_img, "/check")
-            assert_image(base_total_img, "/check")
-            assert_image(base_grandtotal_img, "/check")
-            assert_image(outcome1_img, "solid_check")
-            assert_image(outcome1_total_img, "/check")
-            assert_image(outcome1_grandtotal_img, "/check")
-            assert_image(outcome2_img, "solid_check")
-            assert_image(outcome2_total_img, "/check")
-            assert_image(outcome2_grandtotal_img, "/check")
+            assert_no_image(base_img)
+            assert_no_image(base_total_img)
+            assert_no_image(base_grandtotal_img)
+            assert_no_image(outcome1_img)
+            assert_no_image(outcome1_total_img)
+            assert_no_image(outcome1_grandtotal_img)
+            assert_no_image(outcome2_img)
+            assert_no_image(outcome2_total_img)
+            assert_no_image(outcome2_grandtotal_img)
             # check completion when not all children are toggled
-            outcome2_toggle.perform()
+            outcome1_toggle.perform()
             time.sleep(1)
             assert_image(base_img, "/nocheck")
             assert_image(base_total_img, "/nocheck")
@@ -1059,20 +1373,322 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 selenium.find_element_by_css_selector(outcome2_input2),
             ).perform()
             time.sleep(1)
-            # Currently does not pass, will fix later
 
-    #            assert_image(base_img,"/nocheck")
-    #            assert_image(base_img2,"/nocheck")
-    #            assert_image(base_total_img,"/check")
-    #            assert_image(base_grandtotal_img,"/check")
-    #            assert_image(outcome1_img,"solid_check")
-    #            assert_no_image(outcome1_img2)
-    #            assert_image(outcome1_total_img,"/check")
-    #            assert_image(outcome1_grandtotal_img,"/check")
-    #            assert_no_image(outcome2_img)
-    #            assert_image(outcome2_img2,"solid_check")
-    #            assert_image(outcome2_total_img,"/check")
-    #            assert_image(outcome2_grandtotal_img,"/check")
+            assert_image(base_img, "/nocheck")
+            assert_image(base_img2, "/nocheck")
+            assert_image(base_total_img, "/check")
+            assert_image(base_grandtotal_img, "/check")
+            assert_image(outcome1_img, "solid_check")
+            assert_no_image(outcome1_img2)
+            assert_image(outcome1_total_img, "/check")
+            assert_image(outcome1_grandtotal_img, "/check")
+            assert_no_image(outcome2_img)
+            assert_image(outcome2_img2, "solid_check")
+            assert_image(outcome2_total_img, "/check")
+            assert_image(outcome2_grandtotal_img, "/check")
+
+    def test_horizontal_outcome_view(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(
+            author=self.user, title="project title"
+        )
+        course = Course.objects.create(author=self.user)
+        program = Program.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=course, project=project)
+        WorkflowProject.objects.create(workflow=program, project=project)
+        base_outcome = Outcome.objects.create(author=self.user)
+        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=program)
+        OutcomeOutcome.objects.create(
+            parent=base_outcome,
+            child=Outcome.objects.create(author=self.user),
+        )
+        OutcomeOutcome.objects.create(
+            parent=base_outcome,
+            child=Outcome.objects.create(author=self.user),
+        )
+        course.outcomes.create(author=self.user)
+        course.outcomes.create(author=self.user)
+        node = program.weeks.first().nodes.create(
+            author=self.user,
+            linked_workflow=course,
+            column=program.columns.first(),
+        )
+        response = self.client.post(
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
+        )
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[program.pk])
+        )
+        selenium.find_element_by_css_selector(
+            "#sidebar .window-close-button"
+        ).click()
+        time.sleep(0.5)
+        selenium.find_element_by_css_selector(
+            "#button_horizontaloutcometable"
+        ).click()
+        time.sleep(5)
+        base_outcome_row_select = (
+            ".outcome-table > div > .outcome > .outcome-row > .outcome-cells"
+        )
+        outcome1_row_select = (
+            ".outcome .outcome-outcome:first-of-type .outcome > .outcome-row"
+        )
+        outcome2_row_select = ".outcome .outcome-outcome+.outcome-outcome .outcome > .outcome-row"
+        base_cell = (
+            base_outcome_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell"
+        )
+        base_cell2 = (
+            base_outcome_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+        )
+        base_input = (
+            base_outcome_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell input"
+        )
+        base_input2 = (
+            base_outcome_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+        )
+        base_img = (
+            base_outcome_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell img"
+        )
+        base_img2 = (
+            base_outcome_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
+        )
+        base_total_img = (
+            base_outcome_row_select
+            + " .table-cell.total-cell:not(.grand-total-cell) img"
+        )
+        base_grandtotal_img = (
+            base_outcome_row_select + " .table-cell.grand-total-cell img"
+        )
+        base_toggle = action_hover_click(
+            selenium,
+            selenium.find_element_by_css_selector(base_cell),
+            selenium.find_element_by_css_selector(base_input),
+        )
+        outcome1_cell = (
+            outcome1_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell"
+        )
+        outcome1_cell2 = (
+            outcome1_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+        )
+        outcome1_input = (
+            outcome1_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell input"
+        )
+        outcome1_input2 = (
+            outcome1_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+        )
+        outcome1_img = (
+            outcome1_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell img"
+        )
+        outcome1_img2 = (
+            outcome1_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
+        )
+        outcome1_total_img = (
+            outcome1_row_select
+            + " .table-cell.total-cell:not(.grand-total-cell) img"
+        )
+        outcome1_grandtotal_img = (
+            outcome1_row_select + " .table-cell.grand-total-cell img"
+        )
+        outcome1_toggle = action_hover_click(
+            selenium,
+            selenium.find_element_by_css_selector(outcome1_cell),
+            selenium.find_element_by_css_selector(outcome1_input),
+        )
+        outcome2_cell = (
+            outcome2_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell"
+        )
+        outcome2_cell2 = (
+            outcome2_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+        )
+        outcome2_input = (
+            outcome2_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell input"
+        )
+        outcome2_input2 = (
+            outcome2_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+        )
+        outcome2_img = (
+            outcome2_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell img"
+        )
+        outcome2_img2 = (
+            outcome2_row_select
+            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
+        )
+        outcome2_total_img = (
+            outcome2_row_select
+            + " .table-cell.total-cell:not(.grand-total-cell) img"
+        )
+        outcome2_grandtotal_img = (
+            outcome2_row_select + " .table-cell.grand-total-cell img"
+        )
+        outcome2_toggle = action_hover_click(
+            selenium,
+            selenium.find_element_by_css_selector(outcome2_cell),
+            selenium.find_element_by_css_selector(outcome2_input),
+        )
+
+        def assert_image(element_string, string):
+            assert string in selenium.find_element_by_css_selector(
+                element_string
+            ).get_attribute("src")
+
+        def assert_no_image(element_string):
+            self.assertEqual(
+                len(selenium.find_elements_by_css_selector(element_string)), 0,
+            )
+
+        # Toggle the base outcome. Check to make sure the children and totals columns behave as expected
+        base_toggle.perform()
+        time.sleep(1)
+        assert_image(base_img, "solid_check")
+        assert_image(base_total_img, "/check")
+        assert_image(base_grandtotal_img, "/check")
+        assert_image(outcome1_img, "/solid_check")
+        assert_image(outcome1_total_img, "/check")
+        assert_image(outcome1_grandtotal_img, "/check")
+        assert_image(outcome2_img, "/solid_check")
+        assert_image(outcome2_total_img, "/check")
+        assert_image(outcome2_grandtotal_img, "/check")
+
+        # Toggle one of the children. We expect to lose the top outcome to partial completion
+        outcome1_toggle.perform()
+        time.sleep(1)
+        assert_image(base_img, "/nocheck")
+        assert_image(base_total_img, "/nocheck")
+        assert_image(base_grandtotal_img, "/nocheck")
+        assert_no_image(outcome1_img)
+        assert_no_image(outcome1_total_img)
+        assert_no_image(outcome1_grandtotal_img)
+        assert_image(outcome2_img, "/solid_check")
+        assert_image(outcome2_total_img, "/check")
+        assert_image(outcome2_grandtotal_img, "/check")
+        # check that re-toggling outcome 1 adds the parent
+        outcome1_toggle.perform()
+        time.sleep(1)
+        assert_image(base_img, "solid_check")
+        assert_image(base_total_img, "/check")
+        assert_image(base_grandtotal_img, "/check")
+        assert_image(outcome1_img, "/solid_check")
+        assert_image(outcome1_total_img, "/check")
+        assert_image(outcome1_grandtotal_img, "/check")
+        assert_image(outcome2_img, "/solid_check")
+        assert_image(outcome2_total_img, "/check")
+        assert_image(outcome2_grandtotal_img, "/check")
+        # check that removing the base outcome clears all
+        base_toggle.perform()
+        time.sleep(1)
+        assert_no_image(base_img)
+        assert_no_image(base_total_img)
+        assert_no_image(base_grandtotal_img)
+        assert_no_image(outcome1_img)
+        assert_no_image(outcome1_total_img)
+        assert_no_image(outcome1_grandtotal_img)
+        assert_no_image(outcome2_img)
+        assert_no_image(outcome2_total_img)
+        assert_no_image(outcome2_grandtotal_img)
+        # check completion when not all children are toggled
+        outcome1_toggle.perform()
+        time.sleep(1)
+        assert_image(base_img, "/nocheck")
+        assert_image(base_total_img, "/nocheck")
+        assert_image(base_grandtotal_img, "/nocheck")
+        assert_image(outcome1_img, "solid_check")
+        assert_image(outcome1_total_img, "/check")
+        assert_image(outcome1_grandtotal_img, "/check")
+        assert_no_image(outcome2_img)
+        assert_no_image(outcome2_total_img)
+        assert_no_image(outcome2_grandtotal_img)
+        # check completion when children are toggled but in different nodes
+        action_hover_click(
+            selenium,
+            selenium.find_element_by_css_selector(outcome2_cell2),
+            selenium.find_element_by_css_selector(outcome2_input2),
+        ).perform()
+        time.sleep(1)
+
+        assert_image(base_img, "/nocheck")
+        assert_image(base_img2, "/nocheck")
+        assert_image(base_total_img, "/check")
+        assert_image(base_grandtotal_img, "/check")
+        assert_image(outcome1_img, "solid_check")
+        assert_no_image(outcome1_img2)
+        assert_image(outcome1_total_img, "/check")
+        assert_image(outcome1_grandtotal_img, "/check")
+        assert_no_image(outcome2_img)
+        assert_image(outcome2_img2, "solid_check")
+        assert_image(outcome2_total_img, "/check")
+        assert_image(outcome2_grandtotal_img, "/check")
+        
+    def test_outcome_analytics(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(
+            author=self.user, title="project title"
+        )
+        course = Course.objects.create(author=self.user)
+        program = Program.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=course, project=project)
+        WorkflowProject.objects.create(workflow=program, project=project)
+        base_outcome = Outcome.objects.create(author=self.user)
+        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=program)
+        poo1 = OutcomeOutcome.objects.create(
+            parent=base_outcome,
+            child=Outcome.objects.create(author=self.user),
+        )
+        poo2 = OutcomeOutcome.objects.create(
+            parent=base_outcome,
+            child=Outcome.objects.create(author=self.user),
+        )
+        coc1 = course.outcomes.create(author=self.user)
+        coc2 = course.outcomes.create(author=self.user)
+        node = program.weeks.first().nodes.create(
+            author=self.user,
+            linked_workflow=course,
+            column=program.columns.first(),
+        )
+        response = self.client.post(
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
+        )
+        
+        OutcomeHorizontalLink.objects.create(outcome = coc1, parent_outcome=poo1.child);
+        OutcomeHorizontalLink.objects.create(outcome = coc2, parent_outcome=poo2.child);
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[program.pk])
+        )
+        selenium.find_element_by_css_selector(
+            "#button_alignmentanalysis"
+        ).click()
+        time.sleep(5)
+        
+        assert(selenium.find_element_by_css_selector(".week .title-text").text=="Term 1")
+        assert(len(selenium.find_elements_by_css_selector(".week .node"))==1)
+        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome"))==2)
+        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome .half-width>.outcome"))==2)
+        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome .alignment-row .outcome"))==2)
+        
 
     def test_linked_workflow(self):
         selenium = self.selenium
@@ -1101,9 +1717,9 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             if workflow_type == "activity":
                 continue
             selenium.find_element_by_css_selector(
-                ".workflow-details .node"
+                ".workflow-details .node .node-title"
             ).click()
-            time.sleep(1)
+            time.sleep(2)
             selenium.find_element_by_id("linked-workflow-editor").click()
             time.sleep(2)
             selenium.find_element_by_css_selector(
@@ -1123,14 +1739,13 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert (
                 workflow_types[i - 1]
                 in selenium.find_element_by_css_selector(
-                    ".workflow-title"
+                    "#workflowtitle div"
                 ).text
             )
             selenium.get(this_url)
             selenium.find_element_by_css_selector(
-                ".workflow-details .node"
+                ".workflow-details .node .node-title"
             ).click()
-            time.sleep(1)
             selenium.find_element_by_id("linked-workflow-editor").click()
             time.sleep(2)
             selenium.find_element_by_css_selector(
@@ -1149,615 +1764,327 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert (
                 workflow_type
                 in selenium.find_element_by_css_selector(
-                    ".workflow-title"
+                    "#workflowtitle div"
                 ).text
             )
 
-        """
-        selenium.find_elements_by_class_name("create-button")[2].click()
+    def create_many_items(self, author, published, disciplines):
+        for object_type in [
+            "project",
+            "activity",
+            "course",
+            "program",
+        ]:
+            for i in range(10):
+                item = get_model_from_str(object_type).objects.create(
+                    author=author,
+                    published=published,
+                    title=object_type + str(i),
+                )
+                item.disciplines.set(disciplines)
 
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
-
-        activity_title = "test activity title"
-        activity_description = "test activity description"
-
-        title.send_keys(activity_title)
-        description.send_keys(activity_description)
-
-        selenium.find_element_by_id("save-button").click()
-
-        WebDriverWait(selenium, timeout).until(
-            presence_of_element_located((By.CLASS_NAME, "activity"))
+    def test_explore(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        author = get_author()
+        discipline = Discipline.objects.create(title="Discipline1")
+        self.create_many_items(author, True, disciplines=[discipline])
+        selenium.get(self.live_server_url + reverse("course_flow:explore"))
+        for checkbox in selenium.find_elements_by_css_selector(
+            "#search-type input[type='checkbox']"
+        ):
+            checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 4
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+        )
+        selenium.find_elements_by_css_selector(".page-button")[2].click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 4
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+        )
+        assert "active" in selenium.find_elements_by_css_selector(
+            ".page-button"
+        )[2].get_attribute("class")
+        selenium.find_element_by_css_selector("#next-page-button").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 4
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+        )
+        assert "active" in selenium.find_elements_by_css_selector(
+            ".page-button"
+        )[3].get_attribute("class")
+        selenium.find_element_by_css_selector("#prev-page-button").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 4
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+        )
+        assert "active" in selenium.find_elements_by_css_selector(
+            ".page-button"
+        )[2].get_attribute("class")
+        for checkbox in selenium.find_elements_by_css_selector(
+            "#search-discipline input[type='checkbox']"
+        ):
+            checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 4
+        )
+        selenium.find_element_by_css_selector("select[name='results']").click()
+        time.sleep(0.5)
+        selenium.find_elements_by_css_selector(
+            "select[name='results'] option"
+        )[1].click()
+        time.sleep(0.5)
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 2
+        )
+        selenium.find_element_by_css_selector("select[name='results']").click()
+        selenium.find_elements_by_css_selector(
+            "select[name='results'] option"
+        )[2].click()
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 40
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 1
+        )
+        selenium.find_element_by_id("search-title").send_keys("1")
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 4
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 1
+        )
+        for button in selenium.find_elements_by_css_selector(
+            ".workflow-toggle-favourite"
+        ):
+            button.click()
+        time.sleep(0.5)
+        self.assertEqual(
+            Favourite.objects.filter(
+                user=self.user,
+                content_type=ContentType.objects.get_for_model(Project),
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            Favourite.objects.filter(
+                user=self.user,
+                content_type=ContentType.objects.get_for_model(Activity),
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            Favourite.objects.filter(
+                user=self.user,
+                content_type=ContentType.objects.get_for_model(Course),
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            Favourite.objects.filter(
+                user=self.user,
+                content_type=ContentType.objects.get_for_model(Program),
+            ).count(),
+            1,
+        )
+        selenium.find_element_by_css_selector("select[name='results']").click()
+        selenium.find_elements_by_css_selector(
+            "select[name='results'] option"
+        )[0].click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 4
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 1
         )
 
-        assert (
-            activity_title
-            in selenium.find_element_by_id("activity-title").text
+    def test_explore_no_publish(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        author = get_author()
+        discipline = Discipline.objects.create(title="Discipline1")
+        self.create_many_items(author, False, disciplines=[discipline])
+        selenium.get(self.live_server_url + reverse("course_flow:explore"))
+        for checkbox in selenium.find_elements_by_css_selector(
+            "#search-type input[type='checkbox']"
+        ):
+            checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 0
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 0
         )
 
-        assert (
-            activity_description
-            in selenium.find_element_by_id("activity-description").text
+    def test_explore_disciplines(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        author = get_author()
+        discipline1 = Discipline.objects.create(title="Discipline1")
+        discipline2 = Discipline.objects.create(title="Discipline2")
+        self.create_many_items(author, True, disciplines=[discipline1])
+        self.create_many_items(author, True, disciplines=[discipline2])
+        self.create_many_items(
+            author, True, disciplines=[discipline1, discipline2]
+        )
+        selenium.get(self.live_server_url + reverse("course_flow:explore"))
+        for checkbox in selenium.find_elements_by_css_selector(
+            "#search-type input[type='checkbox']"
+        ):
+            checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 12
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+        )
+        selenium.find_elements_by_css_selector(
+            "#search-discipline input[type='checkbox']"
+        )[0].click()
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 8
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+        )
+        selenium.find_elements_by_css_selector(
+            "#search-discipline input[type='checkbox']"
+        )[0].click()
+        selenium.find_elements_by_css_selector(
+            "#search-discipline input[type='checkbox']"
+        )[1].click()
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 8
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+        )
+        selenium.find_elements_by_css_selector(
+            "#search-discipline input[type='checkbox']"
+        )[0].click()
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 12
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
         )
 
-        assert (
-            username_text
-            in selenium.find_element_by_id("activity-author").text
+    def test_share_edit_view(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        user2 = get_author()
+        project = Project.objects.create(author=self.user)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:project-update", args=[project.pk])
         )
-
-        selenium.find_element_by_id("update-activity").click()
-
+        selenium.find_element_by_id("share-button").click()
+        inputs = selenium.find_elements_by_css_selector(".user-add input")
+        adds = selenium.find_elements_by_css_selector(".user-add button")
+        inputs[0].send_keys("testuser2")
         time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        activity_title = "test activity title updated"
-        activity_description = "test activity description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
+        selenium.find_elements_by_css_selector(".ui-autocomplete li")[
+            0
+        ].click()
+        adds[0].click()
+        time.sleep(1)
+        self.assertEqual(
+            ObjectPermission.objects.filter(
+                user=user2,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+                content_type=ContentType.objects.get_for_model(project),
+                object_id=project.id,
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            ObjectPermission.objects.filter(
+                user=user2,
+                permission_type=ObjectPermission.PERMISSION_VIEW,
+                content_type=ContentType.objects.get_for_model(project),
+                object_id=project.id,
+            ).count(),
+            0,
+        )
+        inputs[1].send_keys("testuser2")
         time.sleep(2)
-
-        assert (
-            activity_title
-            in selenium.find_element_by_id("activity-title").text
+        selenium.find_elements_by_css_selector(".ui-autocomplete li")[
+            1
+        ].click()
+        adds[1].click()
+        time.sleep(1)
+        self.assertEqual(
+            ObjectPermission.objects.filter(
+                user=user2,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+                content_type=ContentType.objects.get_for_model(project),
+                object_id=project.id,
+            ).count(),
+            0,
         )
-
-        assert (
-            activity_description
-            in selenium.find_element_by_id("activity-description").text
+        self.assertEqual(
+            ObjectPermission.objects.filter(
+                user=user2,
+                permission_type=ObjectPermission.PERMISSION_VIEW,
+                content_type=ContentType.objects.get_for_model(project),
+                object_id=project.id,
+            ).count(),
+            1,
         )
-
-        assert (
-            username_text
-            in selenium.find_element_by_id("activity-author").text
-        )
-
-        selenium.find_element_by_id("add-week").click()
-
+        selenium.find_element_by_css_selector(
+            ".user-label .window-close-button"
+        ).click()
+        alert = wait.until(expected_conditions.alert_is_present())
+        selenium.switch_to.alert.accept()
         time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        week_title = "test week title"
-        week_description = "test week description"
-
-        title.send_keys(week_title)
-        description.send_keys(week_description)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("week")
-
-        assert (
-            week_title
-            in selenium.find_elements_by_class_name("week-title")[0].text
+        self.assertEqual(
+            ObjectPermission.objects.filter(
+                user=user2,
+                content_type=ContentType.objects.get_for_model(project),
+                object_id=project.id,
+            ).count(),
+            0,
         )
-
-        assert (
-            week_description
-            in selenium.find_elements_by_class_name("week-description")[
-                0
-            ].text
+        selenium.find_element_by_css_selector(
+            ".message-wrap > .window-close-button"
+        ).click()
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".message-wrap")), 0
         )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("week-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("update-week")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        week_title = "test week title updated"
-        week_description = "test week description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert (
-            week_title
-            in selenium.find_elements_by_class_name("week-title")[0].text
-        )
-
-        assert (
-            week_description
-            in selenium.find_elements_by_class_name("week-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("week-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("add-node")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        node_title = "test node title"
-        node_description = "test node description"
-
-        title.send_keys(node_title)
-        description.send_keys(node_description)
-        Select(
-            selenium.find_elements_by_class_name("mdc-select__native-control")[
-                0
-            ]
-        ).select_by_value("1")
-        Select(
-            selenium.find_elements_by_class_name("mdc-select__native-control")[
-                1
-            ]
-        ).select_by_value("1")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("node")
-
-        assert (
-            node_title
-            in selenium.find_elements_by_class_name("node-title")[0].text
-        )
-
-        assert (
-            node_description
-            in selenium.find_elements_by_class_name("node-description")[0].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("node-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("update-node")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        node_title = "test node title updated"
-        node_description = "test node description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("node")
-
-        assert (
-            node_title
-            in selenium.find_elements_by_class_name("node-title")[0].text
-        )
-
-        assert (
-            node_description
-            in selenium.find_elements_by_class_name("node-description")[0].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("node-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("delete-node")[0].click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert not selenium.find_elements_by_class_name("node")
-
-        selenium.find_elements_by_class_name("delete-week")[0].click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert not selenium.find_elements_by_class_name("week")
-
-        selenium.find_element_by_id("delete-activity").click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        selenium.get(self.live_server_url + "/home/")
-
-        selenium.find_elements_by_class_name("create-button")[1].click()
-
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
-
-        course_title = "test course title"
-        course_description = "test course description"
-
-        title.send_keys(course_title)
-        description.send_keys(course_description)
-
-        selenium.find_element_by_id("save-button").click()
-
-        WebDriverWait(selenium, timeout).until(
-            presence_of_element_located((By.CLASS_NAME, "course"))
-        )
-
-        assert course_title in selenium.find_element_by_id("course-title").text
-
-        assert (
-            course_description
-            in selenium.find_element_by_id("course-description").text
-        )
-
-        assert (
-            username_text in selenium.find_element_by_id("course-author").text
-        )
-
-        selenium.find_element_by_id("update-course").click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        course_title = "test course title updated"
-        course_description = "test course description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert course_title in selenium.find_element_by_id("course-title").text
-
-        assert (
-            course_description
-            in selenium.find_element_by_id("course-description").text
-        )
-
-        assert (
-            username_text in selenium.find_element_by_id("course-author").text
-        )
-
-        selenium.find_element_by_id("add-week").click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-
-        week_title = "test week title"
-
-        title.send_keys(week_title)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("week")[0]
-
-        assert (
-            week_title
-            in selenium.find_elements_by_class_name("week-title")[0].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("week-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("update-week")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-
-        week_title = "test week title updated"
-
-        title.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert (
-            week_title
-            in selenium.find_elements_by_class_name("week-title")[0].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("week-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("add-component")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        component_title = "test component title"
-        component_description = "test component description"
-
-        Select(
-            selenium.find_elements_by_class_name("mdc-select__native-control")[
-                0
-            ]
-        ).select_by_value("assessment")
-        title.send_keys(component_title)
-        description.send_keys(component_description)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("component")[0]
-
-        assert (
-            component_title
-            in selenium.find_elements_by_class_name("component-title")[0].text
-        )
-
-        assert (
-            component_description
-            in selenium.find_elements_by_class_name("component-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("component-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("update-component")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        component_title = "test component title updated"
-        component_description = "test component description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("component")[0]
-
-        assert (
-            component_title
-            in selenium.find_elements_by_class_name("component-title")[0].text
-        )
-
-        assert (
-            component_description
-            in selenium.find_elements_by_class_name("component-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("component-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("delete-component")[0].click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert not selenium.find_elements_by_class_name("component")
-
-        selenium.find_elements_by_class_name("delete-week")[0].click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert not selenium.find_elements_by_class_name("week")
-
-        selenium.find_element_by_id("delete-course").click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.get(self.live_server_url + "/home/")
-
-        assert "Homepage" in selenium.find_element_by_id("header").text
-
-        selenium.find_elements_by_class_name("create-button")[0].click()
-
-        title = selenium.find_element_by_id("id_title")
-        description = selenium.find_element_by_id("id_description")
-
-        program_title = "test program title"
-        program_description = "test program description"
-
-        title.send_keys(program_title)
-        description.send_keys(program_description)
-
-        selenium.find_element_by_id("save-button").click()
-
-        WebDriverWait(selenium, timeout).until(
-            presence_of_element_located((By.CLASS_NAME, "program"))
-        )
-
-        assert (
-            program_title in selenium.find_element_by_id("program-title").text
-        )
-
-        assert (
-            program_description
-            in selenium.find_element_by_id("program-description").text
-        )
-
-        assert (
-            username_text in selenium.find_element_by_id("program-author").text
-        )
-
-        selenium.find_element_by_id("update-program").click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        program_title = "test program title updated"
-        program_description = "test program description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert (
-            program_title in selenium.find_element_by_id("program-title").text
-        )
-
-        assert (
-            program_description
-            in selenium.find_element_by_id("program-description").text
-        )
-
-        assert (
-            username_text in selenium.find_element_by_id("program-author").text
-        )
-
-        selenium.find_element_by_id("add-component").click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        Select(
-            selenium.find_elements_by_class_name("mdc-select__native-control")[
-                0
-            ]
-        ).select_by_value("assessment")
-        component_title = "test component title"
-        component_description = "test component description"
-
-        title.send_keys(component_title)
-        description.send_keys(component_description)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        selenium.find_elements_by_class_name("component")[0]
-
-        assert (
-            component_title
-            in selenium.find_elements_by_class_name("component-title")[0].text
-        )
-
-        assert (
-            component_description
-            in selenium.find_elements_by_class_name("component-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("component-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("update-component")[0].click()
-
-        time.sleep(2)
-
-        title = selenium.find_element_by_id("title-field")
-        description = selenium.find_element_by_id("description-field")
-
-        component_title = "test component title updated"
-        component_description = "test component description updated"
-
-        title.send_keys(" updated")
-        description.send_keys(" updated")
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert (
-            component_title
-            in selenium.find_elements_by_class_name("component-title")[0].text
-        )
-
-        assert (
-            component_description
-            in selenium.find_elements_by_class_name("component-description")[
-                0
-            ].text
-        )
-
-        assert (
-            username_text
-            in selenium.find_elements_by_class_name("component-author")[0].text
-        )
-
-        selenium.find_elements_by_class_name("delete-component")[0].click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-        time.sleep(2)
-
-        assert not selenium.find_elements_by_class_name("component")
-
-        selenium.find_element_by_id("delete-program").click()
-
-        time.sleep(2)
-
-        selenium.find_element_by_id("submit-button").click()
-
-"""

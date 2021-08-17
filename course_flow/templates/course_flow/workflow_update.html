@@ -16,140 +16,104 @@
 <div id="popup-container"></div>
 <div id="sidebar" class="side-bar">
   <ul>
-    <li>
+    <li class="hover-shade">
       <a href="#edit-menu"
         ><img
           src="{% static 'course_flow/img/images_svg/edit_pencil_blue.svg' %}"
       /></a>
     </li>
-    <li>
+    <li class="hover-shade">
       <a href="#node-bar"
         ><img src="{% static 'course_flow/img/images_svg/add_new_blue.svg' %}"
       /></a>
     </li>
     {% if is_strategy == "false" %}
-    <li>
+    <li class="hover-shade">
       <a href="#outcome-bar"
         ><img src="{% static 'course_flow/img/images_svg/outcomes_blue.svg' %}"
       /></a>
     </li>
-    <li>
+    <li class="hover-shade">
       <a href="#strategy-bar"
         ><img src="{% static 'course_flow/img/images_svg/strategy_blue.svg' %}"
       /></a>
     </li>
     {% endif %}
   </ul>
-  <div id="edit-menu" class="right-panel-container"></div>
-  <div id="node-bar" class="right-panel-container"></div>
-  {% if is_strategy == "false" %}
-  <div id="outcome-bar" class="right-panel-container"></div>
-  <div id="strategy-bar" class="right-panel-container"></div>
-  {% endif %}
+    <div id="edit-menu" class="right-panel-container"></div>
+    <div id="node-bar" class="right-panel-container"></div>
+    {% if is_strategy == "false" %}
+        <div id="outcome-bar" class="right-panel-container"></div>
+        <div id="strategy-bar" class="right-panel-container"></div>
+    {% endif %}
+  <div class="window-close-button" id="side-bar-close-button">
+    <img src="{% static 'course_flow/img/images_svg/close.svg' %}" />
+  </div>
 </div>
 
-{% endblock %}
+{{is_strategy}} {% endblock %}
 <!-- -->
 {% block foot %} {% endblock %}
 <!-- -->
 {% csrf_token %}
 <!-- -->
-{% block read_only_scripts %}
-
-<script nonce="{{request.csp_nonce}}">
-  const read_only = false;
-</script>
-
-{% endblock %}
-<!-- -->
 {% block scripts %} {{ block.super }}
-
 <script nonce="{{request.csp_nonce}}">
-
   const workflow_paths = {
-      activity:'{% url "course_flow:activity-detail-view" pk=object.pk %}',
-      course:'{% url "course_flow:course-detail-view" pk=object.pk %}',
-      program:'{% url "course_flow:program-detail-view" pk=object.pk %}',
+      activity:'{% url "course_flow:workflow-update" pk=object.pk %}',
+      course:'{% url "course_flow:workflow-update" pk=object.pk %}',
+      program:'{% url "course_flow:workflow-update" pk=object.pk %}',
   }
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-  var selection_manager;
-  var tiny_loader;
 
-  $("#sidebar").tabs({collapsible:true,active:1,disabled:[0]});
+  $("#sidebar").tabs({
+      active:1,
+      disabled:[0],
+      collapsible:true,
+      activate:(evt,ui)=>{
+          if(ui.oldTab.length==0)$("#sidebar").removeClass("collapsed");
+          else if(ui.newTab.length==0)$("#sidebar").addClass("collapsed");
+      }
+  });
 
-  $("#sidebar").on("mouseup",(evt)=>{evt.stopPropagation();});
+  $("#sidebar").on("dblclick mousedown",(evt)=>{evt.stopPropagation();});
 
+    
+  const read_only = {{read_only|safe}};
+    
   if(read_only)$("#sidebar").hide();
+  else{
+      $("#side-bar-close-button").on("click",()=>{
+          $("#sidebar").addClass("collapsed");
+          $("#sidebar").tabs("option","active",false);
+      });
+  }
 
   {% if parent_project_pk %}
-      if(read_only){
-          $("#floatbar").append("<a id='project-return' href={% url 'course_flow:project-detail-view' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-      }else{
-          $("#floatbar").append("<a id='project-return' href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
-      }
-  {% endif %}
-
-  {% if is_strategy == "false" %}
-      $("#viewbar").append("<div id='outcomeviewbar'><div class='outcomeviewtext'>Outcome View:</div><label class='switch'><input type='checkbox'><span class ='slider round'></span></label></div>");
-
-      $("#outcomeviewbar input").on("change",(evt)=>{
-          workflow_redux.renderWorkflowView($("#container").get()[0],evt.target.checked)
-      });
+        $("#floatbar").append("<a id='project-return' href={% url 'course_flow:project-update' pk=parent_project_pk %} class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
   {% endif %}
 
 
-  initial_data = {{data_flat|safe}}
-  console.log(initial_data);
-  column_choices = {{column_choices|safe}}
-  context_choices = {{context_choices|safe}}
-  task_choices = {{task_choices|safe}}
-  time_choices = {{time_choices|safe}}
-  outcome_type_choices = {{outcome_type_choices|safe}}
-  outcome_sort_choices = {{outcome_sort_choices|safe}}
-  strategy_classification_choices = {{strategy_classification_choices|safe}}
-  is_strategy = {{is_strategy|safe}}
-
-  var column_colours = {}
+//  {% if is_strategy == "false" %}
+//      $("#viewbar").append("<div id='outcomeviewbar'><div class='outcomeviewtext'>Outcome View:</div><label class='switch'><input type='checkbox'><span class ='slider round'></span></label></div>");
+//
+//      $("#outcomeviewbar input").on("change",(evt)=>{
+//          if(evt.target.checked)workflow_renderer.render($("#container"),"outcometable");
+//          else workflow_renderer.render($("#container"));
+//      });
+//  {% endif %}
 
   const user_id = {{ user.id }};
   const create_path=null;
 
-  var initial_loading = true;
-  var ports_rendered = false;
-  var items_to_load = {
-      column:initial_data.column.length,
-      week:initial_data.week.length,
-      node:initial_data.node.length,
-  };
-  var ports_to_render = initial_data.node.length;
-  $(document).on("component-loaded",(evt,objectType)=>{
-      if(objectType&&items_to_load[objectType]){
-          items_to_load[objectType]--;
-          for(prop in items_to_load){
-              if(items_to_load[prop]>0)return;
-          }
-          initial_loading=false;
-          $(document).triggerHandler("render-ports");
-      }
-  });
-
-  $(document).on("ports-rendered",(evt)=>{
-      ports_to_render--;
-      if(ports_to_render>0)return;
-      ports_rendered=true;
-      $(document).triggerHandler("render-links");
-  });
-
+  workflow_data_package = {{data_package|safe}}
+  var workflow_renderer;
+   
   window.addEventListener("load", function(){
-      $(document).ajaxError(workflow_redux.fail_function);
-
-      selection_manager = new workflow_redux.SelectionManager();
-      tiny_loader = new workflow_redux.TinyLoader('#container');
-
-
-      workflow_redux.renderWorkflowView($("#container").get()[0],false);
-
-
+      workflow_renderer = new renderers.WorkflowRenderer(workflow_data_package);
+      console.log(workflow_data_package);
+      $(document).ajaxError(renderers.fail_function);
+      workflow_renderer.render($("#container"));
   });
 </script>
 

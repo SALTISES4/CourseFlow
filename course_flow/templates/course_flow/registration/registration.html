@@ -14,10 +14,12 @@
     </filter>
   </defs>
 </svg>
-<form method="POST" id="registration-form">
-  {% csrf_token %} {{ form }}
-  <button id="register-button" type="submit">Register</button>
-</form>
+<div class="body-wrapper">
+    <form method="POST" id="registration-form">
+      {% csrf_token %} {{ form }}
+      <button id="register-button" type="submit">Register</button>
+    </form>
+</div>
 {% endblock %}
 <!-- -->
 {% block foot %} {% endblock %}

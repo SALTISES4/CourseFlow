@@ -7,6 +7,7 @@ djangorestframework>=3.10.3
 zipp==0.6.0
 django-compressor>=2.3
 django-model-utils
+django-toolbar
 SALTISE_user_feedback
 
 black

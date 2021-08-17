@@ -98,19 +98,17 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/scripts-outcomes.min.js' %}"
-      defer="true"
-      charset="utf-8"
-    ></script>
-    {% endcompress %}
-    <!-- -->
-    {% compress js %}
-    <script
       src="{% static 'user_feedback/js/app.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
     {% endcompress %}
+    <!-- -->
+    <script nonce="{{ request.csp_nonce }}"
+      src="{% url 'course_flow:javascript-catalog' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
     <!-- * CSS -->
     {% compress css %}
     <link
@@ -122,14 +120,7 @@
     {% compress css %}
     <link
       rel="stylesheet"
-      href="{% static 'course_flow/css/workflow_styles.css' %}"
-    />
-    {% endcompress %}
-    <!-- -->
-    {% compress css %}
-    <link
-      rel="stylesheet"
-      href="{% static 'course_flow/css/base_style.css' %}"
+      href="{% static 'course_flow/js/scripts-wf-redux.min.css' %}"
     />
     {% endcompress %}
     <!--  -->
@@ -144,7 +135,8 @@
         color: #1976bc;
         font-size: 32px !important;
       }
-      #home-icon {
+      #home-icon,
+      #explore-icon {
         height: 32px;
       }
     </style>
@@ -154,19 +146,12 @@
     <div class="topnav">
       <div class="titlebar">
         <div class="title">
-          <font size="6">
-            <b>
-              CourseFlow
-            </b>
-          </font>
         </div>
-      </div>
-      <div class="menubar">
-        <div class="mainmenu">
-          <div class="topnavimage">
-            <a href="https://www.saltise.ca/"
-              ><img src="{% static 'course_flow/img/saltise_logo.svg'%}"
-            /></a>
+        <div class="floatbar">
+          <div id="username-container" class="topdropwrapper">
+            <button id="username" class="topdropbutton">
+              {{ user.username }}
+            </button>
           </div>
           <div class="topdropwrapper">
             <button class="topdropbutton">
@@ -177,19 +162,60 @@
               /></a>
             </button>
           </div>
-          <div id="username-container" class="topdropwrapper">
-            <button id="username" class="topdropbutton">
-              {{ user.username }}
+          <div class="topdropwrapper">
+            <button class="topdropbutton">
+              <a id="explore-icon-link" href="{% url 'course_flow:explore' %}"
+                ><img
+                  id="explore-icon"
+                  src="{% static 'course_flow/img/images_svg/explore.svg' %}"
+              /></a>
             </button>
           </div>
-        </div>
-        <div id="floatbar" class="floatbar"></div>
-        <div id="viewbar" class="viewbar">
           <div class="topdropwrapper">
             <div id="user-feedback-app"></div>
           </div>
         </div>
-      </div>
+      </div>  
+        <div class="menubar">
+            <div id="workflowtitle" class="workflow-title-bar">
+            </div>
+            <div id="floatbar" class="floatbar">
+            </div>
+            <div id="viewbar" class="viewbar">
+            </div>
+          </div>
+    </div>
+    <div class="left-panel">
+      <img class="title-image" src="{% static 'course_flow/img/images_svg/logo-courseflow-beta.svg' %}"/>
+      <a class="panel-item hover-shade" href="{% url 'course_flow:home' %}">
+        <img src="{% static 'course_flow/img/images_svg/home_black.svg' %}"/>
+        <div>Home</div>
+      </a>
+      <a class="panel-item hover-shade" href="{% url 'course_flow:my-projects' %}">
+        <img src="{% static 'course_flow/img/images_svg/layoutnav.svg' %}"/>
+        <div>My Projects</div>
+      </a>
+      <a class="panel-item hover-shade" href="{% url 'course_flow:my-templates' %}">
+        <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
+        <div>My Templates</div>
+      </a>
+      <hr>
+      <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
+        My Favourites
+      </a>
+        {% for favourite in user.favourite_set.all|slice:":5" %}
+          <a class="panel-favourite hover-shade"
+             {% if favourite.content_type == "project" %}
+                href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
+             {% else %}
+                href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
+             {% endif %}
+             >
+            {{ favourite.content_object }}
+          </a>
+        {% endfor %}
+      <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... see all</a>
+      
     </div>
 
     {% block body %}{% endblock %}
@@ -203,32 +229,45 @@
     post_paths = {
       get_possible_linked_workflows:
         "{% url 'course_flow:get-possible-linked-workflows' %}",
+      get_possible_added_workflows:
+        "{% url 'course_flow:get-possible-added-workflows' %}",
+      get_target_projects:
+        "{% url 'course_flow:get-target-projects' %}",
       set_linked_workflow: "{% url 'course_flow:set-linked-workflow' %}",
       update_value: "{% url 'course_flow:update-value' %}",
       new_column: "{% url 'course_flow:new-column' %}",
       new_node: "{% url 'course_flow:new-node' %}",
+      new_outcome: "{% url 'course_flow:new-outcome-for-workflow' %}",
       add_strategy: "{% url 'course_flow:add-strategy' %}",
       toggle_strategy: "{% url 'course_flow:toggle-strategy' %}",
       new_node_link: "{% url 'course_flow:new-node-link' %}",
       delete_self: "{% url 'course_flow:delete-self' %}",
-      unlink_outcome_from_node:
-        "{% url 'course_flow:unlink-outcome-from-node' %}",
       duplicate_self: "{% url 'course_flow:duplicate-self' %}",
       insert_sibling: "{% url 'course_flow:insert-sibling' %}",
       insert_child: "{% url 'course_flow:insert-child' %}",
       inserted_at: "{% url 'course_flow:inserted-at' %}",
       column_changed: "{% url 'course_flow:change-column' %}",
-      add_outcome_to_node: "{% url 'course_flow:add-outcome-to-node' %}",
+      update_outcomehorizontallink_degree: "{% url 'course_flow:update-outcomehorizontallink-degree' %}",
       update_outcomenode_degree:
         "{% url 'course_flow:update-outcomenode-degree' %}",
       duplicate_project_ajax: "{% url 'course_flow:duplicate-project' %}",
-      duplicate_outcome_ajax: "{% url 'course_flow:duplicate-outcome' %}",
       duplicate_workflow_ajax: "{% url 'course_flow:duplicate-workflow' %}",
-      duplicate_strategy_ajax: "{% url 'course_flow:duplicate-strategy' %}"
+      duplicate_strategy_ajax: "{% url 'course_flow:duplicate-strategy' %}",
+      toggle_favourite: "{% url 'course_flow:toggle-favourite' %}",
+      get_workflow_data: "{% url 'course_flow:get-workflow-data' %}",
+      get_workflow_parent_data: "{% url 'course_flow:get-workflow-parent-data' %}",
+      get_workflow_child_data: "{% url 'course_flow:get-workflow-child-data' %}",
+      get_project_data: "{% url 'course_flow:get-project-data' %}",
+      get_outcome_data: "{% url 'course_flow:get-outcome-data' %}",
+      get_users_for_object: "{% url 'course_flow:get-users-for-object' %}",
+      get_user_list: "{% url 'course_flow:get-user-list' %}",
+      set_permission: "{% url 'course_flow:set-permission' %}"
+    };
+    get_paths = {
+      get_disciplines: "{% url 'course_flow:get-disciplines' %}"
     };
 
     workflow_update_path = "{% url 'course_flow:workflow-update' pk='0'%}";
-    workflow_detail_path = "{% url 'course_flow:workflow-detail-view' pk='0'%}";
 
     //reload if we got here using forward or back button
     if (

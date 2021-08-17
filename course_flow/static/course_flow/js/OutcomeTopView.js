@@ -5,7 +5,7 @@ import {ComponentJSON} from "./ComponentJSON.js";
 import OutcomeView from "./OutcomeView.js";
 import {OutcomeBarOutcomeView} from "./OutcomeView.js";
 import {getOutcomeByID} from "./FindState.js";
-import {WorkflowForMenu} from './MenuComponents.js'
+import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents.js'
 
 //Basic component representing the outcome view
 class OutcomeTopView extends ComponentJSON{
@@ -18,13 +18,19 @@ class OutcomeTopView extends ComponentJSON{
     render(){
         let data = this.props.data;
         var selector = this;
+        let share;
+        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
         
         return(
             <div id="outcome-wrapper" class="workflow-wrapper">
                 <div class = "workflow-container">
                     <div class="workflow-details">
-                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.selection_manager.changeSelection(evt,selector)}}/>
-                        <OutcomeView objectID={data.id} selection_manager={this.props.selection_manager}/>
+                        <WorkflowForMenu workflow_data={data} selected={this.state.selected} selectAction={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,selector)}}/>
+                        {reactDom.createPortal(
+                        share,
+                        $("#floatbar")[0]
+                        )}
+                        <OutcomeView objectID={data.id} renderer={this.props.renderer}/>
                     </div>
                 </div>
                 {this.addEditable(data)}

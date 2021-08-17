@@ -1,5 +1,6 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
+import autoprefixer from 'autoprefixer';
 import babel from "rollup-plugin-babel";
 import resolve from "rollup-plugin-node-resolve";
 import commonjs from "rollup-plugin-commonjs";
@@ -10,7 +11,11 @@ import reactDom from 'react-dom';
 
 const plugins = [
   postcss({
-    extensions: [".css"]
+    extensions: [".css"],
+    extract:true,
+    plugins:[
+      autoprefixer,
+    ]
   }),
   resolve({
     mainFields: ["browser", "module", "main"]
@@ -50,6 +55,7 @@ const plugins = [
 export default [
   {
     input: "course_flow/static/course_flow/js/scripts.js",
+    external:['jquery'],
     output: {
       file: "course_flow/static/course_flow/js/scripts.min.js",
       name: "root",
@@ -62,17 +68,7 @@ export default [
     input: "course_flow/static/course_flow/js/scripts-wf-redux.js",
     output: {
       file: "course_flow/static/course_flow/js/scripts-wf-redux.min.js",
-      name: "workflow_redux",
-      format: "iife",
-      sourceMap: "inline"
-    },
-    plugins: plugins
-  },
-  {
-    input: "course_flow/static/course_flow/js/scripts-outcomes.js",
-    output: {
-      file: "course_flow/static/course_flow/js/scripts-outcomes.min.js",
-      name: "outcome_scripts",
+      name: "renderers",
       format: "iife",
       sourceMap: "inline"
     },

@@ -1,10 +1,10 @@
 from django.conf.urls import url
+from django.views.i18n import JavaScriptCatalog
 from rest_framework import routers
 
 from . import views
 
 router = routers.SimpleRouter()
-router.register(r"workflow/read", views.WorkflowViewSet)
 
 
 app_name = "course_flow"
@@ -13,36 +13,25 @@ app_name = "course_flow"
 def course_flow_patterns():
     return [
         url(r"home/$", views.home_view, name="home"),
+        url(r"myprojects/$", views.myprojects_view, name="my-projects"),
+        url(r"mytemplates/$", views.mytemplates_view, name="my-templates"),
+        url(r"myfavourites/$", views.myfavourites_view, name="my-favourites"),
+        url(r"explore/$", views.ExploreView.as_view(), name="explore"),
         url(r"import/$", views.import_view, name="import"),
         url(
-            r"^project/(?P<pk>[0-9]+)/update/$",
-            views.ProjectUpdateView.as_view(),
+            r"^project/(?P<pk>[0-9]+)/$",
+            views.ProjectDetailView.as_view(),
             name="project-update",
         ),
         url(
-            r"^outcome/(?P<pk>[0-9]+)/update/$",
-            views.OutcomeUpdateView.as_view(),
-            name="outcome-update",
-        ),
-        url(
-            r"^workflow/(?P<pk>[0-9]+)/update/$",
-            views.WorkflowUpdateView.as_view(),
+            r"^workflow/(?P<pk>[0-9]+)/$",
+            views.WorkflowDetailView.as_view(),
             name="workflow-update",
         ),
         url(
             r"^workflow/updatevalue/$", views.update_value, name="update-value"
         ),
-        # url(
-        #     r"^project/project-toggle-published/$",
-        #     views.project_toggle_published,
-        #     name="project-toggle-published",
-        # ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
-        url(
-            r"^workflow/unlink-outcome-from-node/$",
-            views.unlink_outcome_from_node,
-            name="unlink-outcome-from-node",
-        ),
         url(
             r"^workflow/update-outcomenode-degree/$",
             views.update_outcomenode_degree,
@@ -57,11 +46,6 @@ def course_flow_patterns():
             r"^project/duplicate-workflow/$",
             views.duplicate_workflow_ajax,
             name="duplicate-workflow",
-        ),
-        url(
-            r"^project/duplicate-outcome/$",
-            views.duplicate_outcome_ajax,
-            name="duplicate-outcome",
         ),
         url(
             r"^project/duplicate-project/$",
@@ -88,12 +72,17 @@ def course_flow_patterns():
             r"^node/change-column/$", views.change_column, name="change-column"
         ),
         url(
-            r"^node/add-outcome-to-node/$",
-            views.add_outcome_to_node,
-            name="add-outcome-to-node",
+            r"^outcome/update-outcomehorizontallink-degree/$",
+            views.update_outcomehorizontallink_degree,
+            name="update-outcomehorizontallink-degree",
         ),
         url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
+        url(
+            r"^workflow/outcome/new",
+            views.new_outcome_for_workflow,
+            name="new-outcome-for-workflow",
+        ),
         url(
             r"^workflow/strategy/add", views.add_strategy, name="add-strategy"
         ),
@@ -107,6 +96,17 @@ def course_flow_patterns():
             views.project_from_json,
             name="project-from-json",
         ),
+        url(
+            r"^project/get-disciplines/",
+            views.DisciplineListView.as_view(),
+            name="get-disciplines",
+        ),
+        url(
+            r"^favourites/toggle",
+            views.toggle_favourite,
+            name="toggle-favourite",
+        ),
+        url(r"^permissions/set", views.set_permission, name="set-permission"),
         url(
             r"^workflow/node/set-linked-workflow/$",
             views.set_linked_workflow_ajax,
@@ -123,14 +123,49 @@ def course_flow_patterns():
             name="get-possible-linked-workflows",
         ),
         url(
-            r"^workflow/get-flat-workflow/",
-            views.get_flat_workflow,
-            name="get-flat-workflow",
+            r"^workflow/get-possible-added-workflows/",
+            views.get_possible_added_workflows,
+            name="get-possible-added-workflows",
         ),
         url(
-            r"^workflow/(?P<pk>[0-9]+)/$",
-            views.WorkflowDetailView.as_view(),
-            name="workflow-detail-view",
+            r"^workflow/get-target-projects/",
+            views.get_target_projects,
+            name="get-target-projects",
+        ),
+        url(
+            r"^workflow/get-workflow-data/",
+            views.get_workflow_data,
+            name="get-workflow-data",
+        ),
+        url(
+            r"^workflow/get-workflow-parent-data/",
+            views.get_workflow_parent_data,
+            name="get-workflow-parent-data",
+        ),
+        url(
+            r"^workflow/get-workflow-child-data/",
+            views.get_workflow_child_data,
+            name="get-workflow-child-data",
+        ),
+        url(
+            r"^project/get-project-data/",
+            views.get_project_data,
+            name="get-project-data",
+        ),
+        url(
+            r"^outcome/get-outcome-data/",
+            views.get_outcome_data,
+            name="get-outcome-data",
+        ),
+        url(
+            r"^project/get-users-for-object/",
+            views.get_users_for_object,
+            name="get-users-for-object",
+        ),
+        url(
+            r"^users/get-user-list/",
+            views.get_user_list,
+            name="get-user-list",
         ),
         url(
             r"^project/create/$",
@@ -138,29 +173,9 @@ def course_flow_patterns():
             name="project-create",
         ),
         url(
-            r"^project/(?P<pk>[0-9]+)/$",
-            views.ProjectDetailView.as_view(),
-            name="project-detail-view",
-        ),
-        url(
-            r"^outcome/(?P<projectPk>[0-9]+)/create/$",
-            views.OutcomeCreateView.as_view(),
-            name="outcome-create",
-        ),
-        url(
-            r"^outcome/(?P<pk>[0-9]+)/$",
-            views.OutcomeDetailView.as_view(),
-            name="outcome-detail-view",
-        ),
-        url(
             r"^program/(?P<projectPk>[0-9]+)/create/$",
             views.ProgramCreateView.as_view(),
             name="program-create",
-        ),
-        url(
-            r"^program/(?P<pk>[0-9]+)/$",
-            views.ProgramDetailView.as_view(),
-            name="program-detail-view",
         ),
         url(
             r"^course/(?P<projectPk>[0-9]+)/create/$",
@@ -173,11 +188,6 @@ def course_flow_patterns():
             name="course-strategy-create",
         ),
         url(
-            r"^course/(?P<pk>[0-9]+)/$",
-            views.CourseDetailView.as_view(),
-            name="course-detail-view",
-        ),
-        url(
             r"^activity/(?P<projectPk>[0-9]+)/create/$",
             views.ActivityCreateView.as_view(),
             name="activity-create",
@@ -188,9 +198,7 @@ def course_flow_patterns():
             name="activity-strategy-create",
         ),
         url(
-            r"^activity/(?P<pk>[0-9]+)/$",
-            views.ActivityDetailView.as_view(),
-            name="activity-detail-view",
+            r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
     ] + router.urls
 

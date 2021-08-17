@@ -4,7 +4,7 @@ import {Provider, connect} from "react-redux";
 import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import OutcomeView from "./OutcomeView.js";
 import {OutcomeBarOutcomeView} from "./OutcomeView.js";
-import {NodeOutcomeView, TableOutcomeView} from "./OutcomeView.js";
+import {SimpleOutcomeView, TableOutcomeView} from "./OutcomeView.js";
 import {getOutcomeOutcomeByID} from "./FindState.js";
 
 //Basic component representing an outcome to outcome link
@@ -19,15 +19,15 @@ class OutcomeOutcomeView extends ComponentJSON{
         let data = this.props.data;
         
         return (
-            <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
-                <OutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} selection_manager={this.props.selection_manager}/>
-            </div>
+            <li class="outcome-outcome" id={data.id} ref={this.maindiv} data-child-id={data.child}>
+                <OutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
+            </li>
         );
     }
     
 }
 const mapOutcomeOutcomeStateToProps = (state,own_props)=>(
-    getOutcomeOutcomeByID(state,own_props.objectID)
+    getOutcomeOutcomeByID(state,own_props.objectID,own_props.get_alternate)
 )
 export default connect(
     mapOutcomeOutcomeStateToProps,
@@ -59,8 +59,8 @@ export const OutcomeBarOutcomeOutcomeView = connect(
 )(OutcomeBarOutcomeOutcomeViewUnconnected)
 
 
-//Basic component representing an outcome to outcome link
-class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
+//Basic component representing an outcome to outcome link for a simple non-editable block
+export class SimpleOutcomeOutcomeViewUnconnected extends ComponentJSON{
     
     constructor(props){
         super(props);
@@ -72,16 +72,23 @@ class NodeOutcomeOutcomeViewUnconnected extends ComponentJSON{
         
         return (
             <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
-                <NodeOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
+                {this.getChildType()}
             </div>
         );
     }
     
+    getChildType(){
+        let data = this.props.data;
+        return (
+            <SimpleOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} get_alternate={this.props.get_alternate}/>
+        );
+    }
+    
 }
-export const NodeOutcomeOutcomeView = connect(
+export const SimpleOutcomeOutcomeView = connect(
     mapOutcomeOutcomeStateToProps,
     null
-)(NodeOutcomeOutcomeViewUnconnected)
+)(SimpleOutcomeOutcomeViewUnconnected)
 
 
 //Basic component representing an outcome to outcome link
@@ -97,7 +104,7 @@ class TableOutcomeOutcomeViewUnconnected extends ComponentJSON{
         
         return (
             <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
-                <TableOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.props.updateParentCompletion} completion_status_from_parents={this.props.completion_status_from_parents} outcomes_type={this.props.outcomes_type}/>
+                <TableOutcomeView renderer={this.props.renderer} objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.props.updateParentCompletion} completion_status_from_parents={this.props.completion_status_from_parents} outcomes_type={this.props.outcomes_type}/>
             </div>
         );
     }

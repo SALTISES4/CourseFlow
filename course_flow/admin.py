@@ -14,7 +14,7 @@ from .models import (
     Workflow,
     Project,
     WorkflowProject,
-    OutcomeProject,
+#    OutcomeProject,
     Outcome,
     OutcomeNode,
     OutcomeOutcome,

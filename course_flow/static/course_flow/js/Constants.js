@@ -1,3 +1,4 @@
+import * as React from "react";
 
 export const node_keys=["activity","course","program"];
 export const columnwidth = 160
@@ -89,6 +90,28 @@ export const default_column_settings = {
     14:{colour:"#f7ba2a",icon:"assessment"},
     20:{colour:"#369934",icon:"other"}
 }
+export const object_dictionary = {
+    node:"node",
+    week:"week",
+    column:"column",
+    outcome:"outcome",
+    outcome_base:"outcome",
+    workflow:"workflow"
+}
+export const parent_dictionary = {
+    node:"week",
+    week:"workflow",
+    column:"workflow",
+    outcome:"outcome",
+    outcome_base:"workflow"
+}
+export const through_parent_dictionary = {
+    node:"nodeweek",
+    week:"weekworkflow",
+    column:"columnworkflow",
+    outcome:"outcomeoutcome",
+    outcome_base:"outcomeworkflow"
+}
 
 
 //Get translate from an svg transform
@@ -128,7 +151,53 @@ export function pushOrCreate(obj,index,value){
     else obj[index]=[value];
 }
 
+export function cantorPairing(k1,k2){
+    return parseInt((k1+k2)*(k1+k2+1)/2+k2);
+}
 
+export function hasIntersection(list1,list2){
+    return list1.filter(value=>list2.includes(value)).length>0;
+}
+
+//Gets intersection between two lists. Note that items appear in the same order as in list 1.
+export function getIntersection(list1,list2){
+    return list1.filter(value=>list2.includes(value));
+}
+
+//take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
+export function filterThenSortByID(object_list,id_list){
+    return object_list.filter(obj=>id_list.includes(obj.id)).sort((a,b)=> id_list.indexOf(a.id)-id_list.indexOf(b.id));
+}
+
+
+export function getCompletionImg(completion_status,outcomes_type){
+    if(outcomes_type==0 || completion_status & 1){
+        return (
+            <img class="self-completed" src={iconpath+'solid_check.svg'}/>
+        )
+    }
+    let contents=[];
+    if(completion_status & 2){
+        let divclass="";
+        contents.push(
+            <div class={"outcome-introduced outcome-degree"+divclass}>I</div>
+        );
+    }
+    if(completion_status & 4){
+        let divclass="";
+        contents.push(
+            <div class={"outcome-developed outcome-degree"+divclass}>D</div>
+        );
+    }
+    if(completion_status & 8){
+        let divclass="";
+        contents.push(
+            <div class={"outcome-advanced outcome-degree"+divclass}>A</div>
+        );
+    }
+    return contents;
+
+}
 
 export class Loader{
     constructor(identifier){
@@ -139,3 +208,4 @@ export class Loader{
         this.load_screen.remove();
     }
 }
+

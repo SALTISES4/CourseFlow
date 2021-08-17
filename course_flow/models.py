@@ -1,14 +1,22 @@
+import time
 import uuid
 
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import (
+    GenericForeignKey,
+    GenericRelation,
+)
 from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.signals import pre_delete, post_save
+from django.db.models import Q
+from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
+from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
+from course_flow.utils import benchmark
 
 User = get_user_model()
 
@@ -17,21 +25,35 @@ class Project(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.CharField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
 
     workflows = models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
     )
-    outcomes = models.ManyToManyField(
-        "Outcome", through="OutcomeProject", blank=True
-    )
+    #    outcomes = models.ManyToManyField(
+    #        "Outcome", through="OutcomeProject", blank=True
+    #    )
 
     is_original = models.BooleanField(default=False)
     parent_project = models.ForeignKey(
         "Project", on_delete=models.SET_NULL, null=True
     )
+
+    disciplines = models.ManyToManyField("Discipline", blank=True)
+
+    favourited_by = GenericRelation("Favourite", related_query_name="project")
+    user_permissions = GenericRelation(
+        "ObjectPermission", related_query_name="project"
+    )
+
+    @property
+    def type(self):
+        return "project"
+
+    def get_permission_objects(self):
+        return [self]
 
     class Meta:
         verbose_name = "Project"
@@ -41,29 +63,49 @@ class Project(models.Model):
 class WorkflowProject(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     workflow = models.ForeignKey("Workflow", on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
+
+    def get_permission_objects(self):
+        return [self.project, self.workflow.get_subclass()]
 
     class Meta:
         verbose_name = "Workflow-Project Link"
         verbose_name_plural = "Workflow-Project Links"
 
 
-class OutcomeProject(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+# class OutcomeProject(models.Model):
+#    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+#    outcome = models.ForeignKey("Outcome", on_delete=models.CASCADE)
+#    added_on = models.DateTimeField(default=timezone.now)
+#    rank = models.PositiveIntegerField(default=0)
+#
+#    def get_permission_objects(self):
+#        return [self.project, self.outcome]
+#
+#    class Meta:
+#        verbose_name = "Outcome-Project Link"
+#        verbose_name_plural = "Outcome-Project Links"
+
+
+class OutcomeWorkflow(models.Model):
+    workflow = models.ForeignKey("Workflow", on_delete=models.CASCADE)
     outcome = models.ForeignKey("Outcome", on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
+    def get_permission_objects(self):
+        return [self.project, self.outcome]
+
     class Meta:
-        verbose_name = "Outcome-Project Link"
-        verbose_name_plural = "Outcome-Project Links"
+        verbose_name = "Outcome-Workflow Link"
+        verbose_name_plural = "Outcome-Workflow Links"
 
 
 class Column(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
@@ -102,6 +144,12 @@ class Column(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
+    def get_permission_objects(self):
+        return [self.get_workflow().get_subclass()]
+
+    def get_workflow(self):
+        return self.workflow_set.first()
+
     def __str__(self):
         return self.get_column_type_display()
 
@@ -130,13 +178,16 @@ class NodeLink(models.Model):
     target_port = models.PositiveIntegerField(choices=TARGET_PORTS, default=0)
 
     dashed = models.BooleanField(default=False)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
     is_original = models.BooleanField(default=True)
-    parent_nodelink = models.ForeignKey(
-        "NodeLink", on_delete=models.SET_NULL, null=True
-    )
+
+    def get_permission_objects(self):
+        return [self.get_workflow().get_subclass()]
+
+    def get_workflow(self):
+        return self.source_node.get_workflow()
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -146,12 +197,12 @@ class NodeLink(models.Model):
 
 
 class Outcome(models.Model):
-    title = models.CharField(max_length=500)
-    description = models.TextField(max_length=500)
+    title = models.CharField(max_length=500, null=True, blank=True)
+    code = models.CharField(max_length=50, null=True, blank=True)
+    description = models.TextField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
-    published = models.BooleanField(default=False)
     parent_outcome = models.ForeignKey(
         "Outcome", on_delete=models.SET_NULL, null=True
     )
@@ -167,10 +218,42 @@ class Outcome(models.Model):
         related_name="parent_outcomes",
     )
 
+    horizontal_outcomes = models.ManyToManyField(
+        "Outcome",
+        through="OutcomeHorizontalLink",
+        blank=True,
+        related_name="reverse_horizontal_outcomes",
+    )
+
+    @property
+    def type(self):
+        return "outcome"
+
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    def get_top_outcome(self):
+        if self.parent_outcome_links.all().count() > 0:
+            return self.parent_outcome_links.first().parent.get_top_outcome()
+        else:
+            return self
+
+    def get_workflow(self):
+        return self.get_top_outcome().workflow_set.first().get_subclass()
+
+    #
+    #    def get_project(self):
+    #        return self.project_set.first()
+
+    def get_permission_objects(self):
+        return [self.get_workflow()]
 
     def __str__(self):
         return self.title
+
+    def get_all_outcome_ids(self, ids):
+        ids.append(self.id)
+        for outcome in self.children.all():
+            outcome.get_all_outcome_ids(ids)
 
     class Meta:
         verbose_name = "Outcome"
@@ -184,8 +267,99 @@ class OutcomeOutcome(models.Model):
     child = models.ForeignKey(
         Outcome, on_delete=models.CASCADE, related_name="parent_outcome_links"
     )
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
+
+    def get_permission_objects(self):
+        return self.get_top_outcome().get_permission_objects()
+
+    def get_top_outcome(self):
+        return self.parent.get_top_outcome()
+
+    class Meta:
+        verbose_name = "Outcome-Outcome Link"
+        verbose_name_plural = "Outcome-Outcome Links"
+
+
+class OutcomeHorizontalLink(models.Model):
+    outcome = models.ForeignKey(
+        Outcome,
+        on_delete=models.CASCADE,
+        related_name="outcome_horizontal_links",
+    )
+    parent_outcome = models.ForeignKey(
+        Outcome,
+        on_delete=models.CASCADE,
+        related_name="reverse_outcome_horizontal_links",
+    )
+    added_on = models.DateTimeField(default=timezone.now)
+    rank = models.PositiveIntegerField(default=0)
+    degree = models.PositiveIntegerField(default=1)
+
+    def get_permission_objects(self):
+        return self.get_top_outcome().get_permission_objects()
+
+    def get_top_outcome(self):
+        return self.outcome.get_top_outcome()
+
+    # Check to see if the parent has all its children the same, and add it if necessary
+    def check_parent_outcomes(self):
+        if self.parent_outcome.parent_outcomes.count() > 0:
+            parent_outcome = self.parent_outcome.parent_outcomes.first()
+            if (
+                OutcomeHorizontalLink.objects.filter(
+                    parent_outcome__in=parent_outcome.children.all().values_list(
+                        "id", flat=True
+                    ),
+                    degree=self.degree,
+                    outcome=self.outcome,
+                ).count()
+                == parent_outcome.children.all().count()
+            ):
+                new_outcomehorizontallink = OutcomeHorizontalLink.objects.create(
+                    outcome=self.outcome,
+                    degree=self.degree,
+                    parent_outcome=parent_outcome,
+                )
+                return [
+                    new_outcomehorizontallink
+                ] + new_outcomehorizontallink.check_parent_outcomes()
+            elif (
+                OutcomeHorizontalLink.objects.filter(
+                    parent_outcome=parent_outcome, outcome=self.outcome
+                ).count()
+                > 0
+            ):
+                new_outcomehorizontallink = OutcomeHorizontalLink.objects.create(
+                    outcome=self.outcome,
+                    degree=0,
+                    parent_outcome=parent_outcome,
+                )
+                return [
+                    new_outcomehorizontallink
+                ] + new_outcomehorizontallink.check_parent_outcomes()
+
+        return []
+
+    # Check to see if the children already exist, and if not, add them
+    def check_child_outcomes(self):
+        new_children = []
+        for child in self.parent_outcome.children.all():
+            if (
+                OutcomeHorizontalLink.objects.filter(
+                    parent_outcome=child,
+                    outcome=self.outcome,
+                    degree=self.degree,
+                ).count()
+                == 0
+            ):
+                new_child = OutcomeHorizontalLink.objects.create(
+                    parent_outcome=child,
+                    outcome=self.outcome,
+                    degree=self.degree,
+                )
+                new_children += [new_child] + new_child.check_child_outcomes()
+        return new_children
 
     class Meta:
         verbose_name = "Outcome-Outcome Link"
@@ -201,7 +375,7 @@ class Node(models.Model):
         on_delete=models.SET_NULL,
         null=True,
     )
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
 
@@ -330,7 +504,10 @@ class Node(models.Model):
 
     represents_workflow = models.BooleanField(default=False)
     linked_workflow = models.ForeignKey(
-        "Workflow", on_delete=models.SET_NULL, null=True
+        "Workflow",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="linked_nodes",
     )
 
     column = models.ForeignKey(
@@ -349,6 +526,12 @@ class Node(models.Model):
         through="NodeCompletionStatus",
         blank=True,
     )
+
+    def get_permission_objects(self):
+        return [self.get_workflow().get_subclass()]
+
+    def get_workflow(self):
+        return self.week_set.first().get_workflow()
 
     def __str__(self):
         if self.title is not None:
@@ -370,20 +553,80 @@ class NodeCompletionStatus(models.Model):
 class OutcomeNode(models.Model):
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
     outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
     degree = models.PositiveIntegerField(default=1)
+
+    def get_permission_objects(self):
+        return [self.get_workflow().get_subclass()]
+
+    def get_workflow(self):
+        return self.node.get_workflow()
+
+    def get_top_outcome(self):
+        return self.outcome.get_top_outcome()
 
     class Meta:
         verbose_name = "Outcome-Node Link"
         verbose_name_plural = "Outcome-Node Links"
+
+    # Check to see if the parent has all its children the same, and add it if necessary
+    def check_parent_outcomes(self):
+        if self.outcome.parent_outcomes.count() > 0:
+            parent_outcome = self.outcome.parent_outcomes.first()
+            if (
+                OutcomeNode.objects.filter(
+                    outcome__in=parent_outcome.children.all().values_list(
+                        "id", flat=True
+                    ),
+                    degree=self.degree,
+                    node=self.node,
+                ).count()
+                == parent_outcome.children.all().count()
+            ):
+                new_outcomenode = OutcomeNode.objects.create(
+                    node=self.node, degree=self.degree, outcome=parent_outcome
+                )
+                return [
+                    new_outcomenode
+                ] + new_outcomenode.check_parent_outcomes()
+            elif (
+                OutcomeNode.objects.filter(
+                    outcome=parent_outcome, node=self.node
+                ).count()
+                > 0
+            ):
+                new_outcomenode = OutcomeNode.objects.create(
+                    node=self.node, degree=0, outcome=parent_outcome
+                )
+                return [
+                    new_outcomenode
+                ] + new_outcomenode.check_parent_outcomes()
+
+        return []
+
+    # Check to see if the children already exist, and if not, add them
+    def check_child_outcomes(self):
+        new_children = []
+        for child in self.outcome.children.all():
+            if (
+                OutcomeNode.objects.filter(
+                    outcome=child, node=self.node, degree=self.degree
+                ).count()
+                == 0
+            ):
+                new_child = OutcomeNode.objects.create(
+                    outcome=child, node=self.node, degree=self.degree
+                )
+                new_children += [new_child] + new_child.check_child_outcomes()
+        return new_children
 
 
 class Week(models.Model):
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     default = models.BooleanField(default=False)
     parent_week = models.ForeignKey(
@@ -439,6 +682,12 @@ class Week(models.Model):
     def __str__(self):
         return self.get_week_type_display()
 
+    def get_permission_objects(self):
+        return [self.get_workflow().get_subclass()]
+
+    def get_workflow(self):
+        return self.workflow_set.first()
+
     class Meta:
         verbose_name = "Week"
         verbose_name_plural = "Weeks"
@@ -447,8 +696,11 @@ class Week(models.Model):
 class NodeWeek(models.Model):
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
+
+    def get_workflow(self):
+        return self.week.get_workflow()
 
     class Meta:
         verbose_name = "Node-Week Link"
@@ -458,9 +710,13 @@ class NodeWeek(models.Model):
 class Workflow(models.Model):
     objects = InheritanceManager()
 
+    @property
+    def author(self):
+        return self.get_subclass().author
+
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
-    created_on = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
     static = models.BooleanField(default=False)
@@ -478,10 +734,15 @@ class Workflow(models.Model):
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
+    disciplines = models.ManyToManyField("Discipline", blank=True)
     weeks = models.ManyToManyField(Week, through="WeekWorkflow", blank=True)
 
     columns = models.ManyToManyField(
         Column, through="ColumnWorkflow", blank=True
+    )
+
+    outcomes = models.ManyToManyField(
+        Outcome, through="OutcomeWorkflow", blank=True
     )
 
     OUTCOMES_NORMAL = 0
@@ -519,6 +780,12 @@ class Workflow(models.Model):
                 pass
         return "workflow"
 
+    def get_project(self):
+        return self.project_set.first()
+
+    def get_permission_objects(self):
+        return [self.get_subclass()]
+
     def get_subclass(self):
         subclass = self
         try:
@@ -534,6 +801,12 @@ class Workflow(models.Model):
         except AttributeError:
             pass
         return subclass
+
+    def get_all_outcome_ids(self):
+        ids = []
+        for outcome in self.outcomes.all():
+            outcome.get_all_outcome_ids(ids)
+        return ids
 
     def __str__(self):
         if self.title is not None:
@@ -554,6 +827,11 @@ class Activity(Workflow):
         User, related_name="assigned_activities", blank=True
     )
 
+    favourited_by = GenericRelation("Favourite", related_query_name="activity")
+    user_permissions = GenericRelation(
+        "ObjectPermission", related_query_name="activity"
+    )
+
     DEFAULT_CUSTOM_COLUMN = 0
     DEFAULT_COLUMNS = [1, 2, 3, 4]
     WORKFLOW_TYPE = 0
@@ -561,6 +839,9 @@ class Activity(Workflow):
     @property
     def type(self):
         return "activity"
+
+    def get_permission_objects(self):
+        return [self]
 
     def __str__(self):
         if self.title is not None:
@@ -581,12 +862,13 @@ class Course(Workflow):
         null=True,
     )
 
-    discipline = models.ForeignKey(
-        "Discipline", on_delete=models.SET_NULL, null=True
-    )
-
     students = models.ManyToManyField(
         User, related_name="assigned_courses", blank=True
+    )
+
+    favourited_by = GenericRelation("Favourite", related_query_name="course")
+    user_permissions = GenericRelation(
+        "ObjectPermission", related_query_name="course"
     )
 
     DEFAULT_CUSTOM_COLUMN = 10
@@ -596,6 +878,9 @@ class Course(Workflow):
     @property
     def type(self):
         return "course"
+
+    def get_permission_objects(self):
+        return [self]
 
     def __str__(self):
         if self.title is not None:
@@ -611,9 +896,17 @@ class Program(Workflow):
     DEFAULT_COLUMNS = [20, 20, 20]
     WORKFLOW_TYPE = 2
 
+    favourited_by = GenericRelation("Favourite", related_query_name="program")
+    user_permissions = GenericRelation(
+        "ObjectPermission", related_query_name="program"
+    )
+
     @property
     def type(self):
         return "program"
+
+    def get_permission_objects(self):
+        return [self]
 
     def __str__(self):
         if self.title is not None:
@@ -625,30 +918,31 @@ class Program(Workflow):
 class ColumnWorkflow(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     column = models.ForeignKey(Column, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
+
+    def get_workflow(self):
+        return self.workflow
+
+    def get_permission_objects(self):
+        return [self.get_workflow().get_subclass()]
 
     class Meta:
         verbose_name = "Column-Workflow Link"
         verbose_name_plural = "Column-Workflow Links"
 
 
-class OutcomeWorkflow(models.Model):
-    workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
-    outcome = models.ForeignKey(Outcome, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
-    rank = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Outcome-Workflow Link"
-        verbose_name_plural = "Outcome-Workflow Links"
-
-
 class WeekWorkflow(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
-    added_on = models.DateTimeField(auto_now_add=True)
+    added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
+
+    def get_workflow(self):
+        return self.workflow
+
+    def get_permission_objects(self):
+        return [self.get_workflow().get_subclass()]
 
     class Meta:
         verbose_name = "Week-Workflow Link"
@@ -671,21 +965,238 @@ class Discipline(models.Model):
         verbose_name_plural = _("disciplines")
 
 
+class Favourite(models.Model):
+    content_choices = {
+        "model__in": ["project", "activity", "course", "program"]
+    }
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, limit_choices_to=content_choices
+    )
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+
+class ObjectPermission(models.Model):
+    content_choices = {
+        "model__in": ["project", "activity", "course", "program"]
+    }
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, limit_choices_to=content_choices
+    )
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    PERMISSION_NONE = 0
+    PERMISSION_VIEW = 1
+    PERMISSION_EDIT = 2
+    PERMISSION_CHOICES = (
+        (PERMISSION_NONE, "None"),
+        (PERMISSION_VIEW, "View"),
+        (PERMISSION_EDIT, "Edit"),
+    )
+    permission_type = models.PositiveIntegerField(
+        choices=PERMISSION_CHOICES, default=PERMISSION_NONE
+    )
+
+
 """
 Other receivers
 """
 
 
+def get_allowed_parent_outcomes(workflow, **kwargs):
+    exclude_node = kwargs.get("exclude_node", None)
+    exclude_outcomenode = kwargs.get("exclude_outcomenode", None)
+    parent_outcomenodes = []
+    for parent_node in workflow.linked_nodes.exclude(id=exclude_node):
+        parent_outcomenodes += parent_node.outcomenode_set.exclude(
+            id=exclude_outcomenode
+        )
+    parent_outcomes = [ocn.outcome for ocn in parent_outcomenodes]
+    return parent_outcomes
+
+
+@receiver(pre_delete, sender=OutcomeNode)
+def remove_horizontal_outcome_links_on_outcomenode_delete(
+    sender, instance, **kwargs
+):
+    workflow = instance.node.linked_workflow
+    if workflow is not None:
+        linked_outcomes = list(workflow.outcomes.all())
+        parent_outcomes = get_allowed_parent_outcomes(
+            workflow, exclude_outcomenode=instance.pk
+        )
+        OutcomeHorizontalLink.objects.filter(
+            outcome__in=linked_outcomes
+        ).exclude(parent_outcome__in=parent_outcomes).delete()
+
+
+@receiver(pre_save, sender=Node)
+def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
+    if instance.pk is None:
+        return
+    old_workflow = Node.objects.get(id=instance.pk).linked_workflow
+    new_workflow = instance.linked_workflow
+    if old_workflow is not None and (
+        new_workflow is None or new_workflow.pk != old_workflow.pk
+    ):
+        linked_outcomes = list(old_workflow.outcomes.all())
+        parent_outcomes = get_allowed_parent_outcomes(
+            old_workflow, exclude_node=instance.pk
+        )
+        OutcomeHorizontalLink.objects.filter(
+            outcome__in=linked_outcomes
+        ).exclude(parent_outcome__in=parent_outcomes).delete()
+
+
 @receiver(pre_delete, sender=Project)
 def delete_project_objects(sender, instance, **kwargs):
-    instance.workflows.all().delete()
-    instance.outcomes.all().delete()
+
+    # Pick up all non-linking instances, which need to be saved (and their querysets evaluated) before continuing, otherwise we won't be able to find them again.
+    nodes = Node.objects.filter(week__workflow__project=instance)
+    len(nodes)
+    weeks = Week.objects.filter(workflow__project=instance)
+    len(weeks)
+    columns = Column.objects.filter(workflow__project=instance)
+    len(columns)
+    outcomes = Outcome.objects.filter(
+        Q(workflow__project=instance)
+        | Q(parent_outcomes__workflow__project=instance)
+        | Q(parent_outcomes__parent_outcomes__workflow__project=instance)
+    )
+    len(outcomes)
+    workflows = Workflow.objects.filter(project=instance)
+    len(workflows)
+
+    # Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
+    outcomenodes = OutcomeNode.objects.filter(
+        node__week__workflow__project=instance
+    )
+    outcomenodes._raw_delete(outcomenodes.db)
+    nodelinks = NodeLink.objects.filter(
+        source_node__week__workflow__project=instance
+    )
+    nodelinks._raw_delete(nodelinks.db)
+    outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
+        Q(outcome__workflow__project=instance)
+        | Q(outcome__parent_outcomes__workflow__project=instance)
+        | Q(
+            outcome__parent_outcomes__parent_outcomes__workflow__project=instance
+        )
+    )
+    outcomehorizontallinks._raw_delete(outcomehorizontallinks.db)
+    nodeweeks = NodeWeek.objects.filter(week__workflow__project=instance)
+    nodeweeks._raw_delete(nodeweeks.db)
+    weekworkflows = WeekWorkflow.objects.filter(workflow__project=instance)
+    weekworkflows._raw_delete(weekworkflows.db)
+    columnworkflows = ColumnWorkflow.objects.filter(workflow__project=instance)
+    columnworkflows._raw_delete(columnworkflows.db)
+    outcomeoutcomes = OutcomeOutcome.objects.filter(
+        Q(parent__workflow__project=instance)
+        | Q(parent__parent_outcomes__workflow__project=instance)
+    )
+    outcomeoutcomes._raw_delete(outcomeoutcomes.db)
+    workflowprojects = WorkflowProject.objects.filter(project=instance)
+    workflowprojects._raw_delete(workflowprojects.db)
+
+    # remove all FKs pointing to our objects from outside project. The raw deletes don't cascade, so we will get integrity errors if we fail to do this
+    workflow_subclasses = [workflow.get_subclass() for workflow in workflows]
+    activities = filter(lambda x: x.type == "activity", workflow_subclasses)
+    courses = filter(lambda x: x.type == "course", workflow_subclasses)
+    programs = filter(lambda x: x.type == "program", workflow_subclasses)
+    objectpermissions = ObjectPermission.objects.filter(
+        Q(activity__in=activities)
+        | Q(course__in=courses)
+        | Q(program__in=programs)
+    )
+    favourites = Favourite.objects.filter(
+        Q(activity__in=activities)
+        | Q(course__in=courses)
+        | Q(program__in=programs)
+    )
+    Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
+    Node.objects.filter(linked_workflow__in=workflows).update(
+        linked_workflow=None
+    )
+    Week.objects.filter(parent_week__in=weeks).update(parent_week=None)
+    Week.objects.filter(original_strategy__in=workflows).update(
+        original_strategy=None
+    )
+    Column.objects.filter(parent_column__in=columns).update(parent_column=None)
+    Workflow.objects.filter(parent_workflow__in=workflows).update(
+        parent_workflow=None
+    )
+    Outcome.objects.filter(parent_outcome__in=outcomes).update(
+        parent_outcome=None
+    )
+
+    # Delete nonlinking instances
+    nodes._raw_delete(nodes.db)
+    weeks._raw_delete(weeks.db)
+    columns._raw_delete(columns.db)
+    outcomes._raw_delete(outcomes.db)
+    objectpermissions._raw_delete(objectpermissions.db)
+    favourites._raw_delete(favourites.db)
+    workflows._raw_delete(workflows.db)
+
+    # instance.workflows.all().delete()
 
 
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
-    instance.weeks.all().delete()
-    instance.columns.all().delete()
+
+    # Pick up all non-linking instances, which need to be saved (and their querysets evaluated) before continuing, otherwise we won't be able to find them again.
+    nodes = Node.objects.filter(week__workflow=instance)
+    len(nodes)
+    weeks = Week.objects.filter(workflow=instance)
+    len(weeks)
+    columns = Column.objects.filter(workflow=instance)
+    len(columns)
+    outcomes = Outcome.objects.filter(
+        Q(workflow=instance)
+        | Q(parent_outcomes__workflow=instance)
+        | Q(parent_outcomes__parent_outcomes__workflow=instance)
+    )
+    len(outcomes)
+
+    # Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
+    outcomenodes = OutcomeNode.objects.filter(node__week__workflow=instance)
+    outcomenodes._raw_delete(outcomenodes.db)
+    nodelinks = NodeLink.objects.filter(source_node__week__workflow=instance)
+    nodelinks._raw_delete(nodelinks.db)
+    outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
+        Q(outcome__workflow=instance)
+        | Q(outcome__parent_outcomes__workflow=instance)
+        | Q(outcome__parent_outcomes__parent_outcomes__workflow=instance)
+    )
+    outcomehorizontallinks._raw_delete(outcomehorizontallinks.db)
+    nodeweeks = NodeWeek.objects.filter(week__workflow=instance)
+    nodeweeks._raw_delete(nodeweeks.db)
+    weekworkflows = WeekWorkflow.objects.filter(workflow=instance)
+    weekworkflows._raw_delete(weekworkflows.db)
+    columnworkflows = ColumnWorkflow.objects.filter(workflow=instance)
+    columnworkflows._raw_delete(columnworkflows.db)
+    outcomeoutcomes = OutcomeOutcome.objects.filter(
+        Q(parent__workflow=instance)
+        | Q(parent__parent_outcomes__workflow=instance)
+    )
+    outcomeoutcomes._raw_delete(outcomeoutcomes.db)
+
+    # remove all FKs pointing to our objects from outside project. The raw deletes don't cascade, so we will get integrity errors if we fail to do this
+    Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
+    Week.objects.filter(parent_week__in=weeks).update(parent_week=None)
+    Column.objects.filter(parent_column__in=columns).update(parent_column=None)
+    Outcome.objects.filter(parent_outcome__in=outcomes).update(
+        parent_outcome=None
+    )
+
+    # Delete nonlinking instances
+    nodes._raw_delete(nodes.db)
+    weeks._raw_delete(weeks.db)
+    columns._raw_delete(columns.db)
+    outcomes._raw_delete(outcomes.db)
 
 
 @receiver(pre_delete, sender=Week)
@@ -697,6 +1208,9 @@ def delete_week_objects(sender, instance, **kwargs):
 def delete_node_objects(sender, instance, **kwargs):
     instance.outgoing_links.all().delete()
     instance.incoming_links.all().delete()
+    if instance.linked_workflow is not None:
+        instance.linked_workflow = None
+        instance.save()
 
 
 @receiver(pre_delete, sender=Outcome)
@@ -735,6 +1249,13 @@ def move_nodes(sender, instance, **kwargs):
         print("couldn't find a column")
 
 
+# Removed, this interferes with automatic adding/removing of ndoes
+# @receiver(post_save, sender=OutcomeNode)
+# def delete_outcomenode_no_degree(sender, instance, created, **kwargs):
+#    if instance.degree == 0:
+#        instance.delete()
+
+
 """
 Reorder Receivers
 """
@@ -767,8 +1288,55 @@ def reorder_for_deleted_column_workflow(sender, instance, **kwargs):
         out_of_order_link.save()
 
 
+@receiver(pre_delete, sender=OutcomeWorkflow)
+def reorder_for_deleted_outcome_workflow(sender, instance, **kwargs):
+    for out_of_order_link in OutcomeWorkflow.objects.filter(
+        workflow=instance.workflow, rank__gt=instance.rank
+    ):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+
+@receiver(pre_delete, sender=OutcomeOutcome)
+def reorder_for_deleted_outcome_outcome(sender, instance, **kwargs):
+    for out_of_order_link in OutcomeOutcome.objects.filter(
+        parent=instance.parent, rank__gt=instance.rank
+    ):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+
+@receiver(pre_delete, sender=OutcomeNode)
+def reorder_for_deleted_outcome_node(sender, instance, **kwargs):
+    for out_of_order_link in OutcomeNode.objects.filter(
+        node=instance.node, rank__gt=instance.rank
+    ):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+
+@receiver(pre_delete, sender=OutcomeHorizontalLink)
+def reorder_for_deleted_outcome_horizontal_link(sender, instance, **kwargs):
+    for out_of_order_link in OutcomeNode.objects.filter(
+        outcome=instance.outcome, rank__gt=instance.rank
+    ):
+        out_of_order_link.rank -= 1
+        out_of_order_link.save()
+
+
+@receiver(pre_save, sender=NodeWeek)
+def delete_existing_node_week(sender, instance, **kwargs):
+    if instance.pk is None:
+        NodeWeek.objects.filter(node=instance.node).delete()
+        if instance.rank < 0:
+            instance.rank = 0
+        new_parent_count = NodeWeek.objects.filter(week=instance.week).count()
+        if instance.rank > new_parent_count:
+            instance.rank = new_parent_count
+
+
 @receiver(post_save, sender=NodeWeek)
-def reorder_for_inserted_node_week(sender, instance, created, **kwargs):
+def reorder_for_created_node_week(sender, instance, created, **kwargs):
     if created:
         for out_of_order_link in NodeWeek.objects.filter(
             week=instance.week, rank__gte=instance.rank
@@ -777,8 +1345,21 @@ def reorder_for_inserted_node_week(sender, instance, created, **kwargs):
             out_of_order_link.save()
 
 
+@receiver(pre_save, sender=WeekWorkflow)
+def delete_existing_week_workflow(sender, instance, **kwargs):
+    if instance.pk is None:
+        WeekWorkflow.objects.filter(week=instance.week).delete()
+        if instance.rank < 0:
+            instance.rank = 0
+        new_parent_count = WeekWorkflow.objects.filter(
+            workflow=instance.workflow
+        ).count()
+        if instance.rank > new_parent_count:
+            instance.rank = new_parent_count
+
+
 @receiver(post_save, sender=WeekWorkflow)
-def reorder_for_inserted_week_workflow(sender, instance, created, **kwargs):
+def reorder_for_created_week_workflow(sender, instance, created, **kwargs):
     if created:
         for out_of_order_link in WeekWorkflow.objects.filter(
             workflow=instance.workflow, rank__gte=instance.rank
@@ -787,8 +1368,21 @@ def reorder_for_inserted_week_workflow(sender, instance, created, **kwargs):
             out_of_order_link.save()
 
 
+@receiver(pre_save, sender=ColumnWorkflow)
+def delete_existing_column_workflow(sender, instance, **kwargs):
+    if instance.pk is None:
+        ColumnWorkflow.objects.filter(column=instance.column).delete()
+        if instance.rank < 0:
+            instance.rank = 0
+        new_parent_count = ColumnWorkflow.objects.filter(
+            workflow=instance.workflow
+        ).count()
+        if instance.rank > new_parent_count:
+            instance.rank = new_parent_count
+
+
 @receiver(post_save, sender=ColumnWorkflow)
-def reorder_for_inserted_column_workflow(sender, instance, created, **kwargs):
+def reorder_for_created_column_workflow(sender, instance, created, **kwargs):
     if created:
         for out_of_order_link in ColumnWorkflow.objects.filter(
             workflow=instance.workflow, rank__gte=instance.rank
@@ -797,8 +1391,44 @@ def reorder_for_inserted_column_workflow(sender, instance, created, **kwargs):
             out_of_order_link.save()
 
 
+@receiver(pre_save, sender=OutcomeWorkflow)
+def delete_existing_outcome_workflow(sender, instance, **kwargs):
+    if instance.pk is None:
+        OutcomeWorkflow.objects.filter(outcome=instance.outcome).delete()
+        if instance.rank < 0:
+            instance.rank = 0
+        new_parent_count = OutcomeWorkflow.objects.filter(
+            workflow=instance.workflow
+        ).count()
+        if instance.rank > new_parent_count:
+            instance.rank = new_parent_count
+
+
+@receiver(post_save, sender=OutcomeWorkflow)
+def reorder_for_created_outcome_workflow(sender, instance, created, **kwargs):
+    if created:
+        for out_of_order_link in OutcomeWorkflow.objects.filter(
+            workflow=instance.workflow, rank__gte=instance.rank
+        ).exclude(outcome=instance.outcome):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
+
+
+@receiver(pre_save, sender=OutcomeOutcome)
+def delete_existing_outcome_outcome(sender, instance, **kwargs):
+    if instance.pk is None:
+        OutcomeOutcome.objects.filter(child=instance.child).delete()
+        if instance.rank < 0:
+            instance.rank = 0
+        new_parent_count = OutcomeOutcome.objects.filter(
+            parent=instance.parent
+        ).count()
+        if instance.rank > new_parent_count:
+            instance.rank = new_parent_count
+
+
 @receiver(post_save, sender=OutcomeOutcome)
-def reorder_for_inserted_outcome_outcome(sender, instance, created, **kwargs):
+def reorder_for_created_outcome_outcome(sender, instance, created, **kwargs):
     if created:
         for out_of_order_link in OutcomeOutcome.objects.filter(
             parent=instance.parent, rank__gte=instance.rank
@@ -807,12 +1437,54 @@ def reorder_for_inserted_outcome_outcome(sender, instance, created, **kwargs):
             out_of_order_link.save()
 
 
+@receiver(pre_save, sender=OutcomeNode)
+def delete_existing_outcome_node(sender, instance, **kwargs):
+    if instance.pk is None:
+        OutcomeNode.objects.filter(
+            node=instance.node, outcome=instance.outcome
+        ).delete()
+        if instance.rank < 0:
+            instance.rank = 0
+        new_parent_count = OutcomeNode.objects.filter(
+            node=instance.node
+        ).count()
+        if instance.rank > new_parent_count:
+            instance.rank = new_parent_count
+
+
 @receiver(post_save, sender=OutcomeNode)
-def reorder_for_inserted_outcome_node(sender, instance, created, **kwargs):
+def reorder_for_created_outcome_node(sender, instance, created, **kwargs):
     if created:
         for out_of_order_link in OutcomeNode.objects.filter(
             node=instance.node, rank__gte=instance.rank
         ).exclude(outcome=instance.outcome):
+            out_of_order_link.rank += 1
+            out_of_order_link.save()
+
+
+@receiver(pre_save, sender=OutcomeHorizontalLink)
+def delete_existing_horizontal_link(sender, instance, **kwargs):
+    if instance.pk is None:
+        OutcomeHorizontalLink.objects.filter(
+            outcome=instance.outcome, parent_outcome=instance.parent_outcome
+        ).delete()
+        if instance.rank < 0:
+            instance.rank = 0
+        new_parent_count = OutcomeHorizontalLink.objects.filter(
+            outcome=instance.outcome
+        ).count()
+        if instance.rank > new_parent_count:
+            instance.rank = new_parent_count
+
+
+@receiver(post_save, sender=OutcomeHorizontalLink)
+def reorder_for_created_horizontal_outcome_link(
+    sender, instance, created, **kwargs
+):
+    if created:
+        for out_of_order_link in OutcomeHorizontalLink.objects.filter(
+            outcome=instance.outcome, rank__gte=instance.rank
+        ).exclude(parent_outcome=instance.parent_outcome):
             out_of_order_link.rank += 1
             out_of_order_link.save()
 
@@ -822,14 +1494,75 @@ Default content creation receivers
 """
 
 
+@receiver(post_save, sender=ObjectPermission)
+def set_permissions_to_project_objects(sender, instance, created, **kwargs):
+    if created:
+        if instance.content_type == ContentType.objects.get_for_model(Project):
+            for workflow in instance.content_object.workflows.all():
+                # If user already has edit permissions and we are adding view, do not override
+                if (
+                    instance.permission_type
+                    == ObjectPermission.PERMISSION_VIEW
+                    and ObjectPermission.objects.filter(
+                        user=instance.user,
+                        content_type=ContentType.objects.get_for_model(
+                            workflow.get_subclass()
+                        ),
+                        object_id=workflow.id,
+                        permission_type=ObjectPermission.PERMISSION_EDIT,
+                    ).count()
+                    > 0
+                ):
+                    pass
+                else:
+                    ObjectPermission.objects.create(
+                        user=instance.user,
+                        content_object=workflow.get_subclass(),
+                        permission_type=instance.permission_type,
+                    )
+
+
+#        elif instance.content_type == ContentType.objects.get_for_model(Workflow):
+#            workflow = instance.content_object
+#            if not workflow.is_strategy:
+#                project = workflow.project
+#                ObjectPermission.objects.create(content_object=project, user=instance.user,permission_type=ObjectPermission.PERMISSION_VIEW)
+
+
+@receiver(pre_save, sender=ObjectPermission)
+def delete_existing_permission(sender, instance, **kwargs):
+    ObjectPermission.objects.filter(
+        user=instance.user,
+        content_type=instance.content_type,
+        object_id=instance.object_id,
+    ).delete()
+
+
+@receiver(pre_delete, sender=ObjectPermission)
+def remove_permissions_to_project_objects(sender, instance, **kwargs):
+    if instance.content_type == ContentType.objects.get_for_model(Project):
+        for workflow in instance.content_object.workflows.all():
+            ObjectPermission.objects.filter(
+                user=instance.user,
+                content_type=ContentType.objects.get_for_model(
+                    workflow.get_subclass()
+                ),
+                object_id=workflow.get_subclass().id,
+            ).delete()
+
+
 @receiver(post_save, sender=Project)
 def set_publication_of_project_objects(sender, instance, created, **kwargs):
     for workflow in instance.workflows.all():
         workflow.published = instance.published
+        workflow.disciplines.set(instance.disciplines.all())
         workflow.save()
-    for outcome in instance.outcomes.all():
-        outcome.published = instance.published
-        outcome.save()
+
+
+#    for outcome in instance.outcomes.all():
+#        outcome.published = instance.published
+#        outcome.disciplines.set(instance.disciplines.all())
+#        outcome.save()
 
 
 @receiver(post_save, sender=NodeWeek)
@@ -838,7 +1571,7 @@ def set_node_type_default(sender, instance, created, **kwargs):
     try:
         node.node_type = instance.week.week_type
         node.save()
-    except:
+    except ValidationError:
         print("couldn't set default node type")
 
 
@@ -848,7 +1581,7 @@ def set_week_type_default(sender, instance, created, **kwargs):
     try:
         week.week_type = instance.workflow.get_subclass().WORKFLOW_TYPE
         week.save()
-    except:
+    except ValidationError:
         print("couldn't set default week type")
 
 
@@ -858,7 +1591,7 @@ def set_outcome_depth_default(sender, instance, created, **kwargs):
     try:
         child.depth = instance.parent.depth + 1
         child.save()
-    except:
+    except ValidationError:
         print("couldn't set default outcome depth")
 
 
@@ -937,16 +1670,48 @@ def set_publication_workflow(sender, instance, created, **kwargs):
         # Set the workflow's publication status to that of the project
         workflow = instance.workflow
         workflow.published = instance.project.published
+        workflow.disciplines.set(instance.project.disciplines.all())
+        if instance.project.author != workflow.get_subclass().author:
+            ObjectPermission.objects.create(
+                content_object=workflow.get_subclass(),
+                user=instance.project.author,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+            )
+        for op in ObjectPermission.objects.filter(
+            content_type=ContentType.objects.get_for_model(instance.project),
+            object_id=instance.project.id,
+        ):
+            ObjectPermission.objects.create(
+                content_object=workflow.get_subclass(),
+                user=op.user,
+                permission_type=op.permission_type,
+            )
         workflow.save()
 
 
-@receiver(post_save, sender=OutcomeProject)
-def set_publication_outcome(sender, instance, created, **kwargs):
-    if created:
-        # Set the workflow's publication status to that of the project
-        outcome = instance.outcome
-        outcome.published = instance.project.published
-        outcome.save()
+# @receiver(post_save, sender=OutcomeProject)
+# def set_publication_outcome(sender, instance, created, **kwargs):
+#    if created:
+#        # Set the workflow's publication status to that of the project
+#        outcome = instance.outcome
+#        outcome.published = instance.project.published
+#        outcome.disciplines.set(instance.project.disciplines.all())
+#        if instance.project.author != outcome.author:
+#            ObjectPermission.objects.create(
+#                content_object=outcome,
+#                user=instance.project.author,
+#                permission_type=ObjectPermission.PERMISSION_EDIT,
+#            )
+#        for op in ObjectPermission.objects.filter(
+#            content_type=ContentType.objects.get_for_model(instance.project),
+#            object_id=instance.project.id,
+#        ):
+#            ObjectPermission.objects.create(
+#                content_object=outcome,
+#                user=op.user,
+#                permission_type=op.permission_type,
+#            )
+#        outcome.save()
 
 
 @receiver(post_save, sender=WeekWorkflow)
