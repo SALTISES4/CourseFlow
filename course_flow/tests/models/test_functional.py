@@ -17,15 +17,15 @@ from course_flow.models import (
     Favourite,
     ObjectPermission,
     Outcome,
+    OutcomeHorizontalLink,
     OutcomeNode,
     OutcomeOutcome,
     OutcomeWorkflow,
     Program,
     Project,
+    Week,
     Workflow,
     WorkflowProject,
-    OutcomeHorizontalLink,
-    Week
 )
 from course_flow.utils import get_model_from_str
 
@@ -678,9 +678,9 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             click_item = selenium.find_element_by_css_selector(
                 ".week .delete-self-button img"
             )
-#            selenium.find_element_by_css_selector(
-#                "#sidebar .window-close-button"
-#            ).click()
+            #            selenium.find_element_by_css_selector(
+            #                "#sidebar .window-close-button"
+            #            ).click()
             time.sleep(0.5)
             action_hover_click(selenium, hover_item, click_item).perform()
             alert = wait.until(expected_conditions.alert_is_present())
@@ -1638,7 +1638,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         assert_image(outcome2_img2, "solid_check")
         assert_image(outcome2_total_img, "/check")
         assert_image(outcome2_grandtotal_img, "/check")
-        
+
     def test_outcome_analytics(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -1670,9 +1670,13 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             reverse("course_flow:update-outcomenode-degree"),
             {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
         )
-        
-        OutcomeHorizontalLink.objects.create(outcome = coc1, parent_outcome=poo1.child);
-        OutcomeHorizontalLink.objects.create(outcome = coc2, parent_outcome=poo2.child);
+
+        OutcomeHorizontalLink.objects.create(
+            outcome=coc1, parent_outcome=poo1.child
+        )
+        OutcomeHorizontalLink.objects.create(
+            outcome=coc2, parent_outcome=poo2.child
+        )
 
         selenium.get(
             self.live_server_url
@@ -1682,13 +1686,36 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             "#button_alignmentanalysis"
         ).click()
         time.sleep(5)
-        
-        assert(selenium.find_element_by_css_selector(".week .title-text").text=="Term 1")
-        assert(len(selenium.find_elements_by_css_selector(".week .node"))==1)
-        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome"))==2)
-        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome .half-width>.outcome"))==2)
-        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome .alignment-row .outcome"))==2)
-        
+
+        assert (
+            selenium.find_element_by_css_selector(".week .title-text").text
+            == "Term 1"
+        )
+        assert len(selenium.find_elements_by_css_selector(".week .node")) == 1
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".week .node .child-outcome"
+                )
+            )
+            == 2
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".week .node .child-outcome .half-width>.outcome"
+                )
+            )
+            == 2
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".week .node .child-outcome .alignment-row .outcome"
+                )
+            )
+            == 2
+        )
 
     def test_linked_workflow(self):
         selenium = self.selenium
