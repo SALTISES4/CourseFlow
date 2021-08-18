@@ -56,7 +56,6 @@ class OutcomeView extends ComponentJSON{
         if(data.is_dropped)droptext="hide";
         else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
         
-        console.log(this.props);
         
         
         
@@ -270,9 +269,11 @@ export class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         if(is_toggled){
             $(".outcome-"+this.props.data.id).addClass("outcome-"+type);
             $(".outcome-"+this.props.data.id).parents(".node").addClass("outcome-"+type);
+            $(".outcome-"+this.props.data.id).parents(".workflow-details .outcome").addClass("outcome-"+type);
         }else{
             $(".outcome-"+this.props.data.id).removeClass("outcome-"+type);
             $(".outcome-"+this.props.data.id).parents(".node").removeClass("outcome-"+type);
+            $(".outcome-"+this.props.data.id).parents(".workflow-details .outcome").removeClass("outcome-"+type);
         }
     }
     
@@ -312,12 +313,11 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        
+        console.log(this.props.rank);
         var children = data.child_outcome_links.map((outcomeoutcome)=>
             this.getChildType(outcomeoutcome)
         );
         
-        console.log(this.props);
                 
         let dropIcon;
         if(this.state.is_dropped)dropIcon = "droptriangleup";

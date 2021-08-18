@@ -24,6 +24,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="workflow";
+        this.allowed_tabs=[0,1,2,3];
     }
     
     render(){
@@ -40,34 +41,51 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         }
         let share;
         if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
-        let workflow_content = (
-            <WorkflowView renderer={renderer}/>
-        );
-        if(renderer.view_type=="outcometable")workflow_content=(
-            <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
-        );
-        if(renderer.view_type=="outcomeedit")workflow_content=(
-            <OutcomeEditView renderer={renderer}/>
-        );
-        if(renderer.view_type=="horizontaloutcometable")workflow_content=(
-            <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
-        );
-        if(renderer.view_type=="alignmentanalysis")workflow_content=(
-            <AlignmentView renderer={renderer} view_type={renderer.view_type}/>
-        );
+        let workflow_content;
+        if(renderer.view_type=="outcometable"){
+            workflow_content=(
+                <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
+            );
+            this.allowed_tabs=[];
+        }
+        else if(renderer.view_type=="outcomeedit"){
+            workflow_content=(
+                <OutcomeEditView renderer={renderer}/>
+            );
+            if(data.type=="program")this.allowed_tabs=[];
+            else this.allowed_tabs=[2];
+        }
+        else if(renderer.view_type=="horizontaloutcometable"){
+            workflow_content=(
+                <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
+            );
+            this.allowed_tabs=[];
+        }
+        else if(renderer.view_type=="alignmentanalysis"){
+            workflow_content=(
+                <AlignmentView renderer={renderer} view_type={renderer.view_type}/>
+            );
+            this.allowed_tabs=[];
+        }
+        else{
+            workflow_content = (
+                <WorkflowView renderer={renderer}/>
+            );
+            this.allowed_tabs=[1,2,3];
+        }
+        
         
         let view_buttons = [
-            {type:"workflowview",name:"Workflow View"},
-            {type:"outcomeedit",name:"Edit Outcomes"},
-            {type:"outcometable",name:"Outcomes Table"},
-            {type:"alignmentanalysis",name:"Outcome Analytics"},
-            {type:"horizontaloutcometable",name:"Alignment Table"}
+            {type:"workflowview",name:"Workflow View",disabled:[]},
+            {type:"outcomeedit",name:"Edit Outcomes",disabled:[]},
+            {type:"outcometable",name:"Outcomes Table",disabled:[]},
+            {type:"alignmentanalysis",name:"Outcome Analytics",disabled:["activity"]},
+            {type:"horizontaloutcometable",name:"Alignment Table",disabled:["activity"]}
         ].map(
             (item)=>{
                 let view_class = "hover-shade";
-                if(item.type==renderer.view_type){
-                    view_class += " active";
-                }
+                if(item.type==renderer.view_type)view_class += " active";
+                if(item.disabled.indexOf(data.type)>=0)view_class+=" disabled";
                 return <div id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</div>;
             }
         );
@@ -76,10 +94,10 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class="workflow-header">
-                    <TitleText text={data.description} defaultText={"Add a description"}/>
-                    <div class="workflow-view-select">
-                        {view_buttons}
-                    </div>
+                    <WorkflowForMenu workflow_data={data} selectAction={renderer.selection_manager.changeSelection.bind(this,null,this)}/>
+                </div>
+                <div class="workflow-view-select">
+                    {view_buttons}
                 </div>
                 <div class = "workflow-container">
                     {reactDom.createPortal(
@@ -121,6 +139,28 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             </div>
         
         );
+    }
+                     
+    postMountFunction(){
+        this.updateTabs();    
+    }
+                     
+    componentDidUpdate(prev_props){
+        if(prev_props.view_type!=this.props.view_type)this.updateTabs();
+    }
+                    
+    updateTabs(){
+        //If the view type has changed, enable only appropriate tabs, and change the selection to none
+        this.props.renderer.selection_manager.changeSelection(null,null);
+        let disabled_tabs=[];
+        for(let i=0;i<4;i++)if(this.allowed_tabs.indexOf(i)<0)disabled_tabs.push(i);
+        $("#sidebar").tabs({disabled:false});
+        let current_tab = $("#sidebar").tabs("option","active");
+        if(this.allowed_tabs.indexOf(current_tab)<0){
+            if(this.allowed_tabs.length==0)$("#sidebar").tabs({active:false});
+            else $("#sidebar").tabs({active:this.allowed_tabs[0]});
+        }
+        $("#sidebar").tabs({disabled:disabled_tabs});
     }
                      
     changeView(type){
@@ -172,7 +212,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
                 $("#viewbar")[0]
                 )}
                 {this.state.show_legend && 
-                    <WorkflowLegend toggle={this.toggleLegend.bind(this)}/>
+                    <WorkflowLegend renderer={renderer} toggle={this.toggleLegend.bind(this)}/>
                 }
                 <div class="column-row" id={data.id+"-column-block"}>
                     {columnworkflows}

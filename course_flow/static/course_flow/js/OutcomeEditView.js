@@ -24,14 +24,20 @@ class OutcomeEditView extends ComponentJSON{
         
         let outcomes = data.outcomeworkflow_set.map(outcomeworkflow=>
             <OutcomeWorkflowView objectID={outcomeworkflow} parentID={data.id} renderer={this.props.renderer}/>
-        ); 
-            
+        );
+        if(outcomes.length==0)outcomes=(
+            <div class="emptytext">Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.</div>
+        )
+        
         return(
             <div class="workflow-details">
                 <div class="outcome-edit">
                     <h4>For This Workflow</h4>
                     {outcomes}
-                    <button id="add-new-outcome" onClick={this.addNew.bind(this)}>Add new</button>
+                    <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNew.bind(this)}>
+                        <img class="create-button" src={iconpath+"add_new_white.svg"}/>
+                        <div>Add new</div>
+                    </div>
                     <ParentOutcomeBar/>
                 </div>
             </div>
@@ -212,6 +218,9 @@ class OutcomeBarUnconnected extends ComponentJSON{
             <OutcomeBarOutcomeView key={outcome.outcome} objectID={outcome.outcome}/>
         );
         
+        if(outcomebaroutcomes.length==0){
+            outcomebaroutcomes="Add outcomes to this workflow in by clicking the button below."
+        }
         
         return reactDom.createPortal(
             <div id="outcome-bar-workflow" class="right-panel-inner">
@@ -220,7 +229,7 @@ class OutcomeBarUnconnected extends ComponentJSON{
                     {outcomebaroutcomes}
                 </div>
                 {!read_only &&
-                    <button id="edit-outcomes-button" onClick={this.editOutcomesClick.bind(this)}>Edit Outcomes</button>
+                    <button class="menu-create" id="edit-outcomes-button" onClick={this.editOutcomesClick.bind(this)}>Edit Outcomes</button>
                 }
             </div>
         ,$("#outcome-bar")[0]);
@@ -247,6 +256,9 @@ class ParentOutcomeBarUnconnected extends ComponentJSON{
             <ParentOutcomeNodeView key={outcomenode} objectID={outcomenode}/>
         ));
         
+        if(outcomebaroutcomes.length==0){
+            outcomebaroutcomes="Here you can find outcomes from the workflows that contain a node linked to this workflow. This allows you to create relationships between the outcomes at different levels (ex. program to course), called 'alignment'. Link this workflow to a node in another to do so.";
+        }
         
         return reactDom.createPortal(
             <div id="outcome-bar-workflow" class="right-panel-inner">

@@ -1195,7 +1195,7 @@ class InfoBoxSerializer(
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
-    object_type = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     is_owned = serializers.SerializerMethodField()
     is_strategy = serializers.SerializerMethodField()
@@ -1219,7 +1219,7 @@ class InfoBoxSerializer(
         else:
             return False
 
-    def get_object_type(self, instance):
+    def get_type(self, instance):
         return instance.type
 
     def get_is_strategy(self, instance):

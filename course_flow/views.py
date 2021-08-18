@@ -278,6 +278,7 @@ def get_my_projects(user, add):
             ],
             "add": add,
             "duplicate": "copy",
+            "emptytext": _("Projects are used to organize your Programs, Courses, and Activities. Projects you create will be shown here. Click the button above to create a or import a project to get started."),
         },
         "edit_projects": {
             "title": _("Shared With Me"),
@@ -301,6 +302,7 @@ def get_my_projects(user, add):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _("Projects shared with you by others (for which you have either view or edit permissions) will appear here."),
         },
     }
     return data_package
@@ -324,6 +326,7 @@ def get_my_templates(user):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _("Activity templates, also known as Strategies, are reusable sections of activities you can drag and drop into your workflows. Click Add New above to get started."),
         },
         "owned_course_templates": {
             "title": _("My Course Templates"),
@@ -341,6 +344,7 @@ def get_my_templates(user):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _("Course templates are reusable sections of courses you can drag and drop into your workflows. Click Add New above to get started."),
         },
         "edit_templates": {
             "title": _("Shared With Me"),
@@ -368,6 +372,7 @@ def get_my_templates(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _("Templates shared with you by others (for which you have either view or edit permissions) will appear here."),
         },
     }
     return data_package
@@ -394,6 +399,7 @@ def get_my_favourites(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _("Your favourite projects, workflows, or templates by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."),
         },
         "favourites_project": {
             "title": _("Projects"),
@@ -411,6 +417,7 @@ def get_my_favourites(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _("Your favourite activities by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."),
         },
         "favourites_activity": {
             "title": _("Activities"),
@@ -428,6 +435,7 @@ def get_my_favourites(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _("Your favourite activities by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."),
         },
         "favourites_course": {
             "title": _("Courses"),
@@ -445,6 +453,7 @@ def get_my_favourites(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _("Your favourite courses by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."),
         },
         "favourites_program": {
             "title": _("Program"),
@@ -462,6 +471,7 @@ def get_my_favourites(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _("Your favourite programs by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."),
         },
     }
     return data_package
@@ -494,6 +504,7 @@ def get_data_package_for_project(user, project):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _("Workflows are the basic content object of CourseFlow, representing either a Program, Course, or Activity. Workflows you add to this project will be shown here. Click the button above to create a or import a workflow to get started."),
         },
         "current_activity": {
             "title": _("Activities"),
@@ -510,6 +521,7 @@ def get_data_package_for_project(user, project):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _("Activities can be used to plan a single lesson/assessment, or multiple linked lessons/assessments. Click the button above to create or import an activity."),
         },
         "current_course": {
             "title": _("Courses"),
@@ -526,6 +538,7 @@ def get_data_package_for_project(user, project):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _("Courses can be used to plan a course and its related learning outcomes. Click the button above to create or import a course."),
         },
         "current_program": {
             "title": _("Programs"),
@@ -542,6 +555,7 @@ def get_data_package_for_project(user, project):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _("Programs can be used to plan a curriculum and its related learning outcomes. Click the button above to create or import a program."),
         },
     }
     return data_package
@@ -699,12 +713,15 @@ def get_workflow_data_package(user, project, **kwargs):
     #        current_copy_type = False
     #        other_copy_type = False
     first_header = _("This Project")
+    empty_text = _("There are no applicable workflows in this project.")
     if project is None:
         first_header = _("Owned By You")
+        empty_text = _("You do not own any projects. Create a project first.")
     data_package = {
         "current_project": {
             "title": first_header,
             "sections": this_project_sections,
+            "emptytext": _(empty_text),
             #            "add": (project.author == user),
             #            "duplicate": current_copy_type,
         },
@@ -715,10 +732,12 @@ def get_workflow_data_package(user, project, **kwargs):
                 "title": _("From Your Other Projects"),
                 "sections": other_project_sections,
                 #            "duplicate": other_copy_type,
+                "emptytext": _("There are no applicable workflows outside this project."),
             }
         data_package["all_published"] = {
             "title": _("Your Favourites"),
             "sections": all_published_sections,
+            "emptytext": _("You have no relevant favourites. Use the Explore menu to find and favourite content by other users.")
             #            "duplicate": other_copy_type,
         }
     return data_package
@@ -924,7 +943,8 @@ def get_parent_outcome_data(workflow, user):
     parent_nodes = Node.objects.filter(
         linked_workflow=workflow
     ).prefetch_related("outcomenode_set")
-    parent_workflows = map(lambda x: x.get_workflow(), parent_nodes)
+    parent_workflows = list(map(lambda x: x.get_workflow(), parent_nodes))
+    parent_outcomeworkflows = OutcomeWorkflow.objects.filter(workflow__id__in=[x.id for x in parent_workflows])
     parent_outcomes = []
     parent_outcomeoutcomes = []
     parent_outcomenodes = []
@@ -942,6 +962,9 @@ def get_parent_outcome_data(workflow, user):
     return {
         "parent_workflow": WorkflowSerializerShallow(
             parent_workflows, many=True
+        ).data,
+        "parent_outcomeworkflow": OutcomeWorkflowSerializerShallow(
+            parent_outcomeworkflows, many=True
         ).data,
         "parent_node": NodeSerializerShallow(parent_nodes, many=True).data,
         "parent_outcomenode": OutcomeNodeSerializerShallow(

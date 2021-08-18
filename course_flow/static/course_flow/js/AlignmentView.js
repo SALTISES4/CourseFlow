@@ -99,17 +99,9 @@ class AlignmentTermsBlockUnconnected extends React.Component{
 
                 let nodeweek_ids = Constants.getIntersection(week.nodeweek_set,this.props.nodeweek_ids);
                 let nodeweeks = Constants.filterThenSortByID(this.props.nodeweeks,nodeweek_ids).map(nodeweek=>{
-                    console.log("nodes");
-                    console.log(this.props.nodes);
-                    console.log(nodeweek.node);
-                    console.log(this.props.nodes.filter(node=>node.id==nodeweek.node));
                     let node_react = this.props.nodes.filter(node=>node.id==nodeweek.node).map(node=>{
-                        console.log("outcomenodes");
-                        console.log(node.outcomenode_unique_set);
-                        console.log(this.props.outcomenode_ids);
                         let titleText = node.title;
                         if(node.represents_workflow)titleText = node.linked_workflow_title;
-                        console.log(Constants.getIntersection(node.outcomenode_unique_set,this.props.outcomenode_ids));
                         let outcomenodes = Constants.getIntersection(node.outcomenode_unique_set,this.props.outcomenode_ids).map(outcomenode=>
                             <OutcomeNodeView objectID={outcomenode}/>
                         );
@@ -163,9 +155,7 @@ class AlignmentTermsBlockUnconnected extends React.Component{
     
 }   
 const getDescendantOutcomes = (state,outcome,outcomes)=>{
-    console.log(outcome.child_outcome_links.map(id=>getOutcomeOutcomeByID(state,id)));
     let children = outcome.child_outcome_links.map(id=>getOutcomeOutcomeByID(state,id)).map(outcomeoutcome=>getOutcomeByID(state,outcomeoutcome.data.child).data);
-    console.log(children);
     for(let i=0;i<children.length;i++){
         outcomes.push(children[i].id);
         getDescendantOutcomes(state,children[i],outcomes);
@@ -196,8 +186,6 @@ export const AlignmentTermsBlock = connect(
 class AlignmentHorizontalBlockUnconnected extends React.Component{
     render(){
         let data = this.props.data;
-        console.log("alignment horizontal block");
-        console.log(this.props);
         
         
         let parent_outcomes = this.props.outcomes.map(obj=>{
@@ -296,7 +284,6 @@ export const AlignmentHorizontalBlock = connect(
 class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
     render(){
         let data = this.props.data;
-        console.log(this.props);
         let weekworkflows = this.props.weekworkflows.map(weekworkflow=>{
             let week = weekworkflow.week;
             let week_rank=weekworkflow.rank;

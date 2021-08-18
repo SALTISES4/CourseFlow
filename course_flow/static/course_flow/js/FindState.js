@@ -127,7 +127,9 @@ function findTopRank(state,outcome,get_alternate){
     }
     else if(get_alternate=="parent")for(let j=0;j<state.parent_outcomeworkflow.length;j++){
         if(state.parent_outcomeworkflow[j].outcome==outcome.id){
+            console.log("found the outcomeworkflow");
             for(let k=0;k<state.parent_workflow.length;k++){
+                console.log("checking a parent workflow");
                 let index = state.parent_workflow[k].outcomeworkflow_set.indexOf(state.parent_outcomeworkflow[j].id);
                 if(index>=0){
                     return index+1;
@@ -143,6 +145,7 @@ export const getOutcomeByID = (state,id,get_alternate,display_parent_outcomes)=>
     else state_section=state.outcome;
     for(var i in state_section){
         var outcome = state_section[i];
+        
         if(outcome.id==id){
             let root_outcome;
             let rank=[];
@@ -154,7 +157,6 @@ export const getOutcomeByID = (state,id,get_alternate,display_parent_outcomes)=>
                 else if(get_alternate=="parent")state_outcomeoutcome_section=state.parent_outcomeoutcome;
                 else state_outcomeoutcome_section=state.outcomeoutcome;
                 let root_info = findRootOutcome(outcome.id,[],state_outcomeoutcome_section);
-                console.log(root_info);
                 rank = root_info.rank.map(x=>null);
                 titles = rank.map(x=>null);
                 for(let j=0;j<state_section.length;j++){
@@ -182,6 +184,9 @@ export const getOutcomeByID = (state,id,get_alternate,display_parent_outcomes)=>
             else return {data:outcome,outcomenodes:state.outcomenode,rank:rank,titles:titles};
         }
     }
+    console.log("failed to find outcome with id "+id);
+    console.log(state_section);
+    console.log(get_alternate);
 }
 export const getChildWorkflowByID = (state,id)=>{
     for(var i in state.child_workflow){

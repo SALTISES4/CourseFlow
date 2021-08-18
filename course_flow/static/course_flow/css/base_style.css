@@ -10,7 +10,6 @@ body, html{
     font-family:'Open Sans',sans-serif;
 }
 
-
 a{
     color:#444444;
     text-decoration: none;
@@ -524,6 +523,10 @@ button:hover{
     background-color:#04ba74;
 }
 
+.workflow-type-indicator.project{
+    background-color:#d6bb30;
+}
+
 .workflow-top-row{
     display:flex;
     align-items:flex-start;
@@ -784,7 +787,7 @@ text {
     left:240px;
     width:calc(100% - 240px);
     height:calc(100% - 50px);
-    overflow:auto;
+    overflow:scroll;
     position:absolute;
 }
 

@@ -174,6 +174,7 @@ export class ComponentJSON extends React.Component{
     
     deleteSelf(data){
         //Temporary confirmation; add better confirmation dialogue later
+        if(this.props.renderer)this.props.renderer.selection_manager.deleted(this);
         if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
             alert("You cannot delete the last "+this.objectType);
             return;
@@ -720,6 +721,7 @@ export class ActionButton extends React.Component{
     
     handleClick(evt){
         this.props.handleClick(evt);
+        evt.stopPropagation();
     }
 }
 

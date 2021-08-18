@@ -175,11 +175,19 @@ export const TableChildWorkflowView = connect(
 class TableChildWorkflowHeaderUnconnected extends ComponentJSON{
     render(){
         
+        let node = this.props.node_data;
+        let node_title=node.title;
+        if(node.represents_workflow)node_title=this.props.data.title;
+        if(!node_title)node_title="Unnamed node";
+        
         if(!this.props.data||this.props.data.outcomeworkflow_set.length==0){
             return (
-                <div class="table-cell disabled">
-                    <div class="child-outcome">
-                        {"<No outcomes for node>"}
+                <div class="horizontal-table-header">
+                    <div class="horizontal-table-node" title={node_title}>{node_title}</div>
+                    <div class="table-cell disabled">
+                        <div class="child-outcome">
+                            {"<No outcomes for node>"}
+                        </div>
                     </div>
                 </div>
             );
@@ -190,7 +198,10 @@ class TableChildWorkflowHeaderUnconnected extends ComponentJSON{
         );
         
         return(
-            cells
+            <div class="horizontal-table-header">
+                <div class="horizontal-table-node" style={{width:32*cells.length+"px"}} title={node_title}>{node_title}</div>
+                {cells}
+            </div>
         );
         
     }

@@ -65,8 +65,7 @@ button, input[type="submit"]{
     display:inline-block;
     overflow:visible;
     margin:10px;
-    margin-right:200px;
-    background:white;
+    margin-right:280px;
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
     padding:0px;
     user-select:none;
@@ -74,16 +73,20 @@ button, input[type="submit"]{
 
 .workflow-header{
     margin:20px;
-    margin-top:70px;
-    padding:20px;
+    margin-top:50px;
     border-radius:10px;
-    background:white;
+}
+
+.emptytext{
+    white-space:normal;
+    max-width:800px;
 }
 
 .workflow-view-select{
     display:flex;
     max-width:1000px;
     flex-wrap:wrap;
+    margin:10px 10px 10px 0px 10px;
 }
 
 .workflow-view-select > *{
@@ -103,6 +106,12 @@ button, input[type="submit"]{
 .workflow-view-select > .active{
     background:#1976bc;
     color:white;
+}
+
+.workflow-view-select > .disabled{
+    background:lightgrey;
+    color:darkgrey;
+    pointer-events: none;    
 }
 
 .workflow-details{
@@ -560,6 +569,7 @@ ol.children-block{
     margin-top:5px;
     display:inline-block;
     vertical-align: top;
+    max-width:1000px;
 }
 
 .outcome-edit .outcome{
@@ -603,7 +613,7 @@ ol.children-block{
     border:0px;
 }
 
-.outcome-bar-outcome-block{
+.outcome-bar-outcome-block > .outcome, .outcome-bar-outcome-block > .parent-outcome-node{
     border:3px outset #1976bc;
 }
 
@@ -753,6 +763,25 @@ ol.children-block{
 
 .outcome-table .blank-cell{
     box-shadow:none;
+}
+
+.outcome-table .horizontal-table-node{
+    position:absolute;
+    font-weight:600;
+    font-size:14px;
+    border-bottom:1px solid black;
+    padding:4px;
+    padding-top:5px;
+    top:4px;
+    width:32px;
+    box-sizing:border-box;
+    overflow:hidden;
+    z-index:1;
+}
+
+.outcome-table .horizontal-table-header{
+    display:inline-block;
+    position:relative;
 }
 
 .outcome-table .total-cell, .outcome-table .total-header{
@@ -1068,8 +1097,9 @@ circle.mouseover{
     overflow:visible;
     z-index:4;
     right:16px;
-    top:100px;
+    top:96px;
     bottom:0px;
+    max-width:260px;
 }
 
 
@@ -1081,7 +1111,6 @@ circle.mouseover{
     font-family:sans-serif;
     height:100%;
     width:260px;
-    display:inline-block;
     position:relative;
 }
 
@@ -1092,7 +1121,8 @@ circle.mouseover{
 .side-bar .ui-tabs-nav{
     margin:5px -2px 5px 5px; 
     padding:0px;
-    display:inline-block;
+    left:-48px;
+    position:absolute;
 }
 
 .side-bar .ui-tabs-tab{

@@ -41,7 +41,7 @@ export class SelectionManager{
     
     changeSelection(evt,newSelection){
         if(read_only)return;
-        evt.stopPropagation();
+        if(evt)evt.stopPropagation();
         if(this.currentSelection)this.currentSelection.setState({selected:false});
         this.currentSelection=newSelection;
         if(this.currentSelection){
@@ -52,6 +52,12 @@ export class SelectionManager{
         }else{
             if($("#sidebar").tabs( "option", "active" )===0)$("#sidebar").tabs( "option", "active", this.last_sidebar_tab );
             $("#sidebar").tabs("disable",0);
+        }
+    }
+    
+    deleted(selection){
+        if(selection==this.currentSelection){
+            this.changeSelection(null,null);
         }
     }
 }

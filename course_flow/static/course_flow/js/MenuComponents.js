@@ -147,7 +147,7 @@ export class WorkflowForMenu extends React.Component{
     
     render(){
         var data = this.props.workflow_data;
-        var css_class = "workflow-for-menu hover-shade "+data.object_type;
+        var css_class = "workflow-for-menu hover-shade "+data.type;
         if(this.props.selected)css_class+=" selected";
         if(this.state.hide)return null;
         let publish_icon = iconpath+'view_none.svg';
@@ -178,7 +178,7 @@ export class WorkflowForMenu extends React.Component{
     }
     
     getTypeIndicator(){
-        let type=this.props.workflow_data.object_type
+        let type=this.props.workflow_data.type
         let type_text = type;
         if(this.props.workflow_data.is_strategy)type_text+=" strategy";
         return (
@@ -190,7 +190,7 @@ export class WorkflowForMenu extends React.Component{
         if(this.props.selectAction){
             this.props.selectAction(this.props.workflow_data.id);
         }else{
-            window.location.href=update_path[this.props.workflow_data.object_type].replace("0",this.props.workflow_data.id);
+            window.location.href=update_path[this.props.workflow_data.type].replace("0",this.props.workflow_data.id);
         }
     }
     
@@ -203,7 +203,7 @@ export class WorkflowForMenu extends React.Component{
                 buttons.push(
                     <div  class="workflow-delete-button hover-shade" onClick={(evt)=>{
                         if(window.confirm("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone.")){
-                            deleteSelf(this.props.workflow_data.id,this.props.workflow_data.object_type);
+                            deleteSelf(this.props.workflow_data.id,this.props.workflow_data.type);
                             this.setState({hide:true});
                         }
                         evt.stopPropagation();
@@ -214,7 +214,7 @@ export class WorkflowForMenu extends React.Component{
             }else{
                 buttons.push(
                     <div class="workflow-toggle-favourite hover-shade" onClick={(evt)=>{
-                        toggleFavourite(this.props.workflow_data.id,this.props.workflow_data.object_type,(!this.state.favourite));
+                        toggleFavourite(this.props.workflow_data.id,this.props.workflow_data.type,(!this.state.favourite));
                         let state=this.state;
                         this.setState({favourite:!(state.favourite)})
                         evt.stopPropagation();
@@ -232,7 +232,7 @@ export class WorkflowForMenu extends React.Component{
                     buttons.push(
                         <div class="workflow-duplicate-button hover-shade" onClick={(evt)=>{
                             let loader = new Loader('body');
-                            duplicateBaseItem(this.props.workflow_data.id,this.props.workflow_data.object_type,this.props.parentID,(response_data)=>{
+                            duplicateBaseItem(this.props.workflow_data.id,this.props.workflow_data.type,this.props.parentID,(response_data)=>{
                                 //this.props.dispatch(gridMenuItemAdded(response_data));
                                 loader.endLoad();
                                 window.location.reload();
@@ -249,10 +249,10 @@ export class WorkflowForMenu extends React.Component{
                     buttons.push(
                         <div class="workflow-duplicate-button hover-shade" onClick={(evt)=>{
                             var target_parent;
-                            if(this.props.workflow_data.object_type=="project"||this.props.workflow_data.is_strategy){
+                            if(this.props.workflow_data.type=="project"||this.props.workflow_data.is_strategy){
                                 let loader = new Loader('body');
                                 duplicateBaseItem(
-                                    this.props.workflow_data.id,this.props.workflow_data.object_type,
+                                    this.props.workflow_data.id,this.props.workflow_data.type,
                                     target_parent,(response_data)=>{
                                         try{
                                             this.props.dispatch(gridMenuItemAdded(response_data));
@@ -265,7 +265,7 @@ export class WorkflowForMenu extends React.Component{
                                     if(response_data.parentID!=null){
                                         let loader = new Loader('body');
                                         duplicateBaseItem(
-                                            this.props.workflow_data.id,this.props.workflow_data.object_type,
+                                            this.props.workflow_data.id,this.props.workflow_data.type,
                                             response_data.parentID,(duplication_response_data)=>{
                                                try{
                                                    this.props.dispatch(gridMenuItemAdded(duplication_response_data));
@@ -318,9 +318,9 @@ export class MenuSection extends React.Component{
         var objects = this.props.section_data.objects.map((object)=>
             <WorkflowForMenu key={object.id} type={this.props.type} workflow_data={object} objectType={section_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
         );
+        if(this.props.replacement_text)objects=this.props.replacement_text;
         
-        
-        if(objects.length==0)objects="This category is currently empty."
+        //if(objects.length==0)objects="This category is currently empty."
 
         let add_button;
         if(create_path && this.props.add){
@@ -395,10 +395,15 @@ export class MenuSection extends React.Component{
 
 export class MenuTab extends React.Component{
     render(){
-        var sections = this.props.data.sections.map((section)=>
-            <MenuSection type={this.props.type} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.data.duplicate}/>
+        let is_empty=true;
+        for(let i=0;i<this.props.data.sections.length;i++){
+            if(this.props.data.sections[i].objects.length>0){is_empty=false;break;}
+        }
+        let replacement_text;
+        if(is_empty)replacement_text=this.props.data.emptytext;
+        var sections = this.props.data.sections.map((section,i)=>
+            <MenuSection type={this.props.type} replacement_text={i==0?replacement_text:null} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.data.duplicate}/>
         );
-        
         return (
             <div id={"tabs-"+this.props.identifier}>
                 {sections}
@@ -483,7 +488,7 @@ class ProjectMenuUnconnected extends React.Component{
                         <div>{this.state.title||"Unnamed Project"}</div>,
                         $("#workflowtitle")[0]
                     )}
-                    <p id="project-description">{this.state.description}</p>
+                    <WorkflowForMenu workflow_data={this.state} selectAction={this.openEdit.bind(this)}/>
                     <p>
                         Disciplines: {
                             (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||"None")
@@ -532,7 +537,6 @@ class ProjectMenuUnconnected extends React.Component{
             }
         });
         getDisciplines((response)=>{
-            console.log(response);
             this.setState({all_disciplines:response});
         });
     }
@@ -691,7 +695,7 @@ export class ExploreMenu extends React.Component{
         
         
         let objects = this.props.data_package.map(object=>
-            <WorkflowForMenu selected={(this.state.selected==object.id)} key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.object_type} previewAction={this.selectItem.bind(this,object.id,object.object_type)}/>  
+            <WorkflowForMenu selected={(this.state.selected==object.id)} key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.type} previewAction={this.selectItem.bind(this,object.id,object.type)}/>  
         )
         let disciplines = this.props.disciplines.map(discipline=>
             <li><label><input class = "fillable"  type="checkbox" name="disc[]" value={discipline.id}/>{discipline.title}</label></li>                                            

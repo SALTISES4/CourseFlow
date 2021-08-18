@@ -56,10 +56,18 @@ class NodeView extends ComponentJSON{
         let lefticon;
         let righticon;
         if(data.context_classification>0)lefticon=(
-            <img src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+            <img title={
+                renderer.context_choices.find(
+                    (obj)=>obj.type==data.context_classification
+                ).name
+            } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
         )
         if(data.task_classification>0)righticon=(
-            <img src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+            <img title={
+                renderer.task_choices.find(
+                    (obj)=>obj.type==data.task_classification
+                ).name
+            }src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
         )
         let dropIcon;
         if(data.is_dropped)dropIcon = "droptriangleup";
