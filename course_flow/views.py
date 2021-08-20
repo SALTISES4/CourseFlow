@@ -40,6 +40,7 @@ from .models import (  # OutcomeProject,
     Activity,
     Column,
     ColumnWorkflow,
+    Comment,
     Course,
     Discipline,
     Favourite,
@@ -64,6 +65,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     ActivitySerializerShallow,
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
+    CommentSerializer,
     CourseSerializerShallow,
     DisciplineSerializer,
     InfoBoxSerializer,
@@ -1498,6 +1500,23 @@ Contextual information methods
 """
 
 
+@user_can_edit(False)
+def get_comments_for_object(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    try:
+        comments = (
+            get_model_from_str(object_type)
+            .objects.get(id=object_id)
+            .comments.all()
+            .order_by("created_on")
+        )
+        data_package = CommentSerializer(comments, many=True).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "data_package": data_package})
+
+
 class DisciplineListView(LoginRequiredMixin, ListAPIView):
     queryset = Discipline.objects.order_by("title")
     serializer_class = DisciplineSerializer
@@ -2659,6 +2678,19 @@ Creation methods
 """
 
 
+@user_can_edit(False)
+def add_comment(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    text = json.loads(request.POST.get("text"))
+    try:
+        obj = get_model_from_str(object_type).objects.get(id=object_id)
+        obj.comments.create(text=text, user=request.user)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted"})
+
+
 @user_can_edit("workflowPk")
 def new_column(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
@@ -3514,6 +3546,22 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
 """
 Delete methods
 """
+
+# @user_can_edit(False)
+def remove_comment(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    comment_id = json.loads(request.POST.get("commentPk"))
+
+    try:
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        comment = model.comments.get(id=comment_id)
+        comment.delete()
+
+    except (ProtectedError, ObjectDoesNotExist):
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
 
 
 @user_can_delete(False)

@@ -198,6 +198,15 @@ def course_flow_patterns():
             name="activity-strategy-create",
         ),
         url(
+            r"^comments/get/$",
+            views.get_comments_for_object,
+            name="get-comments-for-object",
+        ),
+        url(r"^comments/add/$", views.add_comment, name="add-comment",),
+        url(
+            r"^comments/remove/$", views.remove_comment, name="remove-comment",
+        ),
+        url(
             r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
     ] + router.urls

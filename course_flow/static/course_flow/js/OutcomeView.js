@@ -46,6 +46,7 @@ class OutcomeView extends ComponentJSON{
             actions.push(this.addInsertSibling(data));
             actions.push(this.addDuplicateSelf(data));
             actions.push(this.addDeleteSelf(data));
+            actions.push(this.addCommenting(data));
         }
         
         let dropIcon;

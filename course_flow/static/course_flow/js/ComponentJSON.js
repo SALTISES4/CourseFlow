@@ -4,7 +4,7 @@ import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
 import {newNodeAction, deleteSelfAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction, newStrategyAction, toggleStrategyAction} from "./Reducers.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild} from "./PostFunctions.js"
+import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment} from "./PostFunctions.js"
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -252,6 +252,38 @@ export class ComponentJSON extends React.Component{
             (response_data)=>{
                 let action = insertChildAction(response_data,Constants.object_dictionary[type]);
                 props.dispatch(action);
+                props.renderer.tiny_loader.endLoad();
+            }
+        );
+    }
+
+    //Adds a button that opens/closes the comments dialogue
+    addCommenting(data){
+        let commentbox;
+        return(
+            [
+                <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext="Comments" handleClick={this.commentClick.bind(this)}/>,
+                <CommentBox show={this.state.show_comments} comments={this.state.comment_data} parent={this}/>
+            ]
+        );
+    }
+    
+    commentClick(evt){
+        evt.stopPropagation();
+        if(!this.state.show_comments){
+            this.reloadComments();
+        }else(this.setState({show_comments:false}));
+    }
+
+    reloadComments(){
+        let props = this.props;
+        let data = props.data;
+        props.renderer.tiny_loader.startLoad();
+        getCommentsForObject(data.id,Constants.object_dictionary[this.objectType],
+            (response_data)=>{
+                console.log("Got some comments");
+                console.log(response_data);
+                this.setState({show_comments:true,comment_data:response_data.data_package});
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -607,9 +639,9 @@ export class NodePorts extends React.Component{
     }
     
     nodeLinkAdded(target,source_port,target_port){
-        var props=this.props;
+        let props=this.props;
         if(target==this.props.nodeID)return;
-        newNodeLink(this.props.nodeID,target,Constants.port_keys.indexOf(source_port),Constants.port_keys.indexOf(target_port),(response_data)=>{
+        newNodeLink(props.nodeID,target,Constants.port_keys.indexOf(source_port),Constants.port_keys.indexOf(target_port),(response_data)=>{
             let action = newNodeLinkAction(response_data);
             props.dispatch(action);
         });
@@ -617,11 +649,103 @@ export class NodePorts extends React.Component{
 }
 
 
-//Text that can be passed a default value
-export class TitleText extends React.Component{
+//A commenting box
+export class CommentBox extends React.Component{
     constructor(props){
         super(props);
+        this.input = React.createRef();
+        this.state={};
     }
+    
+    render(){
+        console.log(this.state);
+        let has_comments=false;
+        if(this.state.has_rendered){
+            if(this.props.comments){
+                has_comments = this.props.comments.length>0;
+            }else{
+                console.log(this.props.parent.props)
+                has_comments = this.props.parent.props.data.comments.length>0;
+            }
+        }
+        let comment_indicator=null;
+        if(has_comments)comment_indicator=reactDom.createPortal(
+            <div class="comment-indicator hover-shade" onClick={this.props.parent.commentClick.bind(this.props.parent)}>
+                <img src={iconpath+"comment_new.svg"}/>
+            </div>,
+            this.props.parent.maindiv.current
+        );
+        
+        
+        if(!this.props.show){
+            return comment_indicator;
+        }
+        
+        let comments;
+        if(this.props.comments)comments = this.props.comments.map(comment=>
+            <div class="comment">
+                <div class="comment-text">
+                    {comment.text}
+                </div>
+                <div class="comment-by">
+                    { "-"+comment.user+" on "+comment.created_on}
+                </div>
+                {!read_only && <div class="mouseover-actions">
+                    <div class="window-close-button" onClick={this.removeComment.bind(this,comment.id)}>
+                        <img src={iconpath+"close.svg"}/>
+                    </div>
+                </div>
+                }
+            </div>               
+        )
+        
+        return reactDom.createPortal(
+            [
+            <div class="comment-box" onClick={(evt)=>evt.stopPropagation()}>
+                <div class="window-close-button" onClick = {this.props.parent.commentClick.bind(this.props.parent)}>
+                    <img src = {iconpath+"close.svg"}/>
+                </div>
+                <div class="comment-block">
+                    {comments}
+                </div>
+                <textarea ref={this.input}/>
+                <button class="menu-create" onClick={this.appendComment.bind(this)}>Submit</button>
+            </div>,
+            comment_indicator
+            ],
+            this.props.parent.maindiv.current
+        )
+    }
+    
+    removeComment(id){
+        let parent = this.props.parent;
+        let props = parent.props;
+        if(window.confirm("Are you sure you want to permanently clear this comment?")){
+            removeComment(props.objectID,Constants.object_dictionary[parent.objectType],id,
+                parent.reloadComments.bind(parent)
+            );
+        }
+    }
+    
+    appendComment(){
+        let text=this.input.current.value;
+        if(!text)return;
+        let parent = this.props.parent;
+        let props = parent.props;
+        console.log(props);
+        this.input.current.value=null;
+        addComment(props.objectID,Constants.object_dictionary[parent.objectType]   ,text,parent.reloadComments.bind(parent));
+    }
+
+    componentDidMount(){
+        this.setState({has_rendered:true})
+    }
+    
+}
+
+
+//Text that can be passed a default value
+export class TitleText extends React.Component{
     
     render(){
         var text = this.props.text;

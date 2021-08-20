@@ -207,6 +207,22 @@ export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log(
     }
 }
 
+//Removes the specified comment from the object
+export function removeComment(objectID,objectType,commentPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.remove_comment, {
+            objectID:JSON.stringify(objectID),
+            commentPk:JSON.stringify(commentPk),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 
 //Causes the specified throughmodel to update its degree
 export function updateOutcomenodeDegree(nodeID,outcomeID,value,callBackFunction=()=>console.log("success")){
@@ -464,6 +480,35 @@ export function getUsersForObject(objectID,objectType,callBackFunction=()=>conso
 export function getUserList(filter,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_user_list,{filter:JSON.stringify(filter)}).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the comments for a particular object
+export function getCommentsForObject(objectID,objectType,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_comments_for_object,{
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//add a comment to an object
+export function addComment(objectID,objectType,text,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.add_comment,{
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            text:JSON.stringify(text),
+        }).done(function(data){
             callBackFunction(data);
         });
     }catch(err){

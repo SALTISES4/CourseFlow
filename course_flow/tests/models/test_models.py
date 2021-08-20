@@ -11,6 +11,7 @@ from course_flow.models import (
     Activity,
     Column,
     ColumnWorkflow,
+    Comment,
     Course,
     Discipline,
     Favourite,
@@ -2438,6 +2439,60 @@ class ModelViewTest(TestCase):
         user = login(self)
         response = self.client.get(reverse("course_flow:explore"))
         self.assertEqual(response.status_code, 200)
+
+    def test_add_comment_to_node(self):
+        user = login(self)
+        workflow = Course.objects.create(author=user)
+        week = workflow.weeks.create(author=user)
+        node = week.nodes.create(author=user)
+        comment_text = "A sample comment"
+
+        # Create a comment, check that it is correctly added to the desired object
+        response = self.client.post(
+            reverse("course_flow:add-comment"),
+            {
+                "objectID": node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "text": JSONRenderer().render(comment_text).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            Node.objects.get(id=node.id).comments.first().text, comment_text
+        )
+        # Retrieve the comments
+        response = self.client.post(
+            reverse("course_flow:get-comments-for-object"),
+            {
+                "objectID": node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEqual(len(content["data_package"]), 1)
+        self.assertEqual(content["data_package"][0]["text"], comment_text)
+        # Remove a comment
+        response = self.client.post(
+            reverse("course_flow:remove-comment"),
+            {
+                "objectID": node.id,
+                "commentPk": Comment.objects.first().id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        # Retrieve the comments
+        response = self.client.post(
+            reverse("course_flow:get-comments-for-object"),
+            {
+                "objectID": node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEqual(len(content["data_package"]), 0)
 
 
 class PermissionsTests(TestCase):

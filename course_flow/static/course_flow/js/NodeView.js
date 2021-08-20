@@ -125,6 +125,7 @@ class NodeView extends ComponentJSON{
                     {this.addInsertSibling(data)}
                     {this.addDuplicateSelf(data)}
                     {this.addDeleteSelf(data)}
+                    {this.addCommenting(data)}
                 </div>
                 }
                 {this.addEditable(data)}

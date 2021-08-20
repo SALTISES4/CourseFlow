@@ -19,7 +19,7 @@ class ColumnView extends ComponentJSON{
         var title = data.title;
         if(!title)title=data.column_type_display;
         return (
-            <div class={"column"+((this.state.selected && " selected")||"")} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
+            <div ref={this.maindiv} class={"column"+((this.state.selected && " selected")||"")} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="column-line">
                     <img src={this.getIcon()}/>
                     <div>{title}</div>
@@ -29,6 +29,7 @@ class ColumnView extends ComponentJSON{
                     {this.addInsertSibling(data)}
                     {this.addDuplicateSelf(data)}
                     {this.addDeleteSelf(data)}
+                    {this.addCommenting(data)}
                 </div>
                 }
             </div>

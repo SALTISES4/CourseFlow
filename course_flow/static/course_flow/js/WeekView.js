@@ -39,6 +39,7 @@ export class WeekViewUnconnected extends ComponentJSON{
                         {this.addInsertSibling(data)}
                         {this.addDuplicateSelf(data)}
                         {this.addDeleteSelf(data)}
+                        {this.addCommenting(data)}
                     </div>
                 </div>
                 }

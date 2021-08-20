@@ -107,7 +107,6 @@ class Column(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
-    published = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
     colour = models.PositiveIntegerField(null=True)
     CUSTOM_ACTIVITY = 0
@@ -142,6 +141,8 @@ class Column(models.Model):
         "Column", on_delete=models.SET_NULL, null=True
     )
 
+    comments = models.ManyToManyField("Comment", blank=True)
+
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def get_permission_objects(self):
@@ -167,7 +168,6 @@ class NodeLink(models.Model):
     target_node = models.ForeignKey(
         "Node", on_delete=models.CASCADE, related_name="incoming_links"
     )
-    published = models.BooleanField(default=False)
     NORTH = 0
     EAST = 1
     SOUTH = 2
@@ -224,6 +224,8 @@ class Outcome(models.Model):
         blank=True,
         related_name="reverse_horizontal_outcomes",
     )
+
+    comments = models.ManyToManyField("Comment", blank=True)
 
     @property
     def type(self):
@@ -377,7 +379,6 @@ class Node(models.Model):
     )
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
-    published = models.BooleanField(default=False)
 
     parent_node = models.ForeignKey(
         "Node", on_delete=models.SET_NULL, null=True
@@ -385,6 +386,8 @@ class Node(models.Model):
     is_original = models.BooleanField(default=True)
     has_autolink = models.BooleanField(default=False)
     is_dropped = models.BooleanField(default=False)
+
+    comments = models.ManyToManyField("Comment", blank=True)
 
     NONE = 0
     INDIVIDUAL = 1
@@ -633,7 +636,6 @@ class Week(models.Model):
         "Week", on_delete=models.SET_NULL, null=True
     )
     is_original = models.BooleanField(default=True)
-    published = models.BooleanField(default=False)
     is_strategy = models.BooleanField(default=False)
     original_strategy = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
@@ -642,6 +644,8 @@ class Week(models.Model):
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)
+
+    comments = models.ManyToManyField("Comment", blank=True)
 
     NONE = 0
     JIGSAW = 1
@@ -975,6 +979,12 @@ class Favourite(models.Model):
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    text = models.CharField(max_length=500, blank=False,)
+    created_on = models.DateTimeField(default=timezone.now)
 
 
 class ObjectPermission(models.Model):

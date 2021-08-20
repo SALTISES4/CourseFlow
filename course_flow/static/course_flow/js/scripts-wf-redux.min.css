@@ -1056,7 +1056,7 @@ button, input[type="submit"]{
     display:flex;
     max-width:1000px;
     flex-wrap:wrap;
-    margin:10px 10px 10px 0px 10px;
+    margin:10px 10px 0px 10px;
 }
 
 .workflow-view-select > *{
@@ -1236,7 +1236,7 @@ button, input[type="submit"]{
     padding-right:40px;
     background:white;
     position:sticky;
-    top:0px;
+    top:46px;
     z-index:2;
     font-size:16px;
     border:2px solid white;
@@ -2026,6 +2026,68 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 
 .dragging .mouseover-actions{
     visibility:hidden !important;
+}
+
+.comment-box{
+    position:absolute;
+    width:200px;
+    max-height:400px;
+    border:1px solid #1976bc;
+    background:white;
+    z-index:7;
+    overflow-y:auto;
+    padding: 5px;
+    font-size: 12px;
+    box-sizing: border-box;
+    top:0px;
+    right:-205px;
+    border-radius:5px;
+    padding-top:24px;
+    box-shadow: 0px 1px 2px 1px rgba(0,0,0,0.3);
+}
+
+.comment-box textarea, .comment-box button{
+    display:block;
+    width:100%;
+    box-sizing: border-box;
+    resize:none;
+    margin:0px;
+    margin-top:4px;
+}
+
+.comment-box textarea{
+    height:80px;
+}
+
+.comment{
+    position:relative;
+    padding-bottom:5px;
+    margin-top:5px;
+    padding:2px;
+    border:1px solid white;
+}
+
+.comment:hover{
+    border:1px solid lightgrey;
+    
+}
+
+.comment-by{
+    font-size:10px;
+}
+
+.comment-indicator{
+    position:absolute;
+    right:0px;
+    bottom:0px;
+    border-radius:5px;
+    background:white;
+    height:20px;
+}
+
+.comment-indicator img{
+    width:20px;
+    filter: brightness(0) saturate(100%) invert(38%) sepia(98%) saturate(461%) hue-rotate(164deg) brightness(87%) contrast(100%);
 }
 
 .workflow-canvas{
