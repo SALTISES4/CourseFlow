@@ -131,7 +131,7 @@ export class ComponentJSON extends React.Component{
                 sortable_block.sortable("refresh");
                 //Fix the vertical containment. This is especially necessary when the item resizes.
                 var sort = $(sortable_block).sortable("instance");
-                sort.containment[3]+=sort.currentItem[0].offsetTop;
+                sort.containment[3]+=sort.currentItem[0].offsetTop+sort.currentItem[0].offsetHeight;
                 
             },
             //Tell the dragging object that we are dragging it

@@ -544,6 +544,7 @@ button:hover{
     font-size:16px;
     margin-bottom:6px;
     flex-grow:1;
+    color:#1976bc;
 }
 
 .workflow-buttons{
@@ -1045,7 +1046,13 @@ button, input[type="submit"]{
     margin:20px;
     margin-top:50px;
     border-radius:10px;
+    display:flex;
 }
+
+.workflow-header > div{
+    margin-left:20px;
+}
+
 
 .emptytext{
     white-space:normal;

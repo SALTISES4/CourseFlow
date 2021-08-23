@@ -207,6 +207,11 @@ def course_flow_patterns():
             r"^comments/remove/$", views.remove_comment, name="remove-comment",
         ),
         url(
+            r"^parentworkflows/get/$",
+            views.get_parent_workflow_info,
+            name="get-parent-workflow-info",
+        ),
+        url(
             r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
     ] + router.urls

@@ -610,7 +610,6 @@ class OutcomeNode(models.Model):
 
     # Check to see if the children already exist, and if not, add them
     def check_child_outcomes(self):
-        last_time = time.time()
         
         node = self.node
         outcome = self.outcome

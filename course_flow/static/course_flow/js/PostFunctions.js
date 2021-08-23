@@ -515,3 +515,17 @@ export function addComment(objectID,objectType,text,callBackFunction=()=>console
         fail_function();
     }
 }
+
+
+//Get the comments for a particular object
+export function getParentWorkflowInfo(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_parent_workflow_info,{
+            workflowPk:JSON.stringify(workflowPk),
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}

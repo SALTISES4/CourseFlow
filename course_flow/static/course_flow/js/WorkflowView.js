@@ -14,6 +14,7 @@ import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
+import {getParentWorkflowInfo} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 
@@ -95,6 +96,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class="workflow-header">
                     <WorkflowForMenu workflow_data={data} selectAction={renderer.selection_manager.changeSelection.bind(this,null,this)}/>
+                    <ParentWorkflowIndicator workflow_id={data.id}/>
                 </div>
                 <div class="workflow-view-select">
                     {view_buttons}
@@ -436,10 +438,62 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
     
     
 }
-export const WorkflowView_Outcome =  connect(
+export const WorkflowView_Outcome = connect(
     mapWorkflowStateToProps,
     null
 )(WorkflowView_Outcome_Unconnected)
+
+class ParentWorkflowIndicator extends React.Component{
+    
+    constructor(props){
+        super(props);
+        this.state={};
+    }
+    
+    render(){
+        console.log(this.state);
+        console.log("Parent workflow indicator");
+        if(this.state.has_loaded && this.state.parent_workflows.length>0){
+            let parent_workflows = this.state.parent_workflows.map(parent_workflow=>
+                <div class="workflow-for-menu hover-shade" >
+                    <div class="workflow-top-row">
+                        <a href={workflow_update_path.replace("0",parent_workflow.id)} class="workflow-title">
+                            {parent_workflow.title}
+                        </a>
+                        {this.getTypeIndicator(parent_workflow)}
+                    </div>                
+                </div>
+            )
+            return(
+                <div class="parent-workflow-indicators">
+                    <h4>Used in:</h4>
+                    {parent_workflows}
+                </div>
+            )
+            
+        }
+        
+        
+        return null;
+    }
+    
+    componentDidMount(){
+        getParentWorkflowInfo(this.props.workflow_id,(response_data=>
+            this.setState({parent_workflows:response_data.data_package,has_loaded:true})
+        ));
+    }
+
+
+    getTypeIndicator(data){
+        let type=data.type
+        let type_text = type;
+        if(data.is_strategy)type_text+=" strategy";
+        return (
+            <div class={"workflow-type-indicator "+type}>{type_text}</div>
+        );
+    }
+    
+}
 
 
 

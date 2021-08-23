@@ -75,6 +75,19 @@ button, input[type="submit"]{
     margin:20px;
     margin-top:50px;
     border-radius:10px;
+    display:flex;
+}
+
+.workflow-header > div{
+    margin-left:20px;
+}
+
+.parent-workflow-indicators{
+    background:white;
+    border-radius: 10px;
+    padding-right:10px;
+    padding-left:10px;
+    margin-bottom:8px;
 }
 
 .emptytext{
