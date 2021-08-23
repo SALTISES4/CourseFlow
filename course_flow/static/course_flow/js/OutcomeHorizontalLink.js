@@ -167,7 +167,7 @@ const mapTableChildWorkflowStateToProps = (state,own_props)=>{
             return ({data:state.child_workflow[i],node_data:node});
         }
     }
-    return {data:null};
+    return {node_data:node};
 }
 export const TableChildWorkflowView = connect(
     mapTableChildWorkflowStateToProps,
@@ -176,7 +176,6 @@ export const TableChildWorkflowView = connect(
 
 class TableChildWorkflowHeaderUnconnected extends ComponentJSON{
     render(){
-        
         let node = this.props.node_data;
         let node_title=node.title;
         if(node.represents_workflow)node_title=this.props.data.title;
