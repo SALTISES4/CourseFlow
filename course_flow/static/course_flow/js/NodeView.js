@@ -42,7 +42,7 @@ class NodeView extends ComponentJSON{
             );
         }
         let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
-            <OutcomeNodeView key={outcomenode} objectID={outcomenode}/>
+            <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
         );
         let outcomeDiv;
         if(outcomenodes.length>0){
@@ -204,10 +204,12 @@ class NodeView extends ComponentJSON{
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 if(drag_item.hasClass("outcome")){
+                    props.renderer.tiny_loader.startLoad();
                     updateOutcomenodeDegree(this.props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
                             let action = updateOutcomenodeDegreeAction(response_data);
                             props.dispatch(action);
+                            props.renderer.tiny_loader.endLoad();
                         }
                     );
                 }

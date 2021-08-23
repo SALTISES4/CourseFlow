@@ -3348,6 +3348,10 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     outcome_id = json.loads(request.POST.get("outcomePk"))
     degree = json.loads(request.POST.get("degree"))
+    #****** TESTING *******
+    last_time=time.time()
+    #****** TESTING *******
+    
     try:
         if (
             OutcomeNode.objects.filter(
@@ -3356,22 +3360,37 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
             > 0
         ):
             return JsonResponse({"action": "posted", "outcomenode": -1})
+        #****** TESTING *******
+        last_time=benchmark("pre-existence check",last_time)
+        #****** TESTING *******
         model = OutcomeNode.objects.create(
             node=Node.objects.get(id=node_id),
             outcome=Outcome.objects.get(id=outcome_id),
             degree=degree,
         )
+        #****** TESTING *******
+        last_time=benchmark("base model creation",last_time)
+        #****** TESTING *******
         new_outcomenodes = OutcomeNodeSerializerShallow(
             [model]
             + model.check_parent_outcomes()
             + model.check_child_outcomes(),
             many=True,
         ).data
+        #****** TESTING *******
+        last_time=benchmark("parent and child checks",last_time)
+        #****** TESTING *******
         if degree == 0:
             OutcomeNode.objects.filter(node=model.node, degree=0).delete()
+        #****** TESTING *******
+        last_time=benchmark("zero degree deletion",last_time)
+        #****** TESTING *******
         new_node_data = NodeSerializerShallow(model.node).data
         new_outcomenode_set = new_node_data["outcomenode_set"]
         new_outcomenode_unique_set = new_node_data["outcomenode_unique_set"]
+        #****** TESTING *******
+        last_time=benchmark("serialization",last_time)
+        #****** TESTING *******
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
 

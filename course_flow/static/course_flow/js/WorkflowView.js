@@ -206,7 +206,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
         return(
             <div class="workflow-details">
                 {reactDom.createPortal(
-                <div class="topdropwrapper" title="Show/Hide Legend">
+                <div class="topdropwrapper hover-shade" title="Show/Hide Legend">
                     <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
                 </div>,
                 $("#viewbar")[0]
@@ -409,11 +409,14 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
         return(
             <div class="workflow-details">
                 {reactDom.createPortal(
-                    <div class="topdropwrapper" title="Show/Hide Legend">
+                    <div class="topdropwrapper hover-shade" title="Show/Hide Legend">
                         <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
                     </div>,
                     $("#viewbar")[0]
                 )}
+                {this.state.show_legend && 
+                    <WorkflowOutcomeLegend renderer={renderer} toggle={this.toggleLegend.bind(this)}/>
+                }
                 <WorkflowOutcomeView renderer={renderer} outcomes_type={data.outcomes_type}/>
             </div>
         );

@@ -44,9 +44,11 @@ export class TableHorizontalOutcomeLinkUnconnected extends ComponentJSON{
         let value;
         if(props.data)value=0;
         else value=1;
+        props.renderer.tiny_loader.startLoad();
         updateOutcomehorizontallinkDegree(props.outcomeID,props.parent_outcomeID,value,
             (response_data)=>{
                 props.dispatch(updateOutcomehorizontallinkDegreeAction(response_data));
+                props.renderer.tiny_loader.endLoad();
             }
         );
         

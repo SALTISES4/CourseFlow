@@ -16,7 +16,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from course_flow.utils import benchmark
+from course_flow.utils import benchmark, get_descendant_outcomes
 
 User = get_user_model()
 
@@ -610,19 +610,20 @@ class OutcomeNode(models.Model):
 
     # Check to see if the children already exist, and if not, add them
     def check_child_outcomes(self):
-        new_children = []
-        for child in self.outcome.children.all():
-            if (
-                OutcomeNode.objects.filter(
-                    outcome=child, node=self.node, degree=self.degree
-                ).count()
-                == 0
-            ):
-                new_child = OutcomeNode.objects.create(
-                    outcome=child, node=self.node, degree=self.degree
-                )
-                new_children += [new_child] + new_child.check_child_outcomes()
-        return new_children
+        last_time = time.time()
+        
+        node = self.node
+        outcome = self.outcome
+        degree = self.degree
+        #Get the descendants (all descendant outcomes that don't already have an outcomenode of this degree and node)
+        descendants = get_descendant_outcomes(outcome).exclude(outcomenode__node=node,outcomenode__degree=degree)
+        #Delete the outcomenodes of any descendants that still have an outcomenode to this node (i.e. clear those of other degrees, we are using bulk create so they won't get automatically deleted)
+        to_delete = OutcomeNode.objects.filter(outcome__in=descendants,node=node)
+        to_delete._raw_delete(to_delete.db)
+        #Create the new outcomenodes with bulk_create
+        new_children = [OutcomeNode(degree=degree,node=node,outcome=x) for x in descendants]
+        return OutcomeNode.objects.bulk_create(new_children)
+        
 
 
 class Week(models.Model):

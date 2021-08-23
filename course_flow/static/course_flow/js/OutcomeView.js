@@ -28,7 +28,7 @@ class OutcomeView extends ComponentJSON{
         );
         
         let outcomehorizontallinks = data.outcome_horizontal_links_unique.map((horizontal_link)=>
-            <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link}/>
+            <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link} renderer={this.props.renderer}/>
         );
         let outcomeDiv;
         if(outcomehorizontallinks.length>0){
@@ -152,10 +152,12 @@ class OutcomeView extends ComponentJSON{
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 if(drag_item.hasClass("outcome")){
+                    props.renderer.tiny_loader.startLoad();
                     updateOutcomehorizontallinkDegree(props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
                             let action = updateOutcomehorizontallinkDegreeAction(response_data);
                             props.dispatch(action);
+                            props.renderer.tiny_loader.endLoad();
                         }
                     );
                 }
@@ -508,9 +510,11 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
         let props=this.props;
         //Temporary confirmation; add better confirmation dialogue later
         if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
+            props.renderer.tiny_loader.startLoad();
             updateOutcomehorizontallinkDegree(data.outcome,data.parent_outcome,0,(response_data)=>{
                 let action = updateOutcomehorizontallinkDegreeAction(response_data);
                 props.dispatch(action);
+                props.renderer.tiny_loader.endLoad();
             });
            
         }
