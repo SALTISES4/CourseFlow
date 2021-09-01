@@ -2493,7 +2493,50 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         content = json.loads(response.content)
         self.assertEqual(len(content["data_package"]), 0)
-
+        
+        
+    def test_add_term_to_project(self):
+        user = login(self)
+        project = Project.objects.create(author=user)
+        #try adding a term
+        # Retrieve the comments
+        response = self.client.post(
+            reverse("course_flow:add-terminology"),
+            {
+                "projectPk": project.id,
+                "term": JSONRenderer().render("outcome").decode("utf-8"),
+                "translation": JSONRenderer().render("competency").decode("utf-8"),
+                "translation_plural": JSONRenderer().render("competencies").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(project.terminology_dict.all().count(),1)
+        
+        #try adding a term that already exists (should replace)
+        response = self.client.post(
+            reverse("course_flow:add-terminology"),
+            {
+                "projectPk": project.id,
+                "term": JSONRenderer().render("outcome").decode("utf-8"),
+                "translation": JSONRenderer().render("program outcome").decode("utf-8"),
+                "translation_plural": JSONRenderer().render("program outcomes").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(project.terminology_dict.all().count(),1)
+        self.assertEqual(project.terminology_dict.first().translation,"program outcome")
+        self.assertEqual(project.terminology_dict.first().translation_plural,"program outcomes")
+        
+        #delete a term
+        response = self.client.post(
+            reverse("course_flow:delete-self"),
+            {
+                "objectID": project.terminology_dict.first().id,
+                "objectType": JSONRenderer().render("customterm").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(project.terminology_dict.all().count(),0)
 
 class PermissionsTests(TestCase):
     def setUp(self):

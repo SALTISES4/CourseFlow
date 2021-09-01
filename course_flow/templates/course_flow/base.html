@@ -263,6 +263,7 @@
       get_user_list: "{% url 'course_flow:get-user-list' %}",
       set_permission: "{% url 'course_flow:set-permission' %}",
       get_comments_for_object: "{% url 'course_flow:get-comments-for-object' %}",
+      add_terminology: "{% url 'course_flow:add-terminology' %}",
       add_comment: "{% url 'course_flow:add-comment' %}",
       remove_comment: "{% url 'course_flow:remove-comment' %}",
       get_parent_workflow_info: "{% url 'course_flow:get-parent-workflow-info' %}",
@@ -272,6 +273,7 @@
     };
 
     workflow_update_path = "{% url 'course_flow:workflow-update' pk='0'%}";
+    project_update_path = "{% url 'course_flow:project-update' pk='0'%}";
 
     //reload if we got here using forward or back button
     if (

@@ -184,7 +184,7 @@ class NodeView extends ComponentJSON{
                 
                 if(drag_item.hasClass("outcome")){
                     drag_helper.addClass("valid-drop");
-                    drop_item.addClass("new-node-drop-over");
+                    drop_item.addClass("outcome-drop-over");
                     return;
                 }else{
                     return;
@@ -194,13 +194,13 @@ class NodeView extends ComponentJSON{
                 var drag_item = ui.draggable;
                 var drag_helper = ui.helper;
                 var drop_item = $(e.target);
-                if(drag_item.hasClass("new-node")){
+                if(drag_item.hasClass("outcome")){
                     drag_helper.removeClass("valid-drop");
-                    drop_item.removeClass("new-node-drop-over");
+                    drop_item.removeClass("outcome-drop-over");
                 }
             },
             drop:(e,ui)=>{
-                $(".new-node-drop-over").removeClass("new-node-drop-over");
+                $(".outcome-drop-over").removeClass("outcome-drop-over");
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 if(drag_item.hasClass("outcome")){

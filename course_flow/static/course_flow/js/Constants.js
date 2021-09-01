@@ -112,6 +112,34 @@ export const through_parent_dictionary = {
     outcome:"outcomeoutcome",
     outcome_base:"outcomeworkflow"
 }
+//get all the possible custom names. This is super clunky, should probably be switched to ngettext
+export function custom_text_base(){
+    return {
+        "program outcome":{
+            "singular_key":"program outcome",
+            "singular":gettext("program outcome"),
+            "plural_key":"program outcomes",
+            "plural":gettext("program outcomes"),
+        },
+        "course outcome":{
+            "singular_key":"course outcome",
+            "singular":gettext("course outcome"),
+            "plural_key":"course outcomes",
+            "plural":gettext("course outcomes"),
+        },
+        "activity outcome":{
+            "singular_key":"activity outcome",
+            "singular":gettext("activity outcome"),
+            "plural_key":"activity outcomes",
+            "plural":gettext("activity outcomes"),
+        },
+    }
+}
+export const parent_workflow_type = {
+    program:"",
+    course:"program",
+    activity:"course"
+}
 
 
 //Get translate from an svg transform
@@ -167,6 +195,14 @@ export function getIntersection(list1,list2){
 //take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
 export function filterThenSortByID(object_list,id_list){
     return object_list.filter(obj=>id_list.includes(obj.id)).sort((a,b)=> id_list.indexOf(a.id)-id_list.indexOf(b.id));
+}
+
+//capitalize first letter of each word in a string
+export function capWords(str){
+    return str.split(" ").map(entry=>{
+        if(entry.length==0)return entry;
+        return entry[0].toUpperCase()+entry.substr(1)
+    }).join(" ");
 }
 
 

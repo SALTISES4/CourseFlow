@@ -1136,6 +1136,17 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     filter: brightness(0) saturate(100%) invert(38%) sepia(98%) saturate(461%) hue-rotate(164deg) brightness(87%) contrast(100%);
 }
 
+.nomenclature-row{
+    position:relative;
+    width:fit-content;
+    padding:8px;
+    padding-right:32px;
+}
+
+.nomenclature-row > *{
+    display:inline-block;
+}
+
 .workflow-canvas{
     position:absolute;
     left:0px;
@@ -1314,6 +1325,10 @@ circle.mouseover{
 
 .new-node-drop-over{
     border-bottom:2px solid #1976bc;
+}
+
+.outcome-drop-over{
+    border:2px solid #1976bc;
 }
 
 .new-strategy-drop-over{

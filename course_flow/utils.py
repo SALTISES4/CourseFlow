@@ -89,7 +89,11 @@ def get_unique_outcomenodes(node):
         | Q(parent_outcomes__parent_outcomes__node=node)
     )
     return node.outcomenode_set.exclude(outcome__in=exclude_outcomes).order_by(
-        "rank"
+        "outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
+        "outcome__parent_outcome_links__parent__outcomeworkflow__rank",
+        "outcome__outcomeworkflow__rank",
+        "outcome__parent_outcome_links__parent__parent_outcome_links__rank",
+        "outcome__parent_outcome_links__rank"
     )
 
 
@@ -102,7 +106,13 @@ def get_unique_outcomehorizontallinks(outcome):
     )
     return outcome.outcome_horizontal_links.exclude(
         parent_outcome__in=exclude_outcomes
-    ).order_by("rank")
+    ).order_by(
+        "parent_outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
+        "parent_outcome__parent_outcome_links__parent__outcomeworkflow__rank",
+        "parent_outcome__outcomeworkflow__rank",
+        "parent_outcome__parent_outcome_links__parent__parent_outcome_links__rank",
+        "parent_outcome__parent_outcome_links__rank"
+    )
 
 
 def benchmark(identifier, last_time):

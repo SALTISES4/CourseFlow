@@ -37,7 +37,7 @@ class AlignmentView extends ComponentJSON{
             view_buttons="No outcomes have been added yet. Use the Edit Outcomes menu to get started";
         }else{
             outcomes_block=(
-                <AlignmentOutcomesBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
+                <AlignmentOutcomesBlock workflow_type={data.type} renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
             );
 //            terms_block=(
 //                <AlignmentTermsBlock renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
@@ -80,9 +80,10 @@ export default connect(
 class AlignmentOutcomesBlock extends React.Component{
     render(){
         let data = this.props.data;
+        let titlestr=Constants.capWords(gettext(this.props.workflow_type+" outcome"));
         return(
             <div class="alignment-block">
-                <h3>Outcome:</h3>
+                <h3>{titlestr}:</h3>
                 <SimpleOutcomeView renderer={this.props.renderer} objectID={data.id}/>
             </div>
         );
@@ -305,6 +306,8 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
                             <SimpleOutcomeView objectID={parent_outcome.id}/>
                         </div>
                     );
+                    console.log("Printing out the parent outcomes");
+                    console.log(parent_outcomes);
 
                     if(parent_outcomes.length==0)return null;
 
@@ -338,7 +341,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
                 )
             });
         
-            let default_text = week.week_type_display+" "+(+1);
+            let default_text = week.week_type_display+" "+(week_rank+1);
         
             return(
                 <div class="week-workflow">
@@ -414,7 +417,7 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
     
     let nodeweeks = state.nodeweek.filter(nodeweek=>node_ids.includes(nodeweek.node));
     let week_ids = nodeweeks.map(nodeweek=>nodeweek.week);
-    let weekworkflows = state.weekworkflow.filter(weekworkflow=>week_ids.includes(weekworkflow.week)).sort((a,b)=>state.workflow.weekworkflow_set.indexOf(b.id)-state.workflow.weekworkflow_set.indexOf(a.id)).map(weekworkflow=>{
+    let weekworkflows = state.weekworkflow.filter(weekworkflow=>week_ids.includes(weekworkflow.week)).sort((a,b)=>state.workflow.weekworkflow_set.indexOf(a.id)-state.workflow.weekworkflow_set.indexOf(b.id)).map(weekworkflow=>{
         let week;
         for(let i=0;i<state.week.length;i++){
             if(weekworkflow.week==state.week[i].id)week=state.week[i];

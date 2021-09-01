@@ -77,11 +77,11 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         
         
         let view_buttons = [
-            {type:"workflowview",name:"Workflow View",disabled:[]},
-            {type:"outcomeedit",name:"Edit Outcomes",disabled:[]},
-            {type:"outcometable",name:"Outcomes Table",disabled:[]},
-            {type:"alignmentanalysis",name:"Outcome Analytics",disabled:["activity"]},
-            {type:"horizontaloutcometable",name:"Alignment Table",disabled:["activity"]}
+            {type:"workflowview",name:gettext("Workflow View"),disabled:[]},
+            {type:"outcomeedit",name:Constants.capWords(gettext("Edit")+" "+gettext(data.type+" outcomes")),disabled:[]},
+            {type:"outcometable",name:Constants.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
+            {type:"alignmentanalysis",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
+            {type:"horizontaloutcometable",name:gettext("Alignment Table"),disabled:["activity"]}
         ].map(
             (item)=>{
                 let view_class = "hover-shade";
@@ -443,7 +443,7 @@ export const WorkflowView_Outcome = connect(
     null
 )(WorkflowView_Outcome_Unconnected)
 
-class ParentWorkflowIndicator extends React.Component{
+class ParentWorkflowIndicatorUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -453,23 +453,35 @@ class ParentWorkflowIndicator extends React.Component{
     render(){
         console.log(this.state);
         console.log("Parent workflow indicator");
-        if(this.state.has_loaded && this.state.parent_workflows.length>0){
+        if(this.state.has_loaded){
             let parent_workflows = this.state.parent_workflows.map(parent_workflow=>
-                <div class="workflow-for-menu hover-shade" >
-                    <div class="workflow-top-row">
-                        <a href={workflow_update_path.replace("0",parent_workflow.id)} class="workflow-title">
-                            {parent_workflow.title}
-                        </a>
-                        {this.getTypeIndicator(parent_workflow)}
-                    </div>                
-                </div>
-            )
-            return(
-                <div class="parent-workflow-indicators">
-                    <h4>Used in:</h4>
-                    {parent_workflows}
-                </div>
-            )
+                <a href={workflow_update_path.replace("0",parent_workflow.id)} class="panel-favourite">
+                    {parent_workflow.title || "Unnamed workflow"}
+                </a>
+            );
+            let child_workflows = this.props.child_workflows.map(child_workflow=>
+                <a href={workflow_update_path.replace("0",child_workflow.id)} class="panel-favourite">
+                    {child_workflow.title || "Unnamed workflow"}
+                </a>
+            );
+            console.log(parent_workflows);
+            console.log(child_workflows);
+            let return_val=[
+                <hr/>,
+                <a class="panel-item">{"Quick Navigation"}</a>
+            ]
+            if(parent_workflows.length>0)return_val.push(
+                <a class="panel-item">{"Used in:"}</a>,
+                ...parent_workflows
+            );
+            if(child_workflows.length>0)return_val.push(
+                <a class="panel-item">{"Workflows Used:"}</a>,
+                ...child_workflows
+            );
+            return reactDom.createPortal(
+                return_val,
+                $(".left-panel")[0]
+            );
             
         }
         
@@ -478,9 +490,9 @@ class ParentWorkflowIndicator extends React.Component{
     }
     
     componentDidMount(){
-        getParentWorkflowInfo(this.props.workflow_id,(response_data=>
-            this.setState({parent_workflows:response_data.data_package,has_loaded:true})
-        ));
+        getParentWorkflowInfo(this.props.workflow_id,response_data=>
+            this.setState({parent_workflows:response_data.parent_workflows,has_loaded:true})
+        );
     }
 
 
@@ -492,8 +504,19 @@ class ParentWorkflowIndicator extends React.Component{
             <div class={"workflow-type-indicator "+type}>{type_text}</div>
         );
     }
-    
 }
+const mapParentWorkflowIndicatorStateToProps = state => ({
+    child_workflows:state.node.map(node => ({
+        id:node.linked_workflow,
+        title:node.linked_workflow_title,
+        description:node.linked_workflow_description
+    })).filter(wf=>wf.id)
+});
+export const ParentWorkflowIndicator = connect(
+    mapParentWorkflowIndicatorStateToProps,
+    null
+)(ParentWorkflowIndicatorUnconnected)
+
 
 
 

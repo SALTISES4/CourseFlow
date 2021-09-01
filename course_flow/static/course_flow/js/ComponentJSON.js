@@ -753,7 +753,7 @@ export class TitleText extends React.Component{
             text=this.props.defaultText;
         }
         return (
-            <div class="title-text" dangerouslySetInnerHTML={{ __html: text }}></div>
+            <div class="title-text" title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
         )
     }
 
@@ -765,7 +765,7 @@ export class OutcomeTitle extends React.Component{
         let data = this.props.data
         let text = data.title;
         if(data.title==null || data.title==""){
-            text="Untitled outcome";
+            text="Untitled";
         }
         
         let hovertext = this.props.rank.map((rank,i)=>

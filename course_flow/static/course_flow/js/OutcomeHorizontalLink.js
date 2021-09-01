@@ -187,7 +187,7 @@ class TableChildWorkflowHeaderUnconnected extends ComponentJSON{
                     <div class="horizontal-table-node" title={node_title}>{node_title}</div>
                     <div class="table-cell disabled">
                         <div class="child-outcome">
-                            {"<No outcomes for node>"}
+                            {gettext("No outcomes or linked workflow")}
                         </div>
                     </div>
                 </div>
@@ -219,7 +219,7 @@ class TableChildOutcomeHeaderUnconnected extends ComponentJSON{
         if(this.props.index>0)class_name+=" not-first-child-outcome";
         return(
             <div class={class_name}>
-                <div class="child-outcome">
+                <div class="child-outcome" title={data.title}>
                     {data.title}
                 </div>
             </div>

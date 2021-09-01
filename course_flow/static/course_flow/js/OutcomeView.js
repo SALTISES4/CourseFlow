@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, TitleText, OutcomeTitle} from "./ComponentJSON.js";
+import {ComponentJSON, OutcomeTitle} from "./ComponentJSON.js";
 import OutcomeOutcomeView from "./OutcomeOutcomeView.js";
 import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode.js";
@@ -132,7 +132,7 @@ class OutcomeView extends ComponentJSON{
                 
                 if(drag_item.hasClass("outcome")){
                     drag_helper.addClass("valid-drop");
-                    drop_item.addClass("new-node-drop-over");
+                    drop_item.addClass("outcome-drop-over");
                     return;
                 }else{
                     return;
@@ -144,11 +144,11 @@ class OutcomeView extends ComponentJSON{
                 var drop_item = $(e.target);
                 if(drag_item.hasClass("outcome")){
                     drag_helper.removeClass("valid-drop");
-                    drop_item.removeClass("new-node-drop-over");
+                    drop_item.removeClass("outcome-drop-over");
                 }
             },
             drop:(e,ui)=>{
-                $(".new-node-drop-over").removeClass("new-node-drop-over");
+                $(".outcome-drop-over").removeClass("outcome-drop-over");
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 if(drag_item.hasClass("outcome")){

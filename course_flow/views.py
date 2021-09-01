@@ -42,6 +42,7 @@ from .models import (  # OutcomeProject,
     ColumnWorkflow,
     Comment,
     Course,
+    CustomTerm,
     Discipline,
     Favourite,
     Node,
@@ -1110,7 +1111,7 @@ def get_workflow_context_data(workflow, context, user):
         for choice in Week._meta.get_field("strategy_classification").choices
     ]
     if not workflow.is_strategy:
-        parent_project_pk = project.pk
+        parent_project = ProjectSerializerShallow(project).data
 
     data_flat = {
         "workflow": SerializerClass(workflow).data,
@@ -1175,7 +1176,7 @@ def get_workflow_context_data(workflow, context, user):
         "strategy_classification_choices"
     ] = strategy_classification_choices
     if not workflow.is_strategy:
-        context["parent_project_pk"] = parent_project_pk
+        data_package["project"] = parent_project
     context["is_strategy"] = (
         JSONRenderer().render(workflow.is_strategy).decode("utf-8")
     )
@@ -1505,11 +1506,9 @@ def get_parent_workflow_info(request: HttpRequest) -> HttpResponse:
     try:
         parent_workflows = [node.get_workflow() for node in Node.objects.filter(linked_workflow__id=workflow_id)]
         data_package = InfoBoxSerializer(parent_workflows, many=True).data
-        print("returning")
-        print(data_package)
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
+    return JsonResponse({"action": "posted", "parent_workflows":data_package})
 
 
 @user_can_edit(False)
@@ -2674,20 +2673,27 @@ def cleanup_workflow_post_duplication(workflow, project):
         node.save()
 
 
-#        for outcomenode in node.outcomenode_set.all():
-#            new_outcome = outcomes_set.filter(
-#                parent_outcome=outcomenode.outcome
-#            ).last()
-#            if new_outcome is None:
-#                outcomenode.delete()
-#            else:
-#                outcomenode.outcome = new_outcome
-#                outcomenode.save()
-
-
 """
 Creation methods
 """
+
+@user_can_edit("projectPk")
+def add_terminology(request: HttpRequest) -> HttpResponse:
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    term = json.loads(request.POST.get("term"))
+    translation = json.loads(request.POST.get("translation"))
+    translation_plural = json.loads(request.POST.get("translation_plural"))
+    try:
+        CustomTerm.objects.filter(
+            term=term,project=project,
+        ).delete()
+        project.terminology_dict.create(
+            term=term,translation=translation,translation_plural=translation_plural
+        )
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted","new_dict":ProjectSerializerShallow(project).data["terminology_dict"]})
+    
 
 
 @user_can_edit(False)
@@ -3292,17 +3298,17 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     parent_type = json.loads(request.POST.get("parentType"))
     new_position = json.loads(request.POST.get("newPosition"))
     through_type = json.loads(request.POST.get("throughType"))
-
     try:
-        model = get_model_from_str(object_type).objects.get(id=object_id)
-        parent = get_model_from_str(parent_type).objects.get(id=parent_id)
-        if object_type == parent_type:
-            creation_kwargs = {"child": model, "parent": parent}
-        else:
-            creation_kwargs = {object_type: model, parent_type: parent}
-        get_model_from_str(through_type).objects.create(
-            rank=new_position, **creation_kwargs
-        )
+        with transaction.atomic():
+            model = get_model_from_str(object_type).objects.get(id=object_id)
+            parent = get_model_from_str(parent_type).objects.get(id=parent_id)
+            if object_type == parent_type:
+                creation_kwargs = {"child": model, "parent": parent}
+            else:
+                creation_kwargs = {object_type: model, parent_type: parent}
+            get_model_from_str(through_type).objects.create(
+                rank=new_position, **creation_kwargs
+            )
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -3316,14 +3322,20 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 def change_column(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     new_column_id = json.loads(request.POST.get("columnPk"))
+    print(node_id)
+    print(new_column_id)
     try:
-        node = Node.objects.get(id=node_id)
-        new_column = Column.objects.get(id=new_column_id)
-        node.column = new_column
-        node.save()
+        with transaction.atomic():
+            print(Node.objects.get(id=node_id).column.id)
+            node = Node.objects.get(id=node_id)
+            new_column = Column.objects.get(id=new_column_id)
+            node.column = new_column
+            node.save()
+            print(Node.objects.get(id=node_id).column.id)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
+    print(Node.objects.get(id=node_id).column.id)
     return JsonResponse({"action": "posted"})
 
 
@@ -3560,7 +3572,7 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
 Delete methods
 """
 
-# @user_can_edit(False)
+@user_can_edit(False)
 def remove_comment(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -3587,7 +3599,6 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             model.delete()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
-
     return JsonResponse({"action": "posted"})
 
 

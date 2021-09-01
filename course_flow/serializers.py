@@ -848,15 +848,22 @@ class ProjectSerializerShallow(
             "workflowproject_set",
             "disciplines",
             "type",
+            "terminology_dict",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     workflowproject_set = serializers.SerializerMethodField()
+    terminology_dict = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
+    
+    def get_terminology_dict(self, instance):
+        return [
+            {"id":term.id,"term":term.term,"translation":term.translation,"translation_plural":term.translation_plural} for term in instance.terminology_dict.all()
+        ]
 
     def get_workflowproject_set(self, instance):
         links = instance.workflowproject_set.all().order_by("rank")

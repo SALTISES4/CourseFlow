@@ -2,9 +2,9 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu} from "./PostFunctions";
+import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology} from "./PostFunctions";
 import {gridMenuItemAdded} from "./Reducers";
-import {Loader} from "./Constants";
+import {custom_text_base,Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
 
 export class MessageBox extends React.Component{
@@ -555,11 +555,14 @@ export const ProjectMenu = connect(
 export class ProjectEditMenu extends React.Component{
     constructor(props){
         super(props);
-        this.state={...props.data};
+        this.state={...props.data,selected_term:"none"};
     }
     
     render(){
         var data = this.state;
+        
+        console.log("state");
+        console.log(this.state);
         
         let all_disciplines;
         let disciplines;
@@ -572,44 +575,81 @@ export class ProjectEditMenu extends React.Component{
             );
         }
         
+        let custom_text = custom_text_base();
+        console.log(data.terminology_dict);
+        
+        let dict_options = Object.keys(custom_text).filter(key=>!data.terminology_dict[key]).map(key=>
+            <option value={key}>{custom_text[key].singular}</option>                                       
+        );
+        let selected_term;
+        console.log(this.state.selected_term);
+        console.log(custom_text);
+        if(this.state.selected_term)selected_term=custom_text[this.state.selected_term];
+        console.log("currently selected:");
+        console.log(selected_term);
+        console.log(data.terminology_dict);
+        let dict_added = data.terminology_dict.map(item=>
+            <div class="nomenclature-row">
+                <div>{(custom_text[item.term] && custom_text[item.term].singular)+": "+item.translation+"/"+item.translation_plural}</div>
+                <div class="window-close-button" onClick={this.deleteTerm.bind(this,item.id)}>
+                    <img src={iconpath+"close.svg"}/>
+                </div>
+            </div>
+        );
+        
         let published_enabled = (data.title && data.disciplines.length>0);
         if(data.published && !published_enabled)this.setState({published:false})
         let disabled_publish_text;
-        if(!published_enabled)disabled_publish_text = "A title and at least one discipline is required for publishing.";
+        if(!published_enabled)disabled_publish_text = gettext("A title and at least one discipline is required for publishing.");
         return(
             <div class="message-wrap">
-                <h3>{"Edit Project:"}</h3>
+                <h3>{gettext("Edit Project")+":"}</h3>
                 <div>
-                    <h4>Title:</h4>
+                    <h4>{gettext("Title")+":"}</h4>
                     <input autocomplete="off" id="project-title-input" value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
                 </div>
                 <div>
-                    <h4>Description:</h4>
+                    <h4>{gettext("Description")+":"}</h4>
                     <input autocomplete="off" id="project-description-input" value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
                 </div>
                 <div>
-                    <h4>Disciplines:</h4>
+                    <h4>{gettext("Disciplines")+":"}</h4>
                     <div class="multi-select">
-                        <h5>This Project:</h5>
+                        <h5>{gettext("This Project")+":"}</h5>
                         <select id="disciplines_chosen" multiple>
                             {disciplines}
                         </select>
-                        <button id="remove-discipline" onClick={this.removeDiscipline.bind(this)}> Remove </button>
+                        <button id="remove-discipline" onClick={this.removeDiscipline.bind(this)}> {gettext("Remove")} </button>
                     </div>
                     <div class="multi-select">
-                        <h5>All:</h5>
+                        <h5>{gettext("All")+":"}</h5>
                         <select id="disciplines_all" multiple>
                             {all_disciplines}
                         </select>
-                        <button id="add-discipline" onClick={this.addDiscipline.bind(this)}> Add </button>
+                        <button id="add-discipline" onClick={this.addDiscipline.bind(this)}> {gettext("Add")} </button>
                     </div>
                     
                 </div>
                 <div>
-                    <h4>Published:</h4>
+                    <h4>{gettext("Published")+":"}</h4>
                     <div>{disabled_publish_text}</div>
                     <input id="project-publish-input" disabled={!published_enabled} type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
-                    <label for="published">Is Published (visible to all users)</label>
+                    <label for="published">{gettext("Is Published (visible to all users)")}</label>
+                </div>
+                <div>
+                    <h4>{gettext("Custom Nomenclature")+":"}</h4>
+                    {dict_added}
+                    <div class="nomenclature-row">
+                        <select id="nomenclature-select" value={this.state.selected_term} onChange={this.inputChanged.bind(this,"selected_term")}>
+                            <option value="none">{gettext("Select a term")}</option>
+                            {dict_options}
+                        </select>
+                        <input placeholder={"custom value"} type="text" id="term-singular" maxlength="50" value={data.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_term==null || selected_term.singular==null)}/>
+                        <input  placeholder={"pluralization"} type="text" id="term-plural" maxlength="50" value={data.termplural} onChange={this.inputChanged.bind(this,"termplural")} disabled={(selected_term==null || selected_term.plural==null)}/>
+                        <button onClick={this.addTerm.bind(this)} disabled={this.addTermDisabled(selected_term)}>
+                            {gettext("Add")}
+                        </button>
+                    </div>
                 </div>
                 <div class="action-bar">
                     {this.getActions()}
@@ -618,7 +658,35 @@ export class ProjectEditMenu extends React.Component{
         );
     }
     
+    deleteTerm(id){
+        let new_state_dict=this.state.terminology_dict.slice()
+        for(let i=0;i<new_state_dict.length;i++){
+            if(new_state_dict[i].id==id){
+                deleteSelf(id,"customterm");
+                new_state_dict.splice(i,1);
+                this.setState({terminology_dict:new_state_dict});
+                break;
+            }
+        }
+    }
     
+    addTerm(){
+        let term = $("#nomenclature-select")[0].value;
+        let translation_singular = $("#term-singular")[0].value;
+        let translation_plural = $("#term-plural")[0].value
+        addTerminology(this.state.id,term,translation_singular,translation_plural,response_data=>{
+            console.log("response_data");
+            console.log(response_data);
+            this.setState({terminology_dict:response_data.new_dict,selected_term:"none",termsingular:"",termplural:""})
+        });
+    }
+    
+    addTermDisabled(selected_term){
+        if(!selected_term)return true;
+        if(!this.state.termsingular)return true;
+        if(selected_term.plural&&!this.state.termplural)return true;
+        return false;
+    }
 
     addDiscipline(evt){
         let selected = $("#disciplines_all").val()
@@ -644,8 +712,12 @@ export class ProjectEditMenu extends React.Component{
     
     
     inputChanged(field,evt){
+        console.log(evt);
+        console.log(field);
+        console.log(evt.target.value);
         var new_state={}
         new_state[field]=evt.target.value;
+        if(field=="selected_term"){new_state["termsingular"]="";new_state["termplural"]="";}
         this.setState(new_state);
     }
 

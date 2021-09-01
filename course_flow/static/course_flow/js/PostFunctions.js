@@ -303,6 +303,7 @@ export function insertedAt(objectID,objectType,parentID,parentType,newPosition,t
                 newPosition:JSON.stringify(newPosition),
                 throughType:JSON.stringify(throughType)
             }).done(function(data){
+                $(document).triggerHandler(throughType+"-dropped-success");
                 if(data.action == "posted") callBackFunction(data);
                 else fail_function();
             });
@@ -315,8 +316,8 @@ export function insertedAt(objectID,objectType,parentID,parentType,newPosition,t
 //Called when a node should have its column changed
 export function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
     
-    $(document).off("nodeweek-dropped.columnchange");
-    $(document).on("nodeweek-dropped.columnchange",()=>{
+    $(document).off("nodeweek-dropped-success.columnchange");
+    $(document).on("nodeweek-dropped-success.columnchange",()=>{
         try{
     
             $.post(post_paths.column_changed, {
@@ -508,6 +509,22 @@ export function addComment(objectID,objectType,text,callBackFunction=()=>console
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType),
             text:JSON.stringify(text),
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//add a comment to an object
+export function addTerminology(projectPk,term,translation,translation_plural,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.add_terminology,{
+            projectPk:JSON.stringify(projectPk),
+            term:JSON.stringify(term),
+            translation:JSON.stringify(translation),
+            translation_plural:JSON.stringify(translation_plural),
         }).done(function(data){
             callBackFunction(data);
         });
