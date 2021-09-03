@@ -98,7 +98,7 @@ button:hover{
     color:white;
     overflow:hidden;
     color:white;
-    
+
 }
 
 .floatbardiv{
@@ -120,7 +120,7 @@ button:hover{
     width:24px;
 }
 
-.floatbar div{
+.floatbar > div{
     display:inline-block;
     vertical-align: middle;
     padding-left:6px;
@@ -364,7 +364,7 @@ button:hover{
 }
 
 .home-tabs{
-    
+
 }
 
 .home-tabs .ui-tabs-nav{
@@ -439,7 +439,7 @@ button:hover{
     padding:10px;
     border-radius:5px;
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
-    
+
 }
 
 .create-dropdown a{
@@ -486,7 +486,7 @@ button:hover{
 
 .workflow-publication>*{
     display:inline-block;
-    vertical-align: middle;   
+    vertical-align: middle;
 }
 
 .workflow-publication>img{
@@ -598,7 +598,7 @@ button:hover{
 }
 
 .search-checklist-block{
-    
+
 }
 
 .page-button{

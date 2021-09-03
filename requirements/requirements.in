@@ -7,7 +7,7 @@ djangorestframework>=3.10.3
 zipp==0.6.0
 django-compressor>=2.3
 django-model-utils
-django-toolbar
+django-debug-toolbar
 SALTISE_user_feedback
 
 black
@@ -21,6 +21,6 @@ selenium
 tox
 twine
 
--e file:./#egg=course_flow
+-e file:./#egg=saltise_course_flow
 
 -e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider

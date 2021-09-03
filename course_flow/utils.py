@@ -3,7 +3,7 @@ import time
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 
-import course_flow.models as models
+from course_flow import models
 
 owned_throughmodels = [
     "node",
