@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, TitleText} from "./ComponentJSON";
+import {ComponentJSON, NodeTitle, TitleText} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {getOutcomeByID,getOutcomeOutcomeByID} from "./FindState";
 import OutcomeView from "./OutcomeView";
@@ -101,8 +101,6 @@ class AlignmentTermsBlockUnconnected extends React.Component{
                 let nodeweek_ids = Constants.getIntersection(week.nodeweek_set,this.props.nodeweek_ids);
                 let nodeweeks = Constants.filterThenSortByID(this.props.nodeweeks,nodeweek_ids).map(nodeweek=>{
                     let node_react = this.props.nodes.filter(node=>node.id==nodeweek.node).map(node=>{
-                        let titleText = node.title;
-                        if(node.represents_workflow)titleText = node.linked_workflow_title;
                         let outcomenodes = Constants.getIntersection(node.outcomenode_unique_set,this.props.outcomenode_ids).map(outcomenode=>
                             <OutcomeNodeView objectID={outcomenode}/>
                         );
@@ -110,9 +108,7 @@ class AlignmentTermsBlockUnconnected extends React.Component{
                         return (
                             <div style={{backgroundColor:this.props.renderer.column_colours[node.column]}} class={"node column-"+node.column}>
                                 <div class="node-top-row">
-                                    <div class="node-title">
-                                        <TitleText text={titleText} defaultText="Unnamed"/>
-                                    </div>
+                                    <NodeTitle data={data}/>
                                     <div class="outcomenode-block">
                                         {outcomenodes}
                                     </div>
@@ -195,15 +191,11 @@ class AlignmentHorizontalBlockUnconnected extends React.Component{
             for(let i=0;i<obj.child_outcomes.length;i++){
                 let node_title_text;
                 if(!obj.nodes[i] || !obj.outcomenodes[i])continue;
-                if(obj.nodes[i].represents_workflow){
-                    node_title_text=obj.nodes[i].linked_workflow_title;
-                }
-                else node_title_text = obj.nodes[i].title;
                 
                 child_outcomes.push(
                     <div class="alignment-row">
                         {Constants.getCompletionImg(obj.outcomenodes[i].degree,this.props.outcomes_type)}
-                        <TitleText text={node_title_text} default_text="Unnamed"/>
+                        <NodeTitle data={obj.nodes[i]}/>
                         <TitleText text={obj.child_outcomes[i].title} default_text="Unnamed"/>
                     </div>
                 )
@@ -292,11 +284,6 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
             let nodeweeks = weekworkflow.nodes.map((obj,k)=>{
                 let node = obj.node;
                 let nodeweek = weekworkflow.nodeweeks[k];
-                let node_title_text;
-                if(node.represents_workflow){
-                    node_title_text=node.linked_workflow_title;
-                }
-                else node_title_text = node.title;
 
                 let child_outcomes = obj.child_outcomes.map((child_outcome,i)=>{
 
@@ -328,9 +315,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
                     <div class="node-week">
                         <div style={{backgroundColor:this.props.renderer.column_colours[node.column]}} class={"node column-"+node.column}>
                             <div class="node-top-row">
-                                <div class="node-title">
-                                    <TitleText text={node_title_text} defaultText="Unnamed"/>
-                                </div>
+                                <NodeTitle data={node}/>
                             </div>
                             <div class="outcome-block">
                                 {child_outcomes}

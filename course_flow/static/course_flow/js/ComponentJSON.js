@@ -300,7 +300,7 @@ export class ComponentJSON extends React.Component{
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
                     <h3>{"Edit "+type+":"}</h3>
-                    {type=="outcome" && data.depth==0 &&
+                    {((type=="outcome" && data.depth==0)||(type=="workflow" && data.type=="course")) &&
                         <div>
                             <h4>Code (Optional):</h4>
                             <input autocomplete="off" id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
@@ -362,7 +362,7 @@ export class ComponentJSON extends React.Component{
                                 Change
                             </button>
                             <input type="checkbox" name="respresents_workflow" checked={data.represents_workflow} onChange={this.checkboxChanged.bind(this,"represents_workflow")}/>
-                            <label for="repesents_workflow">Display data</label>
+                            <label for="repesents_workflow">{gettext("Display linked workflow data")}</label>
                         </div>
                     }
                     {type=="node" && data.node_type!=2 &&
@@ -759,13 +759,55 @@ export class TitleText extends React.Component{
 
 }
 
+//Title text for a workflow
+export class WorkflowTitle extends React.Component{
+    
+    render(){
+        let data = this.props.data;
+        let text = data.title;
+        
+        if(data.code)text = data.code+" - "+text;
+        
+        if(text==null || text==""){
+            text=gettext("Untitled");
+        }
+        
+        
+        return (
+            <div class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
+        )
+    }
+}
+
+//Title text for a workflow
+export class NodeTitle extends React.Component{
+    
+    render(){
+        let data = this.props.data;
+        let text;
+        if(data.represents_workflow){
+            text = data.linked_workflow_title;
+            if(data.linked_workflow_code)text = data.linked_workflow_code+" - "+text;
+        }
+        else text = data.title;
+            
+        if(text==null || text==""){
+            text=gettext("Untitled");
+        }
+        
+        return (
+            <div class="node-title" title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
+        )
+    }
+}
+
 //Title for an outcome
 export class OutcomeTitle extends React.Component{
     render(){
-        let data = this.props.data
+        let data = this.props.data;
         let text = data.title;
         if(data.title==null || data.title==""){
-            text="Untitled";
+            text=gettext("Untitled");
         }
         
         let hovertext = this.props.rank.map((rank,i)=>

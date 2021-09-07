@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, TitleText} from "./ComponentJSON.js";
+import {ComponentJSON, WorkflowTitle} from "./ComponentJSON.js";
 import ColumnWorkflowView from "./ColumnWorkflowView.js";
 import WeekWorkflowView from "./WeekWorkflowView.js";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView.js";
@@ -103,7 +103,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                 </div>
                 <div class = "workflow-container">
                     {reactDom.createPortal(
-                        <div>{data.title||"Unnamed Workflow"}</div>,
+                        <WorkflowTitle class_name="title-text" data={data}/>,
                         $("#workflowtitle")[0]
                     )}
                     {this.addEditable(data)}

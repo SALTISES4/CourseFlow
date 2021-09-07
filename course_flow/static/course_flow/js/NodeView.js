@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, NodeLinkSVG, AutoLinkView, NodePorts, TitleText} from "./ComponentJSON.js";
+import {ComponentJSON, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON.js";
 import NodeLinkView from "./NodeLinkView.js";
 import OutcomeNodeView from "./OutcomeNode.js";
 import {getNodeByID} from "./FindState.js";
@@ -81,8 +81,9 @@ class NodeView extends ComponentJSON{
         );
         let dropText = "";
         if(data.description&&data.description.replace(/(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,'')!='')dropText="...";
-        let titleText = data.title;
-        if(data.represents_workflow)titleText = data.linked_workflow_title;
+        let titleText = (
+            <NodeTitle data={data}/>
+        );
         let descriptionText = data.description;
         if(data.represents_workflow)descriptionText = data.linked_workflow_description;
         
@@ -103,9 +104,7 @@ class NodeView extends ComponentJSON{
                     <div class = "node-icon">
                         {lefticon}
                     </div>
-                    <div class = "node-title">
-                        <TitleText text={titleText} defaultText="New Node"/>
-                    </div>
+                    {titleText}
                     <div class = "node-icon">
                         {righticon}
                     </div>
@@ -256,9 +255,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        let titleText = data.title;
         let selection_manager = this.props.renderer.selection_manager;
-        if(data.represents_workflow)titleText = data.linked_workflow_title;
         let descriptionText = data.description;
         if(data.represents_workflow)descriptionText = data.linked_workflow_description;
         
@@ -276,9 +273,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
                 onClick={(evt)=>selection_manager.changeSelection(evt,this)}
             >
                 <div class = "node-top-row">
-                    <div class = "node-title">
-                        <TitleText text={titleText} defaultText="New Node"/>
-                    </div>
+                    <NodeTitle data={data}/>
                 </div>
                 {this.addEditable(data,true)}
             </div>

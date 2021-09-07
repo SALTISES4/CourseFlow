@@ -607,6 +607,7 @@ class NodeSerializerShallow(
     columnworkflow = serializers.SerializerMethodField()
     linked_workflow_title = serializers.SerializerMethodField()
     linked_workflow_description = serializers.SerializerMethodField()
+    linked_workflow_code = serializers.SerializerMethodField()
 
     node_type_display = serializers.CharField(source="get_node_type_display")
 
@@ -630,6 +631,7 @@ class NodeSerializerShallow(
             "linked_workflow",
             "linked_workflow_title",
             "linked_workflow_description",
+            "linked_workflow_code",
             "time_units",
             "time_required",
             "is_dropped",
@@ -655,6 +657,10 @@ class NodeSerializerShallow(
     def get_linked_workflow_description(self, instance):
         if instance.linked_workflow is not None:
             return instance.linked_workflow.description
+        
+    def get_linked_workflow_code(self, instance):
+        if instance.linked_workflow is not None:
+            return instance.linked_workflow.code
 
     def create(self, validated_data):
         return Node.objects.create(
@@ -1021,6 +1027,7 @@ class WorkflowSerializerShallow(
             "id",
             "title",
             "description",
+            "code",
             "author",
             "created_on",
             "last_modified",
@@ -1077,6 +1084,9 @@ class WorkflowSerializerShallow(
         instance.description = validated_data.get(
             "description", instance.description
         )
+        instance.code = validated_data.get(
+            "code", instance.code
+        )
         instance.outcomes_type = validated_data.get(
             "outcomes_type", instance.outcomes_type
         )
@@ -1100,6 +1110,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "id",
             "title",
             "description",
+            "code",
             "author",
             "author_id",
             "created_on",
@@ -1141,6 +1152,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "id",
             "title",
             "description",
+            "code",
             "author",
             "author_id",
             "created_on",
@@ -1182,6 +1194,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "id",
             "title",
             "description",
+            "code",
             "author",
             "author_id",
             "created_on",
@@ -1226,6 +1239,7 @@ class InfoBoxSerializer(
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    code = serializers.SerializerMethodField()
     type = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     is_owned = serializers.SerializerMethodField()
@@ -1249,6 +1263,12 @@ class InfoBoxSerializer(
             return True
         else:
             return False
+        
+    def get_code(self,instance):
+        if hasattr(instance, "code"):
+            return instance.code
+        else:
+            return None
 
     def get_type(self, instance):
         return instance.type

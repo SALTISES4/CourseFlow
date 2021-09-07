@@ -6,6 +6,7 @@ import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, ge
 import {gridMenuItemAdded} from "./Reducers";
 import {custom_text_base,Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
+import {WorkflowTitle} from "./ComponentJSON";
 
 export class MessageBox extends React.Component{
     render(){
@@ -159,9 +160,7 @@ export class WorkflowForMenu extends React.Component{
         return(
             <div class={css_class} onClick={this.clickAction.bind(this)}>
                 <div class="workflow-top-row">
-                    <div class="workflow-title">
-                        {data.title}
-                    </div>
+                    <WorkflowTitle class_name="workflow-title" data={data}/>
                     {this.getButtons()}
                     {this.getTypeIndicator()}
                 </div>

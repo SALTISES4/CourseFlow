@@ -114,6 +114,10 @@ button:hover{
     cursor:pointer;
 }
 
+.floatbardiv > *{
+    display:inline-block;
+}
+
 .floatbar img{
     display:inline-block;
     vertical-align: middle;

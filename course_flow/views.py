@@ -3322,20 +3322,15 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 def change_column(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     new_column_id = json.loads(request.POST.get("columnPk"))
-    print(node_id)
-    print(new_column_id)
     try:
         with transaction.atomic():
-            print(Node.objects.get(id=node_id).column.id)
             node = Node.objects.get(id=node_id)
             new_column = Column.objects.get(id=new_column_id)
             node.column = new_column
             node.save()
-            print(Node.objects.get(id=node_id).column.id)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    print(Node.objects.get(id=node_id).column.id)
     return JsonResponse({"action": "posted"})
 
 
