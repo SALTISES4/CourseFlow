@@ -134,7 +134,9 @@ def check_special_case_delete_permission(model_data, user):
 def get_model_from_request(model, request, **kwargs):
     if model:
         if model[-2:] == "Pk":
-            id = json.loads(request.POST.get(model))
+            request_data = request.POST.get(model)
+            if request_data is None: id = None
+            else: id = json.loads(request.POST.get(model))
             model = model[:-2]
     else:
         get_parent = kwargs.get("get_parent", False)
