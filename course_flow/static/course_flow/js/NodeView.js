@@ -84,8 +84,11 @@ class NodeView extends ComponentJSON{
         let titleText = (
             <NodeTitle data={data}/>
         );
-        let descriptionText = data.description;
-        if(data.represents_workflow)descriptionText = data.linked_workflow_description;
+        let descriptionText;
+        if(data.represents_workflow){
+            if(data.linked_workflow_data)descriptionText = data.linked_workflow_data.description;
+        }
+        else descriptionText = data.description;
         
         
         return (
@@ -217,7 +220,7 @@ class NodeView extends ComponentJSON{
     }
 
     mouseIn(evt){
-        if(evt.which==1)return;
+        if($(".workflow-canvas").hasClass("creating-node-link"))return;
         if(!read_only)$("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
         d3.selectAll(".node-ports").raise();
         var mycomponent = this;
@@ -256,8 +259,11 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
         let selection_manager = this.props.renderer.selection_manager;
-        let descriptionText = data.description;
-        if(data.represents_workflow)descriptionText = data.linked_workflow_description;
+        let descriptionText;
+        if(data.represents_workflow){
+            if(data.linked_workflow_data)descriptionText = data.linked_workflow_data.description;
+        }
+        else descriptionText = data.description;
         
         return (
             <div 

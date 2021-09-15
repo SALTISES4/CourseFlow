@@ -233,7 +233,7 @@ class Outcome(models.Model):
         blank=True,
         related_name="reverse_horizontal_outcomes",
     )
-
+    
     comments = models.ManyToManyField("Comment", blank=True)
 
     @property
@@ -783,6 +783,36 @@ class Workflow(models.Model):
         choices=OUTCOME_SORTS, default=0
     )
 
+    
+    NO_UNITS = 0
+    SECONDS = 1
+    MINUTES = 2
+    HOURS = 3
+    DAYS = 4
+    WEEKS = 5
+    MONTHS = 6
+    YEARS = 7
+    CREDITS = 8
+    UNIT_CHOICES = (
+        (NO_UNITS, ""),
+        (SECONDS, _("seconds")),
+        (MINUTES, _("minutes")),
+        (HOURS, _("hours")),
+        (DAYS, _("days")),
+        (WEEKS, _("weeks")),
+        (MONTHS, _("months")),
+        (YEARS, _("yrs")),
+        (CREDITS, _("credits")),
+    )
+
+    # note: use charfield because some users like to put in ranges (i.e. 10-15 minutes)
+    time_required = models.CharField(max_length=30, null=True, blank=True)
+    time_units = models.PositiveIntegerField(default=0, choices=UNIT_CHOICES)
+    
+    ponderation_theory = models.PositiveIntegerField(default=0, null=True)
+    ponderation_practical = models.PositiveIntegerField(default=0, null=True)
+    ponderation_individual = models.PositiveIntegerField(default=0, null=True)
+    
     SUBCLASSES = ["activity", "course", "program"]
 
     @property

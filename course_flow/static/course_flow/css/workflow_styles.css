@@ -106,8 +106,8 @@ button, input[type="submit"]{
     max-width:200px;
     overflow:hidden;
     display:inline-block;
-    padding:10px; 
-    font-size:18px;
+    padding:4px; 
+    font-size:14px;
     margin:3px 2px 2px 2px;
     line-height:1.3;
     font-weight:600;
@@ -750,6 +750,7 @@ ol.children-block{
     padding-top:0;
     padding-bottom:0;
     border:0px;
+    font-size: 14px;
 }
 
 .outcome-table .outcome-title{
@@ -763,7 +764,7 @@ ol.children-block{
 
 .outcome-table .table-cell{
     width:30px;
-    min-height:30px;
+    min-height:24px;
     height:100%;
     display:inline-block;
     border-left:2px solid black;
@@ -813,6 +814,86 @@ ol.children-block{
 
 .outcome-table .grand-total-cell{
     border-right:2px solid black;
+}
+
+.competency-matrix .outcome{
+    font-size:14px;
+    transform-origin:top left;
+    transform: rotate(-90deg);
+    position:absolute;
+    margin:0px;
+    border-bottom:2px solid black;
+    text-align:left;
+    height:30px;
+    box-sizing:border-box;
+    left:2px;
+    min-width:revert;
+    width:180px;
+}
+
+.competency-matrix .outcome .title-text{
+    overflow:hidden;
+    white-space:normal;
+    width:100%;
+    height:100%;
+}
+
+.competency-matrix .outcome-drop{
+    margin:0px;
+    left:-20px;
+    top:8px;
+    position:absolute;
+}
+
+.competency-matrix .outcome-block{
+    height:100%;
+    display:inline-block;
+}
+
+.competency-matrix .outcome-block.dropped > .outcome-block-children{
+    display:inline-block;
+}
+
+.competency-matrix .outcome-block-children{
+    height:100%;
+    display:none;
+}
+
+.competency-matrix .outcome-row.node-row{
+    margin-top:200px;
+}
+
+.competency-matrix .node{
+    width:100%;
+    height:26px;
+    display:inline-block;
+    vertical-align:top;
+}
+
+.competency-matrix .week .node-row:first-child{
+    background:#E0E0E0;
+}
+
+.competency-matrix .node-row{
+    height:30px;
+}
+
+.competency-matrix .week{
+    background:none;
+    min-height:revert;
+    padding:0;
+    margin:0;
+    border:0px;
+}
+
+.competency-matrix .table-cell{
+    border-left:0px;
+    border-right:2px solid black;
+}
+
+.competency-matrix .outcome-head{
+    display:inline-block;
+    width:160px;
 }
 
 .outcome-row:not(.node-row):hover, .outcome-row:not(.node-row):hover .total-cell{
@@ -865,7 +946,7 @@ ol.children-block{
     vertical-align: top;
 }
 
-.outcome-table .outcome-head{
+.outcome-table.node-rows .outcome-head{
     display:inline-block;
     width:422px;
 }
@@ -911,7 +992,7 @@ ol.children-block{
     display:inline-block;
 }
 
-.outcome-table .node, .outcome-table .child-outcome{
+.outcome-table.node-rows .node, .outcome-table.node-rows .child-outcome{
     width:160px;
     position:absolute;
     left:-2px;
@@ -1252,6 +1333,16 @@ circle.mouseover{
     border:1px solid lightgray;
     margin-top:2px;
     margin-bottom:2px;
+}
+
+.side-bar input[type=number]{
+    -moz-appearance:textfield;
+}
+
+.side-bar input::-webkit-outer-spin-button,
+.side-bar input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .side-bar button{

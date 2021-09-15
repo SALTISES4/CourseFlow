@@ -70,6 +70,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     CourseSerializerShallow,
     DisciplineSerializer,
     InfoBoxSerializer,
+    LinkedWorkflowSerializerShallow,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
@@ -3488,16 +3489,14 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             node.represents_workflow = False
             node.save()
             linked_workflow = None
-            linked_workflow_title = None
-            linked_workflow_description = None
+            linked_workflow_data = None
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
             set_linked_workflow(node, workflow)
             if node.linked_workflow is None:
                 raise ValidationError("Project could not be found")
             linked_workflow = node.linked_workflow.id
-            linked_workflow_title = node.linked_workflow.title
-            linked_workflow_description = node.linked_workflow.description
+            linked_workflow_data = LinkedWorkflowSerializerShallow(node.linked_workflow).data
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -3507,8 +3506,7 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             "action": "posted",
             "id": node_id,
             "linked_workflow": linked_workflow,
-            "linked_workflow_title": linked_workflow_title,
-            "linked_workflow_description": linked_workflow_description,
+            "linked_workflow_data": linked_workflow_data,
         }
     )
 

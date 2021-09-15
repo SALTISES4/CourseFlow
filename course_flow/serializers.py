@@ -605,9 +605,7 @@ class NodeSerializerShallow(
     outcomenode_set = serializers.SerializerMethodField()
     outcomenode_unique_set = serializers.SerializerMethodField()
     columnworkflow = serializers.SerializerMethodField()
-    linked_workflow_title = serializers.SerializerMethodField()
-    linked_workflow_description = serializers.SerializerMethodField()
-    linked_workflow_code = serializers.SerializerMethodField()
+    linked_workflow_data = serializers.SerializerMethodField()
 
     node_type_display = serializers.CharField(source="get_node_type_display")
 
@@ -627,13 +625,11 @@ class NodeSerializerShallow(
             "node_type",
             "node_type_display",
             "has_autolink",
-            "represents_workflow",
-            "linked_workflow",
-            "linked_workflow_title",
-            "linked_workflow_description",
-            "linked_workflow_code",
             "time_units",
             "time_required",
+            "represents_workflow",
+            "linked_workflow",
+            "linked_workflow_data",
             "is_dropped",
             "comments",
         ]
@@ -650,17 +646,10 @@ class NodeSerializerShallow(
     def get_outcomenode_unique_set(self, instance):
         return list(map(linkIDMap, get_unique_outcomenodes(instance)))
 
-    def get_linked_workflow_title(self, instance):
-        if instance.linked_workflow is not None:
-            return instance.linked_workflow.title
-
-    def get_linked_workflow_description(self, instance):
-        if instance.linked_workflow is not None:
-            return instance.linked_workflow.description
-        
-    def get_linked_workflow_code(self, instance):
-        if instance.linked_workflow is not None:
-            return instance.linked_workflow.code
+    def get_linked_workflow_data(self, instance):
+        linked_workflow = instance.linked_workflow
+        if linked_workflow is not None:
+            return LinkedWorkflowSerializerShallow(linked_workflow).data
 
     def create(self, validated_data):
         return Node.objects.create(
@@ -697,6 +686,19 @@ class NodeSerializerShallow(
         instance.save()
         return instance
 
+class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
+    class Meta:
+        model=Workflow
+        fields = [
+            "title",
+            "description",
+            "code",
+            "time_required",
+            "time_units",
+            "ponderation_theory",
+            "ponderation_practical",
+            "ponderation_individual",
+        ]
 
 class NodeWeekSerializerShallow(serializers.ModelSerializer):
     class Meta:
@@ -1042,8 +1044,13 @@ class WorkflowSerializerShallow(
             "is_strategy",
             "strategy_icon",
             "published",
-        ]
-
+            "time_required",
+            "time_units",
+            "ponderation_theory",
+            "ponderation_practical",
+            "ponderation_individual",
+        ]    
+    
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     weekworkflow_set = serializers.SerializerMethodField()
@@ -1096,6 +1103,21 @@ class WorkflowSerializerShallow(
         instance.published = validated_data.get(
             "published", instance.published
         )
+        instance.time_required = validated_data.get(
+            "time_required", instance.time_required
+        )
+        instance.time_units = validated_data.get(
+            "time_units", instance.time_units
+        )
+        instance.ponderation_theory = validated_data.get(
+            "ponderation_theory", instance.ponderation_theory
+        )
+        instance.ponderation_practical = validated_data.get(
+            "ponderation_practical", instance.ponderation_practical
+        )
+        instance.ponderation_individual = validated_data.get(
+            "ponderation_individual", instance.ponderation_individual
+        )
         instance.save()
         return instance
 
@@ -1128,6 +1150,11 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
+            "time_required",
+            "time_units",
+            "ponderation_theory",
+            "ponderation_practical",
+            "ponderation_individual",
         ]
 
     def get_author_id(self, instance):
@@ -1170,6 +1197,11 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
+            "time_required",
+            "time_units",
+            "ponderation_theory",
+            "ponderation_practical",
+            "ponderation_individual",
         ]
 
     def get_author_id(self, instance):
@@ -1212,6 +1244,11 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "type",
             "DEFAULT_COLUMNS",
             "DEFAULT_CUSTOM_COLUMN",
+            "time_required",
+            "time_units",
+            "ponderation_theory",
+            "ponderation_practical",
+            "ponderation_individual",
         ]
 
     def get_author_id(self, instance):

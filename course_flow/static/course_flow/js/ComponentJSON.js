@@ -281,8 +281,6 @@ export class ComponentJSON extends React.Component{
         props.renderer.tiny_loader.startLoad();
         getCommentsForObject(data.id,Constants.object_dictionary[this.objectType],
             (response_data)=>{
-                console.log("Got some comments");
-                console.log(response_data);
                 this.setState({show_comments:true,comment_data:response_data.data_package});
                 props.renderer.tiny_loader.endLoad();
             }
@@ -338,9 +336,9 @@ export class ComponentJSON extends React.Component{
                             </select>
                         </div>
                     }
-                    {type=="node" &&
+                    {(type=="node" || type=="workflow") &&
                         <div>
-                            <h4>Time:</h4>
+                            <h4>{gettext("Time")}:</h4>
                             <div>
                                 <input autocomplete="off" id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
                                 <select id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
@@ -351,15 +349,28 @@ export class ComponentJSON extends React.Component{
                             </div>
                         </div>
                     }
+                    {(type=="workflow" && data.type=="course") &&
+                        <div>
+                            <h4>{gettext("Ponderation")}:</h4>
+                            <input autocomplete="off" class="half-width" id="ponderation-theory" type="number" value={data.ponderation_theory} onChange={this.inputChanged.bind(this,"ponderation_theory")}/>
+                            <div class="half-width">{gettext("hrs. Theory")}</div>
+                            <input autocomplete="off" class="half-width" id="ponderation-practical" type="number" value={data.ponderation_practical} onChange={this.inputChanged.bind(this,"ponderation_practical")}/>
+                            <div class="half-width">{gettext("hrs. Practical")}</div>
+                            <input class="half-width" autocomplete="off" class="half-width" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
+                            <div class="half-width">{gettext("hrs. Individual")}</div>
+                        </div>
+                    }
                     {type=="node" && data.node_type!=0 &&
                         <div>
                             <h4>Linked Workflow:</h4>
-                            <div>{data.linked_workflow_title}</div>
-                            <button  id="linked-workflow-editor" onClick={()=>{getLinkedWorkflowMenu(data,(response_data)=>{
-                                let action = setLinkedWorkflowAction(response_data);
-                                props.dispatch(action);
-                            })}}>
-                                Change
+                            <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
+                            <button  id="linked-workflow-editor" onClick={()=>{
+                                getLinkedWorkflowMenu(data,(response_data)=>{
+                                    let action = setLinkedWorkflowAction(response_data);
+                                    props.dispatch(action);
+                                });
+                            }}>
+                                {gettext("Change")}
                             </button>
                             <input type="checkbox" name="respresents_workflow" checked={data.represents_workflow} onChange={this.checkboxChanged.bind(this,"represents_workflow")}/>
                             <label for="repesents_workflow">{gettext("Display linked workflow data")}</label>
@@ -428,7 +439,8 @@ export class ComponentJSON extends React.Component{
     inputChanged(field,evt){
         let value=evt.target.value;
         if(!value)value="";
-        this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.value));
+        if(evt.target.type=="number"&&value=="")value=0;
+        this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,value));
     }
 
     checkboxChanged(field,evt){
@@ -658,13 +670,11 @@ export class CommentBox extends React.Component{
     }
     
     render(){
-        console.log(this.state);
         let has_comments=false;
         if(this.state.has_rendered){
             if(this.props.comments){
                 has_comments = this.props.comments.length>0;
             }else{
-                console.log(this.props.parent.props)
                 has_comments = this.props.parent.props.data.comments.length>0;
             }
         }
@@ -732,7 +742,6 @@ export class CommentBox extends React.Component{
         if(!text)return;
         let parent = this.props.parent;
         let props = parent.props;
-        console.log(props);
         this.input.current.value=null;
         addComment(props.objectID,Constants.object_dictionary[parent.objectType]   ,text,parent.reloadComments.bind(parent));
     }
@@ -785,9 +794,9 @@ export class NodeTitle extends React.Component{
     render(){
         let data = this.props.data;
         let text;
-        if(data.represents_workflow){
-            text = data.linked_workflow_title;
-            if(data.linked_workflow_code)text = data.linked_workflow_code+" - "+text;
+        if(data.represents_workflow && data.linked_workflow_data){
+            text = data.linked_workflow_data.title;
+            if(data.linked_workflow_data.code)text = data.linked_workflow_data.code+" - "+text;
         }
         else text = data.title;
             

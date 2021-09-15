@@ -316,7 +316,6 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        console.log(this.props.rank);
         var children = data.child_outcome_links.map((outcomeoutcome)=>
             this.getChildType(outcomeoutcome)
         );

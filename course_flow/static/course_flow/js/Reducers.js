@@ -647,8 +647,7 @@ export function nodeReducer(state={},action){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]};
                     new_state[i].linked_workflow=action.payload.linked_workflow;
-                    new_state[i].linked_workflow_title = action.payload.linked_workflow_title;
-                    new_state[i].linked_workflow_description = action.payload.linked_workflow_description;
+                    new_state[i].linked_workflow_data = action.payload.linked_workflow_data;
                     return new_state;
                 }
             }

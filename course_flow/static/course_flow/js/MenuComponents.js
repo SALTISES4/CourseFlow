@@ -560,9 +560,6 @@ export class ProjectEditMenu extends React.Component{
     render(){
         var data = this.state;
         
-        console.log("state");
-        console.log(this.state);
-        
         let all_disciplines;
         let disciplines;
         if(data.all_disciplines){
@@ -575,18 +572,12 @@ export class ProjectEditMenu extends React.Component{
         }
         
         let custom_text = custom_text_base();
-        console.log(data.terminology_dict);
         
         let dict_options = Object.keys(custom_text).filter(key=>!data.terminology_dict[key]).map(key=>
             <option value={key}>{custom_text[key].singular}</option>                                       
         );
         let selected_term;
-        console.log(this.state.selected_term);
-        console.log(custom_text);
         if(this.state.selected_term)selected_term=custom_text[this.state.selected_term];
-        console.log("currently selected:");
-        console.log(selected_term);
-        console.log(data.terminology_dict);
         let dict_added = data.terminology_dict.map(item=>
             <div class="nomenclature-row">
                 <div>{(custom_text[item.term] && custom_text[item.term].singular)+": "+item.translation+"/"+item.translation_plural}</div>
@@ -674,8 +665,6 @@ export class ProjectEditMenu extends React.Component{
         let translation_singular = $("#term-singular")[0].value;
         let translation_plural = $("#term-plural")[0].value
         addTerminology(this.state.id,term,translation_singular,translation_plural,response_data=>{
-            console.log("response_data");
-            console.log(response_data);
             this.setState({terminology_dict:response_data.new_dict,selected_term:"none",termsingular:"",termplural:""})
         });
     }
@@ -711,9 +700,6 @@ export class ProjectEditMenu extends React.Component{
     
     
     inputChanged(field,evt){
-        console.log(evt);
-        console.log(field);
-        console.log(evt.target.value);
         var new_state={}
         new_state[field]=evt.target.value;
         if(field=="selected_term"){new_state["termsingular"]="";new_state["termplural"]="";}

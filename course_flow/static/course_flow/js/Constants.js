@@ -194,6 +194,8 @@ export function getIntersection(list1,list2){
 
 //take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
 export function filterThenSortByID(object_list,id_list){
+    console.log(object_list);
+    console.log(id_list);
     return object_list.filter(obj=>id_list.includes(obj.id)).sort((a,b)=> id_list.indexOf(a.id)-id_list.indexOf(b.id));
 }
 
@@ -203,6 +205,35 @@ export function capWords(str){
         if(entry.length==0)return entry;
         return entry[0].toUpperCase()+entry.substr(1)
     }).join(" ");
+}
+
+export function createOutcomeBranch(state,outcome_id){
+    for(let i=0;i<state.outcome.length;i++){
+        if(state.outcome[i].id==outcome_id){
+            let children;
+            if(state.outcome[i].child_outcome_links.length==0)children=[];
+            else children = filterThenSortByID(state.outcomeoutcome,state.outcome[i].child_outcome_links).map(outcomeoutcome=>createOutcomeBranch(state,outcomeoutcome.child));
+            
+            return {id:outcome_id, children:children};
+        }
+    }
+    return null;
+}
+
+export function createOutcomeTree(state){
+    let outcomes_tree = [];
+    let outcomeworkflows = filterThenSortByID(state.outcomeworkflow,state.workflow.outcomeworkflow_set);
+    for(let i=0;i<outcomeworkflows.length;i++){
+        outcomes_tree.push(createOutcomeBranch(state,outcomeworkflows[i].outcome));
+    }
+    return outcomes_tree;
+}
+
+export function flattenOutcomeTree(outcomes_tree,array){
+    outcomes_tree.forEach(element=>{
+        array.push(element.id)
+        flattenOutcomeTree(element.children,array);
+    });
 }
 
 

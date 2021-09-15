@@ -17,6 +17,7 @@ import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
 import {getParentWorkflowInfo} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
+import CompetencyMatrixView from './CompetencyMatrixView';
 
 
 //Container for common elements for workflows
@@ -46,6 +47,12 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         if(renderer.view_type=="outcometable"){
             workflow_content=(
                 <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
+            );
+            this.allowed_tabs=[];
+        }
+        else if(renderer.view_type=="competencymatrix"){
+            workflow_content=(
+                <CompetencyMatrixView renderer={renderer} view_type={renderer.view_type}/>
             );
             this.allowed_tabs=[];
         }
@@ -81,6 +88,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             {type:"outcomeedit",name:Constants.capWords(gettext("Edit")+" "+gettext(data.type+" outcomes")),disabled:[]},
             {type:"outcometable",name:Constants.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
             {type:"alignmentanalysis",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
+            {type:"competencymatrix",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
             {type:"horizontaloutcometable",name:gettext("Alignment Table"),disabled:["activity"]}
         ].map(
             (item)=>{
@@ -506,11 +514,11 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
     }
 }
 const mapParentWorkflowIndicatorStateToProps = state => ({
-    child_workflows:state.node.map(node => ({
+    child_workflows:state.node.filter(node=>node.linked_workflow_data).map(node => ({
         id:node.linked_workflow,
-        title:node.linked_workflow_title,
-        description:node.linked_workflow_description
-    })).filter(wf=>wf.id)
+        title:node.linked_workflow_data.title,
+        description:node.linked_workflow_data.description
+    }))
 });
 export const ParentWorkflowIndicator = connect(
     mapParentWorkflowIndicatorStateToProps,
