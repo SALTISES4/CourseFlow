@@ -1708,6 +1708,57 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             )
             == 2
         )
+        
+    def test_outcome_csv_output(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(
+            author=self.user, title="project title"
+        )
+        course = Course.objects.create(author=self.user)
+        program = Program.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=course, project=project)
+        WorkflowProject.objects.create(workflow=program, project=project)
+        base_outcome = Outcome.objects.create(author=self.user)
+        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=program)
+        poo1 = OutcomeOutcome.objects.create(
+            parent=base_outcome,
+            child=Outcome.objects.create(author=self.user),
+        )
+        poo2 = OutcomeOutcome.objects.create(
+            parent=base_outcome,
+            child=Outcome.objects.create(author=self.user),
+        )
+        coc1 = course.outcomes.create(author=self.user)
+        coc2 = course.outcomes.create(author=self.user)
+        node = program.weeks.first().nodes.create(
+            author=self.user,
+            linked_workflow=course,
+            column=program.columns.first(),
+        )
+        response = self.client.post(
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
+        )
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[program.pk])
+        )
+        selenium.find_element_by_css_selector(
+            "#button_competencymatrix"
+        ).click()
+        time.sleep(1)
+
+        selenium.find_element_by_css_selector(
+            ".menu-create"
+        ).click()
+        alert = wait.until(expected_conditions.alert_is_present())
+        selenium.switch_to.alert
+        assert (
+            alert.text == "Data has been output to csv in your downloads folder."
+        )
+        selenium.switch_to.alert.accept()
 
     def test_linked_workflow(self):
         selenium = self.selenium

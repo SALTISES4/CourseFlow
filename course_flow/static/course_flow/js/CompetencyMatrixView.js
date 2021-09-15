@@ -3,7 +3,7 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON, OutcomeTitle, TitleText, NodeTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
-import {getOutcomeByID, getWeekWorkflowByID, getWeekByID, getNodeWeekByID, getNodeByID, getOutcomeNodeByID} from "./FindState";
+import {getOutcomeByID, getWeekWorkflowByID, getWeekByID, getNodeWeekByID, getNodeByID, getOutcomeNodeByID, getTableOutcomeNodeByID} from "./FindState";
 import {TableOutcomeNode} from "./OutcomeNode";
 
 
@@ -51,7 +51,7 @@ class CompetencyMatrixView extends ComponentJSON{
                         </div>
                         {weekworkflows}
                     </div>
-                    <button onClick={this.outputCSV.bind(this)}>{gettext("Output CSV")}</button>
+                    <button class="menu-create" onClick={this.outputCSV.bind(this)}>{gettext("Output CSV")}</button>
                 </div>
             );
         }
@@ -81,8 +81,8 @@ class CompetencyMatrixView extends ComponentJSON{
     createWeekRow(week_data,rank,outcome_ids,totals_data){
         let text = week_data.week_type_display+" "+(rank+1);
         if(week_data.title)text = week_data.title;
-        let row = text;
-        row+=outcome_ids.map(id=>"").join(",");
+        let row = text+",";
+        row+=outcome_ids.map(id=>"").join(",")+",";
         row+=","+totals_data.theory;
         row+=","+totals_data.practical;
         row+=","+totals_data.individual;
@@ -91,7 +91,7 @@ class CompetencyMatrixView extends ComponentJSON{
         return row;
     }
     
-    createNodeRow(state,node_data,outcome_ids,totals_data){
+    createNodeRow(state,node_data,outcomes_displayed,totals_data){
         let title="";
         let linked_workflow_data=node_data.linked_workflow_data;
         if(linked_workflow_data){
@@ -99,29 +99,40 @@ class CompetencyMatrixView extends ComponentJSON{
             title+=linked_workflow_data.title;
         }else title+=node_data.title;
         
-        let row = title;
-        row+=outcome_ids.forEach(id=>{
-            let outcomenode = getTableOutcomeNodeByID(state,node_data.id,id);
-            //Need to figure out if the outcome is partial
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //
-            //
+        let row = title+",";
+        let outcomenodes_all = state.outcomenode.filter(outcomenode=>outcomenode.node==node_data.id);
+        row+=outcomes_displayed.map(outcome=>{
+            let outcomenode = getTableOutcomeNodeByID(state,node_data.id,outcome.data.id).data;
+            let degree;
+            if(!outcomenode){
+                for(let i=0;i<outcome.descendants.length;i++){
+                    for(let j=0;j<outcomenodes_all.length;j++){
+                        if(outcome.descendants[i]==outcomenodes_all[j].outcome){
+                            degree=0;
+                            break;
+                        }
+                    }
+                    if(degree===0)break;
+                }
+            }else{
+                degree=outcomenode.degree;
+            }
             
-        });
+            if(degree===0)return "P";
+            else if(degree==1)return "X";
+            else{
+                let returnval="";
+                if(degree & 2)returnval+="I";
+                if(degree & 4)returnval+="D";
+                if(degree & 8)returnval+="A";
+            }
+            
+            
+        }).join(",");
         console.log("linked workflow data");
         console.log(linked_workflow_data);
         if(linked_workflow_data){
+            row+=",";
             let theory = linked_workflow_data.ponderation_theory
             row+=","+theory;
             if(!theory)theory=0;
@@ -142,7 +153,7 @@ class CompetencyMatrixView extends ComponentJSON{
             row+=","+time_required;
             totals_data.required+=time_required;
         }
-        else row+=",,,,,";
+        else row+=",,,,,,";
         return row;
     }
 
@@ -154,13 +165,10 @@ class CompetencyMatrixView extends ComponentJSON{
         //Get the top row of competencies
         let outcomes = this.getOutcomes(this.props.outcomes_tree,state,outcomes);
         let outcomes_displayed = outcomes.filter(outcome=>outcome.display)
-        console.log("Got the row of outcomes");
-        console.log(outcomes);
-        console.log(outcomes_displayed);
-        let outcomes_row = outcomes_displayed.map(outcome=>{
-            return ",'"+outcome.rank.join(".")+" - "+outcome.data.title+"'";
-        });
-        outcomes_row+=",Theory,Practical,Individual,Total,Credits";
+        let outcomes_row = ","+outcomes_displayed.map(outcome=>{
+            return '"'+Constants.csv_safe(outcome.rank.join(".")+" - "+outcome.data.title)+'"';
+        }).join(",");
+        outcomes_row+=",,Theory,Practical,Individual,Total,Credits";
         console.log(outcomes_row);
         
         //Get individual weeks and nodes
@@ -178,9 +186,12 @@ class CompetencyMatrixView extends ComponentJSON{
             });
             let week_row = this.createWeekRow(week.week_data,i,outcomes_displayed,totals_data);
             rows.push(week_row);
+            rows.push("\n");
         });
         
-        console.log(rows);
+        Constants.download("outcomes_matrix.csv",rows.join("\n"));
+        
+        alert(gettext("Data has been output to csv in your downloads folder."));
         
     }
     
