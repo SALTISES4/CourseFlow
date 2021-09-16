@@ -3459,7 +3459,7 @@ Delete methods
 """
 
 
-@user_can_delete(False)
+@user_can_edit(False)
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
