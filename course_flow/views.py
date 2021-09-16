@@ -3470,7 +3470,7 @@ def delete_self(request: HttpRequest) -> HttpResponse:
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
     except Exception as e:
-        response = JsonResponse({"error": e})
+        response = JsonResponse({"error": str(e)})
         response.status_code = 400
         return response
 

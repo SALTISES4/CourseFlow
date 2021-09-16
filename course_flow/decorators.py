@@ -325,7 +325,7 @@ def user_can_delete(model, **outer_kwargs):
                             model_data, User.objects.get(id=request.user.id)
                         )
                     except Exception as e:
-                        response = JsonResponse({"error": e})
+                        response = JsonResponse({"error": str(e)})
                         response.status_code = 400
                         return response
                     if perm:
@@ -341,11 +341,11 @@ def user_can_delete(model, **outer_kwargs):
                     ):
                         return fct(request, *args, **kwargs)
 
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response = JsonResponse({"error": "permission"})
                 response.status_code = 403
                 return response
-            except:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
+            except Exception as e:
+                response = JsonResponse({"error": str(e)})
                 response.status_code = 403
                 return response
 
