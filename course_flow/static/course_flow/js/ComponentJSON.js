@@ -418,7 +418,7 @@ export class NodeLinkSVG extends React.Component{
             const target_transform=Constants.getSVGTranslation(this.props.target_port_handle.select(function(){
                 return this.parentNode}).attr("transform"));
             const source_point=[parseInt(this.props.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.props.source_port_handle.attr("cy"))+parseInt(source_transform[1])];
-            const target_point=[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform.[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])];
+            const target_point=[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])];
 
             var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
             var path=(this.getPath(path_array));
