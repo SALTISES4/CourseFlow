@@ -150,7 +150,7 @@ class Column(models.Model):
         "Column", on_delete=models.SET_NULL, null=True
     )
 
-    comments = models.ManyToManyField("Comment", blank=True)
+    comments = models.ManyToManyField("Comment", blank=True, related_name="column")
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -234,7 +234,7 @@ class Outcome(models.Model):
         related_name="reverse_horizontal_outcomes",
     )
     
-    comments = models.ManyToManyField("Comment", blank=True)
+    comments = models.ManyToManyField("Comment", blank=True, related_name="outcome")
 
     @property
     def type(self):
@@ -396,7 +396,7 @@ class Node(models.Model):
     has_autolink = models.BooleanField(default=False)
     is_dropped = models.BooleanField(default=False)
 
-    comments = models.ManyToManyField("Comment", blank=True)
+    comments = models.ManyToManyField("Comment", blank=True, related_name="node")
 
     NONE = 0
     INDIVIDUAL = 1
@@ -654,7 +654,7 @@ class Week(models.Model):
 
     nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)
 
-    comments = models.ManyToManyField("Comment", blank=True)
+    comments = models.ManyToManyField("Comment", blank=True, related_name="week")
 
     NONE = 0
     JIGSAW = 1
@@ -1120,7 +1120,16 @@ def delete_project_objects(sender, instance, **kwargs):
     len(outcomes)
     workflows = Workflow.objects.filter(project=instance)
     len(workflows)
+    comments = Comment.objects.filter(Q(node__week__workflow__project=instance)
+        | Q(outcome__in=outcomes.values_list('pk',flat=True))
+        | Q(column__workflow__project=instance)
+        | Q(week__workflow__project=instance)
+    )
+    len(comments)
+    #Inexplicably, I can't seem to raw delete here.
+    comments.delete()
 
+    
     # Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
     outcomenodes = OutcomeNode.objects.filter(
         node__week__workflow__project=instance
@@ -1192,8 +1201,6 @@ def delete_project_objects(sender, instance, **kwargs):
     favourites._raw_delete(favourites.db)
     workflows._raw_delete(workflows.db)
 
-    # instance.workflows.all().delete()
-
 
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
@@ -1211,6 +1218,14 @@ def delete_workflow_objects(sender, instance, **kwargs):
         | Q(parent_outcomes__parent_outcomes__workflow=instance)
     )
     len(outcomes)
+    
+    #Delete all comments.
+    comments = Comment.objects.filter(Q(node__week__workflow=instance)
+        | Q(outcome__in=outcomes.values_list('pk',flat=True))
+        | Q(column__workflow=instance)
+        | Q(week__workflow=instance)
+    )
+    comments._raw_delete(comments.db)
 
     # Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
     outcomenodes = OutcomeNode.objects.filter(node__week__workflow=instance)

@@ -3582,7 +3582,7 @@ def remove_comment(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-@user_can_delete(False)
+#@user_can_delete(False)
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
