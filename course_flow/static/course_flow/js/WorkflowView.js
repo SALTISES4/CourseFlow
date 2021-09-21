@@ -18,6 +18,7 @@ import {getParentWorkflowInfo} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
+import GridView from './GridView';
 
 
 //Container for common elements for workflows
@@ -75,6 +76,12 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             );
             this.allowed_tabs=[];
         }
+        else if(renderer.view_type=="grid"){
+            workflow_content=(
+                <GridView renderer={renderer} view_type={renderer.view_type}/>
+            );
+            this.allowed_tabs=[];
+        }
         else{
             workflow_content = (
                 <WorkflowView renderer={renderer}/>
@@ -89,14 +96,25 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             {type:"outcometable",name:Constants.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
             {type:"alignmentanalysis",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
             {type:"competencymatrix",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
+            {type:"grid",name:gettext("Grid View"),disabled:["activity", "course"]},
             {type:"horizontaloutcometable",name:gettext("Alignment Table"),disabled:["activity"]}
-        ].map(
+        ].filter(item=>item.disabled.indexOf(data.type)==-1).map(
             (item)=>{
                 let view_class = "hover-shade";
                 if(item.type==renderer.view_type)view_class += " active";
-                if(item.disabled.indexOf(data.type)>=0)view_class+=" disabled";
+                //if(item.disabled.indexOf(data.type)>=0)view_class+=" disabled";
                 return <div id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</div>;
             }
+        );
+        
+        let view_buttons_sorted = view_buttons.slice(0,2);
+        view_buttons_sorted.push(
+            <div class="hover-shade other-views" onClick={()=>$(".views-dropdown")[0].classList.toggle("toggled")}>
+                {gettext("Other Views")}
+                <div class="views-dropdown">
+                    {view_buttons.slice(2)}
+                </div>
+            </div>
         );
             
             
@@ -107,7 +125,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     <ParentWorkflowIndicator workflow_id={data.id}/>
                 </div>
                 <div class="workflow-view-select">
-                    {view_buttons}
+                    {view_buttons_sorted}
                 </div>
                 <div class = "workflow-container">
                     {reactDom.createPortal(
@@ -153,6 +171,11 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                      
     postMountFunction(){
         this.updateTabs();    
+        window.addEventListener("click",(evt)=>{
+            if($(evt.target).closest(".other-views").length==0){
+                $(".views-dropdown").removeClass("toggled");
+            }
+        });
     }
                      
     componentDidUpdate(prev_props){

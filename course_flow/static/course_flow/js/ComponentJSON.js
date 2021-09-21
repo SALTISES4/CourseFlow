@@ -358,6 +358,10 @@ export class ComponentJSON extends React.Component{
                             <div class="half-width">{gettext("hrs. Practical")}</div>
                             <input class="half-width" autocomplete="off" class="half-width" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
                             <div class="half-width">{gettext("hrs. Individual")}</div>
+                            <input class="half-width" autocomplete="off" class="half-width" id="time-general-hours" type="number" value={data.time_general_hours} onChange={this.inputChanged.bind(this,"time_general_hours")}/>
+                            <div class="half-width">{gettext("hrs. General Education")}</div>
+                            <input class="half-width" autocomplete="off" class="half-width" id="time-specific-hours" type="number" value={data.time_specific_hours} onChange={this.inputChanged.bind(this,"time_specific_hours")}/>
+                            <div class="half-width">{gettext("hrs. Specific Education")}</div>
                         </div>
                     }
                     {type=="node" && data.node_type!=0 &&

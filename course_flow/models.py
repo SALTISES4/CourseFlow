@@ -10,7 +10,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import post_save, pre_delete, pre_save, m2m_changed
+from django.db.models.signals import (
+    m2m_changed,
+    post_save,
+    pre_delete,
+    pre_save,
+)
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
@@ -49,7 +54,7 @@ class Project(models.Model):
     )
 
     terminology_dict = models.ManyToManyField("CustomTerm", blank=True)
-    
+
     @property
     def type(self):
         return "project"
@@ -61,13 +66,15 @@ class Project(models.Model):
         verbose_name = "Project"
         verbose_name_plural = "Projects"
 
+
 class CustomTerm(models.Model):
     term = models.CharField(max_length=50)
     translation = models.CharField(max_length=50)
-    translation_plural = models.CharField(max_length=50,null=True)
-    
+    translation_plural = models.CharField(max_length=50, null=True)
+
     def get_permission_objects(self):
         return [Project.objects.filter(terminology_dict=self).first()]
+
 
 class WorkflowProject(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
@@ -150,7 +157,9 @@ class Column(models.Model):
         "Column", on_delete=models.SET_NULL, null=True
     )
 
-    comments = models.ManyToManyField("Comment", blank=True, related_name="column")
+    comments = models.ManyToManyField(
+        "Comment", blank=True, related_name="column"
+    )
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -233,8 +242,10 @@ class Outcome(models.Model):
         blank=True,
         related_name="reverse_horizontal_outcomes",
     )
-    
-    comments = models.ManyToManyField("Comment", blank=True, related_name="outcome")
+
+    comments = models.ManyToManyField(
+        "Comment", blank=True, related_name="outcome"
+    )
 
     @property
     def type(self):
@@ -396,7 +407,9 @@ class Node(models.Model):
     has_autolink = models.BooleanField(default=False)
     is_dropped = models.BooleanField(default=False)
 
-    comments = models.ManyToManyField("Comment", blank=True, related_name="node")
+    comments = models.ManyToManyField(
+        "Comment", blank=True, related_name="node"
+    )
 
     NONE = 0
     INDIVIDUAL = 1
@@ -619,19 +632,25 @@ class OutcomeNode(models.Model):
 
     # Check to see if the children already exist, and if not, add them
     def check_child_outcomes(self):
-        
+
         node = self.node
         outcome = self.outcome
         degree = self.degree
-        #Get the descendants (all descendant outcomes that don't already have an outcomenode of this degree and node)
-        descendants = get_descendant_outcomes(outcome).exclude(outcomenode__node=node,outcomenode__degree=degree)
-        #Delete the outcomenodes of any descendants that still have an outcomenode to this node (i.e. clear those of other degrees, we are using bulk create so they won't get automatically deleted)
-        to_delete = OutcomeNode.objects.filter(outcome__in=descendants,node=node)
+        # Get the descendants (all descendant outcomes that don't already have an outcomenode of this degree and node)
+        descendants = get_descendant_outcomes(outcome).exclude(
+            outcomenode__node=node, outcomenode__degree=degree
+        )
+        # Delete the outcomenodes of any descendants that still have an outcomenode to this node (i.e. clear those of other degrees, we are using bulk create so they won't get automatically deleted)
+        to_delete = OutcomeNode.objects.filter(
+            outcome__in=descendants, node=node
+        )
         to_delete._raw_delete(to_delete.db)
-        #Create the new outcomenodes with bulk_create
-        new_children = [OutcomeNode(degree=degree,node=node,outcome=x) for x in descendants]
+        # Create the new outcomenodes with bulk_create
+        new_children = [
+            OutcomeNode(degree=degree, node=node, outcome=x)
+            for x in descendants
+        ]
         return OutcomeNode.objects.bulk_create(new_children)
-        
 
 
 class Week(models.Model):
@@ -654,7 +673,9 @@ class Week(models.Model):
 
     nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)
 
-    comments = models.ManyToManyField("Comment", blank=True, related_name="week")
+    comments = models.ManyToManyField(
+        "Comment", blank=True, related_name="week"
+    )
 
     NONE = 0
     JIGSAW = 1
@@ -783,7 +804,6 @@ class Workflow(models.Model):
         choices=OUTCOME_SORTS, default=0
     )
 
-    
     NO_UNITS = 0
     SECONDS = 1
     MINUTES = 2
@@ -808,11 +828,14 @@ class Workflow(models.Model):
     # note: use charfield because some users like to put in ranges (i.e. 10-15 minutes)
     time_required = models.CharField(max_length=30, null=True, blank=True)
     time_units = models.PositiveIntegerField(default=0, choices=UNIT_CHOICES)
-    
+
     ponderation_theory = models.PositiveIntegerField(default=0, null=True)
     ponderation_practical = models.PositiveIntegerField(default=0, null=True)
     ponderation_individual = models.PositiveIntegerField(default=0, null=True)
-    
+
+    time_general_hours = models.PositiveIntegerField(default=0, null=True)
+    time_specific_hours = models.PositiveIntegerField(default=0, null=True)
+
     SUBCLASSES = ["activity", "course", "program"]
 
     @property
@@ -905,7 +928,6 @@ class Course(Workflow):
         on_delete=models.SET_NULL,
         null=True,
     )
-    
 
     students = models.ManyToManyField(
         User, related_name="assigned_courses", blank=True
@@ -1120,16 +1142,16 @@ def delete_project_objects(sender, instance, **kwargs):
     len(outcomes)
     workflows = Workflow.objects.filter(project=instance)
     len(workflows)
-    comments = Comment.objects.filter(Q(node__week__workflow__project=instance)
-        | Q(outcome__in=outcomes.values_list('pk',flat=True))
+    comments = Comment.objects.filter(
+        Q(node__week__workflow__project=instance)
+        | Q(outcome__in=outcomes.values_list("pk", flat=True))
         | Q(column__workflow__project=instance)
         | Q(week__workflow__project=instance)
     )
     len(comments)
-    #Inexplicably, I can't seem to raw delete here.
+    # Inexplicably, I can't seem to raw delete here.
     comments.delete()
 
-    
     # Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
     outcomenodes = OutcomeNode.objects.filter(
         node__week__workflow__project=instance
@@ -1218,10 +1240,11 @@ def delete_workflow_objects(sender, instance, **kwargs):
         | Q(parent_outcomes__parent_outcomes__workflow=instance)
     )
     len(outcomes)
-    
-    #Delete all comments.
-    comments = Comment.objects.filter(Q(node__week__workflow=instance)
-        | Q(outcome__in=outcomes.values_list('pk',flat=True))
+
+    # Delete all comments.
+    comments = Comment.objects.filter(
+        Q(node__week__workflow=instance)
+        | Q(outcome__in=outcomes.values_list("pk", flat=True))
         | Q(column__workflow=instance)
         | Q(week__workflow=instance)
     )
@@ -1282,7 +1305,6 @@ def delete_node_objects(sender, instance, **kwargs):
 @receiver(pre_delete, sender=Outcome)
 def delete_outcome_objects(sender, instance, **kwargs):
     instance.children.all().delete()
-
 
 
 @receiver(pre_delete, sender=Column)

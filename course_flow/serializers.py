@@ -686,9 +686,10 @@ class NodeSerializerShallow(
         instance.save()
         return instance
 
+
 class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
     class Meta:
-        model=Workflow
+        model = Workflow
         fields = [
             "title",
             "description",
@@ -698,7 +699,10 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
             "ponderation_theory",
             "ponderation_practical",
             "ponderation_individual",
+            "time_general_hours",
+            "time_specific_hours",
         ]
+
 
 class NodeWeekSerializerShallow(serializers.ModelSerializer):
     class Meta:
@@ -867,10 +871,16 @@ class ProjectSerializerShallow(
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
-    
+
     def get_terminology_dict(self, instance):
         return [
-            {"id":term.id,"term":term.term,"translation":term.translation,"translation_plural":term.translation_plural} for term in instance.terminology_dict.all()
+            {
+                "id": term.id,
+                "term": term.term,
+                "translation": term.translation,
+                "translation_plural": term.translation_plural,
+            }
+            for term in instance.terminology_dict.all()
         ]
 
     def get_workflowproject_set(self, instance):
@@ -1049,8 +1059,10 @@ class WorkflowSerializerShallow(
             "ponderation_theory",
             "ponderation_practical",
             "ponderation_individual",
-        ]    
-    
+            "time_general_hours",
+            "time_specific_hours",
+        ]
+
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     weekworkflow_set = serializers.SerializerMethodField()
@@ -1091,9 +1103,7 @@ class WorkflowSerializerShallow(
         instance.description = validated_data.get(
             "description", instance.description
         )
-        instance.code = validated_data.get(
-            "code", instance.code
-        )
+        instance.code = validated_data.get("code", instance.code)
         instance.outcomes_type = validated_data.get(
             "outcomes_type", instance.outcomes_type
         )
@@ -1117,6 +1127,12 @@ class WorkflowSerializerShallow(
         )
         instance.ponderation_individual = validated_data.get(
             "ponderation_individual", instance.ponderation_individual
+        )
+        instance.time_general_hours = validated_data.get(
+            "time_general_hours", instance.time_general_hours
+        )
+        instance.time_specific_hours = validated_data.get(
+            "time_specific_hours", instance.time_specific_hours
         )
         instance.save()
         return instance
@@ -1155,6 +1171,8 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "ponderation_theory",
             "ponderation_practical",
             "ponderation_individual",
+            "time_general_hours",
+            "time_specific_hours",
         ]
 
     def get_author_id(self, instance):
@@ -1202,6 +1220,8 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "ponderation_theory",
             "ponderation_practical",
             "ponderation_individual",
+            "time_general_hours",
+            "time_specific_hours",
         ]
 
     def get_author_id(self, instance):
@@ -1249,6 +1269,8 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "ponderation_theory",
             "ponderation_practical",
             "ponderation_individual",
+            "time_general_hours",
+            "time_specific_hours",
         ]
 
     def get_author_id(self, instance):
@@ -1300,8 +1322,8 @@ class InfoBoxSerializer(
             return True
         else:
             return False
-        
-    def get_code(self,instance):
+
+    def get_code(self, instance):
         if hasattr(instance, "code"):
             return instance.code
         else:

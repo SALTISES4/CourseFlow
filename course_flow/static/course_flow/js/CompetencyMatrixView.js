@@ -7,7 +7,7 @@ import {getOutcomeByID, getWeekWorkflowByID, getWeekByID, getNodeWeekByID, getNo
 import {TableOutcomeNode} from "./OutcomeNode";
 
 
-//Represents the entire outcomeview, barring top level workflow stuff
+//Creates a competency matrix. Probably should only be active at the program level.
 class CompetencyMatrixView extends ComponentJSON{
     constructor(props){
         super(props);
@@ -42,6 +42,10 @@ class CompetencyMatrixView extends ComponentJSON{
                             <div class="outcome-head"></div>
                             <div class="table-cell nodewrapper blank"><div class="outcome"></div></div>
                             <div class="outcome-cells">{outcomes}</div>
+                            <div class="table-cell nodewrapper blank"><div class="outcome"></div></div>
+                            <div class="table-cell nodewrapper"><div class="outcome">{gettext("General Education")}</div></div>
+                            <div class="table-cell nodewrapper"><div class="outcome">{gettext("Specific Education")}</div></div>
+                            <div class="table-cell nodewrapper"><div class="outcome">{gettext("Total Hours")}</div></div>
                             <div class="table-cell nodewrapper blank"><div class="outcome"></div></div>
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("Theory")}</div></div>
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("Practical")}</div></div>
@@ -83,6 +87,10 @@ class CompetencyMatrixView extends ComponentJSON{
         if(week_data.title)text = week_data.title;
         let row = text+",";
         row+=outcome_ids.map(id=>"").join(",")+",";
+        row+=","+totals_data.general_education;
+        row+=","+totals_data.specific_education;
+        row+=","+(totals_data.general_education+totals_data.specific_education);
+        row+=",";
         row+=","+totals_data.theory;
         row+=","+totals_data.practical;
         row+=","+totals_data.individual;
@@ -129,9 +137,17 @@ class CompetencyMatrixView extends ComponentJSON{
             
             
         }).join(",");
-        console.log("linked workflow data");
-        console.log(linked_workflow_data);
         if(linked_workflow_data){
+            row+=",";
+            let general_education = linked_workflow_data.time_general_hours;
+            row+=","+general_education;
+            if(!general_education)general_education=0;
+            totals_data.general_education+=general_education;
+            let specific_education = linked_workflow_data.time_specific_hours;
+            row+=","+specific_education;
+            if(!specific_education)specific_education=0;
+            totals_data.specific_education+=specific_education;
+            row+=","+(general_education+specific_education);
             row+=",";
             let theory = linked_workflow_data.ponderation_theory
             row+=","+theory;
@@ -153,14 +169,13 @@ class CompetencyMatrixView extends ComponentJSON{
             row+=","+time_required;
             totals_data.required+=time_required;
         }
-        else row+=",,,,,,";
+        else row+=",,,,,,,,,,";
         return row;
     }
 
     outputCSV(){
         
         let state = this.props.renderer.store.getState();
-        console.log(state);
         
         //Get the top row of competencies
         let outcomes = this.getOutcomes(this.props.outcomes_tree,state,outcomes);
@@ -168,18 +183,16 @@ class CompetencyMatrixView extends ComponentJSON{
         let outcomes_row = ","+outcomes_displayed.map(outcome=>{
             return '"'+Constants.csv_safe(outcome.rank.join(".")+" - "+outcome.data.title)+'"';
         }).join(",");
-        outcomes_row+=",,Theory,Practical,Individual,Total,Credits";
-        console.log(outcomes_row);
+        outcomes_row+=",,Gen Ed, Specific Ed,Total Hours,,Theory,Practical,Individual,Total,Credits";
         
         //Get individual weeks and nodes
         let weeks = this.getWeeks(state)
-        console.log(weeks);
         
         
         //Convert each week/node into a row
         let rows=[outcomes_row];
         weeks.forEach((week,i)=>{
-            let totals_data = {theory:0,practical:0,individual:0,total:0,required:0};
+            let totals_data = {theory:0,practical:0,individual:0,total:0,required:0,general_education:0,specific_education:0};
             week.nodes.forEach(node=>{
                 let node_row = this.createNodeRow(state,node,outcomes_displayed,totals_data);
                 rows.push(node_row);
@@ -320,6 +333,10 @@ class MatrixWeekViewUnconnected extends ComponentJSON{
                     <div class="table-cell blank"></div>
                     {outcomecells}
                     <div class="table-cell blank"></div>
+                    <div class="table-cell">{this.props.general_education}</div>
+                    <div class="table-cell">{this.props.specific_education}</div>
+                    <div class="table-cell">{this.props.general_education+this.props.specific_education}</div>
+                    <div class="table-cell blank"></div>
                     <div class="table-cell">{this.props.total_theory}</div>
                     <div class="table-cell">{this.props.total_practical}</div>
                     <div class="table-cell">{this.props.total_individual}</div>
@@ -334,12 +351,17 @@ class MatrixWeekViewUnconnected extends ComponentJSON{
 }
 const mapWeekStateToProps = (state,own_props)=>{
     let data = getWeekByID(state,own_props.objectID).data;
-    console.log(data);
     let node_weeks = Constants.filterThenSortByID(state.nodeweek,data.nodeweek_set);
     let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node));
-    console.log("nodes_data");
-    console.log(nodes_data);
     let linked_wf_data = nodes_data.map(node=>node.linked_workflow_data);
+    let general_education = linked_wf_data.reduce((previousValue,currentValue)=>{
+        if(currentValue && currentValue.time_general_hours)return previousValue+currentValue.time_general_hours;
+        return previousValue;
+    },0);
+    let specific_education = linked_wf_data.reduce((previousValue,currentValue)=>{
+        if(currentValue && currentValue.time_specific_hours)return previousValue+currentValue.time_specific_hours;
+        return previousValue;
+    },0);
     let total_theory = linked_wf_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.ponderation_theory)return previousValue+currentValue.ponderation_theory;
         return previousValue;
@@ -354,16 +376,13 @@ const mapWeekStateToProps = (state,own_props)=>{
     },0);
     let total_time = total_theory+total_practical+total_individual;
     let total_required = linked_wf_data.reduce((previousValue,currentValue)=>{
-        console.log("parsing int");
-        console.log(currentValue);
-        console.log(parseInt(currentValue.time_required));
         if(currentValue && currentValue.time_required)return previousValue+parseInt(currentValue.time_required);
         return previousValue;
     },0);
     
     
     
-    return {data:data,total_theory:total_theory,total_practical:total_practical,total_individual:total_individual,total_required:total_required,total_time:total_time};
+    return {data:data,total_theory:total_theory,total_practical:total_practical,total_individual:total_individual,total_required:total_required,total_time:total_time,general_education:general_education,specific_education:specific_education};
 }
 export const MatrixWeekView = connect(
     mapWeekStateToProps,
@@ -455,10 +474,13 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
     
     getTimeData(){
         let linked_workflow_data = this.props.data.linked_workflow_data;
-        console.log(this.props.renderer);
         if(linked_workflow_data){
             return(
                 [
+                    <div class="table-cell">{linked_workflow_data.time_general_hours}</div>,
+                    <div class="table-cell">{linked_workflow_data.time_specific_hours}</div>,
+                    <div class="table-cell">{(linked_workflow_data.time_general_hours||0)+(linked_workflow_data.time_specific_hours||0)}</div>,
+                    <div class="table-cell blank"></div>,
                     <div class="table-cell">{linked_workflow_data.ponderation_theory}</div>,
                     <div class="table-cell">{linked_workflow_data.ponderation_practical}</div>,
                     <div class="table-cell">{linked_workflow_data.ponderation_individual}</div>,
@@ -471,6 +493,10 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
         }else{
             return(
                 [
+                    <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
+                    <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
+                    <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
+                    <div titletext={gettext("No linked workflow")} class="table-cell"></div>,
                     <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
                     <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
                     <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,

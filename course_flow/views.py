@@ -1501,15 +1501,19 @@ def save_serializer(serializer) -> HttpResponse:
 Contextual information methods
 """
 
+
 @user_can_view("workflowPk")
 def get_parent_workflow_info(request: HttpRequest) -> HttpResponse:
-    workflow_id=json.loads(request.POST.get("workflowPk"))
+    workflow_id = json.loads(request.POST.get("workflowPk"))
     try:
-        parent_workflows = [node.get_workflow() for node in Node.objects.filter(linked_workflow__id=workflow_id)]
+        parent_workflows = [
+            node.get_workflow()
+            for node in Node.objects.filter(linked_workflow__id=workflow_id)
+        ]
         data_package = InfoBoxSerializer(parent_workflows, many=True).data
     except AttributeError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "parent_workflows":data_package})
+    return JsonResponse({"action": "posted", "parent_workflows": data_package})
 
 
 @user_can_edit(False)
@@ -2678,6 +2682,7 @@ def cleanup_workflow_post_duplication(workflow, project):
 Creation methods
 """
 
+
 @user_can_edit("projectPk")
 def add_terminology(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
@@ -2685,16 +2690,22 @@ def add_terminology(request: HttpRequest) -> HttpResponse:
     translation = json.loads(request.POST.get("translation"))
     translation_plural = json.loads(request.POST.get("translation_plural"))
     try:
-        CustomTerm.objects.filter(
-            term=term,project=project,
-        ).delete()
+        CustomTerm.objects.filter(term=term, project=project,).delete()
         project.terminology_dict.create(
-            term=term,translation=translation,translation_plural=translation_plural
+            term=term,
+            translation=translation,
+            translation_plural=translation_plural,
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted","new_dict":ProjectSerializerShallow(project).data["terminology_dict"]})
-    
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_dict": ProjectSerializerShallow(project).data[
+                "terminology_dict"
+            ],
+        }
+    )
 
 
 @user_can_edit(False)
@@ -3368,7 +3379,7 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     outcome_id = json.loads(request.POST.get("outcomePk"))
     degree = json.loads(request.POST.get("degree"))
-    
+
     try:
         if (
             OutcomeNode.objects.filter(
@@ -3496,7 +3507,9 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             if node.linked_workflow is None:
                 raise ValidationError("Project could not be found")
             linked_workflow = node.linked_workflow.id
-            linked_workflow_data = LinkedWorkflowSerializerShallow(node.linked_workflow).data
+            linked_workflow_data = LinkedWorkflowSerializerShallow(
+                node.linked_workflow
+            ).data
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -3565,6 +3578,7 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
 Delete methods
 """
 
+
 @user_can_edit(False)
 def remove_comment(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -3582,7 +3596,7 @@ def remove_comment(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-#@user_can_delete(False)
+@user_can_delete(False)
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))

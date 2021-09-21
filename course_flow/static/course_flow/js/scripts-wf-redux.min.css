@@ -1091,15 +1091,41 @@ button, input[type="submit"]{
     border:1px solid lightgray;
 }
 
-.workflow-view-select > .active{
+.workflow-view-select .active{
     background:#1976bc;
     color:white;
 }
 
-.workflow-view-select > .disabled{
+.workflow-view-select .disabled{
     background:lightgrey;
     color:darkgrey;
     pointer-events: none;    
+}
+
+.other-views{
+    position:relative;
+    overflow:visible;
+}
+
+.views-dropdown{
+    display:none;
+    z-index:5;
+    background:white;
+    position:absolute;
+    padding:10px;
+    border-radius:5px;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+    margin-top:5px;
+    margin-left:-5px;
+}
+
+.views-dropdown div{
+    display:block;
+    margin:2px;
+}
+
+.views-dropdown.toggled{
+    display:block;
 }
 
 .workflow-details{
@@ -1869,6 +1895,20 @@ ol.children-block{
 .competency-matrix .outcome-head{
     display:inline-block;
     width:160px;
+}
+
+.workflow-grid{
+    display:flex;
+}
+
+.workflow-grid .node-top-row{
+    border-radius:0 0 5px 5px;
+}
+
+.grid-ponderation{
+    font-size:14px;
+    font-weight:600;
+    margin:5px;
 }
 
 .outcome-row:not(.node-row):hover, .outcome-row:not(.node-row):hover .total-cell{
