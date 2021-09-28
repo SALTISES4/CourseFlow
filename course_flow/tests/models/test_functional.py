@@ -1130,7 +1130,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert (
                 "new strategy"
                 in selenium.find_element_by_css_selector(
-                    "#workflowtitle div"
+                    "#workflowtitle a"
                 ).text
             )
             self.assertEqual(
@@ -1851,7 +1851,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert (
                 workflow_types[i - 1]
                 in selenium.find_element_by_css_selector(
-                    "#workflowtitle div"
+                    "#workflowtitle a"
                 ).text
             )
             selenium.get(this_url)
@@ -1876,7 +1876,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert (
                 workflow_type
                 in selenium.find_element_by_css_selector(
-                    "#workflowtitle div"
+                    "#workflowtitle a"
                 ).text
             )
 

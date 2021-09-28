@@ -89,8 +89,9 @@ button:hover{
     margin-left:20px;
 }
 
-.workflow-title-bar > div{
+.workflow-title-bar > div, .workflow-title-bar > a{
     padding:10px;
+    display:inline-block;
 }
 
 .floatbar{

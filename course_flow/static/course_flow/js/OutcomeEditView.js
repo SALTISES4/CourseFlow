@@ -124,8 +124,8 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected{
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(this.state.is_dropped)droptext="hide";
-        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+        if(this.state.is_dropped)droptext=gettext("hide");
+        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
         
         return(

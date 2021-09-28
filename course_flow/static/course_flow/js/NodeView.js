@@ -76,7 +76,7 @@ class NodeView extends ComponentJSON{
         if(data.linked_workflow)linkIcon=(
             <div class="hover-shade linked-workflow" onClick={this.doubleClick.bind(this)}>
                 <img src={iconpath+"wflink.svg"}/>
-                <div>Visit linked workflow</div>
+                <div>{gettext("Visit linked workflow")}</div>
             </div>
         );
         let dropText = "";
@@ -167,8 +167,7 @@ class NodeView extends ComponentJSON{
     doubleClick(evt){
         evt.stopPropagation();
         if(this.props.data.linked_workflow){
-            if(read_only)window.location=workflow_update_path.replace("0",this.props.data.linked_workflow);
-            else window.location=workflow_update_path.replace("0",this.props.data.linked_workflow);
+            window.location=update_path["workflow"].replace("0",this.props.data.linked_workflow);
         }
     }
 

@@ -143,7 +143,7 @@ export class WorkflowRenderer{
         this.column_colours = {}
         this.read_only = data_package.read_only;
         if(data_package.project){
-            $("#floatbar").append("<a id='project-return' href='"+project_update_path.replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>Project</div></div>");
+            $("#floatbar").append("<a id='project-return' href='"+update_path["project"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Project")+"</div></div>");
             let custom_text_base = Constants.custom_text_base();
             for(let i=0;i<data_package.project.terminology_dict.length;i++){
                 let term = data_package.project.terminology_dict[i];

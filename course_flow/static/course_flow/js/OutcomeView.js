@@ -54,8 +54,8 @@ class OutcomeView extends ComponentJSON{
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(data.is_dropped)droptext="hide";
-        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+        if(data.is_dropped)droptext=gettext("hide");
+        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
         
         
@@ -83,7 +83,7 @@ class OutcomeView extends ComponentJSON{
                 <ol class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
                     {children}
                 </ol>
-                {(!read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>+ Add New</div>
+                {(!read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>{gettext("+ Add New")}</div>
                 }
                 {(!read_only) && <div class="mouseover-actions">
                     {actions}
@@ -198,8 +198,8 @@ export class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(this.state.is_dropped)droptext="hide";
-        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+        if(this.state.is_dropped)droptext=gettext("hide");
+        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
         return(
             <div
@@ -326,8 +326,8 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(this.state.is_dropped)droptext="hide";
-        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+        if(this.state.is_dropped)droptext=gettext("hide");
+        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
         return(
             <div
@@ -403,8 +403,8 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(data.is_dropped)droptext="hide";
-        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+        if(data.is_dropped)droptext=gettext("hide");
+        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
 
         
@@ -508,7 +508,7 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
     deleteSelf(data){
         let props=this.props;
         //Temporary confirmation; add better confirmation dialogue later
-        if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
+        if(window.confirm(gettext("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?"))){
             props.renderer.tiny_loader.startLoad();
             updateOutcomehorizontallinkDegree(data.outcome,data.parent_outcome,0,(response_data)=>{
                 let action = updateOutcomehorizontallinkDegreeAction(response_data);
@@ -547,8 +547,8 @@ export const OutcomeHorizontalLinkView = connect(
 //        else dropIcon = "droptriangledown";
 //        
 //        let droptext;
-//        if(this.state.is_dropped)droptext="hide";
-//        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+//        if(this.state.is_dropped)droptext=gettext("hide");
+//        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
 //        
 //        return(
 //            <div

@@ -5,7 +5,7 @@ from functools import reduce
 from itertools import chain, islice, tee
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
@@ -169,6 +169,10 @@ def registration_view(request):
         request, "course_flow/registration/registration.html", {"form": form}
     )
 
+@ajax_login_required
+def logout_view(request):
+    logout(request,request.user)
+    return redirect("/login/")
 
 class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def test_func(self):
@@ -403,7 +407,7 @@ def get_my_favourites(user):
             "title": _("My Favourites"),
             "sections": [
                 {
-                    "title": _(""),
+                    "title": "",
                     "object_type": "project",
                     "objects": InfoBoxSerializer(
                         get_content_objects(favourites),
@@ -421,7 +425,7 @@ def get_my_favourites(user):
             "title": _("Projects"),
             "sections": [
                 {
-                    "title": _(""),
+                    "title": "",
                     "object_type": "project",
                     "objects": InfoBoxSerializer(
                         get_content_objects(
@@ -441,7 +445,7 @@ def get_my_favourites(user):
             "title": _("Activities"),
             "sections": [
                 {
-                    "title": _(""),
+                    "title": "",
                     "object_type": "activity",
                     "objects": InfoBoxSerializer(
                         get_content_objects(
@@ -461,7 +465,7 @@ def get_my_favourites(user):
             "title": _("Courses"),
             "sections": [
                 {
-                    "title": _(""),
+                    "title": "",
                     "object_type": "course",
                     "objects": InfoBoxSerializer(
                         get_content_objects(
@@ -481,7 +485,7 @@ def get_my_favourites(user):
             "title": _("Program"),
             "sections": [
                 {
-                    "title": _(""),
+                    "title": "",
                     "object_type": "program",
                     "objects": InfoBoxSerializer(
                         get_content_objects(

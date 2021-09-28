@@ -13,6 +13,7 @@ app_name = "course_flow"
 def course_flow_patterns():
     return [
         url(r"home/$", views.home_view, name="home"),
+        url(r"logout/$", views.logout_view, name="logout"),
         url(r"myprojects/$", views.myprojects_view, name="my-projects"),
         url(r"mytemplates/$", views.mytemplates_view, name="my-templates"),
         url(r"myfavourites/$", views.myfavourites_view, name="my-favourites"),

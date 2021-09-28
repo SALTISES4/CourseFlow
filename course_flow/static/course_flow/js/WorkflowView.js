@@ -37,19 +37,19 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         
         var selector = this;
         let publish_icon = iconpath+'view_none.svg';
-        let publish_text = "PRIVATE";
+        let publish_text = gettext("PRIVATE");
         if(data.published){
             publish_icon = iconpath+'published.svg';
-            publish_text = "PUBLISHED";
+            publish_text = gettext("PUBLISHED");
         }
         let share;
-        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
+        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
         let workflow_content;
         if(renderer.view_type=="outcometable"){
             workflow_content=(
                 <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[];
+            this.allowed_tabs=[1];
         }
         else if(renderer.view_type=="competencymatrix"){
             workflow_content=(
@@ -68,7 +68,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             workflow_content=(
                 <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[];
+            this.allowed_tabs=[1];
         }
         else if(renderer.view_type=="alignmentanalysis"){
             workflow_content=(
@@ -146,7 +146,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     {!read_only &&
                         reactDom.createPortal(
                             <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-                                <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
+                                <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
                             </div>,
                             $("#viewbar")[0]
                         )
@@ -155,7 +155,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     {workflow_content}
                     
                     {!read_only &&
-                        <NodeBar renderer={this.props.renderer}/>
+                        <NodeBar view_type={renderer.view_type} renderer={this.props.renderer}/>
                     }
                     {!read_only && !data.is_strategy &&
                         <OutcomeBar renderer={this.props.renderer}/>
@@ -239,7 +239,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
         return(
             <div class="workflow-details">
                 {reactDom.createPortal(
-                <div class="topdropwrapper hover-shade" title="Show/Hide Legend">
+                <div class="topdropwrapper hover-shade" title={gettext("Show/Hide Legend")}>
                     <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
                 </div>,
                 $("#viewbar")[0]
@@ -316,6 +316,26 @@ class NodeBarUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        
+        
+        if(this.props.renderer.view_type=="outcometable"||this.props.renderer.view_type=="horizontaloutcometable"){
+            sort_type=(
+                <div class="node-bar-sort-block">
+                    {this.props.renderer.outcome_sort_choices.map((choice)=>
+                        <div><input type="radio" id={"sort_type_choice"+choice.type} name="sort_type" value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.inputChanged.bind(this,"outcomes_sort")}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></div>
+
+                    )}
+                </div>
+            );
+            return reactDom.createPortal(
+                <div id="node-bar-workflow" class="right-panel-inner">
+                    <h4>Sort Nodes:</h4>
+                    {sort_type}
+                </div>
+            ,$("#node-bar")[0]);
+        }
+        
+        
         var nodebarcolumnworkflows = data.columnworkflow_set.map((columnworkflow)=>
             <NodeBarColumnWorkflow key={columnworkflow} renderer={this.props.renderer} objectID={columnworkflow}/>
         );
@@ -337,22 +357,13 @@ class NodeBarUnconnected extends ComponentJSON{
             <NodeBarWeekWorkflow key={weekworkflow} renderer={this.props.renderer} objectID={weekworkflow}/>
         );
         var sort_type;
-        if(this.props.renderer.view_type=="outcometable"||this.props.renderer.view_type=="horizontaloutcometable")sort_type=(
-            <div class="node-bar-sort-block">
-                <p>Sort Nodes By:</p>
-                {this.props.renderer.outcome_sort_choices.map((choice)=>
-                    <span><input type="radio" id={"sort_type_choice"+choice.type} name="sort_type" value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.inputChanged.bind(this,"outcomes_sort")}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></span>
-                    
-                )}
-            </div>
-        );
         
         
         
         
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
-                <h4 class="drag-and-drop">Nodes:</h4>
+                <h4 class="drag-and-drop">{gettext("Nodes")}:</h4>
                 <div class="node-bar-column-block">
                     {nodebarcolumnworkflows}
                 </div>
@@ -395,12 +406,12 @@ class StrategyBarUnconnected extends ComponentJSON{
         
         return reactDom.createPortal(
             <div id="strategy-bar-workflow" class="right-panel-inner">
-                <h4 class="drag-and-drop">My Strategies:</h4>
+                <h4 class="drag-and-drop">{gettext("My Strategies")}:</h4>
                 <div class="strategy-bar-strategy-block">
                     {strategies}
                 </div>
                 {(saltise_strategies.length>0) &&
-                    [<h4 class="drag-and-drop">SALTISE Strategies:</h4>,
+                    [<h4 class="drag-and-drop">{gettext("SALTISE Strategies")}:</h4>,
                     <div class="strategy-bar-strategy-block">
                         {saltise_strategies}
                     </div>
@@ -442,7 +453,7 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
         return(
             <div class="workflow-details">
                 {reactDom.createPortal(
-                    <div class="topdropwrapper hover-shade" title="Show/Hide Legend">
+                    <div class="topdropwrapper hover-shade" title={gettext("Show/Hide Legend")}>
                         <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
                     </div>,
                     $("#viewbar")[0]
@@ -486,27 +497,27 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
         console.log("Parent workflow indicator");
         if(this.state.has_loaded){
             let parent_workflows = this.state.parent_workflows.map(parent_workflow=>
-                <a href={workflow_update_path.replace("0",parent_workflow.id)} class="panel-favourite">
-                    {parent_workflow.title || "Unnamed workflow"}
+                <a href={update_path["workflow"].replace("0",parent_workflow.id)} class="panel-favourite">
+                    {parent_workflow.title || gettext("Unnamed workflow")}
                 </a>
             );
             let child_workflows = this.props.child_workflows.map(child_workflow=>
-                <a href={workflow_update_path.replace("0",child_workflow.id)} class="panel-favourite">
-                    {child_workflow.title || "Unnamed workflow"}
+                <a href={update_path["workflow"].replace("0",child_workflow.id)} class="panel-favourite">
+                    {child_workflow.title || gettext("Unnamed workflow")}
                 </a>
             );
             console.log(parent_workflows);
             console.log(child_workflows);
             let return_val=[
                 <hr/>,
-                <a class="panel-item">{"Quick Navigation"}</a>
+                <a class="panel-item">{gettext("Quick Navigation")}</a>
             ]
             if(parent_workflows.length>0)return_val.push(
-                <a class="panel-item">{"Used in:"}</a>,
+                <a class="panel-item">{gettext("Used in:")}</a>,
                 ...parent_workflows
             );
             if(child_workflows.length>0)return_val.push(
-                <a class="panel-item">{"Workflows Used:"}</a>,
+                <a class="panel-item">{gettext("Workflows Used:")}</a>,
                 ...child_workflows
             );
             return reactDom.createPortal(
@@ -529,8 +540,8 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
 
     getTypeIndicator(data){
         let type=data.type
-        let type_text = type;
-        if(data.is_strategy)type_text+=" strategy";
+        let type_text = gettext(type);
+        if(data.is_strategy)type_text+=gettext(" strategy");
         return (
             <div class={"workflow-type-indicator "+type}>{type_text}</div>
         );

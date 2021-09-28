@@ -730,6 +730,7 @@ class ColumnSerializerShallow(
             "title",
             "column_type",
             "column_type_display",
+            "colour",
             "visible",
             "comments",
         ]
@@ -742,6 +743,7 @@ class ColumnSerializerShallow(
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
+        instance.colour = validated_data.get("colour",instance.colour)
         instance.save()
         return instance
 

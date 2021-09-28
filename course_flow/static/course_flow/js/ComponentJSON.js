@@ -168,7 +168,7 @@ export class ComponentJSON extends React.Component{
     addDeleteSelf(data,alt_icon){
         let icon=alt_icon || "rubbish.svg";
         return (
-            <ActionButton button_icon={icon} button_class="delete-self-button" titletext="Delete" handleClick={this.deleteSelf.bind(this,data)}/>
+            <ActionButton button_icon={icon} button_class="delete-self-button" titletext={gettext("Delete")} handleClick={this.deleteSelf.bind(this,data)}/>
         );
     }
     
@@ -176,12 +176,12 @@ export class ComponentJSON extends React.Component{
         //Temporary confirmation; add better confirmation dialogue later
         if(this.props.renderer)this.props.renderer.selection_manager.deleted(this);
         if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
-            alert("You cannot delete the last "+this.objectType);
+            alert(gettext("You cannot delete the last ")+this.objectType);
             return;
         }
         let extra_data = this.props.column_order;
         if(Constants.object_dictionary[this.objectType]=="outcome")extra_data=this.props.outcomenodes;
-        if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
+        if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.object_dictionary[this.objectType]+"?")){
             this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,extra_data));
         }
     }
@@ -189,7 +189,7 @@ export class ComponentJSON extends React.Component{
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDuplicateSelf(data){
         return (
-            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext="Duplicate" handleClick={this.duplicateSelf.bind(this,data)}/>
+            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext={gettext("Duplicate")} handleClick={this.duplicateSelf.bind(this,data)}/>
         );
     }
     
@@ -214,7 +214,7 @@ export class ComponentJSON extends React.Component{
     //Adds a button that inserts a sibling below the item. 
     addInsertSibling(data){
         return(
-            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext="Insert Below" handleClick={this.insertSibling.bind(this,data)}/>
+            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext={gettext("Insert Below")} handleClick={this.insertSibling.bind(this,data)}/>
         );
     }
     
@@ -240,7 +240,7 @@ export class ComponentJSON extends React.Component{
     //Adds a button that inserts a child to them item
     addInsertChild(data){
         return(
-            <ActionButton button_icon="create_new_child.svg" button_class="insert-child-button" titletext="Insert Child" handleClick={this.insertChild.bind(this,data)}/>
+            <ActionButton button_icon="create_new_child.svg" button_class="insert-child-button" titletext={gettext("Insert Child")} handleClick={this.insertChild.bind(this,data)}/>
         );
     }
     
@@ -262,7 +262,7 @@ export class ComponentJSON extends React.Component{
         let commentbox;
         return(
             [
-                <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext="Comments" handleClick={this.commentClick.bind(this)}/>,
+                <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext={gettext("Comments")} handleClick={this.commentClick.bind(this)}/>,
                 <CommentBox show={this.state.show_comments} comments={this.state.comment_data} parent={this}/>
             ]
         );
@@ -297,28 +297,28 @@ export class ComponentJSON extends React.Component{
             var props = this.props;
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
-                    <h3>{"Edit "+type+":"}</h3>
+                    <h3>{gettext("Edit ")+type+":"}</h3>
                     {((type=="outcome" && data.depth==0)||(type=="workflow" && data.type=="course")) &&
                         <div>
-                            <h4>Code (Optional):</h4>
+                            <h4>{gettext("Code (Optional)")}:</h4>
                             <input autocomplete="off" id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
                         </div>
                     }
                     {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
-                            <h4>Title:</h4>
+                            <h4>{gettext("Title")}:</h4>
                             <input autocomplete="off" id="title-editor" type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
-                            <h4>Description:</h4>
+                            <h4>{gettext("Description")}:</h4>
                             <QuillDiv text={data.description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
                         <div>
-                            <h4>Context:</h4>
+                            <h4>{gettext("Context")}:</h4>
                             <select  id="context-editor" value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
                                 {this.props.renderer.context_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -328,7 +328,7 @@ export class ComponentJSON extends React.Component{
                     }
                     {type=="node" && data.node_type<2 &&
                         <div>
-                            <h4>Task:</h4>
+                            <h4>{gettext("Task")}:</h4>
                             <select id="task-editor" value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
                                 {this.props.renderer.task_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -349,6 +349,14 @@ export class ComponentJSON extends React.Component{
                             </div>
                         </div>
                     }
+                    {(type=="column") &&
+                        <div>
+                            <h4>{gettext("Colour")}:</h4>
+                            <div>
+                                <input autocomplete="off" id="colour-editor" class="half-width" type="color" value={"#"+data.colour?.toString(16)} maxlength="30" onChange={this.inputChanged.bind(this,"colour")}/>
+                            </div>
+                        </div>
+                    }
                     {(type=="workflow" && data.type=="course") &&
                         <div>
                             <h4>{gettext("Ponderation")}:</h4>
@@ -366,7 +374,7 @@ export class ComponentJSON extends React.Component{
                     }
                     {type=="node" && data.node_type!=0 &&
                         <div>
-                            <h4>Linked Workflow:</h4>
+                            <h4>{gettext("Linked Workflow")}:</h4>
                             <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
                             <button  id="linked-workflow-editor" onClick={()=>{
                                 getLinkedWorkflowMenu(data,(response_data)=>{
@@ -382,15 +390,15 @@ export class ComponentJSON extends React.Component{
                     }
                     {type=="node" && data.node_type!=2 &&
                         <div>
-                            <h4>Other:</h4>
+                            <h4>{gettext("Other")}:</h4>
                             <input type="checkbox" name="has_autolink" checked={data.has_autolink} onChange={this.checkboxChanged.bind(this,"has_autolink")}/>
-                            <label for="has_autolink">Draw arrow to next node</label>
+                            <label for="has_autolink">{gettext("Draw arrow to next node")}</label>
                         </div>
                     }
                     {type=="workflow" &&
                         <div>
-                            <h4>Settings:</h4>
-                            <label for="outcomes_type">Outcomes Style</label>
+                            <h4>{gettext("Settings")}:</h4>
+                            <label for="outcomes_type">{gettext("Outcomes Style")}</label>
                             <select name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
                                 {this.props.renderer.outcome_type_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -399,14 +407,14 @@ export class ComponentJSON extends React.Component{
                             {data.is_strategy && 
                                 [
                                 <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>,
-                                <label for="is_published">Published</label>
+                                <label for="is_published">{gettext("Published")}</label>
                                 ]
                             }
                         </div>
                     }
                     {type=="week" && data.week_type <2 &&
                         <div>
-                            <h4>Strategy:</h4>
+                            <h4>{gettext("Strategy")}:</h4>
                             <select value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
                                 {this.props.renderer.strategy_classification_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -422,17 +430,17 @@ export class ComponentJSON extends React.Component{
                                 })
                             }}>
                                 {data.is_strategy &&
-                                    "Remove Strategy Status"
+                                    gettext("Remove Strategy Status")
                                 }
                                 {!data.is_strategy &&
-                                    "Save as Template "
+                                    gettext("Save as Template")
                                 }
                             </button>
                         </div>
                     }
 
                     {(!no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && 
-                        [<h4>Delete:</h4>,
+                        [<h4>{gettext("Delete")}:</h4>,
                         this.addDeleteSelf(data)]
                     }
                 </div>
@@ -443,6 +451,7 @@ export class ComponentJSON extends React.Component{
     inputChanged(field,evt){
         let value=evt.target.value;
         if(!value)value="";
+        if(field=="colour")value=parseInt(value.replace("#",""),16);
         if(evt.target.type=="number"&&value=="")value=0;
         this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,value));
     }
@@ -702,7 +711,7 @@ export class CommentBox extends React.Component{
                     {comment.text}
                 </div>
                 <div class="comment-by">
-                    { "-"+comment.user+" on "+comment.created_on}
+                    { "-"+comment.user+" ("+comment.created_on+")"}
                 </div>
                 {!read_only && <div class="mouseover-actions">
                     <div class="window-close-button" onClick={this.removeComment.bind(this,comment.id)}>
@@ -723,7 +732,7 @@ export class CommentBox extends React.Component{
                     {comments}
                 </div>
                 <textarea ref={this.input}/>
-                <button class="menu-create" onClick={this.appendComment.bind(this)}>Submit</button>
+                <button class="menu-create" onClick={this.appendComment.bind(this)}>{gettext("Submit")}</button>
             </div>,
             comment_indicator
             ],
@@ -734,7 +743,7 @@ export class CommentBox extends React.Component{
     removeComment(id){
         let parent = this.props.parent;
         let props = parent.props;
-        if(window.confirm("Are you sure you want to permanently clear this comment?")){
+        if(window.confirm(gettext("Are you sure you want to permanently clear this comment?"))){
             removeComment(props.objectID,Constants.object_dictionary[parent.objectType],id,
                 parent.reloadComments.bind(parent)
             );
@@ -787,7 +796,7 @@ export class WorkflowTitle extends React.Component{
         
         
         return (
-            <div class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
+            <a href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
         )
     }
 }

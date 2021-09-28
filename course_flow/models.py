@@ -37,9 +37,6 @@ class Project(models.Model):
     workflows = models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
     )
-    #    outcomes = models.ManyToManyField(
-    #        "Outcome", through="OutcomeProject", blank=True
-    #    )
 
     is_original = models.BooleanField(default=False)
     parent_project = models.ForeignKey(

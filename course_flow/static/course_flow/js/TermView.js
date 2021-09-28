@@ -39,6 +39,7 @@ class TermView extends WeekViewUnconnected{
                         {this.addInsertSibling(data)}
                         {this.addDuplicateSelf(data)}
                         {this.addDeleteSelf(data)}
+                        {this.addCommenting(data)}
                     </div>
                 </div>
                 }

@@ -1,5 +1,6 @@
 from django.apps import AppConfig
-
+from .checks import check_return_url
+from django.core.checks import register
 
 class CourseFlowConfig(AppConfig):
     name = "course_flow"
@@ -10,3 +11,4 @@ class CourseFlowConfig(AppConfig):
         from .lti import ApplicationHookManager  # noqa
 
         LTIView.register_authentication_manager(ApplicationHookManager())
+        register(check_return_url)

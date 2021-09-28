@@ -140,6 +140,12 @@ export const parent_workflow_type = {
     course:"program",
     activity:"course"
 }
+//missing_translations, DO NOT DELETE. This will ensure that a few "utility" translations that don't otherwise show up get translated
+function missing_translations(){
+    gettext("activity");
+    gettext("course");
+    gettext("program");
+}
 
 
 //Get translate from an svg transform

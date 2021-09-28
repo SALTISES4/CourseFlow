@@ -37,7 +37,8 @@ class ColumnView extends ComponentJSON{
     }
     
     getColour(){
-        return Constants.default_column_settings[this.props.data.column_type].colour;
+        if(this.props.data.colour===null)return Constants.default_column_settings[this.props.data.column_type].colour;
+        else return "#"+this.props.data.colour?.toString(16);
     }
 
     getIcon(){
