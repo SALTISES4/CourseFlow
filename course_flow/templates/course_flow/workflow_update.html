@@ -107,6 +107,21 @@
 
   workflow_data_package = {{data_package|safe}}
   var workflow_renderer;
+    
+  const updateSocket = new WebSocket(
+      'ws://'+window.location.host+'/ws/update/'+workflow_data_package.data_flat.workflow.id+'/'
+  );
+
+   updateSocket.onmessage = function(e){
+       console.log("received a message");
+       const data = JSON.parse(e.data);
+       console.log(data);
+   }
+
+   updateSocket.onclose = function(e){
+       alert("Lost connection to server");
+   }
+   $("#container").on("click",()=>{updateSocket.send(JSON.stringify({message:"We did it!"}))});
    
   window.addEventListener("load", function(){
       workflow_renderer = new renderers.WorkflowRenderer(workflow_data_package);

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "channels",
 ]
 
 
@@ -66,6 +67,15 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "csp.middleware.CSPMiddleware",
 ]
+
+# ASGI
+ASGI_APPLICATION = "course_flow.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("127.0.0.1", 6379)],},
+    },
+}
 
 ROOT_URLCONF = "course_flow.test_urls"
 
