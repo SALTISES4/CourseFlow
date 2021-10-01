@@ -4,6 +4,8 @@ import time
 from functools import reduce
 from itertools import chain, islice, tee
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -24,6 +26,7 @@ from django.views.generic.edit import CreateView
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
+
 
 from .decorators import (
     ajax_login_required,
@@ -3370,10 +3373,16 @@ def update_value(request: HttpRequest) -> HttpResponse:
         serializer = serializer_lookups_shallow[object_type](
             object_to_update, data=data, partial=True
         )
+        
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)('workflow_2',
+            {'type':'workflow_message','message':'the workflow was updated'}
+        )
+        
+        
         return save_serializer(serializer)
     except ValidationError:
         return JsonResponse({"action": "error"})
-
     return JsonResponse({"action": "posted"})
 
 
