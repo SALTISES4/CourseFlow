@@ -202,7 +202,7 @@ class CompetencyMatrixView extends ComponentJSON{
             rows.push("\n");
         });
         
-        alert(gettext("Data has been output to csv and will appear in your downloads folder."));
+        alert(gettext("Data has been output to csv in your downloads folder."));
         
         Constants.download("outcomes_matrix.csv",rows.join("\n"));
         
