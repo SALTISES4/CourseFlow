@@ -1771,13 +1771,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         time.sleep(1)
 
         selenium.find_element_by_css_selector(".menu-create").click()
-        alert = wait.until(expected_conditions.alert_is_present())
-        selenium.switch_to.alert
-        assert (
-            alert.text
-            == "Data has been output to csv in your downloads folder."
-        )
-        selenium.switch_to.alert.accept()
+        
 
     def test_grid_view(self):
         selenium = self.selenium
