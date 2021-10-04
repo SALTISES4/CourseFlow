@@ -172,7 +172,7 @@ def registration_view(request):
 @ajax_login_required
 def logout_view(request):
     logout(request,request.user)
-    return redirect("/login/")
+    return redirect(reverse('login'))
 
 class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def test_func(self):
