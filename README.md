@@ -46,9 +46,10 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
         127.0.0.1:8000/register
 
-11. Create default strategies.
+11. Create default strategies and disciplines.
 
         (dev_venv) python3 course_flow.py create_saltise_strategies
+        (dev_venv) python3 course_flow.py create_base_disciplines
 
 12. For testing before commits, run:
 
@@ -61,3 +62,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 13. To package a version:
 
         tox --recreate
+        
+14. When using in another project:
+
+        add a COURSE_FLOW_RETURN_URL value to your settings.py

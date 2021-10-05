@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON";
+import {ComponentJSON, NodeTitle} from "./ComponentJSON";
 import {getNodeByID, getChildOutcomeWorkflowByID, getOutcomeByID} from "./FindState";
 import {updateOutcomehorizontallinkDegreeAction} from "./Reducers";
 import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
@@ -44,9 +44,11 @@ export class TableHorizontalOutcomeLinkUnconnected extends ComponentJSON{
         let value;
         if(props.data)value=0;
         else value=1;
+        props.renderer.tiny_loader.startLoad();
         updateOutcomehorizontallinkDegree(props.outcomeID,props.parent_outcomeID,value,
             (response_data)=>{
                 props.dispatch(updateOutcomehorizontallinkDegreeAction(response_data));
+                props.renderer.tiny_loader.endLoad();
             }
         );
         
@@ -165,7 +167,7 @@ const mapTableChildWorkflowStateToProps = (state,own_props)=>{
             return ({data:state.child_workflow[i],node_data:node});
         }
     }
-    return {data:null};
+    return {node_data:node};
 }
 export const TableChildWorkflowView = connect(
     mapTableChildWorkflowStateToProps,
@@ -174,12 +176,17 @@ export const TableChildWorkflowView = connect(
 
 class TableChildWorkflowHeaderUnconnected extends ComponentJSON{
     render(){
+        let node = this.props.node_data;
+        let node_title=<NodeTitle data={node}/>
         
         if(!this.props.data||this.props.data.outcomeworkflow_set.length==0){
             return (
-                <div class="table-cell disabled">
-                    <div class="child-outcome">
-                        {"<No outcomes for node>"}
+                <div class="horizontal-table-header">
+                    <div class="horizontal-table-node">{node_title}</div>
+                    <div class="table-cell disabled">
+                        <div class="child-outcome">
+                            {gettext("No outcomes or linked workflow")}
+                        </div>
                     </div>
                 </div>
             );
@@ -190,7 +197,10 @@ class TableChildWorkflowHeaderUnconnected extends ComponentJSON{
         );
         
         return(
-            cells
+            <div class="horizontal-table-header">
+                <div class="horizontal-table-node" style={{width:32*cells.length+"px"}}>{node_title}</div>
+                {cells}
+            </div>
         );
         
     }
@@ -207,7 +217,7 @@ class TableChildOutcomeHeaderUnconnected extends ComponentJSON{
         if(this.props.index>0)class_name+=" not-first-child-outcome";
         return(
             <div class={class_name}>
-                <div class="child-outcome">
+                <div class="child-outcome" title={data.title}>
                     {data.title}
                 </div>
             </div>

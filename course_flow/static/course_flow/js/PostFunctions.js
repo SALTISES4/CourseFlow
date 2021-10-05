@@ -207,6 +207,22 @@ export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log(
     }
 }
 
+//Removes the specified comment from the object
+export function removeComment(objectID,objectType,commentPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.remove_comment, {
+            objectID:JSON.stringify(objectID),
+            commentPk:JSON.stringify(commentPk),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 
 //Causes the specified throughmodel to update its degree
 export function updateOutcomenodeDegree(nodeID,outcomeID,value,callBackFunction=()=>console.log("success")){
@@ -287,6 +303,7 @@ export function insertedAt(objectID,objectType,parentID,parentType,newPosition,t
                 newPosition:JSON.stringify(newPosition),
                 throughType:JSON.stringify(throughType)
             }).done(function(data){
+                $(document).triggerHandler(throughType+"-dropped-success");
                 if(data.action == "posted") callBackFunction(data);
                 else fail_function();
             });
@@ -299,8 +316,8 @@ export function insertedAt(objectID,objectType,parentID,parentType,newPosition,t
 //Called when a node should have its column changed
 export function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
     
-    $(document).off("nodeweek-dropped.columnchange");
-    $(document).on("nodeweek-dropped.columnchange",()=>{
+    $(document).off("nodeweek-dropped-success.columnchange");
+    $(document).on("nodeweek-dropped-success.columnchange",()=>{
         try{
     
             $.post(post_paths.column_changed, {
@@ -464,6 +481,65 @@ export function getUsersForObject(objectID,objectType,callBackFunction=()=>conso
 export function getUserList(filter,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_user_list,{filter:JSON.stringify(filter)}).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the comments for a particular object
+export function getCommentsForObject(objectID,objectType,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_comments_for_object,{
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//add a comment to an object
+export function addComment(objectID,objectType,text,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.add_comment,{
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            text:JSON.stringify(text),
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//add a comment to an object
+export function addTerminology(projectPk,term,translation,translation_plural,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.add_terminology,{
+            projectPk:JSON.stringify(projectPk),
+            term:JSON.stringify(term),
+            translation:JSON.stringify(translation),
+            translation_plural:JSON.stringify(translation_plural),
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+
+//Get the comments for a particular object
+export function getParentWorkflowInfo(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_parent_workflow_info,{
+            workflowPk:JSON.stringify(workflowPk),
+        }).done(function(data){
             callBackFunction(data);
         });
     }catch(err){

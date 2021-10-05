@@ -18,51 +18,54 @@ class WorkflowOutcomeView extends ComponentJSON{
     
     render(){
         
-        /*for(let i=0;i<this.props.data.length;i++){
-            for(let j=0;j<this.props.data[i].nodes.length+2;j++){
-                if(j==0)headers.push(
-                    <div class="node-category-header">
-                    {this.props.data[i].title}
-                    </div>
-                );
-                else headers.push(
-                    <div class="node-category-header"></div>
-                )
-            }
-        }*/
-        let nodes;
-        if(this.props.renderer.view_type=="outcometable")nodes = this.props.data.map((nodecategory)=>
-            <div class="table-group">
-                <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
-                {nodecategory.nodes.map((node)=>
-                    <div class="table-cell nodewrapper">
-                        <NodeOutcomeView renderer={this.props.renderer} objectID={node}/>
-                    </div>
-                )}
-                <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
-            </div>
-        );
-        else nodes = nodes = this.props.data.map((nodecategory)=>
-            <div class="table-group">
-                <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
-                {nodecategory.nodes.map((node)=>
-                    <TableChildWorkflowHeader renderer={this.props.renderer} nodeID={node}/>
-                )}
-                <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
-            </div>
-        );
-        let outcomes = this.props.outcomeworkflows.map((outcomeworkflow)=>
-            <TableOutcomeWorkflowView renderer={this.props.renderer} objectID={outcomeworkflow} nodecategory={this.props.data} outcomes_type={this.props.outcomes_type}/>                                          
-        );
+        let has_nodes=false;
+        for(let i=0;i<this.props.data.length;i++){
+            if(this.props.data[i].nodes.length>0){has_nodes=true;break;}
+        }
         
-        
-        return(
-            <div class="outcome-table">
-                <div class="outcome-row node-row"><div class="outcome-head"></div><div class="outcome-cells">{nodes}</div>
-                <div class="table-cell blank-cell"><div class="node-category-header"></div></div><div class="table-cell total-cell grand-total-cell"><div class="total-header">Grand Total</div></div></div>
-                {outcomes}
-            </div>
-        );
+        if(this.props.outcomeworkflows.length==0 || !has_nodes){
+            let text;
+            if(this.props.renderer.view_type=="outcometable")text=gettext("This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.");
+            else text = gettext("This view renders a table showing the relationships between this workflow's outcomes and the outcomes of their linked workflows. To use this feature, you must link the nodes in this workflow to child workflows (ex. program nodes to course workflows) and ensure that those child workflows have their own sets of outcomes.");
+            return(
+                <div class="emptytext">
+                    {text}
+                </div>
+            );
+        }else{
+            let nodes;
+            if(this.props.renderer.view_type=="outcometable")nodes = this.props.data.map((nodecategory)=>
+                <div class="table-group">
+                    <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
+                    {nodecategory.nodes.map((node)=>
+                        <div class="table-cell nodewrapper">
+                            <NodeOutcomeView renderer={this.props.renderer} objectID={node}/>
+                        </div>
+                    )}
+                    <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
+                </div>
+            );
+            else nodes = nodes = this.props.data.map((nodecategory)=>
+                <div class="table-group">
+                    <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
+                    {nodecategory.nodes.map((node)=>
+                        <TableChildWorkflowHeader renderer={this.props.renderer} nodeID={node}/>
+                    )}
+                    <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
+                </div>
+            );
+            let outcomes = this.props.outcomeworkflows.map((outcomeworkflow)=>
+                <TableOutcomeWorkflowView renderer={this.props.renderer} objectID={outcomeworkflow} nodecategory={this.props.data} outcomes_type={this.props.outcomes_type}/>                                          
+            );
+
+            return(
+                <div class="outcome-table node-rows">
+                    <div class="outcome-row node-row"><div class="outcome-head"></div><div class="outcome-cells">{nodes}</div>
+                    <div class="table-cell blank-cell"><div class="node-category-header"></div></div><div class="table-cell total-cell grand-total-cell"><div class="total-header">Grand Total</div></div></div>
+                    {outcomes}
+                </div>
+            );
+        }
     }
     
 }

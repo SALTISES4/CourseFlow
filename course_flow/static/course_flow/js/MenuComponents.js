@@ -2,10 +2,11 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu} from "./PostFunctions";
+import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology} from "./PostFunctions";
 import {gridMenuItemAdded} from "./Reducers";
-import {Loader} from "./Constants";
+import {custom_text_base,Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
+import {WorkflowTitle} from "./ComponentJSON";
 
 export class MessageBox extends React.Component{
     render(){
@@ -75,8 +76,8 @@ export class WorkflowsMenu extends React.Component{
     getActions(){
         var actions = [];
         if(this.props.type=="linked_workflow_menu"){
-            var text="link to node";
-            if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text="copy to current project and "+text;
+            var text=gettext("link to node");
+            if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text=gettext("copy to current project and ")+text;
             actions.push(
                 <button id="set-linked-workflow" disabled={!this.state.selected} onClick={()=>{
                     setLinkedWorkflow(this.props.data.node_id,this.state.selected,this.props.actionFunction)
@@ -90,17 +91,17 @@ export class WorkflowsMenu extends React.Component{
                     setLinkedWorkflow(this.props.data.node_id,-1,this.props.actionFunction)
                     closeMessageBox();
                 }}>
-                    set to none
+                    {gettext("set to none")}
                 </button>
             );
             actions.push(
                 <button id="set-linked-workflow-cancel" onClick={closeMessageBox}>
-                    cancel
+                    {gettext("cancel")}
                 </button>
             );
         }else if(this.props.type=="added_workflow_menu"){
-            var text="duplicate";
-            if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text="copy to current project";
+            var text=gettext("duplicate");
+            if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text=gettext("copy to current project");
             actions.push(
                 <button id="set-linked-workflow" disabled={!this.state.selected} onClick={()=>{
                     
@@ -112,7 +113,7 @@ export class WorkflowsMenu extends React.Component{
             );
             actions.push(
                 <button id="set-linked-workflow-cancel" onClick={closeMessageBox}>
-                    cancel
+                    {gettext("cancel")}
                 </button>
             );
         }else if(this.props.type=="target_project_menu"){
@@ -121,12 +122,12 @@ export class WorkflowsMenu extends React.Component{
                     this.props.actionFunction({parentID:this.state.selected});
                     closeMessageBox();
                 }}>
-                    add to project
+                    {gettext("add to project")}
                 </button>
             );
             actions.push(
                 <button id="set-linked-workflow-cancel" onClick={closeMessageBox}>
-                    cancel
+                    {gettext("cancel")}
                 </button>
             );
         }
@@ -143,30 +144,32 @@ export class WorkflowForMenu extends React.Component{
     constructor(props){
         super(props);
         this.state={favourite:props.workflow_data.favourite};
+        this.maindiv = React.createRef();
     }
     
     render(){
         var data = this.props.workflow_data;
-        var css_class = "workflow-for-menu hover-shade "+data.object_type;
+        var css_class = "workflow-for-menu hover-shade "+data.type;
         if(this.props.selected)css_class+=" selected";
         if(this.state.hide)return null;
         let publish_icon = iconpath+'view_none.svg';
-        let publish_text = "PRIVATE";
+        let publish_text = gettext("PRIVATE");
         if(data.published){
             publish_icon = iconpath+'published.svg';
-            publish_text = "PUBLISHED";
+            publish_text = gettext("PUBLISHED");
         }
+        let creation_text = gettext("Created");
+        if(data.author && data.author !="None")creation_text+=" "+gettext("by")+" "+data.author;
+        creation_text+=" "+data.created_on;
         return(
-            <div class={css_class} onClick={this.clickAction.bind(this)}>
+            <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
                 <div class="workflow-top-row">
-                    <div class="workflow-title">
-                        {data.title}
-                    </div>
+                    <WorkflowTitle class_name="workflow-title" data={data}/>
                     {this.getButtons()}
                     {this.getTypeIndicator()}
                 </div>
                 <div class="workflow-created">
-                    { "Created"+(data.author && " by "+data.author)+" on "+data.created_on}
+                    { creation_text}
                 </div>
                 <div class="workflow-description" dangerouslySetInnerHTML={{ __html: data.description }}>
                 </div>
@@ -178,9 +181,10 @@ export class WorkflowForMenu extends React.Component{
     }
     
     getTypeIndicator(){
-        let type=this.props.workflow_data.object_type
-        let type_text = type;
-        if(this.props.workflow_data.is_strategy)type_text+=" strategy";
+        let data = this.props.workflow_data;
+        let type=data.type
+        let type_text = gettext(type);
+        if(data.is_strategy)type_text+=gettext(" strategy");
         return (
             <div class={"workflow-type-indicator "+type}>{type_text}</div>
         );
@@ -190,10 +194,11 @@ export class WorkflowForMenu extends React.Component{
         if(this.props.selectAction){
             this.props.selectAction(this.props.workflow_data.id);
         }else{
-            window.location.href=update_path[this.props.workflow_data.object_type].replace("0",this.props.workflow_data.id);
+            window.location.href=update_path[this.props.workflow_data.type].replace("0",this.props.workflow_data.id);
         }
     }
-    
+
+
     getButtons(){
         var buttons=[];
         let favourite_img = "no_favourite.svg";
@@ -202,24 +207,24 @@ export class WorkflowForMenu extends React.Component{
             if(this.props.workflow_data.is_owned){
                 buttons.push(
                     <div  class="workflow-delete-button hover-shade" onClick={(evt)=>{
-                        if(window.confirm("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone.")){
-                            deleteSelf(this.props.workflow_data.id,this.props.workflow_data.object_type);
+                        if(window.confirm(gettext("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone."))){
+                            deleteSelf(this.props.workflow_data.id,this.props.workflow_data.type);
                             this.setState({hide:true});
                         }
                         evt.stopPropagation();
                     }}>
-                        <img src={iconpath+'rubbish.svg'} title="Delete"/>
+                        <img src={iconpath+'rubbish.svg'} title={gettext("Delete")}/>
                     </div>
                 );
             }else{
                 buttons.push(
                     <div class="workflow-toggle-favourite hover-shade" onClick={(evt)=>{
-                        toggleFavourite(this.props.workflow_data.id,this.props.workflow_data.object_type,(!this.state.favourite));
+                        toggleFavourite(this.props.workflow_data.id,this.props.workflow_data.type,(!this.state.favourite));
                         let state=this.state;
                         this.setState({favourite:!(state.favourite)})
                         evt.stopPropagation();
                     }}>
-                        <img src={iconpath+favourite_img} title="Favourite"/>
+                        <img src={iconpath+favourite_img} title={gettext("Favourite")}/>
                     </div>
                 );
             }
@@ -228,11 +233,11 @@ export class WorkflowForMenu extends React.Component{
                 let titletext;
                 if(this.props.duplicate=="copy"){
                     icon = 'duplicate.svg';
-                    titletext="Duplicate";
+                    titletext=gettext("Duplicate");
                     buttons.push(
                         <div class="workflow-duplicate-button hover-shade" onClick={(evt)=>{
                             let loader = new Loader('body');
-                            duplicateBaseItem(this.props.workflow_data.id,this.props.workflow_data.object_type,this.props.parentID,(response_data)=>{
+                            duplicateBaseItem(this.props.workflow_data.id,this.props.workflow_data.type,this.props.parentID,(response_data)=>{
                                 //this.props.dispatch(gridMenuItemAdded(response_data));
                                 loader.endLoad();
                                 window.location.reload();
@@ -245,14 +250,14 @@ export class WorkflowForMenu extends React.Component{
                 }
                 else {
                     icon = 'import.svg';
-                    titletext="Import to my files";
+                    titletext=gettext("Import to my files");
                     buttons.push(
                         <div class="workflow-duplicate-button hover-shade" onClick={(evt)=>{
                             var target_parent;
-                            if(this.props.workflow_data.object_type=="project"||this.props.workflow_data.is_strategy){
+                            if(this.props.workflow_data.type=="project"||this.props.workflow_data.is_strategy){
                                 let loader = new Loader('body');
                                 duplicateBaseItem(
-                                    this.props.workflow_data.id,this.props.workflow_data.object_type,
+                                    this.props.workflow_data.id,this.props.workflow_data.type,
                                     target_parent,(response_data)=>{
                                         try{
                                             this.props.dispatch(gridMenuItemAdded(response_data));
@@ -265,7 +270,7 @@ export class WorkflowForMenu extends React.Component{
                                     if(response_data.parentID!=null){
                                         let loader = new Loader('body');
                                         duplicateBaseItem(
-                                            this.props.workflow_data.id,this.props.workflow_data.object_type,
+                                            this.props.workflow_data.id,this.props.workflow_data.type,
                                             response_data.parentID,(duplication_response_data)=>{
                                                try{
                                                    this.props.dispatch(gridMenuItemAdded(duplication_response_data));
@@ -290,7 +295,7 @@ export class WorkflowForMenu extends React.Component{
                     this.props.previewAction(evt);
                     evt.stopPropagation();
                 }}>
-                    <img src={iconpath+"page_view.svg"} title="Preview"/>
+                    <img src={iconpath+"page_view.svg"} title={gettext("Preview")}/>
                 </div>
             );
         }
@@ -318,9 +323,9 @@ export class MenuSection extends React.Component{
         var objects = this.props.section_data.objects.map((object)=>
             <WorkflowForMenu key={object.id} type={this.props.type} workflow_data={object} objectType={section_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
         );
+        if(this.props.replacement_text)objects=this.props.replacement_text;
         
-        
-        if(objects.length==0)objects="This category is currently empty."
+        //if(objects.length==0)objects="This category is currently empty."
 
         let add_button;
         if(create_path && this.props.add){
@@ -329,11 +334,11 @@ export class MenuSection extends React.Component{
             else types=[section_type];
             let adds=types.map((this_type)=>
                 <a class="hover-shade" href={create_path[this_type]}>
-                    {"Create new "+this_type}
+                    {gettext("Create new ")+gettext(this_type)}
                 </a>
             );
-            let import_text = "Import "+section_type;
-            if(is_strategy)import_text+=" strategy"
+            let import_text = gettext("Import ")+gettext(section_type);
+            if(is_strategy)import_text+=gettext(" strategy")
             adds.push(
                 <a class="hover-shade" onClick={()=>{
                     getAddedWorkflowMenu(parentID,section_type,is_strategy,(response_data)=>{
@@ -357,7 +362,7 @@ export class MenuSection extends React.Component{
                 [
                     <div class="menu-create hover-shade" onClick={this.clickAdd.bind(this)}>
                         <img
-                          class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title="Add New"
+                          class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title={gettext("Add New")}
                           src={iconpath+"add_new_white.svg"}
                         /><div>{this.props.section_data.title}</div>
                     </div>,
@@ -395,10 +400,15 @@ export class MenuSection extends React.Component{
 
 export class MenuTab extends React.Component{
     render(){
-        var sections = this.props.data.sections.map((section)=>
-            <MenuSection type={this.props.type} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.data.duplicate}/>
+        let is_empty=true;
+        for(let i=0;i<this.props.data.sections.length;i++){
+            if(this.props.data.sections[i].objects.length>0){is_empty=false;break;}
+        }
+        let replacement_text;
+        if(is_empty)replacement_text=this.props.data.emptytext;
+        var sections = this.props.data.sections.map((section,i)=>
+            <MenuSection type={this.props.type} replacement_text={i==0?replacement_text:null} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.data.duplicate}/>
         );
-        
         return (
             <div id={"tabs-"+this.props.identifier}>
                 {sections}
@@ -467,26 +477,26 @@ class ProjectMenuUnconnected extends React.Component{
             i++;
         }
         let share;
-        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
+        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
         
         let publish_icon = iconpath+'view_none.svg';
-        let publish_text = "PRIVATE";
+        let publish_text = gettext("PRIVATE");
         if(this.props.project.published){
             publish_icon = iconpath+'published.svg';
-            publish_text = "PUBLISHED";
+            publish_text = gettext("PUBLISHED");
         }
         
         return(
             <div class="project-menu">
                 <div class="project-header">
                     {reactDom.createPortal(
-                        <div>{this.state.title||"Unnamed Project"}</div>,
+                        <div>{this.state.title||gettext("Unnamed Project")}</div>,
                         $("#workflowtitle")[0]
                     )}
-                    <p id="project-description">{this.state.description}</p>
+                    <WorkflowForMenu workflow_data={this.state} selectAction={this.openEdit.bind(this)}/>
                     <p>
                         Disciplines: {
-                            (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||"None")
+                            (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||gettext("None"))
                         }
                     </p>
                     
@@ -504,7 +514,7 @@ class ProjectMenuUnconnected extends React.Component{
                     {this.props.project.author_id==user_id  &&
                         reactDom.createPortal(
                             <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-                                <img src={iconpath+'edit_pencil.svg'} title="Edit Project"/>
+                                <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
                             </div>,
                             $("#viewbar")[0]
                         )
@@ -532,7 +542,6 @@ class ProjectMenuUnconnected extends React.Component{
             }
         });
         getDisciplines((response)=>{
-            console.log(response);
             this.setState({all_disciplines:response});
         });
     }
@@ -550,7 +559,7 @@ export const ProjectMenu = connect(
 export class ProjectEditMenu extends React.Component{
     constructor(props){
         super(props);
-        this.state={...props.data};
+        this.state={...props.data,selected_term:"none"};
     }
     
     render(){
@@ -567,44 +576,75 @@ export class ProjectEditMenu extends React.Component{
             );
         }
         
+        let custom_text = custom_text_base();
+        
+        let dict_options = Object.keys(custom_text).filter(key=>!data.terminology_dict[key]).map(key=>
+            <option value={key}>{custom_text[key].singular}</option>                                       
+        );
+        let selected_term;
+        if(this.state.selected_term)selected_term=custom_text[this.state.selected_term];
+        let dict_added = data.terminology_dict.map(item=>
+            <div class="nomenclature-row">
+                <div>{(custom_text[item.term] && custom_text[item.term].singular)+": "+item.translation+"/"+item.translation_plural}</div>
+                <div class="window-close-button" onClick={this.deleteTerm.bind(this,item.id)}>
+                    <img src={iconpath+"close.svg"}/>
+                </div>
+            </div>
+        );
+        
         let published_enabled = (data.title && data.disciplines.length>0);
         if(data.published && !published_enabled)this.setState({published:false})
         let disabled_publish_text;
-        if(!published_enabled)disabled_publish_text = "A title and at least one discipline is required for publishing.";
+        if(!published_enabled)disabled_publish_text = gettext("A title and at least one discipline is required for publishing.");
         return(
             <div class="message-wrap">
-                <h3>{"Edit Project:"}</h3>
+                <h3>{gettext("Edit Project")+":"}</h3>
                 <div>
-                    <h4>Title:</h4>
+                    <h4>{gettext("Title")+":"}</h4>
                     <input autocomplete="off" id="project-title-input" value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
                 </div>
                 <div>
-                    <h4>Description:</h4>
+                    <h4>{gettext("Description")+":"}</h4>
                     <input autocomplete="off" id="project-description-input" value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
                 </div>
                 <div>
-                    <h4>Disciplines:</h4>
+                    <h4>{gettext("Disciplines")+":"}</h4>
                     <div class="multi-select">
-                        <h5>This Project:</h5>
+                        <h5>{gettext("This Project")+":"}</h5>
                         <select id="disciplines_chosen" multiple>
                             {disciplines}
                         </select>
-                        <button id="remove-discipline" onClick={this.removeDiscipline.bind(this)}> Remove </button>
+                        <button id="remove-discipline" onClick={this.removeDiscipline.bind(this)}> {gettext("Remove")} </button>
                     </div>
                     <div class="multi-select">
-                        <h5>All:</h5>
+                        <h5>{gettext("All")+":"}</h5>
                         <select id="disciplines_all" multiple>
                             {all_disciplines}
                         </select>
-                        <button id="add-discipline" onClick={this.addDiscipline.bind(this)}> Add </button>
+                        <button id="add-discipline" onClick={this.addDiscipline.bind(this)}> {gettext("Add")} </button>
                     </div>
                     
                 </div>
                 <div>
-                    <h4>Published:</h4>
+                    <h4>{gettext("Published")+":"}</h4>
                     <div>{disabled_publish_text}</div>
                     <input id="project-publish-input" disabled={!published_enabled} type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
-                    <label for="published">Is Published (visible to all users)</label>
+                    <label for="published">{gettext("Is Published (visible to all users)")}</label>
+                </div>
+                <div>
+                    <h4>{gettext("Custom Nomenclature")+":"}</h4>
+                    {dict_added}
+                    <div class="nomenclature-row">
+                        <select id="nomenclature-select" value={this.state.selected_term} onChange={this.inputChanged.bind(this,"selected_term")}>
+                            <option value="none">{gettext("Select a term")}</option>
+                            {dict_options}
+                        </select>
+                        <input placeholder={gettext("custom value")} type="text" id="term-singular" maxlength="50" value={data.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_term==null || selected_term.singular==null)}/>
+                        <input  placeholder={gettext("pluralization")} type="text" id="term-plural" maxlength="50" value={data.termplural} onChange={this.inputChanged.bind(this,"termplural")} disabled={(selected_term==null || selected_term.plural==null)}/>
+                        <button onClick={this.addTerm.bind(this)} disabled={this.addTermDisabled(selected_term)}>
+                            {gettext("Add")}
+                        </button>
+                    </div>
                 </div>
                 <div class="action-bar">
                     {this.getActions()}
@@ -613,7 +653,33 @@ export class ProjectEditMenu extends React.Component{
         );
     }
     
+    deleteTerm(id){
+        let new_state_dict=this.state.terminology_dict.slice()
+        for(let i=0;i<new_state_dict.length;i++){
+            if(new_state_dict[i].id==id){
+                deleteSelf(id,"customterm");
+                new_state_dict.splice(i,1);
+                this.setState({terminology_dict:new_state_dict});
+                break;
+            }
+        }
+    }
     
+    addTerm(){
+        let term = $("#nomenclature-select")[0].value;
+        let translation_singular = $("#term-singular")[0].value;
+        let translation_plural = $("#term-plural")[0].value
+        addTerminology(this.state.id,term,translation_singular,translation_plural,response_data=>{
+            this.setState({terminology_dict:response_data.new_dict,selected_term:"none",termsingular:"",termplural:""})
+        });
+    }
+    
+    addTermDisabled(selected_term){
+        if(!selected_term)return true;
+        if(!this.state.termsingular)return true;
+        if(selected_term.plural&&!this.state.termplural)return true;
+        return false;
+    }
 
     addDiscipline(evt){
         let selected = $("#disciplines_all").val()
@@ -641,15 +707,16 @@ export class ProjectEditMenu extends React.Component{
     inputChanged(field,evt){
         var new_state={}
         new_state[field]=evt.target.value;
+        if(field=="selected_term"){new_state["termsingular"]="";new_state["termplural"]="";}
         this.setState(new_state);
     }
 
     
     checkboxChanged(field,evt){
         if(field=="published"){
-            if(!this.state.published && !window.confirm("Are you sure you want to publish this project, making it fully visible to anyone with an account?")){
+            if(!this.state.published && !window.confirm(gettext("Are you sure you want to publish this project, making it fully visible to anyone with an account?"))){
                 return;
-            }else if(this.state.published && !window.confirm("Are you sure you want to unpublish this project, rendering it hidden to all other users?")){
+            }else if(this.state.published && !window.confirm(gettext("Are you sure you want to unpublish this project, rendering it hidden to all other users?"))){
                 return;
             }
         }
@@ -691,7 +758,7 @@ export class ExploreMenu extends React.Component{
         
         
         let objects = this.props.data_package.map(object=>
-            <WorkflowForMenu selected={(this.state.selected==object.id)} key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.object_type} previewAction={this.selectItem.bind(this,object.id,object.object_type)}/>  
+            <WorkflowForMenu selected={(this.state.selected==object.id)} key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.type} previewAction={this.selectItem.bind(this,object.id,object.type)}/>  
         )
         let disciplines = this.props.disciplines.map(discipline=>
             <li><label><input class = "fillable"  type="checkbox" name="disc[]" value={discipline.id}/>{discipline.title}</label></li>                                            
@@ -706,26 +773,26 @@ export class ExploreMenu extends React.Component{
         }
         return(
             <div class="explore-menu">
-                <h3>Explore:</h3>
+                <h3>{gettext("Explore")+":"}</h3>
                 <form id="search-parameters" action={explore_path} method="GET">
                     <div>
                         <div>
-                            <h4>Filters:</h4>
-                            <label><div>Title:</div><input autocomplete="off" class = "fillable" id="search-title" name="title"/></label>
-                            <label><div>Description:</div><input autocomplete="off" class = "fillable"  id="search-description" name="des"/></label>
-                            <label><div>Author (Username):</div><input autocomplete="off" class = "fillable"  id="search-author" name="auth"/></label>
+                            <h4>{gettext("Filters")+":"}</h4>
+                            <label><div>{gettext("Title")+":"}</div><input autocomplete="off" class = "fillable" id="search-title" name="title"/></label>
+                            <label><div>{gettext("Description")+":"}</div><input autocomplete="off" class = "fillable"  id="search-description" name="des"/></label>
+                            <label><div>{gettext("Author (Username)")+":"}</div><input autocomplete="off" class = "fillable"  id="search-author" name="auth"/></label>
                         </div>
                         <div>
-                            <h4>Allowed Types:</h4>
+                            <h4>{gettext("Allowed Types")+":"}</h4>
                             <ul id="search-type" class="search-checklist-block">
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="activity"/>Activity</label></li>
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="course"/>Course</label></li>
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="program"/>Program</label></li>
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="project"/>Project</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="activity"/>{gettext("Activity")}</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="course"/>{gettext("Course")}</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="program"/>{gettext("Program")}</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="project"/>{gettext("Project")}</label></li>
                             </ul>
                         </div>
                         <div>
-                            <h4>Disciplines (leave blank for all):</h4>
+                            <h4>{gettext("Disciplines (leave blank for all):")}</h4>
                             <ul id="search-discipline" class="search-checklist-block">
                                 {disciplines}
                             </ul>
@@ -733,7 +800,7 @@ export class ExploreMenu extends React.Component{
                     </div>
                     <div>
                         <input type="hidden" name="page"/>
-                        <label><div>Results Per Page: </div>
+                        <label><div>{gettext("Results Per Page:")}</div>
                             <select class="fillable" name="results">
                                 <option value="10">10</option>
                                 <option value="20">20</option>
@@ -741,7 +808,7 @@ export class ExploreMenu extends React.Component{
                                 <option value="100">100</option>
                             </select>
                         </label>
-                        <input id="submit" type="submit" value="Search"/>
+                        <input id="submit" type="submit" value={gettext("Search")}/>
                         
                     </div>
                 </form>
@@ -751,22 +818,22 @@ export class ExploreMenu extends React.Component{
                         {objects.length>1 &&
                             [
                             <p>
-                                Showing results {this.props.pages.results_per_page*(this.props.pages.current_page-1)+1}-{(this.props.pages.results_per_page*this.props.pages.current_page)} ({this.props.pages.total_results} total results)
+                                {gettext("Showing results")} {this.props.pages.results_per_page*(this.props.pages.current_page-1)+1}-{(this.props.pages.results_per_page*this.props.pages.current_page)} ({this.props.pages.total_results} {gettext("total results")})
 
                             </p>,
                             <p>
                                 <button id="prev-page-button" disabled={(this.props.pages.current_page==1)} onClick={
                                     this.toPage.bind(this,this.props.pages.current_page-1)
-                                }>Previous</button>
+                                }>{gettext("Previous")}</button>
                                     {page_buttons}
                                 <button id="next-page-button" disabled={(this.props.pages.current_page==this.props.pages.page_count)} onClick={
                                     this.toPage.bind(this,this.props.pages.current_page+1)
-                                }>Next</button>
+                                }>{gettext("Next")}</button>
                             </p>,
                             objects]
                         }
                         {objects.length==0 &&
-                            <p>No results were found. Adjust your search parameters, and make sure you have at least one allowed type selected.</p>
+                            <p>{gettext("No results were found. Adjust your search parameters, and make sure you have at least one allowed type selected.")}</p>
                         }
                     </div>
                     <div class="explore-preview">

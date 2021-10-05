@@ -11,6 +11,7 @@ from course_flow.models import (
     Activity,
     Column,
     ColumnWorkflow,
+    Comment,
     Course,
     Discipline,
     Favourite,
@@ -2439,6 +2440,103 @@ class ModelViewTest(TestCase):
         response = self.client.get(reverse("course_flow:explore"))
         self.assertEqual(response.status_code, 200)
 
+    def test_add_comment_to_node(self):
+        user = login(self)
+        workflow = Course.objects.create(author=user)
+        week = workflow.weeks.create(author=user)
+        node = week.nodes.create(author=user)
+        comment_text = "A sample comment"
+
+        # Create a comment, check that it is correctly added to the desired object
+        response = self.client.post(
+            reverse("course_flow:add-comment"),
+            {
+                "objectID": node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "text": JSONRenderer().render(comment_text).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            Node.objects.get(id=node.id).comments.first().text, comment_text
+        )
+        # Retrieve the comments
+        response = self.client.post(
+            reverse("course_flow:get-comments-for-object"),
+            {
+                "objectID": node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEqual(len(content["data_package"]), 1)
+        self.assertEqual(content["data_package"][0]["text"], comment_text)
+        # Remove a comment
+        response = self.client.post(
+            reverse("course_flow:remove-comment"),
+            {
+                "objectID": node.id,
+                "commentPk": Comment.objects.first().id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        # Retrieve the comments
+        response = self.client.post(
+            reverse("course_flow:get-comments-for-object"),
+            {
+                "objectID": node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        content = json.loads(response.content)
+        self.assertEqual(len(content["data_package"]), 0)
+        
+        
+    def test_add_term_to_project(self):
+        user = login(self)
+        project = Project.objects.create(author=user)
+        #try adding a term
+        # Retrieve the comments
+        response = self.client.post(
+            reverse("course_flow:add-terminology"),
+            {
+                "projectPk": project.id,
+                "term": JSONRenderer().render("outcome").decode("utf-8"),
+                "translation": JSONRenderer().render("competency").decode("utf-8"),
+                "translation_plural": JSONRenderer().render("competencies").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(project.terminology_dict.all().count(),1)
+        
+        #try adding a term that already exists (should replace)
+        response = self.client.post(
+            reverse("course_flow:add-terminology"),
+            {
+                "projectPk": project.id,
+                "term": JSONRenderer().render("outcome").decode("utf-8"),
+                "translation": JSONRenderer().render("program outcome").decode("utf-8"),
+                "translation_plural": JSONRenderer().render("program outcomes").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(project.terminology_dict.all().count(),1)
+        self.assertEqual(project.terminology_dict.first().translation,"program outcome")
+        self.assertEqual(project.terminology_dict.first().translation_plural,"program outcomes")
+        
+        #delete a term
+        response = self.client.post(
+            reverse("course_flow:delete-self"),
+            {
+                "objectID": project.terminology_dict.first().id,
+                "objectType": JSONRenderer().render("customterm").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(project.terminology_dict.all().count(),0)
 
 class PermissionsTests(TestCase):
     def setUp(self):

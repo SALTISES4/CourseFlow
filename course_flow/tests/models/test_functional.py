@@ -17,15 +17,15 @@ from course_flow.models import (
     Favourite,
     ObjectPermission,
     Outcome,
+    OutcomeHorizontalLink,
     OutcomeNode,
     OutcomeOutcome,
     OutcomeWorkflow,
     Program,
     Project,
+    Week,
     Workflow,
     WorkflowProject,
-    OutcomeHorizontalLink,
-    Week
 )
 from course_flow.utils import get_model_from_str
 
@@ -107,149 +107,155 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         self.selenium.quit()
         super(SeleniumWorkflowsTestCase, self).tearDown()
 
-        def test_create_project_and_workflows(self):
-            selenium = self.selenium
-            wait = WebDriverWait(selenium, timeout=10)
-            selenium.get(self.live_server_url + "/home/")
-            home = selenium.current_url
-            for project_type in ["activity", "course", "project"]:
-                if project_type == "project":
-                    selenium.find_element_by_css_selector(
-                        "a[href='#tabs-0']"
-                    ).click()
-                else:
-                    selenium.find_element_by_css_selector(
-                        "a[href='#tabs-1']"
-                    ).click()
-                selenium.find_elements_by_class_name(
-                    "create-button-" + project_type
-                )[0].click()
-                time.sleep(0.5)
-                title = selenium.find_element_by_id("id_title")
-                description = selenium.find_element_by_id("id_description")
-                project_title = "test project title"
-                project_description = "test project description"
-                title.send_keys(project_title)
-                description.send_keys(project_description)
-                selenium.find_element_by_id("save-button").click()
-                if project_type == "project":
-                    assert (
-                        project_title
-                        in selenium.find_element_by_id("project-title").text
-                    )
-                    assert (
-                        project_description
-                        in selenium.find_element_by_id(
-                            "project-description"
-                        ).text
-                    )
-                    project_url = selenium.current_url
-                else:
-                    assert (
-                        project_title
-                        in selenium.find_element_by_class_name(
-                            "workflow-title"
-                        ).text
-                    )
-                    assert (
-                        project_description
-                        in selenium.find_element_by_class_name(
-                            "workflow-description"
-                        ).text
-                    )
+    def test_create_project_and_workflows(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        selenium.get(self.live_server_url + "/home/")
+        home = selenium.current_url
 
-                selenium.get(home)
+        # Create a project
+        selenium.get(self.live_server_url + "/myprojects/")
+        selenium.find_element_by_css_selector(
+            ".section-project .menu-create"
+        ).click()
+        selenium.find_element_by_css_selector(
+            ".section-project .create-dropdown.active a:first-child"
+        ).click()
+        title = selenium.find_element_by_id("id_title")
+        description = selenium.find_element_by_id("id_description")
+        project_title = "test project title"
+        project_description = "test project description"
+        title.send_keys(project_title)
+        description.send_keys(project_description)
+        selenium.find_element_by_id("save-button").click()
+        assert (
+            project_title in selenium.find_element_by_id("workflowtitle").text
+        )
+        assert (
+            project_description
+            in selenium.find_element_by_css_selector(
+                ".project-header .workflow-description"
+            ).text
+        )
+        project_url = selenium.current_url
+
+        # Create templates
+        selenium.get(self.live_server_url + "/mytemplates/")
+        templates = selenium.current_url
+
+        for template_type in ["activity", "course"]:
+            if template_type == "course":
+                selenium.find_element_by_css_selector(
+                    'a[href="#tabs-1"]'
+                ).click()
+            selenium.find_element_by_css_selector(
+                ".section-" + template_type + " .menu-create"
+            ).click()
+            selenium.find_element_by_css_selector(
+                ".section-"
+                + template_type
+                + " .create-dropdown.active a:first-child"
+            ).click()
+            title = selenium.find_element_by_id("id_title")
+            description = selenium.find_element_by_id("id_description")
+            project_title = "test project title"
+            project_description = "test project description"
+            title.send_keys(project_title)
+            description.send_keys(project_description)
+            selenium.find_element_by_id("save-button").click()
+            assert (
+                project_title
+                in selenium.find_element_by_id("workflowtitle").text
+            )
+            assert (
+                project_description
+                in selenium.find_element_by_css_selector(
+                    ".workflow-header .workflow-description"
+                ).text
+            )
+
+            selenium.get(templates)
+        selenium.get(project_url)
+
+        for i, workflow_type in enumerate(["activity", "course", "program"]):
+            # Create the workflow
+            selenium.find_element_by_css_selector(
+                'a[href="#tabs-' + str(i + 1) + '"]'
+            ).click()
+            selenium.find_element_by_css_selector(
+                ".section-" + workflow_type + " .menu-create"
+            ).click()
+            selenium.find_element_by_css_selector(
+                ".section-"
+                + workflow_type
+                + " .create-dropdown.active a:first-child"
+            ).click()
+            title = selenium.find_element_by_id("id_title")
+            description = selenium.find_element_by_id("id_description")
+            project_title = "test " + workflow_type + " title"
+            project_description = "test " + workflow_type + " description"
+            title.send_keys(project_title)
+            description.send_keys(project_description)
+            selenium.find_element_by_id("save-button").click()
+            assert (
+                project_title
+                in selenium.find_element_by_class_name("workflow-title").text
+            )
+            assert (
+                project_description
+                in selenium.find_element_by_css_selector(
+                    ".workflow-header .workflow-description"
+                ).text
+            )
             selenium.get(project_url)
-
-            for workflow_type in ["activity", "course", "program", "outcome"]:
-                # Create the workflow
-                selenium.find_elements_by_class_name(
-                    "create-button-" + workflow_type
-                )[0].click()
-                time.sleep(0.5)
-                title = selenium.find_element_by_id("id_title")
-                if workflow_type != "outcome":
-                    description = selenium.find_element_by_id("id_description")
-                project_title = "test " + workflow_type + " title"
-                project_description = "test " + workflow_type + " description"
-                title.send_keys(project_title)
-                if workflow_type != "outcome":
-                    description.send_keys(project_description)
-                selenium.find_element_by_id("save-button").click()
-                assert (
-                    project_title
-                    in selenium.find_element_by_class_name(
-                        "workflow-title"
-                    ).text
-                )
-                if workflow_type != "outcome":
-                    assert (
-                        project_description
-                        in selenium.find_element_by_class_name(
-                            "workflow-description"
-                        ).text
-                    )
-                selenium.get(project_url)
-                # edit link
-                selenium.find_element_by_css_selector(
-                    ".section-" + workflow_type + " .workflow-edit-button"
-                ).click()
-                assert (
-                    project_title
-                    in selenium.find_element_by_class_name(
-                        "workflow-title"
-                    ).text
-                )
-                selenium.get(project_url)
-                selenium.find_element_by_css_selector(
-                    ".section-" + workflow_type + " .workflow-duplicate-button"
-                ).click()
-                wait.until(
-                    lambda driver: len(
-                        driver.find_elements_by_css_selector(
-                            ".section-" + workflow_type + " .workflow-title"
-                        )
-                    )
-                    > 1
-                )
-                assert (
-                    project_title
-                    in selenium.find_elements_by_css_selector(
+            # edit link
+            selenium.find_element_by_css_selector(
+                ".workflow-for-menu." + workflow_type + " .workflow-title"
+            ).click()
+            assert (
+                project_title
+                in selenium.find_element_by_id("workflowtitle").text
+            )
+            selenium.get(project_url)
+            selenium.find_element_by_css_selector(
+                ".workflow-for-menu."
+                + workflow_type
+                + " .workflow-duplicate-button"
+            ).click()
+            wait.until(
+                lambda driver: len(
+                    driver.find_elements_by_css_selector(
                         ".section-" + workflow_type + " .workflow-title"
-                    )[1].text
+                    )
                 )
-                if workflow_type != "outcome":
-                    self.assertEqual(
-                        get_model_from_str(workflow_type)
-                        .objects.exclude(parent_workflow=None)
-                        .count(),
-                        1,
-                    )
-                else:
-                    self.assertEqual(
-                        get_model_from_str(workflow_type)
-                        .objects.exclude(parent_outcome=None)
-                        .count(),
-                        1,
-                    )
-                selenium.find_elements_by_css_selector(
-                    ".section-" + workflow_type + " .workflow-delete-button"
-                )[0].click()
-                alert = wait.until(expected_conditions.alert_is_present())
-                selenium.switch_to.alert.accept()
-                time.sleep(2)
-
-                if workflow_type == "outcome":
-                    self.assertEqual(
-                        get_model_from_str(workflow_type).objects.count(), 1
-                    )
-                else:
-                    self.assertEqual(
-                        get_model_from_str(workflow_type)
-                        .objects.filter(is_strategy=False)
-                        .count(),
-                        1,
-                    )
+                > 1
+            )
+            assert (
+                project_title
+                in selenium.find_elements_by_css_selector(
+                    ".section-workflow .workflow-title"
+                )[1].text
+            )
+            self.assertEqual(
+                get_model_from_str(workflow_type)
+                .objects.exclude(parent_workflow=None)
+                .count(),
+                1,
+            )
+            selenium.find_elements_by_css_selector(
+                ".section-workflow ."
+                + workflow_type
+                + " .workflow-delete-button"
+            )[0].click()
+            alert = wait.until(expected_conditions.alert_is_present())
+            selenium.switch_to.alert.accept()
+            time.sleep(2)
+            self.assertEqual(
+                get_model_from_str(workflow_type)
+                .objects.filter(is_strategy=False)
+                .count(),
+                1,
+            )
 
     def test_edit_project_details(self):
         selenium = self.selenium
@@ -285,7 +291,9 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         )
         assert (
             "new description"
-            in selenium.find_element_by_id("project-description").text
+            in selenium.find_element_by_css_selector(
+                ".project-header .workflow-description"
+            ).text
         )
         project = Project.objects.first()
         self.assertEqual(project.title, "new title")
@@ -678,9 +686,9 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             click_item = selenium.find_element_by_css_selector(
                 ".week .delete-self-button img"
             )
-            selenium.find_element_by_css_selector(
-                "#sidebar .window-close-button"
-            ).click()
+            #            selenium.find_element_by_css_selector(
+            #                "#sidebar .window-close-button"
+            #            ).click()
             time.sleep(0.5)
             action_hover_click(selenium, hover_item, click_item).perform()
             alert = wait.until(expected_conditions.alert_is_present())
@@ -1122,7 +1130,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert (
                 "new strategy"
                 in selenium.find_element_by_css_selector(
-                    "#workflowtitle div"
+                    "#workflowtitle a"
                 ).text
             )
             self.assertEqual(
@@ -1176,6 +1184,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
+            selenium.find_element_by_css_selector(".other-views").click()
             selenium.find_element_by_css_selector(
                 "#button_outcometable"
             ).click()
@@ -1427,6 +1436,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             "#sidebar .window-close-button"
         ).click()
         time.sleep(0.5)
+        selenium.find_element_by_css_selector(".other-views").click()
         selenium.find_element_by_css_selector(
             "#button_horizontaloutcometable"
         ).click()
@@ -1638,7 +1648,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         assert_image(outcome2_img2, "solid_check")
         assert_image(outcome2_total_img, "/check")
         assert_image(outcome2_grandtotal_img, "/check")
-        
+
     def test_outcome_analytics(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -1670,25 +1680,121 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             reverse("course_flow:update-outcomenode-degree"),
             {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
         )
-        
-        OutcomeHorizontalLink.objects.create(outcome = coc1, parent_outcome=poo1.child);
-        OutcomeHorizontalLink.objects.create(outcome = coc2, parent_outcome=poo2.child);
+
+        OutcomeHorizontalLink.objects.create(
+            outcome=coc1, parent_outcome=poo1.child
+        )
+        OutcomeHorizontalLink.objects.create(
+            outcome=coc2, parent_outcome=poo2.child
+        )
 
         selenium.get(
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[program.pk])
         )
+        selenium.find_element_by_css_selector(".other-views").click()
         selenium.find_element_by_css_selector(
             "#button_alignmentanalysis"
         ).click()
         time.sleep(5)
+
+        assert (
+            selenium.find_element_by_css_selector(".week .title-text").text
+            == "Term 1"
+        )
+        assert len(selenium.find_elements_by_css_selector(".week .node")) == 1
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".week .node .child-outcome"
+                )
+            )
+            == 2
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".week .node .child-outcome .half-width>.outcome"
+                )
+            )
+            == 2
+        )
+        assert (
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".week .node .child-outcome .alignment-row .outcome"
+                )
+            )
+            == 2
+        )
+
+    def test_outcome_csv_output(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(
+            author=self.user, title="project title"
+        )
+        course = Course.objects.create(author=self.user)
+        program = Program.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=course, project=project)
+        WorkflowProject.objects.create(workflow=program, project=project)
+        base_outcome = Outcome.objects.create(author=self.user)
+        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=program)
+        poo1 = OutcomeOutcome.objects.create(
+            parent=base_outcome,
+            child=Outcome.objects.create(author=self.user),
+        )
+        poo2 = OutcomeOutcome.objects.create(
+            parent=base_outcome,
+            child=Outcome.objects.create(author=self.user),
+        )
+        coc1 = course.outcomes.create(author=self.user)
+        coc2 = course.outcomes.create(author=self.user)
+        node = program.weeks.first().nodes.create(
+            author=self.user,
+            linked_workflow=course,
+            column=program.columns.first(),
+        )
+        response = self.client.post(
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
+        )
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[program.pk])
+        )
+        selenium.find_element_by_css_selector(".other-views").click()
+        selenium.find_element_by_css_selector(
+            "#button_competencymatrix"
+        ).click()
+        time.sleep(1)
+
+        selenium.find_element_by_css_selector(".menu-create").click()
         
-        assert(selenium.find_element_by_css_selector(".week .title-text").text=="Term 1")
-        assert(len(selenium.find_elements_by_css_selector(".week .node"))==1)
-        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome"))==2)
-        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome .half-width>.outcome"))==2)
-        assert(len(selenium.find_elements_by_css_selector(".week .node .child-outcome .alignment-row .outcome"))==2)
-        
+
+    def test_grid_view(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(
+            author=self.user, title="project title"
+        )
+        program = Program.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=program, project=project)
+        node = program.weeks.first().nodes.create(
+            author=self.user, column=program.columns.first(),
+        )
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[program.pk])
+        )
+        selenium.find_element_by_css_selector(".other-views").click()
+        selenium.find_element_by_css_selector("#button_grid").click()
+        time.sleep(1)
+        assert (
+            len(selenium.find_elements_by_css_selector(".workflow-grid")) > 0
+        )
 
     def test_linked_workflow(self):
         selenium = self.selenium
@@ -1739,7 +1845,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert (
                 workflow_types[i - 1]
                 in selenium.find_element_by_css_selector(
-                    "#workflowtitle div"
+                    "#workflowtitle a"
                 ).text
             )
             selenium.get(this_url)
@@ -1764,7 +1870,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert (
                 workflow_type
                 in selenium.find_element_by_css_selector(
-                    "#workflowtitle div"
+                    "#workflowtitle a"
                 ).text
             )
 

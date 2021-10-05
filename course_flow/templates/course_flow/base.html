@@ -1,4 +1,4 @@
-{% load static compress i18n %} {% get_current_language as LANGUAGE_CODE %}
+{% load static compress i18n %} {% get_current_language as LANGUAGE_CODE %} {% load course_flow_templatetags %}
 <!DOCTYPE html>
 <html lang="{{LANGUAGE_CODE}}">
   <head>
@@ -153,6 +153,13 @@
               {{ user.username }}
             </button>
           </div>
+          {% if user.username %}
+          <div id="logout-container" class="topdropwrapper">
+            <button id="logout" class="topdropbutton">
+              {% trans 'logout' %}
+            </button>
+          </div>
+          {% endif %}
           <div class="topdropwrapper">
             <button class="topdropbutton">
               <a id="home-icon-link" href="{% url 'course_flow:home' %}"
@@ -189,19 +196,24 @@
       <img class="title-image" src="{% static 'course_flow/img/images_svg/logo-courseflow-beta.svg' %}"/>
       <a class="panel-item hover-shade" href="{% url 'course_flow:home' %}">
         <img src="{% static 'course_flow/img/images_svg/home_black.svg' %}"/>
-        <div>Home</div>
+        <div>{% trans 'Home' %}</div>
       </a>
       <a class="panel-item hover-shade" href="{% url 'course_flow:my-projects' %}">
         <img src="{% static 'course_flow/img/images_svg/layoutnav.svg' %}"/>
-        <div>My Projects</div>
+        <div>{% trans 'My Projects' %}</div>
       </a>
       <a class="panel-item hover-shade" href="{% url 'course_flow:my-templates' %}">
         <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
-        <div>My Templates</div>
+        <div>{% trans 'My Templates' %}</div>
       </a>
+      <a class="panel-item hover-shade" href={% course_flow_return_url %}>
+        <img src="{% static 'course_flow/img/images_svg/return_to_project.svg' %}"/>
+        <div>{% course_flow_return_title %}</div>
+      </a>
+      
       <hr>
       <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
-        My Favourites
+        {% trans 'My Favourites' %}
       </a>
         {% for favourite in user.favourite_set.all|slice:":5" %}
           <a class="panel-favourite hover-shade"
@@ -214,7 +226,7 @@
             {{ favourite.content_object }}
           </a>
         {% endfor %}
-      <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... see all</a>
+      <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
 
     </div>
 
@@ -226,7 +238,7 @@
   {% block common_scripts %}
   <script nonce="{{request.csp_nonce}}">
     //global paths for post/get
-    post_paths = {
+    const post_paths = {
       get_possible_linked_workflows:
         "{% url 'course_flow:get-possible-linked-workflows' %}",
       get_possible_added_workflows:
@@ -261,14 +273,30 @@
       get_outcome_data: "{% url 'course_flow:get-outcome-data' %}",
       get_users_for_object: "{% url 'course_flow:get-users-for-object' %}",
       get_user_list: "{% url 'course_flow:get-user-list' %}",
-      set_permission: "{% url 'course_flow:set-permission' %}"
+      set_permission: "{% url 'course_flow:set-permission' %}",
+      get_comments_for_object: "{% url 'course_flow:get-comments-for-object' %}",
+      add_terminology: "{% url 'course_flow:add-terminology' %}",
+      add_comment: "{% url 'course_flow:add-comment' %}",
+      remove_comment: "{% url 'course_flow:remove-comment' %}",
+      get_parent_workflow_info: "{% url 'course_flow:get-parent-workflow-info' %}",
     };
-    get_paths = {
+    const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}"
     };
+    
+    const update_path = {
+        project:"{% url 'course_flow:project-update' pk='0'%}",
+        activity:"{% url 'course_flow:workflow-update' pk='0'%}",
+        course:"{% url 'course_flow:workflow-update' pk='0'%}",
+        program:"{% url 'course_flow:workflow-update' pk='0'%}",
+        workflow:"{% url 'course_flow:workflow-update' pk='0'%}"
+    };
 
-    workflow_update_path = "{% url 'course_flow:workflow-update' pk='0'%}";
-
+    $("#logout").on("click",()=>{
+        window.location.replace("{% url 'course_flow:logout' %}");
+        console.log("logging out");
+    });
+      
     //reload if we got here using forward or back button
     if (
       window.performance &&

@@ -4,7 +4,7 @@ import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
 import {newNodeAction, deleteSelfAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction, newStrategyAction, toggleStrategyAction} from "./Reducers.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild} from "./PostFunctions.js"
+import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment} from "./PostFunctions.js"
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -131,7 +131,7 @@ export class ComponentJSON extends React.Component{
                 sortable_block.sortable("refresh");
                 //Fix the vertical containment. This is especially necessary when the item resizes.
                 var sort = $(sortable_block).sortable("instance");
-                sort.containment[3]+=sort.currentItem[0].offsetTop;
+                sort.containment[3]+=sort.currentItem[0].offsetTop+sort.currentItem[0].offsetHeight;
                 
             },
             //Tell the dragging object that we are dragging it
@@ -168,19 +168,20 @@ export class ComponentJSON extends React.Component{
     addDeleteSelf(data,alt_icon){
         let icon=alt_icon || "rubbish.svg";
         return (
-            <ActionButton button_icon={icon} button_class="delete-self-button" titletext="Delete" handleClick={this.deleteSelf.bind(this,data)}/>
+            <ActionButton button_icon={icon} button_class="delete-self-button" titletext={gettext("Delete")} handleClick={this.deleteSelf.bind(this,data)}/>
         );
     }
     
     deleteSelf(data){
         //Temporary confirmation; add better confirmation dialogue later
+        if(this.props.renderer)this.props.renderer.selection_manager.deleted(this);
         if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
-            alert("You cannot delete the last "+this.objectType);
+            alert(gettext("You cannot delete the last ")+this.objectType);
             return;
         }
         let extra_data = this.props.column_order;
         if(Constants.object_dictionary[this.objectType]=="outcome")extra_data=this.props.outcomenodes;
-        if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
+        if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.object_dictionary[this.objectType]+"?")){
             this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,extra_data));
         }
     }
@@ -188,7 +189,7 @@ export class ComponentJSON extends React.Component{
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDuplicateSelf(data){
         return (
-            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext="Duplicate" handleClick={this.duplicateSelf.bind(this,data)}/>
+            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext={gettext("Duplicate")} handleClick={this.duplicateSelf.bind(this,data)}/>
         );
     }
     
@@ -213,7 +214,7 @@ export class ComponentJSON extends React.Component{
     //Adds a button that inserts a sibling below the item. 
     addInsertSibling(data){
         return(
-            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext="Insert Below" handleClick={this.insertSibling.bind(this,data)}/>
+            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext={gettext("Insert Below")} handleClick={this.insertSibling.bind(this,data)}/>
         );
     }
     
@@ -239,7 +240,7 @@ export class ComponentJSON extends React.Component{
     //Adds a button that inserts a child to them item
     addInsertChild(data){
         return(
-            <ActionButton button_icon="create_new_child.svg" button_class="insert-child-button" titletext="Insert Child" handleClick={this.insertChild.bind(this,data)}/>
+            <ActionButton button_icon="create_new_child.svg" button_class="insert-child-button" titletext={gettext("Insert Child")} handleClick={this.insertChild.bind(this,data)}/>
         );
     }
     
@@ -255,6 +256,36 @@ export class ComponentJSON extends React.Component{
             }
         );
     }
+
+    //Adds a button that opens/closes the comments dialogue
+    addCommenting(data){
+        let commentbox;
+        return(
+            [
+                <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext={gettext("Comments")} handleClick={this.commentClick.bind(this)}/>,
+                <CommentBox show={this.state.show_comments} comments={this.state.comment_data} parent={this}/>
+            ]
+        );
+    }
+    
+    commentClick(evt){
+        evt.stopPropagation();
+        if(!this.state.show_comments){
+            this.reloadComments();
+        }else(this.setState({show_comments:false}));
+    }
+
+    reloadComments(){
+        let props = this.props;
+        let data = props.data;
+        props.renderer.tiny_loader.startLoad();
+        getCommentsForObject(data.id,Constants.object_dictionary[this.objectType],
+            (response_data)=>{
+                this.setState({show_comments:true,comment_data:response_data.data_package});
+                props.renderer.tiny_loader.endLoad();
+            }
+        );
+    }
     
     //Makes the item selectable
     addEditable(data,no_delete=false){
@@ -266,28 +297,28 @@ export class ComponentJSON extends React.Component{
             var props = this.props;
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
-                    <h3>{"Edit "+type+":"}</h3>
-                    {type=="outcome" && data.depth==0 &&
+                    <h3>{gettext("Edit ")+type+":"}</h3>
+                    {((type=="outcome" && data.depth==0)||(type=="workflow" && data.type=="course")) &&
                         <div>
-                            <h4>Code (Optional):</h4>
+                            <h4>{gettext("Code (Optional)")}:</h4>
                             <input autocomplete="off" id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
                         </div>
                     }
                     {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
-                            <h4>Title:</h4>
+                            <h4>{gettext("Title")}:</h4>
                             <input autocomplete="off" id="title-editor" type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
                         <div>
-                            <h4>Description:</h4>
+                            <h4>{gettext("Description")}:</h4>
                             <QuillDiv text={data.description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
                         <div>
-                            <h4>Context:</h4>
+                            <h4>{gettext("Context")}:</h4>
                             <select  id="context-editor" value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
                                 {this.props.renderer.context_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -297,7 +328,7 @@ export class ComponentJSON extends React.Component{
                     }
                     {type=="node" && data.node_type<2 &&
                         <div>
-                            <h4>Task:</h4>
+                            <h4>{gettext("Task")}:</h4>
                             <select id="task-editor" value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
                                 {this.props.renderer.task_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -305,9 +336,9 @@ export class ComponentJSON extends React.Component{
                             </select>
                         </div>
                     }
-                    {type=="node" &&
+                    {(type=="node" || type=="workflow") &&
                         <div>
-                            <h4>Time:</h4>
+                            <h4>{gettext("Time")}:</h4>
                             <div>
                                 <input autocomplete="off" id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
                                 <select id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
@@ -318,31 +349,56 @@ export class ComponentJSON extends React.Component{
                             </div>
                         </div>
                     }
+                    {(type=="column") &&
+                        <div>
+                            <h4>{gettext("Colour")}:</h4>
+                            <div>
+                                <input autocomplete="off" id="colour-editor" class="half-width" type="color" value={"#"+data.colour?.toString(16)} maxlength="30" onChange={this.inputChanged.bind(this,"colour")}/>
+                            </div>
+                        </div>
+                    }
+                    {(type=="workflow" && data.type=="course") &&
+                        <div>
+                            <h4>{gettext("Ponderation")}:</h4>
+                            <input autocomplete="off" class="half-width" id="ponderation-theory" type="number" value={data.ponderation_theory} onChange={this.inputChanged.bind(this,"ponderation_theory")}/>
+                            <div class="half-width">{gettext("hrs. Theory")}</div>
+                            <input autocomplete="off" class="half-width" id="ponderation-practical" type="number" value={data.ponderation_practical} onChange={this.inputChanged.bind(this,"ponderation_practical")}/>
+                            <div class="half-width">{gettext("hrs. Practical")}</div>
+                            <input class="half-width" autocomplete="off" class="half-width" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
+                            <div class="half-width">{gettext("hrs. Individual")}</div>
+                            <input class="half-width" autocomplete="off" class="half-width" id="time-general-hours" type="number" value={data.time_general_hours} onChange={this.inputChanged.bind(this,"time_general_hours")}/>
+                            <div class="half-width">{gettext("hrs. General Education")}</div>
+                            <input class="half-width" autocomplete="off" class="half-width" id="time-specific-hours" type="number" value={data.time_specific_hours} onChange={this.inputChanged.bind(this,"time_specific_hours")}/>
+                            <div class="half-width">{gettext("hrs. Specific Education")}</div>
+                        </div>
+                    }
                     {type=="node" && data.node_type!=0 &&
                         <div>
-                            <h4>Linked Workflow:</h4>
-                            <div>{data.linked_workflow_title}</div>
-                            <button  id="linked-workflow-editor" onClick={()=>{getLinkedWorkflowMenu(data,(response_data)=>{
-                                let action = setLinkedWorkflowAction(response_data);
-                                props.dispatch(action);
-                            })}}>
-                                Change
+                            <h4>{gettext("Linked Workflow")}:</h4>
+                            <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
+                            <button  id="linked-workflow-editor" onClick={()=>{
+                                getLinkedWorkflowMenu(data,(response_data)=>{
+                                    let action = setLinkedWorkflowAction(response_data);
+                                    props.dispatch(action);
+                                });
+                            }}>
+                                {gettext("Change")}
                             </button>
                             <input type="checkbox" name="respresents_workflow" checked={data.represents_workflow} onChange={this.checkboxChanged.bind(this,"represents_workflow")}/>
-                            <label for="repesents_workflow">Display data</label>
+                            <label for="repesents_workflow">{gettext("Display linked workflow data")}</label>
                         </div>
                     }
                     {type=="node" && data.node_type!=2 &&
                         <div>
-                            <h4>Other:</h4>
+                            <h4>{gettext("Other")}:</h4>
                             <input type="checkbox" name="has_autolink" checked={data.has_autolink} onChange={this.checkboxChanged.bind(this,"has_autolink")}/>
-                            <label for="has_autolink">Draw arrow to next node</label>
+                            <label for="has_autolink">{gettext("Draw arrow to next node")}</label>
                         </div>
                     }
                     {type=="workflow" &&
                         <div>
-                            <h4>Settings:</h4>
-                            <label for="outcomes_type">Outcomes Style</label>
+                            <h4>{gettext("Settings")}:</h4>
+                            <label for="outcomes_type">{gettext("Outcomes Style")}</label>
                             <select name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
                                 {this.props.renderer.outcome_type_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -351,14 +407,14 @@ export class ComponentJSON extends React.Component{
                             {data.is_strategy && 
                                 [
                                 <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>,
-                                <label for="is_published">Published</label>
+                                <label for="is_published">{gettext("Published")}</label>
                                 ]
                             }
                         </div>
                     }
                     {type=="week" && data.week_type <2 &&
                         <div>
-                            <h4>Strategy:</h4>
+                            <h4>{gettext("Strategy")}:</h4>
                             <select value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
                                 {this.props.renderer.strategy_classification_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -374,17 +430,17 @@ export class ComponentJSON extends React.Component{
                                 })
                             }}>
                                 {data.is_strategy &&
-                                    "Remove Strategy Status"
+                                    gettext("Remove Strategy Status")
                                 }
                                 {!data.is_strategy &&
-                                    "Save as Template "
+                                    gettext("Save as Template")
                                 }
                             </button>
                         </div>
                     }
 
                     {(!no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && 
-                        [<h4>Delete:</h4>,
+                        [<h4>{gettext("Delete")}:</h4>,
                         this.addDeleteSelf(data)]
                     }
                 </div>
@@ -395,7 +451,9 @@ export class ComponentJSON extends React.Component{
     inputChanged(field,evt){
         let value=evt.target.value;
         if(!value)value="";
-        this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.value));
+        if(field=="colour")value=parseInt(value.replace("#",""),16);
+        if(evt.target.type=="number"&&value=="")value=0;
+        this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,value));
     }
 
     checkboxChanged(field,evt){
@@ -606,9 +664,9 @@ export class NodePorts extends React.Component{
     }
     
     nodeLinkAdded(target,source_port,target_port){
-        var props=this.props;
+        let props=this.props;
         if(target==this.props.nodeID)return;
-        newNodeLink(this.props.nodeID,target,Constants.port_keys.indexOf(source_port),Constants.port_keys.indexOf(target_port),(response_data)=>{
+        newNodeLink(props.nodeID,target,Constants.port_keys.indexOf(source_port),Constants.port_keys.indexOf(target_port),(response_data)=>{
             let action = newNodeLinkAction(response_data);
             props.dispatch(action);
         });
@@ -616,11 +674,100 @@ export class NodePorts extends React.Component{
 }
 
 
-//Text that can be passed a default value
-export class TitleText extends React.Component{
+//A commenting box
+export class CommentBox extends React.Component{
     constructor(props){
         super(props);
+        this.input = React.createRef();
+        this.state={};
     }
+    
+    render(){
+        let has_comments=false;
+        if(this.state.has_rendered){
+            if(this.props.comments){
+                has_comments = this.props.comments.length>0;
+            }else{
+                has_comments = this.props.parent.props.data.comments.length>0;
+            }
+        }
+        let comment_indicator=null;
+        if(has_comments)comment_indicator=reactDom.createPortal(
+            <div class="comment-indicator hover-shade" onClick={this.props.parent.commentClick.bind(this.props.parent)}>
+                <img src={iconpath+"comment_new.svg"}/>
+            </div>,
+            this.props.parent.maindiv.current
+        );
+        
+        
+        if(!this.props.show){
+            return comment_indicator;
+        }
+        
+        let comments;
+        if(this.props.comments)comments = this.props.comments.map(comment=>
+            <div class="comment">
+                <div class="comment-text">
+                    {comment.text}
+                </div>
+                <div class="comment-by">
+                    { "-"+comment.user+" ("+comment.created_on+")"}
+                </div>
+                {!read_only && <div class="mouseover-actions">
+                    <div class="window-close-button" onClick={this.removeComment.bind(this,comment.id)}>
+                        <img src={iconpath+"close.svg"}/>
+                    </div>
+                </div>
+                }
+            </div>               
+        )
+        
+        return reactDom.createPortal(
+            [
+            <div class="comment-box" onClick={(evt)=>evt.stopPropagation()}>
+                <div class="window-close-button" onClick = {this.props.parent.commentClick.bind(this.props.parent)}>
+                    <img src = {iconpath+"close.svg"}/>
+                </div>
+                <div class="comment-block">
+                    {comments}
+                </div>
+                <textarea ref={this.input}/>
+                <button class="menu-create" onClick={this.appendComment.bind(this)}>{gettext("Submit")}</button>
+            </div>,
+            comment_indicator
+            ],
+            this.props.parent.maindiv.current
+        )
+    }
+    
+    removeComment(id){
+        let parent = this.props.parent;
+        let props = parent.props;
+        if(window.confirm(gettext("Are you sure you want to permanently clear this comment?"))){
+            removeComment(props.objectID,Constants.object_dictionary[parent.objectType],id,
+                parent.reloadComments.bind(parent)
+            );
+        }
+    }
+    
+    appendComment(){
+        let text=this.input.current.value;
+        if(!text)return;
+        let parent = this.props.parent;
+        let props = parent.props;
+        this.input.current.value=null;
+        addComment(props.objectID,Constants.object_dictionary[parent.objectType]   ,text,parent.reloadComments.bind(parent));
+    }
+
+    componentDidMount(){
+        this.setState({has_rendered:true})
+    }
+    
+}
+
+
+//Text that can be passed a default value
+export class TitleText extends React.Component{
     
     render(){
         var text = this.props.text;
@@ -628,19 +775,61 @@ export class TitleText extends React.Component{
             text=this.props.defaultText;
         }
         return (
-            <div class="title-text" dangerouslySetInnerHTML={{ __html: text }}></div>
+            <div class="title-text" title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
         )
     }
 
 }
 
+//Title text for a workflow
+export class WorkflowTitle extends React.Component{
+    
+    render(){
+        let data = this.props.data;
+        let text = data.title;
+        
+        if(data.code)text = data.code+" - "+text;
+        
+        if(text==null || text==""){
+            text=gettext("Untitled");
+        }
+        
+        
+        return (
+            <a href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
+        )
+    }
+}
+
+//Title text for a workflow
+export class NodeTitle extends React.Component{
+    
+    render(){
+        let data = this.props.data;
+        let text;
+        if(data.represents_workflow && data.linked_workflow_data){
+            text = data.linked_workflow_data.title;
+            if(data.linked_workflow_data.code)text = data.linked_workflow_data.code+" - "+text;
+        }
+        else text = data.title;
+            
+        if(text==null || text==""){
+            text=gettext("Untitled");
+        }
+        
+        return (
+            <div class="node-title" title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
+        )
+    }
+}
+
 //Title for an outcome
 export class OutcomeTitle extends React.Component{
     render(){
-        let data = this.props.data
+        let data = this.props.data;
         let text = data.title;
         if(data.title==null || data.title==""){
-            text="Untitled outcome";
+            text=gettext("Untitled");
         }
         
         let hovertext = this.props.rank.map((rank,i)=>
@@ -720,6 +909,7 @@ export class ActionButton extends React.Component{
     
     handleClick(evt){
         this.props.handleClick(evt);
+        evt.stopPropagation();
     }
 }
 

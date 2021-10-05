@@ -10,7 +10,6 @@ body, html{
     font-family:'Open Sans',sans-serif;
 }
 
-
 a{
     color:#444444;
     text-decoration: none;
@@ -90,8 +89,9 @@ button:hover{
     margin-left:20px;
 }
 
-.workflow-title-bar > div{
+.workflow-title-bar > div, .workflow-title-bar > a{
     padding:10px;
+    display:inline-block;
 }
 
 .floatbar{
@@ -113,6 +113,10 @@ button:hover{
     box-sizing:border-box;
     white-space:nowrap;
     cursor:pointer;
+}
+
+.floatbardiv > *{
+    display:inline-block;
 }
 
 .floatbar img{
@@ -524,6 +528,10 @@ button:hover{
     background-color:#04ba74;
 }
 
+.workflow-type-indicator.project{
+    background-color:#d6bb30;
+}
+
 .workflow-top-row{
     display:flex;
     align-items:flex-start;
@@ -535,6 +543,7 @@ button:hover{
     font-size:16px;
     margin-bottom:6px;
     flex-grow:1;
+    color:#1976bc;
 }
 
 .workflow-buttons{
@@ -784,7 +793,7 @@ text {
     left:240px;
     width:calc(100% - 240px);
     height:calc(100% - 50px);
-    overflow:auto;
+    overflow:scroll;
     position:absolute;
 }
 

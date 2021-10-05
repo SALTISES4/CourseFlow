@@ -143,6 +143,7 @@ export const getOutcomeByID = (state,id,get_alternate,display_parent_outcomes)=>
     else state_section=state.outcome;
     for(var i in state_section){
         var outcome = state_section[i];
+        
         if(outcome.id==id){
             let root_outcome;
             let rank=[];
@@ -154,7 +155,6 @@ export const getOutcomeByID = (state,id,get_alternate,display_parent_outcomes)=>
                 else if(get_alternate=="parent")state_outcomeoutcome_section=state.parent_outcomeoutcome;
                 else state_outcomeoutcome_section=state.outcomeoutcome;
                 let root_info = findRootOutcome(outcome.id,[],state_outcomeoutcome_section);
-                console.log(root_info);
                 rank = root_info.rank.map(x=>null);
                 titles = rank.map(x=>null);
                 for(let j=0;j<state_section.length;j++){

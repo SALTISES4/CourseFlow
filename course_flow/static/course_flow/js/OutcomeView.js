@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, TitleText, OutcomeTitle} from "./ComponentJSON.js";
+import {ComponentJSON, OutcomeTitle} from "./ComponentJSON.js";
 import OutcomeOutcomeView from "./OutcomeOutcomeView.js";
 import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode.js";
@@ -28,7 +28,7 @@ class OutcomeView extends ComponentJSON{
         );
         
         let outcomehorizontallinks = data.outcome_horizontal_links_unique.map((horizontal_link)=>
-            <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link}/>
+            <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link} renderer={this.props.renderer}/>
         );
         let outcomeDiv;
         if(outcomehorizontallinks.length>0){
@@ -46,6 +46,7 @@ class OutcomeView extends ComponentJSON{
             actions.push(this.addInsertSibling(data));
             actions.push(this.addDuplicateSelf(data));
             actions.push(this.addDeleteSelf(data));
+            actions.push(this.addCommenting(data));
         }
         
         let dropIcon;
@@ -53,10 +54,9 @@ class OutcomeView extends ComponentJSON{
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(data.is_dropped)droptext="hide";
-        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+        if(data.is_dropped)droptext=gettext("hide");
+        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
-        console.log(this.props);
         
         
         
@@ -83,7 +83,7 @@ class OutcomeView extends ComponentJSON{
                 <ol class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
                     {children}
                 </ol>
-                {(!read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>+ Add New</div>
+                {(!read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>{gettext("+ Add New")}</div>
                 }
                 {(!read_only) && <div class="mouseover-actions">
                     {actions}
@@ -132,7 +132,7 @@ class OutcomeView extends ComponentJSON{
                 
                 if(drag_item.hasClass("outcome")){
                     drag_helper.addClass("valid-drop");
-                    drop_item.addClass("new-node-drop-over");
+                    drop_item.addClass("outcome-drop-over");
                     return;
                 }else{
                     return;
@@ -144,18 +144,20 @@ class OutcomeView extends ComponentJSON{
                 var drop_item = $(e.target);
                 if(drag_item.hasClass("outcome")){
                     drag_helper.removeClass("valid-drop");
-                    drop_item.removeClass("new-node-drop-over");
+                    drop_item.removeClass("outcome-drop-over");
                 }
             },
             drop:(e,ui)=>{
-                $(".new-node-drop-over").removeClass("new-node-drop-over");
+                $(".outcome-drop-over").removeClass("outcome-drop-over");
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 if(drag_item.hasClass("outcome")){
+                    props.renderer.tiny_loader.startLoad();
                     updateOutcomehorizontallinkDegree(props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
                             let action = updateOutcomehorizontallinkDegreeAction(response_data);
                             props.dispatch(action);
+                            props.renderer.tiny_loader.endLoad();
                         }
                     );
                 }
@@ -196,8 +198,8 @@ export class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(this.state.is_dropped)droptext="hide";
-        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+        if(this.state.is_dropped)droptext=gettext("hide");
+        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
         return(
             <div
@@ -270,9 +272,11 @@ export class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         if(is_toggled){
             $(".outcome-"+this.props.data.id).addClass("outcome-"+type);
             $(".outcome-"+this.props.data.id).parents(".node").addClass("outcome-"+type);
+            $(".outcome-"+this.props.data.id).parents(".workflow-details .outcome").addClass("outcome-"+type);
         }else{
             $(".outcome-"+this.props.data.id).removeClass("outcome-"+type);
             $(".outcome-"+this.props.data.id).parents(".node").removeClass("outcome-"+type);
+            $(".outcome-"+this.props.data.id).parents(".workflow-details .outcome").removeClass("outcome-"+type);
         }
     }
     
@@ -312,20 +316,18 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        
         var children = data.child_outcome_links.map((outcomeoutcome)=>
             this.getChildType(outcomeoutcome)
         );
         
-        console.log(this.props);
                 
         let dropIcon;
         if(this.state.is_dropped)dropIcon = "droptriangleup";
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(this.state.is_dropped)droptext="hide";
-        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+        if(this.state.is_dropped)droptext=gettext("hide");
+        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
         return(
             <div
@@ -401,8 +403,8 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(data.is_dropped)droptext="hide";
-        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+        if(data.is_dropped)droptext=gettext("hide");
+        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
 
         
@@ -506,10 +508,12 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
     deleteSelf(data){
         let props=this.props;
         //Temporary confirmation; add better confirmation dialogue later
-        if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
+        if(window.confirm(gettext("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?"))){
+            props.renderer.tiny_loader.startLoad();
             updateOutcomehorizontallinkDegree(data.outcome,data.parent_outcome,0,(response_data)=>{
                 let action = updateOutcomehorizontallinkDegreeAction(response_data);
                 props.dispatch(action);
+                props.renderer.tiny_loader.endLoad();
             });
            
         }
@@ -543,8 +547,8 @@ export const OutcomeHorizontalLinkView = connect(
 //        else dropIcon = "droptriangledown";
 //        
 //        let droptext;
-//        if(this.state.is_dropped)droptext="hide";
-//        else droptext = "show "+children.length+" descendant"+((children.length>1&&"s")||"")
+//        if(this.state.is_dropped)droptext=gettext("hide");
+//        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
 //        
 //        return(
 //            <div

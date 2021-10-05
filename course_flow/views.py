@@ -5,7 +5,7 @@ from functools import reduce
 from itertools import chain, islice, tee
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
@@ -40,7 +40,9 @@ from .models import (  # OutcomeProject,
     Activity,
     Column,
     ColumnWorkflow,
+    Comment,
     Course,
+    CustomTerm,
     Discipline,
     Favourite,
     Node,
@@ -64,9 +66,11 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     ActivitySerializerShallow,
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
+    CommentSerializer,
     CourseSerializerShallow,
     DisciplineSerializer,
     InfoBoxSerializer,
+    LinkedWorkflowSerializerShallow,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
@@ -165,6 +169,10 @@ def registration_view(request):
         request, "course_flow/registration/registration.html", {"form": form}
     )
 
+@ajax_login_required
+def logout_view(request):
+    logout(request,request.user)
+    return redirect(reverse('login'))
 
 class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def test_func(self):
@@ -278,6 +286,9 @@ def get_my_projects(user, add):
             ],
             "add": add,
             "duplicate": "copy",
+            "emptytext": _(
+                "Projects are used to organize your Programs, Courses, and Activities. Projects you create will be shown here. Click the button above to create a or import a project to get started."
+            ),
         },
         "edit_projects": {
             "title": _("Shared With Me"),
@@ -301,6 +312,9 @@ def get_my_projects(user, add):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _(
+                "Projects shared with you by others (for which you have either view or edit permissions) will appear here."
+            ),
         },
     }
     return data_package
@@ -324,6 +338,9 @@ def get_my_templates(user):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _(
+                "Activity templates, also known as Strategies, are reusable sections of activities you can drag and drop into your workflows. Click Add New above to get started."
+            ),
         },
         "owned_course_templates": {
             "title": _("My Course Templates"),
@@ -341,6 +358,9 @@ def get_my_templates(user):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _(
+                "Course templates are reusable sections of courses you can drag and drop into your workflows. Click Add New above to get started."
+            ),
         },
         "edit_templates": {
             "title": _("Shared With Me"),
@@ -368,6 +388,9 @@ def get_my_templates(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _(
+                "Templates shared with you by others (for which you have either view or edit permissions) will appear here."
+            ),
         },
     }
     return data_package
@@ -384,7 +407,7 @@ def get_my_favourites(user):
             "title": _("My Favourites"),
             "sections": [
                 {
-                    "title": _(""),
+                    "title": "",
                     "object_type": "project",
                     "objects": InfoBoxSerializer(
                         get_content_objects(favourites),
@@ -394,12 +417,15 @@ def get_my_favourites(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _(
+                "Your favourite projects, workflows, or templates by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
+            ),
         },
         "favourites_project": {
             "title": _("Projects"),
             "sections": [
                 {
-                    "title": _(""),
+                    "title": "",
                     "object_type": "project",
                     "objects": InfoBoxSerializer(
                         get_content_objects(
@@ -411,12 +437,15 @@ def get_my_favourites(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _(
+                "Your favourite activities by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
+            ),
         },
         "favourites_activity": {
             "title": _("Activities"),
             "sections": [
                 {
-                    "title": _(""),
+                    "title": "",
                     "object_type": "activity",
                     "objects": InfoBoxSerializer(
                         get_content_objects(
@@ -428,12 +457,15 @@ def get_my_favourites(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _(
+                "Your favourite activities by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
+            ),
         },
         "favourites_course": {
             "title": _("Courses"),
             "sections": [
                 {
-                    "title": _(""),
+                    "title": "",
                     "object_type": "course",
                     "objects": InfoBoxSerializer(
                         get_content_objects(
@@ -445,12 +477,15 @@ def get_my_favourites(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _(
+                "Your favourite courses by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
+            ),
         },
         "favourites_program": {
             "title": _("Program"),
             "sections": [
                 {
-                    "title": _(""),
+                    "title": "",
                     "object_type": "program",
                     "objects": InfoBoxSerializer(
                         get_content_objects(
@@ -462,6 +497,9 @@ def get_my_favourites(user):
                 }
             ],
             "duplicate": "import",
+            "emptytext": _(
+                "Your favourite programs by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
+            ),
         },
     }
     return data_package
@@ -494,6 +532,9 @@ def get_data_package_for_project(user, project):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _(
+                "Workflows are the basic content object of CourseFlow, representing either a Program, Course, or Activity. Workflows you add to this project will be shown here. Click the button above to create a or import a workflow to get started."
+            ),
         },
         "current_activity": {
             "title": _("Activities"),
@@ -510,6 +551,9 @@ def get_data_package_for_project(user, project):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _(
+                "Activities can be used to plan a single lesson/assessment, or multiple linked lessons/assessments. Click the button above to create or import an activity."
+            ),
         },
         "current_course": {
             "title": _("Courses"),
@@ -526,6 +570,9 @@ def get_data_package_for_project(user, project):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _(
+                "Courses can be used to plan a course and its related learning outcomes. Click the button above to create or import a course."
+            ),
         },
         "current_program": {
             "title": _("Programs"),
@@ -542,6 +589,9 @@ def get_data_package_for_project(user, project):
             ],
             "add": True,
             "duplicate": "copy",
+            "emptytext": _(
+                "Programs can be used to plan a curriculum and its related learning outcomes. Click the button above to create or import a program."
+            ),
         },
     }
     return data_package
@@ -699,12 +749,15 @@ def get_workflow_data_package(user, project, **kwargs):
     #        current_copy_type = False
     #        other_copy_type = False
     first_header = _("This Project")
+    empty_text = _("There are no applicable workflows in this project.")
     if project is None:
         first_header = _("Owned By You")
+        empty_text = _("You do not own any projects. Create a project first.")
     data_package = {
         "current_project": {
             "title": first_header,
             "sections": this_project_sections,
+            "emptytext": _(empty_text),
             #            "add": (project.author == user),
             #            "duplicate": current_copy_type,
         },
@@ -715,10 +768,16 @@ def get_workflow_data_package(user, project, **kwargs):
                 "title": _("From Your Other Projects"),
                 "sections": other_project_sections,
                 #            "duplicate": other_copy_type,
+                "emptytext": _(
+                    "There are no applicable workflows outside this project."
+                ),
             }
         data_package["all_published"] = {
             "title": _("Your Favourites"),
             "sections": all_published_sections,
+            "emptytext": _(
+                "You have no relevant favourites. Use the Explore menu to find and favourite content by other users."
+            )
             #            "duplicate": other_copy_type,
         }
     return data_package
@@ -924,7 +983,10 @@ def get_parent_outcome_data(workflow, user):
     parent_nodes = Node.objects.filter(
         linked_workflow=workflow
     ).prefetch_related("outcomenode_set")
-    parent_workflows = map(lambda x: x.get_workflow(), parent_nodes)
+    parent_workflows = list(map(lambda x: x.get_workflow(), parent_nodes))
+    parent_outcomeworkflows = OutcomeWorkflow.objects.filter(
+        workflow__id__in=[x.id for x in parent_workflows]
+    )
     parent_outcomes = []
     parent_outcomeoutcomes = []
     parent_outcomenodes = []
@@ -942,6 +1004,9 @@ def get_parent_outcome_data(workflow, user):
     return {
         "parent_workflow": WorkflowSerializerShallow(
             parent_workflows, many=True
+        ).data,
+        "parent_outcomeworkflow": OutcomeWorkflowSerializerShallow(
+            parent_outcomeworkflows, many=True
         ).data,
         "parent_node": NodeSerializerShallow(parent_nodes, many=True).data,
         "parent_outcomenode": OutcomeNodeSerializerShallow(
@@ -1051,7 +1116,7 @@ def get_workflow_context_data(workflow, context, user):
         for choice in Week._meta.get_field("strategy_classification").choices
     ]
     if not workflow.is_strategy:
-        parent_project_pk = project.pk
+        parent_project = ProjectSerializerShallow(project).data
 
     data_flat = {
         "workflow": SerializerClass(workflow).data,
@@ -1116,7 +1181,7 @@ def get_workflow_context_data(workflow, context, user):
         "strategy_classification_choices"
     ] = strategy_classification_choices
     if not workflow.is_strategy:
-        context["parent_project_pk"] = parent_project_pk
+        data_package["project"] = parent_project
     context["is_strategy"] = (
         JSONRenderer().render(workflow.is_strategy).decode("utf-8")
     )
@@ -1439,6 +1504,37 @@ def save_serializer(serializer) -> HttpResponse:
 """
 Contextual information methods
 """
+
+
+@user_can_view("workflowPk")
+def get_parent_workflow_info(request: HttpRequest) -> HttpResponse:
+    workflow_id = json.loads(request.POST.get("workflowPk"))
+    try:
+        parent_workflows = [
+            node.get_workflow()
+            for node in Node.objects.filter(linked_workflow__id=workflow_id)
+        ]
+        data_package = InfoBoxSerializer(parent_workflows, many=True).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "parent_workflows": data_package})
+
+
+@user_can_edit(False)
+def get_comments_for_object(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    try:
+        comments = (
+            get_model_from_str(object_type)
+            .objects.get(id=object_id)
+            .comments.all()
+            .order_by("created_on")
+        )
+        data_package = CommentSerializer(comments, many=True).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "data_package": data_package})
 
 
 class DisciplineListView(LoginRequiredMixin, ListAPIView):
@@ -2586,20 +2682,47 @@ def cleanup_workflow_post_duplication(workflow, project):
         node.save()
 
 
-#        for outcomenode in node.outcomenode_set.all():
-#            new_outcome = outcomes_set.filter(
-#                parent_outcome=outcomenode.outcome
-#            ).last()
-#            if new_outcome is None:
-#                outcomenode.delete()
-#            else:
-#                outcomenode.outcome = new_outcome
-#                outcomenode.save()
-
-
 """
 Creation methods
 """
+
+
+@user_can_edit("projectPk")
+def add_terminology(request: HttpRequest) -> HttpResponse:
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    term = json.loads(request.POST.get("term"))
+    translation = json.loads(request.POST.get("translation"))
+    translation_plural = json.loads(request.POST.get("translation_plural"))
+    try:
+        CustomTerm.objects.filter(term=term, project=project,).delete()
+        project.terminology_dict.create(
+            term=term,
+            translation=translation,
+            translation_plural=translation_plural,
+        )
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "new_dict": ProjectSerializerShallow(project).data[
+                "terminology_dict"
+            ],
+        }
+    )
+
+
+@user_can_edit(False)
+def add_comment(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    text = json.loads(request.POST.get("text"))
+    try:
+        obj = get_model_from_str(object_type).objects.get(id=object_id)
+        obj.comments.create(text=text, user=request.user)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted"})
 
 
 @user_can_edit("workflowPk")
@@ -3191,17 +3314,17 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     parent_type = json.loads(request.POST.get("parentType"))
     new_position = json.loads(request.POST.get("newPosition"))
     through_type = json.loads(request.POST.get("throughType"))
-
     try:
-        model = get_model_from_str(object_type).objects.get(id=object_id)
-        parent = get_model_from_str(parent_type).objects.get(id=parent_id)
-        if object_type == parent_type:
-            creation_kwargs = {"child": model, "parent": parent}
-        else:
-            creation_kwargs = {object_type: model, parent_type: parent}
-        get_model_from_str(through_type).objects.create(
-            rank=new_position, **creation_kwargs
-        )
+        with transaction.atomic():
+            model = get_model_from_str(object_type).objects.get(id=object_id)
+            parent = get_model_from_str(parent_type).objects.get(id=parent_id)
+            if object_type == parent_type:
+                creation_kwargs = {"child": model, "parent": parent}
+            else:
+                creation_kwargs = {object_type: model, parent_type: parent}
+            get_model_from_str(through_type).objects.create(
+                rank=new_position, **creation_kwargs
+            )
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -3216,10 +3339,11 @@ def change_column(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     new_column_id = json.loads(request.POST.get("columnPk"))
     try:
-        node = Node.objects.get(id=node_id)
-        new_column = Column.objects.get(id=new_column_id)
-        node.column = new_column
-        node.save()
+        with transaction.atomic():
+            node = Node.objects.get(id=node_id)
+            new_column = Column.objects.get(id=new_column_id)
+            node.column = new_column
+            node.save()
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -3259,6 +3383,7 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     outcome_id = json.loads(request.POST.get("outcomePk"))
     degree = json.loads(request.POST.get("degree"))
+
     try:
         if (
             OutcomeNode.objects.filter(
@@ -3379,16 +3504,16 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             node.represents_workflow = False
             node.save()
             linked_workflow = None
-            linked_workflow_title = None
-            linked_workflow_description = None
+            linked_workflow_data = None
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
             set_linked_workflow(node, workflow)
             if node.linked_workflow is None:
                 raise ValidationError("Project could not be found")
             linked_workflow = node.linked_workflow.id
-            linked_workflow_title = node.linked_workflow.title
-            linked_workflow_description = node.linked_workflow.description
+            linked_workflow_data = LinkedWorkflowSerializerShallow(
+                node.linked_workflow
+            ).data
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -3398,8 +3523,7 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             "action": "posted",
             "id": node_id,
             "linked_workflow": linked_workflow,
-            "linked_workflow_title": linked_workflow_title,
-            "linked_workflow_description": linked_workflow_description,
+            "linked_workflow_data": linked_workflow_data,
         }
     )
 
@@ -3459,6 +3583,23 @@ Delete methods
 """
 
 
+@user_can_edit(False)
+def remove_comment(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    comment_id = json.loads(request.POST.get("commentPk"))
+
+    try:
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        comment = model.comments.get(id=comment_id)
+        comment.delete()
+
+    except (ProtectedError, ObjectDoesNotExist):
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
+
 @user_can_delete(False)
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -3469,11 +3610,6 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             model.delete()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
-    except Exception as e:
-        response = JsonResponse({"error": str(e)})
-        response.status_code = 400
-        return response
-
     return JsonResponse({"action": "posted"})
 
 

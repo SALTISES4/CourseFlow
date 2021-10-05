@@ -9,11 +9,18 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import post_save, pre_delete, pre_save
+from django.db.models.signals import (
+    m2m_changed,
+    post_save,
+    pre_delete,
+    pre_save,
+)
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
+
+from course_flow.utils import benchmark, get_descendant_outcomes
 
 User = get_user_model()
 
@@ -29,9 +36,6 @@ class Project(models.Model):
     workflows = models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
     )
-    #    outcomes = models.ManyToManyField(
-    #        "Outcome", through="OutcomeProject", blank=True
-    #    )
 
     is_original = models.BooleanField(default=False)
     parent_project = models.ForeignKey(
@@ -45,6 +49,8 @@ class Project(models.Model):
         "ObjectPermission", related_query_name="project"
     )
 
+    terminology_dict = models.ManyToManyField("CustomTerm", blank=True)
+
     @property
     def type(self):
         return "project"
@@ -55,6 +61,15 @@ class Project(models.Model):
     class Meta:
         verbose_name = "Project"
         verbose_name_plural = "Projects"
+
+
+class CustomTerm(models.Model):
+    term = models.CharField(max_length=50)
+    translation = models.CharField(max_length=50)
+    translation_plural = models.CharField(max_length=50, null=True)
+
+    def get_permission_objects(self):
+        return [Project.objects.filter(terminology_dict=self).first()]
 
 
 class WorkflowProject(models.Model):
@@ -104,7 +119,6 @@ class Column(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
-    published = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
     colour = models.PositiveIntegerField(null=True)
     CUSTOM_ACTIVITY = 0
@@ -120,23 +134,27 @@ class Column(models.Model):
     CUSTOM_PROGRAM = 20
 
     COLUMN_TYPES = (
-        (CUSTOM_ACTIVITY, "Custom Activity Column"),
-        (OUT_OF_CLASS_INSTRUCTOR, "Out of Class (Instructor)"),
-        (OUT_OF_CLASS_STUDENT, "Out of Class (Students)"),
-        (IN_CLASS_INSTRUCTOR, "In Class (Instructor)"),
-        (IN_CLASS_STUDENT, "In Class (Students)"),
-        (CUSTOM_COURSE, "Custom Course Column"),
-        (PREPARATION, "Preparation"),
-        (LESSON, "Lesson"),
-        (ARTIFACT, "Artifact"),
-        (ASSESSMENT, "Assessment"),
-        (CUSTOM_PROGRAM, "Custom Program Category"),
+        (CUSTOM_ACTIVITY, _("Custom Activity Column")),
+        (OUT_OF_CLASS_INSTRUCTOR, _("Out of Class (Instructor)")),
+        (OUT_OF_CLASS_STUDENT, _("Out of Class (Students)")),
+        (IN_CLASS_INSTRUCTOR, _("In Class (Instructor)")),
+        (IN_CLASS_STUDENT, _("In Class (Students)")),
+        (CUSTOM_COURSE, _("Custom Course Column")),
+        (PREPARATION, _("Preparation")),
+        (LESSON, _("Lesson")),
+        (ARTIFACT, _("Artifact")),
+        (ASSESSMENT, _("Assessment")),
+        (CUSTOM_PROGRAM, _("Custom Program Category")),
     )
     column_type = models.PositiveIntegerField(default=0, choices=COLUMN_TYPES)
 
     is_original = models.BooleanField(default=False)
     parent_column = models.ForeignKey(
         "Column", on_delete=models.SET_NULL, null=True
+    )
+
+    comments = models.ManyToManyField(
+        "Comment", blank=True, related_name="column"
     )
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
@@ -164,7 +182,6 @@ class NodeLink(models.Model):
     target_node = models.ForeignKey(
         "Node", on_delete=models.CASCADE, related_name="incoming_links"
     )
-    published = models.BooleanField(default=False)
     NORTH = 0
     EAST = 1
     SOUTH = 2
@@ -220,6 +237,10 @@ class Outcome(models.Model):
         through="OutcomeHorizontalLink",
         blank=True,
         related_name="reverse_horizontal_outcomes",
+    )
+
+    comments = models.ManyToManyField(
+        "Comment", blank=True, related_name="outcome"
     )
 
     @property
@@ -374,7 +395,6 @@ class Node(models.Model):
     )
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
-    published = models.BooleanField(default=False)
 
     parent_node = models.ForeignKey(
         "Node", on_delete=models.SET_NULL, null=True
@@ -382,6 +402,10 @@ class Node(models.Model):
     is_original = models.BooleanField(default=True)
     has_autolink = models.BooleanField(default=False)
     is_dropped = models.BooleanField(default=False)
+
+    comments = models.ManyToManyField(
+        "Comment", blank=True, related_name="node"
+    )
 
     NONE = 0
     INDIVIDUAL = 1
@@ -391,13 +415,13 @@ class Node(models.Model):
     SUMMATIVE = 102
     COMPREHENSIVE = 103
     CONTEXT_CHOICES = (
-        (NONE, "None"),
-        (INDIVIDUAL, "Individual Work"),
-        (GROUPS, "Work in Groups"),
-        (WHOLE_CLASS, "Whole Class"),
-        (FORMATIVE, "Formative"),
-        (SUMMATIVE, "Summative"),
-        (COMPREHENSIVE, "Comprehensive"),
+        (NONE, _("None")),
+        (INDIVIDUAL, _("Individual Work")),
+        (GROUPS, _("Work in Groups")),
+        (WHOLE_CLASS, _("Whole Class")),
+        (FORMATIVE, _("Formative")),
+        (SUMMATIVE, _("Summative")),
+        (COMPREHENSIVE, _("Comprehensive")),
     )
     context_classification = models.PositiveIntegerField(
         choices=CONTEXT_CHOICES, default=0
@@ -431,35 +455,35 @@ class Node(models.Model):
     DISTRIBUTED_PROBLEM_SOLVING = 109
     PEER_ASSESSMENT = 110
     TASK_CHOICES = (
-        (NONE, "None"),
-        (GATHER_INFO, "Gather Information"),
-        (DISCUSS, "Discuss"),
-        (PROBLEM_SOLVE, "Problem Solve"),
-        (ANALYZE, "Analyze"),
-        (ASSESS_PEERS, "Assess/Review Peers"),
-        (DEBATE, "Debate"),
-        (GAME_ROLEPLAY, "Game/Roleplay"),
-        (CREATE_DESIGN, "Create/Design"),
-        (REVISE, "Revise/Improve"),
-        (READ, "Read"),
-        (WRITE, "Write"),
-        (PRESENT, "Present"),
-        (EXPERIMENT, "Experiment/Inquiry"),
-        (QUIZ_TEST, "Quiz/Test"),
-        (INSTRUCTOR_RESOURCE_CURATION, "Instructor Resource Curation"),
-        (INSTRUCTOR_ORCHESTRATION, "Instructor Orchestration"),
-        (INSTRUCTOR_EVALUATION, "Instructor Evaluation"),
-        (OTHER, "Other"),
-        (JIGSAW, "Jigsaw"),
-        (PEER_INSTRUCTION, "Peer Instruction"),
-        (CASE_STUDIES, "Case Studies"),
-        (GALLERY_WALK, "Gallery Walk"),
-        (REFLECTIVE_WRITING, "Reflective Writing"),
-        (TWO_STAGE_EXAM, "Two-Stage Exam"),
-        (TOOLKIT, "Toolkit"),
-        (ONE_MINUTE_PAPER, "One Minute Paper"),
-        (DISTRIBUTED_PROBLEM_SOLVING, "Distributed Problem Solving"),
-        (PEER_ASSESSMENT, "Peer Assessment"),
+        (NONE, _("None")),
+        (GATHER_INFO, _("Gather Information")),
+        (DISCUSS, _("Discuss")),
+        (PROBLEM_SOLVE, _("Problem Solve")),
+        (ANALYZE, _("Analyze")),
+        (ASSESS_PEERS, _("Assess/Review Peers")),
+        (DEBATE, _("Debate")),
+        (GAME_ROLEPLAY, _("Game/Roleplay")),
+        (CREATE_DESIGN, _("Create/Design")),
+        (REVISE, _("Revise/Improve")),
+        (READ, _("Read")),
+        (WRITE, _("Write")),
+        (PRESENT, _("Present")),
+        (EXPERIMENT, _("Experiment/Inquiry")),
+        (QUIZ_TEST, _("Quiz/Test")),
+        (INSTRUCTOR_RESOURCE_CURATION, _("Instructor Resource Curation")),
+        (INSTRUCTOR_ORCHESTRATION, _("Instructor Orchestration")),
+        (INSTRUCTOR_EVALUATION, _("Instructor Evaluation")),
+        (OTHER, _("Other")),
+        (JIGSAW, _("Jigsaw")),
+        (PEER_INSTRUCTION, _("Peer Instruction")),
+        (CASE_STUDIES, _("Case Studies")),
+        (GALLERY_WALK, _("Gallery Walk")),
+        (REFLECTIVE_WRITING, _("Reflective Writing")),
+        (TWO_STAGE_EXAM, _("Two-Stage Exam")),
+        (TOOLKIT, _("Toolkit")),
+        (ONE_MINUTE_PAPER, _("One Minute Paper")),
+        (DISTRIBUTED_PROBLEM_SOLVING, _("Distributed Problem Solving")),
+        (PEER_ASSESSMENT, _("Peer Assessment")),
     )
     task_classification = models.PositiveIntegerField(
         choices=TASK_CHOICES, default=0
@@ -468,9 +492,9 @@ class Node(models.Model):
     COURSE_NODE = 1
     PROGRAM_NODE = 2
     NODE_TYPES = (
-        (ACTIVITY_NODE, "Activity Node"),
-        (COURSE_NODE, "Course Node"),
-        (PROGRAM_NODE, "Program Node"),
+        (ACTIVITY_NODE, _("Activity Node")),
+        (COURSE_NODE, _("Course Node")),
+        (PROGRAM_NODE, _("Program Node")),
     )
     node_type = models.PositiveIntegerField(choices=NODE_TYPES, default=0)
 
@@ -485,14 +509,14 @@ class Node(models.Model):
     CREDITS = 8
     UNIT_CHOICES = (
         (NO_UNITS, ""),
-        (SECONDS, "seconds"),
-        (MINUTES, "minutes"),
-        (HOURS, "hours"),
-        (DAYS, "days"),
-        (WEEKS, "weeks"),
-        (MONTHS, "months"),
-        (YEARS, "yrs"),
-        (CREDITS, "credits"),
+        (SECONDS, _("seconds")),
+        (MINUTES, _("minutes")),
+        (HOURS, _("hours")),
+        (DAYS, _("days")),
+        (WEEKS, _("weeks")),
+        (MONTHS, _("months")),
+        (YEARS, _("yrs")),
+        (CREDITS, _("credits")),
     )
 
     # note: use charfield because some users like to put in ranges (i.e. 10-15 minutes)
@@ -604,19 +628,25 @@ class OutcomeNode(models.Model):
 
     # Check to see if the children already exist, and if not, add them
     def check_child_outcomes(self):
-        new_children = []
-        for child in self.outcome.children.all():
-            if (
-                OutcomeNode.objects.filter(
-                    outcome=child, node=self.node, degree=self.degree
-                ).count()
-                == 0
-            ):
-                new_child = OutcomeNode.objects.create(
-                    outcome=child, node=self.node, degree=self.degree
-                )
-                new_children += [new_child] + new_child.check_child_outcomes()
-        return new_children
+
+        node = self.node
+        outcome = self.outcome
+        degree = self.degree
+        # Get the descendants (all descendant outcomes that don't already have an outcomenode of this degree and node)
+        descendants = get_descendant_outcomes(outcome).exclude(
+            outcomenode__node=node, outcomenode__degree=degree
+        )
+        # Delete the outcomenodes of any descendants that still have an outcomenode to this node (i.e. clear those of other degrees, we are using bulk create so they won't get automatically deleted)
+        to_delete = OutcomeNode.objects.filter(
+            outcome__in=descendants, node=node
+        )
+        to_delete._raw_delete(to_delete.db)
+        # Create the new outcomenodes with bulk_create
+        new_children = [
+            OutcomeNode(degree=degree, node=node, outcome=x)
+            for x in descendants
+        ]
+        return OutcomeNode.objects.bulk_create(new_children)
 
 
 class Week(models.Model):
@@ -630,7 +660,6 @@ class Week(models.Model):
         "Week", on_delete=models.SET_NULL, null=True
     )
     is_original = models.BooleanField(default=True)
-    published = models.BooleanField(default=False)
     is_strategy = models.BooleanField(default=False)
     original_strategy = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
@@ -639,6 +668,10 @@ class Week(models.Model):
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)
+
+    comments = models.ManyToManyField(
+        "Comment", blank=True, related_name="week"
+    )
 
     NONE = 0
     JIGSAW = 1
@@ -653,18 +686,18 @@ class Week(models.Model):
     PEER_ASSESSMENT = 10
     OTHER = 11
     STRATEGY_CHOICES = (
-        (NONE, "None"),
-        (JIGSAW, "Jigsaw"),
-        (PEER_INSTRUCTION, "Peer Instruction"),
-        (CASE_STUDIES, "Case Studies"),
-        (GALLERY_WALK, "Gallery Walk"),
-        (REFLECTIVE_WRITING, "Reflective Writing"),
-        (TWO_STAGE_EXAM, "Two-Stage Exam"),
-        (TOOLKIT, "Toolkit"),
-        (ONE_MINUTE_PAPER, "One Minute Paper"),
-        (DISTRIBUTED_PROBLEM_SOLVING, "Distributed Problem Solving"),
-        (PEER_ASSESSMENT, "Peer Assessment"),
-        (OTHER, "Other"),
+        (NONE, _("None")),
+        (JIGSAW, _("Jigsaw")),
+        (PEER_INSTRUCTION, _("Peer Instruction")),
+        (CASE_STUDIES, _("Case Studies")),
+        (GALLERY_WALK, _("Gallery Walk")),
+        (REFLECTIVE_WRITING, _("Reflective Writing")),
+        (TWO_STAGE_EXAM, _("Two-Stage Exam")),
+        (TOOLKIT, _("Toolkit")),
+        (ONE_MINUTE_PAPER, _("One Minute Paper")),
+        (DISTRIBUTED_PROBLEM_SOLVING, _("Distributed Problem Solving")),
+        (PEER_ASSESSMENT, _("Peer Assessment")),
+        (OTHER, _("Other")),
     )
     strategy_classification = models.PositiveIntegerField(
         choices=STRATEGY_CHOICES, default=0
@@ -673,7 +706,7 @@ class Week(models.Model):
     PART = 0
     WEEK = 1
     TERM = 2
-    WEEK_TYPES = ((PART, "Part"), (WEEK, "Week"), (TERM, "Term"))
+    WEEK_TYPES = ((PART, _("Part")), (WEEK, _("Week")), (TERM, _("Term")))
     week_type = models.PositiveIntegerField(choices=WEEK_TYPES, default=0)
 
     def __str__(self):
@@ -713,6 +746,7 @@ class Workflow(models.Model):
 
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
+    code = models.CharField(max_length=50, null=True, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -745,8 +779,8 @@ class Workflow(models.Model):
     OUTCOMES_NORMAL = 0
     OUTCOMES_ADVANCED = 1
     OUTCOME_TYPES = (
-        (OUTCOMES_NORMAL, "Normal"),
-        (OUTCOMES_ADVANCED, "Advanced"),
+        (OUTCOMES_NORMAL, _("Normal")),
+        (OUTCOMES_ADVANCED, _("Advanced")),
     )
     outcomes_type = models.PositiveIntegerField(
         choices=OUTCOME_TYPES, default=0
@@ -757,14 +791,46 @@ class Workflow(models.Model):
     OUTCOME_SORT_TASK = 2
     OUTCOME_SORT_CONTEXT = 3
     OUTCOME_SORTS = (
-        (OUTCOME_SORT_WEEK, "Time"),
-        (OUTCOME_SORT_COLUMN, "Category"),
-        (OUTCOME_SORT_TASK, "Task"),
-        (OUTCOME_SORT_CONTEXT, "Context"),
+        (OUTCOME_SORT_WEEK, _("Time")),
+        (OUTCOME_SORT_COLUMN, _("Category")),
+        (OUTCOME_SORT_TASK, _("Task")),
+        (OUTCOME_SORT_CONTEXT, _("Context")),
     )
     outcomes_sort = models.PositiveIntegerField(
         choices=OUTCOME_SORTS, default=0
     )
+
+    NO_UNITS = 0
+    SECONDS = 1
+    MINUTES = 2
+    HOURS = 3
+    DAYS = 4
+    WEEKS = 5
+    MONTHS = 6
+    YEARS = 7
+    CREDITS = 8
+    UNIT_CHOICES = (
+        (NO_UNITS, ""),
+        (SECONDS, _("seconds")),
+        (MINUTES, _("minutes")),
+        (HOURS, _("hours")),
+        (DAYS, _("days")),
+        (WEEKS, _("weeks")),
+        (MONTHS, _("months")),
+        (YEARS, _("yrs")),
+        (CREDITS, _("credits")),
+    )
+
+    # note: use charfield because some users like to put in ranges (i.e. 10-15 minutes)
+    time_required = models.CharField(max_length=30, null=True, blank=True)
+    time_units = models.PositiveIntegerField(default=0, choices=UNIT_CHOICES)
+
+    ponderation_theory = models.PositiveIntegerField(default=0, null=True)
+    ponderation_practical = models.PositiveIntegerField(default=0, null=True)
+    ponderation_individual = models.PositiveIntegerField(default=0, null=True)
+
+    time_general_hours = models.PositiveIntegerField(default=0, null=True)
+    time_specific_hours = models.PositiveIntegerField(default=0, null=True)
 
     SUBCLASSES = ["activity", "course", "program"]
 
@@ -974,6 +1040,12 @@ class Favourite(models.Model):
     content_object = GenericForeignKey("content_type", "object_id")
 
 
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    text = models.CharField(max_length=500, blank=False,)
+    created_on = models.DateTimeField(default=timezone.now)
+
+
 class ObjectPermission(models.Model):
     content_choices = {
         "model__in": ["project", "activity", "course", "program"]
@@ -989,9 +1061,9 @@ class ObjectPermission(models.Model):
     PERMISSION_VIEW = 1
     PERMISSION_EDIT = 2
     PERMISSION_CHOICES = (
-        (PERMISSION_NONE, "None"),
-        (PERMISSION_VIEW, "View"),
-        (PERMISSION_EDIT, "Edit"),
+        (PERMISSION_NONE, _("None")),
+        (PERMISSION_VIEW, _("View")),
+        (PERMISSION_EDIT, _("Edit")),
     )
     permission_type = models.PositiveIntegerField(
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
@@ -1066,6 +1138,15 @@ def delete_project_objects(sender, instance, **kwargs):
     len(outcomes)
     workflows = Workflow.objects.filter(project=instance)
     len(workflows)
+    comments = Comment.objects.filter(
+        Q(node__week__workflow__project=instance)
+        | Q(outcome__in=outcomes.values_list("pk", flat=True))
+        | Q(column__workflow__project=instance)
+        | Q(week__workflow__project=instance)
+    )
+    len(comments)
+    # Inexplicably, I can't seem to raw delete here.
+    comments.delete()
 
     # Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
     outcomenodes = OutcomeNode.objects.filter(
@@ -1148,8 +1229,6 @@ def delete_project_objects(sender, instance, **kwargs):
     favourites._raw_delete(favourites.db)
     workflows._raw_delete(workflows.db)
 
-    # instance.workflows.all().delete()
-
 
 @receiver(pre_delete, sender=Workflow)
 def delete_workflow_objects(sender, instance, **kwargs):
@@ -1167,6 +1246,15 @@ def delete_workflow_objects(sender, instance, **kwargs):
         | Q(parent_outcomes__parent_outcomes__workflow=instance)
     )
     len(outcomes)
+
+    # Delete all comments.
+    comments = Comment.objects.filter(
+        Q(node__week__workflow=instance)
+        | Q(outcome__in=outcomes.values_list("pk", flat=True))
+        | Q(column__workflow=instance)
+        | Q(week__workflow=instance)
+    )
+    comments._raw_delete(comments.db)
 
     # Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
     outcomenodes = OutcomeNode.objects.filter(node__week__workflow=instance)
@@ -1233,15 +1321,6 @@ def delete_outcome_objects(sender, instance, **kwargs):
     instance.children.all().delete()
 
 
-@receiver(post_save, sender=NodeWeek)
-def switch_node_to_static(sender, instance, created, **kwargs):
-    if created:
-        activity = Activity.objects.filter(weeks=instance.week).first()
-        if activity:
-            if activity.static:
-                instance.node.students.add(*list(activity.students.all()))
-
-
 @receiver(pre_delete, sender=Column)
 def move_nodes(sender, instance, **kwargs):
     columnworkflow = instance.columnworkflow_set.first()
@@ -1262,13 +1341,6 @@ def move_nodes(sender, instance, **kwargs):
             node.save()
     else:
         print("couldn't find a column")
-
-
-# Removed, this interferes with automatic adding/removing of ndoes
-# @receiver(post_save, sender=OutcomeNode)
-# def delete_outcomenode_no_degree(sender, instance, created, **kwargs):
-#    if instance.degree == 0:
-#        instance.delete()
 
 
 """
@@ -1342,7 +1414,10 @@ def reorder_for_deleted_outcome_horizontal_link(sender, instance, **kwargs):
 @receiver(pre_save, sender=NodeWeek)
 def delete_existing_node_week(sender, instance, **kwargs):
     if instance.pk is None:
-        NodeWeek.objects.filter(node=instance.node).delete()
+        try:
+            NodeWeek.objects.filter(node=instance.node).delete()
+        except Exception as e:
+            print(e)
         if instance.rank < 0:
             instance.rank = 0
         new_parent_count = NodeWeek.objects.filter(week=instance.week).count()

@@ -13,6 +13,7 @@ app_name = "course_flow"
 def course_flow_patterns():
     return [
         url(r"home/$", views.home_view, name="home"),
+        url(r"logout/$", views.logout_view, name="logout"),
         url(r"myprojects/$", views.myprojects_view, name="my-projects"),
         url(r"mytemplates/$", views.mytemplates_view, name="my-templates"),
         url(r"myfavourites/$", views.myfavourites_view, name="my-favourites"),
@@ -196,6 +197,21 @@ def course_flow_patterns():
             r"^activity-strategy/create/$",
             views.ActivityStrategyCreateView.as_view(),
             name="activity-strategy-create",
+        ),
+        url(
+            r"^comments/get/$",
+            views.get_comments_for_object,
+            name="get-comments-for-object",
+        ),
+        url(r"^terminology/add/$", views.add_terminology, name="add-terminology",),
+        url(r"^comments/add/$", views.add_comment, name="add-comment",),
+        url(
+            r"^comments/remove/$", views.remove_comment, name="remove-comment",
+        ),
+        url(
+            r"^parentworkflows/get/$",
+            views.get_parent_workflow_info,
+            name="get-parent-workflow-info",
         ),
         url(
             r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"

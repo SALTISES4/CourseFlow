@@ -41,7 +41,7 @@ export class SelectionManager{
     
     changeSelection(evt,newSelection){
         if(read_only)return;
-        evt.stopPropagation();
+        if(evt)evt.stopPropagation();
         if(this.currentSelection)this.currentSelection.setState({selected:false});
         this.currentSelection=newSelection;
         if(this.currentSelection){
@@ -54,11 +54,13 @@ export class SelectionManager{
             $("#sidebar").tabs("disable",0);
         }
     }
+    
+    deleted(selection){
+        if(selection==this.currentSelection){
+            this.changeSelection(null,null);
+        }
+    }
 }
-
-
-
-
 
 
 export function renderExploreMenu(data_package,disciplines){
@@ -140,12 +142,25 @@ export class WorkflowRenderer{
         this.store = createStore(Reducers.rootWorkflowReducer,this.initial_workflow_data);
         this.column_colours = {}
         this.read_only = data_package.read_only;
+        if(data_package.project){
+            $("#floatbar").append("<a id='project-return' href='"+update_path["project"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Project")+"</div></div>");
+            let custom_text_base = Constants.custom_text_base();
+            for(let i=0;i<data_package.project.terminology_dict.length;i++){
+                let term = data_package.project.terminology_dict[i];
+                let custom_text = custom_text_base[term.term]
+                if(custom_text){
+                    if(custom_text["singular_key"])django.catalog[custom_text["singular_key"]]=term.translation;
+                    if(custom_text["plural_key"])django.catalog[custom_text["plural_key"]]=term.translation_plural;
+                    
+                }
+            }
+        }
     }
     
     render(container,view_type="workflowview"){
         console.log("rendering a view");
         this.view_type=view_type;
-        reactDom.render(null,container[0]);
+        reactDom.render(<WorkflowLoader/>,container[0]);
         let store = this.store;
         var renderer = this;
         this.initial_loading=true;
@@ -257,7 +272,17 @@ export class OutcomeRenderer{
     }
 }
 
-
+class WorkflowLoader extends React.Component{
+    
+    render(){
+        return (
+            <div class="load-screen">
+                
+            </div>
+        
+        )
+    }
+}
 
 
 

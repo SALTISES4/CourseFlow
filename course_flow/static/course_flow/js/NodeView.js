@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, NodeLinkSVG, AutoLinkView, NodePorts, TitleText} from "./ComponentJSON.js";
+import {ComponentJSON, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON.js";
 import NodeLinkView from "./NodeLinkView.js";
 import OutcomeNodeView from "./OutcomeNode.js";
 import {getNodeByID} from "./FindState.js";
@@ -42,7 +42,7 @@ class NodeView extends ComponentJSON{
             );
         }
         let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
-            <OutcomeNodeView key={outcomenode} objectID={outcomenode}/>
+            <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
         );
         let outcomeDiv;
         if(outcomenodes.length>0){
@@ -56,10 +56,18 @@ class NodeView extends ComponentJSON{
         let lefticon;
         let righticon;
         if(data.context_classification>0)lefticon=(
-            <img src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+            <img title={
+                renderer.context_choices.find(
+                    (obj)=>obj.type==data.context_classification
+                ).name
+            } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
         )
         if(data.task_classification>0)righticon=(
-            <img src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+            <img title={
+                renderer.task_choices.find(
+                    (obj)=>obj.type==data.task_classification
+                ).name
+            }src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
         )
         let dropIcon;
         if(data.is_dropped)dropIcon = "droptriangleup";
@@ -68,15 +76,19 @@ class NodeView extends ComponentJSON{
         if(data.linked_workflow)linkIcon=(
             <div class="hover-shade linked-workflow" onClick={this.doubleClick.bind(this)}>
                 <img src={iconpath+"wflink.svg"}/>
-                <div>Visit linked workflow</div>
+                <div>{gettext("Visit linked workflow")}</div>
             </div>
         );
         let dropText = "";
         if(data.description&&data.description.replace(/(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,'')!='')dropText="...";
-        let titleText = data.title;
-        if(data.represents_workflow)titleText = data.linked_workflow_title;
-        let descriptionText = data.description;
-        if(data.represents_workflow)descriptionText = data.linked_workflow_description;
+        let titleText = (
+            <NodeTitle data={data}/>
+        );
+        let descriptionText;
+        if(data.represents_workflow){
+            if(data.linked_workflow_data)descriptionText = data.linked_workflow_data.description;
+        }
+        else descriptionText = data.description;
         
         
         return (
@@ -95,9 +107,7 @@ class NodeView extends ComponentJSON{
                     <div class = "node-icon">
                         {lefticon}
                     </div>
-                    <div class = "node-title">
-                        <TitleText text={titleText} defaultText="New Node"/>
-                    </div>
+                    {titleText}
                     <div class = "node-icon">
                         {righticon}
                     </div>
@@ -117,6 +127,7 @@ class NodeView extends ComponentJSON{
                     {this.addInsertSibling(data)}
                     {this.addDuplicateSelf(data)}
                     {this.addDeleteSelf(data)}
+                    {this.addCommenting(data)}
                 </div>
                 }
                 {this.addEditable(data)}
@@ -156,8 +167,7 @@ class NodeView extends ComponentJSON{
     doubleClick(evt){
         evt.stopPropagation();
         if(this.props.data.linked_workflow){
-            if(read_only)window.location=workflow_detail_path.replace("0",this.props.data.linked_workflow);
-            else window.location=workflow_update_path.replace("0",this.props.data.linked_workflow);
+            window.location=update_path["workflow"].replace("0",this.props.data.linked_workflow);
         }
     }
 
@@ -175,7 +185,7 @@ class NodeView extends ComponentJSON{
                 
                 if(drag_item.hasClass("outcome")){
                     drag_helper.addClass("valid-drop");
-                    drop_item.addClass("new-node-drop-over");
+                    drop_item.addClass("outcome-drop-over");
                     return;
                 }else{
                     return;
@@ -185,20 +195,22 @@ class NodeView extends ComponentJSON{
                 var drag_item = ui.draggable;
                 var drag_helper = ui.helper;
                 var drop_item = $(e.target);
-                if(drag_item.hasClass("new-node")){
+                if(drag_item.hasClass("outcome")){
                     drag_helper.removeClass("valid-drop");
-                    drop_item.removeClass("new-node-drop-over");
+                    drop_item.removeClass("outcome-drop-over");
                 }
             },
             drop:(e,ui)=>{
-                $(".new-node-drop-over").removeClass("new-node-drop-over");
+                $(".outcome-drop-over").removeClass("outcome-drop-over");
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 if(drag_item.hasClass("outcome")){
+                    props.renderer.tiny_loader.startLoad();
                     updateOutcomenodeDegree(this.props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
                             let action = updateOutcomenodeDegreeAction(response_data);
                             props.dispatch(action);
+                            props.renderer.tiny_loader.endLoad();
                         }
                     );
                 }
@@ -207,7 +219,7 @@ class NodeView extends ComponentJSON{
     }
 
     mouseIn(evt){
-        if(evt.which==1)return;
+        if($(".workflow-canvas").hasClass("creating-node-link"))return;
         if(!read_only)$("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
         d3.selectAll(".node-ports").raise();
         var mycomponent = this;
@@ -245,11 +257,12 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        let titleText = data.title;
         let selection_manager = this.props.renderer.selection_manager;
-        if(data.represents_workflow)titleText = data.linked_workflow_title;
-        let descriptionText = data.description;
-        if(data.represents_workflow)descriptionText = data.linked_workflow_description;
+        let descriptionText;
+        if(data.represents_workflow){
+            if(data.linked_workflow_data)descriptionText = data.linked_workflow_data.description;
+        }
+        else descriptionText = data.description;
         
         return (
             <div 
@@ -265,9 +278,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
                 onClick={(evt)=>selection_manager.changeSelection(evt,this)}
             >
                 <div class = "node-top-row">
-                    <div class = "node-title">
-                        <TitleText text={titleText} defaultText="New Node"/>
-                    </div>
+                    <NodeTitle data={data}/>
                 </div>
                 {this.addEditable(data,true)}
             </div>

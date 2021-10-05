@@ -25,7 +25,7 @@ export class WeekViewUnconnected extends ComponentJSON{
             <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} renderer={renderer}  column_order={this.props.column_order}/>
         );
         if(nodes.length==0)nodes.push(
-            <div class="node-week" style={{height:"100%"}}></div>
+            <div class="node-week" style={{height:"100%"}}>Drag and drop nodes from the sidebar to add.</div>
         );
         let css_class = "week";
         if(this.state.selected)css_class+=" selected";
@@ -39,6 +39,7 @@ export class WeekViewUnconnected extends ComponentJSON{
                         {this.addInsertSibling(data)}
                         {this.addDuplicateSelf(data)}
                         {this.addDeleteSelf(data)}
+                        {this.addCommenting(data)}
                     </div>
                 </div>
                 }
@@ -52,7 +53,11 @@ export class WeekViewUnconnected extends ComponentJSON{
                         <div class="strategy-tab-triangle"></div>
                         <div class="strategy-tab-square">
                             <div class="strategy-tab-circle">
-                                <img src= {iconpath+Constants.strategy_keys[data.strategy_classification]+".svg"}/>
+                                <img title={
+                                    renderer.strategy_classification_choices.find(
+                                        (obj)=>obj.type==data.strategy_classification
+                                    ).name
+                                } src= {iconpath+Constants.strategy_keys[data.strategy_classification]+".svg"}/>
                             </div>
                         </div>
                     </div>
