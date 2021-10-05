@@ -7,8 +7,8 @@ class CourseFlowConfig(AppConfig):
     verbose_name = "Course Flow"
 
     def ready(self):
-        from django_lti_tool_provider.views import LTIView  # noqa
-        from .lti import ApplicationHookManager  # noqa
+        # from django_lti_tool_provider.views import LTIView  # noqa
+        # from .lti import ApplicationHookManager  # noqa
 
-        LTIView.register_authentication_manager(ApplicationHookManager())
+        # LTIView.register_authentication_manager(ApplicationHookManager())
         register(check_return_url)
