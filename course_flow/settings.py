@@ -126,9 +126,7 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-        "OPTIONS": {
-            'timeout': 20,
-        }
+        "OPTIONS": {"timeout": 20},
     }
 }
 
@@ -186,10 +184,9 @@ REST_FRAMEWORK = {
     ]
 }
 
-COURSE_FLOW_RETURN_URL={
-    "name":"course_flow:home",
-    "title":"myDalite"
-};
+COURSE_FLOW_RETURN_URL = {"name": "course_flow:home", "title": "myDalite"}
+
+COURSE_FLOW_LTI_ACCESS = True
 
 
 """
@@ -246,7 +243,8 @@ except ImportError:
     )
     pass
 
-# Run this AFTER importing local settings, because this is where debug will usually be set to true
+# Run this AFTER importing local settings, as this is where debug will usually
+# be set to true
 if DEBUG:
     INSTALLED_APPS += [
         "debug_toolbar",
