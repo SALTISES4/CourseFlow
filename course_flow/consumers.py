@@ -22,23 +22,13 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-
-    def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type':'workflow_message',
-                'message':message
-            }
-        )
     
-    def workflow_message(self, event):
-        message = event['message']
+    def workflow_action(self, event):
+        message = event['action']
         print("got a message from group")
         print(message)
         # Send message to WebSocket
-        self.send(text_data=json.dumps({
-            'message': message
-        }))
+        if(event["type"]=="workflow_action"):
+            self.send(text_data=json.dumps(
+                event
+            ))

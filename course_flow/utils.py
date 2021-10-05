@@ -38,7 +38,6 @@ def get_parent_model(model_str: str):
         model=get_parent_model_str(model_str)
     ).model_class()
 
-
 def linkIDMap(link):
     return link.id
 
@@ -119,3 +118,4 @@ def benchmark(identifier, last_time):
     current_time = time.time()
     print("Completed " + identifier + " in " + str(current_time - last_time))
     return current_time
+

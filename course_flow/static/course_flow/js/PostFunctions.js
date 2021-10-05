@@ -292,8 +292,8 @@ export function insertChild(objectID,objectType,callBackFunction=()=>console.log
     
 //Called when an object in a list is reordered
 export function insertedAt(objectID,objectType,parentID,parentType,newPosition,throughType,callBackFunction=()=>console.log("success")){
-    $(document).off(throughType+"-dropped.insert");
-    $(document).on(throughType+"-dropped.insert",()=>{
+    $(document).off(throughType+"-dropped-success.insert");
+    $(document).on(throughType+"-dropped-success.insert",()=>{
         try{
             $.post(post_paths.inserted_at, {
                 objectID:JSON.stringify(objectID),
@@ -303,7 +303,6 @@ export function insertedAt(objectID,objectType,parentID,parentType,newPosition,t
                 newPosition:JSON.stringify(newPosition),
                 throughType:JSON.stringify(throughType)
             }).done(function(data){
-                $(document).triggerHandler(throughType+"-dropped-success");
                 if(data.action == "posted") callBackFunction(data);
                 else fail_function();
             });
@@ -316,14 +315,15 @@ export function insertedAt(objectID,objectType,parentID,parentType,newPosition,t
 //Called when a node should have its column changed
 export function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
     
-    $(document).off("nodeweek-dropped-success.columnchange");
-    $(document).on("nodeweek-dropped-success.columnchange",()=>{
+    $(document).off("nodeweek-dropped.columnchange");
+    $(document).on("nodeweek-dropped.columnchange",()=>{
         try{
     
             $.post(post_paths.column_changed, {
                 nodePk:JSON.stringify(objectID),
                 columnPk:JSON.stringify(columnID),
             }).done(function(data){
+                $(document).triggerHandler(throughType+"-dropped-success");
                 if(data.action == "posted") callBackFunction(data);
                 else fail_function();
             });

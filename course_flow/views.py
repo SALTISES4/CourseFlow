@@ -4,8 +4,6 @@ import time
 from functools import reduce
 from itertools import chain, islice, tee
 
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -65,6 +63,7 @@ from .models import (  # OutcomeProject,
     Workflow,
     WorkflowProject,
 )
+from . import redux_actions as actions
 from .serializers import (  # OutcomeProjectSerializerShallow,
     ActivitySerializerShallow,
     ColumnSerializerShallow,
@@ -3066,6 +3065,12 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
+    response_data = {
+            "new_model": new_model_serialized,
+            "new_through": new_through_serialized,
+            "parentID": parent_id,
+    }
+    actions.dispatch_wf(model.get_workflow(),actions.insertBelowAction(response_data,object_type))
     return JsonResponse(
         {
             "action": "posted",
@@ -3325,13 +3330,20 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 creation_kwargs = {"child": model, "parent": parent}
             else:
                 creation_kwargs = {object_type: model, parent_type: parent}
+            if parent_type=="week" and parent.parent_type==Week.TERM:
+                #Correct for the fact that we are in a term: the index sent is that WITHIN the column
+                NodeWeek.objects.filter(node__column==model.column)
             get_model_from_str(through_type).objects.create(
                 rank=new_position, **creation_kwargs
             )
 
     except ValidationError:
         return JsonResponse({"action": "error"})
-
+    actions.dispatch_wf(
+        model.get_workflow(),actions.moveThroughModel(
+            through_type,new_position,parent_id,old_parent_id,object_id
+        )
+    )
     return JsonResponse({"action": "posted"})
 
 
@@ -3373,13 +3385,6 @@ def update_value(request: HttpRequest) -> HttpResponse:
         serializer = serializer_lookups_shallow[object_type](
             object_to_update, data=data, partial=True
         )
-        
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)('workflow_2',
-            {'type':'workflow_message','message':'the workflow was updated'}
-        )
-        
-        
         return save_serializer(serializer)
     except ValidationError:
         return JsonResponse({"action": "error"})

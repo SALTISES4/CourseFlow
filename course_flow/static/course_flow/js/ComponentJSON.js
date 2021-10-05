@@ -229,8 +229,8 @@ export class ComponentJSON extends React.Component{
             Constants.parent_dictionary[type],
             Constants.through_parent_dictionary[type],
             (response_data)=>{
-                let action = insertBelowAction(response_data,type);
-                props.dispatch(action);
+//                let action = insertBelowAction(response_data,type);
+//                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             }
         );

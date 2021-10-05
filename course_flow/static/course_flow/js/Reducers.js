@@ -388,6 +388,7 @@ export function weekworkflowReducer(state={},action){
     }
 }
 export function weekReducer(state={},action){
+    console.log(action);
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.week)return action.payload.week;
@@ -395,7 +396,7 @@ export function weekReducer(state={},action){
         case 'nodeweek/movedTo':
             let old_parent,old_parent_index,new_parent,new_parent_index;
             for(var i=0;i<state.length;i++){
-                if(state[i].nodeweek_set.indexOf(action.payload.id)>=0){
+                if(state[i].id == action.payload.old_parent){
                     old_parent_index=i;
                     old_parent={...state[i]};
                 }
@@ -405,15 +406,6 @@ export function weekReducer(state={},action){
                 }
             }
             var new_index = action.payload.new_index;
-            //Correction for if we are in a term:
-            if(action.payload.nodes_by_column){
-                for(var col in action.payload.nodes_by_column){
-                    if(action.payload.nodes_by_column[col].indexOf(action.payload.id)>=0){
-                        let previous = action.payload.nodes_by_column[col][new_index];
-                        new_index = new_parent.nodeweek_set.indexOf(previous);
-                    }
-                }
-            }
             
             
             var new_state = state.slice();
@@ -428,7 +420,7 @@ export function weekReducer(state={},action){
                 
             }
             new_state.splice(old_parent_index,1,old_parent);
-            insertedAt(action.payload.child_id,"node",new_parent.id,"week",new_index,"nodeweek");
+            //insertedAt(action.payload.child_id,"node",new_parent.id,"week",new_index,"nodeweek");
             return new_state;
         case 'node/deleteSelf':
             for(var i=0;i<state.length;i++){
@@ -442,8 +434,10 @@ export function weekReducer(state={},action){
             }
             return state;
         case 'node/insertBelow':
+            console.log("adding node below")
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parentID){
+                    console.log("found parent id");
                     var new_state = state.slice();
                     new_state[i] = {...state[i]}
                     var new_nodeweek_set = state[i].nodeweek_set.slice();
