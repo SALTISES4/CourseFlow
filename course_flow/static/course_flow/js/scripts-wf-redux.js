@@ -247,6 +247,14 @@ export class WorkflowRenderer{
         
     }
     
+    micro_update(obj){
+        if(this.updateSocket){
+            console.log("sending message");
+            //this.updateSocket.send(JSON.stringify({message:"message"}))
+            this.updateSocket.send(JSON.stringify({type:"micro_update",action:obj}))
+        }
+    }
+    
 }
 
 

@@ -111,7 +111,8 @@ class OutcomeView extends ComponentJSON{
     }
 
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
-        this.props.dispatch(moveOutcomeOutcome(id,new_position,new_parent,child_id));
+        this.props.renderer.micro_update(moveOutcomeOutcome(id,new_position,new_parent,child_id));
+        insertedAt(child_id,"outcome",new_parent,"outcome",new_position,"outcomeoutcome");
     }
 
     stopSortFunction(){

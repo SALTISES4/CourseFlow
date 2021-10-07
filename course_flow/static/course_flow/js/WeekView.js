@@ -4,8 +4,8 @@ import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import NodeWeekView from "./NodeWeekView.js";
 import {getWeekByID, getNodeWeekByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
-import {columnChangeNodeWeek, moveNodeWeek, newStrategyAction} from "./Reducers.js";
-import {addStrategy} from "./PostFunctions";
+import {columnChangeNode, moveNodeWeek, newStrategyAction} from "./Reducers.js";
+import {dragUpdate,addStrategy} from "./PostFunctions";
 import {Loader} from "./Constants.js";
 
 //Basic component to represent a Week
@@ -84,7 +84,9 @@ export class WeekViewUnconnected extends ComponentJSON{
           false,
           [200,1],
           ".node-block",
-          ".node");
+          ".node",
+          ".week-block",
+        );
         this.makeDroppable()
     }
 
@@ -92,27 +94,28 @@ export class WeekViewUnconnected extends ComponentJSON{
         //this.props.dispatch(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column))
     }
     
-    sortableColumnChangedFunction(id,delta_x){
-        for(let i=0;i<this.props.nodeweeks.length;i++){
-            if(this.props.nodeweeks[i].id==id){
-                this.props.dispatch(columnChangeNodeWeek(this.props.nodeweeks[i].node,delta_x,this.props.column_order));
+    sortableColumnChangedFunction(id,delta_x,old_column){
+        let columns = this.props.column_order;
+        let old_column_index = columns.indexOf(old_column);
+        let new_column_index = old_column_index+delta_x;
+        if(new_column_index<0 || new_column_index>=columns.length)return;
+        let new_column = columns[new_column_index];
+        //A little hack to stop ourselves from sending this update a hundred times per second
+        if(this.recently_sent_column_change){
+            if(this.recently_sent_column_change.column==new_column && Date.now() - this.recently_sent_column_change.lastCall<=500){
+                this.recently_sent_column_change.lastCall = Date.now();
+                return;
             }
         }
+        this.recently_sent_column_change={column:new_column,lastCall:Date.now()};
+        this.props.renderer.micro_update(columnChangeNode(id,new_column));
+        dragUpdate(this.props.renderer,"nodeweek","column",[id,new_column]);
         
     }
     
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
-
-//        let nodes_by_column = this.props.nodes_by_column;
-//        if(nodes_by_column){
-//            for(var col in nodes_by_column){
-//                if(nodes_by_column[col].indexOf(action.payload.id)>=0){
-//                    let previous = nodes_by_column[col][new_position];
-//                    new_position = new_parent.nodeweek_set.indexOf(previous);
-//                }
-//            }
-//        }
-        insertedAt(child_id,"node",new_parent,"week",new_index,"nodeweek");
+        this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column,child_id));
+        dragUpdate(this.props.renderer,"nodeweek","inserted",[child_id,"node",new_parent,"week",new_position,"nodeweek"]);
     }
 
     makeDroppable(){

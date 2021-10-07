@@ -3313,8 +3313,8 @@ Reorder methods
 
 
 # Insert a model via its throughmodel
-@user_can_edit(False)
-@user_can_edit(False, get_parent=True)
+#@user_can_edit(False)
+#@user_can_edit(False, get_parent=True)
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -3328,20 +3328,22 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
             parent = get_model_from_str(parent_type).objects.get(id=parent_id)
             if object_type == parent_type:
                 creation_kwargs = {"child": model, "parent": parent}
+                search_kwargs = {"child":model}
             else:
                 creation_kwargs = {object_type: model, parent_type: parent}
-            if parent_type=="week" and parent.parent_type==Week.TERM:
-                #Correct for the fact that we are in a term: the index sent is that WITHIN the column
-                NodeWeek.objects.filter(node__column==model.column)
-            get_model_from_str(through_type).objects.create(
+                search_kwargs = {object_type:model}
+            old_through_id = get_model_from_str(through_type).objects.filter(**search_kwargs).first().id
+            new_through = get_model_from_str(through_type).objects.create(
                 rank=new_position, **creation_kwargs
             )
 
     except ValidationError:
         return JsonResponse({"action": "error"})
     actions.dispatch_wf(
-        model.get_workflow(),actions.moveThroughModel(
-            through_type,new_position,parent_id,old_parent_id,object_id
+        model.get_workflow(),actions.changeThroughID(
+            through_type,
+            old_through_id,
+            new_through.id
         )
     )
     return JsonResponse({"action": "posted"})

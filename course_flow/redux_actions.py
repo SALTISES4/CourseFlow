@@ -9,12 +9,16 @@ def dispatch_wf(workflow,action):
         {'type':'workflow_action','action':action}
     )
     
-def moveThroughModel(through_type,new_position,new_parent,old_parent_id,child_id):
+def changeThroughID(through_type,old_id,new_id):
     return {
-        "type": through_type+'/movedTo',
-        "payload":{"new_index":new_position,"new_parent":new_parent,"child_id":child_id,"old_parent":old_parent_id}
+        "type":through_type+"/changeID",
+        "payload":{
+            "old_id":old_id,
+            "new_id":new_id
+        }
+        
     }
-
+    
 def deleteSelfAction(id,parentID,objectType,extra_data):
     return {
         "type": objectType+"/deleteSelf",

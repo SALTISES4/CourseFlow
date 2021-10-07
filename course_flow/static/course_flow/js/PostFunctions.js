@@ -289,48 +289,64 @@ export function insertChild(objectID,objectType,callBackFunction=()=>console.log
         fail_function();
     }
 }
-    
-//Called when an object in a list is reordered
-export function insertedAt(objectID,objectType,parentID,parentType,newPosition,throughType,callBackFunction=()=>console.log("success")){
-    $(document).off(throughType+"-dropped-success.insert");
-    $(document).on(throughType+"-dropped-success.insert",()=>{
-        try{
-            $.post(post_paths.inserted_at, {
-                objectID:JSON.stringify(objectID),
-                objectType:JSON.stringify(objectType),
-                parentID:JSON.stringify(parentID),
-                parentType:JSON.stringify(parentType),
-                newPosition:JSON.stringify(newPosition),
-                throughType:JSON.stringify(throughType)
-            }).done(function(data){
-                if(data.action == "posted") callBackFunction(data);
-                else fail_function();
+
+export function dragUpdate(renderer,throughType,type,args){
+    if(renderer.dragUpdate){
+        renderer.dragUpdate[type]=args;
+    }else renderer.dragUpdate={type:args};
+    $(document).off(throughType+"-dropped");
+    $(document).on(throughType+"-dropped",()=>{
+        if(renderer.dragUpdate["insert"]){
+            insertedAt(...renderer.dragUpdate["insert"],()=>{
+                if(renderer.dragUpdate["column"]){
+                    columnChanged(...renderer.dragUpdate["column"],()=>{
+                        renderer.dragUpdate=null;
+                    });
+                }else renderer.dragUpdate=null;
             });
-        }catch(err){
-            fail_function();
+        }else if(renderer.dragUpdate["column"]){
+            columnChanged(...renderer.dragUpdate["column"],()=>{
+                renderer.dragUpdate=null;
+            });
+        }else{
+            renderer.dragUpdate=null;
         }
     });
+}
+
+//Called when an object in a list is reordered
+export function insertedAt(objectID,objectType,parentID,parentType,newPosition,throughType,callBackFunction=()=>console.log("success")){
+    console.log("called inserted at");
+    try{
+        $.post(post_paths.inserted_at, {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            parentID:JSON.stringify(parentID),
+            parentType:JSON.stringify(parentType),
+            newPosition:JSON.stringify(newPosition),
+            throughType:JSON.stringify(throughType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
 }
  
 //Called when a node should have its column changed
 export function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
-    
-    $(document).off("nodeweek-dropped.columnchange");
-    $(document).on("nodeweek-dropped.columnchange",()=>{
-        try{
-    
-            $.post(post_paths.column_changed, {
-                nodePk:JSON.stringify(objectID),
-                columnPk:JSON.stringify(columnID),
-            }).done(function(data){
-                $(document).triggerHandler(throughType+"-dropped-success");
-                if(data.action == "posted") callBackFunction(data);
-                else fail_function();
-            });
-        }catch(err){
-            fail_function();
-        }
-    });
+    try{
+        $.post(post_paths.column_changed, {
+            nodePk:JSON.stringify(objectID),
+            columnPk:JSON.stringify(columnID),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
 }
 
 

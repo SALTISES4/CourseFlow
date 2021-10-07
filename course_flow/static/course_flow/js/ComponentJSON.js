@@ -22,11 +22,11 @@ export class ComponentJSON extends React.Component{
     
     postMountFunction(){};
     
-    makeSortableNode(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false){
+    makeSortableNode(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false,containment=".workflow-container"){
         if(read_only)return;
         var props = this.props;
         sortable_block.draggable({
-            containment:".workflow-container",
+            containment:containment,
             axis:axis,
             cursor:"move",
             cursorAt:{top:20,left:100},
@@ -42,17 +42,25 @@ export class ComponentJSON extends React.Component{
             start:(e,ui)=>{
                 $(".workflow-canvas").addClass("dragging-"+draggable_type);
                 $(draggable_selector).addClass("dragging");
+                var drag_item = $(e.target);
+                var old_parent_id = parent_id;
+                drag_item.attr("data-old-parent-id",parent_id);
+                var old_index = drag_item.prevAll().length;
+                drag_item.attr("data-old-index",old_index);
+                
                 
                 
             },
             drag:(e,ui)=>{
-                
-                var delta_x= Math.round((ui.helper.offset().left-$("#"+$(e.target).attr("id")+draggable_selector).children(handle).first().offset().left)/Constants.columnwidth);
-                if(delta_x!=0){
-                    this.sortableColumnChangedFunction($(e.target).attr("id"),delta_x);
+                if(draggable_type=="nodeweek"){
+                    var delta_x= Math.round((ui.helper.offset().left-$("#"+$(e.target).attr("id")+draggable_selector).children(handle).first().offset().left)/Constants.columnwidth);
+                    if(delta_x!=0){
+                        this.sortableColumnChangedFunction(parseInt($(e.target).attr("data-child-id")),delta_x,parseInt($(e.target).attr("data-column-id")));
+                    }
                 }
             },
             stop:(e,ui)=>{
+                console.log("stopped drag");
                 $(".workflow-canvas").removeClass("dragging-"+draggable_type);
                 $(draggable_selector).removeClass("dragging");
                 $(document).triggerHandler(draggable_type+"-dropped");
@@ -66,20 +74,28 @@ export class ComponentJSON extends React.Component{
             tolerance:"pointer",
             droppable:".node-ghost",
             over:(e,ui)=>{
+                console.log("over");
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 var drag_helper = ui.helper;
                 var new_index = drop_item.prevAll().length;
                 var new_parent_id = parseInt(drop_item.parent().attr("id")); 
-                
-                if(drag_item.hasClass("new-node")){
+                console.log(drag_item);
+                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
                     drag_helper.addClass("valid-drop");
                     drop_item.addClass("new-node-drop-over");
-                   
-                }else if(drag_item.hasClass("node-week")){
-                    this.sortableMovedFunction(
-                        parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id,drag_item.attr("data-child-id")
-                    );
+                }else if(drag_item.is(draggable_selector)){
+                    var old_parent_id = parseInt(drag_item.attr("data-old-parent-id"));
+                    var old_index = parseInt(drag_item.attr("data-old-index"));
+                    console.log(old_index);
+                    console.log(old_parent_id);
+                    if(old_parent_id!=new_parent_id || old_index!=new_index){
+                        drag_item.attr("data-old-parent-id",new_parent_id)
+                        drag_item.attr("data-old-index",new_index);
+                        this.sortableMovedFunction(
+                            parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id,drag_item.attr("data-child-id")
+                        );
+                    }
                 }else{
                     console.log(drag_item);
                 }
@@ -88,7 +104,7 @@ export class ComponentJSON extends React.Component{
                 var drag_item = ui.draggable;
                 var drag_helper = ui.helper;
                 var drop_item = $(e.target);
-                if(drag_item.hasClass("new-node")){
+                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
                     drag_helper.removeClass("valid-drop");
                     drop_item.removeClass("new-node-drop-over");
                 }
@@ -98,7 +114,7 @@ export class ComponentJSON extends React.Component{
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 var new_index = drop_item.prevAll().length+1;
-                if(drag_item.hasClass("new-node")){
+                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
                     newNode(this.props.objectID,new_index,drag_item[0].dataDraggable.column,drag_item[0].dataDraggable.column_type,
                         (response_data)=>{
                             let action = newNodeAction(response_data);
@@ -111,58 +127,59 @@ export class ComponentJSON extends React.Component{
         
     }
     
-    makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith=false,handle=false){
-        if(read_only)return;
-        var props = this.props;
-        sortable_block.sortable({
-            containment:".workflow-container",
-            axis:axis,
-            cursor:"move",
-            grid:grid,
-            cursorAt:{top:20},
-            handle:handle,
-            tolerance:"pointer",
-            distance:10,
-            connectWith:connectWith,
-            start:(e,ui)=>{
-                $(".workflow-canvas").addClass("dragging-"+draggable_type);
-                $(draggable_selector).addClass("dragging");
-                //Calls a refresh of the sortable in case adding the draggable class resized the object (which it does in many cases)
-                sortable_block.sortable("refresh");
-                //Fix the vertical containment. This is especially necessary when the item resizes.
-                var sort = $(sortable_block).sortable("instance");
-                sort.containment[3]+=sort.currentItem[0].offsetTop+sort.currentItem[0].offsetHeight;
-                
-            },
-            //Tell the dragging object that we are dragging it
-            sort:(e,ui)=>{
-                //figure out if the order has changed
-                var placeholder_index = ui.placeholder.prevAll().not(".ui-sortable-helper").length;
-                if(ui.placeholder.parent()[0]!=ui.item.parent()[0]||ui.item.prevAll().not(".ui-sortable-placeholder").length!=placeholder_index){
-                    var new_parent_id = parseInt(ui.placeholder.parent().attr("id"));
-                    this.sortableMovedFunction(parseInt(ui.item.attr("id")),placeholder_index,draggable_type,new_parent_id,ui.item.attr("data-child-id"));
-                }
-                
-                ui.item.triggerHandler("dragging");
-            },
-            stop:(evt,ui)=>{
-                $(".workflow-canvas").removeClass("dragging-"+draggable_type);
-                $(draggable_selector).removeClass("dragging");
-                var object_id = parseInt(ui.item.attr("id"));
-                var new_position = ui.item.prevAll().length;
-                var new_parent_id = parseInt(ui.item.parent().attr("id"));
-                $(draggable_selector).removeClass("dragging");
-                //Automatic scroll, useful when moving weeks that shrink significantly to make sure the dropped item is kept in focus. This should be updated to only scroll if the item ends up outside the viewport, and to scroll the minimum amount to keep it within.
-                $("#container").animate({
-                    scrollTop: ui.item.offset().top-200
-                },20);
-                $(document).triggerHandler(draggable_type+"-dropped");
-                this.stopSortFunction();
-            }
-        });
-        
-        
-    }
+//    makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith=false,handle=false){
+//        if(read_only)return;
+//        var props = this.props;
+//        sortable_block.sortable({
+//            containment:".workflow-container",
+//            axis:axis,
+//            cursor:"move",
+//            grid:grid,
+//            cursorAt:{top:20},
+//            handle:handle,
+//            tolerance:"pointer",
+//            distance:10,
+//            connectWith:connectWith,
+//            start:(e,ui)=>{
+//                $(".workflow-canvas").addClass("dragging-"+draggable_type);
+//                $(draggable_selector).addClass("dragging");
+//                //Calls a refresh of the sortable in case adding the draggable class resized the object (which it does in many cases)
+//                sortable_block.sortable("refresh");
+//                //Fix the vertical containment. This is especially necessary when the item resizes.
+//                var sort = $(sortable_block).sortable("instance");
+//                sort.containment[3]+=sort.currentItem[0].offsetTop+sort.currentItem[0].offsetHeight;
+//                
+//            },
+//            //Tell the dragging object that we are dragging it
+//            sort:(e,ui)=>{
+//                //figure out if the order has changed
+//                var placeholder_index = ui.placeholder.prevAll().not(".ui-sortable-helper").length;
+//                if(ui.placeholder.parent()[0]!=ui.item.parent()[0]||ui.item.prevAll().not(".ui-sortable-placeholder").length!=placeholder_index){
+//                    console.log("sortable has been moved");
+//                    var new_parent_id = parseInt(ui.placeholder.parent().attr("id"));
+//                    this.sortableMovedFunction(parseInt(ui.item.attr("id")),placeholder_index,draggable_type,new_parent_id,ui.item.attr("data-child-id"));
+//                }
+//                
+//                ui.item.triggerHandler("dragging");
+//            },
+//            stop:(evt,ui)=>{
+//                $(".workflow-canvas").removeClass("dragging-"+draggable_type);
+//                $(draggable_selector).removeClass("dragging");
+//                var object_id = parseInt(ui.item.attr("id"));
+//                var new_position = ui.item.prevAll().length;
+//                var new_parent_id = parseInt(ui.item.parent().attr("id"));
+//                $(draggable_selector).removeClass("dragging");
+//                //Automatic scroll, useful when moving weeks that shrink significantly to make sure the dropped item is kept in focus. This should be updated to only scroll if the item ends up outside the viewport, and to scroll the minimum amount to keep it within.
+//                $("#container").animate({
+//                    scrollTop: ui.item.offset().top-200
+//                },20);
+//                $(document).triggerHandler(draggable_type+"-dropped");
+//                this.stopSortFunction();
+//            }
+//        });
+//        
+//        
+//    }
     
     //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDeleteSelf(data,alt_icon){

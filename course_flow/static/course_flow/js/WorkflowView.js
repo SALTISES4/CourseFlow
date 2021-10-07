@@ -269,16 +269,38 @@ class WorkflowViewUnconnected extends ComponentJSON{
     
                      
     postMountFunction(){
-        this.makeSortable($(".column-row"),
-          this.props.objectID,
-          "columnworkflow",
-          ".column-workflow",
-          "x");
-        if(!this.props.data.is_strategy)this.makeSortable($(".week-block"),
-          this.props.objectID,
-          "weekworkflow",
-          ".week-workflow",
-          "y");
+        this.makeDragAndDrop();
+        
+        
+    }
+
+    componentDidUpdate(){
+        this.makeDragAndDrop();
+    }
+
+    makeDragAndDrop(){
+        this.makeSortableNode(
+            $(".column-row").children(".column-workflow").not(".ui-draggable"),
+            this.props.objectID,
+            "columnworkflow",
+            ".column-workflow",
+            "x",
+            false,
+            ".column-row",
+            ".column",
+            ".column-row"
+        );
+        this.makeSortableNode(
+            $(".week-block").children(".week-workflow").not(".ui-draggable"),
+            this.props.objectID,
+            "weekworkflow",
+            ".week-workflow",
+            "y",
+            false,
+            ".week-block",
+            ".week",
+            ".week-block"
+        );
     }
 
     stopSortFunction(){
@@ -287,8 +309,14 @@ class WorkflowViewUnconnected extends ComponentJSON{
     
     
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
-        if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position,new_parent,child_id))
-        if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position,new_parent,child_id))
+        if(type=="columnworkflow"){
+            this.props.renderer.micro_update(moveColumnWorkflow(id,new_position,new_parent,child_id));
+            insertedAt(child_id,"column",new_parent,"workflow",new_position,"columnworkflow");
+        }
+        if(type=="weekworkflow"){
+            this.props.renderer.micro_update(moveWeekWorkflow(id,new_position,new_parent,child_id));
+            insertedAt(child_id,"week",new_parent,"workflow",new_position,"weekworkflow");
+        }
     }
                      
     toggleLegend(){

@@ -90,7 +90,10 @@ export const getNodeByID = (state,id)=>{
 export const getNodeWeekByID = (state,id)=>{
     for(var i in state.nodeweek){
         var nodeweek = state.nodeweek[i];
-        if(nodeweek.id==id)return {data:nodeweek,order:getWeekByID(state,nodeweek.week).nodeweek_set};
+        if(nodeweek.id==id){
+            let node = getNodeByID(state,nodeweek.node).data
+            return {data:nodeweek,order:getWeekByID(state,nodeweek.week).nodeweek_set,column:node.column};
+        }
     }
 }
 export const getNodeLinkByID = (state,id)=>{

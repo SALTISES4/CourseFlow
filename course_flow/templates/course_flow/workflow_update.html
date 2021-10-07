@@ -115,11 +115,14 @@
    
 
    updateSocket.onclose = function(e){
+       console.log(e);
        alert("Lost connection to server");
    }
+
    
   window.addEventListener("load", function(){
       workflow_renderer = new renderers.WorkflowRenderer(workflow_data_package);
+      workflow_renderer.updateSocket = updateSocket;
       
       updateSocket.onmessage = function(e){
        console.log("received a message");

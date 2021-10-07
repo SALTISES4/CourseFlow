@@ -1,5 +1,5 @@
 import * as Constants from "./Constants.js";
-import {deleteSelf, insertedAt, columnChanged, updateValue, updateOutcomenodeDegree} from "./PostFunctions.js"
+import {deleteSelf, updateValue, updateOutcomenodeDegree} from "./PostFunctions.js"
 import * as Redux from "redux";
 
 export const moveColumnWorkflow = (id,new_position,new_parent,child_id) => {
@@ -58,10 +58,10 @@ export const newOutcomeAction = (response_data) => {
     }
 }
 
-export const columnChangeNodeWeek = (id,delta_x,columns) => {
+export const columnChangeNode = (id,new_column) => {
     return {
-        type: 'node/movedColumnBy',
-        payload:{id:id,delta_x,columns:columns}
+        type: 'node/changedColumn',
+        payload:{id:id,new_column:new_column}
     }
 }
 
@@ -138,6 +138,22 @@ export function workflowReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.workflow)return action.payload.workflow;
             return state;
+        case 'weekworkflow/changeID':
+            var new_state={...state};
+            var old_index = state.weekworkflow_set.indexOf(action.payload.old_id);
+            if(old_index>=0){
+                new_state.weekworklow_set=new_state.weekworkflow_set.slice();
+                new_state.weekworkflow_set.splice(old_index,1,action.payload.new_id);
+            }
+            return new_state;
+        case 'columnworkflow/changeID':
+            var new_state={...state};
+            var old_index = state.columnworkflow_set.indexOf(action.payload.old_id);
+            if(old_index>=0){
+                new_state.columnworklow_set=new_state.columnworkflow_set.slice();
+                new_state.columnworkflow_set.splice(old_index,1,action.payload.new_id);
+            }
+            return new_state;
         case 'columnworkflow/movedTo':
             var new_columnworkflow_set = state.columnworkflow_set.slice();
             for(var i=0;i<new_columnworkflow_set.length;i++){
@@ -146,7 +162,7 @@ export function workflowReducer(state={},action){
                     break;
                 }
             }
-            insertedAt(action.payload.child_id,"column",action.payload.new_parent,"workflow",action.payload.new_index,"columnworkflow");
+            //insertedAt(action.payload.child_id,"column",action.payload.new_parent,"workflow",action.payload.new_index,"columnworkflow");
             return {
                 ...state,
                 columnworkflow_set:new_columnworkflow_set
@@ -159,7 +175,7 @@ export function workflowReducer(state={},action){
                     break;
                 }
             }
-            insertedAt(action.payload.child_id,"week",action.payload.new_parent,"workflow",action.payload.new_index,"weekworkflow");
+            //insertedAt(action.payload.child_id,"week",action.payload.new_parent,"workflow",action.payload.new_index,"weekworkflow");
             return {
                 ...state,
                 weekworkflow_set:new_weekworkflow_set
@@ -172,7 +188,7 @@ export function workflowReducer(state={},action){
                     break;
                 }
             }
-            insertedAt(action.payload.child_id,"outcome",action.payload.new_parent,"workflow",action.payload.new_index,"outcomeworkflow");
+            //insertedAt(action.payload.child_id,"outcome",action.payload.new_parent,"workflow",action.payload.new_index,"outcomeworkflow");
             return {
                 ...state,
                 outcomeworkflow_set:new_outcomeworkflow_set
@@ -282,6 +298,15 @@ export function columnworkflowReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.columnworkflow)return action.payload.columnworkflow;
             return state;
+        case 'columnworkflow/changeID':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.old_id){
+                    var new_state=state.slice();
+                    new_state[i]={...new_state[i],id:action.payload.new_id}
+                    return new_state;
+                }
+            }
+            return state;
         case 'column/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parent_id){
@@ -366,6 +391,15 @@ export function weekworkflowReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.weekworkflow)return action.payload.weekworkflow;
             return state;
+        case 'weekworkflow/changeID':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.old_id){
+                    var new_state=state.slice();
+                    new_state[i]={...new_state[i],id:action.payload.new_id}
+                    return new_state;
+                }
+            }
+            return state;
         case 'week/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parent_id){
@@ -393,10 +427,21 @@ export function weekReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.week)return action.payload.week;
             return state;
-        case 'nodeweek/movedTo':
+        case 'nodeweek/changeID':
+            var new_state=state.slice();
+            for(var i=0;i<state.length;i++){
+                let old_index = state[i].nodeweek_set.indexOf(action.payload.old_id);
+                if(old_index>=0){
+                    new_state[i]={...new_state[i]}
+                    new_state[i].nodeweek_set=new_state[i].nodeweek_set.slice();
+                    new_state[i].nodeweek_set.splice(old_index,1,action.payload.new_id);
+                }
+            }
+            return new_state;
+       case 'nodeweek/movedTo':
             let old_parent,old_parent_index,new_parent,new_parent_index;
             for(var i=0;i<state.length;i++){
-                if(state[i].id == action.payload.old_parent){
+                if(state[i].nodeweek_set.indexOf(action.payload.id)>=0){
                     old_parent_index=i;
                     old_parent={...state[i]};
                 }
@@ -406,6 +451,15 @@ export function weekReducer(state={},action){
                 }
             }
             var new_index = action.payload.new_index;
+            //Correction for if we are in a term:
+            if(action.payload.nodes_by_column){
+                for(var col in action.payload.nodes_by_column){
+                    if(action.payload.nodes_by_column[col].indexOf(action.payload.id)>=0){
+                        let previous = action.payload.nodes_by_column[col][new_index];
+                        new_index = new_parent.nodeweek_set.indexOf(previous);
+                    }
+                }
+            }
             
             
             var new_state = state.slice();
@@ -420,7 +474,6 @@ export function weekReducer(state={},action){
                 
             }
             new_state.splice(old_parent_index,1,old_parent);
-            //insertedAt(action.payload.child_id,"node",new_parent.id,"week",new_index,"nodeweek");
             return new_state;
         case 'node/deleteSelf':
             for(var i=0;i<state.length;i++){
@@ -509,6 +562,15 @@ export function nodeweekReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.nodeweek)return action.payload.nodeweek;
             return state;
+        case 'nodeweek/changeID':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.old_id){
+                    var new_state=state.slice();
+                    new_state[i]={...new_state[i],id:action.payload.new_id}
+                    return new_state;
+                }
+            }
+            return state;
         case 'node/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parent_id){
@@ -567,23 +629,11 @@ export function nodeReducer(state={},action){
                 }
             }
             return new_state;
-        case 'node/movedColumnBy':
-            var new_state = state.slice();
+        case 'node/changedColumn':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
-                    try{
-                        let columns = action.payload.columns;
-                        let old_column_index = columns.indexOf(state[i].column);
-                        let new_column_index = old_column_index+action.payload.delta_x;
-                        if(new_column_index<0 || new_column_index>=columns.length)return state;
-                        let new_column = columns[new_column_index];
-                        var new_nodedata = {
-                            ...state[i],
-                            column:new_column,
-                        };
-                        new_state.splice(i,1,new_nodedata);
-                        columnChanged(action.payload.id,new_column);
-                    }catch(err){console.log("couldn't find new column");return state;}
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],column:action.payload.new_column}
                     return new_state;
                 }
             }
@@ -746,6 +796,17 @@ export function outcomeReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.outcome)return action.payload.outcome;
             return state;
+        case 'outcomeoutcome/changeID':
+            var new_state=state.slice();
+            for(var i=0;i<state.length;i++){
+                let old_index = state[i].child_outcome_links.indexOf(action.payload.old_id);
+                if(old_index>=0){
+                    new_state[i]={...new_state[i]}
+                    new_state[i].child_outcome_links=new_state[i].child_outcome_links.slice();
+                    new_state[i].child_outcome_links.splice(old_index,1,action.payload.new_id);
+                }
+            }
+            return new_state;
         case 'outcomeoutcome/movedTo':
             let old_parent, old_parent_index,new_parent,new_parent_index;
             for(var i=0;i<state.length;i++){
@@ -770,7 +831,7 @@ export function outcomeReducer(state={},action){
                 new_state.splice(new_parent_index,1,new_parent);
             }
             new_state.splice(old_parent_index,1,old_parent);
-            insertedAt(action.payload.child_id,"outcome",new_parent.id,"outcome",new_index,"outcomeoutcome");
+            //insertedAt(action.payload.child_id,"outcome",new_parent.id,"outcome",new_index,"outcomeoutcome");
             return new_state;
         case 'outcome_base/deleteSelf':
             var new_state=state.slice();
@@ -862,6 +923,15 @@ export function outcomeOutcomeReducer(state={},action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.outcomeoutcome)return action.payload.outcomeoutcome;
+            return state;
+        case 'outcomeoutcome/changeID':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.old_id){
+                    var new_state=state.slice();
+                    new_state[i]={...new_state[i],id:action.payload.new_id}
+                    return new_state;
+                }
+            }
             return state;
         case 'outcome/deleteSelf':
             for(var i=0;i<state.length;i++){

@@ -1069,7 +1069,12 @@ class ObjectPermission(models.Model):
     permission_type = models.PositiveIntegerField(
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
-
+#
+#class WorkflowLock(models.Model):
+#    workflow = models.ForeignKey(Workflow,on_delete=models.CASCADE)
+#    user = models.ForeignKey(User, on_delete=models.CASCADE)
+#    created_on = models.DateTimeField(default=timezone.now)
+#    expires_on = models.DateTimeField(default=timezone.now+datetime.timedelta(seconds=10))
 
 """
 Other receivers
@@ -1195,6 +1200,9 @@ def delete_project_objects(sender, instance, **kwargs):
         | Q(course__in=courses)
         | Q(program__in=programs)
     )
+    workflowlocks = WorkflowLock.objects.filter(
+        workflow__in=workflow_subclasses
+    )
     Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
     Node.objects.filter(linked_workflow__in=workflows).update(
         linked_workflow=None
@@ -1218,6 +1226,7 @@ def delete_project_objects(sender, instance, **kwargs):
     outcomes._raw_delete(outcomes.db)
     objectpermissions._raw_delete(objectpermissions.db)
     favourites._raw_delete(favourites.db)
+    workflowlocks._raw_delete(workflowlocks.db)
     workflows._raw_delete(workflows.db)
 
 
