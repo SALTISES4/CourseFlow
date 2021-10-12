@@ -5,7 +5,7 @@ import NodeWeekView from "./NodeWeekView.js";
 import {getWeekByID, getNodeWeekByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
 import {columnChangeNode, moveNodeWeek, newStrategyAction} from "./Reducers.js";
-import {dragUpdate,addStrategy} from "./PostFunctions";
+import {insertedAt,columnChanged,addStrategy} from "./PostFunctions";
 import {Loader} from "./Constants.js";
 
 //Basic component to represent a Week
@@ -109,13 +109,13 @@ export class WeekViewUnconnected extends ComponentJSON{
         }
         this.recently_sent_column_change={column:new_column,lastCall:Date.now()};
         this.props.renderer.micro_update(columnChangeNode(id,new_column));
-        dragUpdate(this.props.renderer,"nodeweek","column",[id,new_column]);
+        columnChanged(this.props.renderer,id,new_column);
         
     }
     
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
         this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column,child_id));
-        dragUpdate(this.props.renderer,"nodeweek","inserted",[child_id,"node",new_parent,"week",new_position,"nodeweek"]);
+        insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
     }
 
     makeDroppable(){

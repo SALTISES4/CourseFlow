@@ -3314,38 +3314,49 @@ Reorder methods
 
 # Insert a model via its throughmodel
 #@user_can_edit(False)
-#@user_can_edit(False, get_parent=True)
+#@user_can_edit_or_none(False, get_parent=True)
+#@user_can_edit_or_none("columnPk")
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-    parent_id = json.loads(request.POST.get("parentID"))
-    parent_type = json.loads(request.POST.get("parentType"))
-    new_position = json.loads(request.POST.get("newPosition"))
-    through_type = json.loads(request.POST.get("throughType"))
+    inserted = json.loads(request.POST.get("inserted","false"))
+    column_change = json.loads(request.POST.get("columnChange","false"))
     try:
         with transaction.atomic():
-            model = get_model_from_str(object_type).objects.get(id=object_id)
-            parent = get_model_from_str(parent_type).objects.get(id=parent_id)
-            if object_type == parent_type:
-                creation_kwargs = {"child": model, "parent": parent}
-                search_kwargs = {"child":model}
-            else:
-                creation_kwargs = {object_type: model, parent_type: parent}
-                search_kwargs = {object_type:model}
-            old_through_id = get_model_from_str(through_type).objects.filter(**search_kwargs).first().id
-            new_through = get_model_from_str(through_type).objects.create(
-                rank=new_position, **creation_kwargs
-            )
+            if column_change:
+                new_column_id = json.loads(request.POST.get("columnPk"))
+                node = get_model_from_str(object_type).objects.get(id=object_id)
+                new_column = Column.objects.get(id=new_column_id)
+                node.column = new_column
+                node.save()
+            if inserted:
+                parent_id = json.loads(request.POST.get("parentID"))
+                parent_type = json.loads(request.POST.get("parentType"))
+                new_position = json.loads(request.POST.get("newPosition"))
+                through_type = json.loads(request.POST.get("throughType"))
+                model = get_model_from_str(object_type).objects.get(id=object_id)
+                parent = get_model_from_str(parent_type).objects.get(id=parent_id)
+                if object_type == parent_type:
+                    creation_kwargs = {"child": model, "parent": parent}
+                    search_kwargs = {"child":model}
+                else:
+                    creation_kwargs = {object_type: model, parent_type: parent}
+                    search_kwargs = {object_type:model}
+                old_through_id = get_model_from_str(through_type).objects.filter(**search_kwargs).first().id
+                new_through = get_model_from_str(through_type).objects.create(
+                    rank=new_position, **creation_kwargs
+                )
 
     except ValidationError:
         return JsonResponse({"action": "error"})
-    actions.dispatch_wf(
-        model.get_workflow(),actions.changeThroughID(
-            through_type,
-            old_through_id,
-            new_through.id
+    if inserted:
+        actions.dispatch_wf(
+            model.get_workflow(),actions.changeThroughID(
+                through_type,
+                old_through_id,
+                new_through.id
+            )
         )
-    )
     return JsonResponse({"action": "posted"})
 
 

@@ -7,7 +7,7 @@ import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOut
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode.js";
 import {getOutcomeByID, getOutcomeHorizontalLinkByID} from "./FindState.js";
 import {changeField, moveOutcomeOutcome, updateOutcomehorizontallinkDegreeAction} from "./Reducers.js";
-import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
+import {updateOutcomehorizontallinkDegree,insertedAt} from "./PostFunctions";
 import * as Constants from "./Constants";
 
 //Basic component representing an outcome
@@ -101,7 +101,7 @@ class OutcomeView extends ComponentJSON{
     
     postMountFunction(){
         
-        this.makeSortable($(this.children_block.current),this.props.objectID,"outcomeoutcome",".outcomeoutcome",false,false,".children-block",false);
+        this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome",false,false,".children-block",".outcome");
         if(this.props.data.depth==0)this.makeDroppable();
     }
 
@@ -112,7 +112,7 @@ class OutcomeView extends ComponentJSON{
 
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
         this.props.renderer.micro_update(moveOutcomeOutcome(id,new_position,new_parent,child_id));
-        insertedAt(child_id,"outcome",new_parent,"outcome",new_position,"outcomeoutcome");
+        insertedAt(this.props.renderer,child_id,"outcome",new_parent,"outcome",new_position,"outcomeoutcome");
     }
 
     stopSortFunction(){

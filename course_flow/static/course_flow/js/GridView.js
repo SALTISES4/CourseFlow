@@ -52,7 +52,6 @@ class GridWeekViewUnconnected extends ComponentJSON{
         let data = this.props.data;
         
         let default_text = data.week_type_display+" "+(this.props.rank+1);
-        console.log(this.props.nodes);
         let nodes = this.props.nodes.map(node=>
             <GridNodeView renderer={this.props.renderer} data={node}/>
         );
@@ -71,7 +70,6 @@ class GridWeekViewUnconnected extends ComponentJSON{
 }
 const mapWeekStateToProps = (state,own_props)=>{
     let data = own_props.data;
-    console.log(data);
     let node_weeks = Constants.filterThenSortByID(state.nodeweek,data.nodeweek_set);
     let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node));
     

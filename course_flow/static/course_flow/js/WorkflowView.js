@@ -14,7 +14,7 @@ import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
-import {getParentWorkflowInfo} from "./PostFunctions";
+import {getParentWorkflowInfo,insertedAt} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
@@ -311,11 +311,11 @@ class WorkflowViewUnconnected extends ComponentJSON{
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
         if(type=="columnworkflow"){
             this.props.renderer.micro_update(moveColumnWorkflow(id,new_position,new_parent,child_id));
-            insertedAt(child_id,"column",new_parent,"workflow",new_position,"columnworkflow");
+            insertedAt(this.props.renderer,child_id,"column",new_parent,"workflow",new_position,"columnworkflow");
         }
         if(type=="weekworkflow"){
             this.props.renderer.micro_update(moveWeekWorkflow(id,new_position,new_parent,child_id));
-            insertedAt(child_id,"week",new_parent,"workflow",new_position,"weekworkflow");
+            insertedAt(this.props.renderer,child_id,"week",new_parent,"workflow",new_position,"weekworkflow");
         }
     }
                      

@@ -200,8 +200,6 @@ export function getIntersection(list1,list2){
 
 //take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
 export function filterThenSortByID(object_list,id_list){
-    console.log(object_list);
-    console.log(id_list);
     return object_list.filter(obj=>id_list.includes(obj.id)).sort((a,b)=> id_list.indexOf(a.id)-id_list.indexOf(b.id));
 }
 

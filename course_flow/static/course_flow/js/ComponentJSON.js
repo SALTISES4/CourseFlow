@@ -60,7 +60,6 @@ export class ComponentJSON extends React.Component{
                 }
             },
             stop:(e,ui)=>{
-                console.log("stopped drag");
                 $(".workflow-canvas").removeClass("dragging-"+draggable_type);
                 $(draggable_selector).removeClass("dragging");
                 $(document).triggerHandler(draggable_type+"-dropped");
@@ -74,21 +73,17 @@ export class ComponentJSON extends React.Component{
             tolerance:"pointer",
             droppable:".node-ghost",
             over:(e,ui)=>{
-                console.log("over");
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 var drag_helper = ui.helper;
                 var new_index = drop_item.prevAll().length;
                 var new_parent_id = parseInt(drop_item.parent().attr("id")); 
-                console.log(drag_item);
                 if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
                     drag_helper.addClass("valid-drop");
                     drop_item.addClass("new-node-drop-over");
                 }else if(drag_item.is(draggable_selector)){
                     var old_parent_id = parseInt(drag_item.attr("data-old-parent-id"));
                     var old_index = parseInt(drag_item.attr("data-old-index"));
-                    console.log(old_index);
-                    console.log(old_parent_id);
                     if(old_parent_id!=new_parent_id || old_index!=new_index){
                         drag_item.attr("data-old-parent-id",new_parent_id)
                         drag_item.attr("data-old-index",new_index);

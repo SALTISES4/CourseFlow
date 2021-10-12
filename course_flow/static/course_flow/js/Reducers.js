@@ -422,7 +422,6 @@ export function weekworkflowReducer(state={},action){
     }
 }
 export function weekReducer(state={},action){
-    console.log(action);
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.week)return action.payload.week;
@@ -487,10 +486,8 @@ export function weekReducer(state={},action){
             }
             return state;
         case 'node/insertBelow':
-            console.log("adding node below")
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.parentID){
-                    console.log("found parent id");
                     var new_state = state.slice();
                     new_state[i] = {...state[i]}
                     var new_nodeweek_set = state[i].nodeweek_set.slice();
