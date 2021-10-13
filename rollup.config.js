@@ -12,10 +12,10 @@ import reactDom from 'react-dom';
 const plugins = [
   postcss({
     extensions: [".css"],
-    extract:true,
+    extract:'course_flow.css',
     plugins:[
       autoprefixer,
-    ]
+    ],
   }),
   resolve({
     mainFields: ["browser", "module", "main"]
