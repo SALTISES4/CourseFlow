@@ -3321,6 +3321,8 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
     inserted = json.loads(request.POST.get("inserted","false"))
     column_change = json.loads(request.POST.get("columnChange","false"))
+    print(inserted)
+    print(column_change)
     try:
         with transaction.atomic():
             if column_change:

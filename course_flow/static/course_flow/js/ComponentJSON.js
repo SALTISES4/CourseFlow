@@ -23,20 +23,23 @@ export class ComponentJSON extends React.Component{
     postMountFunction(){};
     
     makeSortableNode(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false,containment=".workflow-container"){
+        let cursorAt={};
+        if(draggable_type=="weekworkflow")cursorAt={top:20};
         if(read_only)return;
         var props = this.props;
         sortable_block.draggable({
             containment:containment,
             axis:axis,
             cursor:"move",
-            cursorAt:{top:20,left:100},
+            cursorAt:cursorAt,
             handle:handle,
             distance:10,
             refreshPositions:true,
             helper:(e,item)=>{
                 var helper = $(document.createElement('div'));
-                helper.addClass("node-ghost");
+                helper.addClass(draggable_type+"-ghost");
                 helper.appendTo(".workflow-container");
+                helper.width($(e.target).width());
                 return helper;
             },
             start:(e,ui)=>{
@@ -47,7 +50,7 @@ export class ComponentJSON extends React.Component{
                 drag_item.attr("data-old-parent-id",parent_id);
                 var old_index = drag_item.prevAll().length;
                 drag_item.attr("data-old-index",old_index);
-                
+                props.renderer.selection_manager.changeSelection(null,null);
                 
                 
             },
@@ -58,11 +61,13 @@ export class ComponentJSON extends React.Component{
                         this.sortableColumnChangedFunction(parseInt($(e.target).attr("data-child-id")),delta_x,parseInt($(e.target).attr("data-column-id")));
                     }
                 }
+                $("#"+$(e.target).attr("id")+draggable_selector).addClass("selected");
             },
             stop:(e,ui)=>{
                 $(".workflow-canvas").removeClass("dragging-"+draggable_type);
                 $(draggable_selector).removeClass("dragging");
                 $(document).triggerHandler(draggable_type+"-dropped");
+                $("#"+$(e.target).attr("id")+draggable_selector).removeClass("selected");
             
             }
             

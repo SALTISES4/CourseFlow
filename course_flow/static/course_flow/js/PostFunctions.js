@@ -322,7 +322,7 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
         parentType:JSON.stringify(parentType),
         newPosition:JSON.stringify(newPosition),
         throughType:JSON.stringify(throughType),
-        insert:JSON.stringify(true),
+        inserted:JSON.stringify(true),
     }
     $(document).off(throughType+"-dropped");
     $(document).on(throughType+"-dropped",()=>{

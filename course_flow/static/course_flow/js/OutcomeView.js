@@ -27,6 +27,7 @@ class OutcomeView extends ComponentJSON{
             <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} />
         );
         
+        
         let outcomehorizontallinks = data.outcome_horizontal_links_unique.map((horizontal_link)=>
             <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link} renderer={this.props.renderer}/>
         );
@@ -57,6 +58,9 @@ class OutcomeView extends ComponentJSON{
         if(data.is_dropped)droptext=gettext("hide");
         else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
+        if(!read_only && data.depth<2 && children.length==0)children.push(
+            <div class="outcome-outcome" style={{height:"5px"}}></div>
+        );
         
         
         
@@ -100,7 +104,15 @@ class OutcomeView extends ComponentJSON{
     }
     
     postMountFunction(){
+        this.makeDragAndDrop();
         
+    }
+
+    componentDidUpdate(){
+        this.makeDragAndDrop();
+    }
+
+    makeDragAndDrop(){
         this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome",false,false,".children-block",".outcome");
         if(this.props.data.depth==0)this.makeDroppable();
     }

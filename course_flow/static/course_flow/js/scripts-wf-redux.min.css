@@ -1169,8 +1169,6 @@ button, input[type="submit"]{
 .week-workflow.dragging{
     height:100px !important;
     overflow:hidden;
-    border-color:#1976bc;
-    border-style:solid;
     border-width:2px;
     border-radius:5px;
 }
@@ -1323,6 +1321,39 @@ button, input[type="submit"]{
     min-height:50px;
     border:1px dashed black;
     position:absolute;
+    cursor:move;
+}
+
+.nodeweek-ghost{
+    width:160px;
+    min-height:50px;
+    border:1px dashed black;
+    position:absolute;
+    cursor:move;
+}
+
+.columnworkflow-ghost{
+    width:160px;
+    min-height:50px;
+    border:1px dashed black;
+    position:absolute;
+    z-index:3;
+    cursor:move;
+}
+
+.weekworkflow-ghost{
+    min-height:50px;
+    border:1px dashed black;
+    position:absolute;
+    cursor:move;
+}
+
+.outcomeoutcome-ghost{
+    width:400px;
+    min-height:10px;
+    border:1px dashed black;
+    position:absolute;
+    cursor:move;
 }
 
 .node{
