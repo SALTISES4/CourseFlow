@@ -1249,12 +1249,14 @@ def delete_workflow_objects(sender, instance, **kwargs):
 
     # Delete all comments.
     comments = Comment.objects.filter(
-        Q(node__week__workflow=instance)
+        Q(node__week__workflow__project=instance)
         | Q(outcome__in=outcomes.values_list("pk", flat=True))
-        | Q(column__workflow=instance)
-        | Q(week__workflow=instance)
+        | Q(column__workflow__project=instance)
+        | Q(week__workflow__project=instance)
     )
-    comments._raw_delete(comments.db)
+    len(comments)
+    # Inexplicably, I can't seem to raw delete here.
+    comments.delete()
 
     # Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
     outcomenodes = OutcomeNode.objects.filter(node__week__workflow=instance)
