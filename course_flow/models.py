@@ -1249,10 +1249,10 @@ def delete_workflow_objects(sender, instance, **kwargs):
 
     # Delete all comments.
     comments = Comment.objects.filter(
-        Q(node__week__workflow__project=instance)
+        Q(node__week__workflow=instance)
         | Q(outcome__in=outcomes.values_list("pk", flat=True))
-        | Q(column__workflow__project=instance)
-        | Q(week__workflow__project=instance)
+        | Q(column__workflow=instance)
+        | Q(week__workflow=instance)
     )
     len(comments)
     # Inexplicably, I can't seem to raw delete here.
