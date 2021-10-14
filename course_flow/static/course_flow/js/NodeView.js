@@ -90,12 +90,14 @@ class NodeView extends ComponentJSON{
         }
         else descriptionText = data.description;
         
+        let style = {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:this.props.renderer.column_colours[data.column]};
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
+        }
         
         return (
             <div 
-                style={
-                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:this.props.renderer.column_colours[data.column]}
-                } 
+                style={style} 
                 class={
                     "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
                 }

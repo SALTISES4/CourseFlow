@@ -1,5 +1,11 @@
 import * as React from "react";
 
+export const lock_times = {
+    move:5000,
+    update:5000,
+    select:60000,
+}
+
 export const node_keys=["activity","course","program"];
 export const columnwidth = 160
 export const nodewidth = 200;

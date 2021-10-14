@@ -9,6 +9,20 @@ def dispatch_wf(workflow,action):
         {'type':'workflow_action','action':action}
     )
     
+def dispatch_wf_lock(workflow,action):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)('workflow_'+str(workflow.pk),
+        {'type':'lock_update','action':action}
+    )
+    
+def unlock(object_id,object_type):
+    return {
+        "lock":False,
+        "object_id":object_id,
+        "object_type":object_type,
+    }
+
+    
 def changeThroughID(through_type,old_id,new_id):
     return {
         "type":through_type+"/changeID",

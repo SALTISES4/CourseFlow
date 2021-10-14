@@ -165,6 +165,7 @@ export class WorkflowRenderer{
         var renderer = this;
         this.initial_loading=true;
         this.container = container;
+        this.locks={}
         this.items_to_load = {
             column:this.initial_workflow_data.column.length,
             week:this.initial_workflow_data.week.length,
@@ -250,9 +251,33 @@ export class WorkflowRenderer{
     micro_update(obj){
         if(this.updateSocket){
             console.log("sending message");
-            //this.updateSocket.send(JSON.stringify({message:"message"}))
             this.updateSocket.send(JSON.stringify({type:"micro_update",action:obj}))
         }
+    }
+    
+    lock_update(obj,time,lock){
+        if(this.updateSocket){
+            console.log("sending message");
+            this.updateSocket.send(JSON.stringify({type:"lock_update",lock:{...obj,expires:Date.now()+time,user_id:user_id,user_colour:myColour,lock:lock}}));
+        }
+    }
+    
+    lock_update_received(data){
+        console.log("message from lock update");
+        console.log(data);
+        let store = this.store;
+        let object_type=data.object_type;
+        let object_id=data.object_id;
+        if(!this.locks[object_type])this.locks[object_type]={};
+        if(this.locks[object_type][object_id]){
+            clearTimeout(this.locks[object_type][object_id])
+        }
+         store.dispatch(Reducers.createLockAction(object_id,object_type,data.lock,data.user_id,data.user_colour));
+        if(data.lock)this.locks[object_type][object_id] = setTimeout(function(){
+            store.dispatch(Reducers.createLockAction(object_id,object_type,false));
+        },data.expires-Date.now());
+        else this.locks[object_type][object_id]=null;
+       
     }
     
 }

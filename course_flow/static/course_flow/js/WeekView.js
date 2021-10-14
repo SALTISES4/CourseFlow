@@ -25,15 +25,21 @@ export class WeekViewUnconnected extends ComponentJSON{
             <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} renderer={renderer}  column_order={this.props.column_order}/>
         );
         if(nodes.length==0)nodes.push(
-            <div class="node-week" style={{height:"100%"}}>Drag and drop nodes from the sidebar to add.</div>
+            <div class="node-week placeholder" style={{height:"100%"}}>Drag and drop nodes from the sidebar to add.</div>
         );
         let css_class = "week";
         if(this.state.selected)css_class+=" selected";
         if(data.is_strategy)css_class+=" strategy";
         let default_text;
         if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
+        
+        let style={};
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
+        }
+        
         return (
-            <div class={css_class} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
+            <div style={style} class={css_class} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
                 {!read_only && !renderer.is_strategy && <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}
@@ -77,7 +83,7 @@ export class WeekViewUnconnected extends ComponentJSON{
 
     makeDragAndDrop(){
         //Makes the nodeweeks in the node block draggable
-        this.makeSortableNode($(this.node_block.current).children(".node-week").not(".ui-draggable"),
+        this.makeSortableNode($(this.node_block.current).children(".node-week").not(".ui-draggable").not(".placeholder"),
           this.props.objectID,
           "nodeweek",
           ".node-week",
@@ -90,16 +96,20 @@ export class WeekViewUnconnected extends ComponentJSON{
         this.makeDroppable()
     }
 
-    stopSortFunction(id,new_position,type,new_parent){
-        //this.props.dispatch(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column))
-    }
-    
+
+
     sortableColumnChangedFunction(id,delta_x,old_column){
+        console.log("CALLING COLUMN CHANGE");
+        console.log(delta_x);
+        console.log(old_column);
         let columns = this.props.column_order;
         let old_column_index = columns.indexOf(old_column);
         let new_column_index = old_column_index+delta_x;
         if(new_column_index<0 || new_column_index>=columns.length)return;
         let new_column = columns[new_column_index];
+        console.log(new_column);
+        console.log(columns);
+
         //A little hack to stop ourselves from sending this update a hundred times per second
         if(this.recently_sent_column_change){
             if(this.recently_sent_column_change.column==new_column && Date.now() - this.recently_sent_column_change.lastCall<=500){
@@ -108,13 +118,29 @@ export class WeekViewUnconnected extends ComponentJSON{
             }
         }
         this.recently_sent_column_change={column:new_column,lastCall:Date.now()};
+        this.lockChild(id,true,"nodeweek");
         this.props.renderer.micro_update(columnChangeNode(id,new_column));
         columnChanged(this.props.renderer,id,new_column);
-        
     }
+
+
+    
     
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
-        this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column,child_id));
+        
+        //Correction for if we are in a term
+        if(this.props.nodes_by_column){
+            console.log("Correcting for a term");
+            console.log(this.props.nodes_by_column);
+            for(var col in this.props.nodes_by_column){
+                if(this.props.nodes_by_column[col].indexOf(id)>=0){
+                    let previous = this.props.nodes_by_column[col][new_position];
+                    new_position = this.props.data.nodeweek_set.indexOf(previous);
+                }
+            }
+        }
+        
+        this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
         insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
     }
 

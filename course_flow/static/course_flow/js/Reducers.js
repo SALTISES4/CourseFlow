@@ -2,6 +2,17 @@ import * as Constants from "./Constants.js";
 import {deleteSelf, updateValue, updateOutcomenodeDegree} from "./PostFunctions.js"
 import * as Redux from "redux";
 
+export const createLockAction = (object_id,object_type,lock,user_id,user_colour) => {
+    if(lock)return {
+        type: object_type+'/createLock',
+        payload:{id:object_id,lock:{user_id:user_id,user_colour:user_colour}}
+    }
+    else return {
+        type: object_type+'/createLock',
+        payload:{id:object_id,lock:null}
+    }
+}
+
 export const moveColumnWorkflow = (id,new_position,new_parent,child_id) => {
     return {
         type: 'columnworkflow/movedTo',
@@ -65,10 +76,10 @@ export const columnChangeNode = (id,new_column) => {
     }
 }
 
-export const moveNodeWeek = (id,new_position,new_parent,nodes_by_column,child_id) => {
+export const moveNodeWeek = (id,new_position,new_parent,child_id) => {
     return {
         type: 'nodeweek/movedTo',
-        payload:{id:id,new_index:new_position,new_parent:new_parent,nodes_by_column:nodes_by_column,child_id:child_id}
+        payload:{id:id,new_index:new_position,new_parent:new_parent,child_id:child_id}
     }
 }
 
@@ -137,6 +148,15 @@ export function workflowReducer(state={},action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.workflow)return action.payload.workflow;
+            return state;
+        case 'workflow/createLock':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],lock:action.payload.lock}
+                    return new_state;
+                }
+            }
             return state;
         case 'weekworkflow/changeID':
             var new_state={...state};
@@ -342,6 +362,15 @@ export function columnReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.column)return action.payload.column;
             return state;
+        case 'column/createLock':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],lock:action.payload.lock}
+                    return new_state;
+                }
+            }
+            return state;
         case 'column/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
@@ -426,6 +455,15 @@ export function weekReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.week)return action.payload.week;
             return state;
+        case 'week/createLock':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],lock:action.payload.lock}
+                    return new_state;
+                }
+            }
+            return state;
         case 'nodeweek/changeID':
             var new_state=state.slice();
             for(var i=0;i<state.length;i++){
@@ -451,14 +489,14 @@ export function weekReducer(state={},action){
             }
             var new_index = action.payload.new_index;
             //Correction for if we are in a term:
-            if(action.payload.nodes_by_column){
-                for(var col in action.payload.nodes_by_column){
-                    if(action.payload.nodes_by_column[col].indexOf(action.payload.id)>=0){
-                        let previous = action.payload.nodes_by_column[col][new_index];
-                        new_index = new_parent.nodeweek_set.indexOf(previous);
-                    }
-                }
-            }
+//            if(action.payload.nodes_by_column){
+//                for(var col in action.payload.nodes_by_column){
+//                    if(action.payload.nodes_by_column[col].indexOf(action.payload.id)>=0){
+//                        let previous = action.payload.nodes_by_column[col][new_index];
+//                        new_index = new_parent.nodeweek_set.indexOf(previous);
+//                    }
+//                }
+//            }
             
             
             var new_state = state.slice();
@@ -611,6 +649,15 @@ export function nodeReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.node)return action.payload.node;
             return state;
+        case 'node/createLock':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],lock:action.payload.lock}
+                    return new_state;
+                }
+            }
+            return state;
         case 'column/deleteSelf':
             var new_state = state.slice();
             var new_column;
@@ -754,6 +801,15 @@ export function nodelinkReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.nodelink)return action.payload.nodelink;
             return state;
+        case 'nodelink/createLock':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],lock:action.payload.lock}
+                    return new_state;
+                }
+            }
+            return state;
         case 'node/insertBelow':
         case 'node/newNode':
         case 'node/deleteSelf':
@@ -792,6 +848,15 @@ export function outcomeReducer(state={},action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.outcome)return action.payload.outcome;
+            return state;
+        case 'outcome/createLock':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],lock:action.payload.lock}
+                    return new_state;
+                }
+            }
             return state;
         case 'outcomeoutcome/changeID':
             var new_state=state.slice();

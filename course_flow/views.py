@@ -3327,10 +3327,10 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
         with transaction.atomic():
             if column_change:
                 new_column_id = json.loads(request.POST.get("columnPk"))
-                node = get_model_from_str(object_type).objects.get(id=object_id)
+                model = get_model_from_str(object_type).objects.get(id=object_id)
                 new_column = Column.objects.get(id=new_column_id)
-                node.column = new_column
-                node.save()
+                model.column = new_column
+                model.save()
             if inserted:
                 parent_id = json.loads(request.POST.get("parentID"))
                 parent_type = json.loads(request.POST.get("parentType"))
@@ -3351,14 +3351,19 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
 
     except ValidationError:
         return JsonResponse({"action": "error"})
+    workflow = model.get_workflow()
     if inserted:
         actions.dispatch_wf(
-            model.get_workflow(),actions.changeThroughID(
+            workflow,actions.changeThroughID(
                 through_type,
                 old_through_id,
                 new_through.id
             )
         )
+    actions.dispatch_wf_lock(workflow,actions.unlock(
+        model.id,
+        object_type
+    ));
     return JsonResponse({"action": "posted"})
 
 

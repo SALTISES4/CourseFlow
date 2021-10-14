@@ -24,7 +24,7 @@ class TermView extends WeekViewUnconnected{
                 }
             }
             if(nodeweeks.length==0)nodeweeks.push(
-                <div class="node-week" style={{height:"100%"}}></div>
+                <div class="node-week placeholder" style={{height:"100%"}}></div>
             )
             node_blocks.push(
                 <div class={"node-block term column-"+col} id={this.props.objectID+"-node-block-column-"+col} key={col} >
@@ -32,8 +32,15 @@ class TermView extends WeekViewUnconnected{
                 </div>
             );
         }
+        
+        
+        let style={};
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
+        }
+        
         return (
-            <div class={"week"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
+            <div style={style} class={"week"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 {!read_only && <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}

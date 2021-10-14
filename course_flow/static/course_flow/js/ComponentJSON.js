@@ -25,6 +25,7 @@ export class ComponentJSON extends React.Component{
     makeSortableNode(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false,containment=".workflow-container"){
         let cursorAt={};
         if(draggable_type=="weekworkflow")cursorAt={top:20};
+        if(draggable_type=="nodeweek")cursorAt={top:20,left:50};
         if(read_only)return;
         var props = this.props;
         sortable_block.draggable({
@@ -51,23 +52,29 @@ export class ComponentJSON extends React.Component{
                 var old_index = drag_item.prevAll().length;
                 drag_item.attr("data-old-index",old_index);
                 props.renderer.selection_manager.changeSelection(null,null);
-                
+                this.startSortFunction(parseInt(drag_item.attr("data-child-id")),draggable_type);
                 
             },
             drag:(e,ui)=>{
                 if(draggable_type=="nodeweek"){
+                    console.log("Calculating offset");
+                    console.log(ui.helper.offset().left);
+                    let new_target = $("#"+$(e.target).attr("id")+draggable_selector);
+                    console.log(new_target.children(handle).first().offset().left);
                     var delta_x= Math.round((ui.helper.offset().left-$("#"+$(e.target).attr("id")+draggable_selector).children(handle).first().offset().left)/Constants.columnwidth);
+                    console.log(delta_x);
                     if(delta_x!=0){
-                        this.sortableColumnChangedFunction(parseInt($(e.target).attr("data-child-id")),delta_x,parseInt($(e.target).attr("data-column-id")));
+                        let child_id = parseInt($(e.target).attr("data-child-id"));
+                        this.sortableColumnChangedFunction(child_id,delta_x,parseInt(new_target.attr("data-column-id")));
                     }
                 }
-                $("#"+$(e.target).attr("id")+draggable_selector).addClass("selected");
+                //$("#"+$(e.target).attr("id")+draggable_selector).addClass("selected");
             },
             stop:(e,ui)=>{
                 $(".workflow-canvas").removeClass("dragging-"+draggable_type);
                 $(draggable_selector).removeClass("dragging");
                 $(document).triggerHandler(draggable_type+"-dropped");
-                $("#"+$(e.target).attr("id")+draggable_selector).removeClass("selected");
+                //$("#"+$(e.target).attr("id")+draggable_selector).removeClass("selected");
             
             }
             
@@ -92,9 +99,12 @@ export class ComponentJSON extends React.Component{
                     if(old_parent_id!=new_parent_id || old_index!=new_index){
                         drag_item.attr("data-old-parent-id",new_parent_id)
                         drag_item.attr("data-old-index",new_index);
+                        let child_id = parseInt(drag_item.attr("data-child-id"));
                         this.sortableMovedFunction(
-                            parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id,drag_item.attr("data-child-id")
+                            parseInt(drag_item.attr("id")),
+                            new_index,draggable_type,new_parent_id,child_id
                         );
+                        this.lockChild(child_id,true,draggable_type);
                     }
                 }else{
                     console.log(drag_item);
@@ -125,6 +135,26 @@ export class ComponentJSON extends React.Component{
             }
         });
         
+    }
+    
+    stopSortFunction(){
+        
+    }
+    
+    startSortFunction(id,through_type){
+        this.lockChild(id,true,through_type);
+    }
+    
+    
+    lockChild(id,lock,through_type){
+        let object_type;
+        if(through_type=="nodeweek")object_type="node";
+        if(through_type=="weekworkflow")object_type="week";
+        if(through_type=="columnworkflow")object_type="column";
+        if(through_type=="outcomeoutcome")object_type="outcome";
+        this.props.renderer.lock_update(
+            {object_id:id,object_type:object_type},Constants.lock_times.move,lock
+        );
     }
     
 //    makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith=false,handle=false){
@@ -499,7 +529,7 @@ export class NodeLinkSVG extends React.Component{
             var path=(this.getPath(path_array));
 
             return (
-                <g fill="none" stroke="black">
+                <g style={this.props.style} fill="none" stroke="black">
                     <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"+((this.props.selected && " selected")||"")}/>
                     <path opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
                 </g>

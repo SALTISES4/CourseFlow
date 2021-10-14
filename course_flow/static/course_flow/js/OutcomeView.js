@@ -62,10 +62,13 @@ class OutcomeView extends ComponentJSON{
             <div class="outcome-outcome" style={{height:"5px"}}></div>
         );
         
-        
+        let style={};
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
+        }
         
         return(
-            <div
+            <div style={style}
             class={
                 "outcome"+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")
             }

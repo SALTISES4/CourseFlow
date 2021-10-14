@@ -1349,7 +1349,7 @@ button, input[type="submit"]{
 }
 
 .outcomeoutcome-ghost{
-    width:400px;
+    min-width:300px;
     min-height:10px;
     border:1px dashed black;
     position:absolute;

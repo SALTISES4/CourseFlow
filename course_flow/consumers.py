@@ -55,6 +55,16 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
                     'action':action
                 }
             )
+        elif text_data_json["type"]=="lock_update":
+            lock = text_data_json['lock']
+            print(lock)
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'lock_update',
+                    'action':lock
+                }
+            )
             
             
     def workflow_action(self, event):
@@ -65,4 +75,15 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         if(event["type"]=="workflow_action"):
             self.send(text_data=json.dumps(
                 event
+            ))     
+            
+    def lock_update(self, event):
+        message = event['action']
+        print("got a message from group")
+        print(message)
+        # Send message to WebSocket
+        if(event["type"]=="lock_update"):
+            self.send(text_data=json.dumps(
+                event
             ))
+            
