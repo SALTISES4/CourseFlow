@@ -638,9 +638,9 @@ class OutcomeNode(models.Model):
         )
         # Delete the outcomenodes of any descendants that still have an outcomenode to this node (i.e. clear those of other degrees, we are using bulk create so they won't get automatically deleted)
         to_delete = OutcomeNode.objects.filter(
-            outcome__in=descendants, node=node
+            outcome__in=descendants.values_list("pk", flat=True), node=node
         )
-        to_delete._raw_delete(to_delete.db)
+        to_delete.delete()
         # Create the new outcomenodes with bulk_create
         new_children = [
             OutcomeNode(degree=degree, node=node, outcome=x)
@@ -1254,7 +1254,9 @@ def delete_workflow_objects(sender, instance, **kwargs):
         | Q(column__workflow=instance)
         | Q(week__workflow=instance)
     )
-    comments._raw_delete(comments.db)
+    len(comments)
+    # Inexplicably, I can't seem to raw delete here.
+    comments.delete()
 
     # Delete all links. These should be deleted before non-linking instances because this way we prevent a lot of cascades. Order matters here; we want to go from top to bottom or else we will break the links we need in order to find the next step
     outcomenodes = OutcomeNode.objects.filter(node__week__workflow=instance)
