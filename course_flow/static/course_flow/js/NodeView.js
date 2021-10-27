@@ -99,7 +99,7 @@ class NodeView extends ComponentJSON{
             <div 
                 style={style} 
                 class={
-                    "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
+                    "node column-"+data.column+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
                 }
                 id={data.id} 
                 ref={this.maindiv} 
@@ -268,7 +268,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
             <div 
                 
                 class={
-                    "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
+                    "node column-"+data.column+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
                 }
                 style={
                     {backgroundColor:this.props.renderer.column_colours[data.column]}

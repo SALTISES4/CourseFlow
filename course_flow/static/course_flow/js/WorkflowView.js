@@ -119,13 +119,15 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
 
         let style={};
         if(data.lock){
-            style.outline="2px solid "+data.lock.user_colour;
+            style.border="2px solid "+data.lock.user_colour;
         }    
+    
+        let workflow = this;
             
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class="workflow-header" style={style}>
-                    <WorkflowForMenu workflow_data={data} selectAction={renderer.selection_manager.changeSelection.bind(this,null,this)}/>
+                    <WorkflowForMenu workflow_data={data} selectAction={()=>renderer.selection_manager.changeSelection(null,workflow)}/>
                     <ParentWorkflowIndicator workflow_id={data.id}/>
                 </div>
                 <div class="workflow-view-select">

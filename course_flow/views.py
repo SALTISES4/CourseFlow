@@ -25,7 +25,7 @@ from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
-
+from . import redux_actions as actions
 from .decorators import (
     ajax_login_required,
     check_object_permission,
@@ -63,7 +63,6 @@ from .models import (  # OutcomeProject,
     Workflow,
     WorkflowProject,
 )
-from . import redux_actions as actions
 from .serializers import (  # OutcomeProjectSerializerShallow,
     ActivitySerializerShallow,
     ColumnSerializerShallow,
@@ -171,10 +170,12 @@ def registration_view(request):
         request, "course_flow/registration/registration.html", {"form": form}
     )
 
+
 @ajax_login_required
 def logout_view(request):
-    logout(request,request.user)
+    logout(request, request.user)
     return redirect("/login/")
+
 
 class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def test_func(self):
@@ -2768,17 +2769,13 @@ def new_node(request: HttpRequest) -> HttpResponse:
         "new_through": NodeWeekSerializerShallow(node_week).data,
         "index": position,
         "parentID": week_id,
-        "columnworkflow": ColumnWorkflowSerializerShallow(
-            columnworkflow
-        ).data,
+        "columnworkflow": ColumnWorkflowSerializerShallow(columnworkflow).data,
         "column": ColumnSerializerShallow(column).data,
     }
-    actions.dispatch_wf(week.get_workflow(),actions.newNodeAction(response_data))
-    return JsonResponse(
-        {
-            "action": "posted",
-        }
+    actions.dispatch_wf(
+        week.get_workflow(), actions.newNodeAction(response_data)
     )
+    return JsonResponse({"action": "posted",})
 
 
 @user_can_edit("workflowPk")
@@ -2792,20 +2789,14 @@ def new_outcome_for_workflow(request: HttpRequest) -> HttpResponse:
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
-    
+
     response_data = {
-            "new_model": OutcomeSerializerShallow(outcome).data,
-            "new_through": OutcomeWorkflowSerializerShallow(
-                outcome_workflow
-            ).data,
-            "parentID": workflow_id,
+        "new_model": OutcomeSerializerShallow(outcome).data,
+        "new_through": OutcomeWorkflowSerializerShallow(outcome_workflow).data,
+        "parentID": workflow_id,
     }
-    actions.dispatch_wf(workflow,actions.newNodeAction(response_data))
-    return JsonResponse(
-        {
-            "action": "posted"
-        }
-    )
+    actions.dispatch_wf(workflow, actions.newOutcomeAction(response_data))
+    return JsonResponse({"action": "posted"})
 
 
 @user_can_edit("workflowPk")
@@ -2906,9 +2897,7 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
             # return all this information to the user
             response_data = {
                 "strategy": WeekSerializerShallow(week).data,
-                "new_through": WeekWorkflowSerializerShallow(
-                    new_through
-                ).data,
+                "new_through": WeekWorkflowSerializerShallow(new_through).data,
                 "index": position,
                 "columns_added": ColumnSerializerShallow(
                     columns_added, many=True
@@ -2930,12 +2919,8 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
                     many=True,
                 ).data,
             }
-            actions.dispatch_wf(workflow,actions.addStrategy(response_data))
-            return JsonResponse(
-                {
-                    "action": "posted",
-                }
-            )
+            actions.dispatch_wf(workflow, actions.addStrategy(response_data))
+            return JsonResponse({"action": "posted",})
 
         else:
             raise ValidationError("User cannot access this strategy")
@@ -2962,16 +2947,14 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
-    
+
     response_data = {
-            "new_model": NodeLinkSerializerShallow(node_link).data,
+        "new_model": NodeLinkSerializerShallow(node_link).data,
     }
-    actions.dispatch_wf(node.get_workflow(),actions.newNodeLinkAction(response_data))
-    return JsonResponse(
-        {
-            "action": "posted",
-        }
+    actions.dispatch_wf(
+        node.get_workflow(), actions.newNodeLinkAction(response_data)
     )
+    return JsonResponse({"action": "posted",})
 
 
 # Add a new child to a model
@@ -2999,17 +2982,17 @@ def insert_child(request: HttpRequest) -> HttpResponse:
 
     except ValidationError:
         return JsonResponse({"action": "error"})
-    
-    
+
     response_data = {
         "new_model": new_model_serialized,
         "new_through": new_through_serialized,
         "parentID": model.id,
     }
-    actions.dispatch_wf(model.get_workflow(),actions.insertChildAction(response_data,object_type))
-    return JsonResponse({
-        "action":"posted"
-    })
+    actions.dispatch_wf(
+        model.get_workflow(),
+        actions.insertChildAction(response_data, object_type),
+    )
+    return JsonResponse({"action": "posted"})
 
 
 # Add a new sibling to a through model
@@ -3064,16 +3047,15 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     response_data = {
-            "new_model": new_model_serialized,
-            "new_through": new_through_serialized,
-            "parentID": parent_id,
+        "new_model": new_model_serialized,
+        "new_through": new_through_serialized,
+        "parentID": parent_id,
     }
-    actions.dispatch_wf(model.get_workflow(),actions.insertBelowAction(response_data,object_type))
-    return JsonResponse(
-        {
-            "action": "posted"
-        }
+    actions.dispatch_wf(
+        model.get_workflow(),
+        actions.insertBelowAction(response_data, object_type),
     )
+    return JsonResponse({"action": "posted"})
 
 
 # Soft-duplicate the item
@@ -3197,10 +3179,11 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
         "parentID": parent_id,
         "children": new_children_serialized,
     }
-    actions.dispatch_wf(model.get_workflow(),actions.insertBelowAction(response_data,object_type))
-    return JsonResponse({
-        "action": "posted"
-    })
+    actions.dispatch_wf(
+        model.get_workflow(),
+        actions.insertBelowAction(response_data, object_type),
+    )
+    return JsonResponse({"action": "posted"})
 
 
 # favourite/unfavourite a project or workflow or outcome for a user
@@ -3310,21 +3293,23 @@ Reorder methods
 
 
 # Insert a model via its throughmodel
-#@user_can_edit(False)
-#@user_can_edit_or_none(False, get_parent=True)
-#@user_can_edit_or_none("columnPk")
+# @user_can_edit(False)
+# @user_can_edit_or_none(False, get_parent=True)
+# @user_can_edit_or_none("columnPk")
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-    inserted = json.loads(request.POST.get("inserted","false"))
-    column_change = json.loads(request.POST.get("columnChange","false"))
+    inserted = json.loads(request.POST.get("inserted", "false"))
+    column_change = json.loads(request.POST.get("columnChange", "false"))
     print(inserted)
     print(column_change)
     try:
         with transaction.atomic():
             if column_change:
                 new_column_id = json.loads(request.POST.get("columnPk"))
-                model = get_model_from_str(object_type).objects.get(id=object_id)
+                model = get_model_from_str(object_type).objects.get(
+                    id=object_id
+                )
                 new_column = Column.objects.get(id=new_column_id)
                 model.column = new_column
                 model.save()
@@ -3333,15 +3318,24 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 parent_type = json.loads(request.POST.get("parentType"))
                 new_position = json.loads(request.POST.get("newPosition"))
                 through_type = json.loads(request.POST.get("throughType"))
-                model = get_model_from_str(object_type).objects.get(id=object_id)
-                parent = get_model_from_str(parent_type).objects.get(id=parent_id)
+                model = get_model_from_str(object_type).objects.get(
+                    id=object_id
+                )
+                parent = get_model_from_str(parent_type).objects.get(
+                    id=parent_id
+                )
                 if object_type == parent_type:
                     creation_kwargs = {"child": model, "parent": parent}
-                    search_kwargs = {"child":model}
+                    search_kwargs = {"child": model}
                 else:
                     creation_kwargs = {object_type: model, parent_type: parent}
-                    search_kwargs = {object_type:model}
-                old_through_id = get_model_from_str(through_type).objects.filter(**search_kwargs).first().id
+                    search_kwargs = {object_type: model}
+                old_through_id = (
+                    get_model_from_str(through_type)
+                    .objects.filter(**search_kwargs)
+                    .first()
+                    .id
+                )
                 new_through = get_model_from_str(through_type).objects.create(
                     rank=new_position, **creation_kwargs
                 )
@@ -3351,16 +3345,12 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     workflow = model.get_workflow()
     if inserted:
         actions.dispatch_wf(
-            workflow,actions.changeThroughID(
-                through_type,
-                old_through_id,
-                new_through.id
-            )
+            workflow,
+            actions.changeThroughID(
+                through_type, old_through_id, new_through.id
+            ),
         )
-    actions.dispatch_wf_lock(workflow,actions.unlock(
-        model.id,
-        object_type
-    ));
+    actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
     return JsonResponse({"action": "posted"})
 
 
@@ -3388,12 +3378,13 @@ Update Methods
 
 
 # Updates an object's information using its serializer
-@user_can_edit(False)
+# @user_can_edit(False)
 def update_value(request: HttpRequest) -> HttpResponse:
     try:
         object_id = json.loads(request.POST.get("objectID"))
         object_type = json.loads(request.POST.get("objectType"))
         data = json.loads(request.POST.get("data"))
+        print(data)
         objects = get_model_from_str(object_type).objects
         if hasattr(objects, "get_subclass"):
             object_to_update = objects.get_subclass(pk=object_id)
@@ -3447,13 +3438,12 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
         "new_outcomenode_set": new_outcomenode_set,
         "new_outcomenode_unique_set": new_outcomenode_unique_set,
     }
-    #We also need to handle the child workflows here somehow
-    actions.dispatch_wf(node.get_workflow(),actions.updateOutcomenodeDegreeAction(response_data))
-    return JsonResponse(
-        {
-            "action": "posted",
-        }
+    # We also need to handle the child workflows here somehow
+    actions.dispatch_wf(
+        model.node.get_workflow(),
+        actions.updateOutcomenodeDegreeAction(response_data),
     )
+    return JsonResponse({"action": "posted",})
 
 
 # Add a parent outcome to an outcome
@@ -3503,13 +3493,12 @@ def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
         "new_outcome_horizontal_links": new_outcome_horizontal_links,
         "new_outcome_horizontal_links_unique": new_outcome_horizontal_links_unique,
     }
-    #We also need to handle the parent workflows here
-    actions.dispatch_wf(outcome.get_workflow(),actions.updateOutcomehorizontallinkDegreeAction(response_data))
-    return JsonResponse(
-        {
-            "action": "posted",
-        }
+    # We also need to handle the parent workflows here
+    actions.dispatch_wf(
+        outcome.get_workflow(),
+        actions.updateOutcomehorizontallinkDegreeAction(response_data),
     )
+    return JsonResponse({"action": "posted",})
 
 
 # Do not call if duplicating the parent workflow
@@ -3561,13 +3550,11 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
         "linked_workflow": linked_workflow,
         "linked_workflow_data": linked_workflow_data,
     }
-    actions.dispatch_wf(node.get_workflow(),actions.setLinkedWorkflowAction(response_data))
-    # NEED TO ALSO UPDATE CHILD WORKFLOW
-    return JsonResponse(
-        {
-            "action": "posted",
-        }
+    actions.dispatch_wf(
+        node.get_workflow(), actions.setLinkedWorkflowAction(response_data)
     )
+    # NEED TO ALSO UPDATE CHILD WORKFLOW
+    return JsonResponse({"action": "posted",})
 
 
 # Creates strategy from week or turns strategy into week
@@ -3611,18 +3598,14 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     response_data = {
-            "id": week.id,
-            "is_strategy": week.is_strategy,
-            "strategy": strategy_serialized,
+        "id": week.id,
+        "is_strategy": week.is_strategy,
+        "strategy": strategy_serialized,
     }
-    
-    actions.dispatch_wf(workflow,actions.toggleStrategyAction(response_data))
-    
-    return JsonResponse(
-        {
-            "action": "posted",
-        }
-    )
+
+    actions.dispatch_wf(workflow, actions.toggleStrategyAction(response_data))
+
+    return JsonResponse({"action": "posted",})
 
 
 """
@@ -3647,16 +3630,57 @@ def remove_comment(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-@user_can_delete(False)
+# @user_can_delete(False)
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
     try:
         model = get_model_from_str(object_type).objects.get(id=object_id)
+        workflow = None
+        extra_data = None
+        parent_id = None
+        try:
+            workflow = model.get_workflow()
+        except AttributeError:
+            pass
+        if object_type == "week":
+            parent_id = WeekWorkflow.objects.get(week=model).id
+        elif object_type == "column":
+            parent_id = ColumnWorkflow.objects.get(column=model).id
+            extra_data = (
+                workflow.columnworkflow_set.order_by("rank").first().column.id
+            )
+        elif object_type == "node":
+            parent_id = NodeWeek.objects.get(node=model).id
+        elif object_type == "outcome" and model.depth == 0:
+            parent_id = OutcomeWorkflow.objects.get(outcome=model).id
+        elif object_type == "outcome":
+            parent_id = OutcomeOutcome.objects.get(child=model).id
+        if object_type == "outcome":
+            extra_data = OutcomeNodeSerializerShallow(
+                OutcomeNode.objects.filter(
+                    outcome__in=[object_id]
+                    + list(
+                        get_descendant_outcomes(model).values_list(
+                            "pk", flat=True
+                        )
+                    )
+                ),
+                many=True,
+            ).data
+
+        # Delete the object
         with transaction.atomic():
             model.delete()
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
+    if workflow is not None:
+        actions.dispatch_wf(
+            workflow,
+            actions.deleteSelfAction(
+                object_id, object_type, parent_id, extra_data
+            ),
+        )
     return JsonResponse({"action": "posted"})
 
 

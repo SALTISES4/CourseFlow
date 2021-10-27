@@ -2,9 +2,9 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
-import {newNodeAction, deleteSelfAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction, newStrategyAction, toggleStrategyAction} from "./Reducers.js";
+import {newNodeAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction, newStrategyAction, toggleStrategyAction} from "./Reducers.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment} from "./PostFunctions.js"
+import {newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment} from "./PostFunctions.js"
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -211,7 +211,7 @@ export class ComponentJSON extends React.Component{
 //        
 //    }
     
-    //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+    //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDeleteSelf(data,alt_icon){
         let icon=alt_icon || "rubbish.svg";
         return (
@@ -220,6 +220,7 @@ export class ComponentJSON extends React.Component{
     }
     
     deleteSelf(data){
+        var props = this.props;
         //Temporary confirmation; add better confirmation dialogue later
         if(this.props.renderer)this.props.renderer.selection_manager.deleted(this);
         if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
@@ -229,11 +230,16 @@ export class ComponentJSON extends React.Component{
         let extra_data = this.props.column_order;
         if(Constants.object_dictionary[this.objectType]=="outcome")extra_data=this.props.outcomenodes;
         if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.object_dictionary[this.objectType]+"?")){
-            this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,extra_data));
+            props.renderer.tiny_loader.startLoad();
+            deleteSelf(data.id,this.objectType,
+                (response_data)=>{
+                    props.renderer.tiny_loader.endLoad();
+                }
+            );
         }
     }
     
-    //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+    //Adds a button that duplicates the item (with a confirmation).
     addDuplicateSelf(data){
         return (
             <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext={gettext("Duplicate")} handleClick={this.duplicateSelf.bind(this,data)}/>
@@ -499,15 +505,15 @@ export class ComponentJSON extends React.Component{
         if(!value)value="";
         if(field=="colour")value=parseInt(value.replace("#",""),16);
         if(evt.target.type=="number"&&value=="")value=0;
-        this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,value));
+        this.props.renderer.change_field(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,value));
     }
 
     checkboxChanged(field,evt){
-         this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked));
+         this.props.renderer.change_field(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked));
     }
 
     valueChanged(field,new_value){
-        this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,new_value));
+        this.props.renderer.change_field(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,new_value));
     }
 }
 
@@ -526,11 +532,12 @@ export class NodeLinkSVG extends React.Component{
 
             var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
             var path=(this.getPath(path_array));
-
+            let stroke="black";
+            if(this.props.style.stroke)stroke=this.props.style.stroke;
             return (
-                <g style={this.props.style} fill="none" stroke="black">
-                    <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"+((this.props.selected && " selected")||"")}/>
-                    <path opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
+                <g fill="none" stroke={stroke}>
+                    <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"}/>
+                    <path style={this.props.style} opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
                 </g>
             );
         }catch(err){return null;}

@@ -36,11 +36,11 @@ class TermView extends WeekViewUnconnected{
         
         let style={};
         if(data.lock){
-            style.outline="2px solid "+data.lock.user_colour;
+            style.border="2px solid "+data.lock.user_colour;
         }
         
         return (
-            <div style={style} class={"week"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
+            <div style={style} class={"week"} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 {!read_only && <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {this.addInsertSibling(data)}

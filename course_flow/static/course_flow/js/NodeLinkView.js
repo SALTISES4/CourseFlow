@@ -32,7 +32,8 @@ class NodeLinkView extends ComponentJSON{
         
         let style={};
         if(data.lock){
-            style.outline="2px solid "+data.lock.user_colour;
+            style.stroke=data.lock.user_colour;
+            style.opacity=1;
         }
         
         var source_dims = {width:this.source_node.outerWidth(),height:this.source_node.outerHeight()};

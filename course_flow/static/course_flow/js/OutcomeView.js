@@ -64,13 +64,13 @@ class OutcomeView extends ComponentJSON{
         
         let style={};
         if(data.lock){
-            style.outline="2px solid "+data.lock.user_colour;
+            style.border="2px solid "+data.lock.user_colour;
         }
         
         return(
             <div style={style}
             class={
-                "outcome"+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")
+                "outcome"+((data.is_dropped && " dropped")||"")
             }
             ref={this.maindiv} 
             onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
@@ -527,8 +527,8 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
         if(window.confirm(gettext("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?"))){
             props.renderer.tiny_loader.startLoad();
             updateOutcomehorizontallinkDegree(data.outcome,data.parent_outcome,0,(response_data)=>{
-                let action = updateOutcomehorizontallinkDegreeAction(response_data);
-                props.dispatch(action);
+//                let action = updateOutcomehorizontallinkDegreeAction(response_data);
+//                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             });
            

@@ -161,6 +161,7 @@ export class WorkflowForMenu extends React.Component{
         let creation_text = gettext("Created");
         if(data.author && data.author !="None")creation_text+=" "+gettext("by")+" "+data.author;
         creation_text+=" "+data.created_on;
+        
         return(
             <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
                 <div class="workflow-top-row">

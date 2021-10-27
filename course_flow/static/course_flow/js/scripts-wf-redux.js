@@ -11,7 +11,7 @@ import {WorkflowView_Outcome} from"./WorkflowView";
 import * as Constants from "./Constants";
 import * as Reducers from "./Reducers";
 import OutcomeTopView from './OutcomeTopView';
-import {getWorkflowParentData, getWorkflowChildData} from './PostFunctions';
+import {getWorkflowParentData, getWorkflowChildData, updateValue} from './PostFunctions';
 import '../css/base_style.css';
 import '../css/workflow_styles.css';
 
@@ -42,9 +42,22 @@ export class SelectionManager{
     changeSelection(evt,newSelection){
         if(read_only)return;
         if(evt)evt.stopPropagation();
-        if(this.currentSelection)this.currentSelection.setState({selected:false});
+        if(newSelection && newSelection.props.data && newSelection.props.data.lock)return;
+        if(this.currentSelection){
+            this.currentSelection.setState({selected:false});
+            this.currentSelection.props.renderer.lock_update(
+                {object_id:this.currentSelection.props.data.id,
+                    object_type:Constants.object_dictionary[this.currentSelection.objectType]
+                },60*1000,false
+            );
+        }
         this.currentSelection=newSelection;
         if(this.currentSelection){
+            this.currentSelection.props.renderer.lock_update(
+                {object_id:this.currentSelection.props.data.id,
+                    object_type:Constants.object_dictionary[this.currentSelection.objectType]
+                },60*1000,true
+            );
             if($("#sidebar").tabs("option","active")!==0)this.last_sidebar_tab = $("#sidebar").tabs( "option", "active");
             $("#sidebar").tabs("enable",0);
             $("#sidebar").tabs( "option", "active", 0 );
@@ -199,6 +212,7 @@ export class WorkflowRenderer{
         });
     
         this.selection_manager = new SelectionManager(); 
+        this.selection_manager.renderer = renderer;
         this.tiny_loader = new TinyLoader(container);
         console.log("view type is "+view_type);
         if(view_type=="outcomeedit"){
@@ -253,6 +267,15 @@ export class WorkflowRenderer{
             console.log("sending message");
             this.updateSocket.send(JSON.stringify({type:"micro_update",action:obj}))
         }
+    }
+    
+    change_field(obj){
+        this.micro_update(obj);
+        let json = {};
+        json[obj.payload.field]=obj.payload.value;
+        console.log("Changing field");
+        console.log(obj);
+        updateValue(obj.payload.id,obj.payload.objectType,json);
     }
     
     lock_update(obj,time,lock){

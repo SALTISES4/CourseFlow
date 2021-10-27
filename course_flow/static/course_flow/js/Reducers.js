@@ -1,5 +1,4 @@
 import * as Constants from "./Constants.js";
-import {deleteSelf, updateValue, updateOutcomenodeDegree} from "./PostFunctions.js"
 import * as Redux from "redux";
 
 export const createLockAction = (object_id,object_type,lock,user_id,user_colour) => {
@@ -93,7 +92,7 @@ export const newNodeLinkAction = (response_data) => {
 export const changeField = (id,objectType,field,value) => {
     return {
         type: objectType+'/changeField',
-        payload:{id:id,field:field,value:value}
+        payload:{id:id,objectType:objectType,field:field,value:value}
     }
 }
 
@@ -150,12 +149,10 @@ export function workflowReducer(state={},action){
             if(action.payload.workflow)return action.payload.workflow;
             return state;
         case 'workflow/createLock':
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.id){
-                    var new_state = state.slice();
-                    new_state[i]={...new_state[i],lock:action.payload.lock}
-                    return new_state;
-                }
+            if(state.id==action.payload.id){
+                console.log("LOCKING WORKFLOW");
+                var new_state={...state,lock:action.payload.lock}
+                return new_state;
             }
             return state;
         case 'weekworkflow/changeID':
@@ -277,9 +274,6 @@ export function workflowReducer(state={},action){
         case 'workflow/changeField':
             var new_state = {...state};
             new_state[action.payload.field]=action.payload.value;
-            let json = {};
-            json[action.payload.field]=action.payload.value;
-            if(!read_only)updateValue(action.payload.id,"workflow",json);
             return new_state;
         default:
             return state;
@@ -376,7 +370,6 @@ export function columnReducer(state={},action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
-                    deleteSelf(action.payload.id,"column");
                     return new_state;
                 }
             }
@@ -398,9 +391,6 @@ export function columnReducer(state={},action){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]};
                     new_state[i][action.payload.field]=action.payload.value;
-                    let json = {};
-                    json[action.payload.field]=action.payload.value;
-                    if(!read_only)updateValue(action.payload.id,"column",json);
                     return new_state;
                 }
             }
@@ -556,7 +546,6 @@ export function weekReducer(state={},action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
-                    deleteSelf(action.payload.id,"week");
                     return new_state;
                 }
             }
@@ -567,9 +556,6 @@ export function weekReducer(state={},action){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]};
                     new_state[i][action.payload.field]=action.payload.value;
-                    let json = {};
-                    json[action.payload.field]=action.payload.value;
-                    if(!read_only)updateValue(action.payload.id,"week",json);
                     return new_state;
                 }
             }
@@ -687,8 +673,7 @@ export function nodeReducer(state={},action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
-                    deleteSelf(action.payload.id,"node",
-                    ()=>{Constants.triggerHandlerEach($(".week .node"),"component-updated")});
+                    Constants.triggerHandlerEach($(".week .node"),"component-updated");
                     return new_state;
                 }
             }
@@ -722,9 +707,6 @@ export function nodeReducer(state={},action){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]};
                     new_state[i][action.payload.field]=action.payload.value;
-                    let json = {};
-                    json[action.payload.field]=action.payload.value;
-                    if(!read_only)updateValue(action.payload.id,"node",json);
                     return new_state;
                 }
             }
@@ -773,20 +755,25 @@ export function nodeReducer(state={},action){
         case 'outcome/deleteSelf':
         case 'outcome_base/deleteSelf':
             new_state=state.slice();
+            console.log("outcome was deleted, handling now");
+            console.log(action);
+            console.log(action.payload.extra_data);
+            console.log(state);
+            
+            
+            
             for(var i=0;i<action.payload.extra_data.length;i++){
-                if(action.payload.extra_data[i].outcome==action.payload.id){
-                    let outcomenode = action.payload.extra_data[i];
-                    for(var j=0;j<new_state.length;j++){
-                        let outcomenode_index=new_state[j].outcomenode_set.indexOf(outcomenode.id);
-                        if(outcomenode_index>=0){
-                            new_state[j]={...new_state[j]};
-                            new_state[j].outcomenode_set=new_state[j].outcomenode_set.slice();
-                            new_state[j].outcomenode_set.splice(outcomenode_index,1);
-                            let outcomenode_unique_index=new_state[j].outcomenode_unique_set.indexOf(outcomenode.id);
-                            if(outcomenode_unique_index>=0){
-                                new_state[j].outcomenode_unique_set=new_state[j].outcomenode_unique_set.slice();
-                                new_state[j].outcomenode_unique_set.splice(outcomenode_unique_index,1);
-                            }
+                let outcomenode = action.payload.extra_data[i];
+                for(var j=0;j<new_state.length;j++){
+                    let outcomenode_index=new_state[j].outcomenode_set.indexOf(outcomenode.id);
+                    if(outcomenode_index>=0){
+                        new_state[j]={...new_state[j]};
+                        new_state[j].outcomenode_set=new_state[j].outcomenode_set.slice();
+                        new_state[j].outcomenode_set.splice(outcomenode_index,1);
+                        let outcomenode_unique_index=new_state[j].outcomenode_unique_set.indexOf(outcomenode.id);
+                        if(outcomenode_unique_index>=0){
+                            new_state[j].outcomenode_unique_set=new_state[j].outcomenode_unique_set.slice();
+                            new_state[j].outcomenode_unique_set.splice(outcomenode_unique_index,1);
                         }
                     }
                 }
@@ -823,7 +810,6 @@ export function nodelinkReducer(state={},action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
-                    deleteSelf(action.payload.id,"nodelink")
                     return new_state;
                 }
             }
@@ -900,7 +886,6 @@ export function outcomeReducer(state={},action){
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     new_state.splice(i,1);
-                    deleteSelf(action.payload.id,"outcome");
                     return new_state;
                 }
             }
@@ -914,7 +899,6 @@ export function outcomeReducer(state={},action){
                     new_state[i].child_outcome_links.splice(new_state[i].child_outcome_links.indexOf(action.payload.parent_id),1);
                 }else if(state[i].id==action.payload.id){
                     new_state.splice(i,1);
-                    deleteSelf(action.payload.id,"outcome");
                 }
             }
             return new_state;
@@ -957,9 +941,6 @@ export function outcomeReducer(state={},action){
                     var new_state = state.slice();
                     new_state[i] = {...state[i]};
                     new_state[i][action.payload.field]=action.payload.value;
-                    let json = {};
-                    json[action.payload.field]=action.payload.value;
-                    if(!read_only)updateValue(action.payload.id,"outcome",json);
                     return new_state;
                 }
             }

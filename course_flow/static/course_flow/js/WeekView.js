@@ -28,14 +28,13 @@ export class WeekViewUnconnected extends ComponentJSON{
             <div class="node-week placeholder" style={{height:"100%"}}>Drag and drop nodes from the sidebar to add.</div>
         );
         let css_class = "week";
-        if(this.state.selected)css_class+=" selected";
         if(data.is_strategy)css_class+=" strategy";
         let default_text;
         if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
         
         let style={};
         if(data.lock){
-            style.outline="2px solid "+data.lock.user_colour;
+            style.border="2px solid "+data.lock.user_colour;
         }
         
         return (
