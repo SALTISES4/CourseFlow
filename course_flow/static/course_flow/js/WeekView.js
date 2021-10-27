@@ -182,8 +182,8 @@ export class WeekViewUnconnected extends ComponentJSON{
                     let loader = new Loader('body');
                     addStrategy(this.props.parentID,new_index,drag_item[0].dataDraggable.strategy,
                         (response_data)=>{
-                            let action = newStrategyAction(response_data);
-                            props.dispatch(action);
+//                            let action = newStrategyAction(response_data);
+//                            props.dispatch(action);
                             loader.endLoad();
                         }
                     );

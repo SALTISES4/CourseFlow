@@ -127,8 +127,8 @@ export class ComponentJSON extends React.Component{
                 if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
                     newNode(this.props.objectID,new_index,drag_item[0].dataDraggable.column,drag_item[0].dataDraggable.column_type,
                         (response_data)=>{
-                            let action = newNodeAction(response_data);
-                            props.dispatch(action);
+//                            let action = newNodeAction(response_data);
+//                            props.dispatch(action);
                         }
                     );
                 }
@@ -251,8 +251,8 @@ export class ComponentJSON extends React.Component{
             Constants.parent_dictionary[type],
             Constants.through_parent_dictionary[type],
             (response_data)=>{
-                let action = insertBelowAction(response_data,type);
-                props.dispatch(action);
+//                let action = insertBelowAction(response_data,type);
+//                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -297,8 +297,8 @@ export class ComponentJSON extends React.Component{
         props.renderer.tiny_loader.startLoad();
         insertChild(data.id,Constants.object_dictionary[type],
             (response_data)=>{
-                let action = insertChildAction(response_data,Constants.object_dictionary[type]);
-                props.dispatch(action);
+//                let action = insertChildAction(response_data,Constants.object_dictionary[type]);
+//                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -425,8 +425,7 @@ export class ComponentJSON extends React.Component{
                             <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
                             <button  id="linked-workflow-editor" onClick={()=>{
                                 getLinkedWorkflowMenu(data,(response_data)=>{
-                                    let action = setLinkedWorkflowAction(response_data);
-                                    props.dispatch(action);
+                                    console.log("linked a workflow");
                                 });
                             }}>
                                 {gettext("Change")}
@@ -471,8 +470,8 @@ export class ComponentJSON extends React.Component{
                                 let loader = new Constants.Loader('body');
                                 toggleStrategy(data.id,data.is_strategy,
                                 (response_data)=>{
-                                    let action = toggleStrategyAction(response_data);
-                                    props.dispatch(action);
+//                                    let action = toggleStrategyAction(response_data);
+//                                    props.dispatch(action);
                                     loader.endLoad();
                                 })
                             }}>
@@ -713,10 +712,7 @@ export class NodePorts extends React.Component{
     nodeLinkAdded(target,source_port,target_port){
         let props=this.props;
         if(target==this.props.nodeID)return;
-        newNodeLink(props.nodeID,target,Constants.port_keys.indexOf(source_port),Constants.port_keys.indexOf(target_port),(response_data)=>{
-            let action = newNodeLinkAction(response_data);
-            props.dispatch(action);
-        });
+        newNodeLink(props.nodeID,target,Constants.port_keys.indexOf(source_port),Constants.port_keys.indexOf(target_port));
     }
 }
 

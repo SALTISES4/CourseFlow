@@ -8,7 +8,6 @@ import OutcomeView from "./OutcomeView";
 import {getParentWorkflowByID,getParentOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID} from "./FindState";
 import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents';
 import {newOutcome} from "./PostFunctions";
-import {newOutcomeAction} from "./Reducers";
 import * as Constants from "./Constants";
 
 //Basic component representing the outcome view
@@ -48,7 +47,7 @@ class OutcomeEditView extends ComponentJSON{
     
     
     addNew(){
-        newOutcome(this.props.data.id,(response)=>{this.props.dispatch(newOutcomeAction(response))});
+        newOutcome(this.props.data.id);
     }
     
 }

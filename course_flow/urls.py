@@ -77,7 +77,6 @@ def course_flow_patterns():
             views.update_outcomehorizontallink_degree,
             name="update-outcomehorizontallink-degree",
         ),
-        url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
         url(
             r"^workflow/outcome/new",

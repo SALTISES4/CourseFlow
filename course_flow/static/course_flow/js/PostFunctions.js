@@ -95,21 +95,6 @@ export function updateValueInstant(objectID,objectType,json,callBackFunction=()=
     }
 }
 
-//Add a new column to the workflow 
-export function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("success")){
-    try{
-        $.post(post_paths.new_column, {
-            workflowPk:workflowPk,
-            column_type:column_type
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else fail_function();
-        });
-    }catch(err){
-        fail_function();
-    }
-}
-    
 //Add a new node to a week
 export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){
     try{

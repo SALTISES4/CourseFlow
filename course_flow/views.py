@@ -2727,24 +2727,6 @@ def add_comment(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-@user_can_edit("workflowPk")
-def new_column(request: HttpRequest) -> HttpResponse:
-    workflow = Workflow.objects.get_subclass(pk=request.POST.get("workflowPk"))
-    column_type = request.POST.get("column_type")
-    try:
-        number_of_columns = workflow.columns.count()
-        if column_type is None:
-            column_type = workflow.DEFAULT_CUSTOM_COLUMN
-        column = workflow.columns.create(
-            author=workflow.author,
-            column_type=column_type,
-            through_defaults={"rank": number_of_columns},
-        )
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "objectID": column.id})
-
-
 @user_can_edit("weekPk")
 @user_can_view_or_none("columnPk")
 def new_node(request: HttpRequest) -> HttpResponse:
@@ -2781,17 +2763,20 @@ def new_node(request: HttpRequest) -> HttpResponse:
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
+    response_data = {
+        "new_model": NodeSerializerShallow(node).data,
+        "new_through": NodeWeekSerializerShallow(node_week).data,
+        "index": position,
+        "parentID": week_id,
+        "columnworkflow": ColumnWorkflowSerializerShallow(
+            columnworkflow
+        ).data,
+        "column": ColumnSerializerShallow(column).data,
+    }
+    actions.dispatch_wf(week.get_workflow(),actions.newNodeAction(response_data))
     return JsonResponse(
         {
             "action": "posted",
-            "new_model": NodeSerializerShallow(node).data,
-            "new_through": NodeWeekSerializerShallow(node_week).data,
-            "index": position,
-            "parentID": week_id,
-            "columnworkflow": ColumnWorkflowSerializerShallow(
-                columnworkflow
-            ).data,
-            "column": ColumnSerializerShallow(column).data,
         }
     )
 
@@ -2807,14 +2792,18 @@ def new_outcome_for_workflow(request: HttpRequest) -> HttpResponse:
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
-    return JsonResponse(
-        {
-            "action": "posted",
+    
+    response_data = {
             "new_model": OutcomeSerializerShallow(outcome).data,
             "new_through": OutcomeWorkflowSerializerShallow(
                 outcome_workflow
             ).data,
             "parentID": workflow_id,
+    }
+    actions.dispatch_wf(workflow,actions.newNodeAction(response_data))
+    return JsonResponse(
+        {
+            "action": "posted"
         }
     )
 
@@ -2915,33 +2904,36 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
             #                )
 
             # return all this information to the user
+            response_data = {
+                "strategy": WeekSerializerShallow(week).data,
+                "new_through": WeekWorkflowSerializerShallow(
+                    new_through
+                ).data,
+                "index": position,
+                "columns_added": ColumnSerializerShallow(
+                    columns_added, many=True
+                ).data,
+                "columnworkflows_added": ColumnWorkflowSerializerShallow(
+                    columnworkflows_added, many=True
+                ).data,
+                "nodeweeks_added": NodeWeekSerializerShallow(
+                    week.nodeweek_set, many=True
+                ).data,
+                "nodes_added": NodeSerializerShallow(
+                    week.nodes.all(), many=True
+                ).data,
+                "nodelinks_added": NodeLinkSerializerShallow(
+                    NodeLink.objects.filter(
+                        source_node__in=week.nodes.all(),
+                        target_node__in=week.nodes.all(),
+                    ),
+                    many=True,
+                ).data,
+            }
+            actions.dispatch_wf(workflow,actions.addStrategy(response_data))
             return JsonResponse(
                 {
                     "action": "posted",
-                    "strategy": WeekSerializerShallow(week).data,
-                    "new_through": WeekWorkflowSerializerShallow(
-                        new_through
-                    ).data,
-                    "index": position,
-                    "columns_added": ColumnSerializerShallow(
-                        columns_added, many=True
-                    ).data,
-                    "columnworkflows_added": ColumnWorkflowSerializerShallow(
-                        columnworkflows_added, many=True
-                    ).data,
-                    "nodeweeks_added": NodeWeekSerializerShallow(
-                        week.nodeweek_set, many=True
-                    ).data,
-                    "nodes_added": NodeSerializerShallow(
-                        week.nodes.all(), many=True
-                    ).data,
-                    "nodelinks_added": NodeLinkSerializerShallow(
-                        NodeLink.objects.filter(
-                            source_node__in=week.nodes.all(),
-                            target_node__in=week.nodes.all(),
-                        ),
-                        many=True,
-                    ).data,
                 }
             )
 
@@ -2970,10 +2962,14 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
+    
+    response_data = {
+            "new_model": NodeLinkSerializerShallow(node_link).data,
+    }
+    actions.dispatch_wf(node.get_workflow(),actions.newNodeLinkAction(response_data))
     return JsonResponse(
         {
             "action": "posted",
-            "new_model": NodeLinkSerializerShallow(node_link).data,
         }
     )
 
@@ -3003,15 +2999,17 @@ def insert_child(request: HttpRequest) -> HttpResponse:
 
     except ValidationError:
         return JsonResponse({"action": "error"})
-
-    return JsonResponse(
-        {
-            "action": "posted",
-            "new_model": new_model_serialized,
-            "new_through": new_through_serialized,
-            "parentID": model.id,
-        }
-    )
+    
+    
+    response_data = {
+        "new_model": new_model_serialized,
+        "new_through": new_through_serialized,
+        "parentID": model.id,
+    }
+    actions.dispatch_wf(model.get_workflow(),actions.insertChildAction(response_data,object_type))
+    return JsonResponse({
+        "action":"posted"
+    })
 
 
 # Add a new sibling to a through model
@@ -3073,10 +3071,7 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
     actions.dispatch_wf(model.get_workflow(),actions.insertBelowAction(response_data,object_type))
     return JsonResponse(
         {
-            "action": "posted",
-            "new_model": new_model_serialized,
-            "new_through": new_through_serialized,
-            "parentID": parent_id,
+            "action": "posted"
         }
     )
 
@@ -3196,14 +3191,16 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 raise ValidationError("Uknown component type")
     except ValidationError:
         return JsonResponse({"action": "error"})
-    response = {
-        "action": "posted",
+    response_data = {
         "new_model": new_model_serialized,
         "new_through": new_through_serialized,
         "parentID": parent_id,
         "children": new_children_serialized,
     }
-    return JsonResponse(response)
+    actions.dispatch_wf(model.get_workflow(),actions.insertBelowAction(response_data,object_type))
+    return JsonResponse({
+        "action": "posted"
+    })
 
 
 # favourite/unfavourite a project or workflow or outcome for a user
@@ -3445,12 +3442,16 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
 
+    response_data = {
+        "data_package": new_outcomenodes,
+        "new_outcomenode_set": new_outcomenode_set,
+        "new_outcomenode_unique_set": new_outcomenode_unique_set,
+    }
+    #We also need to handle the child workflows here somehow
+    actions.dispatch_wf(node.get_workflow(),actions.updateOutcomenodeDegreeAction(response_data))
     return JsonResponse(
         {
             "action": "posted",
-            "data_package": new_outcomenodes,
-            "new_outcomenode_set": new_outcomenode_set,
-            "new_outcomenode_unique_set": new_outcomenode_unique_set,
         }
     )
 
@@ -3497,12 +3498,16 @@ def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
+    response_data = {
+        "data_package": new_outcomehorizontallinks,
+        "new_outcome_horizontal_links": new_outcome_horizontal_links,
+        "new_outcome_horizontal_links_unique": new_outcome_horizontal_links_unique,
+    }
+    #We also need to handle the parent workflows here
+    actions.dispatch_wf(outcome.get_workflow(),actions.updateOutcomehorizontallinkDegreeAction(response_data))
     return JsonResponse(
         {
             "action": "posted",
-            "data_package": new_outcomehorizontallinks,
-            "new_outcome_horizontal_links": new_outcome_horizontal_links,
-            "new_outcome_horizontal_links_unique": new_outcome_horizontal_links_unique,
         }
     )
 
@@ -3551,13 +3556,16 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
 
     except ValidationError:
         return JsonResponse({"action": "error"})
-
+    response_data = {
+        "id": node_id,
+        "linked_workflow": linked_workflow,
+        "linked_workflow_data": linked_workflow_data,
+    }
+    actions.dispatch_wf(node.get_workflow(),actions.setLinkedWorkflowAction(response_data))
+    # NEED TO ALSO UPDATE CHILD WORKFLOW
     return JsonResponse(
         {
             "action": "posted",
-            "id": node_id,
-            "linked_workflow": linked_workflow,
-            "linked_workflow_data": linked_workflow_data,
         }
     )
 
@@ -3569,6 +3577,7 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("weekPk"))
         is_strategy = json.loads(request.POST.get("is_strategy"))
         week = Week.objects.get(id=object_id)
+        workflow = WeekWorkflow.objects.get(week=week).workflow
         # This check is to prevent people from spamming the button, which would
         # potentially create a bunch of superfluous strategies
         if week.is_strategy != is_strategy:
@@ -3580,7 +3589,6 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
             week.strategy_classification = 0
             week.save()
         else:
-            workflow = WeekWorkflow.objects.get(week=week).workflow
             strategy = fast_duplicate_workflow(workflow, request.user)
             strategy.title = week.title
             strategy.is_strategy = True
@@ -3602,12 +3610,17 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    return JsonResponse(
-        {
-            "action": "posted",
+    response_data = {
             "id": week.id,
             "is_strategy": week.is_strategy,
             "strategy": strategy_serialized,
+    }
+    
+    actions.dispatch_wf(workflow,actions.toggleStrategyAction(response_data))
+    
+    return JsonResponse(
+        {
+            "action": "posted",
         }
     )
 

@@ -2,7 +2,6 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
-#Actions for reduers
 def dispatch_wf(workflow,action):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)('workflow_'+str(workflow.pk),
@@ -14,7 +13,9 @@ def dispatch_wf_lock(workflow,action):
     async_to_sync(channel_layer.group_send)('workflow_'+str(workflow.pk),
         {'type':'lock_update','action':action}
     )
-    
+
+
+#Actions for reduers 
 def unlock(object_id,object_type):
     return {
         "lock":False,

@@ -39,8 +39,6 @@ class OutcomeNodeView extends ComponentJSON{
         if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
             props.renderer.tiny_loader.startLoad();
             updateOutcomenodeDegree(data.node,data.outcome,0,(response_data)=>{
-                let action = updateOutcomenodeDegreeAction(response_data);
-                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             });
            
@@ -220,7 +218,6 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
         props.renderer.tiny_loader.startLoad();
         updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
             (response_data)=>{
-                props.dispatch(updateOutcomenodeDegreeAction(response_data));
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -238,7 +235,6 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
         props.renderer.tiny_loader.startLoad();
         updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
             (response_data)=>{
-                props.dispatch(updateOutcomenodeDegreeAction(response_data));
                 props.renderer.tiny_loader.endLoad();
             }
         );

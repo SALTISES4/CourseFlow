@@ -210,8 +210,6 @@ class NodeView extends ComponentJSON{
                     props.renderer.tiny_loader.startLoad();
                     updateOutcomenodeDegree(this.props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
-                            let action = updateOutcomenodeDegreeAction(response_data);
-                            props.dispatch(action);
                             props.renderer.tiny_loader.endLoad();
                         }
                     );
