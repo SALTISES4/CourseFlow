@@ -26,11 +26,6 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
                 self.room_group_name,
                 self.channel_name
             )
-            print("connected")
-            print(self.scope["user"])
-            print(self.room_group_name)
-            print("can edit: "+str(self.EDIT))
-            print("can view: "+str(self.VIEW))
             self.accept()
 
     def disconnect(self, close_code):
@@ -65,6 +60,15 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
                     'action':lock
                 }
             )
+        elif text_data_json["type"]=="connection_update":
+            user_data = text_data_json['user_data']
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'connection_update',
+                    'action':user_data
+                }
+            )
             
             
     def workflow_action(self, event):
@@ -83,6 +87,16 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         print(message)
         # Send message to WebSocket
         if(event["type"]=="lock_update"):
+            self.send(text_data=json.dumps(
+                event
+            ))
+            
+    def  connection_update(self,event):
+        message = event['action']
+        print("got a message from group")
+        print(message)
+        # Send message to WebSocket
+        if(event["type"]=="connection_update"):
             self.send(text_data=json.dumps(
                 event
             ))

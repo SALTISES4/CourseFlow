@@ -273,8 +273,6 @@ export class WorkflowRenderer{
         this.micro_update(obj);
         let json = {};
         json[obj.payload.field]=obj.payload.value;
-        console.log("Changing field");
-        console.log(obj);
         updateValue(obj.payload.id,obj.payload.objectType,json);
     }
     
@@ -302,6 +300,15 @@ export class WorkflowRenderer{
         else this.locks[object_type][object_id]=null;
        
     }
+    
+    create_connection_bar(){
+        reactDom.render(
+            <ConnectionBar updateSocket={this.updateSocket}/>,
+            $("#userbar")[0]
+        );
+    }
+    
+    
     
 }
 

@@ -103,6 +103,7 @@
 //  {% endif %}
 
   const user_id = {{ user.id }};
+  const user_name = "{{ user.username }}";
   const create_path=null;
 
   workflow_data_package = {{data_package|safe}}
@@ -133,8 +134,13 @@
        }else if(data.type=="lock_update"){
            console.log("got a lock update");
            workflow_renderer.lock_update_received(data.action);
+       }else if(data.type=="connection_update"){
+           console.log("got a connection update");
+           workflow_renderer.connection_update_received(data.action);
        }
    }
+      workflow_renderer.create_connection_bar();
+      
       
       console.log(workflow_data_package);
       $(document).ajaxError(renderers.fail_function);
