@@ -12,6 +12,7 @@ import * as Constants from "./Constants";
 import * as Reducers from "./Reducers";
 import OutcomeTopView from './OutcomeTopView';
 import {getWorkflowParentData, getWorkflowChildData, updateValue} from './PostFunctions';
+import {ConnectionBar} from './ConnectedUsers'
 import '../css/base_style.css';
 import '../css/workflow_styles.css';
 
@@ -303,7 +304,7 @@ export class WorkflowRenderer{
     
     create_connection_bar(){
         reactDom.render(
-            <ConnectionBar updateSocket={this.updateSocket}/>,
+            <ConnectionBar updateSocket={this.updateSocket} renderer={this}/>,
             $("#userbar")[0]
         );
     }

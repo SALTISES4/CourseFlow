@@ -78,7 +78,6 @@ button:hover{
     justify-content: space-between;
     width:100%;
     font-family:'Open Sans',sans-serif;
-    overflow:hidden;
 }
 
 .workflow-title-bar{
@@ -99,8 +98,6 @@ button:hover{
 
 .floatbar{
     flex-shrink:99;
-    color:white;
-    overflow:hidden;
     color:white;
 
 }
@@ -134,6 +131,62 @@ button:hover{
     padding-left:6px;
     padding-right:6px;
 }
+
+.users-box{
+    position:relative;
+    height:100%;
+}
+
+.users-small .user-indicator{
+    margin-top: 10px;
+}
+
+.user-indicator {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.users-small{
+    display:inline-block;
+    display:flex;
+    flex-wrap:wrap;
+    max-width:76px;
+    gap:20px 2px;
+    height:100%;
+    overflow:hidden;
+}
+
+.users-small-wrapper{
+    height:100%;
+    display:inline-block;
+}
+
+.users-more{
+    display:inline-block;
+    height:100%;
+    color:black;
+    padding-left:3px;
+}
+
+.users-hidden{
+    display:none;
+    position:absolute;
+    top:44px;
+    right:0px;
+    padding:5px;
+    background-color:white;
+    border:1px solid grey;
+}
+
+.users-more:hover+.users-hidden, .users-hidden:hover{
+    display:inline-block;
+}
+
+
 
 .viewbar{
     display:inline-block;

@@ -6,50 +6,79 @@ import * as reactDom from "react-dom";
 export class ConnectionBar extends React.Component{
     constructor(props){
         super(props);
-        this.state={connnected_users:[]};
+        this.state={connected_users:[]};
+        let connection_bar=this;
+        props.renderer.connection_update_received = (user_data)=>{
+            connection_bar.connection_update_received(user_data);
+        }
     }
     
     
     render(){
+        console.log(this.state);
         let users = this.state.connected_users.map(user=>
             <ConnectedUser user_data={user}/>
         );
+        
+        return (
+            <div class="users-box">
+                <div class="users-small-wrapper">
+                    <div class="users-small">
+                        {users.slice(0,2)}
+                    </div>
+                </div>
+                <div class="users-more">
+                    ...
+                </div>
+                <div class="users-hidden">
+                    {users}
+                </div>
+            </div>
+        )
     }
     
     componentDidMount(){
         this.connection_update();
     }
     
-    connection_update(){
-        this.props.updateSocket.send(JSON.stringify({type:"connection_update",user_data:{user_id:user_id,user_name:user_name,user_colour:myColour,connected:true}}))
-        setTimeout(this.connection_update,10000);
+    connection_update(connected=true){
+        this.props.updateSocket.send(JSON.stringify({type:"connection_update",user_data:{user_id:user_id,user_name:user_name,user_colour:myColour,connected:connected}}))
+        setTimeout(this.connection_update.bind(this),10000);
     }
     
     connection_update_received(user_data){
-        let connected_users=this.state.connected_users.slice();
+        console.log("Recieved a connection");
         console.log(user_data);
-        let found_user=false;
-        for(let i=0;i<connected_users.length;i++){
-            if(connected_users[i].user_id==user_data.user_id){
-                found_user=true;
-                clearTimeout(connected_users[i].timeout);
-                connected_users[i] = {...user_data,timeout:setTimeout(()=>{
-                    this.removeConnection(user_data);
-                },15000)}
-                break;
+        if(user_data.connected){
+            console.log("Connecting the user");
+            let connected_users=this.state.connected_users.slice();
+            console.log(user_data);
+            let found_user=false;
+            for(let i=0;i<connected_users.length;i++){
+                if(connected_users[i].user_id==user_data.user_id){
+                    found_user=true;
+                    clearTimeout(connected_users[i].timeout);
+                    connected_users[i] = {...user_data,timeout:setTimeout(
+                        this.removeConnection.bind(this,user_data)
+                    ,15000)}
+                    break;
+                }
             }
-        }
-        if(!found_user)connected_users.push({...user_data,timeout:setTimeout(()=>{
-            this.removeConnection(user_data);
-        },15000)});
-        this.setState({connected_users:connected_users});
+            if(!found_user)connected_users.push({...user_data,timeout:setTimeout(
+                this.removeConnection.bind(this,user_data)
+            ,15000)});
+            this.setState({connected_users:connected_users});
+        }else this.removeConnection(user_data);
     }
     
     removeConnection(user_data){
+        console.log("Removing the user");
         let connected_users=this.state.connected_users.slice();
         for(let i=0;i<connected_users.length;i++){
             if(connected_users[i].user_id==user_data.user_id){
-                connected_users=connected_users.splice(i,1);
+                if(connected_users[i].timeout)clearTimeout(connected_users[i].timeout)
+                connected_users.splice(i,1);
+                break;
             }
         }
         this.setState({connected_users:connected_users});
@@ -63,7 +92,7 @@ export class ConnectedUser extends React.Component{
     render(){
         let data = this.props.user_data;
         return(
-            <div class="user-indicator" title=data.user_name>
+            <div class="user-indicator" style={{backgroundColor:data.user_colour}} title={data.user_name}>
                 {data.user_name[0]}
             </div>
         );

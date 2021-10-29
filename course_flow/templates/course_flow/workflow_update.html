@@ -113,7 +113,7 @@
       'ws://'+window.location.host+'/ws/update/'+workflow_data_package.data_flat.workflow.id+'/'
   );
 
-   const myColour = 'hsl('+parseInt(Math.random()*360+1)+',50%,50%)';
+   const myColour = 'hsl('+(((user_id*5)%360)+1)+',50%,50%)';
 
    updateSocket.onclose = function(e){
        console.log(e);
@@ -139,7 +139,8 @@
            workflow_renderer.connection_update_received(data.action);
        }
    }
-      workflow_renderer.create_connection_bar();
+      updateSocket.onopen = function(){workflow_renderer.create_connection_bar();};
+      if(updateSocket.readyState==1)workflow_renderer.create_connection_bar();
       
       
       console.log(workflow_data_package);

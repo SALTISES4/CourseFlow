@@ -34,6 +34,16 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
+        try:
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'lock_update',
+                    'action':self.last_lock
+                }
+            )
+        except AttributeError:
+            pass
         
     def receive(self, text_data):
         if not self.EDIT:return
@@ -53,6 +63,8 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         elif text_data_json["type"]=="lock_update":
             lock = text_data_json['lock']
             print(lock)
+            if lock["lock"]:
+                self.last_lock={**lock,"lock":False}
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {
