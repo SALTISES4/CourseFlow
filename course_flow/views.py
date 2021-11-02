@@ -3378,7 +3378,7 @@ Update Methods
 
 
 # Updates an object's information using its serializer
-# @user_can_edit(False)
+@user_can_edit(False)
 def update_value(request: HttpRequest) -> HttpResponse:
     try:
         object_id = json.loads(request.POST.get("objectID"))
@@ -3527,6 +3527,8 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
         node_id = json.loads(request.POST.get("nodePk"))
         workflow_id = json.loads(request.POST.get("workflowPk"))
         node = Node.objects.get(pk=node_id)
+        original_workflow = node.linked_workflow
+        workflow = None
         if workflow_id == -1:
             node.linked_workflow = None
             node.represents_workflow = False
@@ -3550,10 +3552,23 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
         "linked_workflow": linked_workflow,
         "linked_workflow_data": linked_workflow_data,
     }
+    if original_workflow is not None: 
+        data_package = get_child_outcome_data(
+            original_workflow.get_subclass(), request.user
+        )
+        actions.dispatch_wf(
+            original_workflow, actions.replaceStoreData(data_package)
+        )
+    if workflow is not None:
+        data_package = get_child_outcome_data(
+            workflow.get_subclass(), request.user
+        )
+        actions.dispatch_wf(
+            workflow, actions.replaceStoreData(data_package)
+        )
     actions.dispatch_wf(
         node.get_workflow(), actions.setLinkedWorkflowAction(response_data)
     )
-    # NEED TO ALSO UPDATE CHILD WORKFLOW
     return JsonResponse({"action": "posted",})
 
 

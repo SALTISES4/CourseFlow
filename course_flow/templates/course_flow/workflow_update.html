@@ -109,38 +109,55 @@
   workflow_data_package = {{data_package|safe}}
   var workflow_renderer;
     
-  const updateSocket = new WebSocket(
-      'ws://'+window.location.host+'/ws/update/'+workflow_data_package.data_flat.workflow.id+'/'
-  );
+
 
    const myColour = 'hsl('+(((user_id*5)%360)+1)+',50%,50%)';
 
-   updateSocket.onclose = function(e){
-       console.log(e);
-       alert("Lost connection to server");
-   }
+   
 
+    function connect(){
+
+        const updateSocket = new WebSocket(
+        'ws://'+window.location.host+'/ws/update/'+workflow_data_package.data_flat.workflow.id+'/'
+        );
+
+        workflow_renderer.updateSocket = updateSocket;
+
+        updateSocket.onmessage = function(e){
+            console.log("received a message");
+            const data = JSON.parse(e.data);
+            console.log(data);
+            if(data.type=="workflow_action"){
+                workflow_renderer.store.dispatch(data.action);
+            }else if(data.type=="lock_update"){
+                console.log("got a lock update");
+                workflow_renderer.lock_update_received(data.action);
+            }else if(data.type=="connection_update"){
+                console.log("got a connection update");
+                workflow_renderer.connection_update_received(data.action);
+            }
+        }
+        updateSocket.onopen = function(){workflow_renderer.create_connection_bar();};
+        if(updateSocket.readyState==1)workflow_renderer.create_connection_bar();
+        
+        updateSocket.onclose = function(e){
+           setTimeout(
+                ()=>{
+                    connect();
+                },
+               3000
+           )
+           console.log(e);
+           console.log("Lost connection to server");
+        }
+
+    }
+   
    
   window.addEventListener("load", function(){
       workflow_renderer = new renderers.WorkflowRenderer(workflow_data_package);
-      workflow_renderer.updateSocket = updateSocket;
+      connect();
       
-      updateSocket.onmessage = function(e){
-       console.log("received a message");
-       const data = JSON.parse(e.data);
-       console.log(data);
-       if(data.type=="workflow_action"){
-            workflow_renderer.store.dispatch(data.action);
-       }else if(data.type=="lock_update"){
-           console.log("got a lock update");
-           workflow_renderer.lock_update_received(data.action);
-       }else if(data.type=="connection_update"){
-           console.log("got a connection update");
-           workflow_renderer.connection_update_received(data.action);
-       }
-   }
-      updateSocket.onopen = function(){workflow_renderer.create_connection_bar();};
-      if(updateSocket.readyState==1)workflow_renderer.create_connection_bar();
       
       
       console.log(workflow_data_package);

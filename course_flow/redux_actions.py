@@ -100,3 +100,11 @@ def toggleStrategyAction(response_data):
 
 def gridMenuItemAdded(response_data):
     return {"type": "gridmenu/itemAdded", "payload": response_data}
+
+
+
+def replaceStoreData(data_package):
+    return {
+        "type": 'replaceStoreData',
+        "payload": data_package
+    }
