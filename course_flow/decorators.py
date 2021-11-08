@@ -141,11 +141,21 @@ def get_model_from_request(model, request, **kwargs):
     else:
         get_parent = kwargs.get("get_parent", False)
         if get_parent:
-            id = json.loads(request.POST.get("parentID"))
-            model = json.loads(request.POST.get("parentType"))
+            request_data = request.POST.get("parentID")
+            if request_data is None: 
+                id=None
+                model=None
+            else:
+                id = json.loads(request_data)
+                model = json.loads(request.POST.get("parentType"))
         else:
-            id = json.loads(request.POST.get("objectID"))
-            model = json.loads(request.POST.get("objectType"))
+            request_data = request.POST.get("objectID")
+            if request_data is None:
+                id=None
+                model=None
+            else:
+                id = json.loads(request_data)
+                model = json.loads(request.POST.get("objectType"))
     return {"model": model, "id": id}
 
 

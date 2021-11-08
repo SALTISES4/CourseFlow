@@ -231,7 +231,7 @@ export class ComponentJSON extends React.Component{
         if(Constants.object_dictionary[this.objectType]=="outcome")extra_data=this.props.outcomenodes;
         if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.object_dictionary[this.objectType]+"?")){
             props.renderer.tiny_loader.startLoad();
-            deleteSelf(data.id,this.objectType,
+            deleteSelf(data.id,Constants.object_dictionary[this.objectType],
                 (response_data)=>{
                     props.renderer.tiny_loader.endLoad();
                 }
@@ -505,15 +505,15 @@ export class ComponentJSON extends React.Component{
         if(!value)value="";
         if(field=="colour")value=parseInt(value.replace("#",""),16);
         if(evt.target.type=="number"&&value=="")value=0;
-        this.props.renderer.change_field(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,value));
+        this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,value);
     }
 
     checkboxChanged(field,evt){
-         this.props.renderer.change_field(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked));
+         this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
     }
 
     valueChanged(field,new_value){
-        this.props.renderer.change_field(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,new_value));
+        this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,new_value);
     }
 }
 

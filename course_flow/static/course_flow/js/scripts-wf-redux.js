@@ -270,12 +270,16 @@ export class WorkflowRenderer{
         }
     }
     
-    change_field(obj){
-        this.micro_update(obj);
+    change_field(id,object_type,field,value){
         let json = {};
-        json[obj.payload.field]=obj.payload.value;
-        updateValue(obj.payload.id,obj.payload.objectType,json);
+        json[field]=value;
+        console.log("DISPATCHING");
+        console.log(Reducers.changeField(id,object_type,json));
+        this.store.dispatch(Reducers.changeField(id,object_type,json));
+        console.log("DISPATCHED");
+        updateValue(id,object_type,json);
     }
+    
     
     lock_update(obj,time,lock){
         if(this.updateSocket){

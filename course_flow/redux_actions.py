@@ -1,6 +1,6 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-
+from .models import Node
 
 def dispatch_wf(workflow, action):
     channel_layer = get_channel_layer()
@@ -8,6 +8,16 @@ def dispatch_wf(workflow, action):
         "workflow_" + str(workflow.pk),
         {"type": "workflow_action", "action": action},
     )
+
+
+def dispatch_to_parent_wf(workflow, action):
+    channel_layer = get_channel_layer()
+    for parent_node in Node.objects.filter(linked_workflow=workflow):
+        parent_workflow = parent_node.get_workflow()
+        async_to_sync(channel_layer.group_send)(
+            "workflow_" + str(parent_workflow.pk),
+            {"type": "workflow_action", "action": action},
+        )
 
 
 def dispatch_wf_lock(workflow, action):
@@ -60,6 +70,9 @@ def newNodeAction(response_data):
 def newOutcomeAction(response_data):
     return {"type": "outcome/newOutcome", "payload": response_data}
 
+def newChildOutcomeAction(response_data):
+    return {"type": "childoutcome/newOutcome", "payload": response_data}
+
 
 def columnChangeNodeWeek(id, delta_x, columns):
     return {
@@ -72,10 +85,10 @@ def newNodeLinkAction(response_data):
     return {"type": "nodelink/newNodeLink", "payload": response_data}
 
 
-def changeField(id, objectType, field, value):
+def changeField(id, objectType, json):
     return {
         "type": objectType + "/changeField",
-        "payload": {"id": id, "field": field, "value": value},
+        "payload": {"id": id,"objectType":objectType,"json":json},
     }
 
 
@@ -86,6 +99,12 @@ def updateOutcomenodeDegreeAction(response_data):
 def updateOutcomehorizontallinkDegreeAction(response_data):
     return {
         "type": "outcomehorizontallink/updateDegree",
+        "payload": response_data,
+    }
+
+def updateChildOutcomehorizontallinkDegreeAction(response_data):
+    return {
+        "type": "childoutcomehorizontallink/updateDegree",
         "payload": response_data,
     }
 

@@ -231,7 +231,7 @@ const mapAlignmentHorizontalStateToProps = (state,own_props)=>{
     let all_outcomes = state.outcome.filter(outcome=>all_outcome_ids.includes(outcome.id));
     
     let outcomes = all_outcomes.map(parent_outcome=>{
-        let outcomehorizontallinks = state.outcomehorizontallink.filter(link=>parent_outcome.id==link.parent_outcome);
+        let outcomehorizontallinks = state.child_outcomehorizontallink.filter(link=>parent_outcome.id==link.parent_outcome);
         let child_outcomes = outcomehorizontallinks.map(link=>{
             for(let i=0;i<state.child_outcome.length;i++){
                 if(state.child_outcome[i].id==link.outcome)return state.child_outcome[i];
@@ -378,7 +378,7 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
             
             child_outcomes = Constants.filterThenSortByID(state.child_outcome,child_outcome_ids);
             parent_outcomes = child_outcomes.map(child_outcome=>{
-                let horizontallinks = Constants.filterThenSortByID(state.outcomehorizontallink,child_outcome.outcome_horizontal_links_unique);
+                let horizontallinks = Constants.filterThenSortByID(state.child_outcomehorizontallink,child_outcome.outcome_horizontal_links_unique);
                 let my_parent_outcomes=horizontallinks.map(link=>{
                     for(let i=0;i<all_outcomes.length;i++){
                         if(all_outcomes[i].id==link.parent_outcome)return all_outcomes[i];

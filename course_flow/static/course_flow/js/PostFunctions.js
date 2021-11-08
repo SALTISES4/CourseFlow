@@ -179,6 +179,9 @@ export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.l
 
 //Causes the specified object to delete itself
 export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
+    console.log("DELETING SELF");
+    console.log(objectID);
+    console.log(objectType);
     try{
         $.post(post_paths.delete_self, {
             objectID:JSON.stringify(objectID),

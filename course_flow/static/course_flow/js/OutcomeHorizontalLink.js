@@ -47,7 +47,7 @@ export class TableHorizontalOutcomeLinkUnconnected extends ComponentJSON{
         props.renderer.tiny_loader.startLoad();
         updateOutcomehorizontallinkDegree(props.outcomeID,props.parent_outcomeID,value,
             (response_data)=>{
-                props.dispatch(updateOutcomehorizontallinkDegreeAction(response_data));
+                //props.dispatch(updateOutcomehorizontallinkDegreeAction(response_data));
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -126,11 +126,11 @@ const mapTableHorizontalOutcomeLinkStateToProps = (state,own_props)=>{
     }
     let child_outcome = getChildOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome;
     if(outcomenode==null)return {data:null,outcomenode:null,outcomeID:child_outcome};
-    for(var i=0;i<state.outcomehorizontallink.length;i++){
+    for(var i=0;i<state.child_outcomehorizontallink.length;i++){
         if(
-            state.outcomehorizontallink[i].outcome==child_outcome &&
-            state.outcomehorizontallink[i].parent_outcome==own_props.parent_outcomeID
-        )return {data:state.outcomehorizontallink[i],outcomenode:outcomenode,outcomeID:child_outcome}
+            state.child_outcomehorizontallink[i].outcome==child_outcome &&
+            state.child_outcomehorizontallink[i].parent_outcome==own_props.parent_outcomeID
+        )return {data:state.child_outcomehorizontallink[i],outcomenode:outcomenode,outcomeID:child_outcome}
     }
     return {data:null,outcomenode:outcomenode,outcomeID:child_outcome};
 }

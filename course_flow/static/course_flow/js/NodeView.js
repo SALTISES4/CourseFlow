@@ -7,7 +7,7 @@ import OutcomeNodeView from "./OutcomeNode.js";
 import {getNodeByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
 import {changeField, updateOutcomenodeDegreeAction} from "./Reducers.js";
-import {updateOutcomenodeDegree} from "./PostFunctions.js"
+import {updateOutcomenodeDegree, updateValueInstant} from "./PostFunctions.js"
 
 
 //Basic component to represent a Node
@@ -163,7 +163,7 @@ class NodeView extends ComponentJSON{
     }
     
     toggleDrop(){
-        this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
+        updateValueInstant(this.props.objectID,this.objectType,{is_dropped:!this.props.data.is_dropped});
     }
 
     doubleClick(evt){
