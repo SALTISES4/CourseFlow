@@ -1171,15 +1171,15 @@ def delete_project_objects(sender, instance, **kwargs):
     weekworkflows._raw_delete(weekworkflows.db)
     columnworkflows = ColumnWorkflow.objects.filter(workflow__project=instance)
     columnworkflows._raw_delete(columnworkflows.db)
-    outcomeworkflows = OutcomeWorkflow.objects.filter(
-        workflow__project=instance
-    )
-    outcomeworkflows._raw_delete(outcomeworkflows.db)
     outcomeoutcomes = OutcomeOutcome.objects.filter(
         Q(parent__workflow__project=instance)
         | Q(parent__parent_outcomes__workflow__project=instance)
     )
     outcomeoutcomes._raw_delete(outcomeoutcomes.db)
+    outcomeworkflows = OutcomeWorkflow.objects.filter(
+        workflow__project=instance
+    )
+    outcomeworkflows._raw_delete(outcomeworkflows.db)
     workflowprojects = WorkflowProject.objects.filter(project=instance)
     workflowprojects._raw_delete(workflowprojects.db)
 
@@ -1275,13 +1275,13 @@ def delete_workflow_objects(sender, instance, **kwargs):
     weekworkflows._raw_delete(weekworkflows.db)
     columnworkflows = ColumnWorkflow.objects.filter(workflow=instance)
     columnworkflows._raw_delete(columnworkflows.db)
-    outcomeworkflows = OutcomeWorkflow.objects.filter(workflow=instance)
-    outcomeworkflows._raw_delete(outcomeworkflows.db)
     outcomeoutcomes = OutcomeOutcome.objects.filter(
         Q(parent__workflow=instance)
         | Q(parent__parent_outcomes__workflow=instance)
     )
     outcomeoutcomes._raw_delete(outcomeoutcomes.db)
+    outcomeworkflows = OutcomeWorkflow.objects.filter(workflow=instance)
+    outcomeworkflows._raw_delete(outcomeworkflows.db)
 
     # remove all FKs pointing to our objects from outside project. The raw deletes don't cascade, so we will get integrity errors if we fail to do this
     Node.objects.filter(
