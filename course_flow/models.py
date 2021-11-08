@@ -1305,9 +1305,33 @@ def delete_workflow_objects(sender, instance, **kwargs):
     ).update(parent_outcome=None)
 
     # Delete nonlinking instances
+    print("Nodes to be deleted:")
+    print(nodes.count())
+    nodes_list = [x.pk for x in nodes]
+    print(nodes_list)
+    print(nodes)
+    print(nodes.values_list("title"))
+    print(nodes.values_list())
+    nodes = Node.objects.filter(pk__in=nodes_list)
     nodes._raw_delete(nodes.db)
+    print(Node.objects.filter(pk__in=nodes_list))
+    weeks_list = [x.pk for x in weeks]
+    weeks = Week.objects.filter(pk__in=weeks_list)
     weeks._raw_delete(weeks.db)
+    columns_list = [x.pk for x in columns]
+    columns = Column.objects.filter(pk__in=columns_list)
     columns._raw_delete(columns.db)
+    outcomes_list = [x.pk for x in outcomes]
+    print("doing outcomes")
+    print(outcomes_list)
+    outcomes = Outcome.objects.filter(pk__in=outcomes_list)
+    print(OutcomeNode.objects.filter(outcome__pk__in=outcomes_list))
+    print(OutcomeWorkflow.objects.filter(outcome__pk__in=outcomes_list))
+    print(OutcomeOutcome.objects.filter(child__pk__in=outcomes_list))
+    print(OutcomeOutcome.objects.filter(parent__pk__in=outcomes_list))
+    print(OutcomeHorizontalLink.objects.filter(parent_outcome__pk__in=outcomes_list))
+    print(OutcomeHorizontalLink.objects.filter(outcome__pk__in=outcomes_list))
+    print(outcomes)
     outcomes._raw_delete(outcomes.db)
 
 
