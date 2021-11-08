@@ -173,8 +173,8 @@ def registration_view(request):
 
 @ajax_login_required
 def logout_view(request):
-    logout(request, request.user)
-    return redirect("/login/")
+    logout(request)
+    return redirect(reverse('login'))
 
 
 class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
@@ -1892,6 +1892,7 @@ def fast_outcome_copy(outcome, author, now):
         parent_outcome=outcome,
         depth=outcome.depth,
         created_on=now,
+        code=outcome.code
     )
 
 
@@ -1905,6 +1906,14 @@ def fast_activity_copy(workflow, author, now):
         is_original=False,
         parent_workflow=workflow,
         is_strategy=workflow.is_strategy,
+        time_required=workflow.time_required,
+        time_units=workflow.time_units,
+        ponderation_theory=workflow.ponderation_theory,
+        ponderation_practical=workflow.ponderation_practical,
+        ponderation_individual=workflow.ponderation_individual,
+        time_general_hours=workflow.time_general_hours,
+        time_specific_hours=workflow.time_specific_hours,
+        code=workflow.code,
     )
 
 
@@ -1918,6 +1927,14 @@ def fast_course_copy(workflow, author, now):
         is_original=False,
         parent_workflow=workflow,
         is_strategy=workflow.is_strategy,
+        time_required=workflow.time_required,
+        time_units=workflow.time_units,
+        ponderation_theory=workflow.ponderation_theory,
+        ponderation_practical=workflow.ponderation_practical,
+        ponderation_individual=workflow.ponderation_individual,
+        time_general_hours=workflow.time_general_hours,
+        time_specific_hours=workflow.time_specific_hours,
+        code=workflow.code,
     )
 
 
@@ -1931,6 +1948,14 @@ def fast_program_copy(workflow, author, now):
         is_original=False,
         parent_workflow=workflow,
         is_strategy=workflow.is_strategy,
+        time_required=workflow.time_required,
+        time_units=workflow.time_units,
+        ponderation_theory=workflow.ponderation_theory,
+        ponderation_practical=workflow.ponderation_practical,
+        ponderation_individual=workflow.ponderation_individual,
+        time_general_hours=workflow.time_general_hours,
+        time_specific_hours=workflow.time_specific_hours,
+        code=workflow.code,
     )
 
 
@@ -2030,6 +2055,7 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
             is_original=False,
             parent_outcome=outcome,
             depth=outcome.depth,
+            code=outcome.code,
         )
 
         # Retrieve all data.
@@ -2086,6 +2112,14 @@ def fast_duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
             is_original=False,
             parent_workflow=workflow,
             is_strategy=workflow.is_strategy,
+            time_required=workflow.time_required,
+            time_units=workflow.time_units,
+            ponderation_theory=workflow.ponderation_theory,
+            ponderation_practical=workflow.ponderation_practical,
+            ponderation_individual=workflow.ponderation_individual,
+            time_general_hours=workflow.time_general_hours,
+            time_specific_hours=workflow.time_specific_hours,
+            code=workflow.code,
         )
 
         # Retrieve all data.
@@ -2617,6 +2651,7 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
         is_original=False,
         parent_outcome=outcome,
         depth=outcome.depth,
+        code=outcome.code
     )
 
     for child in outcome.children.all():

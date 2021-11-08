@@ -52,6 +52,7 @@ button, input[type="submit"]{
     display:inline-block;
     white-space:nowrap;
     text-align:left;
+    top:0px;
 }
 
 #content-container{

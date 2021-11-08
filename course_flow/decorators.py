@@ -135,8 +135,10 @@ def get_model_from_request(model, request, **kwargs):
     if model:
         if model[-2:] == "Pk":
             request_data = request.POST.get(model)
-            if request_data is None: id = None
-            else: id = json.loads(request.POST.get(model))
+            if request_data is None:
+                id = None
+            else:
+                id = json.loads(request.POST.get(model))
             model = model[:-2]
     else:
         get_parent = kwargs.get("get_parent", False)
@@ -328,9 +330,15 @@ def user_can_delete(model, **outer_kwargs):
                     model, request, **outer_kwargs
                 )
                 if model_data["model"] in delete_exceptions:
-                    if check_special_case_delete_permission(
-                        model_data, User.objects.get(id=request.user.id)
-                    ):
+                    try:
+                        perm = check_special_case_delete_permission(
+                            model_data, User.objects.get(id=request.user.id)
+                        )
+                    except Exception as e:
+                        response = JsonResponse({"error": str(e)})
+                        response.status_code = 400
+                        return response
+                    if perm:
                         return fct(request, *args, **kwargs)
                 else:
                     permission_objects = get_permission_objects(
@@ -343,11 +351,11 @@ def user_can_delete(model, **outer_kwargs):
                     ):
                         return fct(request, *args, **kwargs)
 
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response = JsonResponse({"error": "permission"})
                 response.status_code = 403
                 return response
-            except:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
+            except Exception as e:
+                response = JsonResponse({"error": str(e)})
                 response.status_code = 403
                 return response
 
