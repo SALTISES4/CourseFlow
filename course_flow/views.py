@@ -3797,7 +3797,17 @@ def delete_self(request: HttpRequest) -> HttpResponse:
         linked_workflows=False
         if object_type=="node":linked_workflows = list(Workflow.objects.filter(linked_nodes=model))
         elif object_type=="week":linked_workflows = list(Workflow.objects.filter(linked_nodes__week=model))
-        elif object_type=="workflow":linked_workflows = list(Workflow.objects.filter(linked_nodes__week__workflow__id=model.id))
+        elif object_type in ["workflow","activity","course","program"]:
+            linked_workflows = list(Workflow.objects.filter(
+                linked_nodes__week__workflow__id=model.id
+            ))
+        elif object_type == "outcome":
+            print(Workflow.objects.filter(linked_nodes__outcomes=model))
+            linked_workflows = list(Workflow.objects.filter(
+                Q(linked_nodes__outcomes=model)
+                | Q(linked_nodes__outcomes__children=model)
+                | Q(linked_nodes__outcomes__children__children=model)
+            ))
         print(object_type)
         print("linked wfs")
         print(linked_workflows)
