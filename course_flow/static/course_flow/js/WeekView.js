@@ -4,7 +4,7 @@ import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import NodeWeekView from "./NodeWeekView.js";
 import {getWeekByID, getNodeWeekByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
-import {columnChangeNode, moveNodeWeek, newStrategyAction} from "./Reducers.js";
+import {columnChangeNode, moveNodeWeek} from "./Reducers.js";
 import {insertedAt,columnChanged,addStrategy} from "./PostFunctions";
 import {Loader} from "./Constants.js";
 
@@ -98,16 +98,11 @@ export class WeekViewUnconnected extends ComponentJSON{
 
 
     sortableColumnChangedFunction(id,delta_x,old_column){
-        console.log("CALLING COLUMN CHANGE");
-        console.log(delta_x);
-        console.log(old_column);
         let columns = this.props.column_order;
         let old_column_index = columns.indexOf(old_column);
         let new_column_index = old_column_index+delta_x;
         if(new_column_index<0 || new_column_index>=columns.length)return;
         let new_column = columns[new_column_index];
-        console.log(new_column);
-        console.log(columns);
 
         //A little hack to stop ourselves from sending this update a hundred times per second
         if(this.recently_sent_column_change){
@@ -129,8 +124,6 @@ export class WeekViewUnconnected extends ComponentJSON{
         
         //Correction for if we are in a term
         if(this.props.nodes_by_column){
-            console.log("Correcting for a term");
-            console.log(this.props.nodes_by_column);
             for(var col in this.props.nodes_by_column){
                 if(this.props.nodes_by_column[col].indexOf(id)>=0){
                     let previous = this.props.nodes_by_column[col][new_position];
@@ -181,8 +174,6 @@ export class WeekViewUnconnected extends ComponentJSON{
                     let loader = new Loader('body');
                     addStrategy(this.props.parentID,new_index,drag_item[0].dataDraggable.strategy,
                         (response_data)=>{
-//                            let action = newStrategyAction(response_data);
-//                            props.dispatch(action);
                             loader.endLoad();
                         }
                     );

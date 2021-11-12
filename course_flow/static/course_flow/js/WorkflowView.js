@@ -528,7 +528,6 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
     
     render(){
         console.log(this.state);
-        console.log("Parent workflow indicator");
         if(this.state.has_loaded){
             let parent_workflows = this.state.parent_workflows.map(parent_workflow=>
                 <a href={update_path["workflow"].replace("0",parent_workflow.id)} class="panel-favourite">
@@ -540,8 +539,6 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
                     {child_workflow.title || gettext("Unnamed workflow")}
                 </a>
             );
-            console.log(parent_workflows);
-            console.log(child_workflows);
             let return_val=[
                 <hr/>,
                 <a class="panel-item">{gettext("Quick Navigation")}</a>

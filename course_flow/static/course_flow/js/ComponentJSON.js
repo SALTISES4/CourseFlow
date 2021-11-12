@@ -2,7 +2,6 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
-import {newNodeAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction, newStrategyAction, toggleStrategyAction} from "./Reducers.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 import {newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment} from "./PostFunctions.js"
 
@@ -57,12 +56,8 @@ export class ComponentJSON extends React.Component{
             },
             drag:(e,ui)=>{
                 if(draggable_type=="nodeweek"){
-                    console.log("Calculating offset");
-                    console.log(ui.helper.offset().left);
                     let new_target = $("#"+$(e.target).attr("id")+draggable_selector);
-                    console.log(new_target.children(handle).first().offset().left);
                     var delta_x= Math.round((ui.helper.offset().left-$("#"+$(e.target).attr("id")+draggable_selector).children(handle).first().offset().left)/Constants.columnwidth);
-                    console.log(delta_x);
                     if(delta_x!=0){
                         let child_id = parseInt($(e.target).attr("data-child-id"));
                         this.sortableColumnChangedFunction(child_id,delta_x,parseInt(new_target.attr("data-column-id")));
@@ -127,8 +122,7 @@ export class ComponentJSON extends React.Component{
                 if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
                     newNode(this.props.objectID,new_index,drag_item[0].dataDraggable.column,drag_item[0].dataDraggable.column_type,
                         (response_data)=>{
-//                            let action = newNodeAction(response_data);
-//                            props.dispatch(action);
+                        
                         }
                     );
                 }
@@ -257,8 +251,6 @@ export class ComponentJSON extends React.Component{
             Constants.parent_dictionary[type],
             Constants.through_parent_dictionary[type],
             (response_data)=>{
-//                let action = insertBelowAction(response_data,type);
-//                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -282,8 +274,6 @@ export class ComponentJSON extends React.Component{
             Constants.parent_dictionary[type],
             Constants.through_parent_dictionary[type],
             (response_data)=>{
-//                let action = insertBelowAction(response_data,type);
-//                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -303,8 +293,6 @@ export class ComponentJSON extends React.Component{
         props.renderer.tiny_loader.startLoad();
         insertChild(data.id,Constants.object_dictionary[type],
             (response_data)=>{
-//                let action = insertChildAction(response_data,Constants.object_dictionary[type]);
-//                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -476,8 +464,6 @@ export class ComponentJSON extends React.Component{
                                 let loader = new Constants.Loader('body');
                                 toggleStrategy(data.id,data.is_strategy,
                                 (response_data)=>{
-//                                    let action = toggleStrategyAction(response_data);
-//                                    props.dispatch(action);
                                     loader.endLoad();
                                 })
                             }}>

@@ -3,7 +3,6 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON, NodeTitle} from "./ComponentJSON";
 import {getNodeByID, getChildOutcomeWorkflowByID, getOutcomeByID} from "./FindState";
-import {updateOutcomehorizontallinkDegreeAction} from "./Reducers";
 import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
 
 
@@ -47,7 +46,6 @@ export class TableHorizontalOutcomeLinkUnconnected extends ComponentJSON{
         props.renderer.tiny_loader.startLoad();
         updateOutcomehorizontallinkDegree(props.outcomeID,props.parent_outcomeID,value,
             (response_data)=>{
-                //props.dispatch(updateOutcomehorizontallinkDegreeAction(response_data));
                 props.renderer.tiny_loader.endLoad();
             }
         );

@@ -11,7 +11,7 @@ import {WorkflowView_Outcome} from"./WorkflowView";
 import * as Constants from "./Constants";
 import * as Reducers from "./Reducers";
 import OutcomeTopView from './OutcomeTopView';
-import {getWorkflowParentData, getWorkflowChildData, updateValue} from './PostFunctions';
+import {getWorkflowData, getWorkflowParentData, getWorkflowChildData, updateValue} from './PostFunctions';
 import {ConnectionBar} from './ConnectedUsers'
 import '../css/base_style.css';
 import '../css/workflow_styles.css';
@@ -144,7 +144,8 @@ export class ProjectRenderer{
 
 export class WorkflowRenderer{
     constructor(data_package){
-        this.initial_workflow_data = data_package.data_flat;
+        this.message_queue=[];
+        this.messages_queued=true;
         this.column_choices = data_package.column_choices;
         this.context_choices = data_package.context_choices;
         this.task_choices = data_package.task_choices;
@@ -153,7 +154,6 @@ export class WorkflowRenderer{
         this.outcome_sort_choices = data_package.outcome_sort_choices;
         this.strategy_classification_choices = data_package.strategy_classification_choices;
         this.is_strategy = data_package.is_strategy;
-        this.store = createStore(Reducers.rootWorkflowReducer,this.initial_workflow_data);
         this.column_colours = {}
         this.read_only = data_package.read_only;
         if(data_package.project){
@@ -176,16 +176,17 @@ export class WorkflowRenderer{
         this.view_type=view_type;
         reactDom.render(<WorkflowLoader/>,container[0]);
         let store = this.store;
+        let initial_workflow_data = store.getState();
         var renderer = this;
         this.initial_loading=true;
         this.container = container;
         this.locks={}
         this.items_to_load = {
-            column:this.initial_workflow_data.column.length,
-            week:this.initial_workflow_data.week.length,
-            node:this.initial_workflow_data.node.length,
+            column:initial_workflow_data.column.length,
+            week:initial_workflow_data.week.length,
+            node:initial_workflow_data.node.length,
         };
-        this.ports_to_render = this.initial_workflow_data.node.length;
+        this.ports_to_render = initial_workflow_data.node.length;
         
         container.on("component-loaded",(evt,objectType)=>{
             evt.stopPropagation();
@@ -218,7 +219,7 @@ export class WorkflowRenderer{
         console.log("view type is "+view_type);
         if(view_type=="outcomeedit"){
             //get additional data about parent workflow prior to render
-            getWorkflowParentData(this.initial_workflow_data.workflow.id,(response)=>{
+            getWorkflowParentData(workflow_model_id,(response)=>{
                 console.log(response)
                 store.dispatch(Reducers.replaceStoreData(response.data_package));
                 console.log(store.getState());
@@ -232,7 +233,7 @@ export class WorkflowRenderer{
             
         }else if(view_type=="horizontaloutcometable" || view_type=="alignmentanalysis"){
             //get additional data about child workflows prior to render
-            getWorkflowChildData(this.initial_workflow_data.workflow.id,(response)=>{
+            getWorkflowChildData(workflow_model_id,(response)=>{
                 console.log(response)
                 store.dispatch(Reducers.replaceStoreData(response.data_package));
                 console.log(store.getState());
@@ -261,6 +262,48 @@ export class WorkflowRenderer{
             );
         }
         
+    }
+    
+    connection_opened(){
+        getWorkflowData(workflow_model_id,(response)=>{
+            let data_flat = response.data_package;
+            console.log(data_flat)
+            this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
+            this.render($("#container"));
+            this.create_connection_bar();
+            this.clear_queue(data_flat.workflow.edit_count);
+        });
+    }
+    
+    clear_queue(edit_count){
+        let started_edits = false;
+        while(this.message_queue.length>0){
+            let message = this.message_queue[0];
+            if(started_edits)this.parsemessage(message);
+            else if(message.edit_count && parseInt(message.edit_count)>=edit_count)started_edits=true;
+            this.message_queue.splice(0,1);
+        }
+        this.messages_queued=false;
+    }
+    
+    parsemessage = function(e){
+        const data = JSON.parse(e.data);
+        console.log(data);
+        if(data.type=="workflow_action"){
+            this.store.dispatch(data.action);
+        }else if(data.type=="lock_update"){
+            console.log("got a lock update");
+            this.lock_update_received(data.action);
+        }else if(data.type=="connection_update"){
+            console.log("got a connection update");
+            this.connection_update_received(data.action);
+        }
+    }
+    
+    message_received(e){
+        console.log("received a message");
+        if(this.messages_queued)this.message_queue.push(e);
+        else this.parsemessage(e);
     }
     
     micro_update(obj){

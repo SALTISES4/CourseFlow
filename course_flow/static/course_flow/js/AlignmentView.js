@@ -293,8 +293,6 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
                             <SimpleOutcomeView objectID={parent_outcome.id}/>
                         </div>
                     );
-                    console.log("Printing out the parent outcomes");
-                    console.log(parent_outcomes);
 
                     if(parent_outcomes.length==0)return null;
 

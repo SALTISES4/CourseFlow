@@ -26,48 +26,6 @@ export const moveWeekWorkflow = (id,new_position,new_parent,child_id) => {
     }
 }
 
-export const deleteSelfAction = (id,parentID,objectType,extra_data) => {
-    return {
-        type: objectType+"/deleteSelf",
-        payload:{id:id,parent_id:parentID,extra_data:extra_data}
-    }
-}
-
-export const insertBelowAction = (response_data,objectType) => {
-    return {
-        type: objectType+"/insertBelow",
-        payload:response_data
-    }
-}
-
-export const insertChildAction = (response_data,objectType) => {
-    return {
-        type: objectType+"/insertChild",
-        payload:response_data
-    }
-}
-
-export const setLinkedWorkflowAction = (response_data) => {
-    return {
-        type: "node/setLinkedWorkflow",
-        payload:response_data
-    }
-}
-
-export const newNodeAction = (response_data) => {
-    return {
-        type: "node/newNode",
-        payload:response_data
-    }
-}
-
-export const newOutcomeAction = (response_data) => {
-    return {
-        type: "outcome/newOutcome",
-        payload:response_data
-    }
-}
-
 export const columnChangeNode = (id,new_column) => {
     return {
         type: 'node/changedColumn',
@@ -79,13 +37,6 @@ export const moveNodeWeek = (id,new_position,new_parent,child_id) => {
     return {
         type: 'nodeweek/movedTo',
         payload:{id:id,new_index:new_position,new_parent:new_parent,child_id:child_id}
-    }
-}
-
-export const newNodeLinkAction = (response_data) => {
-    return {
-        type: 'nodelink/newNodeLink',
-        payload:response_data
     }
 }
 
@@ -103,31 +54,6 @@ export const moveOutcomeOutcome = (id,new_position,new_parent,child_id) => {
     }
 }
 
-export const updateOutcomenodeDegreeAction = (response_data) => {
-    return {
-        type: "outcomenode/updateDegree",
-        payload:response_data
-    }
-}
-export const updateOutcomehorizontallinkDegreeAction = (response_data) => {
-    return {
-        type: "outcomehorizontallink/updateDegree",
-        payload:response_data
-    }
-}
-
-export const newStrategyAction = (response_data) => {
-    return {
-        type: "strategy/addStrategy",
-        payload:response_data
-    }
-}
-export const toggleStrategyAction = (response_data) => {
-    return {
-        type: "strategy/toggleStrategy",
-        payload:response_data
-    }
-}
 export const gridMenuItemAdded = (response_data) => {
     return {
         type: "gridmenu/itemAdded",
@@ -150,7 +76,6 @@ export function workflowReducer(state={},action){
             return state;
         case 'workflow/createLock':
             if(state.id==action.payload.id){
-                console.log("LOCKING WORKFLOW");
                 var new_state={...state,lock:action.payload.lock}
                 return new_state;
             }
@@ -751,13 +676,6 @@ export function nodeReducer(state={},action){
         case 'outcome/deleteSelf':
         case 'outcome_base/deleteSelf':
             new_state=state.slice();
-            console.log("outcome was deleted, handling now");
-            console.log(action);
-            console.log(action.payload.extra_data);
-            console.log(state);
-            
-            
-            
             for(var i=0;i<action.payload.extra_data.length;i++){
                 let outcomenode = action.payload.extra_data[i];
                 for(var j=0;j<new_state.length;j++){
@@ -829,9 +747,6 @@ export function nodelinkReducer(state={},action){
 export function outcomeReducer(state={},action){
     switch(action.type){
         case 'replaceStoreData':
-            console.log("replacing outcomes");
-            console.log(action.payload);
-            console.log(action.payload.outcome);
             if(action.payload.outcome)return action.payload.outcome;
             return state;
         case 'outcome/createLock':
@@ -946,8 +861,6 @@ export function outcomeReducer(state={},action){
         case 'outcomehorizontallink/updateDegree':
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomehorizontallink==-1)return state;
-            console.log("updaing horizontal degree");
-            console.log(action);
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.data_package[0].outcome){
                     var new_state=state.slice();
@@ -1214,8 +1127,6 @@ export function childOutcomeReducer(state={},action){
         case 'childoutcomehorizontallink/updateDegree':
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomehorizontallink==-1)return state;
-            console.log("updaing horizontal degree");
-            console.log(action);
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.data_package[0].outcome){
                     var new_state=state.slice();
@@ -1353,16 +1264,12 @@ export function childOutcomeWorkflowReducer(state={},action){
             }
             return state;
         case 'childoutcome_base/insertBelow':
-            console.log(state);
             new_state = state.slice();
             new_state.push(action.payload.new_through);
-            console.log(new_state);
             return new_state;
         case 'childoutcome/newOutcome':
-            console.log(state);
             new_state = state.slice();
             new_state.push(action.payload.new_through);
-            console.log(new_state);
             return new_state;
         default:
             return state;

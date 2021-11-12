@@ -259,7 +259,6 @@
       insert_sibling: "{% url 'course_flow:insert-sibling' %}",
       insert_child: "{% url 'course_flow:insert-child' %}",
       inserted_at: "{% url 'course_flow:inserted-at' %}",
-      column_changed: "{% url 'course_flow:change-column' %}",
       update_outcomehorizontallink_degree: "{% url 'course_flow:update-outcomehorizontallink-degree' %}",
       update_outcomenode_degree:
         "{% url 'course_flow:update-outcomenode-degree' %}",
@@ -307,23 +306,23 @@
       location.reload();
     }
 
-    // Broadcast that you're opening a page.
-    localStorage.openpages = "";
-    localStorage.openpages = window.location;
-    var onLocalStorageEvent = function(e) {
-      //Listen for whether the same page opens anywhere else, sending own page location back if they match
-      if (e.key == "openpages" && e.newValue == window.location) {
-        localStorage.page_used = "";
-        localStorage.page_used = window.location;
-      }
-      //Listen for ping back from other open pages, showing alert
-      if (e.key == "page_used" && e.newValue == window.location) {
-        alert(
-          "Warning: this page is already open in another tab or window. Editing the same page in multiple tabs or windows can lead to data loss on your file."
-        );
-      }
-    };
-    window.addEventListener("storage", onLocalStorageEvent, false);
+//    // Broadcast that you're opening a page.
+//    localStorage.openpages = "";
+//    localStorage.openpages = window.location;
+//    var onLocalStorageEvent = function(e) {
+//      //Listen for whether the same page opens anywhere else, sending own page location back if they match
+//      if (e.key == "openpages" && e.newValue == window.location) {
+//        localStorage.page_used = "";
+//        localStorage.page_used = window.location;
+//      }
+//      //Listen for ping back from other open pages, showing alert
+//      if (e.key == "page_used" && e.newValue == window.location) {
+//        alert(
+//          "Warning: this page is already open in another tab or window. Editing the same page in multiple tabs or windows can lead to data loss on your file."
+//        );
+//      }
+//    };
+//    window.addEventListener("storage", onLocalStorageEvent, false);
   </script>
   {% endblock %} {% block read_only_scripts %} {% endblock %}
   <!-- -->

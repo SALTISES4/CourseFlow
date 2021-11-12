@@ -70,9 +70,6 @@ def course_flow_patterns():
         ),
         url(r"^workflow/inserted-at/$", views.inserted_at, name="inserted-at"),
         url(
-            r"^node/change-column/$", views.change_column, name="change-column"
-        ),
-        url(
             r"^outcome/update-outcomehorizontallink-degree/$",
             views.update_outcomehorizontallink_degree,
             name="update-outcomehorizontallink-degree",
@@ -202,7 +199,11 @@ def course_flow_patterns():
             views.get_comments_for_object,
             name="get-comments-for-object",
         ),
-        url(r"^terminology/add/$", views.add_terminology, name="add-terminology",),
+        url(
+            r"^terminology/add/$",
+            views.add_terminology,
+            name="add-terminology",
+        ),
         url(r"^comments/add/$", views.add_comment, name="add-comment",),
         url(
             r"^comments/remove/$", views.remove_comment, name="remove-comment",

@@ -179,9 +179,6 @@ export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.l
 
 //Causes the specified object to delete itself
 export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
-    console.log("DELETING SELF");
-    console.log(objectID);
-    console.log(objectType);
     try{
         $.post(post_paths.delete_self, {
             objectID:JSON.stringify(objectID),
@@ -335,41 +332,6 @@ export function dragAction(action_data,callBackFunction=()=>console.log("success
         fail_function();
     }
 }
-//
-////Called when an object in a list is reordered
-//export function insertedAt(objectID,objectType,parentID,parentType,newPosition,throughType,callBackFunction=()=>console.log("success")){
-//    console.log("called inserted at");
-//    try{
-//        $.post(post_paths.inserted_at, {
-//            objectID:JSON.stringify(objectID),
-//            objectType:JSON.stringify(objectType),
-//            parentID:JSON.stringify(parentID),
-//            parentType:JSON.stringify(parentType),
-//            newPosition:JSON.stringify(newPosition),
-//            throughType:JSON.stringify(throughType)
-//        }).done(function(data){
-//            if(data.action == "posted") callBackFunction(data);
-//            else fail_function();
-//        });
-//    }catch(err){
-//        fail_function();
-//    }
-//}
-// 
-////Called when a node should have its column changed
-//export function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
-//    try{
-//        $.post(post_paths.column_changed, {
-//            nodePk:JSON.stringify(objectID),
-//            columnPk:JSON.stringify(columnID),
-//        }).done(function(data){
-//            if(data.action == "posted") callBackFunction(data);
-//            else fail_function();
-//        });
-//    }catch(err){
-//        fail_function();
-//    }
-//}
 
 
 //Add an outcome from the parent workflow to an outcome from the current one
@@ -448,7 +410,20 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
     
 }
 
-//Get the list of possible disciplines
+//Get the data from the workflow
+export function getWorkflowData(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_workflow_data,{
+            workflowPk:JSON.stringify(workflowPk)
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the data from all parent workflows
 export function getWorkflowParentData(workflowPk,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_workflow_parent_data,{
@@ -461,7 +436,7 @@ export function getWorkflowParentData(workflowPk,callBackFunction=()=>console.lo
     }
 }
 
-//Get the list of possible disciplines
+//Get the data from all child workflows
 export function getWorkflowChildData(workflowPk,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_workflow_child_data,{

@@ -743,7 +743,7 @@ class ColumnSerializerShallow(
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
-        instance.colour = validated_data.get("colour",instance.colour)
+        instance.colour = validated_data.get("colour", instance.colour)
         instance.save()
         return instance
 
@@ -1063,6 +1063,7 @@ class WorkflowSerializerShallow(
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
+            "edit_count",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())

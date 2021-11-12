@@ -1,12 +1,21 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
+from django.db.models import F
+
 from .models import Node
 
+
 def dispatch_wf(workflow, action):
+    workflow.edit_count = F("edit_count") + 1
+    workflow.save()
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         "workflow_" + str(workflow.pk),
-        {"type": "workflow_action", "action": action},
+        {
+            "type": "workflow_action",
+            "action": action,
+            "edit_count": str(workflow.edit_count),
+        },
     )
 
 
@@ -14,9 +23,15 @@ def dispatch_to_parent_wf(workflow, action):
     channel_layer = get_channel_layer()
     for parent_node in Node.objects.filter(linked_workflow=workflow):
         parent_workflow = parent_node.get_workflow()
+        parent_workflow.edit_count = F("edit_count") + 1
+        parent_workflow.save()
         async_to_sync(channel_layer.group_send)(
             "workflow_" + str(parent_workflow.pk),
-            {"type": "workflow_action", "action": action},
+            {
+                "type": "workflow_action",
+                "action": action,
+                "edit_count": parent_workflow.edit_count,
+            },
         )
 
 
@@ -70,15 +85,9 @@ def newNodeAction(response_data):
 def newOutcomeAction(response_data):
     return {"type": "outcome/newOutcome", "payload": response_data}
 
+
 def newChildOutcomeAction(response_data):
     return {"type": "childoutcome/newOutcome", "payload": response_data}
-
-
-def columnChangeNodeWeek(id, delta_x, columns):
-    return {
-        "type": "node/movedColumnBy",
-        "payload": {"id": id, "delta_x": delta_x, "columns": columns},
-    }
 
 
 def newNodeLinkAction(response_data):
@@ -88,7 +97,7 @@ def newNodeLinkAction(response_data):
 def changeField(id, objectType, json):
     return {
         "type": objectType + "/changeField",
-        "payload": {"id": id,"objectType":objectType,"json":json},
+        "payload": {"id": id, "objectType": objectType, "json": json},
     }
 
 
@@ -101,6 +110,7 @@ def updateOutcomehorizontallinkDegreeAction(response_data):
         "type": "outcomehorizontallink/updateDegree",
         "payload": response_data,
     }
+
 
 def updateChildOutcomehorizontallinkDegreeAction(response_data):
     return {
@@ -121,9 +131,5 @@ def gridMenuItemAdded(response_data):
     return {"type": "gridmenu/itemAdded", "payload": response_data}
 
 
-
 def replaceStoreData(data_package):
-    return {
-        "type": 'replaceStoreData',
-        "payload": data_package
-    }
+    return {"type": "replaceStoreData", "payload": data_package}

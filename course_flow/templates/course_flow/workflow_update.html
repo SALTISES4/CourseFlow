@@ -103,49 +103,46 @@
 //  {% endif %}
 
   const user_id = {{ user.id }};
+  const workflow_model_id = {{ object.id }}
   const user_name = "{{ user.username }}";
   const create_path=null;
 
   workflow_data_package = {{data_package|safe}}
   var workflow_renderer;
-    
 
+    const openfunction = function(){
+        workflow_renderer.connection_opened();
+    };
 
    const myColour = 'hsl('+(((user_id*5)%360)+1)+',50%,50%)';
 
    
 
     function connect(){
+        workflow_renderer.messages_queued=true;
 
         const updateSocket = new WebSocket(
-        'ws://'+window.location.host+'/ws/update/'+workflow_data_package.data_flat.workflow.id+'/'
+        'ws://'+window.location.host+'/ws/update/'+workflow_model_id+'/'
         );
 
         workflow_renderer.updateSocket = updateSocket;
-
+        
+        
         updateSocket.onmessage = function(e){
-            console.log("received a message");
-            const data = JSON.parse(e.data);
-            console.log(data);
-            if(data.type=="workflow_action"){
-                workflow_renderer.store.dispatch(data.action);
-            }else if(data.type=="lock_update"){
-                console.log("got a lock update");
-                workflow_renderer.lock_update_received(data.action);
-            }else if(data.type=="connection_update"){
-                console.log("got a connection update");
-                workflow_renderer.connection_update_received(data.action);
-            }
+            workflow_renderer.message_received(e);
         }
-        updateSocket.onopen = function(){workflow_renderer.create_connection_bar();};
-        if(updateSocket.readyState==1)workflow_renderer.create_connection_bar();
+        
+        
+        
+        updateSocket.onopen = openfunction
+        if(updateSocket.readyState==1)openfunction();
         
         updateSocket.onclose = function(e){
            setTimeout(
                 ()=>{
                     connect();
                 },
-               3000
+               5000
            )
            console.log(e);
            console.log("Lost connection to server");
@@ -160,9 +157,9 @@
       
       
       
-      console.log(workflow_data_package);
+//      console.log(workflow_data_package);
       $(document).ajaxError(renderers.fail_function);
-      workflow_renderer.render($("#container"));
+//      workflow_renderer.render($("#container"));
   });
 </script>
 

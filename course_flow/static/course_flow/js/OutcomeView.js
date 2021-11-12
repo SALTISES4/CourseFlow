@@ -6,7 +6,7 @@ import OutcomeOutcomeView from "./OutcomeOutcomeView.js";
 import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode.js";
 import {getOutcomeByID, getOutcomeHorizontalLinkByID} from "./FindState.js";
-import {changeField, moveOutcomeOutcome, updateOutcomehorizontallinkDegreeAction} from "./Reducers.js";
+import {moveOutcomeOutcome} from "./Reducers.js";
 import {updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant} from "./PostFunctions";
 import * as Constants from "./Constants";
 
@@ -31,8 +31,6 @@ class OutcomeView extends ComponentJSON{
         let outcomehorizontallinks = data.outcome_horizontal_links_unique.map((horizontal_link)=>
             <OutcomeHorizontalLinkView key={horizontal_link} parent_component={this} objectID={horizontal_link} renderer={this.props.renderer}/>
         );
-        console.log("OUTCOME LINKS");
-        console.log(outcomehorizontallinks);
         let outcomeDiv;
         if(outcomehorizontallinks.length>0){
             outcomeDiv = (
@@ -123,9 +121,6 @@ class OutcomeView extends ComponentJSON{
         let indicator_number = indicator.children(".outcome-node-indicator-number");
         let number = indicator.children(".outcome-node-container").children().length;
         indicator_number.text(number);
-        console.log(indicator.children());
-        console.log(indicator.children(".outcome-node-container").children());
-        console.log(number);
         if(number>0)indicator.show();
         else indicator.hide();
     }
@@ -137,9 +132,6 @@ class OutcomeView extends ComponentJSON{
 
 
     toggleDrop(){
-        console.log(this.props.objectID);
-        console.log(this.objectType);
-        console.log(this.props.data.is_dropped);
         updateValueInstant(this.props.objectID,Constants.object_dictionary[this.objectType],{is_dropped:!this.props.data.is_dropped});
     }
 
@@ -189,8 +181,6 @@ class OutcomeView extends ComponentJSON{
                     props.renderer.tiny_loader.startLoad();
                     updateOutcomehorizontallinkDegree(props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
-//                            let action = updateOutcomehorizontallinkDegreeAction(response_data);
-//                            props.dispatch(action);
                             props.renderer.tiny_loader.endLoad();
                         }
                     );
@@ -547,8 +537,6 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
         if(window.confirm(gettext("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?"))){
             props.renderer.tiny_loader.startLoad();
             updateOutcomehorizontallinkDegree(data.outcome,data.parent_outcome,0,(response_data)=>{
-//                let action = updateOutcomehorizontallinkDegreeAction(response_data);
-//                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             });
            
@@ -556,9 +544,6 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
     }
 
     postMountFunction(){
-        console.log("UPDATING PARENT INDICATOR");
-        console.log(this.props.parent_component);
-        console.log(this.props.data);
         if(this.props.parent_component)this.props.parent_component.updateIndicator();
     }
     componentDidUpdate(){

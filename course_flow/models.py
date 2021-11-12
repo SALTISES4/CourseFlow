@@ -832,6 +832,10 @@ class Workflow(models.Model):
     time_general_hours = models.PositiveIntegerField(default=0, null=True)
     time_specific_hours = models.PositiveIntegerField(default=0, null=True)
 
+    edit_count = models.PositiveIntegerField(default=0, null=False)
+
+    actions = models.ManyToManyField("WorkflowAction", blank=True)
+
     SUBCLASSES = ["activity", "course", "program"]
 
     @property
@@ -1068,12 +1072,16 @@ class ObjectPermission(models.Model):
     permission_type = models.PositiveIntegerField(
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
-#
-#class WorkflowLock(models.Model):
+
+
+# class WorkflowAction(models.Model):
 #    workflow = models.ForeignKey(Workflow,on_delete=models.CASCADE)
-#    user = models.ForeignKey(User, on_delete=models.CASCADE)
+#    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 #    created_on = models.DateTimeField(default=timezone.now)
-#    expires_on = models.DateTimeField(default=timezone.now+datetime.timedelta(seconds=10))
+#    action_type = models.PositiveIntegerField()
+#    action_arguments = models.CharField(blank=False)
+#    undo = models.CharField(blank=False)
+#
 
 """
 Other receivers
@@ -1092,10 +1100,10 @@ def get_allowed_parent_outcomes(workflow, **kwargs):
     return parent_outcomes
 
 
-#@receiver(pre_delete, sender=OutcomeNode)
-#def remove_horizontal_outcome_links_on_outcomenode_delete(
+# @receiver(pre_delete, sender=OutcomeNode)
+# def remove_horizontal_outcome_links_on_outcomenode_delete(
 #    sender, instance, **kwargs
-#):
+# ):
 #    workflow = instance.node.linked_workflow
 #    if workflow is not None:
 #        linked_outcomes = list(workflow.outcomes.all())
@@ -1107,8 +1115,8 @@ def get_allowed_parent_outcomes(workflow, **kwargs):
 #        ).exclude(parent_outcome__in=parent_outcomes).delete()
 
 
-#@receiver(pre_save, sender=Node)
-#def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
+# @receiver(pre_save, sender=Node)
+# def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
 #    if instance.pk is None:
 #        return
 #    old_workflow = Node.objects.get(id=instance.pk).linked_workflow
@@ -1292,7 +1300,9 @@ def delete_workflow_objects(sender, instance, **kwargs):
         | Q(outcome__parent_outcomes__parent_outcomes__workflow=instance)
         | Q(parent_outcome__workflow=instance)
         | Q(parent_outcome__parent_outcomes__workflow=instance)
-        | Q(parent_outcome__parent_outcomes__parent_outcomes__workflow=instance)
+        | Q(
+            parent_outcome__parent_outcomes__parent_outcomes__workflow=instance
+        )
     )
     outcomehorizontallinks._raw_delete(outcomehorizontallinks.db)
     nodeweeks = NodeWeek.objects.filter(week__workflow=instance)

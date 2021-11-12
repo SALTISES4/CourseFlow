@@ -6,7 +6,6 @@ import NodeLinkView from "./NodeLinkView.js";
 import OutcomeNodeView from "./OutcomeNode.js";
 import {getNodeByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
-import {changeField, updateOutcomenodeDegreeAction} from "./Reducers.js";
 import {updateOutcomenodeDegree, updateValueInstant} from "./PostFunctions.js"
 
 

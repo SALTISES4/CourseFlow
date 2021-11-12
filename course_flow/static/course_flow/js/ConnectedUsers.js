@@ -15,7 +15,6 @@ export class ConnectionBar extends React.Component{
     
     
     render(){
-        console.log(this.state);
         let users = this.state.connected_users.map(user=>
             <ConnectedUser user_data={user}/>
         );
@@ -47,12 +46,8 @@ export class ConnectionBar extends React.Component{
     }
     
     connection_update_received(user_data){
-        console.log("Recieved a connection");
-        console.log(user_data);
         if(user_data.connected){
-            console.log("Connecting the user");
             let connected_users=this.state.connected_users.slice();
-            console.log(user_data);
             let found_user=false;
             for(let i=0;i<connected_users.length;i++){
                 if(connected_users[i].user_id==user_data.user_id){
@@ -72,7 +67,6 @@ export class ConnectionBar extends React.Component{
     }
     
     removeConnection(user_data){
-        console.log("Removing the user");
         let connected_users=this.state.connected_users.slice();
         for(let i=0;i<connected_users.length;i++){
             if(connected_users[i].user_id==user_data.user_id){

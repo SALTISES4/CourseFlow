@@ -4,7 +4,6 @@ import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON";
 import {SimpleOutcomeView} from "./OutcomeView";
 import {getOutcomeNodeByID, getTableOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getNodeByID, getChildWorkflowByID, getChildOutcomeWorkflowByID} from "./FindState";
-import {updateOutcomenodeDegreeAction} from "./Reducers";
 import {updateOutcomenodeDegree} from "./PostFunctions";
 import * as Constants from "./Constants";
 import {TableChildWorkflowView} from "./OutcomeHorizontalLink"
