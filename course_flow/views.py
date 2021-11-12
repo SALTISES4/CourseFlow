@@ -2806,42 +2806,34 @@ def add_comment(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-@user_can_edit("weekPk")
-@user_can_view_or_none("columnPk")
-def new_node(request: HttpRequest) -> HttpResponse:
-    week_id = json.loads(request.POST.get("weekPk"))
-    column_id = json.loads(request.POST.get("columnPk"))
-    column_type = json.loads(request.POST.get("columnType"))
-    position = json.loads(request.POST.get("position"))
+def new_node_function(week_id,column_id,column_type,position):
     week = Week.objects.get(pk=week_id)
-    try:
-        if column_id is not None and column_id >= 0:
-            column = Column.objects.get(pk=column_id)
-            columnworkflow = ColumnWorkflow.objects.get(column=column)
-        elif column_type is not None and column_type >= 0:
-            column = Column.objects.create(
-                column_type=column_type, author=week.author
-            )
-            columnworkflow = ColumnWorkflow.objects.create(
-                column=column,
-                workflow=week.get_workflow(),
-                rank=week.get_workflow().columns.count(),
-            )
-        else:
-            columnworkflow = ColumnWorkflow.objects.filter(
-                workflow=WeekWorkflow.objects.get(week=week).workflow
-            ).first()
-            column = columnworkflow.column
-        if position < 0 or position > week.nodes.count():
-            position = week.nodes.count()
-        node = Node.objects.create(
-            author=week.author, node_type=week.week_type, column=column
+    workflow = week.get_workflow()
+    if column_id is not None and column_id >= 0:
+        column = Column.objects.get(pk=column_id)
+        columnworkflow = ColumnWorkflow.objects.get(column=column)
+    elif column_type is not None and column_type >= 0:
+        column = Column.objects.create(
+            column_type=column_type, author=week.author
         )
-        node_week = NodeWeek.objects.create(
-            week=week, node=node, rank=position
+        columnworkflow = ColumnWorkflow.objects.create(
+            column=column,
+            workflow=workflow,
+            rank=workflow.columns.count(),
         )
-    except ValidationError:
-        return JsonResponse({"action": "error"})
+    else:
+        columnworkflow = ColumnWorkflow.objects.filter(
+            workflow=workflow
+        ).first()
+        column = columnworkflow.column
+    if position < 0 or position > week.nodes.count():
+        position = week.nodes.count()
+    node = Node.objects.create(
+        author=week.author, node_type=week.week_type, column=column
+    )
+    node_week = NodeWeek.objects.create(
+        week=week, node=node, rank=position
+    )
     response_data = {
         "new_model": NodeSerializerShallow(node).data,
         "new_through": NodeWeekSerializerShallow(node_week).data,
@@ -2851,8 +2843,33 @@ def new_node(request: HttpRequest) -> HttpResponse:
         "column": ColumnSerializerShallow(column).data,
     }
     actions.dispatch_wf(
-        week.get_workflow(), actions.newNodeAction(response_data)
+        workflow, actions.newNodeAction(response_data)
     )
+    return workflow,column,node
+
+@user_can_edit("weekPk")
+@user_can_view_or_none("columnPk")
+def new_node(request: HttpRequest) -> HttpResponse:
+    week_id = json.loads(request.POST.get("weekPk"))
+    column_id = json.loads(request.POST.get("columnPk"))
+    column_type = json.loads(request.POST.get("columnType"))
+    position = json.loads(request.POST.get("position"))
+    try:
+        column,node = new_node_function(week_id,column_id,column_type,position)
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    
+    action_args = [week_id,column.id,column_type,position]
+    undo_args = [node_id,"node"]
+    workflow.actions.create(
+        user=request.user,
+        action_type=WorkflowAction.NEW_NODE,
+        action_arguments=json.dumps(action_args),
+        undo_type=WorkflowAction.DELETE_SELF,
+        undo_args=json.dumps()
+        
+    )
+    
     return JsonResponse({"action": "posted",})
 
 
