@@ -29,11 +29,11 @@ class Command(BaseCommand):
         orphaned_weeks.delete()
         orphaned_columns = Column.objects.filter(columnworkflow=None)
         orphaned_columns.delete()
+        orphaned_outcomes = Outcome.objects.filter(
+            outcomeworkflow=None, parent_outcome_links=None
+        )
+        orphaned_outcomes.delete()
         orphaned_workflows = Workflow.objects.filter(
             workflowproject=None, is_strategy=False
         )
         orphaned_workflows.delete()
-        orphaned_outcomes = Outcome.objects.filter(
-            outcomeworkflow=None, parent_outcome_links=False
-        )
-        orphaned_outcomes.delete()
