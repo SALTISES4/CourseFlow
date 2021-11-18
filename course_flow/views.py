@@ -86,6 +86,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     WeekWorkflowSerializerShallow,
     WorkflowSerializerFinder,
     WorkflowSerializerShallow,
+    RefreshSerializerNode,
     bleach_allowed_tags,
     bleach_sanitizer,
     serializer_lookups_shallow,
@@ -98,7 +99,6 @@ from .utils import (
     get_model_from_str,
     get_parent_model,
     get_parent_model_str,
-    get_project_outcomes,
     get_unique_outcomenodes,
 )
 
@@ -982,7 +982,9 @@ def get_parent_outcome_data(workflow, user):
     outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
     parent_nodes = Node.objects.filter(
         linked_workflow=workflow
-    ).prefetch_related("outcomenode_set")
+    ).exclude(Q(deleted=True)|Q(week__deleted=True)|Q(week__workflow__deleted=True)).prefetch_related("outcomenode_set")
+    print("GOT PARENT DATA")
+    print(parent_nodes)
     parent_workflows = list(map(lambda x: x.get_workflow(), parent_nodes))
     parent_outcomeworkflows = OutcomeWorkflow.objects.filter(
         workflow__in=parent_workflows
@@ -1059,10 +1061,10 @@ def get_parent_outcome_data(workflow, user):
 
 
 def get_child_outcome_data(workflow, user):
-    nodes = Node.objects.filter(week__workflow=workflow)
+    nodes = Node.objects.filter(week__workflow=workflow).exclude(Q(deleted=True)|Q(week__deleted=True))
     linked_workflows = Workflow.objects.filter(
         linked_nodes__week__workflow=workflow
-    ).prefetch_related("outcomeworkflow_set")
+    ).exclude(deleted=True).prefetch_related("outcomeworkflow_set")
     child_workflow_outcomeworkflows = []
     child_workflow_outcomes = []
     child_workflow_outcomeoutcomes = []
@@ -2806,34 +2808,42 @@ def add_comment(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-def new_node_function(week_id,column_id,column_type,position):
+@user_can_edit("weekPk")
+@user_can_view_or_none("columnPk")
+def new_node(request: HttpRequest) -> HttpResponse:
+    week_id = json.loads(request.POST.get("weekPk"))
+    column_id = json.loads(request.POST.get("columnPk"))
+    column_type = json.loads(request.POST.get("columnType"))
+    position = json.loads(request.POST.get("position"))
     week = Week.objects.get(pk=week_id)
-    workflow = week.get_workflow()
-    if column_id is not None and column_id >= 0:
-        column = Column.objects.get(pk=column_id)
-        columnworkflow = ColumnWorkflow.objects.get(column=column)
-    elif column_type is not None and column_type >= 0:
-        column = Column.objects.create(
-            column_type=column_type, author=week.author
+    try:
+        if column_id is not None and column_id >= 0:
+            column = Column.objects.get(pk=column_id)
+            columnworkflow = ColumnWorkflow.objects.get(column=column)
+        elif column_type is not None and column_type >= 0:
+            column = Column.objects.create(
+                column_type=column_type, author=week.author
+            )
+            columnworkflow = ColumnWorkflow.objects.create(
+                column=column,
+                workflow=week.get_workflow(),
+                rank=week.get_workflow().columns.count(),
+            )
+        else:
+            columnworkflow = ColumnWorkflow.objects.filter(
+                workflow=WeekWorkflow.objects.get(week=week).workflow
+            ).first()
+            column = columnworkflow.column
+        if position < 0 or position > week.nodes.count():
+            position = week.nodes.count()
+        node = Node.objects.create(
+            author=week.author, node_type=week.week_type, column=column
         )
-        columnworkflow = ColumnWorkflow.objects.create(
-            column=column,
-            workflow=workflow,
-            rank=workflow.columns.count(),
+        node_week = NodeWeek.objects.create(
+            week=week, node=node, rank=position
         )
-    else:
-        columnworkflow = ColumnWorkflow.objects.filter(
-            workflow=workflow
-        ).first()
-        column = columnworkflow.column
-    if position < 0 or position > week.nodes.count():
-        position = week.nodes.count()
-    node = Node.objects.create(
-        author=week.author, node_type=week.week_type, column=column
-    )
-    node_week = NodeWeek.objects.create(
-        week=week, node=node, rank=position
-    )
+    except ValidationError:
+        return JsonResponse({"action": "error"})
     response_data = {
         "new_model": NodeSerializerShallow(node).data,
         "new_through": NodeWeekSerializerShallow(node_week).data,
@@ -2843,33 +2853,8 @@ def new_node_function(week_id,column_id,column_type,position):
         "column": ColumnSerializerShallow(column).data,
     }
     actions.dispatch_wf(
-        workflow, actions.newNodeAction(response_data)
+        week.get_workflow(), actions.newNodeAction(response_data)
     )
-    return workflow,column,node
-
-@user_can_edit("weekPk")
-@user_can_view_or_none("columnPk")
-def new_node(request: HttpRequest) -> HttpResponse:
-    week_id = json.loads(request.POST.get("weekPk"))
-    column_id = json.loads(request.POST.get("columnPk"))
-    column_type = json.loads(request.POST.get("columnType"))
-    position = json.loads(request.POST.get("position"))
-    try:
-        column,node = new_node_function(week_id,column_id,column_type,position)
-    except ValidationError:
-        return JsonResponse({"action": "error"})
-    
-    action_args = [week_id,column.id,column_type,position]
-    undo_args = [node_id,"node"]
-    workflow.actions.create(
-        user=request.user,
-        action_type=WorkflowAction.NEW_NODE,
-        action_arguments=json.dumps(action_args),
-        undo_type=WorkflowAction.DELETE_SELF,
-        undo_args=json.dumps()
-        
-    )
-    
     return JsonResponse({"action": "posted",})
 
 
@@ -3456,9 +3441,18 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 if object_type == parent_type:
                     creation_kwargs = {"child": model, "parent": parent}
                     search_kwargs = {"child": model}
+                    index_kwargs = {"parent":parent,"child__deleted":False}
                 else:
                     creation_kwargs = {object_type: model, parent_type: parent}
                     search_kwargs = {object_type: model}
+                    index_kwargs = {parent_type:parent,object_type+"__deleted":False}
+                #Adjust the new position, given the # of deleted items
+                try:
+                    new_position=get_model_from_str(through_type).objects.filter(**index_kwargs)[new_position].rank
+                except (IndexError, AttributeError):
+                    print("had an error in inserted_at")
+                    pass
+                    
                 old_through_id = (
                     get_model_from_str(through_type)
                     .objects.filter(**search_kwargs)
@@ -3820,17 +3814,11 @@ def delete_self(request: HttpRequest) -> HttpResponse:
                 )
             )
         elif object_type == "outcome":
-            print(Workflow.objects.filter(linked_nodes__outcomes=model))
             linked_workflows = list(
                 Workflow.objects.filter(
-                    Q(linked_nodes__outcomes=model)
-                    | Q(linked_nodes__outcomes__children=model)
-                    | Q(linked_nodes__outcomes__children__children=model)
+                    Q(linked_nodes__outcomes__in=[model.id]+list(get_descendant_outcomes(model).values_list("pk",flat=True)))
                 )
             )
-        print(object_type)
-        print("linked wfs")
-        print(linked_workflows)
         if object_type == "outcome":
             extra_data = OutcomeNodeSerializerShallow(
                 OutcomeNode.objects.filter(
@@ -3874,6 +3862,208 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             actions.dispatch_to_parent_wf(
                 workflow,
                 actions.deleteSelfAction(
+                    object_id, "child" + object_type, parent_id, extra_data
+                ),
+            )
+    print("Checking linked workflows")
+    print(linked_workflows)
+    if linked_workflows:
+        print(linked_workflows)
+        for wf in linked_workflows:
+            print("SENDING DATA TO WF")
+            data_package = get_parent_outcome_data(
+                wf.get_subclass(), request.user
+            )
+            actions.dispatch_wf(wf, actions.replaceStoreData(data_package))
+    return JsonResponse({"action": "posted"})
+
+# @user_can_delete(False)
+def restore_self(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    try:
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        workflow = None
+        extra_data = None
+        parent_id = None
+        throughparent_id = None
+        object_suffix = ""
+        try:
+            workflow = model.get_workflow()
+        except AttributeError:
+            pass
+        # Delete the object
+        with transaction.atomic():
+            model.deleted=False
+            model.save()
+        # Check to see if we have any linked workflows that need to be updated
+        linked_workflows = False
+        if object_type == "node":
+            linked_workflows = list(
+                Workflow.objects.filter(linked_nodes=model)
+            )
+        elif object_type == "week":
+            linked_workflows = list(
+                Workflow.objects.filter(linked_nodes__week=model)
+            )
+        elif object_type in ["workflow", "activity", "course", "program"]:
+            linked_workflows = list(
+                Workflow.objects.filter(
+                    linked_nodes__week__workflow__id=model.id
+                )
+            )
+        elif object_type == "outcome":
+            linked_workflows = list(
+                Workflow.objects.filter(
+                    Q(linked_nodes__outcomes__in=[model.id]+list(get_descendant_outcomes(model).values_list("pk",flat=True)))
+                )
+            )
+            print("Linked workflows")
+            print(linked_workflows)
+        print("IN DLETE")
+        print(object_type)
+        if object_type == "outcome":
+            extra_data = RefreshSerializerNode(
+                Node.objects.filter(
+                    outcomes__in=[object_id]
+                    + list(
+                        get_descendant_outcomes(model).values_list(
+                            "pk", flat=True
+                        )
+                    )
+                ),
+                many=True,
+            ).data
+        if object_type == "week":
+            throughparent_id = WeekWorkflow.objects.get(week=model).id
+            parent_id = workflow.id
+        elif object_type == "column":
+            throughparent_id = ColumnWorkflow.objects.get(column=model).id
+            extra_data = [x.id for x in Node.objects.filter(column=model)]
+            parent_id = workflow.id
+        elif object_type == "node":
+            throughparent_id = NodeWeek.objects.get(node=model).id
+            parent_id = NodeWeek.objects.get(node=model).week.id
+        elif object_type == "outcome" and model.depth == 0:
+            throughparent_id = OutcomeWorkflow.objects.get(outcome=model).id
+            parent_id = workflow.id
+            object_type = "outcome_base"
+        elif object_type == "outcome":
+            throughparent_id = OutcomeOutcome.objects.get(child=model).id
+            parent_id = OutcomeOutcome.objects.get(child=model).parent.id
+        
+    except (ProtectedError, ObjectDoesNotExist):
+        return JsonResponse({"action": "error"})
+    if workflow is not None:
+        actions.dispatch_wf(
+            workflow,
+            actions.restoreSelfAction(
+                object_id, object_type, parent_id, throughparent_id, extra_data
+            ),
+        )
+        if object_type == "outcome" or object_type == "outcome_base":
+            actions.dispatch_to_parent_wf(
+                workflow,
+                actions.restoreSelfAction(
+                    object_id, "child" + object_type, parent_id, throughparent_id, extra_data
+                ),
+            )
+    print("Checking linked workflows")
+    print(linked_workflows)
+    if linked_workflows:
+        print(linked_workflows)
+        for wf in linked_workflows:
+            print("SENDING DATA TO WF")
+            data_package = get_parent_outcome_data(
+                wf.get_subclass(), request.user
+            )
+            actions.dispatch_wf(wf, actions.replaceStoreData(data_package))
+    return JsonResponse({"action": "posted"})
+
+# @user_can_delete(False)
+def delete_self_soft(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    try:
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        workflow = None
+        extra_data = None
+        parent_id = None
+        object_suffix = ""
+        try:
+            workflow = model.get_workflow()
+        except AttributeError:
+            pass
+
+        # Check to see if we have any linked workflows that need to be updated
+        linked_workflows = False
+        if object_type == "node":
+            linked_workflows = list(
+                Workflow.objects.filter(linked_nodes=model)
+            )
+        elif object_type == "week":
+            linked_workflows = list(
+                Workflow.objects.filter(linked_nodes__week=model)
+            )
+        elif object_type in ["workflow", "activity", "course", "program"]:
+            linked_workflows = list(
+                Workflow.objects.filter(
+                    linked_nodes__week__workflow__id=model.id
+                )
+            )
+        elif object_type == "outcome":
+            linked_workflows = list(
+                Workflow.objects.filter(
+                    Q(linked_nodes__outcomes__in=[model.id]+list(get_descendant_outcomes(model).values_list("pk",flat=True)))
+                )
+            )
+        print(object_type)
+        print("linked wfs")
+        print(linked_workflows)
+        if object_type == "outcome":
+            extra_data = OutcomeNodeSerializerShallow(
+                OutcomeNode.objects.filter(
+                    outcome__in=[object_id]
+                    + list(
+                        get_descendant_outcomes(model).values_list(
+                            "pk", flat=True
+                        )
+                    )
+                ),
+                many=True,
+            ).data
+        if object_type == "week":
+            parent_id = WeekWorkflow.objects.get(week=model).id
+        elif object_type == "column":
+            parent_id = ColumnWorkflow.objects.get(column=model).id
+            extra_data = (
+                workflow.columnworkflow_set.filter(column__deleted=False).order_by("rank").first().column.id
+            )
+        elif object_type == "node":
+            parent_id = NodeWeek.objects.get(node=model).id
+        elif object_type == "outcome" and model.depth == 0:
+            parent_id = OutcomeWorkflow.objects.get(outcome=model).id
+            object_type = "outcome_base"
+        elif object_type == "outcome":
+            parent_id = OutcomeOutcome.objects.get(child=model).id
+
+        # Delete the object
+        with transaction.atomic():
+            model.deleted=True
+            model.save()
+    except (ProtectedError, ObjectDoesNotExist):
+        return JsonResponse({"action": "error"})
+    if workflow is not None:
+        actions.dispatch_wf(
+            workflow,
+            actions.deleteSelfSoftAction(
+                object_id, object_type, parent_id, extra_data
+            ),
+        )
+        if object_type == "outcome" or object_type == "outcome_base":
+            actions.dispatch_to_parent_wf(
+                workflow,
+                actions.deleteSelfSoftAction(
                     object_id, "child" + object_type, parent_id, extra_data
                 ),
             )

@@ -26,6 +26,7 @@ User = get_user_model()
 
 
 class Project(models.Model):
+    deleted = models.BooleanField(default=False)
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.CharField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -115,6 +116,7 @@ class OutcomeWorkflow(models.Model):
 
 
 class Column(models.Model):
+    deleted = models.BooleanField(default=False)
     title = models.CharField(max_length=50, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
@@ -211,6 +213,7 @@ class NodeLink(models.Model):
 
 
 class Outcome(models.Model):
+    deleted = models.BooleanField(default=False)
     title = models.CharField(max_length=500, null=True, blank=True)
     code = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
@@ -326,13 +329,13 @@ class OutcomeHorizontalLink(models.Model):
             parent_outcome = self.parent_outcome.parent_outcomes.first()
             if (
                 OutcomeHorizontalLink.objects.filter(
-                    parent_outcome__in=parent_outcome.children.all().values_list(
+                    parent_outcome__in=parent_outcome.children.exclude(deleted=True).values_list(
                         "id", flat=True
                     ),
                     degree=self.degree,
                     outcome=self.outcome,
                 ).count()
-                == parent_outcome.children.all().count()
+                == parent_outcome.children.exclude(deleted=True).count()
             ):
                 new_outcomehorizontallink = OutcomeHorizontalLink.objects.create(
                     outcome=self.outcome,
@@ -385,6 +388,7 @@ class OutcomeHorizontalLink(models.Model):
 
 
 class Node(models.Model):
+    deleted = models.BooleanField(default=False)
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(
@@ -597,13 +601,13 @@ class OutcomeNode(models.Model):
             parent_outcome = self.outcome.parent_outcomes.first()
             if (
                 OutcomeNode.objects.filter(
-                    outcome__in=parent_outcome.children.all().values_list(
+                    outcome__in=parent_outcome.children.exclude(deleted=True).values_list(
                         "id", flat=True
                     ),
                     degree=self.degree,
                     node=self.node,
                 ).count()
-                == parent_outcome.children.all().count()
+                == parent_outcome.children.exclude(deleted=True).count()
             ):
                 new_outcomenode = OutcomeNode.objects.create(
                     node=self.node, degree=self.degree, outcome=parent_outcome
@@ -650,6 +654,7 @@ class OutcomeNode(models.Model):
 
 
 class Week(models.Model):
+    deleted = models.BooleanField(default=False)
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -743,6 +748,8 @@ class Workflow(models.Model):
     @property
     def author(self):
         return self.get_subclass().author
+    
+    deleted = models.BooleanField(default=False)
 
     title = models.CharField(max_length=50, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
@@ -834,9 +841,7 @@ class Workflow(models.Model):
     
     edit_count=models.PositiveIntegerField(default=0,null=False)
     
-    actions = models.ManyToManyField(
-        "WorkflowAction",blank=True
-    )
+    
 
     SUBCLASSES = ["activity", "course", "program"]
 
@@ -1075,21 +1080,21 @@ class ObjectPermission(models.Model):
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
 
-class WorkflowAction(models.Model):
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    created_on = models.DateTimeField(default=timezone.now)
-    action_type = models.PositiveIntegerField(choices=ACTION_CHOICES)
-    action_arguments = models.CharField(blank=False)
-    undo_type = models.PositiveIntegerField(choices=ACTION_CHOICES)
-    undo_arguments = models.CharField(blank=False)
-    
-    NEW_NODE = 0
-    DELETE_SELF = 1
-    
-    ACTION_CHOICES = (
-        (NEW_NODE, _("New Node")),
-        (DELETE_SELF, _("Delete")),
-    )
+#class WorkflowAction(models.Model):
+#    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+#    created_on = models.DateTimeField(default=timezone.now)
+#    action_type = models.PositiveIntegerField(choices=ACTION_CHOICES)
+#    action_arguments = models.CharField(blank=False)
+#    undo_type = models.PositiveIntegerField(choices=ACTION_CHOICES)
+#    undo_arguments = models.CharField(blank=False)
+#    
+#    NEW_NODE = 0
+#    DELETE_SELF = 1
+#    
+#    ACTION_CHOICES = (
+#        (NEW_NODE, _("New Node")),
+#        (DELETE_SELF, _("Delete")),
+#    )
 
 """
 Other receivers

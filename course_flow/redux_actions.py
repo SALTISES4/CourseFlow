@@ -8,6 +8,7 @@ from .models import Node
 def dispatch_wf(workflow, action):
     workflow.edit_count = F("edit_count") + 1
     workflow.save()
+    workflow.refresh_from_db()
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         "workflow_" + str(workflow.pk),
@@ -25,6 +26,7 @@ def dispatch_to_parent_wf(workflow, action):
         parent_workflow = parent_node.get_workflow()
         parent_workflow.edit_count = F("edit_count") + 1
         parent_workflow.save()
+        parent_workflow.refresh_from_db()
         async_to_sync(channel_layer.group_send)(
             "workflow_" + str(parent_workflow.pk),
             {
@@ -65,6 +67,17 @@ def deleteSelfAction(id, objectType, parentID, extra_data):
         "payload": {"id": id, "parent_id": parentID, "extra_data": extra_data},
     }
 
+def deleteSelfSoftAction(id, objectType, parentID, extra_data):
+    return {
+        "type": objectType + "/deleteSelfSoft",
+        "payload": {"id": id, "parent_id": parentID, "extra_data": extra_data},
+    }
+
+def restoreSelfAction(id, objectType, parentID, throughparentID, extra_data):
+    return {
+        "type": objectType + "/restoreSelf",
+        "payload": {"id": id, "parent_id": parentID, "throughparent_id":throughparentID, "extra_data": extra_data},
+    }
 
 def insertBelowAction(response_data, objectType):
     return {"type": objectType + "/insertBelow", "payload": response_data}

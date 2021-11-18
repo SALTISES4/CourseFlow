@@ -33,6 +33,8 @@ def course_flow_patterns():
             r"^workflow/updatevalue/$", views.update_value, name="update-value"
         ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
+        url(r"^workflow/restore-self/$", views.restore_self, name="restore-self"),
+        url(r"^workflow/delete-self-soft/$", views.delete_self_soft, name="delete-self-soft"),
         url(
             r"^workflow/update-outcomenode-degree/$",
             views.update_outcomenode_degree,

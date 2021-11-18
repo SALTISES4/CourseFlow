@@ -82,7 +82,7 @@ export class WeekViewUnconnected extends ComponentJSON{
 
     makeDragAndDrop(){
         //Makes the nodeweeks in the node block draggable
-        this.makeSortableNode($(this.node_block.current).children(".node-week").not(".ui-draggable").not(".placeholder"),
+        this.makeSortableNode($(this.node_block.current).children(".node-week").not(".ui-draggable"),
           this.props.objectID,
           "nodeweek",
           ".node-week",

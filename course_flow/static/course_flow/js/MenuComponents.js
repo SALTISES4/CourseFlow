@@ -209,7 +209,7 @@ export class WorkflowForMenu extends React.Component{
                 buttons.push(
                     <div  class="workflow-delete-button hover-shade" onClick={(evt)=>{
                         if(window.confirm(gettext("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone."))){
-                            deleteSelf(this.props.workflow_data.id,this.props.workflow_data.type);
+                            deleteSelf(this.props.workflow_data.id,this.props.workflow_data.type,true);
                             this.setState({hide:true});
                         }
                         evt.stopPropagation();

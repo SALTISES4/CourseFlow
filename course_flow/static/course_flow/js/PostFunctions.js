@@ -178,9 +178,28 @@ export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.l
 }
 
 //Causes the specified object to delete itself
-export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
+export function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>console.log("success")){
+    let path;
+    if(soft)path=post_paths.delete_self_soft;
+    else path=post_pathsdelete_self;
     try{
-        $.post(post_paths.delete_self, {
+        $.post(path, {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Causes the specified object to undelete itself
+export function restoreSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
+    let path;
+    try{
+        $.post(post_paths.restore_self, {
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType)
         }).done(function(data){

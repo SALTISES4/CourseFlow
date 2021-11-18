@@ -14,7 +14,7 @@ import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
-import {getParentWorkflowInfo,insertedAt} from "./PostFunctions";
+import {getParentWorkflowInfo,insertedAt,restoreSelf} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
@@ -62,7 +62,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                 <OutcomeEditView renderer={renderer}/>
             );
             if(data.type=="program")this.allowed_tabs=[];
-            else this.allowed_tabs=[2];
+            else this.allowed_tabs=[2,4];
         }
         else if(renderer.view_type=="horizontaloutcometable"){
             workflow_content=(
@@ -86,7 +86,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             workflow_content = (
                 <WorkflowView renderer={renderer}/>
             );
-            this.allowed_tabs=[1,2,3];
+            this.allowed_tabs=[1,2,3,4];
         }
         
         
@@ -168,6 +168,9 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     }
                     {!read_only && !data.is_strategy && data.type != "program" &&
                         <StrategyBar/>
+                    }
+                    {!read_only && 
+                        <RestoreBar/>
                     }
                 </div>
             </div>
@@ -418,6 +421,79 @@ export const NodeBar = connect(
     mapNodeBarStateToProps,
     null
 )(NodeBarUnconnected)
+
+class RestoreBarUnconnected extends ComponentJSON{
+    
+    constructor(props){
+        super(props);
+        this.objectType="workflow";
+    }
+    
+    
+    render(){
+        let columns = this.props.columns.map((column)=>
+            <RestoreBarItem objectType="column" data={column}/>
+        )
+        let weeks = this.props.weeks.map((week)=>
+            <RestoreBarItem objectType="week" data={week}/>
+        )
+        let nodes = this.props.nodes.map((node)=>
+            <RestoreBarItem objectType="node" data={node}/>
+        )
+        let outcomes = this.props.outcomes.map((outcome)=>
+            <RestoreBarItem objectType="outcome" data={outcome}/>
+        )
+        
+        
+        return reactDom.createPortal(
+            <div id="restore-bar-workflow" class="right-panel-inner">
+                <h4>{gettext("Nodes")}:</h4>
+                <div class="node-bar-column-block">
+                    {nodes}
+                </div>
+                <h4>{gettext("Weeks")}:</h4>
+                <div class="node-bar-column-block">
+                    {weeks}
+                </div>
+                <h4>{gettext("Columns")}:</h4>
+                <div class="node-bar-column-block">
+                    {columns}
+                </div>
+                <h4>{gettext("Outcomes")}:</h4>
+                <div class="node-bar-column-block">
+                    {outcomes}
+                </div>
+            </div>
+        ,$("#restore-bar")[0]);
+    }
+    
+}
+const mapRestoreBarStateToProps = state=>({
+    weeks:state.week.filter(x=>x.deleted),
+    columns:state.column.filter(x=>x.deleted),
+    nodes:state.node.filter(x=>x.deleted),
+    outcomes:state.outcome.filter(x=>x.deleted),
+    
+})
+export const RestoreBar = connect(
+    mapRestoreBarStateToProps,
+    null
+)(RestoreBarUnconnected)
+
+class RestoreBarItem extends React.Component{
+    render(){
+        return (
+            <div>
+                <div>{this.props.data.title}</div>
+                <button onClick={this.restore.bind(this)}>{gettext("Restore")}</button>
+            </div>
+        );
+    }
+    
+    restore(){
+        restoreSelf(this.props.data.id,this.props.objectType);
+    }
+}
 
 class StrategyBarUnconnected extends ComponentJSON{
     

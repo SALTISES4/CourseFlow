@@ -43,6 +43,7 @@ export class ComponentJSON extends React.Component{
                 return helper;
             },
             start:(e,ui)=>{
+                if($(e.target).hasClass("placeholder"))return;
                 $(".workflow-canvas").addClass("dragging-"+draggable_type);
                 $(draggable_selector).addClass("dragging");
                 var drag_item = $(e.target);
@@ -225,7 +226,7 @@ export class ComponentJSON extends React.Component{
         if(Constants.object_dictionary[this.objectType]=="outcome")extra_data=this.props.outcomenodes;
         if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.object_dictionary[this.objectType]+"?")){
             props.renderer.tiny_loader.startLoad();
-            deleteSelf(data.id,Constants.object_dictionary[this.objectType],
+            deleteSelf(data.id,Constants.object_dictionary[this.objectType],true,
                 (response_data)=>{
                     props.renderer.tiny_loader.endLoad();
                 }
@@ -519,7 +520,7 @@ export class NodeLinkSVG extends React.Component{
             var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
             var path=(this.getPath(path_array));
             let stroke="black";
-            if(this.props.style.stroke)stroke=this.props.style.stroke;
+            if(this.props.style && this.props.style.stroke)stroke=this.props.style.stroke;
             return (
                 <g fill="none" stroke={stroke}>
                     <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"}/>

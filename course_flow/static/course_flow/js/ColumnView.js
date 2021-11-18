@@ -14,8 +14,8 @@ class ColumnView extends ComponentJSON{
     }
     
     render(){
-        this.props.renderer.column_colours[this.props.objectID] = this.getColour();
         let data = this.props.data;
+        this.props.renderer.column_colours[this.props.objectID] = this.getColour();
         var title = data.title;
         if(!title)title=data.column_type_display;
         

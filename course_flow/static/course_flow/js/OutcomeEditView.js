@@ -220,7 +220,7 @@ class OutcomeBarUnconnected extends ComponentJSON{
     
 }
 const mapOutcomeBarStateToProps = state =>(
-    {data:state.outcomeworkflow,workflow_type:state.workflow.type}
+    {data:state.outcomeworkflow.filter(outcomeworkflow=>state.workflow.outcomeworkflow_set.indexOf(outcomeworkflow.id)>=0),workflow_type:state.workflow.type}
 )
 export const OutcomeBar = connect(
     mapOutcomeBarStateToProps,

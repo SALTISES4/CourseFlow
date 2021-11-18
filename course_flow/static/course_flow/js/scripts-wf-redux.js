@@ -182,11 +182,11 @@ export class WorkflowRenderer{
         this.container = container;
         this.locks={}
         this.items_to_load = {
-            column:initial_workflow_data.column.length,
-            week:initial_workflow_data.week.length,
-            node:initial_workflow_data.node.length,
+            column:initial_workflow_data.column.filter(x=>!x.deleted).length,
+            week:initial_workflow_data.week.filter(x=>!x.deleted).length,
+            node:initial_workflow_data.node.filter(x=>!x.deleted).length,
         };
-        this.ports_to_render = initial_workflow_data.node.length;
+        this.ports_to_render = initial_workflow_data.node.filter(x=>!x.deleted).length;
         
         container.on("component-loaded",(evt,objectType)=>{
             evt.stopPropagation();
@@ -202,11 +202,14 @@ export class WorkflowRenderer{
         
         
         container.on("ports-rendered",(evt)=>{
+            console.log("PORTS RENDERED");
+            console.log(renderer.ports_to_render);
             evt.stopPropagation();
             renderer.ports_to_render--;
             if(renderer.ports_to_render>0)return;
             renderer.ports_rendered=true;
             container.triggerHandler("render-links");
+            console.log("RENDERING LINKS");
         });
         
         container.on("render-links",(evt)=>{

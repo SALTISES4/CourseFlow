@@ -136,6 +136,7 @@ export function workflowReducer(state={},action){
                 outcomeworkflow_set:new_outcomeworkflow_set
             }
         case 'week/deleteSelf':
+        case 'week/deleteSelfSoft':
             if(state.weekworkflow_set.indexOf(action.payload.parent_id)>=0){
                 var new_state = {...state};
                 new_state.weekworkflow_set = state.weekworkflow_set.slice();
@@ -143,6 +144,11 @@ export function workflowReducer(state={},action){
                 return new_state;
             }
             return state;
+        case 'week/restoreSelf':
+            var new_state = {...state};
+            new_state.weekworkflow_set = state.weekworkflow_set.slice();
+            new_state.weekworkflow_set.push(action.payload.throughparent_id);
+            return new_state;
         case 'week/insertBelow':
             new_state = {...state}
             var new_weekworkflow_set = state.weekworkflow_set.slice();
@@ -150,6 +156,7 @@ export function workflowReducer(state={},action){
             new_state.weekworkflow_set = new_weekworkflow_set;
             return new_state;
         case 'outcome_base/deleteSelf':
+        case 'outcome_base/deleteSelfSoft':
             if(state.outcomeworkflow_set.indexOf(action.payload.parent_id)>=0){
                 var new_state = {...state};
                 new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
@@ -157,6 +164,11 @@ export function workflowReducer(state={},action){
                 return new_state;
             }
             return state;
+        case 'outcome_base/restoreSelf':
+            var new_state = {...state};
+            new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
+            new_state.outcomeworkflow_set.push(action.payload.throughparent_id);
+            return new_state;
         case 'outcome_base/insertBelow':
         case 'outcome/newOutcome':
             new_state = {...state}
@@ -176,6 +188,7 @@ export function workflowReducer(state={},action){
             }
             return new_state;
         case 'column/deleteSelf':
+        case 'column/deleteSelfSoft':
             if(state.columnworkflow_set.indexOf(action.payload.parent_id)>=0){
                 var new_state = {...state};
                 new_state.columnworkflow_set = state.columnworkflow_set.slice();
@@ -183,6 +196,11 @@ export function workflowReducer(state={},action){
                 return new_state;
             }
             return state;
+        case 'column/restoreSelf':
+            var new_state = {...state};
+            new_state.columnworkflow_set = state.columnworkflow_set.slice();
+            new_state.columnworkflow_set.push(action.payload.throughparent_id);
+            return new_state;
         case 'node/newNode':
             if(state.columnworkflow_set.indexOf(action.payload.columnworkflow.id)>=0)return state;
             new_state = {...state}
@@ -294,6 +312,24 @@ export function columnReducer(state={},action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'column/deleteSelfSoft':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:true};
+                    return new_state;
+                }
+            }
+            return state;
+        case 'column/restoreSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:false};
                     return new_state;
                 }
             }
@@ -426,12 +462,24 @@ export function weekReducer(state={},action){
             new_state.splice(old_parent_index,1,old_parent);
             return new_state;
         case 'node/deleteSelf':
+        case 'node/deleteSelfSoft':
             for(var i=0;i<state.length;i++){
                 if(state[i].nodeweek_set.indexOf(action.payload.parent_id)>=0){
                     var new_state=state.slice();
                     new_state[i] = {...new_state[i]};
                     new_state[i].nodeweek_set = state[i].nodeweek_set.slice();
                     new_state[i].nodeweek_set.splice(new_state[i].nodeweek_set.indexOf(action.payload.parent_id),1);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'node/restoreSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.parent_id){
+                    var new_state=state.slice();
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].nodeweek_set = state[i].nodeweek_set.slice();
+                    new_state[i].nodeweek_set.push(action.payload.throughparent_id);
                     return new_state;
                 }
             }
@@ -469,6 +517,24 @@ export function weekReducer(state={},action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'week/deleteSelfSoft':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:true};
+                    return new_state;
+                }
+            }
+            return state;
+        case 'week/restoreSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:false};
                     return new_state;
                 }
             }
@@ -567,6 +633,7 @@ export function nodeReducer(state={},action){
             }
             return state;
         case 'column/deleteSelf':
+        case 'column/deleteSelfSoft':
             var new_state = state.slice();
             var new_column;
             if(action.payload.extra_data){
@@ -600,13 +667,45 @@ export function nodeReducer(state={},action){
                 }
             }
             return state;
+        case 'node/deleteSelfSoft':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:true};
+                    Constants.triggerHandlerEach($(".week .node"),"component-updated");
+                    return new_state;
+                }
+            }
+            return state;
+        case 'node/restoreSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:false};
+                    Constants.triggerHandlerEach($(".week .node"),"component-updated");
+                    return new_state;
+                }
+            }
+            return state;
         case 'nodelink/deleteSelf':
+        case 'nodelink/deleteSelfSoft':
             for(var i=0;i<state.length;i++){
                 if(state[i].outgoing_links.indexOf(action.payload.id)>=0){
                     var new_state=state.slice();
                     new_state[i] = {...new_state[i]};
                     new_state[i].outgoing_links = state[i].outgoing_links.slice();
                     new_state[i].outgoing_links.splice(new_state[i].outgoing_links.indexOf(action.payload.id),1);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'nodelink/restoreSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id == action.payload.parent_id){
+                    var new_state=state.slice();
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].outgoing_links = state[i].outgoing_links.slice();
+                    new_state[i].outgoing_links.push(action.payload.id);
                     return new_state;
                 }
             }
@@ -674,7 +773,9 @@ export function nodeReducer(state={},action){
             new_state.push(...action.payload.nodes_added);
             return new_state;
         case 'outcome/deleteSelf':
+        case 'outcome/deleteSelfSoft':
         case 'outcome_base/deleteSelf':
+        case 'outcome_base/deleteSelfSoft':
             new_state=state.slice();
             for(var i=0;i<action.payload.extra_data.length;i++){
                 let outcomenode = action.payload.extra_data[i];
@@ -689,6 +790,18 @@ export function nodeReducer(state={},action){
                             new_state[j].outcomenode_unique_set=new_state[j].outcomenode_unique_set.slice();
                             new_state[j].outcomenode_unique_set.splice(outcomenode_unique_index,1);
                         }
+                    }
+                }
+            }
+            return new_state;
+        case 'outcome/restoreSelf':
+        case 'outcome_base/restoreSelf':
+            new_state=state.slice();
+            for(var i=0;i<action.payload.extra_data.length;i++){
+                let new_node_data = action.payload.extra_data[i];
+                for(var j=0;j<new_state.length;j++){
+                    if(new_node_data.id==new_state[j].id){
+                        new_state[j] = {...new_state[j],...new_node_data}          
                     }
                 }
             }
@@ -806,16 +919,59 @@ export function outcomeReducer(state={},action){
             return state;
         case 'outcome/deleteSelf':
             var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                if(new_state[i].child_outcome_links.indexOf(action.payload.parent_id)>=0){
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].child_outcome_links = new_state[i].child_outcome_links.slice();
+                    new_state[i].child_outcome_links.splice(new_state[i].child_outcome_links.indexOf(action.payload.parent_id),1);
+                }else if(new_state[i].id==action.payload.id){
+                    new_state.splice(i,1);
+                    i--;
+                }
+            }
+            return new_state;
+        case 'outcome/deleteSelfSoft':
+            var new_state=state.slice();
             for(var i=0;i<state.length;i++){
                 if(state[i].child_outcome_links.indexOf(action.payload.parent_id)>=0){
                     new_state[i] = {...new_state[i]};
                     new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
                     new_state[i].child_outcome_links.splice(new_state[i].child_outcome_links.indexOf(action.payload.parent_id),1);
                 }else if(state[i].id==action.payload.id){
-                    new_state.splice(i,1);
+                    new_state[i] = {...new_state[i],deleted:true};
                 }
             }
             return new_state;
+        case 'outcome/restoreSelf':
+            var new_state=state.slice();
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.parent_id){
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
+                    new_state[i].child_outcome_links.push(action.payload.throughparent_id);
+                }else if(state[i].id==action.payload.id){
+                    new_state[i] = {...new_state[i],deleted:false};
+                }
+            }
+            return new_state;
+        case 'outcome_base/deleteSelfSoft':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:true};
+                    return new_state;
+                }
+            }
+            return state;
+        case 'outcome_base/restoreSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:false};
+                    return new_state;
+                }
+            }
+            return state;
         case "outcome_base/insertBelow":
         case 'outcome/newOutcome':
             var new_state=state.slice();
@@ -1092,12 +1248,24 @@ export function childWorkflowReducer(state={},action){
             if(action.payload.child_workflow)return action.payload.child_workflow;
             return state;
         case 'childoutcome_base/deleteSelf':
+        case 'childoutcome_base/deleteSelfSoft':
             for(var i=0;i<state.length;i++){
                 if(state[i].outcomeworkflow_set.indexOf(action.payload.parent_id)>=0){
                     var new_state = state.slice()
                     new_state[i] = {...state[i]}
                     new_state[i].outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
                     new_state[i].outcomeworkflow_set.splice(new_state[i].outcomeworkflow_set.indexOf(action.payload.parent_id),1);
+                    return new_state;
+                }
+            }
+            return state;
+        case 'childoutcome_base/restoreSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id ==action.payload.parent_id){
+                    var new_state = state.slice()
+                    new_state[i] = {...state[i]}
+                    new_state[i].outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
+                    new_state[i].outcomeworkflow_set.push(action.payload.throughparent_id);
                     return new_state;
                 }
             }
@@ -1148,16 +1316,57 @@ export function childOutcomeReducer(state={},action){
             return state;
         case 'childoutcome/deleteSelf':
             var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                if(new_state[i].child_outcome_links.indexOf(action.payload.parent_id)>=0){
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].child_outcome_links = new_state[i].child_outcome_links.slice();
+                    new_state[i].child_outcome_links.splice(new_state[i].child_outcome_links.indexOf(action.payload.parent_id),1);
+                }else if(new_state[i].id==action.payload.id){
+                    new_state.splice(i,1);
+                    i--;
+                }
+            }
+            return new_state;
+        case 'childoutcome/deleteSelfSoft':
+            var new_state=state.slice();
             for(var i=0;i<state.length;i++){
                 if(state[i].child_outcome_links.indexOf(action.payload.parent_id)>=0){
                     new_state[i] = {...new_state[i]};
                     new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
                     new_state[i].child_outcome_links.splice(new_state[i].child_outcome_links.indexOf(action.payload.parent_id),1);
                 }else if(state[i].id==action.payload.id){
-                    new_state.splice(i,1);
+                    new_state[i] = {...new_state[i],deleted:true};
                 }
             }
-            return new_state;
+        case 'childoutcome/restoreSelf':
+            var new_state=state.slice();
+            for(var i=0;i<state.length;i++){
+                if(state[i].id == action.payload.parent_id){
+                    new_state[i] = {...new_state[i]};
+                    new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
+                    new_state[i].child_outcome_links.push(action.payload.throughparent_id);
+                }else if(state[i].id==action.payload.id){
+                    new_state[i] = {...new_state[i],deleted:false};
+                }
+            }
+        case 'childoutcome_base/deleteSelfSoft':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:true};
+                    return new_state;
+                }
+            }
+            return state;
+        case 'childoutcome_base/restoreSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:false};
+                    return new_state;
+                }
+            }
+            return state;
         case "childoutcome_base/insertBelow":
         case 'childoutcome/newOutcome':
             var new_state=state.slice();
