@@ -1236,14 +1236,6 @@ class ProgramCreateView(
     fields = ["title", "description"]
     template_name = "course_flow/program_create.html"
 
-    def test_func(self):
-        project = Project.objects.get(pk=self.kwargs["projectPk"])
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-            and project.author == self.request.user
-        )
-
     def form_valid(self, form):
         form.instance.author = self.request.user
         project = Project.objects.get(pk=self.kwargs["projectPk"])
@@ -1264,14 +1256,6 @@ class CourseCreateView(
     model = Course
     fields = ["title", "description"]
     template_name = "course_flow/course_create.html"
-
-    def test_func(self):
-        project = Project.objects.get(pk=self.kwargs["projectPk"])
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-            and project.author == self.request.user
-        )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -1317,14 +1301,6 @@ class ActivityCreateView(
     model = Activity
     fields = ["title", "description"]
     template_name = "course_flow/activity_create.html"
-
-    def test_func(self):
-        project = Project.objects.get(pk=self.kwargs["projectPk"])
-        return (
-            Group.objects.get(name=settings.TEACHER_GROUP)
-            in self.request.user.groups.all()
-            and project.author == self.request.user
-        )
 
     def form_valid(self, form):
         form.instance.author = self.request.user
