@@ -27,6 +27,8 @@ class AlignmentView extends ComponentJSON{
                 </div>
             );
         });
+        console.log("outcomes");
+        console.log(this.props.outcomes);
 
         let outcomes_block;
         let terms_block;
@@ -70,7 +72,7 @@ class AlignmentView extends ComponentJSON{
 }
 const mapAlignmentStateToProps = state=>({
     data:state.workflow,
-    outcomes:state.outcomeworkflow.map(outcomeworkflow=>getOutcomeByID(state,outcomeworkflow.outcome,null,true))
+    outcomes:state.outcomeworkflow.map(outcomeworkflow=>getOutcomeByID(state,outcomeworkflow.outcome,null,true)).filter(x=>!x.data.deleted)
 });
 export default connect(
     mapAlignmentStateToProps,

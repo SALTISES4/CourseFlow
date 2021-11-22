@@ -38,6 +38,7 @@ def get_parent_model(model_str: str):
         model=get_parent_model_str(model_str)
     ).model_class()
 
+
 def linkIDMap(link):
     return link.id
 
@@ -78,12 +79,20 @@ def get_unique_outcomenodes(node):
         Q(parent_outcomes__node=node)
         | Q(parent_outcomes__parent_outcomes__node=node)
     )
-    return node.outcomenode_set.exclude(Q(outcome__deleted=True)|Q(outcome__parent_outcomes__deleted=True)|Q(outcome__parent_outcomes__parent_outcomes__deleted=True)).exclude(outcome__in=exclude_outcomes).order_by(
-        "outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
-        "outcome__parent_outcome_links__parent__outcomeworkflow__rank",
-        "outcome__outcomeworkflow__rank",
-        "outcome__parent_outcome_links__parent__parent_outcome_links__rank",
-        "outcome__parent_outcome_links__rank"
+    return (
+        node.outcomenode_set.exclude(
+            Q(outcome__deleted=True)
+            | Q(outcome__parent_outcomes__deleted=True)
+            | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
+        )
+        .exclude(outcome__in=exclude_outcomes)
+        .order_by(
+            "outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
+            "outcome__parent_outcome_links__parent__outcomeworkflow__rank",
+            "outcome__outcomeworkflow__rank",
+            "outcome__parent_outcome_links__parent__parent_outcome_links__rank",
+            "outcome__parent_outcome_links__rank",
+        )
     )
 
 
@@ -94,14 +103,31 @@ def get_unique_outcomehorizontallinks(outcome):
             parent_outcomes__parent_outcomes__reverse_horizontal_outcomes=outcome
         )
     )
-    return outcome.outcome_horizontal_links.exclude(Q(parent_outcome__deleted=True)|Q(parent_outcome__parent_outcomes__deleted=True)|Q(parent_outcome__parent_outcomes__parent_outcomes__deleted=True)).exclude(
-        parent_outcome__in=exclude_outcomes
-    ).order_by(
-        "parent_outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
-        "parent_outcome__parent_outcome_links__parent__outcomeworkflow__rank",
-        "parent_outcome__outcomeworkflow__rank",
-        "parent_outcome__parent_outcome_links__parent__parent_outcome_links__rank",
-        "parent_outcome__parent_outcome_links__rank"
+    return (
+        outcome.outcome_horizontal_links.exclude(
+            Q(parent_outcome__deleted=True)
+            | Q(parent_outcome__parent_outcomes__deleted=True)
+            | Q(parent_outcome__parent_outcomes__parent_outcomes__deleted=True)
+        )
+        .exclude(parent_outcome__in=exclude_outcomes)
+        .order_by(
+            "parent_outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
+            "parent_outcome__parent_outcome_links__parent__outcomeworkflow__rank",
+            "parent_outcome__outcomeworkflow__rank",
+            "parent_outcome__parent_outcome_links__parent__parent_outcome_links__rank",
+            "parent_outcome__parent_outcome_links__rank",
+        )
+    )
+
+
+def get_nondeleted_favourites(user):
+    return models.Favourite.objects.filter(user=user).exclude(
+        Q(
+            object_id__in=models.Workflow.objects.filter(
+                Q(deleted=True) | Q(project__deleted=True)
+            )
+        )
+        | Q(object_id__in=models.Project.objects.filter(deleted=True))
     )
 
 
@@ -109,4 +135,3 @@ def benchmark(identifier, last_time):
     current_time = time.time()
     print("Completed " + identifier + " in " + str(current_time - last_time))
     return current_time
-

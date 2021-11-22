@@ -222,7 +222,7 @@ export function workflowReducer(state={},action){
     }
 }
 
-export function outcomeworkflowReducer(state={},action){
+export function outcomeworkflowReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.outcomeworkflow)return action.payload.outcomeworkflow;
@@ -249,7 +249,7 @@ export function outcomeworkflowReducer(state={},action){
     }
 }
 
-export function columnworkflowReducer(state={},action){
+export function columnworkflowReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.columnworkflow)return action.payload.columnworkflow;
@@ -293,7 +293,7 @@ export function columnworkflowReducer(state={},action){
     }
 }
 
-export function columnReducer(state={},action){
+export function columnReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.column)return action.payload.column;
@@ -364,7 +364,7 @@ export function columnReducer(state={},action){
     }
 }
 
-export function weekworkflowReducer(state={},action){
+export function weekworkflowReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.weekworkflow)return action.payload.weekworkflow;
@@ -399,7 +399,7 @@ export function weekworkflowReducer(state={},action){
             return state;
     }
 }
-export function weekReducer(state={},action){
+export function weekReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.week)return action.payload.week;
@@ -566,7 +566,7 @@ export function weekReducer(state={},action){
             return state;
     }
 }
-export function nodeweekReducer(state={},action){
+export function nodeweekReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.nodeweek)return action.payload.nodeweek;
@@ -618,7 +618,7 @@ export function nodeweekReducer(state={},action){
             return state;
     }
 }
-export function nodeReducer(state={},action){
+export function nodeReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.node)return action.payload.node;
@@ -776,24 +776,6 @@ export function nodeReducer(state={},action){
         case 'outcome/deleteSelfSoft':
         case 'outcome_base/deleteSelf':
         case 'outcome_base/deleteSelfSoft':
-            new_state=state.slice();
-            for(var i=0;i<action.payload.extra_data.length;i++){
-                let outcomenode = action.payload.extra_data[i];
-                for(var j=0;j<new_state.length;j++){
-                    let outcomenode_index=new_state[j].outcomenode_set.indexOf(outcomenode.id);
-                    if(outcomenode_index>=0){
-                        new_state[j]={...new_state[j]};
-                        new_state[j].outcomenode_set=new_state[j].outcomenode_set.slice();
-                        new_state[j].outcomenode_set.splice(outcomenode_index,1);
-                        let outcomenode_unique_index=new_state[j].outcomenode_unique_set.indexOf(outcomenode.id);
-                        if(outcomenode_unique_index>=0){
-                            new_state[j].outcomenode_unique_set=new_state[j].outcomenode_unique_set.slice();
-                            new_state[j].outcomenode_unique_set.splice(outcomenode_unique_index,1);
-                        }
-                    }
-                }
-            }
-            return new_state;
         case 'outcome/restoreSelf':
         case 'outcome_base/restoreSelf':
             new_state=state.slice();
@@ -810,7 +792,7 @@ export function nodeReducer(state={},action){
             return state;
     }
 }
-export function nodelinkReducer(state={},action){
+export function nodelinkReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.nodelink)return action.payload.nodelink;
@@ -857,7 +839,7 @@ export function nodelinkReducer(state={},action){
             return state;
     }
 }
-export function outcomeReducer(state={},action){
+export function outcomeReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.outcome)return action.payload.outcome;
@@ -1015,6 +997,8 @@ export function outcomeReducer(state={},action){
             }
             return state;
         case 'outcomehorizontallink/updateDegree':
+            console.log("GOT OUTCOMEHORIZONTALLINK UPDATE CALL");
+            console.log(action.payload);
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomehorizontallink==-1)return state;
             for(var i=0;i<state.length;i++){
@@ -1027,11 +1011,22 @@ export function outcomeReducer(state={},action){
                 }
             }
             return state;
+        case 'outcome/updateHorizontalLinks':
+            new_state=state.slice();
+            for(var i=0;i<action.payload.data.length;i++){
+                let new_outcome_data = action.payload.data[i];
+                for(var j=0;j<new_state.length;j++){
+                    if(new_outcome_data.id==new_state[j].id){
+                        new_state[j] = {...new_state[j],...new_outcome_data}          
+                    }
+                }
+            }
+            return new_state;
         default:
             return state;
     }
 }
-export function outcomeOutcomeReducer(state={},action){
+export function outcomeOutcomeReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.outcomeoutcome)return action.payload.outcomeoutcome;
@@ -1076,7 +1071,7 @@ export function outcomeOutcomeReducer(state={},action){
             return state;
     }
 }
-export function outcomeNodeReducer(state={},action){
+export function outcomeNodeReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.outcomenode)return action.payload.outcomenode;
@@ -1122,7 +1117,7 @@ export function outcomeNodeReducer(state={},action){
             return state;
     }
 }
-export function parentOutcomeReducer(state={},action){
+export function parentOutcomeReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.parent_outcome)return action.payload.parent_outcome;
@@ -1141,7 +1136,7 @@ export function parentOutcomeReducer(state={},action){
             return state;
     }
 }
-export function parentOutcomeoutcomeReducer(state={},action){
+export function parentOutcomeoutcomeReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.parent_outcomeoutcome)return action.payload.parent_outcomeoutcome;
@@ -1150,7 +1145,7 @@ export function parentOutcomeoutcomeReducer(state={},action){
             return state;
     }
 }
-export function parentOutcomeworkflowReducer(state={},action){
+export function parentOutcomeworkflowReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.parent_outcomeworkflow)return action.payload.parent_outcomeworkflow;
@@ -1159,7 +1154,7 @@ export function parentOutcomeworkflowReducer(state={},action){
             return state;
     }
 }
-export function parentOutcomenodeReducer(state={},action){
+export function parentOutcomenodeReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.parent_outcomenode)return action.payload.parent_outcomenode;
@@ -1168,7 +1163,7 @@ export function parentOutcomenodeReducer(state={},action){
             return state;
     }
 }
-export function outcomeHorizontalLinkReducer(state={},action){
+export function outcomeHorizontalLinkReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.outcomehorizontallink)return action.payload.outcomehorizontallink;
@@ -1196,7 +1191,7 @@ export function outcomeHorizontalLinkReducer(state={},action){
         return state;
     }
 }
-export function childOutcomeHorizontalLinkReducer(state={},action){
+export function childOutcomeHorizontalLinkReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.child_outcomehorizontallink)return action.payload.child_outcomehorizontallink;
@@ -1224,7 +1219,7 @@ export function childOutcomeHorizontalLinkReducer(state={},action){
         return state;
     }
 }
-export function parentNodeReducer(state={},action){
+export function parentNodeReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.parent_node)return action.payload.parent_node;
@@ -1233,7 +1228,7 @@ export function parentNodeReducer(state={},action){
             return state;
     }
 }
-export function parentWorkflowReducer(state={},action){
+export function parentWorkflowReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.parent_workflow)return action.payload.parent_workflow;
@@ -1242,7 +1237,7 @@ export function parentWorkflowReducer(state={},action){
             return state;
     }
 }
-export function childWorkflowReducer(state={},action){
+export function childWorkflowReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.child_workflow)return action.payload.child_workflow;
@@ -1287,7 +1282,7 @@ export function childWorkflowReducer(state={},action){
             return state;
     }
 }
-export function childOutcomeReducer(state={},action){
+export function childOutcomeReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.child_outcome)return action.payload.child_outcome;
@@ -1413,7 +1408,7 @@ export function childOutcomeReducer(state={},action){
             return state;
     }
 }
-export function childOutcomeOutcomeReducer(state={},action){
+export function childOutcomeOutcomeReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.child_outcomeoutcome)return action.payload.child_outcomeoutcome;
@@ -1458,7 +1453,7 @@ export function childOutcomeOutcomeReducer(state={},action){
             return state;
     }
 }
-export function childOutcomeWorkflowReducer(state={},action){
+export function childOutcomeWorkflowReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.child_outcomeworkflow)return action.payload.child_outcomeworkflow;
@@ -1484,13 +1479,13 @@ export function childOutcomeWorkflowReducer(state={},action){
             return state;
     }
 }
-export function outcomeProjectReducer(state={},action){
+export function outcomeProjectReducer(state=[],action){
     switch(action.type){
         default:
             return state;
     }
 }
-export function strategyReducer(state={},action){
+export function strategyReducer(state=[],action){
     switch(action.type){
         case 'strategy/toggleStrategy':
             if(!action.payload.is_strategy)return state;
@@ -1501,7 +1496,7 @@ export function strategyReducer(state={},action){
             return state;
     }
 }
-export function saltiseStrategyReducer(state={},action){
+export function saltiseStrategyReducer(state=[],action){
     switch(action.type){
         default:
             return state;

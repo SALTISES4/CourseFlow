@@ -103,13 +103,19 @@ export const getNodeLinkByID = (state,id)=>{
     }
 }
 //Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids. These can later be pieced together in an iteration over the outcomes to create a list of ranks.
+//Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids. These can later be pieced together in an iteration over the outcomes to create a list of ranks.
 function findRootOutcome(id,rank,state){
+    console.log("trying to find root outcome");
+    console.log(state);
     for(let i=0;i<state.length;i++){
         if(state[i].child==id){
             rank.unshift({parent:state[i].parent,through:state[i].id});
+            console.log("found root outcome");
+            console.log(state[i].parent);
             return findRootOutcome(state[i].parent,rank,state);
         }
     }
+    console.log("Failed to find root outcome");
     return {id:id,rank:rank};
 }
 function findTopRank(state,outcome,get_alternate){

@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology} from "./PostFunctions";
+import {updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology} from "./PostFunctions";
 import {gridMenuItemAdded} from "./Reducers";
 import {custom_text_base,Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
@@ -206,17 +206,35 @@ export class WorkflowForMenu extends React.Component{
         if(this.state.favourite)favourite_img = "favourite.svg";
         if(this.props.type=="projectmenu"||this.props.type=="gridmenu"||this.props.type=="exploremenu"){
             if(this.props.workflow_data.is_owned){
-                buttons.push(
-                    <div  class="workflow-delete-button hover-shade" onClick={(evt)=>{
-                        if(window.confirm(gettext("Are you sure you want to delete this? All contents will be deleted, and this action cannot be undone."))){
-                            deleteSelf(this.props.workflow_data.id,this.props.workflow_data.type,true);
-                            this.setState({hide:true});
-                        }
-                        evt.stopPropagation();
-                    }}>
-                        <img src={iconpath+'rubbish.svg'} title={gettext("Delete")}/>
-                    </div>
-                );
+                if(!this.props.workflow_data.deleted){
+                    buttons.push(
+                        <div  class="workflow-delete-button hover-shade" onClick={(evt)=>{
+                            evt.stopPropagation();
+                            if(window.confirm(gettext("Are you sure you want to delete this?"))){
+                                let loader = new Loader('body');
+                                deleteSelf(this.props.workflow_data.id,this.props.workflow_data.type,true,(response_data)=>{
+                                    loader.endLoad();
+                                    window.location.reload();
+                                });
+                            }
+                        }}>
+                            <img src={iconpath+'rubbish.svg'} title={gettext("Delete")}/>
+                        </div>
+                    );
+                }else{
+                    buttons.push(
+                        <div  class="workflow-delete-button hover-shade" onClick={(evt)=>{
+                            evt.stopPropagation();
+                            let loader = new Loader('body');
+                            restoreSelf(this.props.workflow_data.id,this.props.workflow_data.type,(response_data)=>{
+                                loader.endLoad();
+                                window.location.reload();
+                            });
+                        }}>
+                            <img src={iconpath+'restore.svg'} title={gettext("Restore")}/>
+                        </div>
+                    );
+                }
             }else{
                 buttons.push(
                     <div class="workflow-toggle-favourite hover-shade" onClick={(evt)=>{
@@ -239,7 +257,6 @@ export class WorkflowForMenu extends React.Component{
                         <div class="workflow-duplicate-button hover-shade" onClick={(evt)=>{
                             let loader = new Loader('body');
                             duplicateBaseItem(this.props.workflow_data.id,this.props.workflow_data.type,this.props.parentID,(response_data)=>{
-                                //this.props.dispatch(gridMenuItemAdded(response_data));
                                 loader.endLoad();
                                 window.location.reload();
                             });
