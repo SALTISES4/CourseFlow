@@ -1,4 +1,4 @@
-asgiref==3.2.3
+asgiref
 bleach
 Django<3.0.0
 django-csp
