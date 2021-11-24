@@ -115,10 +115,15 @@ def newNodeLinkAction(response_data):
     return {"type": "nodelink/newNodeLink", "payload": response_data}
 
 
-def changeField(id, objectType, json):
+def changeField(id, objectType, json, changeFieldID=0):
     return {
         "type": objectType + "/changeField",
-        "payload": {"id": id, "objectType": objectType, "json": json},
+        "payload": {
+            "id": id,
+            "objectType": objectType,
+            "json": json,
+            "changeFieldID": changeFieldID,
+        },
     }
 
 

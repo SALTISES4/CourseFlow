@@ -29,6 +29,8 @@ export class WeekViewUnconnected extends ComponentJSON{
         );
         let css_class = "week";
         if(data.is_strategy)css_class+=" strategy";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        
         let default_text;
         if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
         

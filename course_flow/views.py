@@ -1116,8 +1116,6 @@ def get_parent_outcome_data(workflow, user):
         )
         .prefetch_related("outcomenode_set")
     )
-    print("GOT PARENT DATA")
-    print(parent_nodes)
     parent_workflows = list(map(lambda x: x.get_workflow(), parent_nodes))
     parent_outcomeworkflows = OutcomeWorkflow.objects.filter(
         workflow__in=parent_workflows
@@ -2713,8 +2711,8 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
     return new_workflow
 
 
-# @user_can_view("workflowPk")
-# @user_can_edit("projectPk")
+@user_can_view("workflowPk")
+@user_can_edit("projectPk")
 def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
 
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
@@ -2980,7 +2978,7 @@ def new_node(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted",})
 
 
-# @user_can_edit("workflowPk")
+@user_can_edit("workflowPk")
 def new_outcome_for_workflow(request: HttpRequest) -> HttpResponse:
     workflow_id = json.loads(request.POST.get("workflowPk"))
     workflow = Workflow.objects.get(pk=workflow_id)
@@ -3125,7 +3123,9 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
                     many=True,
                 ).data,
             }
-            actions.dispatch_wf(workflow, actions.addStrategy(response_data))
+            actions.dispatch_wf(
+                workflow, actions.newStrategyAction(response_data)
+            )
             return JsonResponse({"action": "posted",})
 
         else:
@@ -3276,8 +3276,8 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
 
 
 # Soft-duplicate the item
-# @user_can_view(False)
-# @user_can_edit(False, get_parent=True)
+@user_can_view(False)
+@user_can_edit(False, get_parent=True)
 def duplicate_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -3529,16 +3529,14 @@ Reorder methods
 
 
 # Insert a model via its throughmodel
-# @user_can_edit(False)
-# @user_can_edit_or_none(False, get_parent=True)
-# @user_can_edit_or_none("columnPk")
+@user_can_edit(False)
+@user_can_edit_or_none(False, get_parent=True)
+@user_can_edit_or_none("columnPk")
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
     inserted = json.loads(request.POST.get("inserted", "false"))
     column_change = json.loads(request.POST.get("columnChange", "false"))
-    print(inserted)
-    print(column_change)
     try:
         with transaction.atomic():
             if column_change:
@@ -3573,14 +3571,24 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                     }
                 # Adjust the new position, given the # of deleted items
                 try:
-                    new_position = (
+                    all_throughs = (
                         get_model_from_str(through_type)
-                        .objects.filter(**index_kwargs)[new_position]
-                        .rank
+                        .objects.filter(**index_kwargs)
+                        .order_by("rank")
                     )
+                    if new_position < 0:
+                        new_position = 0
+                    elif new_position > all_throughs.count():
+                        new_position = all_throughs.count()
+                    else:
+                        new_position = (
+                            get_model_from_str(through_type)
+                            .objects.filter(**index_kwargs)
+                            .order_by("rank")[new_position]
+                            .rank
+                        )
                 except (IndexError, AttributeError):
                     print("had an error in inserted_at")
-                    pass
 
                 old_through_id = (
                     get_model_from_str(through_type)
@@ -3625,7 +3633,9 @@ def update_value(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("objectID"))
         object_type = json.loads(request.POST.get("objectType"))
         data = json.loads(request.POST.get("data"))
-        print(data)
+        changeFieldID = request.POST.get("changeFieldID", False)
+        if changeFieldID:
+            changeFieldID = json.loads(changeFieldID)
         objects = get_model_from_str(object_type).objects
         if hasattr(objects, "get_subclass"):
             object_to_update = objects.get_subclass(pk=object_id)
@@ -3640,7 +3650,8 @@ def update_value(request: HttpRequest) -> HttpResponse:
     try:
         workflow = object_to_update.get_workflow()
         actions.dispatch_wf(
-            workflow, actions.changeField(object_id, object_type, data),
+            workflow,
+            actions.changeField(object_id, object_type, data, changeFieldID),
         )
         if object_type == "outcome":
             actions.dispatch_to_parent_wf(
@@ -3911,7 +3922,7 @@ def remove_comment(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-# @user_can_delete(False)
+@user_can_delete(False)
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -3942,6 +3953,11 @@ def delete_self(request: HttpRequest) -> HttpResponse:
                     linked_nodes__week__workflow__id=model.id
                 )
             )
+            parent_workflows = [
+                node.get_workflow()
+                for node in Node.objects.filter(linked_workflow=model)
+            ]
+
         elif object_type == "outcome":
             linked_workflows = list(
                 Workflow.objects.filter(
@@ -3971,7 +3987,10 @@ def delete_self(request: HttpRequest) -> HttpResponse:
         elif object_type == "column":
             parent_id = ColumnWorkflow.objects.get(column=model).id
             extra_data = (
-                workflow.columnworkflow_set.order_by("rank").first().column.id
+                workflow.columnworkflow_set.filter(column__deleted=False)
+                .order_by("rank")
+                .first()
+                .column.id
             )
         elif object_type == "node":
             parent_id = NodeWeek.objects.get(node=model).id
@@ -4004,20 +4023,24 @@ def delete_self(request: HttpRequest) -> HttpResponse:
                     object_id, "child" + object_type, parent_id, extra_data
                 ),
             )
-    print("Checking linked workflows")
-    print(linked_workflows)
     if linked_workflows:
-        print(linked_workflows)
         for wf in linked_workflows:
-            print("SENDING DATA TO WF")
             data_package = get_parent_outcome_data(
                 wf.get_subclass(), request.user
             )
             actions.dispatch_wf(wf, actions.replaceStoreData(data_package))
+    if object_type in ["workflow", "activity", "course", "program"]:
+        for parent_workflow in parent_workflows:
+            data_package = get_child_outcome_data(
+                parent_workflow.get_subclass(), request.user
+            )
+            actions.dispatch_wf(
+                parent_workflow, actions.replaceStoreData(data_package)
+            )
     return JsonResponse({"action": "posted"})
 
 
-# @user_can_delete(False)
+@user_can_delete(False)
 def restore_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -4052,6 +4075,10 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                     linked_nodes__week__workflow__id=model.id
                 )
             )
+            parent_workflows = [
+                node.get_workflow()
+                for node in Node.objects.filter(linked_workflow=model)
+            ]
         elif object_type == "outcome":
             linked_workflows = list(
                 Workflow.objects.filter(
@@ -4065,10 +4092,6 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                     )
                 )
             )
-            print("Linked workflows")
-            print(linked_workflows)
-        print("IN DLETE")
-        print(object_type)
         if object_type == "outcome":
             outcomes_list = [object_id] + list(
                 get_descendant_outcomes(model).values_list("pk", flat=True)
@@ -4118,12 +4141,8 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                     extra_data,
                 ),
             )
-    print("Checking linked workflows")
-    print(linked_workflows)
     if linked_workflows:
-        print(linked_workflows)
         for wf in linked_workflows:
-            print("SENDING DATA TO WF")
             data_package = get_parent_outcome_data(
                 wf.get_subclass(), request.user
             )
@@ -4135,10 +4154,18 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                         {"data": outcomes_to_update}
                     ),
                 )
+    if object_type in ["workflow", "activity", "course", "program"]:
+        for parent_workflow in parent_workflows:
+            data_package = get_child_outcome_data(
+                parent_workflow.get_subclass(), request.user
+            )
+            actions.dispatch_wf(
+                parent_workflow, actions.replaceStoreData(data_package)
+            )
     return JsonResponse({"action": "posted"})
 
 
-# @user_can_delete(False)
+@user_can_delete(False)
 def delete_self_soft(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -4169,6 +4196,10 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                     linked_nodes__week__workflow__id=model.id
                 )
             )
+            parent_workflows = [
+                node.get_workflow()
+                for node in Node.objects.filter(linked_workflow=model)
+            ]
         elif object_type == "outcome":
             linked_workflows = list(
                 Workflow.objects.filter(
@@ -4182,9 +4213,6 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                     )
                 )
             )
-        print(object_type)
-        print("linked wfs")
-        print(linked_workflows)
         if object_type == "week":
             parent_id = WeekWorkflow.objects.get(week=model).id
         elif object_type == "column":
@@ -4236,12 +4264,8 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                     object_id, "child" + object_type, parent_id, extra_data
                 ),
             )
-    print("Checking linked workflows")
-    print(linked_workflows)
     if linked_workflows:
-        print(linked_workflows)
         for wf in linked_workflows:
-            print("SENDING DATA TO WF")
             data_package = get_parent_outcome_data(
                 wf.get_subclass(), request.user
             )
@@ -4253,6 +4277,14 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                         {"data": outcomes_to_update}
                     ),
                 )
+    if object_type in ["workflow", "activity", "course", "program"]:
+        for parent_workflow in parent_workflows:
+            data_package = get_child_outcome_data(
+                parent_workflow.get_subclass(), request.user
+            )
+            actions.dispatch_wf(
+                parent_workflow, actions.replaceStoreData(data_package)
+            )
     return JsonResponse({"action": "posted"})
 
 

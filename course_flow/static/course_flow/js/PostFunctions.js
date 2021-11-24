@@ -52,7 +52,7 @@ export function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>cons
     });
 }
 
-export function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
+export function updateValue(objectID,objectType,json,changeField=false,callBackFunction=()=>console.log("success")){
     var t = 1000;
     let previousCall = document.lastUpdateCall;
     document.lastUpdateCall = {time:Date.now(),id:objectID,type:objectType,field:Object.keys(json)[0]};
@@ -63,13 +63,16 @@ export function updateValue(objectID,objectType,json,callBackFunction=()=>consol
     if(previousCall && (previousCall.id!=document.lastUpdateCall.id || previousCall.type!=document.lastUpdateCall.type ||previousCall.field!=document.lastUpdateCall.field)){
        document.lastUpdateCallFunction();
     }
+    let post_object = {
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify(objectType),
+        data:JSON.stringify(json)
+    }
+    if(changeField)post_object.changeFieldID = changeFieldID;
+    else post_object.changeFieldID=0;
     document.lastUpdateCallFunction = ()=>{
         try{
-            $.post(post_paths.update_value, {
-                objectID:JSON.stringify(objectID),
-                objectType:JSON.stringify(objectType),
-                data:JSON.stringify(json)
-            }).done(function(data){
+            $.post(post_paths.update_value, post_object).done(function(data){
                 if(data.action == "posted") callBackFunction(data);
                 else fail_function();
             });
@@ -339,13 +342,16 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
 
 
 export function dragAction(action_data,callBackFunction=()=>console.log("success")){
-    console.log(action_data);
     try{
+        workflow_renderer.tiny_loader.startLoad();
+        $(".ui-draggable").draggable("disable");
         $.post(post_paths.inserted_at, 
             action_data
         ).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else fail_function();
+            $(".ui-draggable").draggable("enable");
+            workflow_renderer.tiny_loader.endLoad();
         });
     }catch(err){
         fail_function();

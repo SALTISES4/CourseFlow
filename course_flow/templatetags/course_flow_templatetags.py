@@ -32,6 +32,8 @@ def not_deleted(query):
 
 @register.filter
 def not_deleted_favourites(query):
+    if query is None:
+        return None
     return query.exclude(
         Q(
             object_id__in=models.Workflow.objects.filter(

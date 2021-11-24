@@ -172,7 +172,6 @@ export class WorkflowRenderer{
     }
     
     render(container,view_type="workflowview"){
-        console.log("rendering a view");
         this.view_type=view_type;
         reactDom.render(<WorkflowLoader/>,container[0]);
         let store = this.store;
@@ -202,14 +201,11 @@ export class WorkflowRenderer{
         
         
         container.on("ports-rendered",(evt)=>{
-            console.log("PORTS RENDERED");
-            console.log(renderer.ports_to_render);
             evt.stopPropagation();
             renderer.ports_to_render--;
             if(renderer.ports_to_render>0)return;
             renderer.ports_rendered=true;
             container.triggerHandler("render-links");
-            console.log("RENDERING LINKS");
         });
         
         container.on("render-links",(evt)=>{
@@ -219,13 +215,10 @@ export class WorkflowRenderer{
         this.selection_manager = new SelectionManager(); 
         this.selection_manager.renderer = renderer;
         this.tiny_loader = new TinyLoader(container);
-        console.log("view type is "+view_type);
         if(view_type=="outcomeedit"){
             //get additional data about parent workflow prior to render
             getWorkflowParentData(workflow_model_id,(response)=>{
-                console.log(response)
                 store.dispatch(Reducers.replaceStoreData(response.data_package));
-                console.log(store.getState());
                 reactDom.render(
                     <Provider store = {store}>
                         <WorkflowBaseView view_type={view_type} renderer={this}/>
@@ -237,9 +230,7 @@ export class WorkflowRenderer{
         }else if(view_type=="horizontaloutcometable" || view_type=="alignmentanalysis"){
             //get additional data about child workflows prior to render
             getWorkflowChildData(workflow_model_id,(response)=>{
-                console.log(response)
                 store.dispatch(Reducers.replaceStoreData(response.data_package));
-                console.log(store.getState());
                 reactDom.render(
                     <Provider store = {store}>
                         <WorkflowBaseView view_type={view_type} renderer={this}/>
@@ -270,7 +261,6 @@ export class WorkflowRenderer{
     connection_opened(){
         getWorkflowData(workflow_model_id,(response)=>{
             let data_flat = response.data_package;
-            console.log(data_flat)
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
             this.render($("#container"));
             this.create_connection_bar();
@@ -291,27 +281,22 @@ export class WorkflowRenderer{
     
     parsemessage = function(e){
         const data = JSON.parse(e.data);
-        console.log(data);
         if(data.type=="workflow_action"){
             this.store.dispatch(data.action);
         }else if(data.type=="lock_update"){
-            console.log("got a lock update");
             this.lock_update_received(data.action);
         }else if(data.type=="connection_update"){
-            console.log("got a connection update");
             this.connection_update_received(data.action);
         }
     }
     
     message_received(e){
-        console.log("received a message");
         if(this.messages_queued)this.message_queue.push(e);
         else this.parsemessage(e);
     }
     
     micro_update(obj){
         if(this.updateSocket){
-            console.log("sending message");
             this.updateSocket.send(JSON.stringify({type:"micro_update",action:obj}))
         }
     }
@@ -319,24 +304,18 @@ export class WorkflowRenderer{
     change_field(id,object_type,field,value){
         let json = {};
         json[field]=value;
-        console.log("DISPATCHING");
-        console.log(Reducers.changeField(id,object_type,json));
         this.store.dispatch(Reducers.changeField(id,object_type,json));
-        console.log("DISPATCHED");
-        updateValue(id,object_type,json);
+        updateValue(id,object_type,json,true);
     }
     
     
     lock_update(obj,time,lock){
         if(this.updateSocket){
-            console.log("sending message");
             this.updateSocket.send(JSON.stringify({type:"lock_update",lock:{...obj,expires:Date.now()+time,user_id:user_id,user_colour:myColour,lock:lock}}));
         }
     }
     
     lock_update_received(data){
-        console.log("message from lock update");
-        console.log(data);
         let store = this.store;
         let object_type=data.object_type;
         let object_id=data.object_id;

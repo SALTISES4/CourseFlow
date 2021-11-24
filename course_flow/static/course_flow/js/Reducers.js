@@ -215,6 +215,7 @@ export function workflowReducer(state={},action){
             new_state.columnworkflow_set = new_columnworkflow_set;
             return new_state;
         case 'workflow/changeField':
+            if(action.payload.changeFieldID==changeFieldID)return state;
             var new_state = {...state,...action.payload.json};
             return new_state;
         default:
@@ -346,6 +347,7 @@ export function columnReducer(state=[],action){
             new_state.push(action.payload.new_model);
             return new_state;
         case 'column/changeField':
+            if(action.payload.changeFieldID==changeFieldID)return state;
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
@@ -540,6 +542,7 @@ export function weekReducer(state=[],action){
             }
             return state;
         case 'week/changeField':
+            if(action.payload.changeFieldID==changeFieldID)return state;
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
@@ -637,16 +640,29 @@ export function nodeReducer(state=[],action){
             var new_state = state.slice();
             var new_column;
             if(action.payload.extra_data){
-                new_column = action.payload.extra_data[0];
-                if(new_column==action.payload.id)new_column=action.payload.extra_data[1];
+                new_column = action.payload.extra_data;
             }
             
             for(var i=0;i<state.length;i++){
                 if(state[i].column==action.payload.id){
-                    new_state[i]={...state[i]};
-                    new_state[i].column=new_column;
+                    new_state[i]={...state[i],column:new_column};
                 }
             }
+            Constants.triggerHandlerEach($(".week .node"),"component-updated");
+            return new_state;
+        case 'column/restoreSelf':
+            var new_state = state.slice();
+            var new_column;
+            if(action.payload.id){
+                new_column = action.payload.id;
+            }
+            
+            for(var i=0;i<state.length;i++){
+                if(action.payload.extra_data.indexOf(state[i].id)>=0){
+                    new_state[i]={...state[i],column:new_column};
+                }
+            }
+            Constants.triggerHandlerEach($(".week .node"),"component-updated");
             return new_state;
         case 'node/changedColumn':
             for(var i=0;i<state.length;i++){
@@ -723,6 +739,7 @@ export function nodeReducer(state=[],action){
             new_state.push(action.payload.new_model);
             return new_state;
         case 'node/changeField':
+            if(action.payload.changeFieldID==changeFieldID)return state;
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
@@ -988,6 +1005,7 @@ export function outcomeReducer(state=[],action){
             return state;
         case 'outcome/changeField':
         case 'outcome_base/changeField':
+            if(action.payload.changeFieldID==changeFieldID)return state;
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
@@ -997,8 +1015,6 @@ export function outcomeReducer(state=[],action){
             }
             return state;
         case 'outcomehorizontallink/updateDegree':
-            console.log("GOT OUTCOMEHORIZONTALLINK UPDATE CALL");
-            console.log(action.payload);
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomehorizontallink==-1)return state;
             for(var i=0;i<state.length;i++){
@@ -1124,6 +1140,7 @@ export function parentOutcomeReducer(state=[],action){
             return state;
         case 'parentoutcome/changeField':
         case 'parentoutcome_base/changeField':
+            if(action.payload.changeFieldID==changeFieldID)return state;
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
@@ -1396,6 +1413,7 @@ export function childOutcomeReducer(state=[],action){
             return state;
         case 'childoutcome/changeField':
         case 'childoutcome_base/changeField':
+            if(action.payload.changeFieldID==changeFieldID)return state;
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();

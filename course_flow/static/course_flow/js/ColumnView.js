@@ -23,9 +23,11 @@ class ColumnView extends ComponentJSON{
         if(data.lock){
             style.border="2px solid "+data.lock.user_colour;
         }
+        let css_class = "column";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
         return (
-            <div ref={this.maindiv} style={style} class={"column"} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
+            <div ref={this.maindiv} style={style} class={css_class} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="column-line">
                     <img src={this.getIcon()}/>
                     <div>{title}</div>

@@ -27,8 +27,6 @@ class AlignmentView extends ComponentJSON{
                 </div>
             );
         });
-        console.log("outcomes");
-        console.log(this.props.outcomes);
 
         let outcomes_block;
         let terms_block;

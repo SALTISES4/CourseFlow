@@ -6,9 +6,9 @@ export const getColumnByID = (state,id)=>{
             data:column,
             sibling_count:state.workflow.columnworkflow_set.length,
             columnworkflows:state.workflow.columnworkflow_set,
-            column_order:state.columnworkflow.sort(
-                (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
-            ).map(columnworkflow=>columnworkflow.column),
+            column_order:state.workflow.columnworkflow_set.map((columnworkflow_id)=>
+                getColumnWorkflowByID(state, columnworkflow_id).data.column
+            ),
         };
     }
 }
@@ -23,9 +23,9 @@ export const getWeekByID = (state,id)=>{
         var week = state.week[i];
         if(week.id==id)return {
             data:week,
-            column_order:state.columnworkflow.sort(
-                (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
-            ).map(columnworkflow=>columnworkflow.column),
+            column_order:state.workflow.columnworkflow_set.map((columnworkflow_id)=>
+                getColumnWorkflowByID(state, columnworkflow_id).data.column
+            ),
             sibling_count:state.workflow.weekworkflow_set.length,
             nodeweeks:state.nodeweek
         };
@@ -105,17 +105,12 @@ export const getNodeLinkByID = (state,id)=>{
 //Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids. These can later be pieced together in an iteration over the outcomes to create a list of ranks.
 //Find the root outcome, and as we go, create pairs of parent outcome ids / throughmodel ids. These can later be pieced together in an iteration over the outcomes to create a list of ranks.
 function findRootOutcome(id,rank,state){
-    console.log("trying to find root outcome");
-    console.log(state);
     for(let i=0;i<state.length;i++){
         if(state[i].child==id){
             rank.unshift({parent:state[i].parent,through:state[i].id});
-            console.log("found root outcome");
-            console.log(state[i].parent);
             return findRootOutcome(state[i].parent,rank,state);
         }
     }
-    console.log("Failed to find root outcome");
     return {id:id,rank:rank};
 }
 function findTopRank(state,outcome,get_alternate){

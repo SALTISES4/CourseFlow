@@ -603,7 +603,6 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
     }
     
     render(){
-        console.log(this.state);
         if(this.state.has_loaded){
             let parent_workflows = this.state.parent_workflows.map(parent_workflow=>
                 <a href={update_path["workflow"].replace("0",parent_workflow.id)} class="panel-favourite">

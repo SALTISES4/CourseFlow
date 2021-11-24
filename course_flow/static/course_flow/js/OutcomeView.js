@@ -67,11 +67,13 @@ class OutcomeView extends ComponentJSON{
             style.border="2px solid "+data.lock.user_colour;
         }
         
+        let css_class="outcome";
+        if(data.is_dropped)css_class+=" dropped";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        
         return(
             <div style={style}
-            class={
-                "outcome"+((data.is_dropped && " dropped")||"")
-            }
+            class={css_class}
             ref={this.maindiv} 
             onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="outcome-title">

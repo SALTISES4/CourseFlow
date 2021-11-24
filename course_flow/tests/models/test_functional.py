@@ -1,5 +1,6 @@
 import time
 
+from channels.testing import ChannelsLiveServerTestCase, HttpCommunicator
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -10,6 +11,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 
+from course_flow.consumers import WorkflowUpdateConsumer
 from course_flow.models import (
     Activity,
     Course,
@@ -32,6 +34,10 @@ from course_flow.utils import get_model_from_str
 from .utils import get_author, login
 
 timeout = 10
+
+
+class ChannelsStaticLiveServerTestCase(ChannelsLiveServerTestCase):
+    serve_static = True
 
 
 def action_hover_click(selenium, hover_item, click_item):
@@ -83,7 +89,7 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
         self.assertEqual(self.live_server_url + "/home/", selenium.current_url)
 
 
-class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
+class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
         if settings.CHROMEDRIVER_PATH is not None:
@@ -106,6 +112,12 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
     def tearDown(self):
         self.selenium.quit()
         super(SeleniumWorkflowsTestCase, self).tearDown()
+
+    #    async def test_my_consumer(self):
+    #        communicator = HttpCommunicator(WorkflowUpdateConsumer,"GET","/test/")
+    #        response = await communicator.get_response()
+    #        self.assertEqual(response["body"], b"test response")
+    #        self.assertEqual(response["status"], 200)
 
     def test_create_project_and_workflows(self):
         selenium = self.selenium
@@ -163,6 +175,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             title.send_keys(project_title)
             description.send_keys(project_description)
             selenium.find_element_by_id("save-button").click()
+            time.sleep(2)
             assert (
                 project_title
                 in selenium.find_element_by_id("workflowtitle").text
@@ -197,6 +210,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             title.send_keys(project_title)
             description.send_keys(project_description)
             selenium.find_element_by_id("save-button").click()
+            time.sleep(2)
             assert (
                 project_title
                 in selenium.find_element_by_class_name("workflow-title").text
@@ -212,6 +226,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             selenium.find_element_by_css_selector(
                 ".workflow-for-menu." + workflow_type + " .workflow-title"
             ).click()
+            time.sleep(2)
             assert (
                 project_title
                 in selenium.find_element_by_id("workflowtitle").text
@@ -252,7 +267,13 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             time.sleep(2)
             self.assertEqual(
                 get_model_from_str(workflow_type)
-                .objects.filter(is_strategy=False)
+                .objects.filter(is_strategy=False, deleted=False)
+                .count(),
+                1,
+            )
+            self.assertEqual(
+                get_model_from_str(workflow_type)
+                .objects.filter(is_strategy=False, deleted=True)
                 .count(),
                 1,
             )
@@ -577,11 +598,11 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             workflow.weeks.first().nodes.create(
                 author=self.user, column=workflow.columns.first()
             )
-
             selenium.get(
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
+            time.sleep(2)
             num_columns = workflow.columns.all().count()
             num_weeks = workflow.weeks.all().count()
             num_nodes = 1
@@ -616,6 +637,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".column .insert-sibling-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
+            time.sleep(0.5)
             hover_item = selenium.find_element_by_css_selector(
                 ".workflow-details .week"
             )
@@ -634,7 +656,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ".node .insert-sibling-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
-            time.sleep(2)
+            time.sleep(6)
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -736,6 +758,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
+            time.sleep(2)
             num_columns = workflow.columns.all().count()
             num_weeks = workflow.weeks.all().count()
             num_nodes = 1
@@ -828,6 +851,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[workflow.pk])
         )
+        time.sleep(2)
         selenium.find_element_by_css_selector("a[href='#outcome-bar']").click()
         selenium.find_element_by_css_selector("#edit-outcomes-button").click()
         time.sleep(1)
@@ -838,7 +862,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             ".outcome .insert-child-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
-        time.sleep(1)
+        time.sleep(2)
 
         self.assertEqual(
             len(
@@ -858,7 +882,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             ".outcome .outcome .insert-sibling-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
-        time.sleep(1)
+        time.sleep(2)
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
@@ -879,7 +903,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         action_hover_click(selenium, hover_item, click_item).perform()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
-        time.sleep(1)
+        time.sleep(2)
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
@@ -888,13 +912,14 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             ),
             1,
         )
+        # Make sure item has only been soft deleted
         self.assertEqual(
-            OutcomeOutcome.objects.filter(parent=base_outcome).count(), 1
+            OutcomeOutcome.objects.filter(parent=base_outcome).count(), 2
         )
         selenium.find_element_by_css_selector(
             ".children-block:not(:empty)+.outcome-create-child"
         ).click()
-        time.sleep(1)
+        time.sleep(2)
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
@@ -910,7 +935,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             ".outcome .outcome .duplicate-self-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
-        time.sleep(1)
+        time.sleep(2)
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
@@ -920,10 +945,10 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             3,
         )
         self.assertEqual(
-            OutcomeOutcome.objects.filter(parent=base_outcome).count(), 3
+            OutcomeOutcome.objects.filter(parent=base_outcome).count(), 2
         )
         selenium.find_element_by_css_selector("#add-new-outcome").click()
-        time.sleep(2)
+        time.sleep(3)
         self.assertEqual(Outcome.objects.filter(depth=0).count(), 2)
         self.assertEqual(
             OutcomeWorkflow.objects.filter(workflow=workflow).count(), 2
@@ -935,7 +960,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .insert-sibling-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
-        time.sleep(1)
+        time.sleep(2)
 
         self.assertEqual(
             len(
@@ -955,7 +980,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .duplicate-self-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
-        time.sleep(1)
+        time.sleep(2)
 
         self.assertEqual(
             len(
@@ -990,6 +1015,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
+            time.sleep(2)
             selenium.find_element_by_css_selector(
                 ".workflow-details .node"
             ).click()
@@ -1071,6 +1097,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
+            time.sleep(2)
             selenium.find_element_by_id("project-return").click()
             assert (
                 "project title"
@@ -1101,6 +1128,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
+            time.sleep(2)
             selenium.find_element_by_css_selector(
                 ".workflow-details .week"
             ).click()
@@ -1110,7 +1138,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             )
             time.sleep(2.5)
             selenium.find_element_by_id("toggle-strategy-editor").click()
-            time.sleep(2)
+            time.sleep(4)
             selenium.find_element_by_css_selector(
                 "a[href='#strategy-bar']"
             ).click()
@@ -1127,6 +1155,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 "a[href='#tabs-" + str(i) + "']"
             ).click()
             selenium.find_element_by_css_selector(".workflow-title").click()
+            time.sleep(2)
             assert (
                 "new strategy"
                 in selenium.find_element_by_css_selector(
@@ -1184,6 +1213,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
+            time.sleep(2)
             selenium.find_element_by_css_selector(".other-views").click()
             selenium.find_element_by_css_selector(
                 "#button_outcometable"
@@ -1316,7 +1346,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
 
             # Toggle the base outcome. Check to make sure the children and totals columns behave as expected
             base_toggle.perform()
-            time.sleep(1)
+            time.sleep(2)
             assert_image(base_img, "solid_check")
             assert_image(base_total_img, "/check")
             assert_image(base_grandtotal_img, "/check")
@@ -1329,7 +1359,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
 
             # Toggle one of the children. We expect to lose the top outcome to partial completion
             outcome1_toggle.perform()
-            time.sleep(1)
+            time.sleep(3)
             assert_image(base_img, "/nocheck")
             assert_image(base_total_img, "/nocheck")
             assert_image(base_grandtotal_img, "/nocheck")
@@ -1341,7 +1371,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert_image(outcome2_grandtotal_img, "/check")
             # check that re-toggling outcome 1 adds the parent
             outcome1_toggle.perform()
-            time.sleep(1)
+            time.sleep(3)
             assert_image(base_img, "solid_check")
             assert_image(base_total_img, "/check")
             assert_image(base_grandtotal_img, "/check")
@@ -1353,7 +1383,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert_image(outcome2_grandtotal_img, "/check")
             # check that removing the base outcome clears all
             base_toggle.perform()
-            time.sleep(1)
+            time.sleep(3)
             assert_no_image(base_img)
             assert_no_image(base_total_img)
             assert_no_image(base_grandtotal_img)
@@ -1365,7 +1395,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert_no_image(outcome2_grandtotal_img)
             # check completion when not all children are toggled
             outcome1_toggle.perform()
-            time.sleep(1)
+            time.sleep(3)
             assert_image(base_img, "/nocheck")
             assert_image(base_total_img, "/nocheck")
             assert_image(base_grandtotal_img, "/nocheck")
@@ -1381,7 +1411,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 selenium.find_element_by_css_selector(outcome2_cell2),
                 selenium.find_element_by_css_selector(outcome2_input2),
             ).perform()
-            time.sleep(1)
+            time.sleep(3)
 
             assert_image(base_img, "/nocheck")
             assert_image(base_img2, "/nocheck")
@@ -1432,6 +1462,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[program.pk])
         )
+        time.sleep(2)
         selenium.find_element_by_css_selector(
             "#sidebar .window-close-button"
         ).click()
@@ -1569,7 +1600,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
 
         # Toggle the base outcome. Check to make sure the children and totals columns behave as expected
         base_toggle.perform()
-        time.sleep(1)
+        time.sleep(4)
         assert_image(base_img, "solid_check")
         assert_image(base_total_img, "/check")
         assert_image(base_grandtotal_img, "/check")
@@ -1582,7 +1613,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
 
         # Toggle one of the children. We expect to lose the top outcome to partial completion
         outcome1_toggle.perform()
-        time.sleep(1)
+        time.sleep(3)
         assert_image(base_img, "/nocheck")
         assert_image(base_total_img, "/nocheck")
         assert_image(base_grandtotal_img, "/nocheck")
@@ -1594,7 +1625,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         assert_image(outcome2_grandtotal_img, "/check")
         # check that re-toggling outcome 1 adds the parent
         outcome1_toggle.perform()
-        time.sleep(1)
+        time.sleep(3)
         assert_image(base_img, "solid_check")
         assert_image(base_total_img, "/check")
         assert_image(base_grandtotal_img, "/check")
@@ -1606,7 +1637,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         assert_image(outcome2_grandtotal_img, "/check")
         # check that removing the base outcome clears all
         base_toggle.perform()
-        time.sleep(1)
+        time.sleep(4)
         assert_no_image(base_img)
         assert_no_image(base_total_img)
         assert_no_image(base_grandtotal_img)
@@ -1618,7 +1649,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         assert_no_image(outcome2_grandtotal_img)
         # check completion when not all children are toggled
         outcome1_toggle.perform()
-        time.sleep(1)
+        time.sleep(3)
         assert_image(base_img, "/nocheck")
         assert_image(base_total_img, "/nocheck")
         assert_image(base_grandtotal_img, "/nocheck")
@@ -1634,7 +1665,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             selenium.find_element_by_css_selector(outcome2_cell2),
             selenium.find_element_by_css_selector(outcome2_input2),
         ).perform()
-        time.sleep(1)
+        time.sleep(3)
 
         assert_image(base_img, "/nocheck")
         assert_image(base_img2, "/nocheck")
@@ -1692,6 +1723,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[program.pk])
         )
+        time.sleep(2)
         selenium.find_element_by_css_selector(".other-views").click()
         selenium.find_element_by_css_selector(
             "#button_alignmentanalysis"
@@ -1764,6 +1796,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[program.pk])
         )
+        time.sleep(2)
         selenium.find_element_by_css_selector(".other-views").click()
         selenium.find_element_by_css_selector(
             "#button_competencymatrix"
@@ -1771,7 +1804,6 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         time.sleep(1)
 
         selenium.find_element_by_css_selector(".menu-create").click()
-        
 
     def test_grid_view(self):
         selenium = self.selenium
@@ -1789,6 +1821,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[program.pk])
         )
+        time.sleep(2)
         selenium.find_element_by_css_selector(".other-views").click()
         selenium.find_element_by_css_selector("#button_grid").click()
         time.sleep(1)
@@ -1819,6 +1852,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
+            time.sleep(2)
             this_url = selenium.current_url
             if workflow_type == "activity":
                 continue
@@ -1842,6 +1876,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                     ".workflow-details .node"
                 )
             ).perform()
+            time.sleep(2)
             assert (
                 workflow_types[i - 1]
                 in selenium.find_element_by_css_selector(
@@ -1849,6 +1884,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 ).text
             )
             selenium.get(this_url)
+            time.sleep(2)
             selenium.find_element_by_css_selector(
                 ".workflow-details .node .node-title"
             ).click()
@@ -1991,7 +2027,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             ".workflow-toggle-favourite"
         ):
             button.click()
-        time.sleep(0.5)
+        time.sleep(3)
         self.assertEqual(
             Favourite.objects.filter(
                 user=self.user,

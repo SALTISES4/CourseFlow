@@ -43,10 +43,11 @@ export class ComponentJSON extends React.Component{
                 return helper;
             },
             start:(e,ui)=>{
-                if($(e.target).hasClass("placeholder"))return;
+                var drag_item = $(e.target);
+                if(drag_item.hasClass("placeholder")){e.preventDefault();return false;}
+                if(drag_item.children(".locked:not(.locked-"+user_id+")").length>0){e.preventDefault();return false;}
                 $(".workflow-canvas").addClass("dragging-"+draggable_type);
                 $(draggable_selector).addClass("dragging");
-                var drag_item = $(e.target);
                 var old_parent_id = parent_id;
                 drag_item.attr("data-old-parent-id",parent_id);
                 var old_index = drag_item.prevAll().length;

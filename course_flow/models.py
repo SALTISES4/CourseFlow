@@ -176,6 +176,7 @@ class Column(models.Model):
 
 
 class NodeLink(models.Model):
+    deleted = models.BooleanField(default=False)
     title = models.CharField(max_length=100, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     source_node = models.ForeignKey(
@@ -329,9 +330,9 @@ class OutcomeHorizontalLink(models.Model):
             parent_outcome = self.parent_outcome.parent_outcomes.first()
             if (
                 OutcomeHorizontalLink.objects.filter(
-                    parent_outcome__in=parent_outcome.children.exclude(deleted=True).values_list(
-                        "id", flat=True
-                    ),
+                    parent_outcome__in=parent_outcome.children.exclude(
+                        deleted=True
+                    ).values_list("id", flat=True),
                     degree=self.degree,
                     outcome=self.outcome,
                 ).count()
@@ -601,9 +602,9 @@ class OutcomeNode(models.Model):
             parent_outcome = self.outcome.parent_outcomes.first()
             if (
                 OutcomeNode.objects.filter(
-                    outcome__in=parent_outcome.children.exclude(deleted=True).values_list(
-                        "id", flat=True
-                    ),
+                    outcome__in=parent_outcome.children.exclude(
+                        deleted=True
+                    ).values_list("id", flat=True),
                     degree=self.degree,
                     node=self.node,
                 ).count()
@@ -748,7 +749,7 @@ class Workflow(models.Model):
     @property
     def author(self):
         return self.get_subclass().author
-    
+
     deleted = models.BooleanField(default=False)
 
     title = models.CharField(max_length=50, null=True, blank=True)
@@ -838,10 +839,8 @@ class Workflow(models.Model):
 
     time_general_hours = models.PositiveIntegerField(default=0, null=True)
     time_specific_hours = models.PositiveIntegerField(default=0, null=True)
-    
-    edit_count=models.PositiveIntegerField(default=0,null=False)
-    
-    
+
+    edit_count = models.PositiveIntegerField(default=0, null=False)
 
     SUBCLASSES = ["activity", "course", "program"]
 
@@ -1080,17 +1079,18 @@ class ObjectPermission(models.Model):
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
 
-#class WorkflowAction(models.Model):
+
+# class WorkflowAction(models.Model):
 #    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 #    created_on = models.DateTimeField(default=timezone.now)
 #    action_type = models.PositiveIntegerField(choices=ACTION_CHOICES)
 #    action_arguments = models.CharField(blank=False)
 #    undo_type = models.PositiveIntegerField(choices=ACTION_CHOICES)
 #    undo_arguments = models.CharField(blank=False)
-#    
+#
 #    NEW_NODE = 0
 #    DELETE_SELF = 1
-#    
+#
 #    ACTION_CHOICES = (
 #        (NEW_NODE, _("New Node")),
 #        (DELETE_SELF, _("Delete")),
@@ -1113,10 +1113,10 @@ def get_allowed_parent_outcomes(workflow, **kwargs):
     return parent_outcomes
 
 
-#@receiver(pre_delete, sender=OutcomeNode)
-#def remove_horizontal_outcome_links_on_outcomenode_delete(
+# @receiver(pre_delete, sender=OutcomeNode)
+# def remove_horizontal_outcome_links_on_outcomenode_delete(
 #    sender, instance, **kwargs
-#):
+# ):
 #    workflow = instance.node.linked_workflow
 #    if workflow is not None:
 #        linked_outcomes = list(workflow.outcomes.all())
@@ -1128,8 +1128,8 @@ def get_allowed_parent_outcomes(workflow, **kwargs):
 #        ).exclude(parent_outcome__in=parent_outcomes).delete()
 
 
-#@receiver(pre_save, sender=Node)
-#def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
+# @receiver(pre_save, sender=Node)
+# def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
 #    if instance.pk is None:
 #        return
 #    old_workflow = Node.objects.get(id=instance.pk).linked_workflow
@@ -1313,7 +1313,9 @@ def delete_workflow_objects(sender, instance, **kwargs):
         | Q(outcome__parent_outcomes__parent_outcomes__workflow=instance)
         | Q(parent_outcome__workflow=instance)
         | Q(parent_outcome__parent_outcomes__workflow=instance)
-        | Q(parent_outcome__parent_outcomes__parent_outcomes__workflow=instance)
+        | Q(
+            parent_outcome__parent_outcomes__parent_outcomes__workflow=instance
+        )
     )
     outcomehorizontallinks._raw_delete(outcomehorizontallinks.db)
     nodeweeks = NodeWeek.objects.filter(week__workflow=instance)

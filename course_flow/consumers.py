@@ -31,7 +31,6 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
             self.accept()
 
     def disconnect(self, close_code):
-        print("disconnecting")
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name, self.channel_name
         )
@@ -47,18 +46,15 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         if not self.EDIT:
             return
         text_data_json = json.loads(text_data)
-        print(text_data)
 
         if text_data_json["type"] == "micro_update":
             action = text_data_json["action"]
-            print(action)
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
                 {"type": "workflow_action", "action": action},
             )
         elif text_data_json["type"] == "lock_update":
             lock = text_data_json["lock"]
-            print(lock)
             if lock["lock"]:
                 self.last_lock = {**lock, "lock": False}
             async_to_sync(self.channel_layer.group_send)(

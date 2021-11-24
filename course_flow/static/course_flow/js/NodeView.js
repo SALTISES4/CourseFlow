@@ -72,10 +72,17 @@ class NodeView extends ComponentJSON{
         if(data.is_dropped)dropIcon = "droptriangleup";
         else dropIcon = "droptriangledown";
         let linkIcon;
+        let linktext = gettext("Visit linked workflow");
+        let clickfunc = this.doubleClick.bind(this);
+        if(data.linked_workflow_data){
+            if(data.linked_workflow_data.deleted)linktext=gettext("<Deleted Workflow>")
+            if(data.linked_workflow_data.deleted)clickfunc=null;
+        }
+        
         if(data.linked_workflow)linkIcon=(
-            <div class="hover-shade linked-workflow" onClick={this.doubleClick.bind(this)}>
+            <div class="hover-shade linked-workflow" onClick={clickfunc}>
                 <img src={iconpath+"wflink.svg"}/>
-                <div>{gettext("Visit linked workflow")}</div>
+                <div>{linktext}</div>
             </div>
         );
         let dropText = "";
@@ -93,13 +100,13 @@ class NodeView extends ComponentJSON{
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
-        
+        let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
+        if(data.is_dropped)css_class+=" dropped";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         return (
             <div 
                 style={style} 
-                class={
-                    "node column-"+data.column+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
-                }
+                class={css_class}
                 id={data.id} 
                 ref={this.maindiv} 
                 onClick={(evt)=>selection_manager.changeSelection(evt,this)}
