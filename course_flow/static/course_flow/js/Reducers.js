@@ -642,7 +642,9 @@ export function nodeReducer(state=[],action){
             if(action.payload.extra_data){
                 new_column = action.payload.extra_data;
             }
-            
+            console.log("A column has been deleted: "+action.payload.id);
+            console.log(state);
+            console.log("replacement column is: "+new_column);
             for(var i=0;i<state.length;i++){
                 if(state[i].column==action.payload.id){
                     new_state[i]={...state[i],column:new_column};

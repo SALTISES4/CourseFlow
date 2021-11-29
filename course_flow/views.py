@@ -3962,12 +3962,6 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             parent_id = WeekWorkflow.objects.get(week=model).id
         elif object_type == "column":
             parent_id = ColumnWorkflow.objects.get(column=model).id
-            extra_data = (
-                workflow.columnworkflow_set.filter(column__deleted=False)
-                .order_by("rank")
-                .first()
-                .column.id
-            )
         elif object_type == "node":
             parent_id = NodeWeek.objects.get(node=model).id
         elif object_type == "outcome" and model.depth == 0:
@@ -3983,6 +3977,13 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             extra_data = RefreshSerializerNode(
                 Node.objects.filter(pk__in=affected_nodes), many=True,
             ).data
+        elif object_type =="column":
+            extra_data = (
+                workflow.columnworkflow_set.filter(column__deleted=False)
+                .order_by("rank")
+                .first()
+                .column.id
+            )
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
     if workflow is not None:
@@ -4193,12 +4194,6 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
             parent_id = WeekWorkflow.objects.get(week=model).id
         elif object_type == "column":
             parent_id = ColumnWorkflow.objects.get(column=model).id
-            extra_data = (
-                workflow.columnworkflow_set.filter(column__deleted=False)
-                .order_by("rank")
-                .first()
-                .column.id
-            )
 
         elif object_type == "node":
             parent_id = NodeWeek.objects.get(node=model).id
@@ -4224,6 +4219,13 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                 Outcome.objects.filter(horizontal_outcomes__in=outcomes_list),
                 many=True,
             ).data
+        elif object_type=="column":
+            extra_data = (
+                workflow.columnworkflow_set.filter(column__deleted=False)
+                .order_by("rank")
+                .first()
+                .column.id
+            )
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
     if workflow is not None:

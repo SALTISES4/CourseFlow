@@ -2230,3 +2230,530 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".message-wrap")), 0
         )
+
+        
+class SeleniumDeleteRestoreTestCase(SeleniumWorkflowsTestCase):
+    def test_delete_restore_column(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user)
+        for workflow_type in ["activity", "course", "program"]:
+            workflow = get_model_from_str(workflow_type).objects.create(
+                author=self.user
+            )
+            WorkflowProject.objects.create(workflow=workflow, project=project)
+            workflow.weeks.first().nodes.create(
+                author=self.user, column=workflow.columns.first()
+            )
+            workflow.outcomes.create(author=self.user)
+            workflow.outcomes.first().children.create(author=self.user)
+            selenium.get(
+                self.live_server_url
+                + reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            time.sleep(2)
+            
+            #Delete a column
+            column_id = workflow.columns.first().id
+            
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".workflow-details .node.column-"+str(column_id)
+                    )
+                ),
+                1,
+            )
+            hover_item = selenium.find_element_by_css_selector(
+                ".workflow-details .column"
+            )
+            click_item = selenium.find_element_by_css_selector(
+                ".column .delete-self-button img"
+            )
+            action_hover_click(selenium, hover_item, click_item).perform()
+            alert = wait.until(expected_conditions.alert_is_present())
+            selenium.switch_to.alert.accept()
+            time.sleep(2)
+            column2_id = workflow.columns.filter(deleted=False).first().id
+            
+            #Make sure all nodes have been moved to the first column
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".workflow-details .node.column-"+str(column2_id)
+                    )
+                ),
+                1,
+            )
+            
+            #Refresh, and make sure the change is permanent
+            selenium.get(
+                self.live_server_url
+                + reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            time.sleep(2)
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".workflow-details .node.column-"+str(column2_id)
+                    )
+                ),
+                1,
+            )
+            
+            #Restore the column
+            selenium.find_element_by_css_selector("a[href='#restore-bar'] img").click()
+            selenium.find_element_by_css_selector("#restore-bar-workflow .node-bar-column-block button").click()
+            time.sleep(2)
+            
+            #Make sure all nodes have been moved back to the restored column
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".workflow-details .node.column-"+str(column_id)
+                    )
+                ),
+                1,
+            )
+            
+            #Refresh, and make sure the change is permanent
+            selenium.get(
+                self.live_server_url
+                + reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            time.sleep(2)
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".workflow-details .node.column-"+str(column_id)
+                    )
+                ),
+                1,
+            )
+            
+    def test_delete_restore_node(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user)
+        for workflow_type in ["activity", "course", "program"]:
+            workflow = get_model_from_str(workflow_type).objects.create(
+                author=self.user
+            )
+            WorkflowProject.objects.create(workflow=workflow, project=project)
+            workflow.weeks.first().nodes.create(
+                author=self.user, column=workflow.columns.first()
+            )
+            workflow.outcomes.create(author=self.user)
+            workflow.outcomes.first().children.create(author=self.user)
+            selenium.get(
+                self.live_server_url
+                + reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            time.sleep(2)
+            
+            #Delete a node
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".workflow-details .node"
+                    )
+                ),
+                1,
+            )
+            hover_item = selenium.find_element_by_css_selector(
+                ".workflow-details .node"
+            )
+            click_item = selenium.find_element_by_css_selector(
+                ".node .delete-self-button img"
+            )
+            action_hover_click(selenium, hover_item, click_item).perform()
+            alert = wait.until(expected_conditions.alert_is_present())
+            selenium.switch_to.alert.accept()
+            time.sleep(2)
+            
+            #Make sure the node has vanished
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".workflow-details .node"
+                    )
+                ),
+                0,
+            )
+            
+            #Refresh, and make sure the change is permanent
+            selenium.get(
+                self.live_server_url
+                + reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            time.sleep(2)
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".workflow-details .node"
+                    )
+                ),
+                0,
+            )
+            
+            #Restore the node
+            selenium.find_element_by_css_selector("a[href='#restore-bar'] img").click()
+            selenium.find_element_by_css_selector("#restore-bar-workflow .node-bar-column-block button").click()
+            time.sleep(2)
+            
+            #Make sure the node was restored
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".workflow-details .node"
+                    )
+                ),
+                1,
+            )
+            
+            #Refresh, and make sure the change is permanent
+            selenium.get(
+                self.live_server_url
+                + reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            time.sleep(2)
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".workflow-details .node"
+                    )
+                ),
+                1,
+            ) 
+            
+    def test_delete_restore_outcome(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user)
+        for workflow_type in ["activity", "course", "program"]:
+            workflow = get_model_from_str(workflow_type).objects.create(
+                author=self.user
+            )
+            WorkflowProject.objects.create(workflow=workflow, project=project)
+            node1 = workflow.weeks.first().nodes.create(
+                author=self.user, column=workflow.columns.first()
+            )
+            node2 = workflow.weeks.first().nodes.create(
+                author=self.user, column=workflow.columns.first()
+            )
+            outcome = workflow.outcomes.create(author=self.user)
+            child1 = workflow.outcomes.first().children.create(author=self.user,depth=1)
+            child2 = workflow.outcomes.first().children.create(author=self.user,depth=1)
+            OutcomeNode.objects.create(node=node1,outcome=child1)
+            OutcomeNode.objects.create(node=node2,outcome=outcome)
+            selenium.get(
+                self.live_server_url
+                + reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            time.sleep(2)
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".outcome-node .outcome-"+str(outcome.id)
+                    )
+                ),
+                1,
+            )
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".outcome-node .outcome-"+str(child1.id)
+                    )
+                ),
+                2,
+            )
+            
+            
+            selenium.find_element_by_css_selector("#button_outcomeedit").click()
+            time.sleep(2)
+            
+            #Delete the parent outcome
+            hover_item = selenium.find_element_by_css_selector(
+                ".workflow-details .outcome-workflow>.outcome"
+            )
+            click_item = selenium.find_element_by_css_selector(
+                ".outcome-workflow>.outcome>.mouseover-actions .delete-self-button img"
+            )
+            action_hover_click(selenium, hover_item, click_item).perform()
+            alert = wait.until(expected_conditions.alert_is_present())
+            selenium.switch_to.alert.accept()
+            time.sleep(2)
+            selenium.find_element_by_css_selector("#button_workflowview").click()
+            
+            #Make sure the outcomenodes have vanished
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".outcome-node .outcome-"+str(outcome.id)
+                    )
+                ),
+                0,
+            )
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".outcome-node .outcome-"+str(child1.id)
+                    )
+                ),
+                0,
+            )
+            
+            #Refresh, and make sure the change is permanent
+            selenium.get(
+                self.live_server_url
+                + reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            time.sleep(2)
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".outcome-node .outcome-"+str(outcome.id)
+                    )
+                ),
+                0,
+            )
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".outcome-node .outcome-"+str(child1.id)
+                    )
+                ),
+                0,
+            )
+            
+            #Restore the outcome
+            selenium.find_element_by_css_selector("a[href='#restore-bar'] img").click()
+            selenium.find_element_by_css_selector("#restore-bar-workflow .node-bar-column-block button").click()
+            time.sleep(2)
+            
+            #Make sure the outcome was restored
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".outcome-node .outcome-"+str(outcome.id)
+                    )
+                ),
+                1,
+            )
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".outcome-node .outcome-"+str(child1.id)
+                    )
+                ),
+                2,
+            )
+            
+            #Refresh, and make sure the change is permanent
+            selenium.get(
+                self.live_server_url
+                + reverse("course_flow:workflow-update", args=[workflow.pk])
+            )
+            time.sleep(2)
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".outcome-node .outcome-"+str(outcome.id)
+                    )
+                ),
+                1,
+            )
+            self.assertEqual(
+                len(
+                    selenium.find_elements_by_css_selector(
+                        ".outcome-node .outcome-"+str(child1.id)
+                    )
+                ),
+                2,
+            )
+            
+    def test_delete_restore_workflow(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user)
+        course = Course.objects.create(author=self.user)
+        program=Program.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=course,project=project)
+        WorkflowProject.objects.create(workflow=program,project=project)
+        program.weeks.first().nodes.create(author=self.user,column=program.columns.first(),node_type=2)
+        Favourite.objects.create(user=self.user,content_object=course)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:project-update", args=[project.pk])
+        )
+        
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".panel-favourite"
+                )
+            ),
+            2,
+        )
+        
+        #delete a workflow
+        time.sleep(2)
+        selenium.find_element_by_css_selector(".course .workflow-delete-button").click()
+        alert = wait.until(expected_conditions.alert_is_present())
+        selenium.switch_to.alert.accept()
+        time.sleep(2)
+        
+        #make sure it doesn't show up in favourites
+        
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".panel-favourite"
+                )
+            ),
+            1,
+        )
+        selenium.find_element_by_css_selector("a[href='/myfavourites/']").click()
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".workflow-for-menu"
+                )
+            ),
+            0,
+        )
+        
+        #make sure it doesn't show up in linked wf
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[program.pk])
+        )
+        time.sleep(2)
+        selenium.find_element_by_css_selector(".workflow-details .node .node-title").click()
+        time.sleep(1)
+        selenium.find_element_by_css_selector("#linked-workflow-editor").click()
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".message-wrap .workflow-for-menu"
+                )
+            ),
+            0,
+        )
+        
+        #Restore 
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:project-update", args=[project.pk])
+        )
+        time.sleep(1)
+        selenium.find_element_by_css_selector("a[href='#tabs-4']").click()
+        selenium.find_element_by_css_selector(".course .workflow-delete-button").click()
+        time.sleep(2)
+        #make sure shows up in favourites
+        
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".panel-favourite"
+                )
+            ),
+            2,
+        )
+        selenium.find_element_by_css_selector("a[href='/myfavourites/']").click()
+        time.sleep(10)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".workflow-for-menu"
+                )
+            ),
+            2,
+        )
+        
+        #make sure it shows up in linked wf
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[program.pk])
+        )
+        time.sleep(2)
+        selenium.find_element_by_css_selector(".workflow-details .node .node-title").click()
+        time.sleep(1)
+        selenium.find_element_by_css_selector("#linked-workflow-editor").click()
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".message-wrap .workflow-for-menu"
+                )
+            ),
+            1,
+        )
+        
+        
+        
+    def test_explore_deleted(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        author = get_author()
+        discipline = Discipline.objects.create(title="Discipline1")
+        self.create_many_items(author, True, disciplines=[discipline])
+        project_list = list(Project.objects.all().values_list("pk",flat=True))
+        activity_list = list(Activity.objects.all().values_list("pk",flat=True))
+        course_list = list(Course.objects.all().values_list("pk",flat=True))
+        program_list = list(Program.objects.all().values_list("pk",flat=True))
+        for i,project in enumerate(project_list):
+            WorkflowProject.objects.create(project=Project.objects.get(id=project_list[i]),workflow=Workflow.objects.get(id=activity_list[i]))
+            WorkflowProject.objects.create(project=Project.objects.get(id=project_list[i]),workflow=Workflow.objects.get(id=course_list[i]))
+            WorkflowProject.objects.create(project=Project.objects.get(id=project_list[i]),workflow=Workflow.objects.get(id=program_list[i]))
+        Workflow.objects.all().update(deleted=True)
+        #make deleted workflows don't show up in explore
+        selenium.get(self.live_server_url + reverse("course_flow:explore"))
+        for checkbox in selenium.find_elements_by_css_selector(
+            "#search-type input[type='checkbox']"
+        ):
+            checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 1
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+        )
+        Project.objects.all().update(deleted=True)
+        #make deleted projects don't show up in explore
+        selenium.get(self.live_server_url + reverse("course_flow:explore"))
+        for checkbox in selenium.find_elements_by_css_selector(
+            "#search-type input[type='checkbox']"
+        ):
+            checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 0
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 0
+        )
+        Workflow.objects.all().update(deleted=False)
+        #make workflows from deleted projects don't show up in explore
+        selenium.get(self.live_server_url + reverse("course_flow:explore"))
+        for checkbox in selenium.find_elements_by_css_selector(
+            "#search-type input[type='checkbox']"
+        ):
+            checkbox.click()
+        selenium.find_element_by_id("submit").click()
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".page-button")), 0
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 0
+        )
+        
+    
+    
+    
+    

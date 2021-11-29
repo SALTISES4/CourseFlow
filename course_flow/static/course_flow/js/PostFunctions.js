@@ -182,18 +182,22 @@ export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.l
 
 //Causes the specified object to delete itself
 export function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>console.log("success")){
+    console.log("delete self");
+    console.log(soft);
     let path;
     if(soft)path=post_paths.delete_self_soft;
-    else path=post_pathsdelete_self;
+    else path=post_paths.delete_self;
     try{
         $.post(path, {
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType)
         }).done(function(data){
+            console.log(data);
             if(data.action == "posted") callBackFunction(data);
             else fail_function();
         });
     }catch(err){
+        console.log(err);
         fail_function();
     }
 }
