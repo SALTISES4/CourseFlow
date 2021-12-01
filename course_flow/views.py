@@ -21,6 +21,8 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, TemplateView, UpdateView
 from django.views.generic.edit import CreateView
+from io import BytesIO
+import pandas as pd
 from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
@@ -34,6 +36,7 @@ from .decorators import (
     user_can_view,
     user_can_view_or_none,
     user_is_teacher,
+    user_can_get,
 )
 from .forms import RegistrationForm
 from .models import (  # OutcomeProject,
@@ -85,14 +88,18 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     WeekWorkflowSerializerShallow,
     WorkflowSerializerFinder,
     WorkflowSerializerShallow,
+    OutcomeExportSerializer,
     bleach_allowed_tags,
     bleach_sanitizer,
     serializer_lookups_shallow,
 )
 from .utils import (
     benchmark,
+    dateTimeFormat,
+    dateTimeFormatNoSpace,
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,
+    get_all_outcomes_ordered,
     get_descendant_outcomes,
     get_model_from_str,
     get_parent_model,
@@ -1475,6 +1482,69 @@ def save_serializer(serializer) -> HttpResponse:
 #    return JsonResponse(
 #        {"action": "got", "completion_status": statuses.count()}
 #    )
+
+
+"""
+Export  methods
+"""
+
+#@user_can_get
+def get_outcomes_csv(request,pk,object_type) -> HttpResponse:
+    model_object = get_model_from_str(object_type).objects.get(pk=pk)
+    print(model_object)
+    if object_type=="workflow":
+        workflows = [model_object]
+    elif object_type=="project":
+        workflows = list(Project.workflows.all())
+    df = pd.DataFrame({},columns=["code","title","description","id","depth"])
+    for workflow in workflows:
+        df = df.append({"title":workflow.title},ignore_index=True)
+        df = pd.concat([df,get_workflow_outcomes_table(model_object)])
+        df = df.append({"title":""},ignore_index=True)
+    # Set up the Http response.
+    filename = object_type+'_'+pk+'_'+timezone.now().strftime(dateTimeFormatNoSpace())+'.csv'
+    response = HttpResponse(
+        content_type='text/csv'
+    )
+    response['Content-Disposition'] = 'attachment; filename=%s' % filename
+    df.to_csv(path_or_buf=response,sep=",")
+    return response
+
+def get_workflow_outcomes_table(workflow):
+    outcomes = get_all_outcomes_ordered(workflow)
+    print("getting outcomes table")
+    print(outcomes[0])
+    data = OutcomeExportSerializer(outcomes,many=True).data
+    print(data[0])
+    df = pd.DataFrame(data,columns=["code","title","description","id","depth"])
+    pd.set_option("display.max_colwidth",None)
+    print(df['title'])
+    return df
+    
+    
+#@user_can_get
+def get_outcomes_excel(request,pk,object_type) -> HttpResponse:
+    model_object = get_model_from_str(object_type).objects.get(pk=pk)
+    print(model_object)
+    with BytesIO() as b:
+        # Use the StringIO object as the filehandle.
+        writer = pd.ExcelWriter(b, engine='openpyxl')
+        if object_type=="workflow":
+            workflows = [model_object]
+        elif object_type=="project":
+            workflows = list(Project.workflows.all())
+        for workflow in workflows:
+            df = get_workflow_outcomes_table(model_object)
+            df.to_excel(writer, sheet_name=str(workflow.pk))
+            writer.save()
+        # Set up the Http response.
+        filename = object_type+'_'+pk+'_'+timezone.now().strftime(dateTimeFormatNoSpace())+'.xlsx'
+        response = HttpResponse(
+            b.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        response['Content-Disposition'] = 'attachment; filename=%s' % filename
+        return response
 
 
 """

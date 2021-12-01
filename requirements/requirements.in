@@ -9,6 +9,8 @@ django-compressor>=2.3
 django-model-utils
 django-debug-toolbar
 SALTISE_user_feedback
+pandas
+openpyxl
 
 black
 pre-commit

@@ -28,6 +28,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         super(props);
         this.objectType="workflow";
         this.allowed_tabs=[0,1,2,3];
+        this.exportDropDown = React.createRef();
     }
     
     render(){
@@ -143,14 +144,13 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                         </div>,
                         $("#floatbar")[0]
                     )}
-                    {!read_only &&
-                        reactDom.createPortal(
-                            <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-                                <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
-                            </div>,
-                            $("#viewbar")[0]
-                        )
-                    }
+                    {reactDom.createPortal(
+                        <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
+                            <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
+                        </div>,
+                        $("#viewbar")[0]
+                    )}
+                    {this.getExportButton()}
                     
                     {workflow_content}
                     
@@ -202,6 +202,37 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                      
     openEdit(evt){
         this.props.renderer.selection_manager.changeSelection(evt,this);
+    }
+                     
+    getExportButton(){
+        let exports=[];
+        exports.push(
+            <a class="hover-shade" href={get_paths.get_outcomes_csv.replace("0",this.props.data.id).replace("objecttype","workflow")}>
+                {gettext("Outcomes to CSV")}
+            </a>
+        )
+        exports.push(
+            <a class="hover-shade" href={get_paths.get_outcomes_excel.replace("0",this.props.data.id).replace("objecttype","workflow")}>
+                {gettext("Outcomes to .xls")}
+            </a>
+        )
+        
+        
+        let export_button = (
+            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("active")}><img src={iconpath+"add_person.svg"}/><div>{gettext("Export")}</div>
+                <div class="create-dropdown" ref={this.exportDropDown}>
+                    {exports}
+                </div>
+            </div>
+            
+        )
+        
+        return (
+            reactDom.createPortal(
+                export_button,
+                $("#floatbar")[0]
+            )
+        )
     }
     
 }

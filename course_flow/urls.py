@@ -214,6 +214,16 @@ def course_flow_patterns():
             name="get-parent-workflow-info",
         ),
         url(
+            r"^(?P<object_type>[a-z]+)/exports/outcomes/csv/(?P<pk>[0-9]+)/$",
+            views.get_outcomes_csv,
+            name="get-outcomes-csv",
+        ),
+        url(
+            r"^(?P<object_type>[a-z]+)/exports/outcomes/excel/(?P<pk>[0-9]+)/$",
+            views.get_outcomes_excel,
+            name="get-outcomes-excel",
+        ),
+        url(
             r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
     ] + router.urls

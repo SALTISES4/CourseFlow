@@ -1,6 +1,8 @@
 import bleach
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
+from html2text import html2text
+import re
 
 from .models import (
     Activity,
@@ -27,6 +29,7 @@ from .models import (
     Workflow,
 )
 from .utils import (
+    dateTimeFormat,
     get_descendant_outcomes,
     get_model_from_str,
     get_unique_outcomehorizontallinks,
@@ -58,9 +61,6 @@ def bleach_sanitizer(value, **kwargs):
         return None
 
 
-def dateTimeFormat():
-    return "%Y/%m/%d"
-
 
 class DescriptionSerializerMixin:
     description = serializers.SerializerMethodField()
@@ -71,16 +71,30 @@ class DescriptionSerializerMixin:
     def validate_description(self, value):
         return bleach_sanitizer(value, tags=bleach_allowed_tags)
 
-
+    
 class TitleSerializerMixin:
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
         return bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
-
+    
     def validate_title(self, value):
         return bleach_sanitizer(value, tags=bleach_allowed_tags)
 
+class DescriptionSerializerTextMixin(serializers.Serializer):
+    description = serializers.SerializerMethodField()
+
+    def get_description(self, instance):
+        returnval = html2text(bleach_sanitizer(instance.description, tags=bleach_allowed_tags))
+        return returnval
+
+
+class TitleSerializerTextMixin(serializers.Serializer):
+    title = serializers.SerializerMethodField()
+
+    def get_title(self, instance):
+        returnval = html2text(bleach_sanitizer(instance.title, tags=bleach_allowed_tags))
+        return returnval
 
 class TimeRequiredSerializerMixin:
     time_required = serializers.SerializerMethodField()
@@ -1342,6 +1356,34 @@ class InfoBoxSerializer(
 
     def get_author(self, instance):
         return str(instance.author)
+
+class OutcomeExportSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerTextMixin,
+    DescriptionSerializerTextMixin,
+):
+    class Meta:
+        model = Outcome
+        fields = [
+            "id",
+            "title",
+            "code",
+            "description",
+            "depth",
+        ]
+
+
+    code = serializers.SerializerMethodField()
+
+    def get_code(self, instance):
+        prefix = ". . . "*instance.depth;
+        if instance.code is None or instance.code=="":
+            if instance.depth==0:
+                return prefix+str(OutcomeWorkflow.objects.filter(outcome=instance).first().rank)
+            else:
+                return prefix+str(OutcomeOutcome.objects.filter(child=instance).first().rank)
+        else:
+            return prefix+instance.code
 
 
 #

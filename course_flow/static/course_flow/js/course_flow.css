@@ -2578,7 +2578,17 @@ circle.mouseover{
 }
 
 .alignment-row > *:not(img){
-    width:calc(50% - 14px);
+    min-width:0px;
+    width:calc(100% - 50px);
+}
+
+.alignment-column .outcome{
+    min-width:0px;
+    width:calc(100% - 50px);
+}
+
+.alignment-column{
+    min-width:400px;
 }
 
 .alignment-block .outcome-block{

@@ -1042,6 +1042,20 @@ export function childOutcomeReducer(state={},action){
         case 'replaceStoreData':
             if(action.payload.child_outcome)return action.payload.child_outcome;
             return state;
+        case 'outcome/changeField':
+        case 'outcome_base/changeField':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i]};
+                    new_state[i][action.payload.field]=action.payload.value;
+                    let json = {};
+                    json[action.payload.field]=action.payload.value;
+                    if(!read_only)updateValue(action.payload.id,"outcome",json);
+                    return new_state;
+                }
+            }
+            return state;
         default:
             return state;
     }
