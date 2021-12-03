@@ -199,6 +199,7 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         sort = self.request.GET.get("sort", None)
         page = self.request.GET.get("page", 1)
         results = self.request.GET.get("results", 20)
+        print(types)
         filter_kwargs = {}
         if title:
             filter_kwargs["title__icontains"] = title
@@ -238,14 +239,10 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         except TypeError:
             queryset = Project.objects.none()
         total_results = 0
-        subqueryset = []
-        for x in queryset:
-            if (
-                total_results >= (page - 1) * results
-                and total_results < page * results
-            ):
-                subqueryset.append(x)
-            total_results = total_results + 1
+        queryset = list(queryset)
+        total_results=len(queryset)
+        subqueryset = queryset[min((page-1)*results,0):min(page*results,total_results)]
+        
         page_number = math.ceil(float(total_results) / results)
         object_list = (
             JSONRenderer()
@@ -1495,11 +1492,11 @@ def get_outcomes_csv(request,pk,object_type) -> HttpResponse:
     if object_type=="workflow":
         workflows = [model_object]
     elif object_type=="project":
-        workflows = list(Project.workflows.all())
+        workflows = list(model_object.workflows.all())
     df = pd.DataFrame({},columns=["code","title","description","id","depth"])
     for workflow in workflows:
         df = df.append({"title":workflow.title},ignore_index=True)
-        df = pd.concat([df,get_workflow_outcomes_table(model_object)])
+        df = pd.concat([df,get_workflow_outcomes_table(workflow)])
         df = df.append({"title":""},ignore_index=True)
     # Set up the Http response.
     filename = object_type+'_'+pk+'_'+timezone.now().strftime(dateTimeFormatNoSpace())+'.csv'
@@ -1513,9 +1510,7 @@ def get_outcomes_csv(request,pk,object_type) -> HttpResponse:
 def get_workflow_outcomes_table(workflow):
     outcomes = get_all_outcomes_ordered(workflow)
     print("getting outcomes table")
-    print(outcomes[0])
     data = OutcomeExportSerializer(outcomes,many=True).data
-    print(data[0])
     df = pd.DataFrame(data,columns=["code","title","description","id","depth"])
     pd.set_option("display.max_colwidth",None)
     print(df['title'])
@@ -1532,10 +1527,10 @@ def get_outcomes_excel(request,pk,object_type) -> HttpResponse:
         if object_type=="workflow":
             workflows = [model_object]
         elif object_type=="project":
-            workflows = list(Project.workflows.all())
+            workflows = list(model_object.workflows.all())
         for workflow in workflows:
-            df = get_workflow_outcomes_table(model_object)
-            df.to_excel(writer, sheet_name=str(workflow.pk))
+            df = get_workflow_outcomes_table(workflow)
+            df.to_excel(writer, sheet_name=workflow.title+"_"+str(workflow.pk))
             writer.save()
         # Set up the Http response.
         filename = object_type+'_'+pk+'_'+timezone.now().strftime(dateTimeFormatNoSpace())+'.xlsx'

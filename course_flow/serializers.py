@@ -85,6 +85,7 @@ class DescriptionSerializerTextMixin(serializers.Serializer):
     description = serializers.SerializerMethodField()
 
     def get_description(self, instance):
+        if instance.description is None: return None
         returnval = html2text(bleach_sanitizer(instance.description, tags=bleach_allowed_tags))
         return returnval
 
@@ -93,6 +94,7 @@ class TitleSerializerTextMixin(serializers.Serializer):
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
+        if instance.title is None: return None
         returnval = html2text(bleach_sanitizer(instance.title, tags=bleach_allowed_tags))
         return returnval
 

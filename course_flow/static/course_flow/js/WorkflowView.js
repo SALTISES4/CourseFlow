@@ -138,6 +138,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                         share,
                         $("#floatbar")[0]
                     )}
+                    {this.getExportButton()}
                     {reactDom.createPortal(
                         <div class="workflow-publication">
                             <img src={publish_icon}/><div>{publish_text}</div>
@@ -146,11 +147,10 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     )}
                     {reactDom.createPortal(
                         <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-                            <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
+                            <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Workflow")}/>
                         </div>,
                         $("#viewbar")[0]
                     )}
-                    {this.getExportButton()}
                     
                     {workflow_content}
                     
@@ -219,7 +219,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         
         
         let export_button = (
-            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("active")}><img src={iconpath+"add_person.svg"}/><div>{gettext("Export")}</div>
+            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("active")}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
                 <div class="create-dropdown" ref={this.exportDropDown}>
                     {exports}
                 </div>

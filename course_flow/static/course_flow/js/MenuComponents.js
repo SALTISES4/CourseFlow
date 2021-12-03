@@ -460,6 +460,7 @@ class ProjectMenuUnconnected extends React.Component{
     constructor(props){
         super(props);
         this.state={...props.project,all_disciplines:[]};
+        this.exportDropDown = React.createRef();
     }
     
     render(){
@@ -504,6 +505,7 @@ class ProjectMenuUnconnected extends React.Component{
                         share,
                         $("#floatbar")[0]
                     )}
+                    {this.getExportButton()}
                     {reactDom.createPortal(
                         <div class="workflow-publication">
                             <img src={publish_icon}/><div>{publish_text}</div>
@@ -548,6 +550,43 @@ class ProjectMenuUnconnected extends React.Component{
 
     updateFunction(new_state){
         this.setState(new_state);
+    }
+
+    componentDidUpdate(){
+        console.log("UPDATED");
+    }
+
+    getExportButton(){
+        let exports=[];
+        exports.push(
+            <a class="hover-shade" href={get_paths.get_outcomes_csv.replace("0",this.props.project.id).replace("objecttype","project")}>
+                {gettext("Outcomes to CSV")}
+            </a>
+        )
+        exports.push(
+            <a class="hover-shade" href={get_paths.get_outcomes_excel.replace("0",this.props.project.id).replace("objecttype","project")}>
+                {gettext("Outcomes to .xls")}
+            </a>
+        )
+        
+        let myself=this;
+        let export_button = (
+            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>
+                 this.exportDropDown.current.classList.toggle("activate")
+                }><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
+                <div class="create-dropdown" ref={this.exportDropDown}>
+                    {exports}
+                </div>
+            </div>
+            
+        )
+        
+        return (
+            reactDom.createPortal(
+                export_button,
+                $("#floatbar")[0]
+            )
+        )
     }
 }
 export const ProjectMenu = connect(
@@ -756,9 +795,8 @@ export class ExploreMenu extends React.Component{
     render(){
         
         
-        
         let objects = this.props.data_package.map(object=>
-            <WorkflowForMenu selected={(this.state.selected==object.id)} key={object.id} type={"exploremenu"} workflow_data={object} duplicate={false} objectType={object.type} previewAction={this.selectItem.bind(this,object.id,object.type)}/>  
+            <WorkflowForMenu selected={(this.state.selected==object.id)} key={object.id} type={"exploremenu"} workflow_data={object} duplicate={"import"} objectType={object.type} previewAction={this.selectItem.bind(this,object.id,object.type)}/>  
         )
         let disciplines = this.props.disciplines.map(discipline=>
             <li><label><input class = "fillable"  type="checkbox" name="disc[]" value={discipline.id}/>{discipline.title}</label></li>                                            
@@ -815,7 +853,7 @@ export class ExploreMenu extends React.Component{
                 <hr/>
                 <div class="explore-main">
                     <div class="explore-results">
-                        {objects.length>1 &&
+                        {objects.length>0 &&
                             [
                             <p>
                                 {gettext("Showing results")} {this.props.pages.results_per_page*(this.props.pages.current_page-1)+1}-{(this.props.pages.results_per_page*this.props.pages.current_page)} ({this.props.pages.total_results} {gettext("total results")})
