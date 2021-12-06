@@ -224,6 +224,11 @@ def course_flow_patterns():
             name="get-outcomes-excel",
         ),
         url(
+            r"^(?P<object_type>[a-z]+)/exports/frameworks/excel/(?P<pk>[0-9]+)/$",
+            views.get_course_frameworks_excel,
+            name="get-course-frameworks-excel",
+        ),
+        url(
             r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
     ] + router.urls

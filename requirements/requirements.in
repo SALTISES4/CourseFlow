@@ -11,6 +11,7 @@ django-debug-toolbar
 SALTISE_user_feedback
 pandas
 openpyxl
+celery[redis]
 
 black
 pre-commit

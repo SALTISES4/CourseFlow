@@ -216,6 +216,11 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                 {gettext("Outcomes to .xls")}
             </a>
         )
+        exports.push(
+            <a class="hover-shade" href={get_paths.get_course_frameworks_excel.replace("0",this.props.data.id).replace("objecttype","workflow")}>
+                {gettext("Framework to .xls")}
+            </a>
+        )
         
         
         let export_button = (

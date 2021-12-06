@@ -1378,14 +1378,30 @@ class OutcomeExportSerializer(
     code = serializers.SerializerMethodField()
 
     def get_code(self, instance):
-        prefix = ". . . "*instance.depth;
+        if instance.depth==0:
+            outcomeworkflow = OutcomeWorkflow.objects.filter(outcome=instance).first()
+            if instance.code is None or instance.code=="":
+                return str(outcomeworkflow.rank+1)
+            else:
+                return instance.code
+        else:
+            outcomeoutcome = OutcomeOutcome.objects.filter(child=instance).first()
+            if instance.code is None or instance.code=="":
+                return self.get_code(outcomeoutcome.parent)+"."+str(outcomeoutcome.rank+1)
+            else:
+                return self.get_code(outcomeoutcome.parent)+"."+instance.code
+        
+        
+        
+        
+        
         if instance.code is None or instance.code=="":
             if instance.depth==0:
-                return prefix+str(OutcomeWorkflow.objects.filter(outcome=instance).first().rank)
+                return str(OutcomeWorkflow.objects.filter(outcome=instance).first().rank)
             else:
-                return prefix+str(OutcomeOutcome.objects.filter(child=instance).first().rank)
+                return 
         else:
-            return prefix+instance.code
+            return instance.code
 
 
 #

@@ -568,6 +568,11 @@ class ProjectMenuUnconnected extends React.Component{
                 {gettext("Outcomes to .xls")}
             </a>
         )
+        exports.push(
+            <a class="hover-shade" href={get_paths.get_course_frameworks_excel.replace("0",this.props.project.id).replace("objecttype","project")}>
+                {gettext("Frameworks to .xls")}
+            </a>
+        )
         
         let myself=this;
         let export_button = (
