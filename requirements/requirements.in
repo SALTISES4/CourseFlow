@@ -12,6 +12,7 @@ SALTISE_user_feedback
 pandas
 openpyxl
 celery[redis]
+html2text
 
 black
 pre-commit
