@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology} from "./PostFunctions";
+import {updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology, getExport} from "./PostFunctions";
 import {gridMenuItemAdded} from "./Reducers";
 import {custom_text_base,Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
@@ -556,29 +556,16 @@ class ProjectMenuUnconnected extends React.Component{
         console.log("UPDATED");
     }
 
+                     
     getExportButton(){
         let exports=[];
-        exports.push(
-            <a class="hover-shade" href={get_paths.get_outcomes_csv.replace("0",this.props.project.id).replace("objecttype","project")}>
-                {gettext("Outcomes to CSV")}
-            </a>
-        )
-        exports.push(
-            <a class="hover-shade" href={get_paths.get_outcomes_excel.replace("0",this.props.project.id).replace("objecttype","project")}>
-                {gettext("Outcomes to .xls")}
-            </a>
-        )
-        exports.push(
-            <a class="hover-shade" href={get_paths.get_course_frameworks_excel.replace("0",this.props.project.id).replace("objecttype","project")}>
-                {gettext("Frameworks to .xls")}
-            </a>
-        )
+        this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
+        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to CSV"));
+        this.pushExport(exports,"frameworks_excel",gettext("Framework to .xls"));
         
-        let myself=this;
+        
         let export_button = (
-            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>
-                 this.exportDropDown.current.classList.toggle("activate")
-                }><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
+            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("active")}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
                 <div class="create-dropdown" ref={this.exportDropDown}>
                     {exports}
                 </div>
@@ -592,6 +579,19 @@ class ProjectMenuUnconnected extends React.Component{
                 $("#floatbar")[0]
             )
         )
+    }
+                     
+    pushExport(exports,export_type,text){
+        exports.push(
+            <a class="hover-shade" onClick={this.clickExport.bind(this,export_type)}>
+                {text}
+            </a>
+        )
+    }
+                     
+    clickExport(export_type,evt){
+        evt.preventDefault();
+        getExport(this.props.data.id,"project",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
     }
 }
 export const ProjectMenu = connect(

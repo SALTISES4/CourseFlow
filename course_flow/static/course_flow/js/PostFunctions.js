@@ -534,7 +534,7 @@ export function addTerminology(projectPk,term,translation,translation_plural,cal
 }
 
 
-//Get the comments for a particular object
+//Get the info from the parent workflow
 export function getParentWorkflowInfo(workflowPk,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_parent_workflow_info,{
@@ -546,3 +546,19 @@ export function getParentWorkflowInfo(workflowPk,callBackFunction=()=>console.lo
         fail_function();
     }
 }
+
+//get exported data
+export function getExport(objectID,objectType,exportType,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_export,{
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            exportType:JSON.stringify(exportType),
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+

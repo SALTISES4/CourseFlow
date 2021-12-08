@@ -203,7 +203,11 @@ def course_flow_patterns():
             views.get_comments_for_object,
             name="get-comments-for-object",
         ),
-        url(r"^terminology/add/$", views.add_terminology, name="add-terminology",),
+        url(
+            r"^terminology/add/$",
+            views.add_terminology,
+            name="add-terminology",
+        ),
         url(r"^comments/add/$", views.add_comment, name="add-comment",),
         url(
             r"^comments/remove/$", views.remove_comment, name="remove-comment",
@@ -213,21 +217,7 @@ def course_flow_patterns():
             views.get_parent_workflow_info,
             name="get-parent-workflow-info",
         ),
-        url(
-            r"^(?P<object_type>[a-z]+)/exports/outcomes/csv/(?P<pk>[0-9]+)/$",
-            views.get_outcomes_csv,
-            name="get-outcomes-csv",
-        ),
-        url(
-            r"^(?P<object_type>[a-z]+)/exports/outcomes/excel/(?P<pk>[0-9]+)/$",
-            views.get_outcomes_excel,
-            name="get-outcomes-excel",
-        ),
-        url(
-            r"^(?P<object_type>[a-z]+)/exports/frameworks/excel/(?P<pk>[0-9]+)/$",
-            views.get_course_frameworks_excel,
-            name="get-course-frameworks-excel",
-        ),
+        url(r"^exports/get/$", views.get_export, name="get-export",),
         url(
             r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),

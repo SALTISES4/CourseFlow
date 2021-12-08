@@ -14,7 +14,7 @@ import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
-import {getParentWorkflowInfo} from "./PostFunctions";
+import {getParentWorkflowInfo,getExport} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
@@ -206,21 +206,9 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                      
     getExportButton(){
         let exports=[];
-        exports.push(
-            <a class="hover-shade" href={get_paths.get_outcomes_csv.replace("0",this.props.data.id).replace("objecttype","workflow")}>
-                {gettext("Outcomes to CSV")}
-            </a>
-        )
-        exports.push(
-            <a class="hover-shade" href={get_paths.get_outcomes_excel.replace("0",this.props.data.id).replace("objecttype","workflow")}>
-                {gettext("Outcomes to .xls")}
-            </a>
-        )
-        exports.push(
-            <a class="hover-shade" href={get_paths.get_course_frameworks_excel.replace("0",this.props.data.id).replace("objecttype","workflow")}>
-                {gettext("Framework to .xls")}
-            </a>
-        )
+        this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
+        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to CSV"));
+        if(this.props.data.type=="course")this.pushExport(exports,"frameworks_excel",gettext("Framework to .xls"));
         
         
         let export_button = (
@@ -238,6 +226,19 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                 $("#floatbar")[0]
             )
         )
+    }
+                     
+    pushExport(exports,export_type,text){
+        exports.push(
+            <a class="hover-shade" onClick={this.clickExport.bind(this,export_type)}>
+                {text}
+            </a>
+        )
+    }
+                     
+    clickExport(export_type,evt){
+        evt.preventDefault();
+        getExport(this.props.data.id,"workflow",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
     }
     
 }

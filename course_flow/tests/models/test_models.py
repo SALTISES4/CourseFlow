@@ -1,12 +1,15 @@
 import json
 import os
+import time
 
+from celery.result import AsyncResult
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.urls import reverse
 from rest_framework.renderers import JSONRenderer
 
+from course_flow import tasks
 from course_flow.models import (
     Activity,
     Column,
@@ -2493,50 +2496,65 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         content = json.loads(response.content)
         self.assertEqual(len(content["data_package"]), 0)
-        
-        
+
     def test_add_term_to_project(self):
         user = login(self)
         project = Project.objects.create(author=user)
-        #try adding a term
+        # try adding a term
         # Retrieve the comments
         response = self.client.post(
             reverse("course_flow:add-terminology"),
             {
                 "projectPk": project.id,
                 "term": JSONRenderer().render("outcome").decode("utf-8"),
-                "translation": JSONRenderer().render("competency").decode("utf-8"),
-                "translation_plural": JSONRenderer().render("competencies").decode("utf-8"),
+                "translation": JSONRenderer()
+                .render("competency")
+                .decode("utf-8"),
+                "translation_plural": JSONRenderer()
+                .render("competencies")
+                .decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(project.terminology_dict.all().count(),1)
-        
-        #try adding a term that already exists (should replace)
+        self.assertEqual(project.terminology_dict.all().count(), 1)
+
+        # try adding a term that already exists (should replace)
         response = self.client.post(
             reverse("course_flow:add-terminology"),
             {
                 "projectPk": project.id,
                 "term": JSONRenderer().render("outcome").decode("utf-8"),
-                "translation": JSONRenderer().render("program outcome").decode("utf-8"),
-                "translation_plural": JSONRenderer().render("program outcomes").decode("utf-8"),
+                "translation": JSONRenderer()
+                .render("program outcome")
+                .decode("utf-8"),
+                "translation_plural": JSONRenderer()
+                .render("program outcomes")
+                .decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(project.terminology_dict.all().count(),1)
-        self.assertEqual(project.terminology_dict.first().translation,"program outcome")
-        self.assertEqual(project.terminology_dict.first().translation_plural,"program outcomes")
-        
-        #delete a term
+        self.assertEqual(project.terminology_dict.all().count(), 1)
+        self.assertEqual(
+            project.terminology_dict.first().translation, "program outcome"
+        )
+        self.assertEqual(
+            project.terminology_dict.first().translation_plural,
+            "program outcomes",
+        )
+
+        # delete a term
         response = self.client.post(
             reverse("course_flow:delete-self"),
             {
                 "objectID": project.terminology_dict.first().id,
-                "objectType": JSONRenderer().render("customterm").decode("utf-8"),
+                "objectType": JSONRenderer()
+                .render("customterm")
+                .decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(project.terminology_dict.all().count(),0)
+        self.assertEqual(project.terminology_dict.all().count(), 0)
+
 
 class PermissionsTests(TestCase):
     def setUp(self):
@@ -2861,3 +2879,118 @@ class PermissionsTests(TestCase):
                 },
             )
             self.assertEqual(response.status_code, 200)
+
+
+class ExportTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_export_no_login(self):
+        pass
+
+    def test_export_outcomes(self):
+        author = get_author()
+        user = login(self)
+        project = make_object("project", author)
+        for workflow_type in ["activity", "course", "program"]:
+            workflow = make_object(workflow_type, author)
+            WorkflowProject.objects.create(workflow=workflow, project=project)
+            week = workflow.weeks.first()
+            node = week.nodes.create(author=author)
+            base_outcome = workflow.outcomes.create(
+                author=author, title="outcome"
+            )
+            base_outcome.children.create(
+                author=author, title="outcome", depth=1
+            )
+            base_outcome.children.create(
+                author=author, title="outcome", depth=1
+            )
+            base_outcome = workflow.outcomes.create(
+                author=author, title="outcome"
+            )
+            base_outcome.children.create(
+                author=author, title="outcome", depth=1
+            )
+            base_outcome.children.create(
+                author=author, title="outcome", depth=1
+            )
+
+            tasks.async_get_outcomes_excel(
+                author.email, workflow.id, "workflow"
+            )
+            tasks.async_get_outcomes_csv(author.email, workflow.id, "workflow")
+
+        tasks.async_get_outcomes_excel(author.email, project.id, "project")
+        tasks.async_get_outcomes_csv(author.email, project.id, "project")
+
+    def test_export_frameworks(self):
+        author = get_author()
+        user = login(self)
+        project = make_object("project", author)
+        program = make_object("program", author)
+        WorkflowProject.objects.create(workflow=program, project=project)
+        week = program.weeks.first()
+        workflows = [
+            make_object(workflow_type, author)
+            for workflow_type in ["course", "course", "course"]
+        ]
+        nodes = [
+            week.nodes.create(author=author, linked_workflow=workflow)
+            for workflow in workflows
+        ]
+        base_outcome = program.outcomes.create(author=author, title="outcome")
+        base_outcome.children.create(author=author, title="outcome", depth=1)
+        outcome2 = base_outcome.children.create(
+            author=author, title="outcome", depth=1
+        )
+        base_outcome = program.outcomes.create(author=author, title="outcome")
+        base_outcome.children.create(author=author, title="outcome", depth=1)
+        base_outcome.children.create(author=author, title="outcome", depth=1)
+        [
+            OutcomeNode.objects.create(node=node, outcome=base_outcome)
+            for node in nodes
+        ]
+        [
+            OutcomeNode.objects.create(node=node, outcome=outcome2)
+            for node in nodes
+        ]
+        for workflow in workflows:
+            WorkflowProject.objects.create(workflow=workflow, project=project)
+            week = workflow.weeks.first()
+            node = week.nodes.create(
+                author=author,
+                column=workflow.columns.get(column_type=Column.ASSESSMENT),
+            )
+            base_outcome = workflow.outcomes.create(
+                author=author, title="outcome"
+            )
+            base_outcome.children.create(
+                author=author, title="outcome", depth=1
+            )
+            outcome2 = base_outcome.children.create(
+                author=author, title="outcome", depth=1
+            )
+            base_outcome = workflow.outcomes.create(
+                author=author, title="outcome"
+            )
+            base_outcome.children.create(
+                author=author, title="outcome", depth=1
+            )
+            base_outcome.children.create(
+                author=author, title="outcome", depth=1
+            )
+            OutcomeNode.objects.create(node=node, outcome=base_outcome)
+            OutcomeNode.objects.create(node=node, outcome=outcome2)
+            OutcomeHorizontalLink.objects.create(
+                outcome=base_outcome,
+                parent_outcome=workflow.linked_nodes.first().outcomes.first(),
+            )
+
+            tasks.async_get_course_frameworks_excel(
+                author.email, workflow.id, "workflow"
+            )
+
+        tasks.async_get_course_frameworks_excel(
+            author.email, project.id, "project"
+        )

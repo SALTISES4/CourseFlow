@@ -297,39 +297,6 @@ def user_can_edit_or_none(model, **outer_kwargs):
 
     return wrapped_view
 
-def user_can_get(model, **outer_kwargs):
-    def wrapped_view(fct):
-        @ajax_login_required
-        @wraps(fct)
-        def _wrapped_view(
-            request, pk, object_type, outer_kwargs=outer_kwargs, *args, **kwargs
-        ):
-            print(object_type)
-            try:
-                model_object = get_model_from_str(object_type).objects.get(pk=pk)
-                print(model_object)
-                print("attempting to get permission objects")
-                permission_objects = model_object.get_permission_objects()
-                print(permission_objects)
-            except:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
-            if check_objects_permission(
-                permission_objects,
-                User.objects.get(id=request.user.id),
-                ObjectPermission.PERMISSION_EDIT,
-            ):
-                return fct(request, pk, object_type, *args, **kwargs)
-            else:
-                response = JsonResponse({"login_url": settings.LOGIN_URL})
-                response.status_code = 403
-                return response
-
-        return _wrapped_view
-
-    return wrapped_view
-
 
 delete_exceptions = [
     "workflow",
