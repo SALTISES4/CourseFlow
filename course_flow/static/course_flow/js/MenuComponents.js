@@ -565,7 +565,7 @@ class ProjectMenuUnconnected extends React.Component{
         
         
         let export_button = (
-            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("active")}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
+            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("activate")}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
                 <div class="create-dropdown" ref={this.exportDropDown}>
                     {exports}
                 </div>
@@ -591,7 +591,7 @@ class ProjectMenuUnconnected extends React.Component{
                      
     clickExport(export_type,evt){
         evt.preventDefault();
-        getExport(this.props.data.id,"project",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
+        getExport(this.props.project.id,"project",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
     }
 }
 export const ProjectMenu = connect(
