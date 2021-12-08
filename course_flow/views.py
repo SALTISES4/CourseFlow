@@ -242,7 +242,7 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         queryset = list(queryset)
         total_results = len(queryset)
         subqueryset = queryset[
-            min((page - 1) * results, 0) : min(page * results, total_results)
+            max((page - 1) * results, 0) : min(page * results, total_results)
         ]
 
         page_number = math.ceil(float(total_results) / results)

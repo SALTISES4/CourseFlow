@@ -2885,9 +2885,6 @@ class ExportTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
-    def test_export_no_login(self):
-        pass
-
     def test_export_outcomes(self):
         author = get_author()
         user = login(self)
