@@ -80,7 +80,7 @@ export class SimpleOutcomeOutcomeViewUnconnected extends ComponentJSON{
     getChildType(){
         let data = this.props.data;
         return (
-            <SimpleOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} get_alternate={this.props.get_alternate} comments={this.props.comments} edit={this.props.edit}/>
+            <SimpleOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} get_alternate={this.props.get_alternate} comments={this.props.comments} edit={this.props.edit} renderer={this.props.renderer}/>
         );
     }
     
