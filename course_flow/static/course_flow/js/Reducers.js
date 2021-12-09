@@ -1413,6 +1413,9 @@ export function childOutcomeReducer(state=[],action){
                 }
             }
             return state;
+        //The following two cases are due to the fact that we can alter child outcomes at the parent workflow level. That means when we try to update the react locally, it will be attempting to look for just an "outcome"
+        case 'outcome/changeField':
+        case 'outcome_base/changeField':
         case 'childoutcome/changeField':
         case 'childoutcome_base/changeField':
             if(action.payload.changeFieldID==changeFieldID)return state;
@@ -1420,16 +1423,15 @@ export function childOutcomeReducer(state=[],action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state[i] = {...state[i],...action.payload.json};
-        case 'outcome/changeField':
-        case 'outcome_base/changeField':
+                    return new_state;
+                }
+            }
+            return state;
+        case 'outcome/createLock':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
-                    new_state[i] = {...state[i]};
-                    new_state[i][action.payload.field]=action.payload.value;
-                    let json = {};
-                    json[action.payload.field]=action.payload.value;
-                    if(!read_only)updateValue(action.payload.id,"outcome",json);
+                    new_state[i]={...new_state[i],lock:action.payload.lock}
                     return new_state;
                 }
             }

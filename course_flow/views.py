@@ -106,7 +106,6 @@ from .utils import (
     get_nondeleted_favourites,
     get_parent_model,
     get_parent_model_str,
-    get_project_outcomes,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
 )
