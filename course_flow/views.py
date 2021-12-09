@@ -26,6 +26,8 @@ from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
 from . import redux_actions as actions
+from course_flow import tasks
+
 from .decorators import (
     ajax_login_required,
     check_object_permission,
@@ -94,13 +96,18 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
 )
 from .utils import (
     benchmark,
+    dateTimeFormat,
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,
+    get_all_outcomes_ordered,
+    get_all_outcomes_ordered_for_outcome,
     get_descendant_outcomes,
     get_model_from_str,
     get_nondeleted_favourites,
     get_parent_model,
     get_parent_model_str,
+    get_project_outcomes,
+    get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
 )
 
@@ -238,14 +245,12 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         except TypeError:
             queryset = Project.objects.none()
         total_results = 0
-        subqueryset = []
-        for x in queryset:
-            if (
-                total_results >= (page - 1) * results
-                and total_results < page * results
-            ):
-                subqueryset.append(x)
-            total_results = total_results + 1
+        queryset = list(queryset)
+        total_results = len(queryset)
+        subqueryset = queryset[
+            max((page - 1) * results, 0) : min(page * results, total_results)
+        ]
+
         page_number = math.ceil(float(total_results) / results)
         object_list = (
             JSONRenderer()
@@ -1618,6 +1623,31 @@ def save_serializer(serializer) -> HttpResponse:
 #    return JsonResponse(
 #        {"action": "got", "completion_status": statuses.count()}
 #    )
+
+
+"""
+Export  methods
+"""
+
+
+@user_can_view(False)
+def get_export(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    task_type = json.loads(request.POST.get("exportType"))
+    if task_type == "outcomes_excel":
+        task = tasks.async_get_outcomes_excel.delay(
+            request.user.email, object_id, object_type
+        )
+    elif task_type == "outcomes_csv":
+        task = tasks.async_get_outcomes_csv.delay(
+            request.user.email, object_id, object_type
+        )
+    elif task_type == "frameworks_excel":
+        task = tasks.async_get_course_frameworks_excel.delay(
+            request.user.email, object_id, object_type
+        )
+    return JsonResponse({"action": "posted", "task_id": task.id})
 
 
 """

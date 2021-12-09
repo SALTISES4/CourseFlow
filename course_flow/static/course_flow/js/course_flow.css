@@ -498,13 +498,20 @@ button:hover{
 .create-dropdown{
     display:none;
     z-index:1;
-    margin-top:-20px;
     background:white;
     position:absolute;
     padding:10px;
     border-radius:5px;
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+}
 
+.project-menu .create-dropdown{
+    margin-top:-20px;
+}
+
+.floatbar .create-dropdown{
+    margin-top:8px;
+    margin-left:-6px;
 }
 
 .create-dropdown a{
@@ -513,7 +520,7 @@ button:hover{
     margin:0px;
 }
 
-.create-dropdown.active{
+.create-dropdown.active, .create-dropdown.activate{
     display:block;
 }
 
@@ -2665,7 +2672,17 @@ circle.mouseover{
 }
 
 .alignment-row > *:not(img){
-    width:calc(50% - 14px);
+    min-width:0px;
+    width:calc(100% - 50px);
+}
+
+.alignment-column .outcome{
+    min-width:0px;
+    width:calc(100% - 50px);
+}
+
+.alignment-column{
+    min-width:400px;
 }
 
 .alignment-block .outcome-block{

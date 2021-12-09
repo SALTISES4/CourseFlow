@@ -14,7 +14,7 @@ import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
-import {getParentWorkflowInfo,insertedAt,restoreSelf} from "./PostFunctions";
+import {getParentWorkflowInfo,insertedAt,restoreSelf,getExport} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
@@ -28,6 +28,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         super(props);
         this.objectType="workflow";
         this.allowed_tabs=[0,1,2,3];
+        this.exportDropDown = React.createRef();
     }
     
     render(){
@@ -143,20 +144,19 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                         share,
                         $("#floatbar")[0]
                     )}
+                    {this.getExportButton()}
                     {reactDom.createPortal(
                         <div class="workflow-publication">
                             <img src={publish_icon}/><div>{publish_text}</div>
                         </div>,
                         $("#floatbar")[0]
                     )}
-                    {!read_only &&
-                        reactDom.createPortal(
-                            <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-                                <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
-                            </div>,
-                            $("#viewbar")[0]
-                        )
-                    }
+                    {reactDom.createPortal(
+                        <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
+                            <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Workflow")}/>
+                        </div>,
+                        $("#viewbar")[0]
+                    )}
                     
                     {workflow_content}
                     
@@ -211,6 +211,43 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                      
     openEdit(evt){
         this.props.renderer.selection_manager.changeSelection(evt,this);
+    }
+                     
+    getExportButton(){
+        let exports=[];
+        this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
+        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to CSV"));
+        if(this.props.data.type=="course")this.pushExport(exports,"frameworks_excel",gettext("Framework to .xls"));
+        
+        
+        let export_button = (
+            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("active")}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
+                <div class="create-dropdown" ref={this.exportDropDown}>
+                    {exports}
+                </div>
+            </div>
+            
+        )
+        
+        return (
+            reactDom.createPortal(
+                export_button,
+                $("#floatbar")[0]
+            )
+        )
+    }
+                     
+    pushExport(exports,export_type,text){
+        exports.push(
+            <a class="hover-shade" onClick={this.clickExport.bind(this,export_type)}>
+                {text}
+            </a>
+        )
+    }
+                     
+    clickExport(export_type,evt){
+        evt.preventDefault();
+        getExport(this.props.data.id,"workflow",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
     }
     
 }

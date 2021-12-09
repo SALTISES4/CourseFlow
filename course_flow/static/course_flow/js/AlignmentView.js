@@ -290,7 +290,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
                     let parent_outcomes = obj.parent_outcomes[i].parent_outcomes.map((parent_outcome,j)=>
                         <div class="alignment-row">
                             {Constants.getCompletionImg(obj.parent_outcomes[i].outcomenodes[j].degree,this.props.outcomes_type)}
-                            <SimpleOutcomeView objectID={parent_outcome.id}/>
+                            <SimpleOutcomeView objectID={parent_outcome.id} comments={true} edit={true} renderer={this.props.renderer}/>
                         </div>
                     );
 
@@ -298,10 +298,10 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
 
                     return (
                         <div class="child-outcome">
-                            <div class="half-width">
-                                <SimpleOutcomeView get_alternate="child" objectID={child_outcome.id}/>
+                            <div class="half-width alignment-column">
+                                <SimpleOutcomeView get_alternate="child" objectID={child_outcome.id} comments={true} edit={true} renderer={this.props.renderer}/>
                             </div>
-                            <div class="half-width">
+                            <div class="half-width alignment-column">
                                 {parent_outcomes}
                             </div>
                         </div>

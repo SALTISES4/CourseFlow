@@ -215,6 +215,7 @@ def course_flow_patterns():
             views.get_parent_workflow_info,
             name="get-parent-workflow-info",
         ),
+        url(r"^exports/get/$", views.get_export, name="get-export",),
         url(
             r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),

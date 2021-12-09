@@ -11,6 +11,10 @@ django-debug-toolbar
 SALTISE_user_feedback
 channels
 channels_redis
+pandas
+openpyxl
+celery[redis]
+html2text
 
 black
 pre-commit

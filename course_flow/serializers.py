@@ -2,6 +2,8 @@ import bleach
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from rest_framework import serializers
+from html2text import html2text
+import re
 
 from .models import (
     Activity,
@@ -28,6 +30,7 @@ from .models import (
     Workflow,
 )
 from .utils import (
+    dateTimeFormat,
     get_descendant_outcomes,
     get_model_from_str,
     get_unique_outcomehorizontallinks,
@@ -59,9 +62,6 @@ def bleach_sanitizer(value, **kwargs):
         return None
 
 
-def dateTimeFormat():
-    return "%Y/%m/%d"
-
 
 class DescriptionSerializerMixin:
     description = serializers.SerializerMethodField()
@@ -72,16 +72,32 @@ class DescriptionSerializerMixin:
     def validate_description(self, value):
         return bleach_sanitizer(value, tags=bleach_allowed_tags)
 
-
+    
 class TitleSerializerMixin:
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
         return bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
-
+    
     def validate_title(self, value):
         return bleach_sanitizer(value, tags=bleach_allowed_tags)
 
+class DescriptionSerializerTextMixin(serializers.Serializer):
+    description = serializers.SerializerMethodField()
+
+    def get_description(self, instance):
+        if instance.description is None: return None
+        returnval = html2text(bleach_sanitizer(instance.description, tags=bleach_allowed_tags))
+        return returnval
+
+
+class TitleSerializerTextMixin(serializers.Serializer):
+    title = serializers.SerializerMethodField()
+
+    def get_title(self, instance):
+        if instance.title is None: return None
+        returnval = html2text(bleach_sanitizer(instance.title, tags=bleach_allowed_tags))
+        return returnval
 
 class TimeRequiredSerializerMixin:
     time_required = serializers.SerializerMethodField()
@@ -965,6 +981,8 @@ class InfoBoxSerializer(
 #        return list(map(linkIDMap, links))
 #
 #
+
+
 class RefreshSerializerOutcome(serializers.ModelSerializer):
     class Meta:
         model = Outcome
@@ -1013,6 +1031,49 @@ class RefreshSerializerNode(serializers.ModelSerializer):
         return list(map(linkIDMap, get_unique_outcomenodes(instance)))
     
 
+class OutcomeExportSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerTextMixin,
+    DescriptionSerializerTextMixin,
+):
+    class Meta:
+        model = Outcome
+        fields = [
+            "id",
+            "title",
+            "code",
+            "description",
+            "depth",
+        ]
+
+
+    code = serializers.SerializerMethodField()
+
+    def get_code(self, instance):
+        if instance.depth==0:
+            outcomeworkflow = OutcomeWorkflow.objects.filter(outcome=instance).first()
+            if instance.code is None or instance.code=="":
+                return str(outcomeworkflow.rank+1)
+            else:
+                return instance.code
+        else:
+            outcomeoutcome = OutcomeOutcome.objects.filter(child=instance).first()
+            if instance.code is None or instance.code=="":
+                return self.get_code(outcomeoutcome.parent)+"."+str(outcomeoutcome.rank+1)
+            else:
+                return self.get_code(outcomeoutcome.parent)+"."+instance.code
+        
+        
+        
+        
+        
+        if instance.code is None or instance.code=="":
+            if instance.depth==0:
+                return str(OutcomeWorkflow.objects.filter(outcome=instance).first().rank)
+            else:
+                return 
+        else:
+            return instance.code
 
 serializer_lookups_shallow = {
     "node": NodeSerializerShallow,
