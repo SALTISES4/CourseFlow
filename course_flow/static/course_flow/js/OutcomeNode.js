@@ -21,7 +21,7 @@ class OutcomeNodeView extends ComponentJSON{
         if(data.outcome==-1)return null;
         
         return (
-            <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
+            <div class={"outcome-node outcomenode-"+data.id} id={data.id} ref={this.maindiv}>
                 <SimpleOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             
                 {!read_only && <div class="mouseover-actions">

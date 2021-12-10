@@ -3583,7 +3583,7 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                     )
                     if new_position < 0:
                         new_position = 0
-                    elif new_position > all_throughs.count():
+                    elif new_position >= all_throughs.count():
                         new_position = all_throughs.count()
                     else:
                         new_position = (

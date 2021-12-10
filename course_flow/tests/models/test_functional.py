@@ -656,7 +656,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 ".node .insert-sibling-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
-            time.sleep(6)
+            time.sleep(8)
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -2450,7 +2450,7 @@ class SeleniumDeleteRestoreTestCase(SeleniumWorkflowsTestCase):
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
-            time.sleep(2)
+            time.sleep(3)
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
