@@ -1434,6 +1434,15 @@ circle.mouseover{
     position:unset;
 }
 
+.side-bar .character-length{
+    font-size:10px;
+    color:grey;
+}
+
+.side-bar .character-length.overflow{
+    color:red;
+}
+
 .side-bar input.half-width, .side-bar select.half-width{
     width:50%;
 }

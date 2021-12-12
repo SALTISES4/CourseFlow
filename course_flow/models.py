@@ -24,11 +24,13 @@ from course_flow.utils import benchmark, get_descendant_outcomes
 
 User = get_user_model()
 
+title_max_length=50
+description_max_length=2000
 
 class Project(models.Model):
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.CharField(max_length=500, null=True, blank=True)
+    title = models.CharField(max_length=title_max_length, null=True, blank=True)
+    description = models.CharField(max_length=description_max_length, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -65,9 +67,9 @@ class Project(models.Model):
 
 
 class CustomTerm(models.Model):
-    term = models.CharField(max_length=50)
-    translation = models.CharField(max_length=50)
-    translation_plural = models.CharField(max_length=50, null=True)
+    term = models.CharField(max_length=title_max_length)
+    translation = models.CharField(max_length=title_max_length)
+    translation_plural = models.CharField(max_length=title_max_length, null=True)
 
     def get_permission_objects(self):
         return [Project.objects.filter(terminology_dict=self).first()]
@@ -117,7 +119,7 @@ class OutcomeWorkflow(models.Model):
 
 class Column(models.Model):
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=50, null=True, blank=True)
+    title = models.CharField(max_length=title_max_length, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -215,9 +217,9 @@ class NodeLink(models.Model):
 
 class Outcome(models.Model):
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=500, null=True, blank=True)
-    code = models.CharField(max_length=50, null=True, blank=True)
-    description = models.TextField(max_length=500, null=True, blank=True)
+    title = models.CharField(max_length=description_max_length, null=True, blank=True)
+    code = models.CharField(max_length=title_max_length, null=True, blank=True)
+    description = models.TextField(max_length=description_max_length, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -390,8 +392,8 @@ class OutcomeHorizontalLink(models.Model):
 
 class Node(models.Model):
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.TextField(max_length=500, null=True, blank=True)
+    title = models.CharField(max_length=title_max_length, null=True, blank=True)
+    description = models.TextField(max_length=description_max_length, null=True, blank=True)
     author = models.ForeignKey(
         User,
         related_name="authored_nodes",
@@ -656,8 +658,8 @@ class OutcomeNode(models.Model):
 
 class Week(models.Model):
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.TextField(max_length=500, null=True, blank=True)
+    title = models.CharField(max_length=title_max_length, null=True, blank=True)
+    description = models.TextField(max_length=description_max_length, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -752,9 +754,9 @@ class Workflow(models.Model):
 
     deleted = models.BooleanField(default=False)
 
-    title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.TextField(max_length=500, null=True, blank=True)
-    code = models.CharField(max_length=50, null=True, blank=True)
+    title = models.CharField(max_length=title_max_length, null=True, blank=True)
+    description = models.TextField(max_length=description_max_length, null=True, blank=True)
+    code = models.CharField(max_length=title_max_length, null=True, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -1052,7 +1054,7 @@ class Favourite(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    text = models.CharField(max_length=500, blank=False,)
+    text = models.CharField(max_length=description_max_length, blank=False,)
     created_on = models.DateTimeField(default=timezone.now)
 
 

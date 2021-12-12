@@ -889,13 +889,20 @@ export class QuillDiv extends React.Component{
     constructor(props){
         super(props);
         this.maindiv = React.createRef();
+        if(props.text)this.state={charlength:props.text.length};
+        else this.state={charlength:0};
     }
     
     render(){
+        let overflow = "";
+        if(this.state.charlength>2000)overflow=" overflow";
         
         return(
-            <div ref={this.maindiv} class="quill-div">
-                
+            <div>
+                <div ref={this.maindiv} class="quill-div">
+
+                </div>
+                <div class={"character-length"+overflow}>{this.state.charlength+"/2000 "+gettext("characters")}</div>
             </div>
         );
     }
@@ -912,7 +919,9 @@ export class QuillDiv extends React.Component{
         });
         if(this.props.text)quill.clipboard.dangerouslyPasteHTML(this.props.text);
         quill.on('text-change',()=>{
-            this.props.textChangeFunction(quill_container.childNodes[0].innerHTML.replace(/\<p\>\<br\>\<\/p\>\<ul\>/g,"\<ul\>"));
+            let text = quill_container.childNodes[0].innerHTML.replace(/\<p\>\<br\>\<\/p\>\<ul\>/g,"\<ul\>");
+            this.props.textChangeFunction(text);
+            this.setState({charlength:text.length});
         });
         let toolbar = quill.getModule('toolbar');
         toolbar.defaultLinkFunction=toolbar.handlers['link'];
@@ -924,6 +933,7 @@ export class QuillDiv extends React.Component{
             }
             this.defaultLinkFunction(value);
         });
+        
     }
     
     

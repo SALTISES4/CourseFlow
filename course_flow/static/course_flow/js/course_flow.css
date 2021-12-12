@@ -532,21 +532,22 @@ button:hover{
 
 .menu-grid > .workflow-for-menu{
     margin-right:10px;
+    width:400px;
 }
 
 .workflow-for-menu{
     position:relative;
-    width:400px;
     background-color:white;
     margin-bottom:8px;
     padding:10px;
     color:#1976bc;
     border-radius:10px;
     border:2px solid white;
+    max-width:600px;
 }
 
 .workflow-description{
-    font-size:16px;
+    font-size:13px;
     color:#444444;
     margin-bottom:2px;
     white-space:normal;
@@ -619,6 +620,7 @@ button:hover{
     margin-bottom:6px;
     flex-grow:1;
     color:#1976bc;
+    white-space:normal;
 }
 
 .workflow-buttons{
@@ -2476,6 +2478,15 @@ circle.mouseover{
 .side-bar .quill-div{
     min-height:140px;
     position:unset;
+}
+
+.side-bar .character-length{
+    font-size:10px;
+    color:grey;
+}
+
+.side-bar .character-length.overflow{
+    color:red;
 }
 
 .side-bar input.half-width, .side-bar select.half-width{

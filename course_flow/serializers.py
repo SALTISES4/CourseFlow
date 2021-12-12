@@ -28,6 +28,8 @@ from .models import (
     Week,
     WeekWorkflow,
     Workflow,
+    title_max_length,
+    description_max_length,
 )
 from .utils import (
     dateTimeFormat,
@@ -37,6 +39,7 @@ from .utils import (
     get_unique_outcomenodes,
     linkIDMap,
 )
+
 
 bleach_allowed_tags = [
     "b",
@@ -70,7 +73,8 @@ class DescriptionSerializerMixin:
         return bleach_sanitizer(instance.description, tags=bleach_allowed_tags)
 
     def validate_description(self, value):
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)
+        if value is None: return None
+        return bleach_sanitizer(value, tags=bleach_allowed_tags)[:description_max_length]
 
     
 class TitleSerializerMixin:
@@ -80,7 +84,7 @@ class TitleSerializerMixin:
         return bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
     
     def validate_title(self, value):
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)
+        return bleach_sanitizer(value, tags=bleach_allowed_tags)[:title_max_length]
 
 class DescriptionSerializerTextMixin(serializers.Serializer):
     description = serializers.SerializerMethodField()
