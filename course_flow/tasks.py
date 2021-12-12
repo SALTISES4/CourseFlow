@@ -219,8 +219,8 @@ def async_get_outcomes_excel(user_email, pk, object_type):
             + ".xlsx"
         )
         email = EmailMessage(
-            "Your Outcomes Export",
-            "Hi there! Here are the results of your recent outcomes export.",
+            _("Your Outcomes Export"),
+            _("Hi there! Here are the results of your recent outcomes export."),
             "noreply@courseflow.org",
             [user_email],
         )
@@ -268,8 +268,8 @@ def async_get_outcomes_csv(user_email, pk, object_type):
         + ".csv"
     )
     email = EmailMessage(
-        "Your Outcomes Export",
-        "Hi there! Here are the results of your recent outcomes export.",
+        _("Your Outcomes Export"),
+        _("Hi there! Here are the results of your recent outcomes export."),
         "noreply@courseflow.org",
         [user_email],
     )
@@ -314,8 +314,8 @@ def async_get_course_frameworks_excel(user_email, pk, object_type):
             + ".xlsx"
         )
         email = EmailMessage(
-            "Your Outcomes Export",
-            "Hi there! Here are the results of your recent course frameworks export.",
+            _("Your Outcomes Export"),
+            _("Hi there! Here are the results of your recent outcomes export."),
             "noreply@courseflow.org",
             [user_email],
         )
