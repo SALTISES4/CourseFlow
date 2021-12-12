@@ -16,6 +16,10 @@ from .utils import (
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
 )
+from .celery import (
+    try_async
+)
+from smtplib import SMTPException
 
 
 def get_displayed_title(node):
@@ -186,9 +190,9 @@ def get_workflow_outcomes_table(workflow):
     pd.set_option("display.max_colwidth", None)
     return df
 
-
+@try_async
 @shared_task
-def async_get_outcomes_excel(email, pk, object_type):
+def async_get_outcomes_excel(user_email, pk, object_type):
     model_object = get_model_from_str(object_type).objects.get(pk=pk)
     with BytesIO() as b:
         # Use the StringIO object as the filehandle.
@@ -218,14 +222,17 @@ def async_get_outcomes_excel(email, pk, object_type):
             "Your Outcomes Export",
             "Hi there! Here are the results of your recent outcomes export.",
             "noreply@courseflow.org",
-            [email],
+            [user_email],
         )
         email.attach(
             filename,
             b.getvalue(),
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
-        email.send()
+        try:
+            email.send()
+        except SMTPException:
+            print("Email could not be sent")
 
 
 #        response = HttpResponse(
@@ -236,8 +243,9 @@ def async_get_outcomes_excel(email, pk, object_type):
 #        return response
 
 
+@try_async
 @shared_task
-def async_get_outcomes_csv(email, pk, object_type):
+def async_get_outcomes_csv(user_email, pk, object_type):
     model_object = get_model_from_str(object_type).objects.get(pk=pk)
     if object_type == "workflow":
         workflows = [model_object]
@@ -263,16 +271,21 @@ def async_get_outcomes_csv(email, pk, object_type):
         "Your Outcomes Export",
         "Hi there! Here are the results of your recent outcomes export.",
         "noreply@courseflow.org",
-        [email],
+        [user_email],
     )
     with BytesIO() as b:
         df.to_csv(path_or_buf=b, sep=",", index=False)
         email.attach(filename, b.getvalue(), "text/csv")
-    email.send()
+        
+    try:
+        email.send()
+    except SMTPException:
+        print("Email could not be sent")
 
 
+@try_async
 @shared_task
-def async_get_course_frameworks_excel(email, pk, object_type):
+def async_get_course_frameworks_excel(user_email, pk, object_type):
     model_object = get_model_from_str(object_type).objects.get(pk=pk)
     with BytesIO() as b:
         # Use the StringIO object as the filehandle.
@@ -304,11 +317,14 @@ def async_get_course_frameworks_excel(email, pk, object_type):
             "Your Outcomes Export",
             "Hi there! Here are the results of your recent course frameworks export.",
             "noreply@courseflow.org",
-            [email],
+            [user_email],
         )
         email.attach(
             filename,
             b.getvalue(),
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
-        email.send()
+        try:
+            email.send()
+        except SMTPException:
+            print("Email could not be sent")
