@@ -842,6 +842,24 @@ export function nodelinkReducer(state=[],action){
                 }
             }
             return state;
+        case 'nodelink/deleteSelfSoft':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:true};
+                    return new_state;
+                }
+            }
+            return state;
+        case 'nodelink/restoreSelf':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],deleted:false};
+                    return new_state;
+                }
+            }
+            return state;
         case 'week/insertBelow':
             if(!action.payload.children)return state;
             new_state = state.slice();

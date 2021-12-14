@@ -172,6 +172,7 @@ export class WorkflowRenderer{
     }
     
     render(container,view_type="workflowview"){
+        console.log(this.store.getState());
         this.view_type=view_type;
         reactDom.render(<WorkflowLoader/>,container[0]);
         let store = this.store;

@@ -184,6 +184,7 @@ export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.l
 export function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>console.log("success")){
     console.log("delete self");
     console.log(soft);
+    console.log(objectType);
     let path;
     if(soft)path=post_paths.delete_self_soft;
     else path=post_paths.delete_self;

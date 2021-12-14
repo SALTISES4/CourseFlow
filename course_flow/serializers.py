@@ -140,6 +140,7 @@ class NodeLinkSerializerShallow(
     class Meta:
         model = NodeLink
         fields = [
+            "deleted",
             "id",
             "title",
             "source_node",
@@ -168,6 +169,7 @@ class NodeSerializerShallow(
     TimeRequiredSerializerMixin,
 ):
 
+    outgoing_links = serializers.SerializerMethodField()
     outcomenode_set = serializers.SerializerMethodField()
     outcomenode_unique_set = serializers.SerializerMethodField()
     columnworkflow = serializers.SerializerMethodField()
@@ -226,6 +228,10 @@ class NodeSerializerShallow(
 
     def get_outcomenode_set(self, instance):
         links = instance.outcomenode_set.exclude(Q(outcome__deleted=True)|Q(outcome__parent_outcomes__deleted=True)|Q(outcome__parent_outcomes__parent_outcomes__deleted=True)).order_by("rank")
+        return list(map(linkIDMap, links))
+    
+    def get_outgoing_links(self, instance):
+        links = instance.outgoing_links.exclude(Q(deleted=True)|Q(target_node__deleted=True)|Q(target_node__week__deleted=True))
         return list(map(linkIDMap, links))
 
     def get_outcomenode_unique_set(self, instance):

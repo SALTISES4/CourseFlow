@@ -3993,6 +3993,8 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             parent_id = ColumnWorkflow.objects.get(column=model).id
         elif object_type == "node":
             parent_id = NodeWeek.objects.get(node=model).id
+        elif object_type == "nodelink":
+            parent_id = Node.objects.get(outgoing_links=model).id
         elif object_type == "outcome" and model.depth == 0:
             parent_id = OutcomeWorkflow.objects.get(outcome=model).id
             object_type = "outcome_base"
@@ -4119,6 +4121,9 @@ def restore_self(request: HttpRequest) -> HttpResponse:
         elif object_type == "node":
             throughparent_id = NodeWeek.objects.get(node=model).id
             parent_id = NodeWeek.objects.get(node=model).week.id
+        elif object_type == "nodelink":
+            throughparent_id = None
+            parent_id = Node.objects.get(outgoing_links=model).id
         elif object_type == "outcome" and model.depth == 0:
             throughparent_id = OutcomeWorkflow.objects.get(outcome=model).id
             parent_id = workflow.id
@@ -4226,6 +4231,8 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
 
         elif object_type == "node":
             parent_id = NodeWeek.objects.get(node=model).id
+        elif object_type == "nodelink":
+            parent_id = Node.objects.get(outgoing_links=model).id
         elif object_type == "outcome" and model.depth == 0:
             parent_id = OutcomeWorkflow.objects.get(outcome=model).id
             object_type = "outcome_base"

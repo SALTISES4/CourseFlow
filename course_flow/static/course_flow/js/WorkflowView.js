@@ -480,6 +480,9 @@ class RestoreBarUnconnected extends ComponentJSON{
         let outcomes = this.props.outcomes.map((outcome)=>
             <RestoreBarItem objectType="outcome" data={outcome}/>
         )
+        let nodelinks = this.props.nodelinks.map((nodelink)=>
+            <RestoreBarItem objectType="nodelink" data={nodelink}/>
+        )
         
         
         return reactDom.createPortal(
@@ -500,6 +503,10 @@ class RestoreBarUnconnected extends ComponentJSON{
                 <div class="node-bar-column-block">
                     {outcomes}
                 </div>
+                <h4>{gettext("Node Links")}:</h4>
+                <div class="node-bar-column-block">
+                    {nodelinks}
+                </div>
             </div>
         ,$("#restore-bar")[0]);
     }
@@ -510,6 +517,7 @@ const mapRestoreBarStateToProps = state=>({
     columns:state.column.filter(x=>x.deleted),
     nodes:state.node.filter(x=>x.deleted),
     outcomes:state.outcome.filter(x=>x.deleted),
+    nodelinks:state.nodelink.filter(x=>x.deleted),
     
 })
 export const RestoreBar = connect(
@@ -521,10 +529,16 @@ class RestoreBarItem extends React.Component{
     render(){
         return (
             <div>
-                <div>{this.props.data.title}</div>
+                <div>{this.getTitle()}</div>
                 <button onClick={this.restore.bind(this)}>{gettext("Restore")}</button>
             </div>
         );
+    }
+
+    getTitle(){
+        if(this.props.title && this.props.title !== "")return this.props.title;
+        if(this.props.objectType=="node" && (this.props.data.represents_workflow && this.props.data.linked_workflow_data.title && this.props.data.linked_workflow_data.title !== ""))return this.props.data.linked_workflow_data.title;
+        return gettext("Untitled");
     }
     
     restore(){
