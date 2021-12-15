@@ -1003,6 +1003,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             project.author == self.request.user
             or ObjectPermission.objects.filter(
                 user=self.request.user,
+                project=project,
                 permission_type=ObjectPermission.PERMISSION_EDIT,
             ).count()
             > 0
@@ -1339,7 +1340,13 @@ def get_workflow_context_data(workflow, context, user):
     if (
         workflow.author == user
         or ObjectPermission.objects.filter(
-            user=user, permission_type=ObjectPermission.PERMISSION_EDIT
+            user=user, 
+            permission_type=ObjectPermission.PERMISSION_EDIT,
+            object_id=workflow.id,
+        ).filter(
+            Q(content_type=ContentType.objects.get_for_model(Activity))
+            |Q(content_type=ContentType.objects.get_for_model(Course))
+            |Q(content_type=ContentType.objects.get_for_model(Program))
         ).count()
         > 0
     ):
@@ -1635,18 +1642,18 @@ def get_export(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
     task_type = json.loads(request.POST.get("exportType"))
     if task_type == "outcomes_excel":
-        task = tasks.async_get_outcomes_excel.delay(
+        task = tasks.async_get_outcomes_excel(
             request.user.email, object_id, object_type
         )
     elif task_type == "outcomes_csv":
-        task = tasks.async_get_outcomes_csv.delay(
+        task = tasks.async_get_outcomes_csv(
             request.user.email, object_id, object_type
         )
     elif task_type == "frameworks_excel":
-        task = tasks.async_get_course_frameworks_excel.delay(
+        task = tasks.async_get_course_frameworks_excel(
             request.user.email, object_id, object_type
         )
-    return JsonResponse({"action": "posted", "task_id": task.id})
+    return JsonResponse({"action": "posted"})
 
 
 """
