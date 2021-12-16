@@ -79,13 +79,13 @@ def get_all_outcomes_for_workflow(workflow):
 
 def get_all_outcomes_ordered_for_outcome(outcome):
     outcomes = [outcome]
-    for outcomeoutcome in outcome.child_outcome_links.all().order_by("rank"):
+    for outcomeoutcome in outcome.child_outcome_links.filter(child__deleted=False).order_by("rank"):
         outcomes += get_all_outcomes_ordered_for_outcome(outcomeoutcome.child)
     return outcomes
 
 def get_all_outcomes_ordered(workflow):
     outcomes = []
-    for outcomeworkflow in workflow.outcomeworkflow_set.all().order_by("rank"):
+    for outcomeworkflow in workflow.outcomeworkflow_set.filter(outcome__deleted=False).order_by("rank"):
         outcomes+=get_all_outcomes_ordered_for_outcome(outcomeworkflow.outcome)
     return outcomes
 
@@ -134,6 +134,16 @@ def get_unique_outcomehorizontallinks(outcome):
         )
     )
 
+def get_parent_nodes_for_workflow(workflow):
+    nodes = (Node.objects.filter(linked_workflow=workflow)
+        .exclude(
+            Q(deleted=True)
+            | Q(week__deleted=True)
+            | Q(week__workflow__deleted=True)
+        )
+        .prefetch_related("outcomenode_set")
+    )
+    return nodes
 
 def get_nondeleted_favourites(user):
     return models.Favourite.objects.filter(user=user).exclude(

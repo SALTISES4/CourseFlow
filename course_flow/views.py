@@ -99,8 +99,6 @@ from .utils import (
     dateTimeFormat,
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,
-    get_all_outcomes_ordered,
-    get_all_outcomes_ordered_for_outcome,
     get_descendant_outcomes,
     get_model_from_str,
     get_nondeleted_favourites,
@@ -108,6 +106,7 @@ from .utils import (
     get_parent_model_str,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
+    get_parent_nodes_for_workflow,
 )
 
 
@@ -1112,15 +1111,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 def get_parent_outcome_data(workflow, user):
     last_time = time.time()
     outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
-    parent_nodes = (
-        Node.objects.filter(linked_workflow=workflow)
-        .exclude(
-            Q(deleted=True)
-            | Q(week__deleted=True)
-            | Q(week__workflow__deleted=True)
-        )
-        .prefetch_related("outcomenode_set")
-    )
+    parent_nodes = get_parent_nodes_for_workflow(workflow)
     parent_workflows = list(map(lambda x: x.get_workflow(), parent_nodes))
     parent_outcomeworkflows = OutcomeWorkflow.objects.filter(
         workflow__in=parent_workflows

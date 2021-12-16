@@ -15,6 +15,7 @@ from .utils import (
     get_model_from_str,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
+    get_parent_nodes_for_workflow,
 )
 from .celery import (
     try_async
@@ -73,10 +74,12 @@ def get_framework_line_for_outcome(outcome):
     activities = Node.objects.filter(
         outcomenode__outcome__in=sub_outcomes,
         column__column_type=Column.LESSON,
+        deleted=False,
     ).distinct()
     assessments = Node.objects.filter(
         outcomenode__outcome__in=sub_outcomes,
         column__column_type=Column.ASSESSMENT,
+        deleted=False,
     ).distinct()
     dict_data["e"] = "\n".join(
         [get_displayed_title(activity) for activity in activities]
@@ -119,7 +122,7 @@ def get_course_framework(workflow):
     )
     df = df.append({"a": _("Ministerial Competencies")}, ignore_index=True)
     df = df.append({"a": _("Competency"), "b": _("Title")}, ignore_index=True)
-    nodes = Node.objects.filter(linked_workflow=workflow).distinct()
+    nodes = get_parent_nodes_for_workflow(workflow)
     parent_outcomes = []
     for node in nodes:
         outcomenodes = get_unique_outcomenodes(node)
@@ -138,10 +141,12 @@ def get_course_framework(workflow):
             ignore_index=True,
         )
         prereqs = Node.objects.filter(
-            outgoing_links__target_node__in=nodes
+            outgoing_links__target_node__in=nodes,
+            deleted=False,
         ).distinct()
         postreqs = Node.objects.filter(
-            incoming_links__source_node__in=nodes
+            incoming_links__source_node__in=nodes,
+            deleted=False,
         ).distinct()
         if len(prereqs) > 0:
             df = df.append(
