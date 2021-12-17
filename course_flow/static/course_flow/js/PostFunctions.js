@@ -182,9 +182,6 @@ export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.l
 
 //Causes the specified object to delete itself
 export function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>console.log("success")){
-    console.log("delete self");
-    console.log(soft);
-    console.log(objectType);
     let path;
     if(soft)path=post_paths.delete_self_soft;
     else path=post_paths.delete_self;
@@ -597,11 +594,27 @@ export function getExport(objectID,objectType,exportType,callBackFunction=()=>co
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType),
             exportType:JSON.stringify(exportType),
-        }).done(function(data){
+        }).done(function(data, status, xhr){
+            console.log("got export");
+            console.log(data);
+            console.log(status);
+            console.log(xhr);
             callBackFunction(data);
         });
     }catch(err){
         fail_function();
     }
 }
+
+//get exported data
+//export function getExport(objectID,objectType,exportType,callBackFunction=()=>console.log("success")){
+//    try{
+//        let a=document.createElement('a');
+//        document.body.append(a);
+//        a.href=get_paths.get_download_export.replace('0',objectID).replace('objecttype',objectType).replace('exporttype',exportType);
+//        a.click();
+//    }catch(err){
+//        fail_function();
+//    }
+//}
 

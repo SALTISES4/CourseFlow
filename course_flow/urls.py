@@ -33,8 +33,16 @@ def course_flow_patterns():
             r"^workflow/updatevalue/$", views.update_value, name="update-value"
         ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
-        url(r"^workflow/restore-self/$", views.restore_self, name="restore-self"),
-        url(r"^workflow/delete-self-soft/$", views.delete_self_soft, name="delete-self-soft"),
+        url(
+            r"^workflow/restore-self/$",
+            views.restore_self,
+            name="restore-self",
+        ),
+        url(
+            r"^workflow/delete-self-soft/$",
+            views.delete_self_soft,
+            name="delete-self-soft",
+        ),
         url(
             r"^workflow/update-outcomenode-degree/$",
             views.update_outcomenode_degree,
@@ -216,6 +224,11 @@ def course_flow_patterns():
             name="get-parent-workflow-info",
         ),
         url(r"^exports/get/$", views.get_export, name="get-export",),
+        url(
+            r"^downloads/exports/get/(?P<pk>[0-9]+)/(?P<object_type>[a-z]+)/(?P<export_type>[a-z_]+)/$",
+            views.get_export_download,
+            name="get-export-download",
+        ),
         url(
             r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),

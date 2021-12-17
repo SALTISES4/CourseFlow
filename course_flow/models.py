@@ -24,13 +24,18 @@ from course_flow.utils import benchmark, get_descendant_outcomes
 
 User = get_user_model()
 
-title_max_length=50
-description_max_length=2000
+title_max_length = 50
+description_max_length = 2000
+
 
 class Project(models.Model):
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=title_max_length, null=True, blank=True)
-    description = models.CharField(max_length=description_max_length, null=True, blank=True)
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
+    description = models.CharField(
+        max_length=description_max_length, null=True, blank=True
+    )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -69,7 +74,9 @@ class Project(models.Model):
 class CustomTerm(models.Model):
     term = models.CharField(max_length=title_max_length)
     translation = models.CharField(max_length=title_max_length)
-    translation_plural = models.CharField(max_length=title_max_length, null=True)
+    translation_plural = models.CharField(
+        max_length=title_max_length, null=True
+    )
 
     def get_permission_objects(self):
         return [Project.objects.filter(terminology_dict=self).first()]
@@ -109,6 +116,13 @@ class OutcomeWorkflow(models.Model):
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
+    def get_display_rank(self):
+        return list(
+            OutcomeWorkflow.objects.filter(
+                workflow=self.workflow, outcome__deleted=False
+            ).order_by("rank")
+        ).index(self)
+
     def get_permission_objects(self):
         return [self.project, self.outcome]
 
@@ -119,7 +133,9 @@ class OutcomeWorkflow(models.Model):
 
 class Column(models.Model):
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=title_max_length, null=True, blank=True)
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -217,9 +233,13 @@ class NodeLink(models.Model):
 
 class Outcome(models.Model):
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=description_max_length, null=True, blank=True)
+    title = models.CharField(
+        max_length=description_max_length, null=True, blank=True
+    )
     code = models.CharField(max_length=title_max_length, null=True, blank=True)
-    description = models.TextField(max_length=description_max_length, null=True, blank=True)
+    description = models.TextField(
+        max_length=description_max_length, null=True, blank=True
+    )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -293,6 +313,13 @@ class OutcomeOutcome(models.Model):
     )
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
+
+    def get_display_rank(self):
+        return list(
+            OutcomeOutcome.objects.filter(
+                parent=self.parent, child__deleted=False
+            ).order_by("rank")
+        ).index(self)
 
     def get_permission_objects(self):
         return self.get_top_outcome().get_permission_objects()
@@ -392,8 +419,12 @@ class OutcomeHorizontalLink(models.Model):
 
 class Node(models.Model):
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=title_max_length, null=True, blank=True)
-    description = models.TextField(max_length=description_max_length, null=True, blank=True)
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
+    description = models.TextField(
+        max_length=description_max_length, null=True, blank=True
+    )
     author = models.ForeignKey(
         User,
         related_name="authored_nodes",
@@ -658,8 +689,12 @@ class OutcomeNode(models.Model):
 
 class Week(models.Model):
     deleted = models.BooleanField(default=False)
-    title = models.CharField(max_length=title_max_length, null=True, blank=True)
-    description = models.TextField(max_length=description_max_length, null=True, blank=True)
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
+    description = models.TextField(
+        max_length=description_max_length, null=True, blank=True
+    )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -754,8 +789,12 @@ class Workflow(models.Model):
 
     deleted = models.BooleanField(default=False)
 
-    title = models.CharField(max_length=title_max_length, null=True, blank=True)
-    description = models.TextField(max_length=description_max_length, null=True, blank=True)
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
+    description = models.TextField(
+        max_length=description_max_length, null=True, blank=True
+    )
     code = models.CharField(max_length=title_max_length, null=True, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -1012,6 +1051,13 @@ class WeekWorkflow(models.Model):
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
+
+    def get_display_rank(self):
+        return list(
+            WeekWorkflow.objects.filter(
+                workflow=self.workflow, week__deleted=False
+            ).order_by("rank")
+        ).index(self)
 
     def get_workflow(self):
         return self.workflow

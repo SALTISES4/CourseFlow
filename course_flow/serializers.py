@@ -1,9 +1,10 @@
+import re
+
 import bleach
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
-from rest_framework import serializers
 from html2text import html2text
-import re
+from rest_framework import serializers
 
 from .models import (
     Activity,
@@ -28,8 +29,8 @@ from .models import (
     Week,
     WeekWorkflow,
     Workflow,
-    title_max_length,
     description_max_length,
+    title_max_length,
 )
 from .utils import (
     dateTimeFormat,
@@ -39,7 +40,6 @@ from .utils import (
     get_unique_outcomenodes,
     linkIDMap,
 )
-
 
 bleach_allowed_tags = [
     "b",
@@ -65,7 +65,6 @@ def bleach_sanitizer(value, **kwargs):
         return None
 
 
-
 class DescriptionSerializerMixin:
     description = serializers.SerializerMethodField()
 
@@ -73,25 +72,34 @@ class DescriptionSerializerMixin:
         return bleach_sanitizer(instance.description, tags=bleach_allowed_tags)
 
     def validate_description(self, value):
-        if value is None: return None
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)[:description_max_length]
+        if value is None:
+            return None
+        return bleach_sanitizer(value, tags=bleach_allowed_tags)[
+            :description_max_length
+        ]
 
-    
+
 class TitleSerializerMixin:
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
         return bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
-    
+
     def validate_title(self, value):
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)[:title_max_length]
+        return bleach_sanitizer(value, tags=bleach_allowed_tags)[
+            :title_max_length
+        ]
+
 
 class DescriptionSerializerTextMixin(serializers.Serializer):
     description = serializers.SerializerMethodField()
 
     def get_description(self, instance):
-        if instance.description is None: return None
-        returnval = html2text(bleach_sanitizer(instance.description, tags=bleach_allowed_tags))
+        if instance.description is None:
+            return None
+        returnval = html2text(
+            bleach_sanitizer(instance.description, tags=bleach_allowed_tags)
+        )
         return returnval
 
 
@@ -99,9 +107,13 @@ class TitleSerializerTextMixin(serializers.Serializer):
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
-        if instance.title is None: return None
-        returnval = html2text(bleach_sanitizer(instance.title, tags=bleach_allowed_tags))
+        if instance.title is None:
+            return None
+        returnval = html2text(
+            bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
+        )
         return returnval
+
 
 class TimeRequiredSerializerMixin:
     time_required = serializers.SerializerMethodField()
@@ -126,12 +138,10 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-
 class DisciplineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discipline
         fields = ["id", "title"]
-
 
 
 class NodeLinkSerializerShallow(
@@ -161,7 +171,6 @@ class NodeLinkSerializerShallow(
         return instance
 
 
-    
 class NodeSerializerShallow(
     serializers.ModelSerializer,
     TitleSerializerMixin,
@@ -207,31 +216,47 @@ class NodeSerializerShallow(
     def get_columnworkflow(self, instance):
         if instance.column.deleted:
             workflow = instance.get_workflow()
-            return ColumnWorkflow.objects.filter(
-                workflow=workflow,
-                column__deleted=False
-            ).order_by("rank").first().id
+            return (
+                ColumnWorkflow.objects.filter(
+                    workflow=workflow, column__deleted=False
+                )
+                .order_by("rank")
+                .first()
+                .id
+            )
         else:
             return instance.column.columnworkflow_set.get(
                 column=instance.column
             ).id
-    
+
     def get_column(self, instance):
         if instance.column.deleted:
             workflow = instance.get_workflow()
-            return ColumnWorkflow.objects.filter(
-                workflow=workflow,
-                column__deleted=False
-            ).order_by("rank").first().column.id
+            return (
+                ColumnWorkflow.objects.filter(
+                    workflow=workflow, column__deleted=False
+                )
+                .order_by("rank")
+                .first()
+                .column.id
+            )
         else:
             return instance.column.id
 
     def get_outcomenode_set(self, instance):
-        links = instance.outcomenode_set.exclude(Q(outcome__deleted=True)|Q(outcome__parent_outcomes__deleted=True)|Q(outcome__parent_outcomes__parent_outcomes__deleted=True)).order_by("rank")
+        links = instance.outcomenode_set.exclude(
+            Q(outcome__deleted=True)
+            | Q(outcome__parent_outcomes__deleted=True)
+            | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
+        ).order_by("rank")
         return list(map(linkIDMap, links))
-    
+
     def get_outgoing_links(self, instance):
-        links = instance.outgoing_links.exclude(Q(deleted=True)|Q(target_node__deleted=True)|Q(target_node__week__deleted=True))
+        links = instance.outgoing_links.exclude(
+            Q(deleted=True)
+            | Q(target_node__deleted=True)
+            | Q(target_node__week__deleted=True)
+        )
         return list(map(linkIDMap, links))
 
     def get_outcomenode_unique_set(self, instance):
@@ -368,7 +393,9 @@ class WeekSerializerShallow(
         ]
 
     def get_nodeweek_set(self, instance):
-        links = instance.nodeweek_set.filter(node__deleted=False).order_by("rank")
+        links = instance.nodeweek_set.filter(node__deleted=False).order_by(
+            "rank"
+        )
         return list(map(linkIDMap, links))
 
     def create(self, validated_data):
@@ -481,7 +508,9 @@ class ProjectSerializerShallow(
         ]
 
     def get_workflowproject_set(self, instance):
-        links = instance.workflowproject_set.filter(workflow__deleted=False).order_by("rank")
+        links = instance.workflowproject_set.filter(
+            workflow__deleted=False
+        ).order_by("rank")
         return list(map(linkIDMap, links))
 
     def update(self, instance, validated_data):
@@ -539,9 +568,18 @@ class OutcomeSerializerShallow(
         if len(instance.outcome_horizontal_links.all()) == 0:
             return []
         return list(
-            map(linkIDMap, instance.outcome_horizontal_links.exclude(Q(parent_outcome__deleted=True)|Q(parent_outcome__parent_outcomes__deleted=True)|Q(parent_outcome__parent_outcomes__parent_outcomes__deleted=True)))
+            map(
+                linkIDMap,
+                instance.outcome_horizontal_links.exclude(
+                    Q(parent_outcome__deleted=True)
+                    | Q(parent_outcome__parent_outcomes__deleted=True)
+                    | Q(
+                        parent_outcome__parent_outcomes__parent_outcomes__deleted=True
+                    )
+                ),
+            )
         )
-    
+
     def get_outcome_horizontal_links_unique(self, instance):
         if len(instance.outcome_horizontal_links.all()) == 0:
             return []
@@ -619,7 +657,6 @@ class CommentSerializer(serializers.ModelSerializer):
         return instance
 
 
-
 class WorkflowSerializerShallow(
     serializers.ModelSerializer,
     TitleSerializerMixin,
@@ -684,15 +721,21 @@ class WorkflowSerializerShallow(
             return None
 
     def get_weekworkflow_set(self, instance):
-        links = instance.weekworkflow_set.filter(week__deleted=False).order_by("rank")
+        links = instance.weekworkflow_set.filter(week__deleted=False).order_by(
+            "rank"
+        )
         return list(map(linkIDMap, links))
 
     def get_columnworkflow_set(self, instance):
-        links = instance.columnworkflow_set.filter(column__deleted=False).order_by("rank")
+        links = instance.columnworkflow_set.filter(
+            column__deleted=False
+        ).order_by("rank")
         return list(map(linkIDMap, links))
 
     def get_outcomeworkflow_set(self, instance):
-        links = instance.outcomeworkflow_set.filter(outcome__deleted=False).order_by("rank")
+        links = instance.outcomeworkflow_set.filter(
+            outcome__deleted=False
+        ).order_by("rank")
         return list(map(linkIDMap, links))
 
     def update(self, instance, validated_data):
@@ -942,24 +985,24 @@ class InfoBoxSerializer(
     def get_author(self, instance):
         return str(instance.author)
 
-    
-#class RefreshSerializerWeek(serializers.Serializer):
+
+# class RefreshSerializerWeek(serializers.Serializer):
 #    class Meta:
 #        model = Week
 #        fields = [
 #            "id",
 #            "nodeweek_set",
 #        ]
-#        
+#
 #    nodeweek_set = serializers.SerializerMethodField()
-#        
+#
 #    def get_nodeweek_set(self, instance):
 #        links = instance.nodeweek_set.filter(node__deleted=False).order_by("rank")
 #        return list(map(linkIDMap, links))
-#    
 #
 #
-#class RefreshSerializerWorkflow(serializers.ModelSerializer):
+#
+# class RefreshSerializerWorkflow(serializers.ModelSerializer):
 #
 #    author_id = serializers.SerializerMethodField()
 #
@@ -971,7 +1014,7 @@ class InfoBoxSerializer(
 #            "weekworkflow_set",
 #            "outcomeworkflow_set",
 #        ]
-#        
+#
 #    weekworkflow_set = serializers.SerializerMethodField()
 #    columnworkflow_set = serializers.SerializerMethodField()
 #    outcomeworkflow_set = serializers.SerializerMethodField()
@@ -1009,9 +1052,18 @@ class RefreshSerializerOutcome(serializers.ModelSerializer):
         if len(instance.outcome_horizontal_links.all()) == 0:
             return []
         return list(
-            map(linkIDMap, instance.outcome_horizontal_links.exclude(Q(parent_outcome__deleted=True)|Q(parent_outcome__parent_outcomes__deleted=True)|Q(parent_outcome__parent_outcomes__parent_outcomes__deleted=True)))
+            map(
+                linkIDMap,
+                instance.outcome_horizontal_links.exclude(
+                    Q(parent_outcome__deleted=True)
+                    | Q(parent_outcome__parent_outcomes__deleted=True)
+                    | Q(
+                        parent_outcome__parent_outcomes__parent_outcomes__deleted=True
+                    )
+                ),
+            )
         )
-    
+
     def get_outcome_horizontal_links_unique(self, instance):
         if len(instance.outcome_horizontal_links.all()) == 0:
             return []
@@ -1034,12 +1086,16 @@ class RefreshSerializerNode(serializers.ModelSerializer):
         ]
 
     def get_outcomenode_set(self, instance):
-        links = instance.outcomenode_set.exclude(Q(outcome__deleted=True)|Q(outcome__parent_outcomes__deleted=True)|Q(outcome__parent_outcomes__parent_outcomes__deleted=True)).order_by("rank")
+        links = instance.outcomenode_set.exclude(
+            Q(outcome__deleted=True)
+            | Q(outcome__parent_outcomes__deleted=True)
+            | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
+        ).order_by("rank")
         return list(map(linkIDMap, links))
 
     def get_outcomenode_unique_set(self, instance):
         return list(map(linkIDMap, get_unique_outcomenodes(instance)))
-    
+
 
 class OutcomeExportSerializer(
     serializers.ModelSerializer,
@@ -1056,34 +1112,32 @@ class OutcomeExportSerializer(
             "depth",
         ]
 
-
     code = serializers.SerializerMethodField()
 
     def get_code(self, instance):
-        if instance.depth==0:
-            outcomeworkflow = OutcomeWorkflow.objects.filter(outcome=instance).first()
-            if instance.code is None or instance.code=="":
-                return str(outcomeworkflow.rank+1)
+        if instance.depth == 0:
+            outcomeworkflow = OutcomeWorkflow.objects.filter(
+                outcome=instance
+            ).first()
+            if instance.code is None or instance.code == "":
+                return str(outcomeworkflow.get_display_rank() + 1)
             else:
                 return instance.code
         else:
-            outcomeoutcome = OutcomeOutcome.objects.filter(child=instance).first()
-            if instance.code is None or instance.code=="":
-                return self.get_code(outcomeoutcome.parent)+"."+str(outcomeoutcome.rank+1)
+            outcomeoutcome = OutcomeOutcome.objects.filter(
+                child=instance
+            ).first()
+            if instance.code is None or instance.code == "":
+                return (
+                    self.get_code(outcomeoutcome.parent)
+                    + "."
+                    + str(outcomeoutcome.get_display_rank() + 1)
+                )
             else:
-                return self.get_code(outcomeoutcome.parent)+"."+instance.code
-        
-        
-        
-        
-        
-        if instance.code is None or instance.code=="":
-            if instance.depth==0:
-                return str(OutcomeWorkflow.objects.filter(outcome=instance).first().rank)
-            else:
-                return 
-        else:
-            return instance.code
+                return (
+                    self.get_code(outcomeoutcome.parent) + "." + instance.code
+                )
+
 
 serializer_lookups_shallow = {
     "node": NodeSerializerShallow,

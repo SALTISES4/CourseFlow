@@ -25,9 +25,9 @@ from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
-from . import redux_actions as actions
 from course_flow import tasks
 
+from . import redux_actions as actions
 from .decorators import (
     ajax_login_required,
     check_object_permission,
@@ -97,6 +97,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
 from .utils import (
     benchmark,
     dateTimeFormat,
+    dateTimeFormatNoSpace,
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,
     get_descendant_outcomes,
@@ -104,9 +105,9 @@ from .utils import (
     get_nondeleted_favourites,
     get_parent_model,
     get_parent_model_str,
+    get_parent_nodes_for_workflow,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
-    get_parent_nodes_for_workflow,
 )
 
 
@@ -1331,14 +1332,16 @@ def get_workflow_context_data(workflow, context, user):
     if (
         workflow.author == user
         or ObjectPermission.objects.filter(
-            user=user, 
+            user=user,
             permission_type=ObjectPermission.PERMISSION_EDIT,
             object_id=workflow.id,
-        ).filter(
+        )
+        .filter(
             Q(content_type=ContentType.objects.get_for_model(Activity))
-            |Q(content_type=ContentType.objects.get_for_model(Course))
-            |Q(content_type=ContentType.objects.get_for_model(Program))
-        ).count()
+            | Q(content_type=ContentType.objects.get_for_model(Course))
+            | Q(content_type=ContentType.objects.get_for_model(Program))
+        )
+        .count()
         > 0
     ):
         context["read_only"] = JSONRenderer().render(False).decode("utf-8")
@@ -1632,19 +1635,52 @@ def get_export(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
     task_type = json.loads(request.POST.get("exportType"))
-    if task_type == "outcomes_excel":
-        task = tasks.async_get_outcomes_excel(
-            request.user.email, object_id, object_type
-        )
-    elif task_type == "outcomes_csv":
-        task = tasks.async_get_outcomes_csv(
-            request.user.email, object_id, object_type
-        )
-    elif task_type == "frameworks_excel":
-        task = tasks.async_get_course_frameworks_excel(
-            request.user.email, object_id, object_type
-        )
+    task = tasks.async_send_export_email(
+        request.user.email, object_id, object_type, task_type
+    )
     return JsonResponse({"action": "posted"})
+
+
+# enable for testing/download
+@user_can_view(False)
+def get_export_download(
+    request: HttpRequest, pk, object_type, export_type
+) -> HttpResponse:
+    object_id = pk
+    task_type = export_type
+    if settings.DEBUG != True:
+        return HttpResponse()
+    model_object = get_model_from_str(object_type).objects.get(pk=object_id)
+    if task_type == "outcomes_excel":
+        file = tasks.get_outcomes_excel(model_object, object_type)
+        file_type = "xlsx"
+    elif task_type == "outcomes_csv":
+        file = tasks.get_outcomes_csv(model_object, object_type)
+        file_type = "csv"
+    elif task_type == "frameworks_excel":
+        file = tasks.get_course_frameworks_excel(model_object, object_type)
+        file_type = "xlsx"
+    elif task_type == "matrix_excel":
+        file = tasks.get_program_matrix_excel(model_object, object_type)
+        file_type = "xlsx"
+    filename = (
+        object_type
+        + "_"
+        + str(object_id)
+        + "_"
+        + timezone.now().strftime(dateTimeFormatNoSpace())
+        + "."
+        + file_type
+    )
+    if file_type == "csv":
+        file_data = "text/csv"
+    elif file_type == "xlsx":
+        file_data = (
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+    response = HttpResponse(file, content_type=file_data)
+    response["Content-Disposition"] = "attachment; filename=%s" % filename
+    return response
 
 
 """
@@ -4006,7 +4042,7 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             extra_data = RefreshSerializerNode(
                 Node.objects.filter(pk__in=affected_nodes), many=True,
             ).data
-        elif object_type =="column":
+        elif object_type == "column":
             extra_data = (
                 workflow.columnworkflow_set.filter(column__deleted=False)
                 .order_by("rank")
@@ -4253,7 +4289,7 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                 Outcome.objects.filter(horizontal_outcomes__in=outcomes_list),
                 many=True,
             ).data
-        elif object_type=="column":
+        elif object_type == "column":
             extra_data = (
                 workflow.columnworkflow_set.filter(column__deleted=False)
                 .order_by("rank")
