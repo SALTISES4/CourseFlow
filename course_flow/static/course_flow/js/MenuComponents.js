@@ -578,8 +578,10 @@ class ProjectMenuUnconnected extends React.Component{
     getExportButton(){
         let exports=[];
         this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
-        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to CSV"));
-        this.pushExport(exports,"frameworks_excel",gettext("Framework to .xls"));
+        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to .csv"));
+        this.pushExport(exports,"frameworks_excel",gettext("Course Framework to .xls"));
+        this.pushExport(exports,"matrix_excel",gettext("Program Matrix to .xls"));
+        this.pushExport(exports,"matrix_csv",gettext("Program Matrix to .csv"));
         
         
         let export_button = (

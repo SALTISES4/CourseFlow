@@ -216,9 +216,10 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     getExportButton(){
         let exports=[];
         this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
-        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to CSV"));
+        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to .csv"));
         if(this.props.data.type=="course")this.pushExport(exports,"frameworks_excel",gettext("Framework to .xls"));
         if(this.props.data.type=="program")this.pushExport(exports,"matrix_excel",gettext("Matrix to .xls"));
+        if(this.props.data.type=="program")this.pushExport(exports,"matrix_csv",gettext("Matrix to .csv"));
         
         
         let export_button = (

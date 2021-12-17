@@ -135,7 +135,7 @@ def get_unique_outcomehorizontallinks(outcome):
     )
 
 def get_parent_nodes_for_workflow(workflow):
-    nodes = (Node.objects.filter(linked_workflow=workflow)
+    nodes = (models.Node.objects.filter(linked_workflow=workflow)
         .exclude(
             Q(deleted=True)
             | Q(week__deleted=True)

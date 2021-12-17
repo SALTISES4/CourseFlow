@@ -117,6 +117,7 @@ class OutcomeWorkflow(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def get_display_rank(self):
+        if self.outcome.deleted: return -1
         return list(
             OutcomeWorkflow.objects.filter(
                 workflow=self.workflow, outcome__deleted=False
@@ -315,6 +316,7 @@ class OutcomeOutcome(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def get_display_rank(self):
+        if self.child.deleted: return -1
         return list(
             OutcomeOutcome.objects.filter(
                 parent=self.parent, child__deleted=False
@@ -1053,6 +1055,7 @@ class WeekWorkflow(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def get_display_rank(self):
+        if self.week.deleted: return -1
         return list(
             WeekWorkflow.objects.filter(
                 workflow=self.workflow, week__deleted=False

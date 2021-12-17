@@ -11,6 +11,7 @@ from .celery import try_async
 from .models import (
     Column,
     Course,
+    Program,
     Node,
     NodeWeek,
     OutcomeNode,
@@ -186,7 +187,7 @@ def get_course_framework(workflow):
         },
         ignore_index=True,
     )
-    for outcome in workflow.outcomes.all():
+    for outcome in workflow.outcomes.filter(deleted=False):
         df = df.append(
             get_framework_line_for_outcome(outcome), ignore_index=True
         )
@@ -219,6 +220,9 @@ def async_send_export_email(user_email, pk, object_type, task_type):
     elif task_type == "matrix_excel":
         file = get_program_matrix_excel(model_object, object_type)
         file_type = "xlsx"
+    elif task_type == "matrix_csv":
+        file = get_program_matrix_csv(model_object, object_type)
+        file_type = "csv"
     filename = (
         object_type
         + "_"
@@ -374,7 +378,7 @@ def get_matrix_sum_line(rows, fn):
         if row["type"] == "node":
             value = fn(row["object"])
             values += [value]
-            if value is None:
+            if value is None or value is "":
                 value = 0
             total += int(value)
         else:
@@ -490,7 +494,7 @@ def get_program_matrix(workflow, simple):
     col += 1
 
     data[str(col)] = ["", _("Credits")] + get_matrix_sum_line(
-        rows, lambda x: x.linked_workflow.time_required
+        rows, lambda x: x.linked_workflow.time_required if x.linked_workflow is not None else "",
     )
     col += 1
 
@@ -517,4 +521,24 @@ def get_program_matrix_excel(model_object, object_type):
             )
             writer.save()
 
+        return b.getvalue()
+    
+    
+def get_program_matrix_csv(model_object, object_type):
+    if object_type == "workflow":
+        workflows = [model_object]
+    elif object_type == "project":
+        workflows = list(
+            Program.objects.filter(project=model_object, deleted=False)
+        )
+    df = pd.DataFrame(
+        {}
+    )
+    for workflow in workflows:
+        df = df.append({"0": workflow.title}, ignore_index=True)
+        df = pd.concat([df, get_program_matrix(workflow,True)])
+        df = df.append({"0": ""}, ignore_index=True)
+
+    with BytesIO() as b:
+        df.to_csv(path_or_buf=b, sep=",", index=False, header=False)
         return b.getvalue()

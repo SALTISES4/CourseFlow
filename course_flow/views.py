@@ -1642,7 +1642,7 @@ def get_export(request: HttpRequest) -> HttpResponse:
 
 
 # enable for testing/download
-@user_can_view(False)
+#@user_can_view(False)
 def get_export_download(
     request: HttpRequest, pk, object_type, export_type
 ) -> HttpResponse:
@@ -1663,6 +1663,9 @@ def get_export_download(
     elif task_type == "matrix_excel":
         file = tasks.get_program_matrix_excel(model_object, object_type)
         file_type = "xlsx"
+    elif task_type == "matrix_csv":
+        file = tasks.get_program_matrix_csv(model_object, object_type)
+        file_type = "csv"
     filename = (
         object_type
         + "_"
