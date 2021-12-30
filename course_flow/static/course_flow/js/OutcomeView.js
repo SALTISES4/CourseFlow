@@ -24,14 +24,14 @@ class OutcomeView extends ComponentJSON{
         let data = this.props.data;
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} />
+            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} get_alternate={this.props.get_alternate}/>
         );
         
         let outcomehorizontallinks = data.outcome_horizontal_links_unique.map((horizontal_link)=>
             <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link} renderer={this.props.renderer}/>
         );
         let outcomeDiv;
-        if(outcomehorizontallinks.length>0){
+        if(!this.props.get_alternate && outcomehorizontallinks.length>0){
             outcomeDiv = (
                 <div class="outcome-node-indicator">
                     <div class={"outcome-node-indicator-number"}>{outcomehorizontallinks.length}</div>
@@ -329,12 +329,20 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         if(this.state.is_dropped)droptext=gettext("hide");
         else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
+        let comments;
+        if(this.props.comments)comments=this.addCommenting();
+        
+        let edit;
+        let onClick;
+        if(this.props.edit)edit=this.addEditable(data,true);
+        onClick=(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this);
+        
         return(
             <div
             class={
-                "outcome"+((this.state.is_dropped && " dropped")||"")+" outcome-"+data.id
+                "outcome"+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")
             }
-            ref={this.maindiv}>
+            ref={this.maindiv} onClick={onClick}>
                 <div class="outcome-title">
                     <OutcomeTitle data={data} rank={this.props.rank} titles={this.props.titles}/>
                 </div>
@@ -351,6 +359,11 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
                 <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
                     {children}
                 </div>
+                {!read_only && <div class="mouseover-actions">
+                    {comments}
+                </div>
+                }
+                {edit}
             </div>
             
         );
@@ -363,7 +376,7 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
     getChildType(outcomeoutcome){
         let data = this.props.data;
         return(
-            <SimpleOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} get_alternate={this.props.get_alternate}/>
+            <SimpleOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} get_alternate={this.props.get_alternate} comments={this.props.comments} edit={this.props.edit}/>
         );
     }
 

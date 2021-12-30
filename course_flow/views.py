@@ -25,6 +25,8 @@ from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
+from course_flow import tasks
+
 from .decorators import (
     ajax_login_required,
     check_object_permission,
@@ -91,13 +93,17 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
 )
 from .utils import (
     benchmark,
+    dateTimeFormat,
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,
+    get_all_outcomes_ordered,
+    get_all_outcomes_ordered_for_outcome,
     get_descendant_outcomes,
     get_model_from_str,
     get_parent_model,
     get_parent_model_str,
     get_project_outcomes,
+    get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
 )
 
@@ -169,10 +175,12 @@ def registration_view(request):
         request, "course_flow/registration/registration.html", {"form": form}
     )
 
+
 @ajax_login_required
 def logout_view(request):
     logout(request)
-    return redirect(reverse('login'))
+    return redirect(reverse("login"))
+
 
 class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     def test_func(self):
@@ -231,14 +239,12 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         except TypeError:
             queryset = Project.objects.none()
         total_results = 0
-        subqueryset = []
-        for x in queryset:
-            if (
-                total_results >= (page - 1) * results
-                and total_results < page * results
-            ):
-                subqueryset.append(x)
-            total_results = total_results + 1
+        queryset = list(queryset)
+        total_results = len(queryset)
+        subqueryset = queryset[
+            max((page - 1) * results, 0) : min(page * results, total_results)
+        ]
+
         page_number = math.ceil(float(total_results) / results)
         object_list = (
             JSONRenderer()
@@ -869,6 +875,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             project.author == self.request.user
             or ObjectPermission.objects.filter(
                 user=self.request.user,
+                project=project,
                 permission_type=ObjectPermission.PERMISSION_EDIT,
             ).count()
             > 0
@@ -1192,7 +1199,13 @@ def get_workflow_context_data(workflow, context, user):
     if (
         workflow.author == user
         or ObjectPermission.objects.filter(
-            user=user, permission_type=ObjectPermission.PERMISSION_EDIT
+            user=user, 
+            permission_type=ObjectPermission.PERMISSION_EDIT,
+            object_id=workflow.id,
+        ).filter(
+            Q(content_type=ContentType.objects.get_for_model(Activity))
+            |Q(content_type=ContentType.objects.get_for_model(Course))
+            |Q(content_type=ContentType.objects.get_for_model(Program))
         ).count()
         > 0
     ):
@@ -1475,6 +1488,31 @@ def save_serializer(serializer) -> HttpResponse:
 #    return JsonResponse(
 #        {"action": "got", "completion_status": statuses.count()}
 #    )
+
+
+"""
+Export  methods
+"""
+
+
+@user_can_view(False)
+def get_export(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    task_type = json.loads(request.POST.get("exportType"))
+    if task_type == "outcomes_excel":
+        task = tasks.async_get_outcomes_excel(
+            request.user.email, object_id, object_type
+        )
+    elif task_type == "outcomes_csv":
+        task = tasks.async_get_outcomes_csv(
+            request.user.email, object_id, object_type
+        )
+    elif task_type == "frameworks_excel":
+        task = tasks.async_get_course_frameworks_excel(
+            request.user.email, object_id, object_type
+        )
+    return JsonResponse({"action": "posted"})
 
 
 """
@@ -1836,7 +1874,7 @@ def fast_outcome_copy(outcome, author, now):
         parent_outcome=outcome,
         depth=outcome.depth,
         created_on=now,
-        code=outcome.code
+        code=outcome.code,
     )
 
 
@@ -2586,7 +2624,7 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
         is_original=False,
         parent_outcome=outcome,
         depth=outcome.depth,
-        code=outcome.code
+        code=outcome.code,
     )
 
     for child in outcome.children.all():

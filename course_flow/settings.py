@@ -39,6 +39,11 @@ TEACHER_GROUP = "Teacher"
 ADMINS = [("John", "john@example.com"), ("Mary", "mary@example.com")]
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
 
 INSTALLED_APPS = [
     "compressor",
@@ -114,8 +119,6 @@ CSP_FONT_SRC = [
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "course_flow:home"
 LOGOUT_REDIRECT_URL = "login"
-
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 ADMINS = [("John", "john@example.com"), ("Mary", "mary@example.com")]
 

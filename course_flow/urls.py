@@ -203,7 +203,11 @@ def course_flow_patterns():
             views.get_comments_for_object,
             name="get-comments-for-object",
         ),
-        url(r"^terminology/add/$", views.add_terminology, name="add-terminology",),
+        url(
+            r"^terminology/add/$",
+            views.add_terminology,
+            name="add-terminology",
+        ),
         url(r"^comments/add/$", views.add_comment, name="add-comment",),
         url(
             r"^comments/remove/$", views.remove_comment, name="remove-comment",
@@ -213,6 +217,7 @@ def course_flow_patterns():
             views.get_parent_workflow_info,
             name="get-parent-workflow-info",
         ),
+        url(r"^exports/get/$", views.get_export, name="get-export",),
         url(
             r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),

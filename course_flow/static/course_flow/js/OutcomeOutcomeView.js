@@ -20,7 +20,7 @@ class OutcomeOutcomeView extends ComponentJSON{
         
         return (
             <li class="outcome-outcome" id={data.id} ref={this.maindiv} data-child-id={data.child}>
-                <OutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
+                <OutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} get_alternate={this.props.get_alternate} renderer={this.props.renderer}/>
             </li>
         );
     }
@@ -80,7 +80,7 @@ export class SimpleOutcomeOutcomeViewUnconnected extends ComponentJSON{
     getChildType(){
         let data = this.props.data;
         return (
-            <SimpleOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} get_alternate={this.props.get_alternate}/>
+            <SimpleOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} get_alternate={this.props.get_alternate} comments={this.props.comments} edit={this.props.edit} renderer={this.props.renderer}/>
         );
     }
     
