@@ -29,7 +29,6 @@ from .models import (
     Week,
     WeekWorkflow,
     Workflow,
-    description_max_length,
     title_max_length,
 )
 from .utils import (
@@ -74,9 +73,7 @@ class DescriptionSerializerMixin:
     def validate_description(self, value):
         if value is None:
             return None
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)[
-            :description_max_length
-        ]
+        return bleach_sanitizer(value, tags=bleach_allowed_tags)
 
 
 class TitleSerializerMixin:

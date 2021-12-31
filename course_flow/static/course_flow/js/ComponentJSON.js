@@ -894,15 +894,13 @@ export class QuillDiv extends React.Component{
     }
     
     render(){
-        let overflow = "";
-        if(this.state.charlength>2000)overflow=" overflow";
         
         return(
             <div>
                 <div ref={this.maindiv} class="quill-div">
 
                 </div>
-                <div class={"character-length"+overflow}>{this.state.charlength+"/2000 "+gettext("characters")}</div>
+                <div class={"character-length"}>{this.state.charlength+" "+gettext("characters")}</div>
             </div>
         );
     }
