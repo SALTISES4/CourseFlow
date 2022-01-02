@@ -9,18 +9,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import (
-    m2m_changed,
-    post_save,
-    pre_delete,
-    pre_save,
-)
+from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from course_flow.utils import benchmark, get_descendant_outcomes
+from course_flow.utils import get_descendant_outcomes
 
 User = get_user_model()
 
@@ -1287,7 +1282,9 @@ def delete_workflow_objects(sender, instance, **kwargs):
         | Q(outcome__parent_outcomes__parent_outcomes__workflow=instance)
         | Q(parent_outcome__workflow=instance)
         | Q(parent_outcome__parent_outcomes__workflow=instance)
-        | Q(parent_outcome__parent_outcomes__parent_outcomes__workflow=instance)
+        | Q(
+            parent_outcome__parent_outcomes__parent_outcomes__workflow=instance
+        )
     )
     outcomehorizontallinks._raw_delete(outcomehorizontallinks.db)
     nodeweeks = NodeWeek.objects.filter(week__workflow=instance)

@@ -1,23 +1,22 @@
 from django.contrib import admin
 
 from .models import (
-    Node,
-    Column,
-    Week,
     Activity,
-    Course,
-    Program,
-    NodeWeek,
-    NodeLink,
-    WeekWorkflow,
+    Column,
     ColumnWorkflow,
-    Workflow,
-    Project,
-    WorkflowProject,
+    Course,
+    Node,
+    NodeLink,
+    NodeWeek,
     Outcome,
     OutcomeNode,
     OutcomeOutcome,
-    
+    Program,
+    Project,
+    Week,
+    WeekWorkflow,
+    Workflow,
+    WorkflowProject,
 )
 
 admin.site.register(Node)

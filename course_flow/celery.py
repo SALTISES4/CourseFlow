@@ -17,9 +17,11 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
 
+
 @app.task
 def heartbeat():
     pass
+
 
 def try_async(func):
     """
@@ -33,7 +35,7 @@ def try_async(func):
         try:
             heartbeat.delay()
 
-        except heartbeat.OperationalError as e:
+        except heartbeat.OperationalError:
             print("Celery unavailable.  Executing synchronously.")
             return func(*args, **kwargs)
 

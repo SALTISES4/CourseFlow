@@ -1,8 +1,7 @@
 import bleach
 from django.contrib.contenttypes.models import ContentType
-from rest_framework import serializers
 from html2text import html2text
-import re
+from rest_framework import serializers
 
 from .models import (
     Activity,
@@ -13,7 +12,6 @@ from .models import (
     Discipline,
     Favourite,
     Node,
-    NodeCompletionStatus,
     NodeLink,
     NodeWeek,
     Outcome,
@@ -30,8 +28,6 @@ from .models import (
 )
 from .utils import (
     dateTimeFormat,
-    get_descendant_outcomes,
-    get_model_from_str,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
     linkIDMap,
@@ -61,7 +57,6 @@ def bleach_sanitizer(value, **kwargs):
         return None
 
 
-
 class DescriptionSerializerMixin:
     description = serializers.SerializerMethodField()
 
@@ -71,22 +66,26 @@ class DescriptionSerializerMixin:
     def validate_description(self, value):
         return bleach_sanitizer(value, tags=bleach_allowed_tags)
 
-    
+
 class TitleSerializerMixin:
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
         return bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
-    
+
     def validate_title(self, value):
         return bleach_sanitizer(value, tags=bleach_allowed_tags)
+
 
 class DescriptionSerializerTextMixin(serializers.Serializer):
     description = serializers.SerializerMethodField()
 
     def get_description(self, instance):
-        if instance.description is None: return None
-        returnval = html2text(bleach_sanitizer(instance.description, tags=bleach_allowed_tags))
+        if instance.description is None:
+            return None
+        returnval = html2text(
+            bleach_sanitizer(instance.description, tags=bleach_allowed_tags)
+        )
         return returnval
 
 
@@ -94,9 +93,13 @@ class TitleSerializerTextMixin(serializers.Serializer):
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
-        if instance.title is None: return None
-        returnval = html2text(bleach_sanitizer(instance.title, tags=bleach_allowed_tags))
+        if instance.title is None:
+            return None
+        returnval = html2text(
+            bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
+        )
         return returnval
+
 
 class TimeRequiredSerializerMixin:
     time_required = serializers.SerializerMethodField()
@@ -759,7 +762,7 @@ class ColumnSerializerShallow(
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
-        instance.colour = validated_data.get("colour",instance.colour)
+        instance.colour = validated_data.get("colour", instance.colour)
         instance.save()
         return instance
 
@@ -1359,6 +1362,7 @@ class InfoBoxSerializer(
     def get_author(self, instance):
         return str(instance.author)
 
+
 class OutcomeExportSerializer(
     serializers.ModelSerializer,
     TitleSerializerTextMixin,
@@ -1374,32 +1378,41 @@ class OutcomeExportSerializer(
             "depth",
         ]
 
-
     code = serializers.SerializerMethodField()
 
     def get_code(self, instance):
-        if instance.depth==0:
-            outcomeworkflow = OutcomeWorkflow.objects.filter(outcome=instance).first()
-            if instance.code is None or instance.code=="":
-                return str(outcomeworkflow.rank+1)
+        if instance.depth == 0:
+            outcomeworkflow = OutcomeWorkflow.objects.filter(
+                outcome=instance
+            ).first()
+            if instance.code is None or instance.code == "":
+                return str(outcomeworkflow.rank + 1)
             else:
                 return instance.code
         else:
-            outcomeoutcome = OutcomeOutcome.objects.filter(child=instance).first()
-            if instance.code is None or instance.code=="":
-                return self.get_code(outcomeoutcome.parent)+"."+str(outcomeoutcome.rank+1)
+            outcomeoutcome = OutcomeOutcome.objects.filter(
+                child=instance
+            ).first()
+            if instance.code is None or instance.code == "":
+                return (
+                    self.get_code(outcomeoutcome.parent)
+                    + "."
+                    + str(outcomeoutcome.rank + 1)
+                )
             else:
-                return self.get_code(outcomeoutcome.parent)+"."+instance.code
-        
-        
-        
-        
-        
-        if instance.code is None or instance.code=="":
-            if instance.depth==0:
-                return str(OutcomeWorkflow.objects.filter(outcome=instance).first().rank)
+                return (
+                    self.get_code(outcomeoutcome.parent) + "." + instance.code
+                )
+
+        if instance.code is None or instance.code == "":
+            if instance.depth == 0:
+                return str(
+                    OutcomeWorkflow.objects.filter(outcome=instance)
+                    .first()
+                    .rank
+                )
             else:
-                return 
+                return
         else:
             return instance.code
 

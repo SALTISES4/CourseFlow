@@ -153,11 +153,11 @@ def course_flow_patterns():
             views.get_project_data,
             name="get-project-data",
         ),
-        url(
-            r"^outcome/get-outcome-data/",
-            views.get_outcome_data,
-            name="get-outcome-data",
-        ),
+        # url(
+        #     r"^outcome/get-outcome-data/",
+        #     views.get_outcome_data,
+        #     name="get-outcome-data",
+        # ),
         url(
             r"^project/get-users-for-object/",
             views.get_users_for_object,

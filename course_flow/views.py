@@ -1,8 +1,7 @@
 import json
 import math
-import time
 from functools import reduce
-from itertools import chain, islice, tee
+from itertools import chain
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -12,16 +11,15 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
-from django.db.models import Count, ProtectedError, Q
+from django.db.models import ProtectedError, Q
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
-from django.views.generic import DetailView, ListView, TemplateView, UpdateView
+from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView
-from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
@@ -42,7 +40,6 @@ from .models import (  # OutcomeProject,
     Activity,
     Column,
     ColumnWorkflow,
-    Comment,
     Course,
     CustomTerm,
     Discipline,
@@ -85,26 +82,15 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     UserSerializer,
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
-    WorkflowSerializerFinder,
     WorkflowSerializerShallow,
     bleach_allowed_tags,
     bleach_sanitizer,
     serializer_lookups_shallow,
 )
 from .utils import (
-    benchmark,
-    dateTimeFormat,
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,
-    get_all_outcomes_ordered,
-    get_all_outcomes_ordered_for_outcome,
-    get_descendant_outcomes,
     get_model_from_str,
-    get_parent_model,
-    get_parent_model_str,
-    get_project_outcomes,
-    get_unique_outcomehorizontallinks,
-    get_unique_outcomenodes,
 )
 
 
@@ -197,7 +183,7 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         disciplines = self.request.GET.getlist("disc[]", None)
         title = self.request.GET.get("title", None)
         description = self.request.GET.get("des", None)
-        sort = self.request.GET.get("sort", None)
+        sort = self.request.GET.get("sort", None)  # noqa F841
         page = self.request.GET.get("page", 1)
         results = self.request.GET.get("results", 20)
         filter_kwargs = {}
@@ -982,7 +968,6 @@ class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 
 
 def get_parent_outcome_data(workflow, user):
-    last_time = time.time()
     outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
     outcomehorizontallinks = []
     for oc in outcomes:
@@ -1032,7 +1017,6 @@ def get_parent_outcome_data(workflow, user):
 
 
 def get_child_outcome_data(workflow, user):
-    nodes = Node.objects.filter(week__workflow=workflow)
     linked_workflows = Workflow.objects.filter(
         linked_nodes__week__workflow=workflow
     ).prefetch_related("outcomeworkflow_set")
@@ -1199,14 +1183,16 @@ def get_workflow_context_data(workflow, context, user):
     if (
         workflow.author == user
         or ObjectPermission.objects.filter(
-            user=user, 
+            user=user,
             permission_type=ObjectPermission.PERMISSION_EDIT,
             object_id=workflow.id,
-        ).filter(
+        )
+        .filter(
             Q(content_type=ContentType.objects.get_for_model(Activity))
-            |Q(content_type=ContentType.objects.get_for_model(Course))
-            |Q(content_type=ContentType.objects.get_for_model(Program))
-        ).count()
+            | Q(content_type=ContentType.objects.get_for_model(Course))
+            | Q(content_type=ContentType.objects.get_for_model(Program))
+        )
+        .count()
         > 0
     ):
         context["read_only"] = JSONRenderer().render(False).decode("utf-8")
@@ -1501,15 +1487,15 @@ def get_export(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
     task_type = json.loads(request.POST.get("exportType"))
     if task_type == "outcomes_excel":
-        task = tasks.async_get_outcomes_excel(
+        tasks.async_get_outcomes_excel(
             request.user.email, object_id, object_type
         )
     elif task_type == "outcomes_csv":
-        task = tasks.async_get_outcomes_csv(
+        tasks.async_get_outcomes_csv(
             request.user.email, object_id, object_type
         )
     elif task_type == "frameworks_excel":
-        task = tasks.async_get_course_frameworks_excel(
+        tasks.async_get_course_frameworks_excel(
             request.user.email, object_id, object_type
         )
     return JsonResponse({"action": "posted"})
@@ -1615,16 +1601,16 @@ def get_project_data(request: HttpRequest) -> HttpResponse:
     )
 
 
-@user_can_view("outcomePk")
-def get_outcome_data(request: HttpRequest) -> HttpResponse:
-    outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
-    try:
-        data_package = get_outcome_context_data(outcome, {}, request.user)[
-            "data_flat"
-        ]
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
+# @user_can_view("outcomePk")
+# def get_outcome_data(request: HttpRequest) -> HttpResponse:
+#     outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
+#     try:
+#         data_package = get_outcome_context_data(outcome, {}, request.user)[
+#             "data_flat"
+#         ]
+#     except AttributeError:
+#         return JsonResponse({"action": "error"})
+#     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
 @user_can_view("workflowPk")
@@ -2698,7 +2684,6 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 
 @user_can_view("projectPk")
 def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
-    last_time = time.time()
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
         with transaction.atomic():
@@ -3130,7 +3115,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("parentID"))
     parent_type = json.loads(request.POST.get("parentType"))
-    through_type = json.loads(request.POST.get("throughType"))
+    through_type = json.loads(request.POST.get("throughType"))  # noqa F841
     try:
         with transaction.atomic():
             if object_type == "week":

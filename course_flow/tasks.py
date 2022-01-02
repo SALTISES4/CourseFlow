@@ -1,4 +1,5 @@
 from io import BytesIO
+from smtplib import SMTPException
 
 import pandas as pd
 from celery import shared_task
@@ -6,6 +7,7 @@ from django.core.mail import EmailMessage
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
+from .celery import try_async
 from .models import Column, Course, Node, WeekWorkflow
 from .serializers import OutcomeExportSerializer
 from .utils import (
@@ -16,10 +18,6 @@ from .utils import (
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
 )
-from .celery import (
-    try_async
-)
-from smtplib import SMTPException
 
 
 def get_displayed_title(node):
@@ -190,6 +188,7 @@ def get_workflow_outcomes_table(workflow):
     pd.set_option("display.max_colwidth", None)
     return df
 
+
 @try_async
 @shared_task
 def async_get_outcomes_excel(user_email, pk, object_type):
@@ -220,7 +219,9 @@ def async_get_outcomes_excel(user_email, pk, object_type):
         )
         email = EmailMessage(
             _("Your Outcomes Export"),
-            _("Hi there! Here are the results of your recent outcomes export."),
+            _(
+                "Hi there! Here are the results of your recent outcomes export."
+            ),
             "noreply@courseflow.org",
             [user_email],
         )
@@ -276,7 +277,7 @@ def async_get_outcomes_csv(user_email, pk, object_type):
     with BytesIO() as b:
         df.to_csv(path_or_buf=b, sep=",", index=False)
         email.attach(filename, b.getvalue(), "text/csv")
-        
+
     try:
         email.send()
     except SMTPException:
@@ -315,7 +316,9 @@ def async_get_course_frameworks_excel(user_email, pk, object_type):
         )
         email = EmailMessage(
             _("Your Outcomes Export"),
-            _("Hi there! Here are the results of your recent outcomes export."),
+            _(
+                "Hi there! Here are the results of your recent outcomes export."
+            ),
             "noreply@courseflow.org",
             [user_email],
         )
