@@ -681,7 +681,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
             );
             return reactDom.createPortal(
                 return_val,
-                $(".left-panel")[0]
+                $(".left-panel-extra")[0]
             );
             
         }

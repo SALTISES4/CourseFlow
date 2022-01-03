@@ -204,6 +204,16 @@ export class WorkflowForMenu extends React.Component{
         var buttons=[];
         let favourite_img = "no_favourite.svg";
         if(this.state.favourite)favourite_img = "favourite.svg";
+        buttons.push(
+            <div class="workflow-toggle-favourite hover-shade" onClick={(evt)=>{
+                toggleFavourite(this.props.workflow_data.id,this.props.workflow_data.type,(!this.state.favourite));
+                let state=this.state;
+                this.setState({favourite:!(state.favourite)})
+                evt.stopPropagation();
+            }}>
+                <img src={iconpath+favourite_img} title={gettext("Favourite")}/>
+            </div>
+        );
         if(this.props.type=="projectmenu"||this.props.type=="gridmenu"||this.props.type=="exploremenu"){
             if(this.props.workflow_data.is_owned){
                 if(!this.props.workflow_data.deleted){
@@ -235,17 +245,6 @@ export class WorkflowForMenu extends React.Component{
                         </div>
                     );
                 }
-            }else{
-                buttons.push(
-                    <div class="workflow-toggle-favourite hover-shade" onClick={(evt)=>{
-                        toggleFavourite(this.props.workflow_data.id,this.props.workflow_data.type,(!this.state.favourite));
-                        let state=this.state;
-                        this.setState({favourite:!(state.favourite)})
-                        evt.stopPropagation();
-                    }}>
-                        <img src={iconpath+favourite_img} title={gettext("Favourite")}/>
-                    </div>
-                );
             }
             if(this.props.duplicate){
                 let icon;

@@ -16,6 +16,7 @@ def course_flow_patterns():
         url(r"logout/$", views.logout_view, name="logout"),
         url(r"myprojects/$", views.myprojects_view, name="my-projects"),
         url(r"mytemplates/$", views.mytemplates_view, name="my-templates"),
+        url(r"myshared/$", views.myshared_view, name="my-shared"),
         url(r"myfavourites/$", views.myfavourites_view, name="my-favourites"),
         url(r"explore/$", views.ExploreView.as_view(), name="explore"),
         url(r"import/$", views.import_view, name="import"),

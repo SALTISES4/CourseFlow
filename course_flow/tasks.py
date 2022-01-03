@@ -206,7 +206,7 @@ def get_workflow_outcomes_table(workflow):
 
 @try_async
 @shared_task
-def async_send_export_email(user_email, pk, object_type, task_type):
+def async_send_export_email(user_email, pk, object_type, task_type, email_subject, email_text):
     model_object = get_model_from_str(object_type).objects.get(pk=pk)
     if task_type == "outcomes_excel":
         file = get_outcomes_excel(model_object, object_type)
@@ -233,8 +233,8 @@ def async_send_export_email(user_email, pk, object_type, task_type):
         + file_type
     )
     email = EmailMessage(
-        _("Your Outcomes Export"),
-        _("Hi there! Here are the results of your recent export."),
+        email_subject,
+        email_text,
         "noreply@courseflow.org",
         [user_email],
     )

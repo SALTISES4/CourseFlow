@@ -1,0 +1,54 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block header %} {% endblock %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<div id="content-container" class="body-wrapper"></div>
+<div id="popup-container"></div>
+<!-- -->
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block scripts %} {{ block.super }}
+<script nonce="{{request.csp_nonce}}">
+
+  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+  const create_path = {
+      project:"{% url 'course_flow:project-create' %}",
+  };
+  const data_package = {{project_data_package|safe}}
+  var home_renderer;
+  const user_id = {{ user.id }};
+  const read_only=false;
+  window.addEventListener("load",function(){
+      home_renderer = new renderers.HomeRenderer(data_package);
+      $(document).ajaxError(renderers.fail_function);
+      home_renderer.render($("#content-container"));
+  });
+
+
+
+
+function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>console.log("success")){
+    let path;
+    if(soft)path=post_paths.delete_self_soft;
+    else path=post_pathsdelete_self;
+    $.post(path, {
+      objectID:JSON.stringify(objectID),
+      objectType:JSON.stringify(objectType)
+    }).done(function(data){
+      if(data.action == "posted") callBackFunction(data);
+      else console.log("Failed");
+    });
+  }
+</script>
+{% endblock %}

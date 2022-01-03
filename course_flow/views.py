@@ -358,6 +358,122 @@ def get_my_projects(user, add):
     }
     return data_package
 
+def get_my_shared(user):
+    data_package = {
+        "shared_projects": {
+            "title": _("Shared Projects"),
+            "sections": [
+                {
+                    "title": _("Shared Projects"),
+                    "object_type": "project",
+                    "objects": InfoBoxSerializer(
+                        [
+                            user_permission.content_object
+                            for user_permission in ObjectPermission.objects.filter(
+                                user=user,
+                                content_type=ContentType.objects.get_for_model(
+                                    Project
+                                ),
+                                project__deleted=False,
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+            "emptytext": _(
+                "Projects shared with you by others (for which you have either view or edit permissions) will appear here."
+            ),
+        },
+        "shared_programs": {
+            "title": _("Shared Programs"),
+            "sections": [
+                {
+                    "title": _("Shared Programs"),
+                    "object_type": "workflow",
+                    "objects": InfoBoxSerializer(
+                        [
+                            user_permission.content_object
+                            for user_permission in ObjectPermission.objects.filter(
+                                user=user,
+                                content_type=ContentType.objects.get_for_model(
+                                    Program
+                                ),
+                                program__deleted=False,
+                                program__project__deleted=False,
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+            "emptytext": _(
+                "Programs shared with you by others (for which you have either view or edit permissions) will appear here."
+            ),
+        },
+        "shared_courses": {
+            "title": _("Shared Courses"),
+            "sections": [
+                {
+                    "title": _("Shared Courses"),
+                    "object_type": "workflow",
+                    "objects": InfoBoxSerializer(
+                        [
+                            user_permission.content_object
+                            for user_permission in ObjectPermission.objects.filter(
+                                user=user,
+                                content_type=ContentType.objects.get_for_model(
+                                    Course
+                                ),
+                                course__deleted=False,
+                                course__project__deleted=False,
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+            "emptytext": _(
+                "Courses shared with you by others (for which you have either view or edit permissions) will appear here."
+            ),
+        },
+        "shared_activities": {
+            "title": _("Shared Activities"),
+            "sections": [
+                {
+                    "title": _("Shared Activities"),
+                    "object_type": "workflow",
+                    "objects": InfoBoxSerializer(
+                        [
+                            user_permission.content_object
+                            for user_permission in ObjectPermission.objects.filter(
+                                user=user,
+                                content_type=ContentType.objects.get_for_model(
+                                    Activity
+                                ),
+                                activity__deleted=False,
+                                activity__project__deleted=False,
+                            )
+                        ],
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "duplicate": "import",
+            "emptytext": _(
+                "Activities shared with you by others (for which you have either view or edit permissions) will appear here."
+            ),
+        },
+    }
+    return data_package
+
 
 def get_my_templates(user):
     data_package = {
@@ -931,6 +1047,15 @@ def myprojects_view(request):
     }
     return render(request, "course_flow/myprojects.html", context)
 
+@login_required
+def myshared_view(request):
+    context = {
+        "project_data_package": JSONRenderer()
+        .render(get_my_shared(request.user))
+        .decode("utf-8")
+    }
+    return render(request, "course_flow/myshared.html", context)
+
 
 @login_required
 def mytemplates_view(request):
@@ -995,7 +1120,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         )
         context["project_data"] = (
             JSONRenderer()
-            .render(ProjectSerializerShallow(project).data)
+            .render(ProjectSerializerShallow(project, context={"user": self.request.user}).data)
             .decode("utf-8")
         )
         context["read_only"] = JSONRenderer().render(True).decode("utf-8")
@@ -1220,7 +1345,7 @@ def get_workflow_data_flat(workflow, user):
         )
 
     data_flat = {
-        "workflow": SerializerClass(workflow).data,
+        "workflow": SerializerClass(workflow, context={"user": user}).data,
         "columnworkflow": ColumnWorkflowSerializerShallow(
             columnworkflows, many=True
         ).data,
@@ -1249,23 +1374,23 @@ def get_workflow_data_flat(workflow, user):
         ).data
         if workflow.type == "course":
             data_flat["strategy"] = WorkflowSerializerShallow(
-                Course.objects.filter(author=user, is_strategy=True),
+                Course.objects.filter(author=user, is_strategy=True, deleted=False),
                 many=True,
             ).data
             data_flat["saltise_strategy"] = WorkflowSerializerShallow(
                 Course.objects.filter(
-                    from_saltise=True, is_strategy=True, published=True
+                    from_saltise=True, is_strategy=True, published=True, deleted=False
                 ),
                 many=True,
             ).data
         elif workflow.type == "activity":
             data_flat["strategy"] = WorkflowSerializerShallow(
-                Activity.objects.filter(author=user, is_strategy=True),
+                Activity.objects.filter(author=user, is_strategy=True, deleted=False),
                 many=True,
             ).data
             data_flat["saltise_strategy"] = WorkflowSerializerShallow(
                 Activity.objects.filter(
-                    from_saltise=True, is_strategy=True, published=True
+                    from_saltise=True, is_strategy=True, published=True, deleted=False
                 ),
                 many=True,
             ).data
@@ -1635,14 +1760,16 @@ def get_export(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
     task_type = json.loads(request.POST.get("exportType"))
+    subject = _("Your Outcomes Export")
+    text = _("Hi there! Here are the results of your recent export.")
     task = tasks.async_send_export_email(
-        request.user.email, object_id, object_type, task_type
+        request.user.email, object_id, object_type, task_type, subject, text,
     )
     return JsonResponse({"action": "posted"})
 
 
 # enable for testing/download
-#@user_can_view(False)
+@user_can_view(False)
 def get_export_download(
     request: HttpRequest, pk, object_type, export_type
 ) -> HttpResponse:
@@ -2263,6 +2390,118 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 
     return new_outcome
 
+
+def fast_create_strategy(week: Week, workflow: Workflow, author: User) -> Workflow:
+
+    model = get_model_from_str(workflow.type)
+
+    try:
+        # Duplicate the workflow
+        new_strategy = model.objects.create(
+            title=workflow.title,
+            author=author,
+            is_strategy=True,
+            is_original=False,
+            parent_workflow=workflow,
+        )
+
+        # Retrieve all data.
+        # Speed is critical here. querying through __ has come out much faster (by a factor of up to 100) in testing than moving vertically through the heirarchy, even when prefetc_related is used.
+        # In order to speed the creation of the throughmodels, select_related is used for any foreignkeys that need to be traversed
+
+        columnworkflows = ColumnWorkflow.objects.filter(
+            workflow=workflow
+        ).select_related("column")
+        columns = Column.objects.filter(workflow=workflow)
+
+        nodeweeks = NodeWeek.objects.filter(
+            week__workflow=workflow, week=week
+        ).select_related("node", "week")
+        nodes = Node.objects.filter(week__workflow=workflow, week=week).select_related(
+            "column", "linked_workflow"
+        )
+
+        nodelinks = NodeLink.objects.filter(
+            source_node__week__workflow=workflow, source_node__week=week, target_node__week=week
+        ).select_related("source_node", "target_node")
+
+        # Create the new content, and keep track of old_id:new_instance pairs in a dict
+        id_dict = {}
+        now = timezone.now()
+
+        Column.objects.bulk_create(
+            [fast_column_copy(column, author, now) for column in columns]
+        )
+        new_columns = Column.objects.filter(author=author, created_on=now)
+        id_dict["column"] = {
+            columns[i].id: new_col for i, new_col in enumerate(new_columns)
+        }
+
+        weeks=[week]
+        Week.objects.bulk_create(
+            [fast_week_copy(week, author, now)]
+        )
+        new_weeks = Week.objects.filter(author=author, created_on=now)
+        new_weeks.update(is_strategy=True)
+        id_dict["week"] = {
+            weeks[i].id: new_week for i, new_week in enumerate(new_weeks)
+        }
+
+        Node.objects.bulk_create(
+            [
+                fast_node_copy(
+                    node, id_dict["column"][node.column.id], author, now
+                )
+                for node in nodes
+            ]
+        )
+        new_nodes = Node.objects.filter(author=author, created_on=now)
+        new_nodes.update(linked_workflow=None)
+        id_dict["node"] = {
+            nodes[i].id: new_node for i, new_node in enumerate(new_nodes)
+        }
+
+        # Link everything up
+        ColumnWorkflow.objects.bulk_create(
+            [
+                ColumnWorkflow(
+                    rank=columnworkflow.rank,
+                    column=id_dict["column"][columnworkflow.column.id],
+                    workflow=new_strategy,
+                )
+                for columnworkflow in columnworkflows
+            ]
+        )
+
+        WeekWorkflow.objects.create(workflow=new_strategy,week=new_weeks[0])
+
+        NodeWeek.objects.bulk_create(
+            [
+                NodeWeek(
+                    rank=nodeweek.rank,
+                    node=id_dict["node"][nodeweek.node.id],
+                    week=id_dict["week"][nodeweek.week.id],
+                )
+                for nodeweek in nodeweeks
+            ]
+        )
+
+        NodeLink.objects.bulk_create(
+            [
+                fast_nodelink_copy(
+                    nodelink,
+                    author,
+                    id_dict["node"][nodelink.source_node.id],
+                    id_dict["node"][nodelink.target_node.id],
+                )
+                for nodelink in nodelinks
+            ]
+        )
+        
+    except IndexError:
+        return None
+
+    return new_strategy
 
 def fast_duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
 
@@ -3910,14 +4149,9 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
             week.strategy_classification = 0
             week.save()
         else:
-            strategy = fast_duplicate_workflow(workflow, request.user)
+            strategy = fast_create_strategy(week,workflow, request.user)
             strategy.title = week.title
-            strategy.is_strategy = True
             strategy.save()
-            strategy.weeks.exclude(parent_week=week).delete()
-            strategy_week = strategy.weeks.first()
-            strategy_week.is_strategy = True
-            strategy_week.save()
             week.is_strategy = True
             week.original_strategy = strategy
             week.save()

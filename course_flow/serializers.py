@@ -482,17 +482,30 @@ class ProjectSerializerShallow(
             "disciplines",
             "type",
             "terminology_dict",
+            "favourite",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     workflowproject_set = serializers.SerializerMethodField()
     terminology_dict = serializers.SerializerMethodField()
+    favourite = serializers.SerializerMethodField()
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
-
+    
+    def get_favourite(self, instance):
+        user = self.context.get("user")
+        if Favourite.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(instance),
+            object_id=instance.id,
+        ):
+            return True
+        else:
+            return False
+        
     def get_terminology_dict(self, instance):
         return [
             {
@@ -692,6 +705,7 @@ class WorkflowSerializerShallow(
             "time_general_hours",
             "time_specific_hours",
             "edit_count",
+            "favourite",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -699,6 +713,7 @@ class WorkflowSerializerShallow(
     weekworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
+    favourite = serializers.SerializerMethodField()
 
     strategy_icon = serializers.SerializerMethodField()
 
@@ -710,7 +725,20 @@ class WorkflowSerializerShallow(
         if instance.author is not None:
             return instance.author.id
         return None
-
+    
+    def get_favourite(self, instance):
+        print("getting favourite")
+        user = self.context.get("user",None)
+        if user is None: return False
+        if Favourite.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(instance.get_subclass()),
+            object_id=instance.id,
+        ):
+            return True
+        else:
+            return False
+        
     def get_strategy_icon(self, instance):
         if instance.is_strategy:
             return instance.weeks.first().strategy_classification
@@ -811,6 +839,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
+            "favourite",
         ]
 
     def get_author_id(self, instance):
@@ -861,6 +890,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
+            "favourite",
         ]
 
     def get_author_id(self, instance):
@@ -911,6 +941,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
+            "favourite",
         ]
 
     def get_author_id(self, instance):

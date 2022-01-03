@@ -208,27 +208,33 @@
         <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
         <div>{% trans 'My Templates' %}</div>
       </a>
+      <a class="panel-item hover-shade" href="{% url 'course_flow:my-shared' %}">
+        <img src="{% static 'course_flow/img/images_svg/add_person_black.svg' %}"/>
+        <div>{% trans 'Shared With Me' %}</div>
+      </a>
       <a class="panel-item hover-shade" href={% course_flow_return_url %}>
         <img src="{% static 'course_flow/img/images_svg/return_to_project.svg' %}"/>
         <div>{% course_flow_return_title %}</div>
       </a>
       
       <hr>
-      <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
-        {% trans 'My Favourites' %}
-      </a>
-        {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
-          <a class="panel-favourite hover-shade"
-             {% if favourite.content_type == "project" %}
-                href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
-             {% else %}
-                href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
-             {% endif %}
-             >
-            {{ favourite.content_object }}
+      <div class="left-panel-extra">
+          <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
+            {% trans 'My Favourites' %}
           </a>
-        {% endfor %}
-      <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
+            {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
+              <a class="panel-favourite hover-shade"
+                 {% if favourite.content_type == "project" %}
+                    href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
+                 {% else %}
+                    href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
+                 {% endif %}
+                 >
+                {{ favourite.content_object }}
+              </a>
+            {% endfor %}
+          <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
+        </div>
 
     </div>
 

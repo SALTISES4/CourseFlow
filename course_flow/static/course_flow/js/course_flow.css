@@ -336,6 +336,12 @@ button:hover{
     box-sizing:border-box;
     color:#444444;
     position:fixed;
+    display:flex;
+    flex-direction:column;
+}
+
+.left-panel-extra{
+    overflow-y:auto;
 }
 
 .title-image{
