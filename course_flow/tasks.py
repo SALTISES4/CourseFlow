@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 from .celery import try_async
 from .models import Column, Course, Node, WeekWorkflow
 from .serializers import OutcomeExportSerializer
+from .settings import DEFAULT_FROM_EMAIL
 from .utils import (
     dateTimeFormatNoSpace,
     get_all_outcomes_ordered,
@@ -222,7 +223,7 @@ def async_get_outcomes_excel(user_email, pk, object_type):
             _(
                 "Hi there! Here are the results of your recent outcomes export."
             ),
-            "noreply@courseflow.org",
+            DEFAULT_FROM_EMAIL,
             [user_email],
         )
         email.attach(
@@ -271,7 +272,7 @@ def async_get_outcomes_csv(user_email, pk, object_type):
     email = EmailMessage(
         _("Your Outcomes Export"),
         _("Hi there! Here are the results of your recent outcomes export."),
-        "noreply@courseflow.org",
+        DEFAULT_FROM_EMAIL,
         [user_email],
     )
     with BytesIO() as b:
@@ -319,7 +320,7 @@ def async_get_course_frameworks_excel(user_email, pk, object_type):
             _(
                 "Hi there! Here are the results of your recent outcomes export."
             ),
-            "noreply@courseflow.org",
+            DEFAULT_FROM_EMAIL,
             [user_email],
         )
         email.attach(
