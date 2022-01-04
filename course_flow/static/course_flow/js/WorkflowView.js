@@ -170,7 +170,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                         <StrategyBar/>
                     }
                     {!read_only && 
-                        <RestoreBar/>
+                        <RestoreBar renderer={this.props.renderer}/>
                     }
                 </div>
             </div>
@@ -206,6 +206,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     }
                      
     changeView(type){
+        this.props.renderer.changeSelection(null,null);
         this.props.renderer.render(this.props.renderer.container,type);
     }
                      
@@ -471,19 +472,19 @@ class RestoreBarUnconnected extends ComponentJSON{
     
     render(){
         let columns = this.props.columns.map((column)=>
-            <RestoreBarItem objectType="column" data={column}/>
+            <RestoreBarItem objectType="column" data={column} renderer={this.props.renderer}/>
         )
         let weeks = this.props.weeks.map((week)=>
-            <RestoreBarItem objectType="week" data={week}/>
+            <RestoreBarItem objectType="week" data={week} renderer={this.props.renderer}/>
         )
         let nodes = this.props.nodes.map((node)=>
-            <RestoreBarItem objectType="node" data={node}/>
+            <RestoreBarItem objectType="node" data={node} renderer={this.props.renderer}/>
         )
         let outcomes = this.props.outcomes.map((outcome)=>
-            <RestoreBarItem objectType="outcome" data={outcome}/>
+            <RestoreBarItem objectType="outcome" data={outcome} renderer={this.props.renderer}/>
         )
         let nodelinks = this.props.nodelinks.map((nodelink)=>
-            <RestoreBarItem objectType="nodelink" data={nodelink}/>
+            <RestoreBarItem objectType="nodelink" data={nodelink} renderer={this.props.renderer}/>
         )
         
         
@@ -528,8 +529,15 @@ export const RestoreBar = connect(
 )(RestoreBarUnconnected)
 
 class RestoreBarItem extends React.Component{
+    constructor(props){
+        super(props);
+        //The disabling prevents double clicks from sending two calls
+        this.state={disabled:false};
+    }
+    
     render(){
-        return (
+        if(this.state.disabled)return null;
+        else return (
             <div>
                 <div>{this.getTitle()}</div>
                 <button onClick={this.restore.bind(this)}>{gettext("Restore")}</button>
@@ -544,7 +552,11 @@ class RestoreBarItem extends React.Component{
     }
     
     restore(){
-        restoreSelf(this.props.data.id,this.props.objectType);
+        this.setState({disabled:true});
+        this.props.renderer.tiny_loader.startLoad();
+        restoreSelf(this.props.data.id,this.props.objectType,()=>{
+            this.props.renderer.tiny_loader.endLoad();
+        });
     }
 }
 

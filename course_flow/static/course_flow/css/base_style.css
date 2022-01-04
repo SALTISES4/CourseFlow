@@ -253,6 +253,11 @@ button:hover{
 
 .topdropbutton > a{
     display:block;
+    color:white;
+}
+
+.topdropbutton > a:hover{
+    text-decoration: none;
 }
 
 /* A tag at the top of the menu that does nothing*/

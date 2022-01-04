@@ -150,7 +150,9 @@
         <div class="floatbar">
           <div id="username-container" class="topdropwrapper">
             <button id="username" class="topdropbutton">
-              {{ user.username }}
+              <a class="username-link" href="{% url 'course_flow:home' %}">
+                  {{ user.username }}
+              </a>
             </button>
           </div>
           {% if user.username %}
