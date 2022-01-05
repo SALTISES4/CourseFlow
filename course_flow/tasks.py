@@ -272,7 +272,7 @@ def async_get_outcomes_csv(user_email, pk, object_type):
     email = EmailMessage(
         _("Your Outcomes Export"),
         _("Hi there! Here are the results of your recent outcomes export."),
-        DEFAULT_FROM_EMAIL,
+        settings.DEFAULT_FROM_EMAIL,
         [user_email],
     )
     with BytesIO() as b:
@@ -320,7 +320,7 @@ def async_get_course_frameworks_excel(user_email, pk, object_type):
             _(
                 "Hi there! Here are the results of your recent outcomes export."
             ),
-            DEFAULT_FROM_EMAIL,
+            settings.DEFAULT_FROM_EMAIL,
             [user_email],
         )
         email.attach(
