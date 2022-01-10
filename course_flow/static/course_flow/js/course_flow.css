@@ -2211,6 +2211,11 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 
 .comment-box textarea{
     height:80px;
+    white-space:normal;
+}
+
+.comment-text{
+    white-space:normal;
 }
 
 .comment{

@@ -159,6 +159,10 @@ class Column(models.Model):
 
     def get_workflow(self):
         return self.workflow_set.first()
+    
+    def get_display_title(self):
+        if self.title is not None and self.title != "":return self.title
+        else: return self.get_column_type_display()
 
     def __str__(self):
         return self.get_column_type_display()
