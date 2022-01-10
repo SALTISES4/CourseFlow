@@ -1601,7 +1601,7 @@ circle.mouseover{
     margin-right:4px;
 }
 
-.alignment-row > *:not(img){
+.alignment-row > *:not(img):not(.outcome-degree){
     min-width:0px;
     width:calc(100% - 50px);
 }
