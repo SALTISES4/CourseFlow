@@ -53,6 +53,12 @@ class Project(models.Model):
     def get_permission_objects(self):
         return [self]
 
+    def __str__(self):
+        if self.title is not None and self.title!="":
+            return self.title
+        else:
+            return "Project"
+        
     class Meta:
         verbose_name = "Project"
         verbose_name_plural = "Projects"
@@ -871,7 +877,7 @@ class Workflow(models.Model):
         return ids
 
     def __str__(self):
-        if self.title is not None:
+        if self.title is not None and self.title!="":
             return self.title
         else:
             return self.type
@@ -906,7 +912,7 @@ class Activity(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None:
+        if self.title is not None and self.title!="":
             return self.title
         else:
             return self.type
@@ -945,7 +951,7 @@ class Course(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None:
+        if self.title is not None and self.title!="":
             return self.title
         else:
             return self.type
@@ -971,7 +977,7 @@ class Program(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None:
+        if self.title is not None and self.title!="":
             return self.title
         else:
             return self.type

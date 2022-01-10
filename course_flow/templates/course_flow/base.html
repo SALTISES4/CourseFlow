@@ -217,7 +217,7 @@
       </a>
         {% for favourite in user.favourite_set.all|slice:":5" %}
           <a class="panel-favourite hover-shade"
-             {% if favourite.content_type == "project" %}
+             {% if favourite.content_object.type == "project" %}
                 href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
              {% else %}
                 href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
