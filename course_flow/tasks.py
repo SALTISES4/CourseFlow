@@ -326,7 +326,7 @@ def get_matrix_row_header(row):
         return get_displayed_title(node)
     else:
         week = row["object"]
-        if week.title is not None and week.title is not "":
+        if week.title is not None and week.title != "":
             return week.title
         else:
             return (
@@ -378,7 +378,7 @@ def get_matrix_sum_line(rows, fn):
         if row["type"] == "node":
             value = fn(row["object"])
             values += [value]
-            if value is None or value is "":
+            if value is None or value == "":
                 value = 0
             total += int(value)
         else:
