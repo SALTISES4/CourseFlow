@@ -7,8 +7,9 @@ import {getOutcomeByID,getOutcomeOutcomeByID} from "./FindState";
 import OutcomeView from "./OutcomeView";
 import {SimpleOutcomeView} from "./OutcomeView";
 import OutcomeNodeView from "./OutcomeNode";
+import {OutcomeTitle} from "./ComponentJSON"
 
-//Basic component representing an outcome
+//Analytics view
 class AlignmentView extends ComponentJSON{
     constructor(props){
         super(props);
@@ -23,7 +24,7 @@ class AlignmentView extends ComponentJSON{
             if(i==this.state.active)view_class+=" active";
             return(
                 <div id={"button_"+outcome.data.id} class={view_class} onClick={this.changeView.bind(this,i)}>
-                    {outcome.rank[0]+" - "+outcome.data.title}
+                    <OutcomeTitle data={outcome.data} rank={outcome.rank} titles={outcome.titles}/>
                 </div>
             );
         });

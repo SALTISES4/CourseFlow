@@ -340,7 +340,7 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         return(
             <div
             class={
-                "outcome"+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")
+                "outcome"+((this.state.selected && " selected")||"")+((this.state.is_dropped && " dropped")||"")
             }
             ref={this.maindiv} onClick={onClick}>
                 <div class="outcome-title">
