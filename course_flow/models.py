@@ -812,6 +812,8 @@ class Workflow(models.Model):
     is_strategy = models.BooleanField(default=False)
 
     from_saltise = models.BooleanField(default=False)
+    
+    condensed = models.BooleanField(default=False)
 
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
@@ -1855,6 +1857,7 @@ def create_default_program_content(sender, instance, created, **kwargs):
             author=instance.author,
             is_strategy=instance.is_strategy,
         )
+        instance.condensed=True
         instance.save()
 
 

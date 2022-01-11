@@ -17,7 +17,7 @@ class WeekWorkflowView extends ComponentJSON{
     render(){
         let data = this.props.data;
         var week;
-        if(data.week_type==2)week = (
+        if(this.props.condensed)week = (
                 <TermView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
         );
         else week = (

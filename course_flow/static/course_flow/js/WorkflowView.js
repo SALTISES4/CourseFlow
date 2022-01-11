@@ -280,7 +280,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
             <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={data.id} renderer={renderer}/>
         );
         var weekworkflows = data.weekworkflow_set.map((weekworkflow)=>
-            <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
+            <WeekWorkflowView condensed={data.condensed} key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
         );
         
         

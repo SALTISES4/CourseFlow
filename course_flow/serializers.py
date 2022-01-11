@@ -704,6 +704,7 @@ class WorkflowSerializerShallow(
             "time_specific_hours",
             "edit_count",
             "favourite",
+            "condensed",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -796,6 +797,9 @@ class WorkflowSerializerShallow(
         instance.time_specific_hours = validated_data.get(
             "time_specific_hours", instance.time_specific_hours
         )
+        instance.condensed = validated_data.get(
+            "condensed", instance.condensed
+        )
         instance.save()
         return instance
 
@@ -837,6 +841,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "time_general_hours",
             "time_specific_hours",
             "favourite",
+            "condensed",
         ]
 
     def get_author_id(self, instance):
@@ -888,6 +893,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "time_general_hours",
             "time_specific_hours",
             "favourite",
+            "condensed",
         ]
 
     def get_author_id(self, instance):
@@ -939,6 +945,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "time_general_hours",
             "time_specific_hours",
             "favourite",
+            "condensed",
         ]
 
     def get_author_id(self, instance):

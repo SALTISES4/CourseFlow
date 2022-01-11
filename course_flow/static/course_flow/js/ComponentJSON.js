@@ -446,6 +446,8 @@ export class ComponentJSON extends React.Component{
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
                             </select>
+                            <label for="condensed">{gettext("Condensed View")}</label>
+                            <input type="checkbox" name="condensed" checked={data.condensed} onChange={this.checkboxChanged.bind(this,"condensed")}/>
                             {data.is_strategy && 
                                 [
                                 <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>,

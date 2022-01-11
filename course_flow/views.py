@@ -2200,6 +2200,7 @@ def fast_activity_copy(workflow, author, now):
         time_specific_hours=workflow.time_specific_hours,
         code=workflow.code,
         deleted=workflow.deleted,
+        condensed=workflow.condensed,
     )
 
 
@@ -2222,6 +2223,7 @@ def fast_course_copy(workflow, author, now):
         time_specific_hours=workflow.time_specific_hours,
         code=workflow.code,
         deleted=workflow.deleted,
+        condensed=workflow.condensed,
     )
 
 
@@ -2244,6 +2246,7 @@ def fast_program_copy(workflow, author, now):
         time_specific_hours=workflow.time_specific_hours,
         code=workflow.code,
         deleted=workflow.deleted,
+        condensed=workflow.condensed,
     )
 
 
@@ -2523,6 +2526,7 @@ def fast_duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
             time_specific_hours=workflow.time_specific_hours,
             code=workflow.code,
             deleted=workflow.deleted,
+            condensed=workflow.condensed,
         )
 
         # Retrieve all data.
@@ -2936,6 +2940,7 @@ def duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
         parent_workflow=workflow,
         is_strategy=workflow.is_strategy,
         deleted=workflow.deleted,
+        condensed=workflow.condensed,
     )
     for outcome in workflow.outcomes.all():
         OutcomeWorkflow.objects.create(
