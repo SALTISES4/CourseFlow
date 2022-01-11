@@ -1,25 +1,8 @@
-asgiref
-bleach
-Django<3.0.0
-django-csp
-django-filter
-djangorestframework>=3.10.3
-zipp==0.6.0
-django-compressor>=2.3
-django-model-utils
-django-debug-toolbar
-SALTISE_user_feedback
-channels
-channels_redis
-pandas
-openpyxl
-celery[redis]
-html2text
 
 black
-pre-commit
+django-debug-toolbar
 isort
-Markdown==3.1.1
+pre-commit
 pytest-cov
 pytest-django
 safety

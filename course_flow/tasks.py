@@ -3,6 +3,7 @@ from smtplib import SMTPException
 
 import pandas as pd
 from celery import shared_task
+from django.conf import settings
 from django.core.mail import EmailMessage
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -49,7 +50,7 @@ def stringify(value):
         return str(value)
 
 
-def get_framework_line_for_outcome(outcome):
+def get_framework_line_for_outcome(outcome,columns):
     outcome_serialized = OutcomeExportSerializer(outcome).data
     sub_outcomes = get_all_outcomes_ordered_for_outcome(outcome)
     sub_outcomes_serialized = OutcomeExportSerializer(
@@ -72,39 +73,34 @@ def get_framework_line_for_outcome(outcome):
         [get_str(och, "code") for och in outcomes_horizontal_serialized]
     )
     dict_data = {
-        "a": get_str(outcome_serialized, "code")
+        "0": get_str(outcome_serialized, "code")
         + " - "
         + get_str(outcome_serialized, "title"),
-        "b": sub_outcomes_entry,
-        "c": outcomes_horizontal_entry,
+        "1": sub_outcomes_entry,
+        "2": outcomes_horizontal_entry,
     }
-    activities = Node.objects.filter(
-        outcomenode__outcome__in=sub_outcomes,
-        column__column_type=Column.LESSON,
-        deleted=False,
-    ).distinct()
-    assessments = Node.objects.filter(
-        outcomenode__outcome__in=sub_outcomes,
-        column__column_type=Column.ASSESSMENT,
-        deleted=False,
-    ).distinct()
-    dict_data["e"] = "\n".join(
-        [get_displayed_title(activity) for activity in activities]
-    )
-    dict_data["f"] = "\n".join(
-        [get_displayed_title(assessment) for assessment in assessments]
-    )
+    for i,column in enumerate(columns):
+        nodes = Node.objects.filter(
+            outcomenode__outcome__in=sub_outcomes,
+            column=column,
+            deleted=False,
+        ).distinct()
+        dict_data[str(3+i)] = "\n".join(
+            [get_displayed_title(node) for node in nodes]
+        )
     return dict_data
 
 
 def get_course_framework(workflow):
-    df = pd.DataFrame(columns=["a", "b", "c", "d", "e", "f", "g"])
+    num_columns = workflow.columns.all().count()
+    df_columns = max(6,3+num_columns)
+    df = pd.DataFrame(columns=[str(i) for i in range(num_columns)])
     df = df.append(
         {
-            "a": _("Course Title"),
-            "b": workflow.title,
-            "c": _("Ponderation Theory/Practical/Individual"),
-            "d": str(workflow.ponderation_theory)
+            "0": _("Course Title"),
+            "1": workflow.title,
+            "2": _("Ponderation Theory/Practical/Individual"),
+            "3": str(workflow.ponderation_theory)
             + "/"
             + str(workflow.ponderation_practical)
             + "/"
@@ -114,21 +110,21 @@ def get_course_framework(workflow):
     )
     df = df.append(
         {
-            "a": _("Course Code"),
-            "b": workflow.code,
-            "c": _("Hours"),
-            "d": str(
+            "0": _("Course Code"),
+            "1": workflow.code,
+            "2": _("Hours"),
+            "3": str(
                 workflow.time_general_hours + workflow.time_specific_hours
             ),
-            "e": _("Time"),
-            "f": stringify(workflow.time_required)
+            "4": _("Time"),
+            "5": stringify(workflow.time_required)
             + " "
             + workflow.get_time_units_display(),
         },
         ignore_index=True,
     )
-    df = df.append({"a": _("Ministerial Competencies")}, ignore_index=True)
-    df = df.append({"a": _("Competency"), "b": _("Title")}, ignore_index=True)
+    df = df.append({"0": _("Ministerial Competencies")}, ignore_index=True)
+    df = df.append({"0": _("Competency"), "1": _("Title")}, ignore_index=True)
     nodes = get_parent_nodes_for_workflow(workflow)
     parent_outcomes = []
     for node in nodes:
@@ -138,12 +134,12 @@ def get_course_framework(workflow):
         ).data
     a = [get_str(outcome, "code") for outcome in parent_outcomes]
     b = [get_str(outcome, "title") for outcome in parent_outcomes]
-    df = pd.concat([df, pd.DataFrame({"a": a, "b": b})])
+    df = pd.concat([df, pd.DataFrame({"0": a, "1": b})])
     if len(nodes) > 0:
         df = df.append(
             {
-                "a": _("Term"),
-                "b": WeekWorkflow.objects.get(
+                "0": _("Term"),
+                "1": WeekWorkflow.objects.get(
                     week__nodes=nodes[0]
                 ).get_display_rank()
                 + 1,
@@ -159,8 +155,8 @@ def get_course_framework(workflow):
         if len(prereqs) > 0:
             df = df.append(
                 {
-                    "a": _("Prerequisites"),
-                    "b": [get_displayed_title(req) for req in prereqs].join(
+                    "0": _("Prerequisites"),
+                    "1": [get_displayed_title(req) for req in prereqs].join(
                         ", "
                     ),
                 },
@@ -169,27 +165,27 @@ def get_course_framework(workflow):
         if len(postreqs) > 0:
             df = df.append(
                 {
-                    "a": _("Required For"),
-                    "b": [get_displayed_title(req) for req in postreqs].join(
+                    "0": _("Required For"),
+                    "1": [get_displayed_title(req) for req in postreqs].join(
                         ", "
                     ),
                 },
                 ignore_index=True,
             )
+    headers={
+        "0": _("Course Outcome"),
+        "1": _("Sub-Outcomes"),
+        "2": _("Competencies"),
+    }
+    columns = workflow.columns.order_by("columnworkflow__rank").all()
+    for i,column in enumerate(columns):headers[str(3+i)]=column.get_display_title();
     df = df.append(
-        {
-            "a": _("Course Outcome"),
-            "b": _("Sub-Outcomes"),
-            "c": _("Competencies"),
-            "d": _("Topics & Content"),
-            "e": _("Lessons/Activities"),
-            "f": _("Assessments"),
-        },
+        headers,
         ignore_index=True,
     )
     for outcome in workflow.outcomes.filter(deleted=False):
         df = df.append(
-            get_framework_line_for_outcome(outcome), ignore_index=True
+            get_framework_line_for_outcome(outcome,columns), ignore_index=True
         )
     return df
 
@@ -235,7 +231,7 @@ def async_send_export_email(user_email, pk, object_type, task_type, email_subjec
     email = EmailMessage(
         email_subject,
         email_text,
-        "noreply@courseflow.org",
+        settings.DEFAULT_FROM_EMAIL,
         [user_email],
     )
     if file_type == "csv":
@@ -272,13 +268,6 @@ def get_outcomes_excel(model_object, object_type):
 
         return b.getvalue()
 
-
-#        response = HttpResponse(
-#            b.getvalue(),
-#            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-#        )
-#        response['Content-Disposition'] = 'attachment; filename=%s' % filename
-#        return response
 
 
 def get_outcomes_csv(model_object, object_type):

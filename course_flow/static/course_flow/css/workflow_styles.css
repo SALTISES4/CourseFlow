@@ -1256,6 +1256,11 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 
 .comment-box textarea{
     height:80px;
+    white-space:normal;
+}
+
+.comment-text{
+    white-space:normal;
 }
 
 .comment{
@@ -1636,7 +1641,7 @@ circle.mouseover{
     margin-right:4px;
 }
 
-.alignment-row > *:not(img){
+.alignment-row > *:not(img):not(.outcome-degree){
     min-width:0px;
     width:calc(100% - 50px);
 }

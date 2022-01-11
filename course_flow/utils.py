@@ -2,6 +2,7 @@ import time
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+
 from course_flow import models
 
 owned_throughmodels = [
@@ -21,11 +22,14 @@ owned_throughmodels = [
     "outcome",
 ]
 
+
 def dateTimeFormat():
     return "%Y/%m/%d"
 
+
 def dateTimeFormatNoSpace():
     return "%Y_%m_%d_%H_%m_%s"
+
 
 def get_model_from_str(model_str: str):
     return ContentType.objects.get(model=model_str).model_class()
@@ -77,17 +81,20 @@ def get_all_outcomes_for_workflow(workflow):
     )
     return outcomes, outcomeoutcomes
 
+
 def get_all_outcomes_ordered_for_outcome(outcome):
     outcomes = [outcome]
     for outcomeoutcome in outcome.child_outcome_links.filter(child__deleted=False).order_by("rank"):
         outcomes += get_all_outcomes_ordered_for_outcome(outcomeoutcome.child)
     return outcomes
 
+
 def get_all_outcomes_ordered(workflow):
     outcomes = []
     for outcomeworkflow in workflow.outcomeworkflow_set.filter(outcome__deleted=False).order_by("rank"):
         outcomes+=get_all_outcomes_ordered_for_outcome(outcomeworkflow.outcome)
     return outcomes
+
 
 def get_unique_outcomenodes(node):
     exclude_outcomes = models.Outcome.objects.filter(
@@ -108,6 +115,7 @@ def get_unique_outcomenodes(node):
             "outcome__parent_outcome_links__parent__parent_outcome_links__rank",
             "outcome__parent_outcome_links__rank",
         )
+
     )
 
 

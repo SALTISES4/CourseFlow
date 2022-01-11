@@ -33,7 +33,7 @@
                 <p>{% trans "Your favourited items" %}</p></a>
                 {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
                   <a class="hover-shade"
-                     {% if favourite.content_type == "project" %}
+                     {% if favourite.content_object.type == "project" %}
                         href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
                      {% else %}
                         href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"

@@ -1,8 +1,7 @@
 import json
 import math
-import time
 from functools import reduce
-from itertools import chain, islice, tee
+from itertools import chain
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -12,16 +11,15 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
-from django.db.models import Count, ProtectedError, Q
+from django.db.models import ProtectedError, Q
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
-from django.views.generic import DetailView, ListView, TemplateView, UpdateView
+from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView
-from rest_framework import viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
@@ -43,7 +41,6 @@ from .models import (  # OutcomeProject,
     Activity,
     Column,
     ColumnWorkflow,
-    Comment,
     Course,
     CustomTerm,
     Discipline,
@@ -88,7 +85,6 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     UserSerializer,
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
-    WorkflowSerializerFinder,
     WorkflowSerializerShallow,
     bleach_allowed_tags,
     bleach_sanitizer,
@@ -200,7 +196,7 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         disciplines = self.request.GET.getlist("disc[]", None)
         title = self.request.GET.get("title", None)
         description = self.request.GET.get("des", None)
-        sort = self.request.GET.get("sort", None)
+        sort = self.request.GET.get("sort", None)  # noqa F841
         page = self.request.GET.get("page", 1)
         results = self.request.GET.get("results", 20)
         filter_kwargs = {}
@@ -1235,7 +1231,6 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
 
 
 def get_parent_outcome_data(workflow, user):
-    last_time = time.time()
     outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
     parent_nodes = get_parent_nodes_for_workflow(workflow)
     parent_workflows = list(map(lambda x: x.get_workflow(), parent_nodes))
@@ -1913,16 +1908,16 @@ def get_project_data(request: HttpRequest) -> HttpResponse:
     )
 
 
-@user_can_view("outcomePk")
-def get_outcome_data(request: HttpRequest) -> HttpResponse:
-    outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
-    try:
-        data_package = get_outcome_context_data(outcome, {}, request.user)[
-            "data_flat"
-        ]
-    except AttributeError:
-        return JsonResponse({"action": "error"})
-    return JsonResponse({"action": "posted", "data_package": data_package})
+# @user_can_view("outcomePk")
+# def get_outcome_data(request: HttpRequest) -> HttpResponse:
+#     outcome = Outcome.objects.get(pk=request.POST.get("outcomePk"))
+#     try:
+#         data_package = get_outcome_context_data(outcome, {}, request.user)[
+#             "data_flat"
+#         ]
+#     except AttributeError:
+#         return JsonResponse({"action": "error"})
+#     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
 @user_can_view("workflowPk")
@@ -3133,7 +3128,6 @@ def duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
 
 @user_can_view("projectPk")
 def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
-    last_time = time.time()
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
         with transaction.atomic():
@@ -3564,7 +3558,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("parentID"))
     parent_type = json.loads(request.POST.get("parentType"))
-    through_type = json.loads(request.POST.get("throughType"))
+    through_type = json.loads(request.POST.get("throughType"))  # noqa F841
     try:
         with transaction.atomic():
             if object_type == "week":

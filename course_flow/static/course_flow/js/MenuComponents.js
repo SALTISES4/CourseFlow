@@ -955,18 +955,18 @@ export class ExploreMenu extends React.Component{
                     else console.log("couldn't show preview");
                 });
                 break;
-            case "outcome":
-                $.post(post_paths.get_outcome_data,{
-                    outcomePk:JSON.stringify(id),
-                }).done(function(data){
-                    if(data.action=="posted"){
-                        loader.endLoad();
-                        var outcome_renderer = new renderers.OutcomeRenderer(JSON.parse(data.data_package));
-                        outcome_renderer.render($(".explore-preview"));
-                    }
-                    else console.log("couldn't show preview");
-                });
-                break;
+//            case "outcome":
+//                $.post(post_paths.get_outcome_data,{
+//                    outcomePk:JSON.stringify(id),
+//                }).done(function(data){
+//                    if(data.action=="posted"){
+//                        loader.endLoad();
+//                        var outcome_renderer = new renderers.OutcomeRenderer(JSON.parse(data.data_package));
+//                        outcome_renderer.render($(".explore-preview"));
+//                    }
+//                    else console.log("couldn't show preview");
+//                });
+//                break;
                 
             default: 
                 return;

@@ -370,7 +370,7 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         }
         
         let css_class="outcome outcome-"+data.id;
-        if(data.is_dropped)css_class+=" dropped";
+        if(this.state.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
         return(

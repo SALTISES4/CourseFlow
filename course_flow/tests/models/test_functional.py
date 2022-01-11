@@ -304,7 +304,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element_by_id("project-publish-input").click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
-        time.sleep(1)
+        time.sleep(2)
         selenium.find_element_by_id("save-changes").click()
         assert (
             "new title"

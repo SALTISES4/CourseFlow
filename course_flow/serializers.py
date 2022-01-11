@@ -15,7 +15,6 @@ from .models import (
     Discipline,
     Favourite,
     Node,
-    NodeCompletionStatus,
     NodeLink,
     NodeWeek,
     Outcome,
@@ -33,8 +32,6 @@ from .models import (
 )
 from .utils import (
     dateTimeFormat,
-    get_descendant_outcomes,
-    get_model_from_str,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
     linkIDMap,
@@ -86,6 +83,7 @@ class TitleSerializerMixin:
         return bleach_sanitizer(value, tags=bleach_allowed_tags)[
             :title_max_length
         ]
+
 
 
 class DescriptionSerializerTextMixin(serializers.Serializer):
@@ -1165,6 +1163,18 @@ class OutcomeExportSerializer(
                 return (
                     self.get_code(outcomeoutcome.parent) + "." + instance.code
                 )
+
+
+
+#
+# serializer_lookups = {
+#    "node": NodeSerializer,
+#    "week": WeekSerializer,
+#    "column": ColumnSerializer,
+#    "activity": ActivitySerializer,
+#    "course": CourseSerializer,
+#    "program": ProgramSerializer,
+# }
 
 
 serializer_lookups_shallow = {

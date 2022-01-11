@@ -9,18 +9,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
-from django.db.models.signals import (
-    m2m_changed,
-    post_save,
-    pre_delete,
-    pre_save,
-)
+from django.db.models.signals import post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from course_flow.utils import benchmark, get_descendant_outcomes
+from course_flow.utils import get_descendant_outcomes
 
 User = get_user_model()
 
@@ -65,6 +60,12 @@ class Project(models.Model):
     def get_permission_objects(self):
         return [self]
 
+    def __str__(self):
+        if self.title is not None and self.title!="":
+            return self.title
+        else:
+            return "Project"
+        
     class Meta:
         verbose_name = "Project"
         verbose_name_plural = "Projects"
@@ -184,6 +185,10 @@ class Column(models.Model):
 
     def get_workflow(self):
         return self.workflow_set.first()
+    
+    def get_display_title(self):
+        if self.title is not None and self.title != "":return self.title
+        else: return self.get_column_type_display()
 
     def __str__(self):
         return self.get_column_type_display()
@@ -924,7 +929,7 @@ class Workflow(models.Model):
         return ids
 
     def __str__(self):
-        if self.title is not None:
+        if self.title is not None and self.title!="":
             return self.title
         else:
             return self.type
@@ -959,7 +964,7 @@ class Activity(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None:
+        if self.title is not None and self.title!="":
             return self.title
         else:
             return self.type
@@ -998,7 +1003,7 @@ class Course(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None:
+        if self.title is not None and self.title!="":
             return self.title
         else:
             return self.type
@@ -1024,7 +1029,7 @@ class Program(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None:
+        if self.title is not None and self.title!="":
             return self.title
         else:
             return self.type
