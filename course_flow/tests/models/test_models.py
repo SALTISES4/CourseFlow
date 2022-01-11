@@ -2985,13 +2985,13 @@ class ExportTest(TestCase):
                 author=author, title="outcome", depth=1
             )
 
-            tasks.async_get_outcomes_excel(
-                author.email, workflow.id, "workflow"
+            tasks.async_send_export_email(
+                author.email, workflow.id, "workflow", "outcomes_csv","subject","text"
             )
-            tasks.async_get_outcomes_csv(author.email, workflow.id, "workflow")
+            tasks.async_send_export_email(author.email, workflow.id, "workflow", "outcomes_excel","subject","text")
 
-        tasks.async_get_outcomes_excel(author.email, project.id, "project")
-        tasks.async_get_outcomes_csv(author.email, project.id, "project")
+        tasks.async_send_export_email(author.email, project.id, "project", "outcomes_excel","subject","text")
+        tasks.async_send_export_email(author.email, project.id, "project", "outcomes_csv","subject","text")
 
     def test_export_frameworks(self):
         author = get_author()
@@ -3056,10 +3056,22 @@ class ExportTest(TestCase):
                 parent_outcome=workflow.linked_nodes.first().outcomes.first(),
             )
 
-            tasks.async_get_course_frameworks_excel(
-                author.email, workflow.id, "workflow"
+            tasks.async_send_export_email(
+                author.email, workflow.id, "workflow", "frameworks_excel","subject","text",
             )
 
-        tasks.async_get_course_frameworks_excel(
-            author.email, project.id, "project"
+        tasks.async_send_export_email(
+            author.email, project.id, "project", "frameworks_excel","subject","text",
+        )
+        tasks.async_send_export_email(
+            author.email, program.id, "workflow", "matrix_excel","subject","text",
+        )
+        tasks.async_send_export_email(
+            author.email, project.id, "project", "matrix_excel","subject","text",
+        )
+        tasks.async_send_export_email(
+            author.email, program.id, "workflow", "matrix_csv","subject","text",
+        )
+        tasks.async_send_export_email(
+            author.email, project.id, "project", "matrix_csv","subject","text",
         )

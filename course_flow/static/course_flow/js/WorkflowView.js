@@ -206,7 +206,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     }
                      
     changeView(type){
-        this.props.renderer.changeSelection(null,null);
+        this.props.renderer.selection_manager.changeSelection(null,null);
         this.props.renderer.render(this.props.renderer.container,type);
     }
                      

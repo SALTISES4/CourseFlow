@@ -725,7 +725,6 @@ class WorkflowSerializerShallow(
         return None
     
     def get_favourite(self, instance):
-        print("getting favourite")
         user = self.context.get("user",None)
         if user is None: return False
         if Favourite.objects.filter(

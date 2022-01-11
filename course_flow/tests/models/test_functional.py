@@ -1760,7 +1760,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             == 2
         )
 
-    def test_outcome_csv_output(self):
+    def test_outcome_matrix_view(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(
@@ -1802,8 +1802,6 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             "#button_competencymatrix"
         ).click()
         time.sleep(1)
-
-        selenium.find_element_by_css_selector(".menu-create").click()
 
     def test_grid_view(self):
         selenium = self.selenium
@@ -2470,7 +2468,7 @@ class SeleniumDeleteRestoreTestCase(SeleniumWorkflowsTestCase):
             
             
             selenium.find_element_by_css_selector("#button_outcomeedit").click()
-            time.sleep(2)
+            time.sleep(3)
             
             #Delete the parent outcome
             hover_item = selenium.find_element_by_css_selector(
