@@ -5,7 +5,7 @@ import {ComponentJSON} from "./ComponentJSON.js";
 import {NodeOutcomeView} from "./NodeView.js";
 import {TableOutcomeView} from "./OutcomeView.js";
 import {TableOutcomeWorkflowView} from "./OutcomeWorkflowView"
-import {pushOrCreate} from "./Constants.js"
+import {pushOrCreate, filterThenSortByID} from "./Constants.js"
 import {TableChildWorkflowHeader} from "./OutcomeHorizontalLink";
 
 
@@ -70,14 +70,13 @@ class WorkflowOutcomeView extends ComponentJSON{
     
 }
 const mapStateToProps = (state,own_props)=>{
-    let weekworkflow_order = state.workflow.weekworkflow_set;
-    let week_order = state.weekworkflow.slice().sort(function(a,b){return(weekworkflow_order.indexOf(a.id)-weekworkflow_order.indexOf(b.id))}).map((weekworkflow)=>weekworkflow.week);
-    let weeks_ordered = state.week.slice().sort(function(a,b){return week_order.indexOf(a.id)-week_order.indexOf(b.id)})
-        
-    let nodeweek_order=[].concat(...weeks_ordered.map((week)=>week.nodeweek_set));
-    let nodeweeks_ordered = state.nodeweek.slice().sort(function(a,b){return nodeweek_order.indexOf(a.id)-nodeweek_order.indexOf(b.id)});
-    let node_order = nodeweeks_ordered.map((nodeweek)=>nodeweek.node);
-    let nodes_ordered = state.node.slice().sort(function(a,b){return node_order.indexOf(a.id)-node_order.indexOf(b.id)});
+    let week_order = filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(weekworkflow=>weekworkflow.week);
+    let weeks_ordered = filterThenSortByID(state.week,week_order);
+    let nodeweek_order = [].concat(...weeks_ordered.map((week)=>week.nodeweek_set));
+    let nodeweeks_ordered = filterThenSortByID(state.nodeweek,nodeweek_order)
+    let node_order = nodeweeks_ordered.map(nodeweek=>nodeweek.node);
+    let nodes_ordered = filterThenSortByID(state.node,node_order);
+    
     switch(parseInt(state.workflow.outcomes_sort)){
         case 0:
             let nodes_by_week={};
@@ -87,15 +86,16 @@ const mapStateToProps = (state,own_props)=>{
             }
             return {data:weeks_ordered.map((week,index)=>{return {title:(week.title||week.week_type_display+" "+(index+1)),nodes:(nodes_by_week[week.id]||[])};}),outcomeworkflows:state.workflow.outcomeworkflow_set};
         case 1:
-            let columnworkflow_order = state.workflow.columnworkflow_set;
-            let column_order = state.columnworkflow.slice().sort(function(a,b){return(columnworkflow_order.indexOf(a.id)-columnworkflow_order.indexOf(b.id))}).map((columnworkflow)=>columnworkflow.week);
-            let columns_ordered = state.column.slice().sort(function(a,b){return(column_order.indexOf(a.id)-column_order.indexOf(b.id))});
+            let column_order = filterThenSortByID(state.columnworkflow,state.workflow.columnworkflow_set).map(columnworkflow=>columnworkflow.column);
+            let columns_ordered = filterThenSortByID(state.column,column_order);
+            
+            
             let nodes_by_column={};
             for(let i=0;i<nodes_ordered.length;i++){
                 let node = nodes_ordered[i];
-                pushOrCreate(nodes_by_column,node.columnworkflow,node.id);
+                pushOrCreate(nodes_by_column,node.column,node.id);
             }
-            return {data:columns_ordered.map((column,index)=>{return {title:(column.title||column.column_type_display),nodes:(nodes_by_column[columnworkflow_order[index]]||[])};}),outcomeworkflows:state.workflow.outcomeworkflow_set};
+            return {data:columns_ordered.map((column,index)=>{return {title:(column.title||column.column_type_display),nodes:(nodes_by_column[column_order[index]]||[])};}),outcomeworkflows:state.workflow.outcomeworkflow_set};
         case 2:
             var workflow_type = ["activity","course","program"].indexOf(state.workflow.type)
             let task_ordered = own_props.renderer.task_choices.filter((x)=> (x.type==0 || (x.type>100*workflow_type &&x.type<100*(workflow_type+1))));
