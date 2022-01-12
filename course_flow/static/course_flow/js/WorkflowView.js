@@ -14,7 +14,7 @@ import StrategyView from "./Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "./WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
-import {getParentWorkflowInfo,insertedAt,restoreSelf,getExport} from "./PostFunctions";
+import {getParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
@@ -538,9 +538,11 @@ class RestoreBarItem extends React.Component{
     render(){
         if(this.state.disabled)return null;
         else return (
-            <div>
+            <div class="restore-bar-item">
                 <div>{this.getTitle()}</div>
+                <div class="workflow-created">{gettext("Deleted")+" "+this.props.data.deleted_on}</div>
                 <button onClick={this.restore.bind(this)}>{gettext("Restore")}</button>
+                <button onClick={this.delete.bind(this)}>{gettext("Permanently Delete")}</button>
             </div>
         );
     }
@@ -557,6 +559,16 @@ class RestoreBarItem extends React.Component{
         restoreSelf(this.props.data.id,this.props.objectType,()=>{
             this.props.renderer.tiny_loader.endLoad();
         });
+    }
+
+    delete(){
+        this.setState({disabled:true});
+        if(window.confirm(gettext("Are you sure you want to permanently delete this object?"))){
+            this.props.renderer.tiny_loader.startLoad();
+            deleteSelf(this.props.data.id,this.props.objectType,false,()=>{
+                this.props.renderer.tiny_loader.endLoad();
+            });
+        }
     }
 }
 

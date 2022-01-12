@@ -145,7 +145,7 @@ class NodeLinkSerializerShallow(
     class Meta:
         model = NodeLink
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "id",
             "title",
             "source_node",
@@ -153,6 +153,8 @@ class NodeLinkSerializerShallow(
             "source_port",
             "target_port",
         ]
+        
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def create(self, validated_data):
         return Node.objects.create(
@@ -185,7 +187,7 @@ class NodeSerializerShallow(
     class Meta:
         model = Node
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "id",
             "title",
             "description",
@@ -207,6 +209,8 @@ class NodeSerializerShallow(
             "is_dropped",
             "comments",
         ]
+        
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def get_columnworkflow(self, instance):
         if instance.column.deleted:
@@ -302,7 +306,7 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
     class Meta:
         model = Workflow
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "title",
             "description",
             "code",
@@ -314,6 +318,8 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
             "time_general_hours",
             "time_specific_hours",
         ]
+        
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
 
 class NodeWeekSerializerShallow(serializers.ModelSerializer):
@@ -338,7 +344,7 @@ class ColumnSerializerShallow(
     class Meta:
         model = Column
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "id",
             "title",
             "column_type",
@@ -347,6 +353,8 @@ class ColumnSerializerShallow(
             "visible",
             "comments",
         ]
+        
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def create(self, validated_data):
         return Column.objects.create(
@@ -374,7 +382,7 @@ class WeekSerializerShallow(
     class Meta:
         model = Week
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "id",
             "title",
             "description",
@@ -386,6 +394,8 @@ class WeekSerializerShallow(
             "strategy_classification",
             "comments",
         ]
+        
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def get_nodeweek_set(self, instance):
         links = instance.nodeweek_set.filter(node__deleted=False).order_by(
@@ -467,7 +477,7 @@ class ProjectSerializerShallow(
     class Meta:
         model = Project
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "id",
             "title",
             "description",
@@ -488,6 +498,7 @@ class ProjectSerializerShallow(
     workflowproject_set = serializers.SerializerMethodField()
     terminology_dict = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
@@ -544,7 +555,7 @@ class OutcomeSerializerShallow(
     class Meta:
         model = Outcome
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "id",
             "title",
             "code",
@@ -571,6 +582,7 @@ class OutcomeSerializerShallow(
     child_outcome_links = serializers.SerializerMethodField()
     outcome_horizontal_links = serializers.SerializerMethodField()
     outcome_horizontal_links_unique = serializers.SerializerMethodField()
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def get_outcome_horizontal_links(self, instance):
         if len(instance.outcome_horizontal_links.all()) == 0:
@@ -676,7 +688,7 @@ class WorkflowSerializerShallow(
     class Meta:
         model = Workflow
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "id",
             "title",
             "description",
@@ -713,6 +725,7 @@ class WorkflowSerializerShallow(
     columnworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     strategy_icon = serializers.SerializerMethodField()
 
@@ -811,7 +824,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
     class Meta:
         model = Program
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "id",
             "title",
             "description",
@@ -863,7 +876,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
     class Meta:
         model = Course
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "id",
             "title",
             "description",
@@ -915,7 +928,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
     class Meta:
         model = Activity
         fields = [
-            "deleted",
+            "deleted", "deleted_on",
             "id",
             "title",
             "description",

@@ -321,7 +321,7 @@ export function columnReducer(state=[],action){
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
-                    new_state[i]={...new_state[i],deleted:true};
+                    new_state[i]={...new_state[i],deleted:true,deleted_on:gettext("This session")};
                     return new_state;
                 }
             }
@@ -527,7 +527,7 @@ export function weekReducer(state=[],action){
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
-                    new_state[i]={...new_state[i],deleted:true};
+                    new_state[i]={...new_state[i],deleted:true,deleted_on:gettext("This session")};
                     return new_state;
                 }
             }
@@ -689,7 +689,7 @@ export function nodeReducer(state=[],action){
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
-                    new_state[i]={...new_state[i],deleted:true};
+                    new_state[i]={...new_state[i],deleted:true,deleted_on:gettext("This session")};
                     Constants.triggerHandlerEach($(".week .node"),"component-updated");
                     return new_state;
                 }
@@ -846,7 +846,7 @@ export function nodelinkReducer(state=[],action){
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
-                    new_state[i]={...new_state[i],deleted:true};
+                    new_state[i]={...new_state[i],deleted:true,deleted_on:gettext("This session")};
                     return new_state;
                 }
             }
@@ -957,7 +957,7 @@ export function outcomeReducer(state=[],action){
                     new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
                     new_state[i].child_outcome_links.splice(new_state[i].child_outcome_links.indexOf(action.payload.parent_id),1);
                 }else if(state[i].id==action.payload.id){
-                    new_state[i] = {...new_state[i],deleted:true};
+                    new_state[i] = {...new_state[i],deleted:true,deleted_on:gettext("This session")};
                 }
             }
             return new_state;
@@ -977,7 +977,7 @@ export function outcomeReducer(state=[],action){
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
-                    new_state[i]={...new_state[i],deleted:true};
+                    new_state[i]={...new_state[i],deleted:true,deleted_on:gettext("This session")};
                     return new_state;
                 }
             }
@@ -1367,7 +1367,7 @@ export function childOutcomeReducer(state=[],action){
                     new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
                     new_state[i].child_outcome_links.splice(new_state[i].child_outcome_links.indexOf(action.payload.parent_id),1);
                 }else if(state[i].id==action.payload.id){
-                    new_state[i] = {...new_state[i],deleted:true};
+                    new_state[i] = {...new_state[i],deleted:true,deleted_on:gettext("This session")};
                 }
             }
         case 'childoutcome/restoreSelf':
@@ -1385,7 +1385,7 @@ export function childOutcomeReducer(state=[],action){
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
-                    new_state[i]={...new_state[i],deleted:true};
+                    new_state[i]={...new_state[i],deleted:true,deleted_on:gettext("This session")};
                     return new_state;
                 }
             }

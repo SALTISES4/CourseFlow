@@ -4513,6 +4513,7 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
         # Delete the object
         with transaction.atomic():
             model.deleted = True
+            model.deleted_on=timezone.now()
             model.save()
 
         if object_type == "outcome" or object_type == "outcome_base":

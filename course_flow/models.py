@@ -24,6 +24,7 @@ title_max_length = 50
 
 class Project(models.Model):
     deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
     title = models.CharField(
         max_length=title_max_length, null=True, blank=True
     )
@@ -134,6 +135,7 @@ class OutcomeWorkflow(models.Model):
 
 class Column(models.Model):
     deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
     title = models.CharField(
         max_length=title_max_length, null=True, blank=True
     )
@@ -200,6 +202,7 @@ class Column(models.Model):
 
 class NodeLink(models.Model):
     deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=100, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     source_node = models.ForeignKey(
@@ -238,6 +241,7 @@ class NodeLink(models.Model):
 
 class Outcome(models.Model):
     deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
     title = models.TextField(
         null=True, blank=True
     )
@@ -425,6 +429,7 @@ class OutcomeHorizontalLink(models.Model):
 
 class Node(models.Model):
     deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
     title = models.CharField(
         max_length=title_max_length, null=True, blank=True
     )
@@ -695,6 +700,7 @@ class OutcomeNode(models.Model):
 
 class Week(models.Model):
     deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
     title = models.CharField(
         max_length=title_max_length, null=True, blank=True
     )
@@ -794,6 +800,7 @@ class Workflow(models.Model):
         return self.get_subclass().author
 
     deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
 
     title = models.CharField(
         max_length=title_max_length, null=True, blank=True
