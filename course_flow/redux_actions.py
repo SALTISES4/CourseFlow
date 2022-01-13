@@ -75,13 +75,14 @@ def deleteSelfSoftAction(id, objectType, parentID, extra_data):
     }
 
 
-def restoreSelfAction(id, objectType, parentID, throughparentID, extra_data):
+def restoreSelfAction(id, objectType, parentID, throughparentID, throughparent_index, extra_data):
     return {
         "type": objectType + "/restoreSelf",
         "payload": {
             "id": id,
             "parent_id": parentID,
             "throughparent_id": throughparentID,
+            "throughparent_index":throughparent_index,
             "extra_data": extra_data,
         },
     }

@@ -19,7 +19,7 @@ from course_flow.utils import get_descendant_outcomes
 
 User = get_user_model()
 
-title_max_length = 50
+title_max_length = 200
 
 
 class Project(models.Model):

@@ -147,7 +147,7 @@ export function workflowReducer(state={},action){
         case 'week/restoreSelf':
             var new_state = {...state};
             new_state.weekworkflow_set = state.weekworkflow_set.slice();
-            new_state.weekworkflow_set.push(action.payload.throughparent_id);
+            new_state.weekworkflow_set.splice(action.payload.throughparent_index,0,action.payload.throughparent_id);
             return new_state;
         case 'week/insertBelow':
             new_state = {...state}
@@ -167,7 +167,7 @@ export function workflowReducer(state={},action){
         case 'outcome_base/restoreSelf':
             var new_state = {...state};
             new_state.outcomeworkflow_set = state.outcomeworkflow_set.slice();
-            new_state.outcomeworkflow_set.push(action.payload.throughparent_id);
+            new_state.outcomeworkflow_set.splice(action.payload.throughparent_index,0,action.payload.throughparent_id);
             return new_state;
         case 'outcome_base/insertBelow':
         case 'outcome/newOutcome':
@@ -199,7 +199,7 @@ export function workflowReducer(state={},action){
         case 'column/restoreSelf':
             var new_state = {...state};
             new_state.columnworkflow_set = state.columnworkflow_set.slice();
-            new_state.columnworkflow_set.push(action.payload.throughparent_id);
+            new_state.columnworkflow_set.splice(action.payload.throughparent_index,0,action.payload.throughparent_id);
             return new_state;
         case 'node/newNode':
             if(state.columnworkflow_set.indexOf(action.payload.columnworkflow.id)>=0)return state;
@@ -481,7 +481,7 @@ export function weekReducer(state=[],action){
                     var new_state=state.slice();
                     new_state[i] = {...new_state[i]};
                     new_state[i].nodeweek_set = state[i].nodeweek_set.slice();
-                    new_state[i].nodeweek_set.push(action.payload.throughparent_id);
+                    new_state[i].nodeweek_set.splice(action.payload.throughparent_index,0,action.payload.throughparent_id);
                     return new_state;
                 }
             }
@@ -967,7 +967,7 @@ export function outcomeReducer(state=[],action){
                 if(state[i].id==action.payload.parent_id){
                     new_state[i] = {...new_state[i]};
                     new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
-                    new_state[i].child_outcome_links.push(action.payload.throughparent_id);
+                    new_state[i].child_outcome_links.splice(action.payload.throughparent_index,0,action.payload.throughparent_id);
                 }else if(state[i].id==action.payload.id){
                     new_state[i] = {...new_state[i],deleted:false};
                 }
@@ -1297,7 +1297,7 @@ export function childWorkflowReducer(state=[],action){
                     var new_state = state.slice()
                     new_state[i] = {...state[i]}
                     new_state[i].outcomeworkflow_set = state[i].outcomeworkflow_set.slice();
-                    new_state[i].outcomeworkflow_set.push(action.payload.throughparent_id);
+                    new_state[i].outcomeworkflow_set.splice(action.payload.throughparent_index,0,action.payload.throughparent_id);
                     return new_state;
                 }
             }
@@ -1376,7 +1376,7 @@ export function childOutcomeReducer(state=[],action){
                 if(state[i].id == action.payload.parent_id){
                     new_state[i] = {...new_state[i]};
                     new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
-                    new_state[i].child_outcome_links.push(action.payload.throughparent_id);
+                    new_state[i].child_outcome_links.splice(action.payload.throughparent_index,0,action.payload.throughparent_id);
                 }else if(state[i].id==action.payload.id){
                     new_state[i] = {...new_state[i],deleted:false};
                 }

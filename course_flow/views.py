@@ -4329,6 +4329,7 @@ def restore_self(request: HttpRequest) -> HttpResponse:
         extra_data = None
         parent_id = None
         throughparent_id = None
+        throughparent_index = None
         object_suffix = ""
         try:
             workflow = model.get_workflow()
@@ -4383,25 +4384,45 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                 many=True,
             ).data
         if object_type == "week":
-            throughparent_id = WeekWorkflow.objects.get(week=model).id
+            throughparent = WeekWorkflow.objects.get(week=model)
+            throughparent_id = throughparent.id
             parent_id = workflow.id
+            throughparent_index = workflow.weekworkflow_set.exclude(
+                week__deleted=True
+            ).filter(rank__lt=throughparent.rank).count()
         elif object_type == "column":
-            throughparent_id = ColumnWorkflow.objects.get(column=model).id
+            throughparent = ColumnWorkflow.objects.get(column=model)
+            throughparent_id = throughparent.id
+            throughparent_index = workflow.columnworkflow_set.exclude(
+                column__deleted=True
+            ).filter(rank__lt=throughparent.rank).count()
             extra_data = [x.id for x in Node.objects.filter(column=model)]
             parent_id = workflow.id
         elif object_type == "node":
-            throughparent_id = NodeWeek.objects.get(node=model).id
-            parent_id = NodeWeek.objects.get(node=model).week.id
+            throughparent = NodeWeek.objects.get(node=model)
+            throughparent_id = throughparent.id
+            throughparent_index = throughparent.week.nodeweek_set.exclude(
+                node__deleted=True
+            ).filter(rank__lt=throughparent.rank).count()
+            parent_id = throughparent.week.id
         elif object_type == "nodelink":
             throughparent_id = None
             parent_id = Node.objects.get(outgoing_links=model).id
         elif object_type == "outcome" and model.depth == 0:
-            throughparent_id = OutcomeWorkflow.objects.get(outcome=model).id
+            throughparent = OutcomeWorkflow.objects.get(outcome=model)
+            throughparent_id = throughparent.id
+            throughparent_index = workflow.outcomeworkflow_set.exclude(
+                outcome__deleted=True
+            ).filter(rank__lt=throughparent.rank).count()
             parent_id = workflow.id
             object_type = "outcome_base"
         elif object_type == "outcome":
-            throughparent_id = OutcomeOutcome.objects.get(child=model).id
-            parent_id = OutcomeOutcome.objects.get(child=model).parent.id
+            throughparent = OutcomeOutcome.objects.get(child=model)
+            throughparent_id = throughparent.id
+            throughparent_index = throughparent.parent.child_outcome_links.exclude(
+                child__deleted=True
+            ).filter(rank__lt=throughparent.rank).count()
+            parent_id = throughparent.parent.id
 
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
@@ -4409,7 +4430,7 @@ def restore_self(request: HttpRequest) -> HttpResponse:
         actions.dispatch_wf(
             workflow,
             actions.restoreSelfAction(
-                object_id, object_type, parent_id, throughparent_id, extra_data
+                object_id, object_type, parent_id, throughparent_id, throughparent_index, extra_data
             ),
         )
         if object_type == "outcome" or object_type == "outcome_base":
@@ -4420,6 +4441,7 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                     "child" + object_type,
                     parent_id,
                     throughparent_id,
+                    throughparent_index,
                     extra_data,
                 ),
             )
