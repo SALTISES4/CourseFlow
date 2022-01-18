@@ -1,6 +1,9 @@
 import time
+import asyncio
+import json
 
-from channels.testing import ChannelsLiveServerTestCase, HttpCommunicator
+from channels.testing import ChannelsLiveServerTestCase, HttpCommunicator, WebsocketCommunicator
+from channels.routing import URLRouter
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -10,6 +13,7 @@ from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
+from course_flow.routing import websocket_urlpatterns
 
 from course_flow.consumers import WorkflowUpdateConsumer
 from course_flow.models import (
@@ -113,11 +117,6 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.selenium.quit()
         super(SeleniumWorkflowsTestCase, self).tearDown()
 
-    #    async def test_my_consumer(self):
-    #        communicator = HttpCommunicator(WorkflowUpdateConsumer,"GET","/test/")
-    #        response = await communicator.get_response()
-    #        self.assertEqual(response["body"], b"test response")
-    #        self.assertEqual(response["status"], 200)
 
     def test_create_project_and_workflows(self):
         selenium = self.selenium
@@ -2230,7 +2229,30 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         
-class SeleniumDeleteRestoreTestCase(SeleniumWorkflowsTestCase):
+class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
+        else:
+            self.selenium = webdriver.Chrome()
+
+        super(SeleniumWorkflowsTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        selenium.get(self.live_server_url + "/home/")
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(SeleniumWorkflowsTestCase, self).tearDown()
+        
     def test_delete_restore_column(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -2749,9 +2771,109 @@ class SeleniumDeleteRestoreTestCase(SeleniumWorkflowsTestCase):
         )
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-title")), 0
-        )
+        )        
         
+async def connect_ws(ws):
+    return await ws.connect()
+        
+async def disconnect_ws(ws):
+    return await ws.disconnect()
     
+async def send_input_ws(ws,data):
+    return await ws.send_json_to(data)
+
+async def receive_output_ws(ws):
+    return await ws.receive_from(timeout=1)
+
+async def receive_nothing_ws(ws):
+    return await ws.receive_nothing(timeout=1)
     
+def async_to_sync_connect(ws):
+    loop = asyncio.get_event_loop()
+    coroutine = connect_ws(ws)
+    return loop.run_until_complete(coroutine)
+
+def async_to_sync_disconnect(ws):
+    loop = asyncio.get_event_loop()
+    coroutine = disconnect_ws(ws)
+    return loop.run_until_complete(coroutine)
+
+def async_to_sync_send_input(ws,data):
+    loop = asyncio.get_event_loop()
+    coroutine = send_input_ws(ws,data)
+    return loop.run_until_complete(coroutine)
+
+def async_to_sync_receive_output(ws):
+    loop = asyncio.get_event_loop()
+    coroutine = receive_output_ws(ws)
+    return loop.run_until_complete(coroutine)
     
+def async_to_sync_receive_nothing(ws):
+    loop = asyncio.get_event_loop()
+    coroutine = receive_nothing_ws(ws)
+    return loop.run_until_complete(coroutine)
+    
+class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
+
+    def test_permissions_connect_to_workflow_update_consumer(self):    
+        author = get_author()
+        user = login(self)
+        workflow_owned = Course.objects.create(author=user)
+        workflow_view = Course.objects.create(author=author)
+        workflow_edit = Course.objects.create(author=author)
+        workflow_published = Course.objects.create(author=author, published=True)
+        workflow_none = Course.objects.create(author=author)
+        ObjectPermission.objects.create(user=user,content_object=workflow_view,permission_type=ObjectPermission.PERMISSION_VIEW)
+        ObjectPermission.objects.create(user=user,content_object=workflow_edit,permission_type=ObjectPermission.PERMISSION_EDIT)
+        
+        application = URLRouter(websocket_urlpatterns)
+        headers = [(b'origin', b'...'), (b'cookie', self.client.cookies.output(header='', sep='; ').encode())]
+        
+        url = '/ws/update/'+str(workflow_owned.pk)+'/'
+        communicator = WebsocketCommunicator(application,url,headers)
+        communicator.scope["user"]=user
+        connected, subprotocol = async_to_sync_connect(communicator)
+        assert connected
+        my_input = async_to_sync_send_input(communicator,{"type":"micro_update","action":"my_action"})
+        output = json.loads(async_to_sync_receive_output(communicator))
+        self.assertEqual(output["action"],"my_action")
+        async_to_sync_disconnect(communicator)
+        
+        
+        url = '/ws/update/'+str(workflow_view.pk)+'/'
+        communicator = WebsocketCommunicator(application,url,headers)
+        communicator.scope["user"]=user
+        connected, subprotocol = async_to_sync_connect(communicator)
+        assert connected
+        my_input = async_to_sync_send_input(communicator,{"type":"micro_update","action":"my_action"})
+        output = async_to_sync_receive_nothing(communicator)
+        assert output
+        async_to_sync_disconnect(communicator)
+        
+        url = '/ws/update/'+str(workflow_edit.pk)+'/'
+        communicator = WebsocketCommunicator(application,url,headers)
+        communicator.scope["user"]=user
+        connected, subprotocol = async_to_sync_connect(communicator)
+        assert connected
+        my_input = async_to_sync_send_input(communicator,{"type":"micro_update","action":"my_action"})
+        output = json.loads(async_to_sync_receive_output(communicator))
+        self.assertEqual(output["action"],"my_action")
+        async_to_sync_disconnect(communicator)
+    
+        url = '/ws/update/'+str(workflow_published.pk)+'/'
+        communicator = WebsocketCommunicator(application,url,headers)
+        communicator.scope["user"]=user
+        connected, subprotocol = async_to_sync_connect(communicator)
+        assert connected
+        my_input = async_to_sync_send_input(communicator,{"type":"micro_update","action":"my_action"})
+        output = async_to_sync_receive_nothing(communicator)
+        assert output
+        async_to_sync_disconnect(communicator)
+        
+        url = '/ws/update/'+str(workflow_none.pk)+'/'
+        communicator = WebsocketCommunicator(application,url,headers)
+        communicator.scope["user"]=user
+        connected, subprotocol = async_to_sync_connect(communicator)
+        assert not connected
+        
     

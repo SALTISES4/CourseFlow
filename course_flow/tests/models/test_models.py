@@ -6,9 +6,11 @@ from celery.result import AsyncResult
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.urls import reverse
+from django.urls import reverse, re_path
+from channels.routing import URLRouter
 from rest_framework.renderers import JSONRenderer
 
+from course_flow.consumers import WorkflowUpdateConsumer
 from course_flow import tasks
 from course_flow.models import (
     Activity,

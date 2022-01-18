@@ -22,13 +22,15 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
                 workflow, self.user, ObjectPermission.PERMISSION_EDIT
             )
         except:
-            return False
+            return self.close()
 
         if self.VIEW or self.EDIT:
             async_to_sync(self.channel_layer.group_add)(
                 self.room_group_name, self.channel_name
             )
-            self.accept()
+            return self.accept()
+            
+        return self.close()
 
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
@@ -68,16 +70,22 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
             )
 
     def workflow_action(self, event):
+        if not self.VIEW:
+            return
         # Send message to WebSocket
         if event["type"] == "workflow_action":
             self.send(text_data=json.dumps(event))
 
     def lock_update(self, event):
+        if not self.VIEW:
+            return
         # Send message to WebSocket
         if event["type"] == "lock_update":
             self.send(text_data=json.dumps(event))
 
     def connection_update(self, event):
+        if not self.VIEW:
+            return
         # Send message to WebSocket
         if event["type"] == "connection_update":
             self.send(text_data=json.dumps(event))
