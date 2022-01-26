@@ -1747,9 +1747,21 @@ def save_serializer(serializer) -> HttpResponse:
 
 
 """
-Export  methods
+Import/Export  methods
 """
 
+
+@user_can_view(False)
+def get_export(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    task_type = json.loads(request.POST.get("exportType"))
+    subject = _("Your Outcomes Export")
+    text = _("Hi there! Here are the results of your recent export.")
+    task = tasks.async_send_export_email(
+        request.user.email, object_id, object_type, task_type, subject, text,
+    )
+    return JsonResponse({"action": "posted"})
 
 @user_can_view(False)
 def get_export(request: HttpRequest) -> HttpResponse:
