@@ -88,8 +88,6 @@ const mapStateToProps = (state,own_props)=>{
         case 1:
             let column_order = filterThenSortByID(state.columnworkflow,state.workflow.columnworkflow_set).map(columnworkflow=>columnworkflow.column);
             let columns_ordered = filterThenSortByID(state.column,column_order);
-            
-            
             let nodes_by_column={};
             for(let i=0;i<nodes_ordered.length;i++){
                 let node = nodes_ordered[i];

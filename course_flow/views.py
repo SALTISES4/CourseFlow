@@ -1,6 +1,7 @@
 import json
 import math
 import time
+import pandas as pd
 from functools import reduce
 from itertools import chain
 
@@ -1751,16 +1752,21 @@ Import/Export  methods
 """
 
 
-@user_can_view(False)
-def get_export(request: HttpRequest) -> HttpResponse:
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-    task_type = json.loads(request.POST.get("exportType"))
-    subject = _("Your Outcomes Export")
-    text = _("Hi there! Here are the results of your recent export.")
-    task = tasks.async_send_export_email(
-        request.user.email, object_id, object_type, task_type, subject, text,
-    )
+@user_can_edit(False)
+def import_data(request: HttpRequest) -> HttpResponse:
+    object_id = request.POST.get("objectID")
+    object_type = request.POST.get("objectType")
+    task_type = request.POST.get("importType")
+    file = request.FILES.get('myFile')
+    if file.size<1024*1024:
+        file_type = file.content_type
+        if file_type=="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            df = pd.read_excel(file)
+        elif file_type=="text/csv":
+            df = pd.read_csv(file)
+        tasks.async_import_file_data(object_id,object_type,task_type,df.to_json())
+    else:
+        return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
 
 @user_can_view(False)
@@ -2097,6 +2103,7 @@ def duplicate_column(column: Column, author: User) -> Column:
         parent_column=column,
         column_type=column.column_type,
         deleted=column.deleted,
+        colour=column.colour,
     )
 
     return new_column
@@ -2111,6 +2118,7 @@ def fast_column_copy(column, author, now):
         column_type=column.column_type,
         created_on=now,
         deleted=column.deleted,
+        colour=column.colour,
     )
 
 

@@ -6,6 +6,7 @@ import {updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicat
 import {gridMenuItemAdded} from "./Reducers";
 import {custom_text_base,Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
+import {ImportMenu} from "./ImportMenu";
 import {WorkflowTitle} from "./ComponentJSON";
 
 export class MessageBox extends React.Component{
@@ -19,6 +20,9 @@ export class MessageBox extends React.Component{
         );
         if(this.props.message_type=="share_menu")menu=(
             <ShareMenu data={this.props.message_data} actionFunction={this.props.actionFunction}/>
+        );
+        if(this.props.message_type=="import")menu=(
+            <ImportMenu data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
         return(
             <div class="screen-barrier" onClick={(evt)=>evt.stopPropagation()}>

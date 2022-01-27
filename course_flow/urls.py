@@ -225,6 +225,7 @@ def course_flow_patterns():
             name="get-parent-workflow-info",
         ),
         url(r"^exports/get/$", views.get_export, name="get-export",),
+        url(r"^imports/import-data/$", views.import_data, name="import-data",),
         url(
             r"^downloads/exports/get/(?P<pk>[0-9]+)/(?P<object_type>[a-z]+)/(?P<export_type>[a-z_]+)/$",
             views.get_export_download,

@@ -1,10 +1,7 @@
 from io import BytesIO
-from smtplib import SMTPException
 
 import pandas as pd
-from celery import shared_task
 from django.conf import settings
-from django.core.mail import EmailMessage
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -198,56 +195,6 @@ def get_workflow_outcomes_table(workflow):
     )
     pd.set_option("display.max_colwidth", None)
     return df
-
-
-@try_async
-@shared_task
-def async_send_export_email(user_email, pk, object_type, task_type, email_subject, email_text):
-    model_object = get_model_from_str(object_type).objects.get(pk=pk)
-    if task_type == "outcomes_excel":
-        file = get_outcomes_excel(model_object, object_type)
-        file_type = "xlsx"
-    elif task_type == "outcomes_csv":
-        file = get_outcomes_csv(model_object, object_type)
-        file_type = "csv"
-    elif task_type == "frameworks_excel":
-        file = get_course_frameworks_excel(model_object, object_type)
-        file_type = "xlsx"
-    elif task_type == "matrix_excel":
-        file = get_program_matrix_excel(model_object, object_type)
-        file_type = "xlsx"
-    elif task_type == "matrix_csv":
-        file = get_program_matrix_csv(model_object, object_type)
-        file_type = "csv"
-    filename = (
-        object_type
-        + "_"
-        + str(pk)
-        + "_"
-        + timezone.now().strftime(dateTimeFormatNoSpace())
-        + "."
-        + file_type
-    )
-    email = EmailMessage(
-        email_subject,
-        email_text,
-        settings.DEFAULT_FROM_EMAIL,
-        [user_email],
-    )
-    if file_type == "csv":
-        file_data = "text/csv"
-    elif file_type == "xlsx":
-        file_data = (
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
-    email.attach(
-        filename, file, file_data,
-    )
-    try:
-        email.send()
-    except SMTPException:
-        print("Email could not be sent")
 
 
 def get_outcomes_excel(model_object, object_type):

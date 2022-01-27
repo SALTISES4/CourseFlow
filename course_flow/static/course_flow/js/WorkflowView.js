@@ -29,6 +29,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         this.objectType="workflow";
         this.allowed_tabs=[0,1,2,3];
         this.exportDropDown = React.createRef();
+        this.importDropDown = React.createRef();
     }
     
     render(){
@@ -145,6 +146,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                         $("#floatbar")[0]
                     )}
                     {this.getExportButton()}
+                    {this.getImportButton()}
                     {reactDom.createPortal(
                         <div class="workflow-publication">
                             <img src={publish_icon}/><div>{publish_text}</div>
@@ -251,6 +253,41 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     clickExport(export_type,evt){
         evt.preventDefault();
         getExport(this.props.data.id,"workflow",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
+    }
+                     
+    getImportButton(){
+        let imports=[];
+        this.pushImport(imports,"outcomes",gettext("Import Outcomes"));
+        
+        
+        let import_button = (
+            <div id="import-button" class="floatbardiv hover-shade" onClick={()=>$(this.importDropDown.current).toggleClass("active")}><img src={iconpath+"download.svg"}/><div>{gettext("Import")}</div>
+                <div class="create-dropdown" ref={this.importDropDown}>
+                    {imports}
+                </div>
+            </div>
+            
+        )
+        
+        return (
+            reactDom.createPortal(
+                import_button,
+                $("#floatbar")[0]
+            )
+        )
+    }
+                     
+    pushImport(imports,import_type,text){
+        imports.push(
+            <a class="hover-shade" onClick={this.clickImport.bind(this,import_type)}>
+                {text}
+            </a>
+        )
+    }
+                     
+    clickImport(import_type,evt){
+        evt.preventDefault();
+        renderMessageBox({"object_id":this.props.data.id,"object_type":this.objectType,import_type:import_type},"import",()=>{this.setState({uploading:true})});
     }
     
 }
