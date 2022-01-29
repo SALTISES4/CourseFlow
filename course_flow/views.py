@@ -1773,6 +1773,7 @@ def duplicate_column(column: Column, author: User) -> Column:
         is_original=False,
         parent_column=column,
         column_type=column.column_type,
+        colour=column.colour,
     )
 
     return new_column
@@ -1786,6 +1787,7 @@ def fast_column_copy(column, author, now):
         parent_column=column,
         column_type=column.column_type,
         created_on=now,
+        colour=column.colour,
     )
 
 

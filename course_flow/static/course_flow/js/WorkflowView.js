@@ -122,7 +122,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class="workflow-header">
-                    <WorkflowForMenu workflow_data={data} selectAction={renderer.selection_manager.changeSelection.bind(this,null,this)}/>
+                    <WorkflowForMenu workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
                     <ParentWorkflowIndicator workflow_id={data.id}/>
                 </div>
                 <div class="workflow-view-select">

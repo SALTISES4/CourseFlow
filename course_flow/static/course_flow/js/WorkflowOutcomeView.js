@@ -88,7 +88,7 @@ const mapStateToProps = (state,own_props)=>{
             return {data:weeks_ordered.map((week,index)=>{return {title:(week.title||week.week_type_display+" "+(index+1)),nodes:(nodes_by_week[week.id]||[])};}),outcomeworkflows:state.workflow.outcomeworkflow_set};
         case 1:
             let columnworkflow_order = state.workflow.columnworkflow_set;
-            let column_order = state.columnworkflow.slice().sort(function(a,b){return(columnworkflow_order.indexOf(a.id)-columnworkflow_order.indexOf(b.id))}).map((columnworkflow)=>columnworkflow.week);
+            let column_order = state.columnworkflow.slice().sort(function(a,b){return(columnworkflow_order.indexOf(a.id)-columnworkflow_order.indexOf(b.id))}).map((columnworkflow)=>columnworkflow.column);
             let columns_ordered = state.column.slice().sort(function(a,b){return(column_order.indexOf(a.id)-column_order.indexOf(b.id))});
             let nodes_by_column={};
             for(let i=0;i<nodes_ordered.length;i++){

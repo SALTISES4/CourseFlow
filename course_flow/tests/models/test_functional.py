@@ -283,7 +283,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         selenium.find_element_by_id("project-publish-input").click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
-        time.sleep(1)
+        time.sleep(2)
         selenium.find_element_by_id("save-changes").click()
         assert (
             "new title"
@@ -1771,7 +1771,6 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         time.sleep(1)
 
         selenium.find_element_by_css_selector(".menu-create").click()
-        
 
     def test_grid_view(self):
         selenium = self.selenium
@@ -1991,7 +1990,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             ".workflow-toggle-favourite"
         ):
             button.click()
-        time.sleep(0.5)
+        time.sleep(2)
         self.assertEqual(
             Favourite.objects.filter(
                 user=self.user,
