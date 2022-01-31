@@ -106,6 +106,7 @@ from .utils import (
     get_parent_nodes_for_workflow,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
+    save_serializer,
 )
 
 
@@ -1610,17 +1611,6 @@ class ActivityStrategyCreateView(
         )
 
 
-def save_serializer(serializer) -> HttpResponse:
-    if serializer:
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({"action": "posted"})
-        else:
-            return JsonResponse({"action": "error"})
-    else:
-        return JsonResponse({"action": "error"})
-
-
 # def get_owned_courses(user: User):
 #    return Course.objects.filter(author=user, static=False).order_by(
 #        "-last_modified"
@@ -1752,20 +1742,24 @@ Import/Export  methods
 """
 
 
-@user_can_edit(False)
+#@user_can_edit(False)
 def import_data(request: HttpRequest) -> HttpResponse:
     object_id = request.POST.get("objectID")
     object_type = request.POST.get("objectType")
     task_type = request.POST.get("importType")
     file = request.FILES.get('myFile')
-    if file.size<1024*1024:
-        file_type = file.content_type
-        if file_type=="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-            df = pd.read_excel(file)
-        elif file_type=="text/csv":
-            df = pd.read_csv(file)
-        tasks.async_import_file_data(object_id,object_type,task_type,df.to_json())
-    else:
+    try:
+        if file.size<1024*1024:
+            file_type = file.content_type
+            if file_type=="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or file_type=="application/vnd.ms-excel":
+                df = pd.read_excel(file)
+            elif file_type=="text/csv":
+                df = pd.read_csv(file)
+            if len(df.index)>1000: raise ValidationError
+            tasks.async_import_file_data(object_id,object_type,task_type,df.to_json(),request.user.id)
+        else:
+            return JsonResponse({"action": "error"})
+    except:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
 

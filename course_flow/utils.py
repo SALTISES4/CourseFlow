@@ -2,6 +2,7 @@ import time
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.http import HttpResponse, JsonResponse
 
 from course_flow import models
 
@@ -162,6 +163,17 @@ def get_nondeleted_favourites(user):
         )
         | Q(object_id__in=models.Project.objects.filter(deleted=True))
     )
+
+
+def save_serializer(serializer) -> HttpResponse:
+    if serializer:
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            return JsonResponse({"action": "error"})
+    else:
+        return JsonResponse({"action": "error"})
 
 
 def benchmark(identifier, last_time):

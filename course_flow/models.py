@@ -6,6 +6,7 @@ from django.contrib.contenttypes.fields import (
     GenericRelation,
 )
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
@@ -798,6 +799,10 @@ class Workflow(models.Model):
     @property
     def author(self):
         return self.get_subclass().author
+    
+    @property
+    def importing(self):
+        return cache.get("workflow"+str(self.pk)+"importing",False)
 
     deleted = models.BooleanField(default=False)
     deleted_on = models.DateTimeField(default=timezone.now)

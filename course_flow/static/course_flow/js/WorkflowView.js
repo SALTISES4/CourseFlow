@@ -256,12 +256,15 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     }
                      
     getImportButton(){
+        let disabled;
+        if(this.props.data.importing)disabled=true;
         let imports=[];
-        this.pushImport(imports,"outcomes",gettext("Import Outcomes"));
+        this.pushImport(imports,"outcomes",gettext("Import Outcomes"),disabled);
         
-        
+        let button_class = "floatbardiv hover-shade";
+        if(disabled)button_class+=" disabled";
         let import_button = (
-            <div id="import-button" class="floatbardiv hover-shade" onClick={()=>$(this.importDropDown.current).toggleClass("active")}><img src={iconpath+"download.svg"}/><div>{gettext("Import")}</div>
+            <div id="import-button" class={button_class} onClick={()=>$(this.importDropDown.current).toggleClass("active")}><img src={iconpath+"upload.svg"}/><div>{gettext("Import")}</div>
                 <div class="create-dropdown" ref={this.importDropDown}>
                     {imports}
                 </div>
@@ -277,9 +280,11 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         )
     }
                      
-    pushImport(imports,import_type,text){
+    pushImport(imports,import_type,text,disabled){
+        let a_class = "hover-shade";
+        if(disabled)a_class=" disabled";
         imports.push(
-            <a class="hover-shade" onClick={this.clickImport.bind(this,import_type)}>
+            <a class={a_class} onClick={this.clickImport.bind(this,import_type)}>
                 {text}
             </a>
         )
@@ -287,7 +292,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                      
     clickImport(import_type,evt){
         evt.preventDefault();
-        renderMessageBox({"object_id":this.props.data.id,"object_type":this.objectType,import_type:import_type},"import",()=>{this.setState({uploading:true})});
+        renderMessageBox({"object_id":this.props.data.id,"object_type":this.objectType,import_type:import_type},"import",()=>{closeMessageBox()});
     }
     
 }
