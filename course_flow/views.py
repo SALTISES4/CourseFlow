@@ -1,10 +1,10 @@
 import json
 import math
 import time
-import pandas as pd
 from functools import reduce
 from itertools import chain
 
+import pandas as pd
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -25,7 +25,7 @@ from django.views.generic.edit import CreateView
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
-from course_flow import tasks
+from course_flow import export_functions, tasks
 
 from . import redux_actions as actions
 from .decorators import (
@@ -356,6 +356,7 @@ def get_my_projects(user, add):
         },
     }
     return data_package
+
 
 def get_my_shared(user):
     data_package = {
@@ -1046,6 +1047,7 @@ def myprojects_view(request):
     }
     return render(request, "course_flow/myprojects.html", context)
 
+
 @login_required
 def myshared_view(request):
     context = {
@@ -1119,7 +1121,11 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         )
         context["project_data"] = (
             JSONRenderer()
-            .render(ProjectSerializerShallow(project, context={"user": self.request.user}).data)
+            .render(
+                ProjectSerializerShallow(
+                    project, context={"user": self.request.user}
+                ).data
+            )
             .decode("utf-8")
         )
         context["read_only"] = JSONRenderer().render(True).decode("utf-8")
@@ -1372,23 +1378,33 @@ def get_workflow_data_flat(workflow, user):
         ).data
         if workflow.type == "course":
             data_flat["strategy"] = WorkflowSerializerShallow(
-                Course.objects.filter(author=user, is_strategy=True, deleted=False),
+                Course.objects.filter(
+                    author=user, is_strategy=True, deleted=False
+                ),
                 many=True,
             ).data
             data_flat["saltise_strategy"] = WorkflowSerializerShallow(
                 Course.objects.filter(
-                    from_saltise=True, is_strategy=True, published=True, deleted=False
+                    from_saltise=True,
+                    is_strategy=True,
+                    published=True,
+                    deleted=False,
                 ),
                 many=True,
             ).data
         elif workflow.type == "activity":
             data_flat["strategy"] = WorkflowSerializerShallow(
-                Activity.objects.filter(author=user, is_strategy=True, deleted=False),
+                Activity.objects.filter(
+                    author=user, is_strategy=True, deleted=False
+                ),
                 many=True,
             ).data
             data_flat["saltise_strategy"] = WorkflowSerializerShallow(
                 Activity.objects.filter(
-                    from_saltise=True, is_strategy=True, published=True, deleted=False
+                    from_saltise=True,
+                    is_strategy=True,
+                    published=True,
+                    deleted=False,
                 ),
                 many=True,
             ).data
@@ -1742,26 +1758,38 @@ Import/Export  methods
 """
 
 
-#@user_can_edit(False)
+@user_can_edit(False)
 def import_data(request: HttpRequest) -> HttpResponse:
     object_id = request.POST.get("objectID")
     object_type = request.POST.get("objectType")
     task_type = request.POST.get("importType")
-    file = request.FILES.get('myFile')
+    file = request.FILES.get("myFile")
     try:
-        if file.size<1024*1024:
+        if file.size < 1024 * 1024:
             file_type = file.content_type
-            if file_type=="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" or file_type=="application/vnd.ms-excel":
-                df = pd.read_excel(file)
-            elif file_type=="text/csv":
-                df = pd.read_csv(file)
-            if len(df.index)>1000: raise ValidationError
-            tasks.async_import_file_data(object_id,object_type,task_type,df.to_json(),request.user.id)
+            if (
+                file_type
+                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                or file_type == "application/vnd.ms-excel"
+            ):
+                df = pd.read_excel(file, keep_default_na=False)
+            elif file_type == "text/csv":
+                df = pd.read_csv(file, keep_default_na=False)
+            if len(df.index) > 1000:
+                raise ValidationError
+            tasks.async_import_file_data(
+                object_id,
+                object_type,
+                task_type,
+                df.to_json(),
+                request.user.id,
+            )
         else:
             return JsonResponse({"action": "error"})
     except:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
+
 
 @user_can_view(False)
 def get_export(request: HttpRequest) -> HttpResponse:
@@ -1787,19 +1815,31 @@ def get_export_download(
         return HttpResponse()
     model_object = get_model_from_str(object_type).objects.get(pk=object_id)
     if task_type == "outcomes_excel":
-        file = tasks.get_outcomes_excel(model_object, object_type)
+        file = export_functions.get_outcomes_excel(model_object, object_type)
         file_type = "xlsx"
     elif task_type == "outcomes_csv":
-        file = tasks.get_outcomes_csv(model_object, object_type)
+        file = export_functions.get_outcomes_csv(model_object, object_type)
         file_type = "csv"
     elif task_type == "frameworks_excel":
-        file = tasks.get_course_frameworks_excel(model_object, object_type)
+        file = export_functions.get_course_frameworks_excel(
+            model_object, object_type
+        )
         file_type = "xlsx"
     elif task_type == "matrix_excel":
-        file = tasks.get_program_matrix_excel(model_object, object_type)
+        file = export_functions.get_program_matrix_excel(
+            model_object, object_type
+        )
         file_type = "xlsx"
     elif task_type == "matrix_csv":
-        file = tasks.get_program_matrix_csv(model_object, object_type)
+        file = export_functions.get_program_matrix_csv(
+            model_object, object_type
+        )
+        file_type = "csv"
+    elif task_type == "nodes_excel":
+        file = export_functions.get_nodes_excel(model_object, object_type)
+        file_type = "xlsx"
+    elif task_type == "nodes_csv":
+        file = export_functions.get_nodes_csv(model_object, object_type)
         file_type = "csv"
     filename = (
         object_type
@@ -1889,12 +1929,12 @@ def get_workflow_child_data(request: HttpRequest) -> HttpResponse:
 @user_can_view("workflowPk")
 def get_workflow_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
-    try:
-        data_package = get_workflow_data_flat(
-            workflow.get_subclass(), request.user
-        )
-    except AttributeError:
-        return JsonResponse({"action": "error"})
+    # try:
+    data_package = get_workflow_data_flat(
+        workflow.get_subclass(), request.user
+    )
+    #    except AttributeError:
+    #        return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
@@ -2404,7 +2444,9 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
     return new_outcome
 
 
-def fast_create_strategy(week: Week, workflow: Workflow, author: User) -> Workflow:
+def fast_create_strategy(
+    week: Week, workflow: Workflow, author: User
+) -> Workflow:
 
     model = get_model_from_str(workflow.type)
 
@@ -2430,12 +2472,14 @@ def fast_create_strategy(week: Week, workflow: Workflow, author: User) -> Workfl
         nodeweeks = NodeWeek.objects.filter(
             week__workflow=workflow, week=week
         ).select_related("node", "week")
-        nodes = Node.objects.filter(week__workflow=workflow, week=week).select_related(
-            "column", "linked_workflow"
-        )
+        nodes = Node.objects.filter(
+            week__workflow=workflow, week=week
+        ).select_related("column", "linked_workflow")
 
         nodelinks = NodeLink.objects.filter(
-            source_node__week__workflow=workflow, source_node__week=week, target_node__week=week
+            source_node__week__workflow=workflow,
+            source_node__week=week,
+            target_node__week=week,
         ).select_related("source_node", "target_node")
 
         # Create the new content, and keep track of old_id:new_instance pairs in a dict
@@ -2450,10 +2494,8 @@ def fast_create_strategy(week: Week, workflow: Workflow, author: User) -> Workfl
             columns[i].id: new_col for i, new_col in enumerate(new_columns)
         }
 
-        weeks=[week]
-        Week.objects.bulk_create(
-            [fast_week_copy(week, author, now)]
-        )
+        weeks = [week]
+        Week.objects.bulk_create([fast_week_copy(week, author, now)])
         new_weeks = Week.objects.filter(author=author, created_on=now)
         new_weeks.update(is_strategy=True)
         id_dict["week"] = {
@@ -2486,7 +2528,7 @@ def fast_create_strategy(week: Week, workflow: Workflow, author: User) -> Workfl
             ]
         )
 
-        WeekWorkflow.objects.create(workflow=new_strategy,week=new_weeks[0])
+        WeekWorkflow.objects.create(workflow=new_strategy, week=new_weeks[0])
 
         NodeWeek.objects.bulk_create(
             [
@@ -2510,11 +2552,12 @@ def fast_create_strategy(week: Week, workflow: Workflow, author: User) -> Workfl
                 for nodelink in nodelinks
             ]
         )
-        
+
     except IndexError:
         return None
 
     return new_strategy
+
 
 def fast_duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
 
@@ -4163,7 +4206,7 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
             week.strategy_classification = 0
             week.save()
         else:
-            strategy = fast_create_strategy(week,workflow, request.user)
+            strategy = fast_create_strategy(week, workflow, request.user)
             strategy.title = week.title
             strategy.save()
             week.is_strategy = True
@@ -4401,23 +4444,29 @@ def restore_self(request: HttpRequest) -> HttpResponse:
             throughparent = WeekWorkflow.objects.get(week=model)
             throughparent_id = throughparent.id
             parent_id = workflow.id
-            throughparent_index = workflow.weekworkflow_set.exclude(
-                week__deleted=True
-            ).filter(rank__lt=throughparent.rank).count()
+            throughparent_index = (
+                workflow.weekworkflow_set.exclude(week__deleted=True)
+                .filter(rank__lt=throughparent.rank)
+                .count()
+            )
         elif object_type == "column":
             throughparent = ColumnWorkflow.objects.get(column=model)
             throughparent_id = throughparent.id
-            throughparent_index = workflow.columnworkflow_set.exclude(
-                column__deleted=True
-            ).filter(rank__lt=throughparent.rank).count()
+            throughparent_index = (
+                workflow.columnworkflow_set.exclude(column__deleted=True)
+                .filter(rank__lt=throughparent.rank)
+                .count()
+            )
             extra_data = [x.id for x in Node.objects.filter(column=model)]
             parent_id = workflow.id
         elif object_type == "node":
             throughparent = NodeWeek.objects.get(node=model)
             throughparent_id = throughparent.id
-            throughparent_index = throughparent.week.nodeweek_set.exclude(
-                node__deleted=True
-            ).filter(rank__lt=throughparent.rank).count()
+            throughparent_index = (
+                throughparent.week.nodeweek_set.exclude(node__deleted=True)
+                .filter(rank__lt=throughparent.rank)
+                .count()
+            )
             parent_id = throughparent.week.id
         elif object_type == "nodelink":
             throughparent_id = None
@@ -4425,17 +4474,23 @@ def restore_self(request: HttpRequest) -> HttpResponse:
         elif object_type == "outcome" and model.depth == 0:
             throughparent = OutcomeWorkflow.objects.get(outcome=model)
             throughparent_id = throughparent.id
-            throughparent_index = workflow.outcomeworkflow_set.exclude(
-                outcome__deleted=True
-            ).filter(rank__lt=throughparent.rank).count()
+            throughparent_index = (
+                workflow.outcomeworkflow_set.exclude(outcome__deleted=True)
+                .filter(rank__lt=throughparent.rank)
+                .count()
+            )
             parent_id = workflow.id
             object_type = "outcome_base"
         elif object_type == "outcome":
             throughparent = OutcomeOutcome.objects.get(child=model)
             throughparent_id = throughparent.id
-            throughparent_index = throughparent.parent.child_outcome_links.exclude(
-                child__deleted=True
-            ).filter(rank__lt=throughparent.rank).count()
+            throughparent_index = (
+                throughparent.parent.child_outcome_links.exclude(
+                    child__deleted=True
+                )
+                .filter(rank__lt=throughparent.rank)
+                .count()
+            )
             parent_id = throughparent.parent.id
 
     except (ProtectedError, ObjectDoesNotExist):
@@ -4444,7 +4499,12 @@ def restore_self(request: HttpRequest) -> HttpResponse:
         actions.dispatch_wf(
             workflow,
             actions.restoreSelfAction(
-                object_id, object_type, parent_id, throughparent_id, throughparent_index, extra_data
+                object_id,
+                object_type,
+                parent_id,
+                throughparent_id,
+                throughparent_index,
+                extra_data,
             ),
         )
         if object_type == "outcome" or object_type == "outcome_base":
@@ -4549,7 +4609,7 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
         # Delete the object
         with transaction.atomic():
             model.deleted = True
-            model.deleted_on=timezone.now()
+            model.deleted_on = timezone.now()
             model.save()
 
         if object_type == "outcome" or object_type == "outcome_base":

@@ -588,29 +588,29 @@ export function getParentWorkflowInfo(workflowPk,callBackFunction=()=>console.lo
 }
 
 //get exported data
-export function getExport(objectID,objectType,exportType,callBackFunction=()=>console.log("success")){
-    try{
-        $.post(post_paths.get_export,{
-            objectID:JSON.stringify(objectID),
-            objectType:JSON.stringify(objectType),
-            exportType:JSON.stringify(exportType),
-        }).done(function(data, status, xhr){
-            callBackFunction(data);
-        });
-    }catch(err){
-        fail_function();
-    }
-}
-
-//get exported data
 //export function getExport(objectID,objectType,exportType,callBackFunction=()=>console.log("success")){
 //    try{
-//        let a=document.createElement('a');
-//        document.body.append(a);
-//        a.href=get_paths.get_download_export.replace('0',objectID).replace('objecttype',objectType).replace('exporttype',exportType);
-//        a.click();
+//        $.post(post_paths.get_export,{
+//            objectID:JSON.stringify(objectID),
+//            objectType:JSON.stringify(objectType),
+//            exportType:JSON.stringify(exportType),
+//        }).done(function(data, status, xhr){
+//            callBackFunction(data);
+//        });
 //    }catch(err){
 //        fail_function();
 //    }
 //}
+
+//get exported data
+export function getExport(objectID,objectType,exportType,callBackFunction=()=>console.log("success")){
+    try{
+        let a=document.createElement('a');
+        document.body.append(a);
+        a.href=get_paths.get_download_export.replace('0',objectID).replace('objecttype',objectType).replace('exporttype',exportType);
+        a.click();
+    }catch(err){
+        fail_function();
+    }
+}
 

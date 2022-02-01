@@ -85,7 +85,6 @@ class TitleSerializerMixin:
         ]
 
 
-
 class DescriptionSerializerTextMixin(serializers.Serializer):
     description = serializers.SerializerMethodField()
 
@@ -145,7 +144,8 @@ class NodeLinkSerializerShallow(
     class Meta:
         model = NodeLink
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "source_node",
@@ -153,7 +153,7 @@ class NodeLinkSerializerShallow(
             "source_port",
             "target_port",
         ]
-        
+
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def create(self, validated_data):
@@ -187,7 +187,8 @@ class NodeSerializerShallow(
     class Meta:
         model = Node
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -209,10 +210,18 @@ class NodeSerializerShallow(
             "is_dropped",
             "comments",
         ]
-        
+
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def get_columnworkflow(self, instance):
+        if instance.column is None:
+            instance.column = (
+                instance.get_workflow()
+                .columns.filter(deleted=False)
+                .order_by("columnworkflow__rank")
+                .first()
+            )
+            instance.save()
         if instance.column.deleted:
             workflow = instance.get_workflow()
             return (
@@ -229,6 +238,14 @@ class NodeSerializerShallow(
             ).id
 
     def get_column(self, instance):
+        if instance.column is None:
+            instance.column = (
+                instance.get_workflow()
+                .columns.filter(deleted=False)
+                .order_by("columnworkflow__rank")
+                .first()
+            )
+            instance.save()
         if instance.column.deleted:
             workflow = instance.get_workflow()
             return (
@@ -306,7 +323,8 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
     class Meta:
         model = Workflow
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "title",
             "description",
             "code",
@@ -318,7 +336,7 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
             "time_general_hours",
             "time_specific_hours",
         ]
-        
+
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
 
@@ -344,7 +362,8 @@ class ColumnSerializerShallow(
     class Meta:
         model = Column
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "column_type",
@@ -353,7 +372,7 @@ class ColumnSerializerShallow(
             "visible",
             "comments",
         ]
-        
+
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def create(self, validated_data):
@@ -382,7 +401,8 @@ class WeekSerializerShallow(
     class Meta:
         model = Week
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -394,7 +414,7 @@ class WeekSerializerShallow(
             "strategy_classification",
             "comments",
         ]
-        
+
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def get_nodeweek_set(self, instance):
@@ -477,7 +497,8 @@ class ProjectSerializerShallow(
     class Meta:
         model = Project
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -503,7 +524,7 @@ class ProjectSerializerShallow(
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
-    
+
     def get_favourite(self, instance):
         user = self.context.get("user")
         if Favourite.objects.filter(
@@ -514,7 +535,7 @@ class ProjectSerializerShallow(
             return True
         else:
             return False
-        
+
     def get_terminology_dict(self, instance):
         return [
             {
@@ -555,7 +576,8 @@ class OutcomeSerializerShallow(
     class Meta:
         model = Outcome
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "code",
@@ -688,7 +710,8 @@ class WorkflowSerializerShallow(
     class Meta:
         model = Workflow
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -738,19 +761,22 @@ class WorkflowSerializerShallow(
         if instance.author is not None:
             return instance.author.id
         return None
-    
+
     def get_favourite(self, instance):
-        user = self.context.get("user",None)
-        if user is None: return False
+        user = self.context.get("user", None)
+        if user is None:
+            return False
         if Favourite.objects.filter(
             user=user,
-            content_type=ContentType.objects.get_for_model(instance.get_subclass()),
+            content_type=ContentType.objects.get_for_model(
+                instance.get_subclass()
+            ),
             object_id=instance.id,
         ):
             return True
         else:
             return False
-        
+
     def get_strategy_icon(self, instance):
         if instance.is_strategy:
             return instance.weeks.first().strategy_classification
@@ -825,7 +851,8 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
     class Meta:
         model = Program
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -878,7 +905,8 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
     class Meta:
         model = Course
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -931,7 +959,8 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
     class Meta:
         model = Activity
         fields = [
-            "deleted", "deleted_on",
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -1187,6 +1216,50 @@ class OutcomeExportSerializer(
                     self.get_code(outcomeoutcome.parent) + "." + instance.code
                 )
 
+
+class WeekExportSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerTextMixin,
+    DescriptionSerializerTextMixin,
+):
+    class Meta:
+        model = Week
+        fields = [
+            "id",
+            "title",
+            "description",
+            "type",
+        ]
+
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, instance):
+        return "week"
+
+
+class NodeExportSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerTextMixin,
+    DescriptionSerializerTextMixin,
+):
+    class Meta:
+        model = Node
+        fields = [
+            "id",
+            "title",
+            "description",
+            "column_order",
+            "type",
+        ]
+
+    column_order = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+
+    def get_column_order(self, instance):
+        return str(ColumnWorkflow.objects.get(column=instance.column).rank)
+
+    def get_type(self, instance):
+        return "node"
 
 
 #

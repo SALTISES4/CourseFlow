@@ -262,6 +262,7 @@ export class WorkflowRenderer{
     connection_opened(){
         getWorkflowData(workflow_model_id,(response)=>{
             let data_flat = response.data_package;
+            console.log(data_flat);
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
             this.render($("#container"));
             this.create_connection_bar();

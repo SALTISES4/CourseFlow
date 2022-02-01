@@ -223,6 +223,8 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         if(this.props.data.type=="course")this.pushExport(exports,"frameworks_excel",gettext("Framework to .xls"));
         if(this.props.data.type=="program")this.pushExport(exports,"matrix_excel",gettext("Matrix to .xls"));
         if(this.props.data.type=="program")this.pushExport(exports,"matrix_csv",gettext("Matrix to .csv"));
+        this.pushExport(exports,"nodes_csv",gettext("Nodes to .csv"));
+        this.pushExport(exports,"nodes_excel",gettext("Nodes to .xls"));
         
         
         let export_button = (
@@ -260,6 +262,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         if(this.props.data.importing)disabled=true;
         let imports=[];
         this.pushImport(imports,"outcomes",gettext("Import Outcomes"),disabled);
+        this.pushImport(imports,"nodes",gettext("Import Nodes"),disabled);
         
         let button_class = "floatbardiv hover-shade";
         if(disabled)button_class+=" disabled";

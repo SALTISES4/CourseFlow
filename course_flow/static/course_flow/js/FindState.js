@@ -46,7 +46,8 @@ export const getTermByID = (state,id)=>{
             for(var j=0;j<nodeweeks.length;j++){
                 let node_week = getNodeWeekByID(state,nodeweeks[j]).data;
                 let node = getNodeByID(state,node_week.node).data;
-                nodes_by_column[node.column].push(nodeweeks[j]);
+                if(node.column)nodes_by_column[node.column].push(nodeweeks[j]);
+                else nodes_by_column[nodes_by_column.keys()[0]].push(nodeweeks[j]);
             }
             return {
                 data:week,
