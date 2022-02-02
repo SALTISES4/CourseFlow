@@ -35,7 +35,7 @@ class AlignmentView extends ComponentJSON{
         let alignment_reverse_block;
 
         if(view_buttons.length==0){
-            view_buttons="No outcomes have been added yet. Use the Edit Outcomes menu to get started";
+            view_buttons=gettext("No outcomes have been added yet. Use the Edit Outcomes menu to get started");
         }else{
             outcomes_block=(
                 <AlignmentOutcomesBlock workflow_type={data.type} renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
@@ -85,7 +85,7 @@ class AlignmentOutcomesBlock extends React.Component{
         return(
             <div class="alignment-block">
                 <h3>{titlestr}:</h3>
-                <SimpleOutcomeView renderer={this.props.renderer} objectID={data.id}/>
+                <OutcomeView renderer={this.props.renderer} objectID={data.id}/>
             </div>
         );
     }
@@ -300,7 +300,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
                     return (
                         <div class="child-outcome">
                             <div class="half-width alignment-column">
-                                <SimpleOutcomeView get_alternate="child" objectID={child_outcome.id} comments={true} edit={true} renderer={this.props.renderer}/>
+                                <OutcomeView get_alternate="child" objectID={child_outcome.id} comments={true} edit={true} renderer={this.props.renderer}/>
                             </div>
                             <div class="half-width alignment-column">
                                 {parent_outcomes}

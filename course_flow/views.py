@@ -3867,9 +3867,9 @@ Reorder methods
 
 
 # Insert a model via its throughmodel
-@user_can_edit(False)
-@user_can_edit_or_none(False, get_parent=True)
-@user_can_edit_or_none("columnPk")
+#@user_can_edit(False)
+#@user_can_edit_or_none(False, get_parent=True)
+#@user_can_edit_or_none("columnPk")
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -3948,13 +3948,13 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 through_type, old_through_id, new_through.id
             ),
         )
-    if object_type == "outcome":
-        actions.dispatch_to_parent_wf(
-            workflow,
-            actions.insertBelowAction(
-                "child" + through_type, old_through_id, new_through.id
-            ),
-        )
+        if object_type == "outcome":
+            actions.dispatch_to_parent_wf(
+                workflow,
+                actions.changeThroughID(
+                    "child" + through_type, old_through_id, new_through.id
+                ),
+            )
     actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
     return JsonResponse({"action": "posted"})
 

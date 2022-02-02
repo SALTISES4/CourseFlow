@@ -82,20 +82,20 @@ def async_send_export_email(
 def async_import_file_data(pk, object_type, task_type, file_json, user_id):
     model_object = get_model_from_str(object_type).objects.get(pk=pk)
     user = User.objects.get(pk=user_id)
-    actions.dispatch_wf(
-        model_object,
-        actions.changeField(pk, "workflow", {"importing": True}, False),
-    )
-    print(task_type)
+    if object_type=="workflow":
+        actions.dispatch_wf(
+            model_object,
+            actions.changeField(pk, "workflow", {"importing": True}, False),
+        )
     cache.set(object_type + str(pk) + "importing", True, 300)
     df = pd.read_json(file_json)
-    # try:
-    if task_type == "outcomes":
-        import_functions.import_outcomes(df, model_object, user)
-    if task_type == "nodes":
-        import_functions.import_nodes(df, model_object, user)
-    #    except:
-    #        pass
+    try:
+        if task_type == "outcomes":
+            import_functions.import_outcomes(df, model_object, user)
+        if task_type == "nodes":
+            import_functions.import_nodes(df, model_object, user)
+    except:
+        pass
     cache.delete(object_type + str(pk) + "importing")
     if object_type == "workflow":
         actions.dispatch_wf(

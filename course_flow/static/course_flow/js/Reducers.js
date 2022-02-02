@@ -1431,6 +1431,31 @@ export function childOutcomeReducer(state=[],action){
                 }
             }
             return state;
+        case 'childoutcomeoutcome/movedTo':
+            let old_parent, old_parent_index,new_parent,new_parent_index;
+            for(var i=0;i<state.length;i++){
+                if(state[i].child_outcome_links.indexOf(action.payload.id)>=0){
+                    old_parent_index=i;
+                    old_parent={...state[i]};
+                }
+                if(state[i].id==action.payload.new_parent){
+                    new_parent_index=i;
+                    new_parent={...state[i]};
+                }
+            }
+            var new_index = action.payload.new_index;
+            var new_state = state.slice();
+            old_parent.child_outcome_links = old_parent.child_outcome_links.slice();
+            old_parent.child_outcome_links.splice(old_parent.child_outcome_links.indexOf(action.payload.id),1);
+            if(old_parent_index==new_parent_index){
+                old_parent.child_outcome_links.splice(new_index,0,action.payload.id);
+            }else{
+                new_parent.child_outcome_links = new_parent.child_outcome_links.slice();
+                new_parent.child_outcome_links.splice(new_index,0,action.payload.id);
+                new_state.splice(new_parent_index,1,new_parent);
+            }
+            new_state.splice(old_parent_index,1,old_parent);
+            return new_state;
         //The following two cases are due to the fact that we can alter child outcomes at the parent workflow level. That means when we try to update the react locally, it will be attempting to look for just an "outcome"
         case 'outcome/changeField':
         case 'outcome_base/changeField':

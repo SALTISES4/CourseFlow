@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import pandas as pd
 
 from celery.result import AsyncResult
 from django.contrib.contenttypes.models import ContentType
@@ -45,6 +46,10 @@ from course_flow.utils import (
 from .utils import check_order, get_author, login, make_object
 
 TESTJSON_FILENAME = os.path.join(os.path.dirname(__file__), "test_json.json")
+TESTNODESXLS_FILENAME = os.path.join(os.path.dirname(__file__), "test_nodes.xls")
+TESTNODESCSV_FILENAME = os.path.join(os.path.dirname(__file__), "test_nodes.csv")
+TESTOUTCOMESXLS_FILENAME = os.path.join(os.path.dirname(__file__), "test_outcomes.xls")
+TESTOUTCOMESCSV_FILENAME = os.path.join(os.path.dirname(__file__), "test_outcomes.csv")
 
 
 class ModelViewTest(TestCase):
@@ -3077,3 +3082,96 @@ class ExportTest(TestCase):
         tasks.async_send_export_email(
             author.email, project.id, "project", "matrix_csv","subject","text",
         )
+        
+        
+    def test_export_nodes(self):
+        author = get_author()
+        user = login(self)
+        project = make_object("project", author)
+        for workflow_type in ["activity", "course", "program"]:
+            workflow = make_object(workflow_type, author)
+            WorkflowProject.objects.create(workflow=workflow, project=project)
+            week = workflow.weeks.first()
+            node = week.nodes.create(author=author,title="my title",description="my description")
+
+            tasks.async_send_export_email(
+                author.email, workflow.id, "workflow", "nodes_csv","subject","text"
+            )
+            tasks.async_send_export_email(author.email, workflow.id, "workflow", "nodes_excel","subject","text")
+
+        tasks.async_send_export_email(author.email, project.id, "project", "nodes_excel","subject","text")
+        tasks.async_send_export_email(author.email, project.id, "project", "nodes_csv","subject","text")
+
+class ImportTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        
+    def test_import_nodes_xls(self):
+        user = login(self)
+        workflow = Course.objects.create(author=user)
+        filecontents = open(TESTNODESXLS_FILENAME,mode="rb")
+        file_json = pd.read_excel(filecontents,keep_default_na=False).to_json()
+        tasks.async_import_file_data(workflow.pk,"workflow","nodes",file_json,user.id)
+        self.assertEqual(Node.objects.filter(week__workflow=workflow).count(),3)
+        self.assertEqual(Column.objects.filter(workflow=workflow).count(),4)
+        self.assertEqual(Week.objects.filter(workflow=workflow).count(),2)
+        self.assertEqual(workflow.weeks.first().title,"Week 1")
+        self.assertEqual(workflow.weeks.first().description,"My week")
+        self.assertEqual(workflow.weeks.all()[1].title,None)
+        self.assertEqual(Node.objects.get(pk=1).column,workflow.columns.all()[1])
+        self.assertEqual(Node.objects.get(pk=2).column,workflow.columns.all()[3])
+        self.assertEqual(Node.objects.get(pk=3).column,workflow.columns.all()[0])
+        
+    def test_import_nodes_csv(self):
+        user = login(self)
+        workflow = Course.objects.create(author=user)
+        filecontents = open(TESTNODESCSV_FILENAME,mode="rb")
+        file_json = pd.read_csv(filecontents,keep_default_na=False).to_json()
+        tasks.async_import_file_data(workflow.pk,"workflow","nodes",file_json,user.id)
+        self.assertEqual(Node.objects.filter(week__workflow=workflow).count(),3)
+        self.assertEqual(Column.objects.filter(workflow=workflow).count(),4)
+        self.assertEqual(Week.objects.filter(workflow=workflow).count(),2)
+        self.assertEqual(workflow.weeks.first().title,"Week 1")
+        self.assertEqual(workflow.weeks.first().description,"My week")
+        self.assertEqual(workflow.weeks.all()[1].title,None)
+        self.assertEqual(Node.objects.get(pk=1).column,workflow.columns.all()[1])
+        self.assertEqual(Node.objects.get(pk=2).column,workflow.columns.all()[3])
+        self.assertEqual(Node.objects.get(pk=3).column,workflow.columns.all()[0])
+        
+    def test_import_outcomes_xls(self):
+        user = login(self)
+        workflow = Course.objects.create(author=user)
+        filecontents = open(TESTOUTCOMESXLS_FILENAME,mode="rb")
+        file_json = pd.read_excel(filecontents,keep_default_na=False).to_json()
+        tasks.async_import_file_data(workflow.pk,"workflow","outcomes",file_json,user.id)
+        self.assertEqual(Outcome.objects.all().count(),7)
+        self.assertEqual(Outcome.objects.filter(depth=0).count(),2)
+        self.assertEqual(Outcome.objects.filter(depth=1).count(),3)
+        self.assertEqual(Outcome.objects.filter(depth=1,code="").count(),3)
+        self.assertEqual(Outcome.objects.filter(depth=2).count(),2)
+        self.assertEqual(Outcome.objects.filter(depth=2,code="").count(),2)
+        self.assertEqual(Outcome.objects.filter(title="Depth 1").count(),3)
+        self.assertEqual(Outcome.objects.filter(title="Depth 2").count(),2)
+        self.assertEqual(Outcome.objects.filter(title="Base Outcome").count(),1)
+        self.assertEqual(Outcome.objects.get(title="Base Outcome").description,"my description")
+        self.assertEqual(Outcome.objects.get(title="Base Outcome").code,"01XX")
+        
+    def test_import_outcomes_csv(self):
+        user = login(self)
+        workflow = Course.objects.create(author=user)
+        filecontents = open(TESTOUTCOMESCSV_FILENAME,mode="rb")
+        file_json = pd.read_csv(filecontents,keep_default_na=False).to_json()
+        tasks.async_import_file_data(workflow.pk,"workflow","outcomes",file_json,user.id)
+        self.assertEqual(Outcome.objects.all().count(),7)
+        self.assertEqual(Outcome.objects.filter(depth=0).count(),2)
+        self.assertEqual(Outcome.objects.filter(depth=1).count(),3)
+        self.assertEqual(Outcome.objects.filter(depth=1,code="").count(),3)
+        self.assertEqual(Outcome.objects.filter(depth=2).count(),2)
+        self.assertEqual(Outcome.objects.filter(depth=2,code="").count(),2)
+        self.assertEqual(Outcome.objects.filter(title="Depth 1").count(),3)
+        self.assertEqual(Outcome.objects.filter(title="Depth 2").count(),2)
+        self.assertEqual(Outcome.objects.filter(title="Base Outcome").count(),1)
+        self.assertEqual(Outcome.objects.get(title="Base Outcome").description,"my description")
+        self.assertEqual(Outcome.objects.get(title="Base Outcome").code,"01XX")
+        
+        

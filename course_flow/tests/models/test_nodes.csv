@@ -1,0 +1,6 @@
+type,title,description,column_order,id
+week,"Week 1","My week",,1
+node,"Node 1",,1,1
+node,"Node 2",,3,2
+week,,,,2
+node,"Node 3",,4,3

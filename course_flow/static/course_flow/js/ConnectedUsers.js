@@ -42,7 +42,7 @@ export class ConnectionBar extends React.Component{
     
     connection_update(connected=true){
         this.props.updateSocket.send(JSON.stringify({type:"connection_update",user_data:{user_id:user_id,user_name:user_name,user_colour:myColour,connected:connected}}))
-        setTimeout(this.connection_update.bind(this),10000);
+        setTimeout(this.connection_update.bind(this),30000);
     }
     
     connection_update_received(user_data){
@@ -55,13 +55,13 @@ export class ConnectionBar extends React.Component{
                     clearTimeout(connected_users[i].timeout);
                     connected_users[i] = {...user_data,timeout:setTimeout(
                         this.removeConnection.bind(this,user_data)
-                    ,15000)}
+                    ,60000)}
                     break;
                 }
             }
             if(!found_user)connected_users.push({...user_data,timeout:setTimeout(
                 this.removeConnection.bind(this,user_data)
-            ,15000)});
+            ,60000)});
             this.setState({connected_users:connected_users});
         }else this.removeConnection(user_data);
     }

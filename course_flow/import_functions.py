@@ -52,11 +52,10 @@ def import_outcomes(df, workflow, user):
 
     last_outcome = None
     for index, row in df.iterrows():
-        code = row["code"]
+        code = str(row["code"])
         if code is not None and isinstance(code, str) and code.find(".") >= 0:
             code = re.search("([^.]+$)", code).group(0)
         title = row["title"]
-        print(title)
         description = row["description"]
 
         try:
@@ -122,7 +121,7 @@ def import_outcomes(df, workflow, user):
                     rank = OutcomeWorkflow.objects.get(outcome=outcome).rank
                 else:
                     rank = OutcomeOutcome.objects.get(child=outcome).rank
-                if int(code) == rank:
+                if int(code) == rank or int(code) == rank+1:
                     outcome.code = ""
                     outcome.save()
 
