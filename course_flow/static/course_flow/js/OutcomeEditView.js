@@ -5,7 +5,7 @@ import {ComponentJSON, OutcomeTitle} from "./ComponentJSON";
 import OutcomeWorkflowView from "./OutcomeWorkflowView";
 import {OutcomeBarOutcomeView, OutcomeBarOutcomeViewUnconnected} from "./OutcomeView";
 import OutcomeView from "./OutcomeView";
-import {getParentWorkflowByID,getParentOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID} from "./FindState";
+import {getParentWorkflowByID,getOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID} from "./FindState";
 import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents';
 import {newOutcome} from "./PostFunctions";
 import * as Constants from "./Constants";
@@ -23,7 +23,7 @@ class OutcomeEditView extends ComponentJSON{
         var selector = this;
         
         let outcomes = data.outcomeworkflow_set.map(outcomeworkflow=>
-            <OutcomeWorkflowView objectID={outcomeworkflow} parentID={data.id} renderer={this.props.renderer}/>
+            <OutcomeWorkflowView objectID={outcomeworkflow} parentID={data.id} renderer={this.props.renderer} show_horizontal={true}/>
         );
         if(outcomes.length==0)outcomes=(
             <div class="emptytext">{gettext("Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.")}</div>
@@ -103,7 +103,7 @@ class ParentOutcomeNodeViewUnconnected extends ComponentJSON{
     }
 }
 const mapParentOutcomeNodeStateToProps = (state,own_props)=>(
-    getParentOutcomeNodeByID(state,own_props.objectID)
+    getOutcomeNodeByID(state,own_props.objectID)
 )
 export const ParentOutcomeNodeView = connect(
     mapParentOutcomeNodeStateToProps,
@@ -158,7 +158,7 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected{
     
 }
 const mapParentOutcomeStateToProps = (state,own_props)=>(
-    getOutcomeByID(state,own_props.objectID,"parent")
+    getOutcomeByID(state,own_props.objectID)
 )
 export const ParentOutcomeView = connect(
     mapParentOutcomeStateToProps,

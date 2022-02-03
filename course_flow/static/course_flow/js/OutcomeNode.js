@@ -3,7 +3,7 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON";
 import {SimpleOutcomeView} from "./OutcomeView";
-import {getOutcomeNodeByID, getTableOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getNodeByID, getChildWorkflowByID, getChildOutcomeWorkflowByID} from "./FindState";
+import {getOutcomeNodeByID, getTableOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getNodeByID, getChildWorkflowByID, getOutcomeWorkflowByID} from "./FindState";
 import {updateOutcomenodeDegree} from "./PostFunctions";
 import * as Constants from "./Constants";
 import {TableChildWorkflowView} from "./OutcomeHorizontalLink"
@@ -306,7 +306,7 @@ const mapTableOutcomeGroupStateToProps = (state,own_props)=>{
             if(linked_workflow==null)continue;
             let outcomeworkflows = getChildWorkflowByID(state,linked_workflow).data.outcomeworkflow_set;
             for(let j=0;j<outcomeworkflows.length;j++){
-                child_outcomes.push(getChildOutcomeWorkflowByID(state,outcomeworkflows[j]).data.outcome);
+                child_outcomes.push(getOutcomeWorkflowByID(state,outcomeworkflows[j]).data.outcome);
             }
         }
         return {child_outcomes:child_outcomes};

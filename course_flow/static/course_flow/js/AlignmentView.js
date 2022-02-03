@@ -71,7 +71,7 @@ class AlignmentView extends ComponentJSON{
 }
 const mapAlignmentStateToProps = state=>({
     data:state.workflow,
-    outcomes:state.outcomeworkflow.map(outcomeworkflow=>getOutcomeByID(state,outcomeworkflow.outcome,null,true)).filter(x=>!x.data.deleted)
+    outcomes:state.outcomeworkflow.filter(outcomeworkflow=>state.workflow.outcomeworkflow_set.indexOf(outcomeworkflow.id)>=0).map(outcomeworkflow=>getOutcomeByID(state,outcomeworkflow.outcome)).filter(x=>!x.data.deleted)
 });
 export default connect(
     mapAlignmentStateToProps,
@@ -232,19 +232,19 @@ const mapAlignmentHorizontalStateToProps = (state,own_props)=>{
     let all_outcomes = state.outcome.filter(outcome=>all_outcome_ids.includes(outcome.id));
     
     let outcomes = all_outcomes.map(parent_outcome=>{
-        let outcomehorizontallinks = state.child_outcomehorizontallink.filter(link=>parent_outcome.id==link.parent_outcome);
+        let outcomehorizontallinks = state.outcomehorizontallink.filter(link=>parent_outcome.id==link.parent_outcome);
         let child_outcomes = outcomehorizontallinks.map(link=>{
-            for(let i=0;i<state.child_outcome.length;i++){
-                if(state.child_outcome[i].id==link.outcome)return state.child_outcome[i];
+            for(let i=0;i<state.outcome.length;i++){
+                if(state.outcome[i].id==link.outcome)return state.outcome[i];
             }
             return null;
         });
         let nodes = child_outcomes.map(child_outcome=>{
             if(!child_outcome)return null;
             let workflow_id=null;
-            for(let i=0;i<state.child_outcomeworkflow.length;i++){
-                if(state.child_outcomeworkflow[i].outcome==child_outcome.id){
-                    workflow_id=state.child_outcomeworkflow[i].workflow;
+            for(let i=0;i<state.outcomeworkflow.length;i++){
+                if(state.outcomeworkflow[i].outcome==child_outcome.id){
+                    workflow_id=state.outcomeworkflow[i].workflow;
                     break;
                 }
             }
@@ -277,6 +277,7 @@ export const AlignmentHorizontalBlock = connect(
 
 class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
     render(){
+        console.log("Trying to create an alignmentreverseblock");
         let data = this.props.data;
         let weekworkflows = this.props.weekworkflows.map(weekworkflow=>{
             let week = weekworkflow.week;
@@ -300,7 +301,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
                     return (
                         <div class="child-outcome">
                             <div class="half-width alignment-column">
-                                <OutcomeView get_alternate="child" objectID={child_outcome.id} comments={true} edit={true} renderer={this.props.renderer}/>
+                                <OutcomeView objectID={child_outcome.id} comments={true} edit={true} renderer={this.props.renderer}/>
                             </div>
                             <div class="half-width alignment-column">
                                 {parent_outcomes}
@@ -351,6 +352,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
     
 }
 const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
+    console.log("getting reverse block state");
     let outcome = own_props.data;
     let all_outcome_ids = [outcome.id];
     getDescendantOutcomes(state,outcome,all_outcome_ids);
@@ -365,8 +367,8 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
             for(let i=0;i<state.child_workflow.length;i++){
                 if(state.child_workflow[i].id==node.linked_workflow){
                     child_outcome_ids=state.child_workflow[i].outcomeworkflow_set.map(outcomeworkflow_id=>{
-                        for(let j=0;j<state.child_outcomeworkflow.length;j++){
-                            if(state.child_outcomeworkflow[j].id==outcomeworkflow_id)return state.child_outcomeworkflow[j].outcome;
+                        for(let j=0;j<state.outcomeworkflow.length;j++){
+                            if(state.outcomeworkflow[j].id==outcomeworkflow_id)return state.outcomeworkflow[j].outcome;
                         }
                         return null;
                     })
@@ -375,9 +377,9 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
                 }
             }
             
-            child_outcomes = Constants.filterThenSortByID(state.child_outcome,child_outcome_ids);
+            child_outcomes = Constants.filterThenSortByID(state.outcome,child_outcome_ids);
             parent_outcomes = child_outcomes.map(child_outcome=>{
-                let horizontallinks = Constants.filterThenSortByID(state.child_outcomehorizontallink,child_outcome.outcome_horizontal_links_unique);
+                let horizontallinks = Constants.filterThenSortByID(state.outcomehorizontallink,child_outcome.outcome_horizontal_links_unique);
                 let my_parent_outcomes=horizontallinks.map(link=>{
                     for(let i=0;i<all_outcomes.length;i++){
                         if(all_outcomes[i].id==link.parent_outcome)return all_outcomes[i];
@@ -420,6 +422,8 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
         
         return {weekworkflow:weekworkflow,rank:state.workflow.weekworkflow_set.indexOf(weekworkflow.id),week:week,nodeweeks:nodeweeks_included,nodes:nodes_included}
     });
+    
+    console.log("made it to the end");
     
     return {weekworkflows:weekworkflows};
     

@@ -24,7 +24,7 @@ class OutcomeView extends ComponentJSON{
         let data = this.props.data;
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} get_alternate={this.props.get_alternate}/>
+            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} show_horizontal={this.props.show_horizontal} />
         );
         
         
@@ -32,7 +32,7 @@ class OutcomeView extends ComponentJSON{
             <OutcomeHorizontalLinkView key={horizontal_link} parent_component={this} objectID={horizontal_link} renderer={this.props.renderer}/>
         );
         let outcomeDiv;
-        if(!this.props.get_alternate && outcomehorizontallinks.length>0){
+        if(this.props.show_horizontal && outcomehorizontallinks.length>0){
             outcomeDiv = (
                 <div class="outcome-node-indicator">
                     <div class={"outcome-node-indicator-number"}>...</div>
@@ -194,7 +194,7 @@ class OutcomeView extends ComponentJSON{
     
 }
 const mapOutcomeStateToProps = (state,own_props)=>(
-    getOutcomeByID(state,own_props.objectID,own_props.get_alternate,own_props.display_parent_outcomes)
+    getOutcomeByID(state,own_props.objectID)
 )
 export default connect(
     mapOutcomeStateToProps,
@@ -409,7 +409,7 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
     getChildType(outcomeoutcome){
         let data = this.props.data;
         return(
-            <SimpleOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} get_alternate={this.props.get_alternate} comments={this.props.comments} edit={this.props.edit}/>
+            <SimpleOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} comments={this.props.comments} edit={this.props.edit}/>
         );
     }
 
@@ -543,7 +543,7 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
         if(!data)return null;
         return (
             <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
-                <SimpleOutcomeView get_alternate="parent" objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
+                <SimpleOutcomeView objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             
                 {!read_only && <div class="mouseover-actions">
                     {this.addDeleteSelf(data,"close.svg")}

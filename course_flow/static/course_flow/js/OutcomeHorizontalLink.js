@@ -2,7 +2,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON, NodeTitle} from "./ComponentJSON";
-import {getNodeByID, getChildOutcomeWorkflowByID, getOutcomeByID} from "./FindState";
+import {getNodeByID, getOutcomeByID, getOutcomeWorkflowByID} from "./FindState";
 import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
 
 
@@ -122,13 +122,13 @@ const mapTableHorizontalOutcomeLinkStateToProps = (state,own_props)=>{
             break;
         }
     }
-    let child_outcome = getChildOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome;
+    let child_outcome = getOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome;
     if(outcomenode==null)return {data:null,outcomenode:null,outcomeID:child_outcome};
-    for(var i=0;i<state.child_outcomehorizontallink.length;i++){
+    for(var i=0;i<state.outcomehorizontallink.length;i++){
         if(
-            state.child_outcomehorizontallink[i].outcome==child_outcome &&
-            state.child_outcomehorizontallink[i].parent_outcome==own_props.parent_outcomeID
-        )return {data:state.child_outcomehorizontallink[i],outcomenode:outcomenode,outcomeID:child_outcome}
+            state.outcomehorizontallink[i].outcome==child_outcome &&
+            state.outcomehorizontallink[i].parent_outcome==own_props.parent_outcomeID
+        )return {data:state.outcomehorizontallink[i],outcomenode:outcomenode,outcomeID:child_outcome}
     }
     return {data:null,outcomenode:outcomenode,outcomeID:child_outcome};
 }
@@ -223,7 +223,7 @@ class TableChildOutcomeHeaderUnconnected extends ComponentJSON{
     }
 }
 const mapTableChildOutcomeHeaderStateToProps = (state,own_props)=>(
-    getOutcomeByID(state,getChildOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome,"child")
+    getOutcomeByID(state,getOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome)
 )
 export const TableChildOutcomeHeader = connect(
     mapTableChildOutcomeHeaderStateToProps,

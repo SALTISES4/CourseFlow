@@ -1265,17 +1265,17 @@ def get_parent_outcome_data(workflow, user):
         "parent_workflow": WorkflowSerializerShallow(
             parent_workflows, many=True
         ).data,
-        "parent_outcomeworkflow": OutcomeWorkflowSerializerShallow(
+        "outcomeworkflow": OutcomeWorkflowSerializerShallow(
             parent_outcomeworkflows, many=True
         ).data,
         "parent_node": NodeSerializerShallow(parent_nodes, many=True).data,
-        "parent_outcomenode": OutcomeNodeSerializerShallow(
+        "outcomenode": OutcomeNodeSerializerShallow(
             parent_outcomenodes, many=True
         ).data,
-        "parent_outcome": OutcomeSerializerShallow(
+        "outcome": OutcomeSerializerShallow(
             parent_outcomes, many=True
         ).data,
-        "parent_outcomeoutcome": OutcomeOutcomeSerializerShallow(
+        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
             parent_outcomeoutcomes, many=True
         ).data,
         "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
@@ -1315,16 +1315,16 @@ def get_child_outcome_data(workflow, user):
         "child_workflow": WorkflowSerializerShallow(
             linked_workflows, many=True
         ).data,
-        "child_outcomeworkflow": OutcomeWorkflowSerializerShallow(
+        "outcomeworkflow": OutcomeWorkflowSerializerShallow(
             child_workflow_outcomeworkflows, many=True
         ).data,
-        "child_outcome": OutcomeSerializerShallow(
+        "outcome": OutcomeSerializerShallow(
             child_workflow_outcomes, many=True
         ).data,
-        "child_outcomeoutcome": OutcomeOutcomeSerializerShallow(
+        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
             child_workflow_outcomeoutcomes, many=True
         ).data,
-        "child_outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
+        "outcomehorizontallink": OutcomeHorizontalLinkSerializerShallow(
             outcomehorizontallinks, many=True
         ).data,
     }
@@ -3074,7 +3074,7 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     )
     for wf in linked_workflows:
         data_package = get_parent_outcome_data(wf.get_subclass(), request.user)
-        actions.dispatch_wf(wf, actions.replaceStoreData(data_package))
+        actions.dispatch_wf(wf, actions.refreshStoreData(data_package))
 
     return JsonResponse(
         {
@@ -3538,7 +3538,7 @@ def insert_child(request: HttpRequest) -> HttpResponse:
     )
     if object_type == "outcome":
         actions.dispatch_to_parent_wf(
-            workflow, actions.insertChildAction(response_data, "childoutcome")
+            workflow, actions.insertChildAction(response_data, "outcome")
         )
     return JsonResponse({"action": "posted"})
 
@@ -3608,7 +3608,7 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
     if object_type == "outcome" or object_type == "outcome_base":
         actions.dispatch_to_parent_wf(
             workflow,
-            actions.insertBelowAction(response_data, "child" + object_type),
+            actions.insertBelowAction(response_data, object_type),
         )
     return JsonResponse({"action": "posted"})
 
@@ -3743,7 +3743,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     if object_type == "outcome" or object_type == "outcome_base":
         actions.dispatch_to_parent_wf(
             workflow,
-            actions.insertBelowAction(response_data, "child" + object_type),
+            actions.insertBelowAction(response_data, object_type),
         )
 
     linked_workflows = False
@@ -3756,7 +3756,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             data_package = get_parent_outcome_data(
                 wf.get_subclass(), request.user
             )
-            actions.dispatch_wf(wf, actions.replaceStoreData(data_package))
+            actions.dispatch_wf(wf, actions.refreshStoreData(data_package))
     return JsonResponse({"action": "posted"})
 
 
@@ -3867,9 +3867,9 @@ Reorder methods
 
 
 # Insert a model via its throughmodel
-#@user_can_edit(False)
-#@user_can_edit_or_none(False, get_parent=True)
-#@user_can_edit_or_none("columnPk")
+@user_can_edit(False)
+@user_can_edit_or_none(False, get_parent=True)
+@user_can_edit_or_none("columnPk")
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -3952,7 +3952,7 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
             actions.dispatch_to_parent_wf(
                 workflow,
                 actions.changeThroughID(
-                    "child" + through_type, old_through_id, new_through.id
+                    through_type, old_through_id, new_through.id
                 ),
             )
     actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
@@ -3994,7 +3994,7 @@ def update_value(request: HttpRequest) -> HttpResponse:
         if object_type == "outcome":
             actions.dispatch_to_parent_wf(
                 workflow,
-                actions.changeField(object_id, "child" + object_type, data),
+                actions.changeField(object_id, object_type, data),
             )
     except AttributeError:
         pass
@@ -4051,7 +4051,7 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
             node.linked_workflow.get_subclass(), request.user
         )
         actions.dispatch_wf(
-            node.linked_workflow, actions.replaceStoreData(data_package)
+            node.linked_workflow, actions.refreshStoreData(data_package)
         )
     return JsonResponse({"action": "posted",})
 
@@ -4174,13 +4174,13 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             original_workflow.get_subclass(), request.user
         )
         actions.dispatch_wf(
-            original_workflow, actions.replaceStoreData(data_package)
+            original_workflow, actions.refreshStoreData(data_package)
         )
     if workflow is not None:
         data_package = get_parent_outcome_data(
             workflow.get_subclass(), request.user
         )
-        actions.dispatch_wf(workflow, actions.replaceStoreData(data_package))
+        actions.dispatch_wf(workflow, actions.refreshStoreData(data_package))
     actions.dispatch_wf(
         parent_workflow, actions.setLinkedWorkflowAction(response_data)
     )
@@ -4356,7 +4356,7 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             actions.dispatch_to_parent_wf(
                 workflow,
                 actions.deleteSelfAction(
-                    object_id, "child" + object_type, parent_id, extra_data
+                    object_id, object_type, parent_id, extra_data
                 ),
             )
     if linked_workflows:
@@ -4364,14 +4364,14 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             data_package = get_parent_outcome_data(
                 wf.get_subclass(), request.user
             )
-            actions.dispatch_wf(wf, actions.replaceStoreData(data_package))
+            actions.dispatch_wf(wf, actions.refreshStoreData(data_package))
     if object_type in ["workflow", "activity", "course", "program"]:
         for parent_workflow in parent_workflows:
             data_package = get_child_outcome_data(
                 parent_workflow.get_subclass(), request.user
             )
             actions.dispatch_wf(
-                parent_workflow, actions.replaceStoreData(data_package)
+                parent_workflow, actions.refreshStoreData(data_package)
             )
     return JsonResponse({"action": "posted"})
 
@@ -4512,7 +4512,7 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                 workflow,
                 actions.restoreSelfAction(
                     object_id,
-                    "child" + object_type,
+                    object_type,
                     parent_id,
                     throughparent_id,
                     throughparent_index,
@@ -4524,7 +4524,7 @@ def restore_self(request: HttpRequest) -> HttpResponse:
             data_package = get_parent_outcome_data(
                 wf.get_subclass(), request.user
             )
-            actions.dispatch_wf(wf, actions.replaceStoreData(data_package))
+            actions.dispatch_wf(wf, actions.refreshStoreData(data_package))
             if object_type == "outcome" or object_type == "outcome_base":
                 actions.dispatch_wf(
                     wf,
@@ -4538,7 +4538,7 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                 parent_workflow.get_subclass(), request.user
             )
             actions.dispatch_wf(
-                parent_workflow, actions.replaceStoreData(data_package)
+                parent_workflow, actions.refreshStoreData(data_package)
             )
     return JsonResponse({"action": "posted"})
 
@@ -4643,7 +4643,7 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
             actions.dispatch_to_parent_wf(
                 workflow,
                 actions.deleteSelfSoftAction(
-                    object_id, "child" + object_type, parent_id, extra_data
+                    object_id, object_type, parent_id, extra_data
                 ),
             )
     if linked_workflows:
@@ -4651,7 +4651,7 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
             data_package = get_parent_outcome_data(
                 wf.get_subclass(), request.user
             )
-            actions.dispatch_wf(wf, actions.replaceStoreData(data_package))
+            actions.dispatch_wf(wf, actions.refreshStoreData(data_package))
             if object_type == "outcome" or object_type == "outcome_base":
                 actions.dispatch_wf(
                     wf,
@@ -4665,7 +4665,7 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                 parent_workflow.get_subclass(), request.user
             )
             actions.dispatch_wf(
-                parent_workflow, actions.replaceStoreData(data_package)
+                parent_workflow, actions.refreshStoreData(data_package)
             )
     return JsonResponse({"action": "posted"})
 

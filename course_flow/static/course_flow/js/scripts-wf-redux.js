@@ -219,7 +219,7 @@ export class WorkflowRenderer{
         if(view_type=="outcomeedit"){
             //get additional data about parent workflow prior to render
             getWorkflowParentData(workflow_model_id,(response)=>{
-                store.dispatch(Reducers.replaceStoreData(response.data_package));
+                store.dispatch(Reducers.refreshStoreData(response.data_package));
                 reactDom.render(
                     <Provider store = {store}>
                         <WorkflowBaseView view_type={view_type} renderer={this}/>
@@ -231,7 +231,7 @@ export class WorkflowRenderer{
         }else if(view_type=="horizontaloutcometable" || view_type=="alignmentanalysis"){
             //get additional data about child workflows prior to render
             getWorkflowChildData(workflow_model_id,(response)=>{
-                store.dispatch(Reducers.replaceStoreData(response.data_package));
+                store.dispatch(Reducers.refreshStoreData(response.data_package));
                 reactDom.render(
                     <Provider store = {store}>
                         <WorkflowBaseView view_type={view_type} renderer={this}/>

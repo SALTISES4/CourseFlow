@@ -18,7 +18,7 @@ class OutcomeWorkflowView extends ComponentJSON{
         let data = this.props.data;
         return (
             <div class="outcome-workflow" id={data.id}>
-                <OutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
+                <OutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer} show_horizontal={this.props.show_horizontal}/>
             </div>
         )
     }

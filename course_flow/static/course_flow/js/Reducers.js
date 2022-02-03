@@ -67,11 +67,20 @@ export const replaceStoreData = (data_package) =>{
         payload: data_package
     }
 }
+export const refreshStoreData = (data_package) =>{
+    return {
+        type: 'refreshStoreData',
+        payload: data_package
+    }
+}
 
 
 export function workflowReducer(state={},action){
     switch(action.type){
         case 'replaceStoreData':
+            if(action.payload.workflow)return action.payload.workflow;
+            return state;
+        case 'refreshStoreData':
             if(action.payload.workflow)return action.payload.workflow;
             return state;
         case 'workflow/createLock':
@@ -228,6 +237,25 @@ export function outcomeworkflowReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.outcomeworkflow)return action.payload.outcomeworkflow;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.outcomeworkflow){
+                for(var i=0;i<action.payload.outcomeworkflow.length;i++){
+                    let new_obj = action.payload.outcomeworkflow[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'outcome_base/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].outcome==action.payload.id){
@@ -255,6 +283,25 @@ export function columnworkflowReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.columnworkflow)return action.payload.columnworkflow;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.columnworkflow){
+                for(var i=0;i<action.payload.columnworkflow.length;i++){
+                    let new_obj = action.payload.columnworkflow[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'columnworkflow/changeID':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.old_id){
@@ -299,6 +346,25 @@ export function columnReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.column)return action.payload.column;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.column){
+                for(var i=0;i<action.payload.column.length;i++){
+                    let new_obj = action.payload.collumn[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'column/createLock':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
@@ -371,6 +437,25 @@ export function weekworkflowReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.weekworkflow)return action.payload.weekworkflow;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.weekworkflow){
+                for(var i=0;i<action.payload.weekworkflow.length;i++){
+                    let new_obj = action.payload.weekworkflow[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'weekworkflow/changeID':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.old_id){
@@ -406,6 +491,25 @@ export function weekReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.week)return action.payload.week;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.week){
+                for(var i=0;i<action.payload.week.length;i++){
+                    let new_obj = action.payload.week[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'week/createLock':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
@@ -574,6 +678,25 @@ export function nodeweekReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.nodeweek)return action.payload.nodeweek;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.nodeweek){
+                for(var i=0;i<action.payload.nodeweek.length;i++){
+                    let new_obj = action.payload.nodeweek[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'nodeweek/changeID':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.old_id){
@@ -626,6 +749,25 @@ export function nodeReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.node)return action.payload.node;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.node){
+                for(var i=0;i<action.payload.node.length;i++){
+                    let new_obj = action.payload.node[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'node/createLock':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
@@ -816,6 +958,25 @@ export function nodelinkReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.nodelink)return action.payload.nodelink;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.nodelink){
+                for(var i=0;i<action.payload.nodelink.length;i++){
+                    let new_obj = action.payload.nodelink[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'nodelink/createLock':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
@@ -881,6 +1042,25 @@ export function outcomeReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.outcome)return action.payload.outcome;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.outcome){
+                for(var i=0;i<action.payload.outcome.length;i++){
+                    let new_obj = action.payload.outcome[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'outcome/createLock':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
@@ -891,6 +1071,7 @@ export function outcomeReducer(state=[],action){
             }
             return state;
         case 'outcomeoutcome/changeID':
+            console.log("Triggered ID change for "+action.payload.old_id+" to "+action.payload.new_id);
             var new_state=state.slice();
             for(var i=0;i<state.length;i++){
                 let old_index = state[i].child_outcome_links.indexOf(action.payload.old_id);
@@ -913,6 +1094,8 @@ export function outcomeReducer(state=[],action){
                     new_parent={...state[i]};
                 }
             }
+            console.log("Moved to, old parent is ")
+            console.log(old_parent)
             var new_index = action.payload.new_index;
             var new_state = state.slice();
             old_parent.child_outcome_links = old_parent.child_outcome_links.slice();
@@ -1067,6 +1250,25 @@ export function outcomeOutcomeReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.outcomeoutcome)return action.payload.outcomeoutcome;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.outcomeoutcome){
+                for(var i=0;i<action.payload.outcomeoutcome.length;i++){
+                    let new_obj = action.payload.outcomeoutcome[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'outcomeoutcome/changeID':
             for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.old_id){
@@ -1112,6 +1314,25 @@ export function outcomeNodeReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.outcomenode)return action.payload.outcomenode;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.outcomenode){
+                for(var i=0;i<action.payload.outcomenode.length;i++){
+                    let new_obj = action.payload.outcomenode[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'outcomenode/updateDegree':
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomenode==-1)return state;
@@ -1153,87 +1374,31 @@ export function outcomeNodeReducer(state=[],action){
             return state;
     }
 }
-export function parentOutcomeReducer(state=[],action){
-    switch(action.type){
-        case 'replaceStoreData':
-            if(action.payload.parent_outcome)return action.payload.parent_outcome;
-            return state;
-        case 'parentoutcome/changeField':
-        case 'parentoutcome_base/changeField':
-            if(action.payload.changeFieldID==changeFieldID)return state;
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.id){
-                    var new_state = state.slice();
-                    new_state[i] = {...state[i],...action.payload.json};
-                    return new_state;
-                }
-            }
-            return state;
-        default:
-            return state;
-    }
-}
-export function parentOutcomeoutcomeReducer(state=[],action){
-    switch(action.type){
-        case 'replaceStoreData':
-            if(action.payload.parent_outcomeoutcome)return action.payload.parent_outcomeoutcome;
-            return state;
-        default:
-            return state;
-    }
-}
-export function parentOutcomeworkflowReducer(state=[],action){
-    switch(action.type){
-        case 'replaceStoreData':
-            if(action.payload.parent_outcomeworkflow)return action.payload.parent_outcomeworkflow;
-            return state;
-        default:
-            return state;
-    }
-}
-export function parentOutcomenodeReducer(state=[],action){
-    switch(action.type){
-        case 'replaceStoreData':
-            if(action.payload.parent_outcomenode)return action.payload.parent_outcomenode;
-            return state;
-        default:
-            return state;
-    }
-}
 export function outcomeHorizontalLinkReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
             if(action.payload.outcomehorizontallink)return action.payload.outcomehorizontallink;
             return state;
-        case 'outcomehorizontallink/updateDegree':
-            //Returns -1 if the outcome had already been added to the node
-            if(action.payload.outcomehorizontallink==-1)return state;
+        case 'refreshStoreData':
             var new_state = state.slice();
-            let new_outcomehorizontallink_outcomes = action.payload.data_package.map((outcomehorizontallink)=>
-                Constants.cantorPairing(outcomehorizontallink.outcome,outcomehorizontallink.parent_outcome)
-            )
-            for(var i=0;i<new_state.length;i++){
-                let new_outcomehorizontallink_index = new_outcomehorizontallink_outcomes.indexOf(Constants.cantorPairing(new_state[i].outcome,new_state[i].parent_outcome));
-                if(new_outcomehorizontallink_index>=0){
-                    new_state[i]=action.payload.data_package[new_outcomehorizontallink_index];
-                    action.payload.data_package[new_outcomehorizontallink_index]=null;
+            if(action.payload.outcomehorizontallink){
+                for(var i=0;i<action.payload.outcomehorizontallink.length;i++){
+                    let new_obj = action.payload.outcomehorizontallink[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
                 }
+                
             }
-            for(var i=0;i<action.payload.data_package.length;i++){
-                if(action.payload.data_package[i]!=null)new_state.push(action.payload.data_package[i]);
-            }
-            new_state = new_state.filter(outcomehorizontallink => outcomehorizontallink.degree>0);
             return new_state;
-        default:
-        return state;
-    }
-}
-export function childOutcomeHorizontalLinkReducer(state=[],action){
-    switch(action.type){
-        case 'replaceStoreData':
-            if(action.payload.child_outcomehorizontallink)return action.payload.child_outcomehorizontallink;
-            return state;
-        case 'childoutcomehorizontallink/updateDegree':
+        case 'outcomehorizontallink/updateDegree':
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomehorizontallink==-1)return state;
             var new_state = state.slice();
@@ -1261,6 +1426,25 @@ export function parentNodeReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.parent_node)return action.payload.parent_node;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.parent_node){
+                for(var i=0;i<action.payload.parent_node.length;i++){
+                    let new_obj = action.payload.parent_node[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         default:
             return state;
     }
@@ -1270,6 +1454,25 @@ export function parentWorkflowReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.parent_workflow)return action.payload.parent_workflow;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.parent_workflow){
+                for(var i=0;i<action.payload.parent_workflow.length;i++){
+                    let new_obj = action.payload.parent_workflow[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         default:
             return state;
     }
@@ -1279,6 +1482,25 @@ export function childWorkflowReducer(state=[],action){
         case 'replaceStoreData':
             if(action.payload.child_workflow)return action.payload.child_workflow;
             return state;
+        case 'refreshStoreData':
+            var new_state = state.slice();
+            if(action.payload.child_workflow){
+                for(var i=0;i<action.payload.child_workflow.length;i++){
+                    let new_obj = action.payload.child_workflow[i];
+                    let added=false;
+                    for(var j=0;j<new_state.length;j++){
+                        if(new_state[j].id==new_obj.id){
+                            new_state.splice(j,1,new_obj);
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(added)continue;
+                    new_state.push(new_obj);
+                }
+                
+            }
+            return new_state;
         case 'childoutcome_base/deleteSelf':
         case 'childoutcome_base/deleteSelfSoft':
             for(var i=0;i<state.length;i++){
@@ -1315,247 +1537,6 @@ export function childWorkflowReducer(state=[],action){
                 }
             }
             return state;
-        default:
-            return state;
-    }
-}
-export function childOutcomeReducer(state=[],action){
-    switch(action.type){
-        case 'replaceStoreData':
-            if(action.payload.child_outcome)return action.payload.child_outcome;
-            return state;
-        case 'childoutcomehorizontallink/updateDegree':
-            //Returns -1 if the outcome had already been added to the node
-            if(action.payload.outcomehorizontallink==-1)return state;
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.data_package[0].outcome){
-                    var new_state=state.slice();
-                    new_state[i] = {...new_state[i]};
-                    new_state[i].outcome_horizontal_links = action.payload.new_outcome_horizontal_links;
-                    new_state[i].outcome_horizontal_links_unique = action.payload.new_outcome_horizontal_links_unique;
-                    return new_state;
-                }
-            }
-            return state;
-        case 'childoutcome_base/deleteSelf':
-            var new_state=state.slice();
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.id){
-                    new_state.splice(i,1);
-                    return new_state;
-                }
-            }
-            return state;
-        case 'childoutcome/deleteSelf':
-            var new_state=state.slice();
-            for(var i=0;i<new_state.length;i++){
-                if(new_state[i].child_outcome_links.indexOf(action.payload.parent_id)>=0){
-                    new_state[i] = {...new_state[i]};
-                    new_state[i].child_outcome_links = new_state[i].child_outcome_links.slice();
-                    new_state[i].child_outcome_links.splice(new_state[i].child_outcome_links.indexOf(action.payload.parent_id),1);
-                }else if(new_state[i].id==action.payload.id){
-                    new_state.splice(i,1);
-                    i--;
-                }
-            }
-            return new_state;
-        case 'childoutcome/deleteSelfSoft':
-            var new_state=state.slice();
-            for(var i=0;i<state.length;i++){
-                if(state[i].child_outcome_links.indexOf(action.payload.parent_id)>=0){
-                    new_state[i] = {...new_state[i]};
-                    new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
-                    new_state[i].child_outcome_links.splice(new_state[i].child_outcome_links.indexOf(action.payload.parent_id),1);
-                }else if(state[i].id==action.payload.id){
-                    new_state[i] = {...new_state[i],deleted:true,deleted_on:gettext("This session")};
-                }
-            }
-        case 'childoutcome/restoreSelf':
-            var new_state=state.slice();
-            for(var i=0;i<state.length;i++){
-                if(state[i].id == action.payload.parent_id){
-                    new_state[i] = {...new_state[i]};
-                    new_state[i].child_outcome_links = state[i].child_outcome_links.slice();
-                    new_state[i].child_outcome_links.splice(action.payload.throughparent_index,0,action.payload.throughparent_id);
-                }else if(state[i].id==action.payload.id){
-                    new_state[i] = {...new_state[i],deleted:false};
-                }
-            }
-        case 'childoutcome_base/deleteSelfSoft':
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.id){
-                    var new_state = state.slice();
-                    new_state[i]={...new_state[i],deleted:true,deleted_on:gettext("This session")};
-                    return new_state;
-                }
-            }
-            return state;
-        case 'childoutcome_base/restoreSelf':
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.id){
-                    var new_state = state.slice();
-                    new_state[i]={...new_state[i],deleted:false};
-                    return new_state;
-                }
-            }
-            return state;
-        case "childoutcome_base/insertBelow":
-        case 'childoutcome/newOutcome':
-            var new_state=state.slice();
-            new_state.push(action.payload.new_model);
-            if(action.payload.children){
-                for(var i=0;i<action.payload.children.outcome.length;i++){
-                    new_state.push(action.payload.children.outcome[i]);
-                }
-            }
-            return new_state;
-        case 'childoutcome/insertChild':
-        case 'childoutcome_base/insertChild':
-        case 'childoutcome/insertBelow':
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.parentID){
-                    var new_state = state.slice();
-                    new_state[i] = {...state[i]}
-                    var new_child_outcome_links = state[i].child_outcome_links.slice();
-                    let new_index;
-                    new_index= action.payload.new_through.rank;
-                    new_child_outcome_links.splice(new_index,0,action.payload.new_through.id);
-                    new_state[i].child_outcome_links = new_child_outcome_links;
-                    new_state.push(action.payload.new_model);
-                    if(action.payload.children){
-                        for(var i=0;i<action.payload.children.outcome.length;i++){
-                            new_state.push(action.payload.children.outcome[i]);
-                        }
-                    }
-                    return new_state;
-                }
-            }
-            return state;
-        case 'childoutcomeoutcome/movedTo':
-            let old_parent, old_parent_index,new_parent,new_parent_index;
-            for(var i=0;i<state.length;i++){
-                if(state[i].child_outcome_links.indexOf(action.payload.id)>=0){
-                    old_parent_index=i;
-                    old_parent={...state[i]};
-                }
-                if(state[i].id==action.payload.new_parent){
-                    new_parent_index=i;
-                    new_parent={...state[i]};
-                }
-            }
-            var new_index = action.payload.new_index;
-            var new_state = state.slice();
-            old_parent.child_outcome_links = old_parent.child_outcome_links.slice();
-            old_parent.child_outcome_links.splice(old_parent.child_outcome_links.indexOf(action.payload.id),1);
-            if(old_parent_index==new_parent_index){
-                old_parent.child_outcome_links.splice(new_index,0,action.payload.id);
-            }else{
-                new_parent.child_outcome_links = new_parent.child_outcome_links.slice();
-                new_parent.child_outcome_links.splice(new_index,0,action.payload.id);
-                new_state.splice(new_parent_index,1,new_parent);
-            }
-            new_state.splice(old_parent_index,1,old_parent);
-            return new_state;
-        //The following two cases are due to the fact that we can alter child outcomes at the parent workflow level. That means when we try to update the react locally, it will be attempting to look for just an "outcome"
-        case 'outcome/changeField':
-        case 'outcome_base/changeField':
-        case 'childoutcome/changeField':
-        case 'childoutcome_base/changeField':
-            if(action.payload.changeFieldID==changeFieldID)return state;
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.id){
-                    var new_state = state.slice();
-                    new_state[i] = {...state[i],...action.payload.json};
-                    return new_state;
-                }
-            }
-            return state;
-        case 'outcome/createLock':
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.id){
-                    var new_state = state.slice();
-                    new_state[i]={...new_state[i],lock:action.payload.lock}
-                    return new_state;
-                }
-            }
-            return state;
-        default:
-            return state;
-    }
-}
-export function childOutcomeOutcomeReducer(state=[],action){
-    switch(action.type){
-        case 'replaceStoreData':
-            if(action.payload.child_outcomeoutcome)return action.payload.child_outcomeoutcome;
-            return state;
-        case 'childoutcomeoutcome/changeID':
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.old_id){
-                    var new_state=state.slice();
-                    new_state[i]={...new_state[i],id:action.payload.new_id}
-                    return new_state;
-                }
-            }
-            return state;
-        case 'childoutcome/deleteSelf':
-            for(var i=0;i<state.length;i++){
-                if(state[i].id==action.payload.parent_id){
-                    var new_state=state.slice();
-                    new_state.splice(i,1);
-                    return new_state;
-                }
-            }
-            return state;
-        case 'childoutcome_base/insertBelow':
-            var new_state = state.slice();
-            if(action.payload.children){
-                for(var i=0;i<action.payload.children.outcomeoutcome.length;i++){
-                    new_state.push(action.payload.children.outcomeoutcome[i]);
-                }
-            }
-            return new_state;
-        case 'childoutcome/insertChild':
-        case 'childoutcome/insertBelow':
-            var new_state = state.slice();
-            new_state.push(action.payload.new_through);
-            if(action.payload.children){
-                for(var i=0;i<action.payload.children.outcomeoutcome.length;i++){
-                    new_state.push(action.payload.children.outcomeoutcome[i]);
-                }
-            }
-            return new_state;
-        default:
-            return state;
-    }
-}
-export function childOutcomeWorkflowReducer(state=[],action){
-    switch(action.type){
-        case 'replaceStoreData':
-            if(action.payload.child_outcomeworkflow)return action.payload.child_outcomeworkflow;
-            return state;
-        case 'childoutcome_base/deleteSelf':
-            for(var i=0;i<state.length;i++){
-                if(state[i].outcome==action.payload.id){
-                    var new_state=state.slice();
-                    new_state.splice(i,1);
-                    return new_state;
-                }
-            }
-            return state;
-        case 'childoutcome_base/insertBelow':
-            new_state = state.slice();
-            new_state.push(action.payload.new_through);
-            return new_state;
-        case 'childoutcome/newOutcome':
-            new_state = state.slice();
-            new_state.push(action.payload.new_through);
-            return new_state;
-        default:
-            return state;
-    }
-}
-export function outcomeProjectReducer(state=[],action){
-    switch(action.type){
         default:
             return state;
     }
@@ -1638,19 +1619,10 @@ export const rootWorkflowReducer = Redux.combineReducers({
     outcome:outcomeReducer,
     outcomeoutcome:outcomeOutcomeReducer,
     outcomenode:outcomeNodeReducer,
-    parent_outcome:parentOutcomeReducer,
-    parent_outcomeoutcome:parentOutcomeoutcomeReducer,
-    parent_outcomeworkflow:parentOutcomeworkflowReducer,
-    parent_outcomenode:parentOutcomenodeReducer,
-    parent_node:parentNodeReducer,
     parent_workflow:parentWorkflowReducer,
+    parent_node:parentNodeReducer,
     outcomehorizontallink:outcomeHorizontalLinkReducer,
     child_workflow:childWorkflowReducer,
-    child_outcome:childOutcomeReducer,
-    child_outcomeoutcome:childOutcomeOutcomeReducer,
-    child_outcomeworkflow:childOutcomeWorkflowReducer,
-    child_outcomehorizontallink:childOutcomeHorizontalLinkReducer,
-    outcomeproject:outcomeProjectReducer,
     strategy:strategyReducer,
     saltise_strategy:saltiseStrategyReducer,
 });
