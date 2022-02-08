@@ -784,9 +784,6 @@ export function nodeReducer(state=[],action){
             if(action.payload.extra_data){
                 new_column = action.payload.extra_data;
             }
-            console.log("A column has been deleted: "+action.payload.id);
-            console.log(state);
-            console.log("replacement column is: "+new_column);
             for(var i=0;i<state.length;i++){
                 if(state[i].column==action.payload.id){
                     new_state[i]={...state[i],column:new_column};
@@ -1094,8 +1091,6 @@ export function outcomeReducer(state=[],action){
                     new_parent={...state[i]};
                 }
             }
-            console.log("Moved to, old parent is ")
-            console.log(old_parent)
             var new_index = action.payload.new_index;
             var new_state = state.slice();
             old_parent.child_outcome_links = old_parent.child_outcome_links.slice();
@@ -1501,8 +1496,8 @@ export function childWorkflowReducer(state=[],action){
                 
             }
             return new_state;
-        case 'childoutcome_base/deleteSelf':
-        case 'childoutcome_base/deleteSelfSoft':
+        case 'outcome_base/deleteSelf':
+        case 'outcome_base/deleteSelfSoft':
             for(var i=0;i<state.length;i++){
                 if(state[i].outcomeworkflow_set.indexOf(action.payload.parent_id)>=0){
                     var new_state = state.slice()
@@ -1513,7 +1508,7 @@ export function childWorkflowReducer(state=[],action){
                 }
             }
             return state;
-        case 'childoutcome_base/restoreSelf':
+        case 'outcome_base/restoreSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].id ==action.payload.parent_id){
                     var new_state = state.slice()
@@ -1524,8 +1519,8 @@ export function childWorkflowReducer(state=[],action){
                 }
             }
             return state;
-        case 'childoutcome_base/insertBelow':
-        case 'childoutcome/newOutcome':
+        case 'outcome_base/insertBelow':
+        case 'outcome/newOutcome':
             for(var i=0;i<state.length;i++){ 
                 if(state[i].id==action.payload.new_through.workflow){
                     var new_state = state.slice();

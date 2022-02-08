@@ -147,10 +147,6 @@ def newOutcomeAction(response_data):
     return {"type": "outcome/newOutcome", "payload": response_data}
 
 
-def newChildOutcomeAction(response_data):
-    return {"type": "childoutcome/newOutcome", "payload": response_data}
-
-
 def newNodeLinkAction(response_data):
     return {"type": "nodelink/newNodeLink", "payload": response_data}
 

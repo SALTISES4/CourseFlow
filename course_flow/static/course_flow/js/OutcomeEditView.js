@@ -37,7 +37,7 @@ class OutcomeEditView extends ComponentJSON{
                     {outcomes}
                     <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNew.bind(this)}>
                         <img class="create-button" src={iconpath+"add_new_white.svg"}/>
-                        <div>Add new</div>
+                        <div>{gettext("Add new")}</div>
                     </div>
                     <ParentOutcomeBar/>
                 </div>

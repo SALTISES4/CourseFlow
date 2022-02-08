@@ -841,7 +841,19 @@ export class WorkflowTitle extends React.Component{
     }
 }
 
-//Title text for a workflow
+//Title text for a week
+export class WeekTitle extends React.Component{
+    
+    render(){
+        let data = this.props.data;
+        let default_text = data.week_type_display+" "+(this.props.rank+1);
+        return (
+            <TitleText text={data.title} defaultText={default_text}/>
+        )
+    }
+}
+
+//Title text for a node
 export class NodeTitle extends React.Component{
     
     render(){
@@ -883,6 +895,17 @@ export class OutcomeTitle extends React.Component{
             </div>
         )
     }
+
+}
+
+//Returns the outcome title as a string
+export function getOutcomeTitle(data,rank){
+    let text = data.title;
+    if(data.title==null || data.title==""){
+        text=gettext("Untitled");
+    }
+
+    return rank.join(".")+" - "+ text;
 
 }
 

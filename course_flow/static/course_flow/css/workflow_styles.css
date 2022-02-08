@@ -766,6 +766,32 @@ ol.children-block{
     position:relative;
 }
 
+.outcome-node img{
+    width:16px;
+}
+
+.outcome-node >.outcome>.outcome-title{
+    margin-left:0px;
+}
+
+.outcome-node >.outcome{
+    margin-left:0px;
+}
+
+.outcome-node{
+    display:flex;
+    align-items:center;
+}
+
+.outcome-node .outcome-degree{
+    width:16px;
+    text-align:center;
+}
+
+.outcome-degree{
+    font-family:serif;
+}
+
 .outcome-node-container .outcome-title{
     margin-left:16px;
 }
@@ -773,6 +799,7 @@ ol.children-block{
 .outcome-node-container .action-button{
     width:12px;
     height:12px;
+    margin-left:4px;
 }
 
 .outcome-node-container .mouseover-actions{
@@ -1604,7 +1631,10 @@ circle.mouseover{
 }
 
 .alignment-block .node-drop-row{
-    height:5px;
+    height:auto;
+    padding-left:20px;
+    border-top:2px solid lightgrey;
+    box-sizing:border-box;
 }
 
 .alignment-block .parent-outcome-box,.alignment-block .child-outcome-box{
@@ -1642,7 +1672,6 @@ circle.mouseover{
 }
 
 .alignment-row > *{
-    display:inline-block;
     vertical-align:top;
     margin-right:4px;
 }
@@ -1661,6 +1690,11 @@ circle.mouseover{
     min-width:400px;
 }
 
+.alignment-show-all{
+    color:#1976bc;
+    cursor:pointer;
+}
+
 .alignment-block .outcome-block{
     background-color:white;
 }
@@ -1674,9 +1708,6 @@ circle.mouseover{
     vertical-align: top;
 }
 
-.alignment-block .child-outcome .half-width img{
-    margin-top:6px;
-}
 
 #popup-container{
     position:absolute;

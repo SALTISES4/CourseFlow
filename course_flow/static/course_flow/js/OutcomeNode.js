@@ -22,25 +22,25 @@ class OutcomeNodeView extends ComponentJSON{
         
         return (
             <div class={"outcome-node outcomenode-"+data.id} id={data.id} ref={this.maindiv}>
-                <SimpleOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id}/>
-            
-                {!read_only && <div class="mouseover-actions">
+                {!read_only && <div>
                     {this.addDeleteSelf(data,"close.svg")}
                 </div>
                 }
+                {Constants.getCompletionImg(data.degree,this.props.outcomes_type)}
+                <SimpleOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
             </div>
         );
     }
     
     deleteSelf(data){
         let props=this.props;
+        if(this.props.deleteSelfOverride)this.props.deleteSelfOverride();
         //Temporary confirmation; add better confirmation dialogue later
-        if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
+        else {
             props.renderer.tiny_loader.startLoad();
             updateOutcomenodeDegree(data.node,data.outcome,0,(response_data)=>{
                 props.renderer.tiny_loader.endLoad();
             });
-           
         }
     }
     

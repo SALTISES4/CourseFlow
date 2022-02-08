@@ -109,13 +109,13 @@ class OutcomeView extends ComponentJSON{
     }
     
     postMountFunction(){
-        this.makeDragAndDrop();
-        this.updateIndicator();
+        if(this.props.show_horizontal)this.makeDragAndDrop();
+        if(this.props.show_horizontal)this.updateIndicator();
     }
 
     componentDidUpdate(){
-        this.makeDragAndDrop();
-        this.updateIndicator();
+        if(this.props.show_horizontal)this.makeDragAndDrop();
+        if(this.props.show_horizontal)this.updateIndicator();
     }
 
     updateIndicator(){

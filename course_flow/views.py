@@ -3335,7 +3335,7 @@ def new_outcome_for_workflow(request: HttpRequest) -> HttpResponse:
     }
     actions.dispatch_wf(workflow, actions.newOutcomeAction(response_data))
     actions.dispatch_to_parent_wf(
-        workflow, actions.newChildOutcomeAction(response_data)
+        workflow, actions.newOutcomeAction(response_data)
     )
 
     return JsonResponse({"action": "posted"})
@@ -4111,7 +4111,7 @@ def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
     )
     actions.dispatch_to_parent_wf(
         workflow,
-        actions.updateChildOutcomehorizontallinkDegreeAction(response_data),
+        actions.updateOutcomehorizontallinkDegreeAction(response_data),
     )
     return JsonResponse({"action": "posted",})
 

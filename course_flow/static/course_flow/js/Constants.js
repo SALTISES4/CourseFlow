@@ -104,6 +104,7 @@ export const object_dictionary = {
     outcome:"outcome",
     outcome_base:"outcome",
     workflow:"workflow",
+    outcomenode:"outcomenode",
 }
 export const parent_dictionary = {
     nodelink:"node",
