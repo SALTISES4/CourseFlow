@@ -142,9 +142,7 @@ def get_course_framework(workflow):
             df = df.append(
                 {
                     "0": _("Prerequisites"),
-                    "1": [get_displayed_title(req) for req in prereqs].join(
-                        ", "
-                    ),
+                    "1": ", ".join([get_displayed_title(req) for req in prereqs]),
                 },
                 ignore_index=True,
             )
@@ -152,9 +150,7 @@ def get_course_framework(workflow):
             df = df.append(
                 {
                     "0": _("Required For"),
-                    "1": [get_displayed_title(req) for req in postreqs].join(
-                        ", "
-                    ),
+                    "1": ", ".join([get_displayed_title(req) for req in postreqs]),
                 },
                 ignore_index=True,
             )
