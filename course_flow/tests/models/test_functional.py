@@ -2256,6 +2256,21 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         self.selenium.quit()
         super(ChannelsStaticLiveServerTestCase, self).tearDown()
 
+    def create_many_items(self, author, published, disciplines):
+        for object_type in [
+            "project",
+            "activity",
+            "course",
+            "program",
+        ]:
+            for i in range(10):
+                item = get_model_from_str(object_type).objects.create(
+                    author=author,
+                    published=published,
+                    title=object_type + str(i),
+                )
+                item.disciplines.set(disciplines)
+                
     def test_delete_restore_column(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
