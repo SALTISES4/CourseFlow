@@ -539,16 +539,15 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        //It's possible we don't actually have this data, if the horizontal link
+        //It's possible we don't actually have this data, if the horizontal link is dead
         if(!data)return null;
         return (
             <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
-                <SimpleOutcomeView objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
-            
-                {!read_only && <div class="mouseover-actions">
+                {!read_only && <div>
                     {this.addDeleteSelf(data,"close.svg")}
                 </div>
                 }
+                <SimpleOutcomeView objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             </div>
         );
     }

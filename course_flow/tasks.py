@@ -82,7 +82,7 @@ def async_send_export_email(
 def async_import_file_data(pk, object_type, task_type, file_json, user_id):
     model_object = get_model_from_str(object_type).objects.get(pk=pk)
     user = User.objects.get(pk=user_id)
-    if object_type=="workflow":
+    if object_type == "workflow":
         actions.dispatch_wf(
             model_object,
             actions.changeField(pk, "workflow", {"importing": True}, False),
@@ -102,4 +102,3 @@ def async_import_file_data(pk, object_type, task_type, file_json, user_id):
             model_object,
             actions.changeField(pk, "workflow", {"importing": False}, False),
         )
-    print("Completed")

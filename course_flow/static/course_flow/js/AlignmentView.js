@@ -62,7 +62,7 @@ class AlignmentView extends ComponentJSON{
     
         return(
             <div class="workflow-details">
-                <h3>{gettext("Filters:")}:</h3>
+                <h3>{gettext("Filters")}:</h3>
                 <div class="workflow-view-select">
                     {view_buttons_outcomes}
                 </div>
@@ -431,7 +431,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
                 outcomenodes = outcomenodes.filter(ocn=>own_props.restriction_set.parent_outcomes.indexOf(ocn.outcome)>=0);
             }
             let node_outcomes = Constants.filterThenSortByID(state.outcomenode,node.outcomenode_set).map(ocn=>ocn.outcome);
-            if(!node.linked_workflow){
+            if(!node.linked_workflow || node.linked_workflow_data.deleted){
                 return {data:node,child_outcomes:[],outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
             }
             let child_workflow = getChildWorkflowByID(state,node.linked_workflow);
@@ -454,19 +454,19 @@ class OutcomeAdder extends React.Component{
         
         return(
             <select class="outcome-adder" onChange={this.onChange.bind(this)}>
-                <option value="0">{gettext("Add outcome")}</option>
+                <option value={0}>{gettext("Add outcome")}</option>
                 {options}
             </select>
         );
     }
     
     onChange(evt){
-        if(evt.target.value=="0")return;
-        $(".outcome-adder").attr("value","0");
+        if(evt.target.value==0)return;
         this.props.renderer.tiny_loader.startLoad();
         this.props.addFunction(evt.target.value,1,(response_data)=>{
             this.props.renderer.tiny_loader.endLoad();
-        })
+        });
+        $(".outcome-adder").val(0);
     }
 }
 
@@ -515,7 +515,9 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component{
                 </div>
                 <div class="half-width alignment-column">
                     {parent_outcomes}
-                    <OutcomeAdder renderer={this.props.renderer} outcome_set={outcome_restriction} addFunction={updateOutcomehorizontallinkDegree.bind(this,this.props.objectID)}/>
+                    <div class="alignment-row">
+                        <OutcomeAdder renderer={this.props.renderer} outcome_set={outcome_restriction} addFunction={updateOutcomehorizontallinkDegree.bind(this,this.props.objectID)}/>
+                    </div>
                 </div>
             </div>
         );

@@ -44,7 +44,7 @@ export class ComponentJSON extends React.Component{
             },
             start:(e,ui)=>{
                 var drag_item = $(e.target);
-                if(drag_item.hasClass("placeholder")){e.preventDefault();return false;}
+                if(drag_item.hasClass("placeholder") || drag_item.hasClass("no-drag")){e.preventDefault();return false;}
                 if(drag_item.children(".locked:not(.locked-"+user_id+")").length>0){e.preventDefault();return false;}
                 $(".workflow-canvas").addClass("dragging-"+draggable_type);
                 $(draggable_selector).addClass("dragging");

@@ -16,6 +16,8 @@ class WeekWorkflowView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        let my_class = "week-workflow";
+        if(data.no_drag)my_class+=" no-drag";
         var week;
         if(this.props.condensed)week = (
                 <TermView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
@@ -24,7 +26,7 @@ class WeekWorkflowView extends ComponentJSON{
             <WeekView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
         );
         return (
-            <div class="week-workflow" id={data.id} ref={this.maindiv} data-child-id={data.week}>
+            <div class={my_class} id={data.id} ref={this.maindiv} data-child-id={data.week}>
                 {week}
             </div>
         );

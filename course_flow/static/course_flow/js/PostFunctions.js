@@ -190,12 +190,10 @@ export function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>c
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType)
         }).done(function(data){
-            console.log(data);
             if(data.action == "posted") callBackFunction(data);
             else fail_function();
         });
     }catch(err){
-        console.log(err);
         fail_function();
     }
 }

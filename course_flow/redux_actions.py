@@ -37,6 +37,25 @@ def dispatch_to_parent_wf(workflow, action):
         )
 
 
+def dispatch_parent_updated(workflow):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "workflow_" + str(workflow.pk),
+        {
+            "type": "workflow_parent_updated",
+            "edit_count": workflow.edit_count,
+        },
+    )
+
+
+def dispatch_child_updated(workflow):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "workflow_" + str(workflow.pk),
+        {"type": "workflow_child_updated", "edit_count": workflow.edit_count,},
+    )
+
+
 def dispatch_wf_lock(workflow, action):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
@@ -44,7 +63,8 @@ def dispatch_wf_lock(workflow, action):
         {"type": "lock_update", "action": action},
     )
 
-#def dispatch_wf(workflow, action):
+
+# def dispatch_wf(workflow, action):
 #    workflow.edit_count = F("edit_count") + 1
 #    workflow.save()
 #    workflow.refresh_from_db()
@@ -59,7 +79,7 @@ def dispatch_wf_lock(workflow, action):
 #    )
 #
 #
-#def dispatch_to_parent_wf(workflow, action):
+# def dispatch_to_parent_wf(workflow, action):
 #    channel_layer = get_channel_layer()
 #    for parent_node in Node.objects.filter(linked_workflow=workflow):
 #        parent_workflow = parent_node.get_workflow()
@@ -76,7 +96,7 @@ def dispatch_wf_lock(workflow, action):
 #        )
 #
 #
-#def dispatch_wf_lock(workflow, action):
+# def dispatch_wf_lock(workflow, action):
 #    channel_layer = get_channel_layer()
 #    channel_layer.group_send(
 #        "workflow_" + str(workflow.pk),
@@ -114,14 +134,16 @@ def deleteSelfSoftAction(id, objectType, parentID, extra_data):
     }
 
 
-def restoreSelfAction(id, objectType, parentID, throughparentID, throughparent_index, extra_data):
+def restoreSelfAction(
+    id, objectType, parentID, throughparentID, throughparent_index, extra_data
+):
     return {
         "type": objectType + "/restoreSelf",
         "payload": {
             "id": id,
             "parent_id": parentID,
             "throughparent_id": throughparentID,
-            "throughparent_index":throughparent_index,
+            "throughparent_index": throughparent_index,
             "extra_data": extra_data,
         },
     }
@@ -195,6 +217,7 @@ def gridMenuItemAdded(response_data):
 
 def replaceStoreData(data_package):
     return {"type": "replaceStoreData", "payload": data_package}
+
 
 def refreshStoreData(data_package):
     return {"type": "refreshStoreData", "payload": data_package}

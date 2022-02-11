@@ -29,9 +29,7 @@ class Project(models.Model):
     title = models.CharField(
         max_length=title_max_length, null=True, blank=True
     )
-    description = models.TextField(
-        null=True, blank=True
-    )
+    description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -63,11 +61,11 @@ class Project(models.Model):
         return [self]
 
     def __str__(self):
-        if self.title is not None and self.title!="":
+        if self.title is not None and self.title != "":
             return self.title
         else:
             return "Project"
-        
+
     class Meta:
         verbose_name = "Project"
         verbose_name_plural = "Projects"
@@ -119,7 +117,8 @@ class OutcomeWorkflow(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def get_display_rank(self):
-        if self.outcome.deleted: return -1
+        if self.outcome.deleted:
+            return -1
         return list(
             OutcomeWorkflow.objects.filter(
                 workflow=self.workflow, outcome__deleted=False
@@ -188,10 +187,12 @@ class Column(models.Model):
 
     def get_workflow(self):
         return self.workflow_set.first()
-    
+
     def get_display_title(self):
-        if self.title is not None and self.title != "":return self.title
-        else: return self.get_column_type_display()
+        if self.title is not None and self.title != "":
+            return self.title
+        else:
+            return self.get_column_type_display()
 
     def __str__(self):
         return self.get_column_type_display()
@@ -243,13 +244,9 @@ class NodeLink(models.Model):
 class Outcome(models.Model):
     deleted = models.BooleanField(default=False)
     deleted_on = models.DateTimeField(default=timezone.now)
-    title = models.TextField(
-        null=True, blank=True
-    )
+    title = models.TextField(null=True, blank=True)
     code = models.CharField(max_length=title_max_length, null=True, blank=True)
-    description = models.TextField(
-        null=True, blank=True
-    )
+    description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -325,7 +322,8 @@ class OutcomeOutcome(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def get_display_rank(self):
-        if self.child.deleted: return -1
+        if self.child.deleted:
+            return -1
         return list(
             OutcomeOutcome.objects.filter(
                 parent=self.parent, child__deleted=False
@@ -434,9 +432,7 @@ class Node(models.Model):
     title = models.CharField(
         max_length=title_max_length, null=True, blank=True
     )
-    description = models.TextField(
-        null=True, blank=True
-    )
+    description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(
         User,
         related_name="authored_nodes",
@@ -692,11 +688,15 @@ class OutcomeNode(models.Model):
         )
         to_delete.delete()
         # Create the new outcomenodes with bulk_create
+        now = timezone.now()
         new_children = [
-            OutcomeNode(degree=degree, node=node, outcome=x)
+            OutcomeNode(degree=degree, node=node, outcome=x, added_on=now)
             for x in descendants
         ]
-        return OutcomeNode.objects.bulk_create(new_children)
+
+        OutcomeNode.objects.bulk_create(new_children)
+
+        return list(OutcomeNode.objects.filter(added_on=now))
 
 
 class Week(models.Model):
@@ -705,9 +705,7 @@ class Week(models.Model):
     title = models.CharField(
         max_length=title_max_length, null=True, blank=True
     )
-    description = models.TextField(
-        null=True, blank=True
-    )
+    description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -799,10 +797,10 @@ class Workflow(models.Model):
     @property
     def author(self):
         return self.get_subclass().author
-    
+
     @property
     def importing(self):
-        return cache.get("workflow"+str(self.pk)+"importing",False)
+        return cache.get("workflow" + str(self.pk) + "importing", False)
 
     deleted = models.BooleanField(default=False)
     deleted_on = models.DateTimeField(default=timezone.now)
@@ -810,9 +808,7 @@ class Workflow(models.Model):
     title = models.CharField(
         max_length=title_max_length, null=True, blank=True
     )
-    description = models.TextField(
-        null=True, blank=True
-    )
+    description = models.TextField(null=True, blank=True)
     code = models.CharField(max_length=title_max_length, null=True, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -824,7 +820,7 @@ class Workflow(models.Model):
     is_strategy = models.BooleanField(default=False)
 
     from_saltise = models.BooleanField(default=False)
-    
+
     condensed = models.BooleanField(default=False)
 
     parent_workflow = models.ForeignKey(
@@ -943,7 +939,7 @@ class Workflow(models.Model):
         return ids
 
     def __str__(self):
-        if self.title is not None and self.title!="":
+        if self.title is not None and self.title != "":
             return self.title
         else:
             return self.type
@@ -978,7 +974,7 @@ class Activity(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None and self.title!="":
+        if self.title is not None and self.title != "":
             return self.title
         else:
             return self.type
@@ -1017,7 +1013,7 @@ class Course(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None and self.title!="":
+        if self.title is not None and self.title != "":
             return self.title
         else:
             return self.type
@@ -1043,7 +1039,7 @@ class Program(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None and self.title!="":
+        if self.title is not None and self.title != "":
             return self.title
         else:
             return self.type
@@ -1073,7 +1069,8 @@ class WeekWorkflow(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def get_display_rank(self):
-        if self.week.deleted: return -1
+        if self.week.deleted:
+            return -1
         return list(
             WeekWorkflow.objects.filter(
                 workflow=self.workflow, week__deleted=False
@@ -1869,7 +1866,7 @@ def create_default_program_content(sender, instance, created, **kwargs):
             author=instance.author,
             is_strategy=instance.is_strategy,
         )
-        instance.condensed=True
+        instance.condensed = True
         instance.save()
 
 

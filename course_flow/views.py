@@ -1272,9 +1272,7 @@ def get_parent_outcome_data(workflow, user):
         "outcomenode": OutcomeNodeSerializerShallow(
             parent_outcomenodes, many=True
         ).data,
-        "outcome": OutcomeSerializerShallow(
-            parent_outcomes, many=True
-        ).data,
+        "outcome": OutcomeSerializerShallow(parent_outcomes, many=True).data,
         "outcomeoutcome": OutcomeOutcomeSerializerShallow(
             parent_outcomeoutcomes, many=True
         ).data,
@@ -1312,6 +1310,7 @@ def get_child_outcome_data(workflow, user):
         outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
 
     return {
+        "node": NodeSerializerShallow(nodes, many=True).data,
         "child_workflow": WorkflowSerializerShallow(
             linked_workflows, many=True
         ).data,
@@ -3073,8 +3072,7 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
         linked_nodes__week__workflow=clone
     )
     for wf in linked_workflows:
-        data_package = get_parent_outcome_data(wf.get_subclass(), request.user)
-        actions.dispatch_wf(wf, actions.refreshStoreData(data_package))
+        actions.dispatch_parent_updated(wf)
 
     return JsonResponse(
         {
@@ -3607,8 +3605,7 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
     )
     if object_type == "outcome" or object_type == "outcome_base":
         actions.dispatch_to_parent_wf(
-            workflow,
-            actions.insertBelowAction(response_data, object_type),
+            workflow, actions.insertBelowAction(response_data, object_type),
         )
     return JsonResponse({"action": "posted"})
 
@@ -3742,8 +3739,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     )
     if object_type == "outcome" or object_type == "outcome_base":
         actions.dispatch_to_parent_wf(
-            workflow,
-            actions.insertBelowAction(response_data, object_type),
+            workflow, actions.insertBelowAction(response_data, object_type),
         )
 
     linked_workflows = False
@@ -3753,10 +3749,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
         linked_workflows = Workflow.objects.filter(linked_nodes__week=model)
     if linked_workflows:
         for wf in linked_workflows:
-            data_package = get_parent_outcome_data(
-                wf.get_subclass(), request.user
-            )
-            actions.dispatch_wf(wf, actions.refreshStoreData(data_package))
+            actions.dispatch_parent_updated(wf)
     return JsonResponse({"action": "posted"})
 
 
@@ -3993,8 +3986,7 @@ def update_value(request: HttpRequest) -> HttpResponse:
         )
         if object_type == "outcome":
             actions.dispatch_to_parent_wf(
-                workflow,
-                actions.changeField(object_id, object_type, data),
+                workflow, actions.changeField(object_id, object_type, data),
             )
     except AttributeError:
         pass
@@ -4043,15 +4035,13 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
         "new_outcomenode_set": new_outcomenode_set,
         "new_outcomenode_unique_set": new_outcomenode_unique_set,
     }
+    update_action = actions.updateOutcomenodeDegreeAction(response_data)
     actions.dispatch_wf(
-        workflow, actions.updateOutcomenodeDegreeAction(response_data),
+        workflow, update_action,
     )
     if node.linked_workflow is not None:
-        data_package = get_parent_outcome_data(
-            node.linked_workflow.get_subclass(), request.user
-        )
         actions.dispatch_wf(
-            node.linked_workflow, actions.refreshStoreData(data_package)
+            node.linked_workflow, update_action,
         )
     return JsonResponse({"action": "posted",})
 
@@ -4170,17 +4160,9 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
         "linked_workflow_data": linked_workflow_data,
     }
     if original_workflow is not None:
-        data_package = get_parent_outcome_data(
-            original_workflow.get_subclass(), request.user
-        )
-        actions.dispatch_wf(
-            original_workflow, actions.refreshStoreData(data_package)
-        )
+        actions.dispatch_parent_updated(original_workflow)
     if workflow is not None:
-        data_package = get_parent_outcome_data(
-            workflow.get_subclass(), request.user
-        )
-        actions.dispatch_wf(workflow, actions.refreshStoreData(data_package))
+        actions.dispatch_parent_updated(workflow)
     actions.dispatch_wf(
         parent_workflow, actions.setLinkedWorkflowAction(response_data)
     )
@@ -4346,33 +4328,29 @@ def delete_self(request: HttpRequest) -> HttpResponse:
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
     if workflow is not None:
+        action = actions.deleteSelfAction(
+            object_id, object_type, parent_id, extra_data
+        )
         actions.dispatch_wf(
-            workflow,
-            actions.deleteSelfAction(
-                object_id, object_type, parent_id, extra_data
-            ),
+            workflow, action,
         )
         if object_type == "outcome" or object_type == "outcome_base":
             actions.dispatch_to_parent_wf(
-                workflow,
-                actions.deleteSelfAction(
-                    object_id, object_type, parent_id, extra_data
-                ),
+                workflow, action,
             )
-    if linked_workflows:
+            if linked_workflows:
+                for wf in linked_workflows:
+                    actions.dispatch_wf(wf, action)
+    if (
+        object_type != "outcome"
+        and object_type != "outcome_base"
+        and linked_workflows
+    ):
         for wf in linked_workflows:
-            data_package = get_parent_outcome_data(
-                wf.get_subclass(), request.user
-            )
-            actions.dispatch_wf(wf, actions.refreshStoreData(data_package))
+            actions.dispatch_parent_updated(wf)
     if object_type in ["workflow", "activity", "course", "program"]:
         for parent_workflow in parent_workflows:
-            data_package = get_child_outcome_data(
-                parent_workflow.get_subclass(), request.user
-            )
-            actions.dispatch_wf(
-                parent_workflow, actions.refreshStoreData(data_package)
-            )
+            actions.dispatch_child_updated(parent_workflow)
     return JsonResponse({"action": "posted"})
 
 
@@ -4496,50 +4474,40 @@ def restore_self(request: HttpRequest) -> HttpResponse:
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
     if workflow is not None:
+        action = actions.restoreSelfAction(
+            object_id,
+            object_type,
+            parent_id,
+            throughparent_id,
+            throughparent_index,
+            extra_data,
+        )
         actions.dispatch_wf(
-            workflow,
-            actions.restoreSelfAction(
-                object_id,
-                object_type,
-                parent_id,
-                throughparent_id,
-                throughparent_index,
-                extra_data,
-            ),
+            workflow, action,
         )
         if object_type == "outcome" or object_type == "outcome_base":
             actions.dispatch_to_parent_wf(
-                workflow,
-                actions.restoreSelfAction(
-                    object_id,
-                    object_type,
-                    parent_id,
-                    throughparent_id,
-                    throughparent_index,
-                    extra_data,
-                ),
+                workflow, action,
             )
-    if linked_workflows:
+            if linked_workflows:
+                for wf in linked_workflows:
+                    actions.dispatch_wf(wf, action)
+                    actions.dispatch_wf(
+                        wf,
+                        actions.updateHorizontalLinks(
+                            {"data": outcomes_to_update}
+                        ),
+                    )
+    if (
+        object_type != "outcome"
+        and object_type != "outcome_base"
+        and linked_workflows
+    ):
         for wf in linked_workflows:
-            data_package = get_parent_outcome_data(
-                wf.get_subclass(), request.user
-            )
-            actions.dispatch_wf(wf, actions.refreshStoreData(data_package))
-            if object_type == "outcome" or object_type == "outcome_base":
-                actions.dispatch_wf(
-                    wf,
-                    actions.updateHorizontalLinks(
-                        {"data": outcomes_to_update}
-                    ),
-                )
+            actions.dispatch_parent_updated(wf)
     if object_type in ["workflow", "activity", "course", "program"]:
         for parent_workflow in parent_workflows:
-            data_package = get_child_outcome_data(
-                parent_workflow.get_subclass(), request.user
-            )
-            actions.dispatch_wf(
-                parent_workflow, actions.refreshStoreData(data_package)
-            )
+            actions.dispatch_child_updated(parent_workflow)
     return JsonResponse({"action": "posted"})
 
 
@@ -4632,41 +4600,37 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
             )
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
+
     if workflow is not None:
+        action = actions.deleteSelfSoftAction(
+            object_id, object_type, parent_id, extra_data
+        )
         actions.dispatch_wf(
-            workflow,
-            actions.deleteSelfSoftAction(
-                object_id, object_type, parent_id, extra_data
-            ),
+            workflow, action,
         )
         if object_type == "outcome" or object_type == "outcome_base":
             actions.dispatch_to_parent_wf(
-                workflow,
-                actions.deleteSelfSoftAction(
-                    object_id, object_type, parent_id, extra_data
-                ),
+                workflow, action,
             )
-    if linked_workflows:
+            if linked_workflows:
+                for wf in linked_workflows:
+                    actions.dispatch_wf(wf, action)
+                    actions.dispatch_wf(
+                        wf,
+                        actions.updateHorizontalLinks(
+                            {"data": outcomes_to_update}
+                        ),
+                    )
+    if (
+        object_type != "outcome"
+        and object_type != "outcome_base"
+        and linked_workflows
+    ):
         for wf in linked_workflows:
-            data_package = get_parent_outcome_data(
-                wf.get_subclass(), request.user
-            )
-            actions.dispatch_wf(wf, actions.refreshStoreData(data_package))
-            if object_type == "outcome" or object_type == "outcome_base":
-                actions.dispatch_wf(
-                    wf,
-                    actions.updateHorizontalLinks(
-                        {"data": outcomes_to_update}
-                    ),
-                )
+            actions.dispatch_parent_updated(wf)
     if object_type in ["workflow", "activity", "course", "program"]:
         for parent_workflow in parent_workflows:
-            data_package = get_child_outcome_data(
-                parent_workflow.get_subclass(), request.user
-            )
-            actions.dispatch_wf(
-                parent_workflow, actions.refreshStoreData(data_package)
-            )
+            actions.dispatch_child_updated(parent_workflow)
     return JsonResponse({"action": "posted"})
 
 

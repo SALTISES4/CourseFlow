@@ -289,7 +289,34 @@ export class WorkflowRenderer{
             this.lock_update_received(data.action);
         }else if(data.type=="connection_update"){
             this.connection_update_received(data.action);
+        }else if(data.type=="workflow_parent_updated"){
+            this.parent_workflow_updated(data.edit_count);
+        }else if(data.type=="workflow_child_updated"){
+            this.child_workflow_updated(data.edit_count);
         }
+    }
+    
+    parent_workflow_updated(edit_count){
+        this.messages_queued=true;
+        let renderer = this;
+        getWorkflowParentData(workflow_model_id,(response)=>{
+            console.log("Got parent data");
+            //remove all the parent node and parent workflow data
+            renderer.store.dispatch(Reducers.replaceStoreData({parent_node:[],parent_workflow:[]}));
+            renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
+            renderer.clear_queue(0);
+        });
+    }
+
+    child_workflow_updated(edit_count){
+        this.messages_queued=true;
+        let renderer = this;
+        getWorkflowChildData(workflow_model_id,(response)=>{
+            console.log("Got child data");
+            //remove all the child workflow data
+            renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
+            renderer.clear_queue(0);
+        });
     }
     
     message_received(e){

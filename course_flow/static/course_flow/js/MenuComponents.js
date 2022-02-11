@@ -574,7 +574,6 @@ class ProjectMenuUnconnected extends React.Component{
     }
 
     componentDidUpdate(){
-        console.log("UPDATED");
     }
 
                      

@@ -27,7 +27,7 @@ class OutcomeNodeView extends ComponentJSON{
                 </div>
                 }
                 {Constants.getCompletionImg(data.degree,this.props.outcomes_type)}
-                <SimpleOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
+                <SimpleOutcomeView comments={true} edit={true}  objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
             </div>
         );
     }

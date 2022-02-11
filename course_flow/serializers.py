@@ -264,7 +264,7 @@ class NodeSerializerShallow(
             Q(outcome__deleted=True)
             | Q(outcome__parent_outcomes__deleted=True)
             | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
-        ).order_by("rank")
+        )
         return list(map(linkIDMap, links))
 
     def get_outgoing_links(self, instance):

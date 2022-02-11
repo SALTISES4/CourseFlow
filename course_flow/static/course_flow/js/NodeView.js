@@ -72,7 +72,7 @@ class NodeView extends ComponentJSON{
         if(data.is_dropped)dropIcon = "droptriangleup";
         else dropIcon = "droptriangledown";
         let linkIcon;
-        let linktext = gettext("Visit linked workflow");
+        let linktext = gettext("Visit workflow");
         let clickfunc = this.doubleClick.bind(this);
         if(data.linked_workflow_data){
             if(data.linked_workflow_data.deleted)linktext=gettext("<Deleted Workflow>")

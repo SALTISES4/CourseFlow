@@ -47,8 +47,6 @@ def add_to_outcome_parent_with_depth(to_add, base_outcome, required_depth):
 
 
 def import_outcomes(df, workflow, user):
-    print(df)
-    print(df.columns)
 
     last_outcome = None
     for index, row in df.iterrows():
@@ -74,7 +72,6 @@ def import_outcomes(df, workflow, user):
             partial=True,
         )
         save_serializer(serializer)
-
         if depth == 0:
             outcomeworkflow = OutcomeWorkflow.objects.create(
                 workflow=workflow,
@@ -92,7 +89,7 @@ def import_outcomes(df, workflow, user):
                 workflow, actions.newOutcomeAction(response_data)
             )
             actions.dispatch_to_parent_wf(
-                workflow, actions.newChildOutcomeAction(response_data)
+                workflow, actions.newOutcomeAction(response_data)
             )
         else:
             outcomeoutcome = add_to_outcome_parent_with_depth(
@@ -112,8 +109,7 @@ def import_outcomes(df, workflow, user):
                 workflow, actions.insertChildAction(response_data, "outcome"),
             )
             actions.dispatch_to_parent_wf(
-                workflow,
-                actions.insertChildAction(response_data, "childoutcome"),
+                workflow, actions.insertChildAction(response_data, "outcome"),
             )
         try:
             if isinstance(code, str) and code.isnumeric():
@@ -121,10 +117,9 @@ def import_outcomes(df, workflow, user):
                     rank = OutcomeWorkflow.objects.get(outcome=outcome).rank
                 else:
                     rank = OutcomeOutcome.objects.get(child=outcome).rank
-                if int(code) == rank or int(code) == rank+1:
+                if int(code) == rank or int(code) == rank + 1:
                     outcome.code = ""
                     outcome.save()
-
         except ValueError:
             pass
 
@@ -132,14 +127,11 @@ def import_outcomes(df, workflow, user):
 
 
 def import_nodes(df, workflow, user):
-    print("importing nodes")
     week_rank = -1
     week = None
     for index, row in df.iterrows():
         type = row.get("type", "node")
-        print(type)
         if type == "week":
-            print("this is a week")
             week_rank += 1
             created = False
             try:
@@ -147,7 +139,6 @@ def import_nodes(df, workflow, user):
                     "weekworkflow__rank"
                 )[week_rank]
                 weekworkflow = WeekWorkflow.objects.get(week=week)
-                print("found a week")
             except IndexError:
                 week = Week.objects.create(
                     author=user,
@@ -158,7 +149,6 @@ def import_nodes(df, workflow, user):
                     workflow=workflow,
                     rank=workflow.weeks.all().count(),
                 )
-                print("created a week")
                 created = True
             title = row.get("title", "")
             description = row.get("description", "")
@@ -187,7 +177,6 @@ def import_nodes(df, workflow, user):
                 )
 
         elif type == "node":
-            print("this is a node")
             if week is None:
                 week = (
                     workflow.weeks.filter(deleted=False)
@@ -200,7 +189,6 @@ def import_nodes(df, workflow, user):
                     "columnworkflow__rank"
                 )[column_rank]
             except (IndexError, ValueError) as e:
-                print(e)
                 column = (
                     workflow.columns.filter(deleted=False)
                     .order_by("columnworkflow__rank")
@@ -215,7 +203,6 @@ def import_nodes(df, workflow, user):
             )
             title = row.get("title", "")
             description = row.get("description", "")
-            print(description)
             data = {}
             if title is not None and title != "":
                 data["title"] = title
@@ -234,5 +221,3 @@ def import_nodes(df, workflow, user):
             actions.dispatch_wf(
                 workflow, actions.insertBelowAction(response_data, "node")
             )
-
-    print("done")
