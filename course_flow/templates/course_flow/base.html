@@ -237,7 +237,8 @@
             {% endfor %}
           <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
         </div>
-
+        <hr>
+        <a class="panel-item hover-shade" href="{% url 'course_flow:import' %}">{% trans "Import from old CourseFlow" %}</a>
     </div>
 
     {% block body %}{% endblock %}
@@ -289,11 +290,11 @@
       remove_comment: "{% url 'course_flow:remove-comment' %}",
       get_parent_workflow_info: "{% url 'course_flow:get-parent-workflow-info' %}",
       get_export: "{% url 'course_flow:get-export' %}",
-      import_data: "{% url 'course_flow:import-data' %}",
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
       get_download_export: "{% url 'course_flow:get-export-download' pk='0' object_type='objecttype' export_type='exporttype' %}",
+      import: "{% url 'course_flow:import' %}",
     };
 
     const update_path = {
