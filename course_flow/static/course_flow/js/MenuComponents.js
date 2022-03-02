@@ -850,10 +850,10 @@ export class ExploreMenu extends React.Component{
                         <div>
                             <h4>{gettext("Allowed Types")+":"}</h4>
                             <ul id="search-type" class="search-checklist-block">
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="activity"/>{gettext("Activity")}</label></li>
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="course"/>{gettext("Course")}</label></li>
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="program"/>{gettext("Program")}</label></li>
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="project"/>{gettext("Project")}</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="activity" checked/>{gettext("Activity")}</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="course" checked/>{gettext("Course")}</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="program" checked/>{gettext("Program")}</label></li>
+                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="project" checked/>{gettext("Project")}</label></li>
                             </ul>
                         </div>
                         <div>
