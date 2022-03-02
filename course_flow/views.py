@@ -3871,7 +3871,7 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     )
 
 
-# @user_is_teacher()
+@user_is_teacher()
 def get_user_list(request: HttpRequest) -> HttpResponse:
     name_filter = json.loads(request.POST.get("filter"))
     names = name_filter.split(" ")
