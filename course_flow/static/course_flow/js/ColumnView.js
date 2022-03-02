@@ -26,6 +26,14 @@ class ColumnView extends ComponentJSON{
         let css_class = "column";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
+        let mouseover_actions = [];
+        if(!read_only){
+            mouseover_actions.push(this.addInsertSibling(data));
+            mouseover_actions.push(this.addDuplicateSelf(data));
+            mouseover_actions.push(this.addDeleteSelf(data));
+        }
+        mouseover_actions.push(this.addCommenting(data));
+        
         return (
             <div ref={this.maindiv} style={style} class={css_class} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="column-line">
@@ -33,13 +41,9 @@ class ColumnView extends ComponentJSON{
                     <div>{title}</div>
                 </div>
                 {this.addEditable(data)}
-                {!read_only && <div class="mouseover-actions">
-                    {this.addInsertSibling(data)}
-                    {this.addDuplicateSelf(data)}
-                    {this.addDeleteSelf(data)}
-                    {this.addCommenting(data)}
+                <div class="mouseover-actions">
+                    {mouseover_actions}
                 </div>
-                }
             </div>
         );
     }

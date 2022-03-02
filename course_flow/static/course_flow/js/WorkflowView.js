@@ -1,19 +1,19 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, WorkflowTitle} from "./ComponentJSON.js";
-import ColumnWorkflowView from "./ColumnWorkflowView.js";
-import WeekWorkflowView from "./WeekWorkflowView.js";
-import {NodeBarColumnWorkflow} from "./ColumnWorkflowView.js";
-import {NodeBarWeekWorkflow} from "./WeekWorkflowView.js";
-import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents.js";
-import * as Constants from "./Constants.js";
-import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers.js";
-import {OutcomeBar} from "./OutcomeEditView.js";
-import StrategyView from "./Strategy.js";
-import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
-import WorkflowLegend from "./WorkflowLegend.js";
-import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
+import {ComponentJSON, WorkflowTitle} from "./ComponentJSON";
+import ColumnWorkflowView from "./ColumnWorkflowView";
+import WeekWorkflowView from "./WeekWorkflowView";
+import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";
+import {NodeBarWeekWorkflow} from "./WeekWorkflowView";
+import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
+import * as Constants from "./Constants";
+import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers";
+import {OutcomeBar} from "./OutcomeEditView";
+import StrategyView from "./Strategy";
+import WorkflowOutcomeView from "./WorkflowOutcomeView";
+import WorkflowLegend from "./WorkflowLegend";
+import {WorkflowOutcomeLegend} from "./WorkflowLegend";
 import {getParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
@@ -132,7 +132,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     <WorkflowForMenu workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
                     <ParentWorkflowIndicator workflow_id={data.id}/>
                 </div>
-                <div class="workflow-view-select">
+                <div class="workflow-view-select hide-print">
                     {view_buttons_sorted}
                 </div>
                 <div class = "workflow-container">

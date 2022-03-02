@@ -31,6 +31,7 @@ from . import redux_actions as actions
 from .decorators import (
     ajax_login_required,
     check_object_permission,
+    user_can_comment,
     user_can_delete,
     user_can_edit,
     user_can_edit_or_none,
@@ -1467,7 +1468,8 @@ def get_workflow_context_data(workflow, context, user):
         JSONRenderer().render(data_package).decode("utf-8")
     )
     context["read_only"] = JSONRenderer().render(True).decode("utf-8")
-    if (
+    context["comment"] = JSONRenderer().render(False).decode("utf-8")
+    editor = (
         workflow.author == user
         or ObjectPermission.objects.filter(
             user=user,
@@ -1481,8 +1483,24 @@ def get_workflow_context_data(workflow, context, user):
         )
         .count()
         > 0
-    ):
+    )
+    if editor:
         context["read_only"] = JSONRenderer().render(False).decode("utf-8")
+    elif (
+        ObjectPermission.objects.filter(
+            user=user,
+            permission_type=ObjectPermission.PERMISSION_COMMENT,
+            object_id=workflow.id,
+        )
+        .filter(
+            Q(content_type=ContentType.objects.get_for_model(Activity))
+            | Q(content_type=ContentType.objects.get_for_model(Course))
+            | Q(content_type=ContentType.objects.get_for_model(Program))
+        )
+        .count()
+        > 0
+    ):
+        context["comment"] = JSONRenderer().render(True).decode("utf-8")
 
     return context
 
@@ -1879,7 +1897,7 @@ def get_parent_workflow_info(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted", "parent_workflows": data_package})
 
 
-@user_can_edit(False)
+@user_can_view(False)
 def get_comments_for_object(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -3251,7 +3269,7 @@ def add_terminology(request: HttpRequest) -> HttpResponse:
     )
 
 
-@user_can_edit(False)
+@user_can_comment(False)
 def add_comment(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -3825,27 +3843,83 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
             permission_type=ObjectPermission.PERMISSION_VIEW,
         ).select_related("user"):
             viewers.add(object_permission.user)
+        commentors = set()
+        for object_permission in ObjectPermission.objects.filter(
+            content_type=content_type,
+            object_id=object_id,
+            permission_type=ObjectPermission.PERMISSION_COMMENT,
+        ).select_related("user"):
+            commentors.add(object_permission.user)
     except ValidationError:
         return JsonResponse({"action": "error"})
+
+    print(get_model_from_str(object_type))
+    print(get_model_from_str(object_type).objects.get(id=object_id))
+    print(get_model_from_str(object_type).objects.get(id=object_id).author)
     return JsonResponse(
         {
             "action": "posted",
+            "author": UserSerializer(
+                get_model_from_str(object_type)
+                .objects.get(id=object_id)
+                .author
+            ).data,
             "viewers": UserSerializer(viewers, many=True).data,
+            "commentors": UserSerializer(commentors, many=True).data,
             "editors": UserSerializer(editors, many=True).data,
         }
     )
 
 
-@user_is_teacher()
+# @user_is_teacher()
 def get_user_list(request: HttpRequest) -> HttpResponse:
     name_filter = json.loads(request.POST.get("filter"))
+    names = name_filter.split(" ")
+    length = len(names)
+    filters = [[name_filter, ""], ["", name_filter]]
+    for i, name in enumerate(names):
+        if i < length - 1:
+            filters += [
+                [" ".join(names[0 : i + 1]), " ".join(names[i + 1 : length])]
+            ]
     try:
-        user_list = User.objects.filter(
-            username__istartswith=name_filter,
-            groups=Group.objects.get(name=settings.TEACHER_GROUP),
-        )[:10]
+        q_objects = Q(username__istartswith=name_filter)
+        for q_filter in filters:
+            q_objects |= Q(
+                first_name__istartswith=q_filter[0],
+                last_name__istartswith=q_filter[1],
+            )
+
+        teacher_group = Group.objects.get(name=settings.TEACHER_GROUP)
+
+        user_list = User.objects.filter(q_objects, groups=teacher_group)[:10]
+        count = len(user_list)
+        if count < 10:
+            user_list = list(user_list)
+            q_objects = Q(username__icontains=name_filter)
+            for q_filter in filters:
+                print(q_filter)
+                print(
+                    User.objects.filter(
+                        Q(
+                            first_name__icontains=q_filter[0],
+                            last_name__icontains=q_filter[1],
+                        )
+                    )
+                )
+                q_objects |= Q(
+                    first_name__icontains=q_filter[0],
+                    last_name__icontains=q_filter[1],
+                )
+            user_list += list(
+                User.objects.filter(q_objects, groups=teacher_group).exclude(
+                    id__in=[user.id for user in user_list]
+                )[: 10 - count]
+            )
+
     except ValidationError:
         return JsonResponse({"action": "error"})
+
     return JsonResponse(
         {
             "action": "posted",

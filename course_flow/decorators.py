@@ -84,9 +84,15 @@ def check_object_permission(instance, user, permission):
     if permission == ObjectPermission.PERMISSION_VIEW:
         if instance.published == True:
             return True
+        permission_check = (
+            Q(permission_type=ObjectPermission.PERMISSION_EDIT)
+            | Q(permission_type=ObjectPermission.PERMISSION_VIEW)
+            | Q(permission_type=ObjectPermission.PERMISSION_COMMENT)
+        )
+    elif permission == ObjectPermission.PERMISSION_COMMENT:
         permission_check = Q(
             permission_type=ObjectPermission.PERMISSION_EDIT
-        ) | Q(permission_type=ObjectPermission.PERMISSION_VIEW)
+        ) | Q(permission_type=ObjectPermission.PERMISSION_COMMENT)
     else:
         permission_check = Q(permission_type=permission)
     if (
@@ -144,17 +150,17 @@ def get_model_from_request(model, request, **kwargs):
         get_parent = kwargs.get("get_parent", False)
         if get_parent:
             request_data = request.POST.get("parentID")
-            if request_data is None: 
-                id=None
-                model=None
+            if request_data is None:
+                id = None
+                model = None
             else:
                 id = json.loads(request_data)
                 model = json.loads(request.POST.get("parentType"))
         else:
             request_data = request.POST.get("objectID")
             if request_data is None:
-                id=None
-                model=None
+                id = None
+                model = None
             else:
                 id = json.loads(request_data)
                 model = json.loads(request.POST.get("objectType"))
@@ -315,6 +321,38 @@ delete_exceptions = [
     "program",
     "project",
 ]
+
+
+def user_can_comment(model, **outer_kwargs):
+    def wrapped_view(fct):
+        @require_POST
+        @ajax_login_required
+        @wraps(fct)
+        def _wrapped_view(
+            request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
+        ):
+            try:
+                permission_objects = get_permission_objects(
+                    model, request, **outer_kwargs
+                )
+            except:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 403
+                return response
+            if check_objects_permission(
+                permission_objects,
+                User.objects.get(id=request.user.id),
+                ObjectPermission.PERMISSION_COMMENT,
+            ):
+                return fct(request, *args, **kwargs)
+            else:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 403
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view
 
 
 def user_can_delete(model, **outer_kwargs):

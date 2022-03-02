@@ -41,14 +41,14 @@ class OutcomeView extends ComponentJSON{
             );
         }
         
-        let actions=[];
-        if(!read_only && data.depth<2)actions.push(this.addInsertChild(data));
+        let mouseover_actions = [];
         if(!read_only){
-            actions.push(this.addInsertSibling(data));
-            actions.push(this.addDuplicateSelf(data));
-            actions.push(this.addDeleteSelf(data));
-            actions.push(this.addCommenting(data));
+            mouseover_actions.push(this.addInsertSibling(data));
+            mouseover_actions.push(this.addDuplicateSelf(data));
+            mouseover_actions.push(this.addDeleteSelf(data));
+            if(data.depth<2)mouseover_actions.push(this.addInsertChild(data));
         }
+        mouseover_actions.push(this.addCommenting(data));
         
         let dropIcon;
         if(data.is_dropped)dropIcon = "droptriangleup";
@@ -94,17 +94,15 @@ class OutcomeView extends ComponentJSON{
                 </ol>
                 {(!read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>{gettext("+ Add New")}</div>
                 }
-                {(!read_only) && <div class="mouseover-actions">
-                    {actions}
+                <div class="mouseover-actions">
+                    {mouseover_actions}
                 </div>
-                }
                 {
                     this.addEditable(data)
                 }
                 
                 {outcomeDiv}
             </div>
-            
         );
     }
     
@@ -355,8 +353,7 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         if(this.state.is_dropped)droptext=gettext("hide");
         else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
-        let comments;
-        if(this.props.comments)comments=this.addCommenting();
+        let comments=this.addCommenting();
         
         let edit;
         let onClick;
@@ -392,10 +389,9 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
                 <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
                     {children}
                 </div>
-                {!read_only && <div class="mouseover-actions">
+                <div class="mouseover-actions">
                     {comments}
                 </div>
-                }
                 {edit}
             </div>
             

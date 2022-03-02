@@ -103,6 +103,15 @@ class NodeView extends ComponentJSON{
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+
+        let mouseover_actions = [];
+        if(!read_only){
+            mouseover_actions.push(this.addInsertSibling(data));
+            mouseover_actions.push(this.addDuplicateSelf(data));
+            mouseover_actions.push(this.addDeleteSelf(data));
+        }
+        mouseover_actions.push(this.addCommenting(data));
+
         return (
             <div 
                 style={style} 
@@ -131,13 +140,9 @@ class NodeView extends ComponentJSON{
                         <div class="node-drop-time">{data.time_required && (data.time_required+" "+this.props.renderer.time_choices[data.time_units].name)}</div>
                     </div>
                 </div> 
-                {!read_only && <div class="mouseover-actions">
-                    {this.addInsertSibling(data)}
-                    {this.addDuplicateSelf(data)}
-                    {this.addDeleteSelf(data)}
-                    {this.addCommenting(data)}
+                <div class="mouseover-actions">
+                    {mouseover_actions}
                 </div>
-                }
                 {this.addEditable(data)}
                 {nodePorts}
                 {node_links}

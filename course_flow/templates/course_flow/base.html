@@ -143,7 +143,7 @@
     {% block header %}{% endblock %}
   </head>
   <body id="site">
-    <div class="topnav">
+    <div class="topnav hide-print">
       <div class="titlebar">
         <div class="title">
         </div>
@@ -196,7 +196,7 @@
             </div>
           </div>
     </div>
-    <div class="left-panel">
+    <div class="left-panel hide-print">
       <img class="title-image" src="{% static 'course_flow/img/images_svg/logo-courseflow-beta.svg' %}"/>
       <a class="panel-item hover-shade" href="{% url 'course_flow:home' %}">
         <img src="{% static 'course_flow/img/images_svg/home_black.svg' %}"/>
@@ -338,8 +338,18 @@
   </script>
   {% endblock %} {% block read_only_scripts %} {% endblock %}
   <!-- -->
-  {% block scripts %}
-  <script nonce="{{ request.csp_nonce }}">
+    {% block scripts %}
+    <script nonce="{{ request.csp_nonce }}">
+        window.addEventListener("beforeprint",()=>{
+        $(".hide-print").hide();
+        $(".workflow-wrapper, #container").addClass("printing");
+    });
+    window.addEventListener("afterprint",()=>{
+        $(".hide-print").show()
+        $(".workflow-wrapper, #container").removeClass("printing");
+    });
+
+
     window.addEventListener("load", function() {
       const feedback = () => {
         return user_feedback.h(user_feedback.App, {
@@ -369,6 +379,6 @@
         document.getElementById("user-feedback-app")
       );
     });
-  </script>
-  {% endblock %}
+    </script>
+    {% endblock %}
 </html>

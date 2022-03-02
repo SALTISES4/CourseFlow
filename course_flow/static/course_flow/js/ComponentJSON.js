@@ -771,8 +771,12 @@ export class CommentBox extends React.Component{
                 <div class="comment-block">
                     {comments}
                 </div>
-                <textarea ref={this.input}/>
-                <button class="menu-create" onClick={this.appendComment.bind(this)}>{gettext("Submit")}</button>
+                {(!read_only || allow_comments) && 
+                    [
+                        <textarea ref={this.input}/>,
+                        <button class="menu-create" onClick={this.appendComment.bind(this)}>{gettext("Submit")}</button>
+                    ]
+                }
             </div>,
             comment_indicator
             ],

@@ -55,6 +55,11 @@ button, input[type="submit"]{
     top:0px;
 }
 
+.workflow-wrapper.printing{
+    margin-top:0px;
+    background:white;
+}
+
 #content-container{
     font-family:sans-serif;
 }
@@ -70,6 +75,10 @@ button, input[type="submit"]{
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
     padding:0px;
     user-select:none;
+}
+
+.printing .workflow-container{
+    margin-right:10px;
 }
 
 .workflow-header{

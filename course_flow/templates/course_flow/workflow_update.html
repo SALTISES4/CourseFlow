@@ -14,7 +14,7 @@
 
 <div id="container" class="body-wrapper"><div class="load-screen"></div></div>
 <div id="popup-container"></div>
-<div id="sidebar" class="side-bar">
+<div id="sidebar" class="side-bar hide-print">
   <ul>
     <li class="hover-shade">
       <a href="#edit-menu"
@@ -88,8 +88,9 @@
 
     
   const read_only = {{read_only|safe}};
-  console.log("READ ONLY");
-  console.log(read_only);
+  const allow_comments = {{comment|safe}};
+  console.log("override comments");
+  console.log(allow_comments);
   if(read_only)$("#sidebar").hide();
   else{
       $("#side-bar-close-button").on("click",()=>{

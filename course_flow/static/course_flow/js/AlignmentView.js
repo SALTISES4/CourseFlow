@@ -63,10 +63,10 @@ class AlignmentView extends ComponentJSON{
         return(
             <div class="workflow-details">
                 <h3>{gettext("Filters")}:</h3>
-                <div class="workflow-view-select">
+                <div class="workflow-view-select hide-print">
                     {view_buttons_outcomes}
                 </div>
-                <div class="workflow-view-select">
+                <div class="workflow-view-select hide-print">
                     {view_buttons_terms}
                 </div>
                 {outcomes_block}

@@ -1136,10 +1136,12 @@ class ObjectPermission(models.Model):
     PERMISSION_NONE = 0
     PERMISSION_VIEW = 1
     PERMISSION_EDIT = 2
+    PERMISSION_COMMENT = 3
     PERMISSION_CHOICES = (
         (PERMISSION_NONE, _("None")),
         (PERMISSION_VIEW, _("View")),
         (PERMISSION_EDIT, _("Edit")),
+        (PERMISSION_COMMENT, _("Comment")),
     )
     permission_type = models.PositiveIntegerField(
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE

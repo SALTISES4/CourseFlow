@@ -39,17 +39,21 @@ class TermView extends WeekViewUnconnected{
             style.border="2px solid "+data.lock.user_colour;
         }
         
+        let mouseover_actions = [];
+        if(!read_only){
+            mouseover_actions.push(this.addInsertSibling(data));
+            mouseover_actions.push(this.addDuplicateSelf(data));
+            mouseover_actions.push(this.addDeleteSelf(data));
+        }
+        mouseover_actions.push(this.addCommenting(data));
+        
         return (
             <div style={style} class={"week"} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
-                {!read_only && <div class="mouseover-container-bypass">
+                <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
-                        {this.addInsertSibling(data)}
-                        {this.addDuplicateSelf(data)}
-                        {this.addDeleteSelf(data)}
-                        {this.addCommenting(data)}
+                        {mouseover_actions}
                     </div>
                 </div>
-                }
                 <TitleText text={data.title} defaultText={data.week_type_display+" "+(this.props.rank+1)}/>
                 <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                     {node_blocks}

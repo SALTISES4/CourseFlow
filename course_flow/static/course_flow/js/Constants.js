@@ -121,6 +121,12 @@ export const through_parent_dictionary = {
     outcome:"outcomeoutcome",
     outcome_base:"outcomeworkflow"
 }
+export const permission_keys = {
+    "none":0,
+    "view":1,
+    "edit":2,
+    "comment":3,
+}
 //get all the possible custom names. This is super clunky, should probably be switched to ngettext
 export function custom_text_base(){
     return {
@@ -154,6 +160,7 @@ function missing_translations(){
     gettext("activity");
     gettext("course");
     gettext("program");
+    gettext("project");
 }
 
 
