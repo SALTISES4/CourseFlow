@@ -575,7 +575,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             self.assertEqual(
                 len(selenium.find_elements_by_css_selector(".action-button")),
-                0,
+                6,
             )
             selenium.find_elements_by_css_selector(".week")[0].click()
             time.sleep(0.3)
@@ -2159,14 +2159,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
         selenium.find_element_by_id("share-button").click()
         inputs = selenium.find_elements_by_css_selector(".user-add input")
-        adds = selenium.find_elements_by_css_selector(".user-add button")
         inputs[0].send_keys("testuser2")
         time.sleep(2)
         selenium.find_elements_by_css_selector(".ui-autocomplete li")[
             0
         ].click()
-        adds[0].click()
-        time.sleep(1)
+        time.sleep(0.5)
+        selenium.find_elements_by_css_selector(".user-add button")[0].click()
+        time.sleep(2)
         self.assertEqual(
             ObjectPermission.objects.filter(
                 user=user2,
@@ -2176,26 +2176,39 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             ).count(),
             1,
         )
-        self.assertEqual(
-            ObjectPermission.objects.filter(
-                user=user2,
-                permission_type=ObjectPermission.PERMISSION_VIEW,
-                content_type=ContentType.objects.get_for_model(project),
-                object_id=project.id,
-            ).count(),
-            0,
-        )
-        inputs[1].send_keys("testuser2")
-        time.sleep(2)
-        selenium.find_elements_by_css_selector(".ui-autocomplete li")[
+
+        selenium.find_elements_by_css_selector(".user-label select")[0].click()
+        selenium.find_elements_by_css_selector(".user-label select option")[
             1
         ].click()
-        adds[1].click()
-        time.sleep(1)
+        time.sleep(2)
         self.assertEqual(
             ObjectPermission.objects.filter(
                 user=user2,
                 permission_type=ObjectPermission.PERMISSION_EDIT,
+                content_type=ContentType.objects.get_for_model(project),
+                object_id=project.id,
+            ).count(),
+            0,
+        )
+        self.assertEqual(
+            ObjectPermission.objects.filter(
+                user=user2,
+                permission_type=ObjectPermission.PERMISSION_COMMENT,
+                content_type=ContentType.objects.get_for_model(project),
+                object_id=project.id,
+            ).count(),
+            1,
+        )
+        selenium.find_elements_by_css_selector(".user-label select")[0].click()
+        selenium.find_elements_by_css_selector(".user-label select option")[
+            2
+        ].click()
+        time.sleep(2)
+        self.assertEqual(
+            ObjectPermission.objects.filter(
+                user=user2,
+                permission_type=ObjectPermission.PERMISSION_COMMENT,
                 content_type=ContentType.objects.get_for_model(project),
                 object_id=project.id,
             ).count(),
@@ -2210,20 +2223,23 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             ).count(),
             1,
         )
-        selenium.find_element_by_css_selector(
-            ".user-label .window-close-button"
-        ).click()
+        selenium.find_elements_by_css_selector(".user-label select")[0].click()
+        selenium.find_elements_by_css_selector(".user-label select option")[
+            3
+        ].click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
         time.sleep(2)
         self.assertEqual(
             ObjectPermission.objects.filter(
                 user=user2,
+                permission_type=ObjectPermission.PERMISSION_VIEW,
                 content_type=ContentType.objects.get_for_model(project),
                 object_id=project.id,
             ).count(),
             0,
         )
+
         selenium.find_element_by_css_selector(
             ".message-wrap > .window-close-button"
         ).click()
@@ -2270,7 +2286,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                     title=object_type + str(i),
                 )
                 item.disciplines.set(disciplines)
-                
+
     def test_delete_restore_column(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
