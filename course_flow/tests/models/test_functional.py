@@ -573,10 +573,17 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             time.sleep(2)
 
-            self.assertEqual(
-                len(selenium.find_elements_by_css_selector(".action-button")),
-                6,
-            )
+            if workflow_type=="program":
+                self.assertEqual(
+                    len(selenium.find_elements_by_css_selector(".action-button")),
+                    5,
+                )
+            else:
+                self.assertEqual(
+                    len(selenium.find_elements_by_css_selector(".action-button")),
+                    6,
+                )
+                
             selenium.find_elements_by_css_selector(".week")[0].click()
             time.sleep(0.3)
             self.assertEqual(
