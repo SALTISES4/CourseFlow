@@ -30,6 +30,13 @@ export class ShareMenu extends React.Component{
         if(text==null || text==""){
             text=gettext("Untitled");
         }
+
+        let share_info;
+        if(data.type=="project"){
+            share_info=gettext("Note: You are sharing a project. Any added users will be granted the same permission for all workflows within the project.");
+        }else{
+            share_info=gettext("Note: You are sharing a workflow. Any added users will be granted view permissions for the whole project.");
+        }
         
         return(
             <div class="message-wrap user-text">
@@ -50,6 +57,7 @@ export class ShareMenu extends React.Component{
                     </ul>
                 </div>
                 <UserAdd permissionChange={this.setUserPermission.bind(this)}/>
+                {share_info}
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
                     <img src = {iconpath+"close.svg"}/>
                 </div>

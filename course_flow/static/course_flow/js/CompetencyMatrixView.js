@@ -51,7 +51,7 @@ class CompetencyMatrixView extends ComponentJSON{
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("Practical")}</div></div>
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("Individual Work")}</div></div>
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("Total")}</div></div>
-                            <div class="table-cell nodewrapper"><div class="outcome">{gettext("Time")}</div></div>
+                            <div class="table-cell nodewrapper"><div class="outcome">{gettext("Credits")}</div></div>
                         </div>
                         {weekworkflows}
                     </div>
@@ -352,7 +352,10 @@ const mapWeekStateToProps = (state,own_props)=>{
     let data = getWeekByID(state,own_props.objectID).data;
     let node_weeks = Constants.filterThenSortByID(state.nodeweek,data.nodeweek_set);
     let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node));
-    let linked_wf_data = nodes_data.map(node=>node.linked_workflow_data);
+    let linked_wf_data = nodes_data.map(node=>{
+        if(node.represents_workflow)return {...node,...node.linked_workflow_data};
+        return node
+    });
     let general_education = linked_wf_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.time_general_hours)return previousValue+currentValue.time_general_hours;
         return previousValue;
@@ -445,6 +448,19 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        let data_override;
+        if(data.represents_workflow)data_override = {...data,...data.linked_workflow_data}
+        else data_override = data;
+        let selection_manager = this.props.renderer.selection_manager;
+        
+        let style = {backgroundColor:this.props.renderer.column_colours[data.column]}
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
+        }
+        let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
+        if(data.is_dropped)css_class+=" dropped";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        
         let outcomenodes = this.props.outcomes_tree.map(outcome=>
             <MatrixOutcomeBlockView renderer={this.props.renderer} nodeID={data.id} data={outcome} outcomes_type={this.props.outcomes_type} dropped_list={this.props.dropped_list}/>
         )
@@ -452,12 +468,12 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
         return (
             <div class="node-row">
                 <div class="outcome-head">
-                    <div class={
-                            "node column-"+data.column+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
-                        }
-                        style={
-                            {backgroundColor:this.props.renderer.column_colours[data.column]}
-                        }>
+                    <div class={css_class}
+                        style={style}
+                        id={data.id} 
+                        ref={this.maindiv} 
+                        onClick={(evt)=>selection_manager.changeSelection(evt,this)}
+                    >
                         <div class = "node-top-row">
                             <NodeTitle data={data}/>
                         </div>
@@ -466,43 +482,28 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
                 <div class="table-cell blank"></div>
                 {outcomenodes}
                 <div class="table-cell blank"></div>
-                {this.getTimeData()}
+                {this.getTimeData(data_override)}
+                {this.addEditable(data_override)}
             </div>
         )
     }
     
-    getTimeData(){
-        let linked_workflow_data = this.props.data.linked_workflow_data;
-        if(linked_workflow_data){
-            return(
-                [
-                    <div class="table-cell">{linked_workflow_data.time_general_hours}</div>,
-                    <div class="table-cell">{linked_workflow_data.time_specific_hours}</div>,
-                    <div class="table-cell">{(linked_workflow_data.time_general_hours||0)+(linked_workflow_data.time_specific_hours||0)}</div>,
-                    <div class="table-cell blank"></div>,
-                    <div class="table-cell">{linked_workflow_data.ponderation_theory}</div>,
-                    <div class="table-cell">{linked_workflow_data.ponderation_practical}</div>,
-                    <div class="table-cell">{linked_workflow_data.ponderation_individual}</div>,
-                    <div class="table-cell">{linked_workflow_data.ponderation_theory+
-                    linked_workflow_data.ponderation_practical+
-                    linked_workflow_data.ponderation_individual}</div>,
-                    <div class="table-cell" titletext={this.props.renderer.time_choices[linked_workflow_data.time_units].name}>{linked_workflow_data.time_required}</div>,
-                ]
-            )
-        }else{
-            return(
-                [
-                    <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
-                    <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
-                    <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
-                    <div titletext={gettext("No linked workflow")} class="table-cell"></div>,
-                    <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
-                    <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
-                    <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
-                    <div titletext={gettext("No linked workflow")} class="table-cell">-</div>,
-                ]
-            )
-        }
+    getTimeData(data){
+        return(
+            [
+                <div class="table-cell">{data.time_general_hours}</div>,
+                <div class="table-cell">{data.time_specific_hours}</div>,
+                <div class="table-cell">{(data.time_general_hours||0)+(data.time_specific_hours||0)}</div>,
+                <div class="table-cell blank"></div>,
+                <div class="table-cell">{data.ponderation_theory}</div>,
+                <div class="table-cell">{data.ponderation_practical}</div>,
+                <div class="table-cell">{data.ponderation_individual}</div>,
+                <div class="table-cell">{data.ponderation_theory+
+                data.ponderation_practical+
+                data.ponderation_individual}</div>,
+                <div class="table-cell" titletext={this.props.renderer.time_choices[data.time_units].name}>{data.time_required}</div>,
+            ]
+        )
     }
     
 }

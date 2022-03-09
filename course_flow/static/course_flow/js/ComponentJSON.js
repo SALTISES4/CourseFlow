@@ -338,6 +338,12 @@ export class ComponentJSON extends React.Component{
             let title_length="50";
             if(type=="outcome")title_length="500";
             var props = this.props;
+            let override = false;
+            console.log("SELECTED NODE:");
+            console.log(data);
+            let title=data.title || "";
+            let description=data.description || "";
+            if(data.represents_workflow)override=true;
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
                     <h3>{gettext("Edit ")+type+":"}</h3>
@@ -347,16 +353,16 @@ export class ComponentJSON extends React.Component{
                             <input autocomplete="off" id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
                         </div>
                     }
-                    {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
+                    {["node","week","column","workflow","outcome"].indexOf(type)>=0 &&
                         <div>
                             <h4>{gettext("Title")}:</h4>
-                            <input autocomplete="off" id="title-editor" type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
+                            <input disabled={override} autocomplete="off" id="title-editor" type="text" value={title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
-                    {["node","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
+                    {["node","workflow","outcome"].indexOf(type)>=0 &&
                         <div>
                             <h4>{gettext("Description")}:</h4>
-                            <QuillDiv text={data.description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
+                            <QuillDiv  disabled={override} text={description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
@@ -383,8 +389,8 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>{gettext("Time")}:</h4>
                             <div>
-                                <input autocomplete="off" id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
-                                <select id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
+                                <input disabled={override} autocomplete="off" id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
+                                <select disabled={override} id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
                                     {this.props.renderer.time_choices.map((choice)=>
                                         <option value={choice.type}>{choice.name}</option>
                                     )}
@@ -400,18 +406,18 @@ export class ComponentJSON extends React.Component{
                             </div>
                         </div>
                     }
-                    {(type=="workflow" && data.type=="course") &&
+                    {((type=="workflow" && data.type=="course")||(type=="node" && data.node_type==2)) &&
                         <div>
                             <h4>{gettext("Ponderation")}:</h4>
-                            <input autocomplete="off" class="half-width" id="ponderation-theory" type="number" value={data.ponderation_theory} onChange={this.inputChanged.bind(this,"ponderation_theory")}/>
+                            <input disabled={override} autocomplete="off" class="half-width" id="ponderation-theory" type="number" value={data.ponderation_theory} onChange={this.inputChanged.bind(this,"ponderation_theory")}/>
                             <div class="half-width">{gettext("hrs. Theory")}</div>
-                            <input autocomplete="off" class="half-width" id="ponderation-practical" type="number" value={data.ponderation_practical} onChange={this.inputChanged.bind(this,"ponderation_practical")}/>
+                            <input disabled={override} autocomplete="off" class="half-width" id="ponderation-practical" type="number" value={data.ponderation_practical} onChange={this.inputChanged.bind(this,"ponderation_practical")}/>
                             <div class="half-width">{gettext("hrs. Practical")}</div>
-                            <input class="half-width" autocomplete="off" class="half-width" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
+                            <input disabled={override} class="half-width" autocomplete="off" class="half-width" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
                             <div class="half-width">{gettext("hrs. Individual")}</div>
-                            <input class="half-width" autocomplete="off" class="half-width" id="time-general-hours" type="number" value={data.time_general_hours} onChange={this.inputChanged.bind(this,"time_general_hours")}/>
+                            <input disabled={override} class="half-width" autocomplete="off" class="half-width" id="time-general-hours" type="number" value={data.time_general_hours} onChange={this.inputChanged.bind(this,"time_general_hours")}/>
                             <div class="half-width">{gettext("hrs. General Education")}</div>
-                            <input class="half-width" autocomplete="off" class="half-width" id="time-specific-hours" type="number" value={data.time_specific_hours} onChange={this.inputChanged.bind(this,"time_specific_hours")}/>
+                            <input disabled={override} class="half-width" autocomplete="off" class="half-width" id="time-specific-hours" type="number" value={data.time_specific_hours} onChange={this.inputChanged.bind(this,"time_specific_hours")}/>
                             <div class="half-width">{gettext("hrs. Specific Education")}</div>
                         </div>
                     }
@@ -944,6 +950,7 @@ export class QuillDiv extends React.Component{
             },
             placeholder:this.props.placeholder
         });
+        this.quill=quill;
         if(this.props.text)quill.clipboard.dangerouslyPasteHTML(this.props.text);
         quill.on('text-change',()=>{
             let text = quill_container.childNodes[0].innerHTML.replace(/\<p\>\<br\>\<\/p\>\<ul\>/g,"\<ul\>");
@@ -960,9 +967,16 @@ export class QuillDiv extends React.Component{
             }
             this.defaultLinkFunction(value);
         });
+        this.quill.enable(!this.props.disabled);
         
     }
-    
+        
+    componentDidUpdate(prevProps, prevState){
+        if(prevProps.disabled!=this.props.disabled){
+            if(prevProps.text!=this.props.text)this.quill.clipboard.dangerouslyPasteHTML(this.props.text,"silent");
+            this.quill.enable(!this.props.disabled);
+        }
+    }
     
 }
 

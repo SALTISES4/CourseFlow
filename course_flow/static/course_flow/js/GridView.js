@@ -115,24 +115,37 @@ class GridNodeViewUnconnected extends ComponentJSON{
     }
     
     render(){
+        let renderer = this.props.renderer;
+        let selection_manager=renderer.selection_manager;
         let data = this.props.data;
+        let data_override;
+        if(data.represents_workflow)data_override = {...data,...data.linked_workflow_data}
+        else data_override = data;
         let ponderation;
-        if(data.linked_workflow){
-            ponderation = (
-                <div class="grid-ponderation">{data.linked_workflow_data.ponderation_theory+"/"+data.linked_workflow_data.ponderation_practical+"/"+data.linked_workflow_data.ponderation_individual}</div>
-            )
+        ponderation = (
+            <div class="grid-ponderation">{data_override.ponderation_theory+"/"+data_override.ponderation_practical+"/"+data_override.ponderation_individual}</div>
+        )
+        
+        let style = {backgroundColor:this.props.renderer.column_colours[data.column]}
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
         }
+        let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
+        if(data.is_dropped)css_class+=" dropped";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        
         return (
-            <div class={
-                    "node column-"+data.column+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
-                }
-                style={
-                    {backgroundColor:this.props.renderer.column_colours[data.column]}
-                }>
+            <div style={style}
+                id={data.id} 
+                ref={this.maindiv} 
+                onClick={(evt)=>selection_manager.changeSelection(evt,this)}
+                class={css_class}
+                style={style}>
                 <div class = "node-top-row">
                     <NodeTitle data={data}/>
                     {ponderation}
                 </div>
+                {this.addEditable(data_override)}
             </div>
         )
     }

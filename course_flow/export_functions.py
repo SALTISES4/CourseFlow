@@ -369,16 +369,16 @@ def get_program_matrix(workflow, simple):
     data[str(col)] = ["", _("Specific Education")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.time_specific_hours
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.time_specific_hours,
     )
     col += 1
 
     data[str(col)] = ["", _("General Education")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.time_general_hours
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.time_general_hours,
     )
     col += 1
 
@@ -386,8 +386,8 @@ def get_program_matrix(workflow, simple):
         rows,
         lambda x: x.linked_workflow.time_general_hours
         + x.linked_workflow.time_specific_hours
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.time_general_hours+x.time_specific_hours,
     )
     col += 1
 
@@ -397,24 +397,24 @@ def get_program_matrix(workflow, simple):
     data[str(col)] = ["", _("Theory")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.ponderation_theory
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.ponderation_theory,
     )
     col += 1
 
     data[str(col)] = ["", _("Practical")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.ponderation_practical
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.ponderation_practical,
     )
     col += 1
 
     data[str(col)] = ["", _("Practical")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.ponderation_individual
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.ponderation_individual,
     )
     col += 1
 
@@ -423,8 +423,8 @@ def get_program_matrix(workflow, simple):
         lambda x: x.linked_workflow.ponderation_individual
         + x.linked_workflow.ponderation_theory
         + x.linked_workflow.ponderation_practical
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.ponderation_individual+x.ponderation_theory+x.ponderation_practical,
     )
     col += 1
 
@@ -434,8 +434,8 @@ def get_program_matrix(workflow, simple):
     data[str(col)] = ["", _("Credits")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.time_required
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.time_required,
     )
     col += 1
 
