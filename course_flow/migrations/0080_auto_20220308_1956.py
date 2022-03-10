@@ -6,33 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0079_auto_20220228_1845'),
+        ("course_flow", "0079_auto_20220228_1845"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='node',
-            name='ponderation_individual',
+            model_name="node",
+            name="ponderation_individual",
             field=models.PositiveIntegerField(default=0, null=True),
         ),
         migrations.AddField(
-            model_name='node',
-            name='ponderation_practical',
+            model_name="node",
+            name="ponderation_practical",
             field=models.PositiveIntegerField(default=0, null=True),
         ),
         migrations.AddField(
-            model_name='node',
-            name='ponderation_theory',
+            model_name="node",
+            name="ponderation_theory",
             field=models.PositiveIntegerField(default=0, null=True),
         ),
         migrations.AddField(
-            model_name='node',
-            name='time_general_hours',
+            model_name="node",
+            name="time_general_hours",
             field=models.PositiveIntegerField(default=0, null=True),
         ),
         migrations.AddField(
-            model_name='node',
-            name='time_specific_hours',
+            model_name="node",
+            name="time_specific_hours",
             field=models.PositiveIntegerField(default=0, null=True),
         ),
     ]

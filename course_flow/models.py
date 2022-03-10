@@ -568,14 +568,14 @@ class Node(models.Model):
     # note: use charfield because some users like to put in ranges (i.e. 10-15 minutes)
     time_required = models.CharField(max_length=30, null=True, blank=True)
     time_units = models.PositiveIntegerField(default=0, choices=UNIT_CHOICES)
-    
+
     ponderation_theory = models.PositiveIntegerField(default=0, null=True)
     ponderation_practical = models.PositiveIntegerField(default=0, null=True)
     ponderation_individual = models.PositiveIntegerField(default=0, null=True)
 
     time_general_hours = models.PositiveIntegerField(default=0, null=True)
     time_specific_hours = models.PositiveIntegerField(default=0, null=True)
-    
+
     represents_workflow = models.BooleanField(default=False)
     linked_workflow = models.ForeignKey(
         "Workflow",

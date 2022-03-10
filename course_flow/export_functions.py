@@ -387,7 +387,7 @@ def get_program_matrix(workflow, simple):
         lambda x: x.linked_workflow.time_general_hours
         + x.linked_workflow.time_specific_hours
         if (x.linked_workflow is not None and x.represents_workflow)
-        else x.time_general_hours+x.time_specific_hours,
+        else x.time_general_hours + x.time_specific_hours,
     )
     col += 1
 
@@ -424,7 +424,9 @@ def get_program_matrix(workflow, simple):
         + x.linked_workflow.ponderation_theory
         + x.linked_workflow.ponderation_practical
         if (x.linked_workflow is not None and x.represents_workflow)
-        else x.ponderation_individual+x.ponderation_theory+x.ponderation_practical,
+        else x.ponderation_individual
+        + x.ponderation_theory
+        + x.ponderation_practical,
     )
     col += 1
 
