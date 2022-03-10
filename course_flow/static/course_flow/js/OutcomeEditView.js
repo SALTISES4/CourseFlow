@@ -5,10 +5,9 @@ import {ComponentJSON, OutcomeTitle} from "./ComponentJSON";
 import OutcomeWorkflowView from "./OutcomeWorkflowView";
 import {OutcomeBarOutcomeView, OutcomeBarOutcomeViewUnconnected} from "./OutcomeView";
 import OutcomeView from "./OutcomeView";
-import {getParentWorkflowByID,getParentOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID} from "./FindState";
+import {getParentWorkflowByID,getOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID} from "./FindState";
 import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents';
 import {newOutcome} from "./PostFunctions";
-import {newOutcomeAction} from "./Reducers";
 import * as Constants from "./Constants";
 
 //Basic component representing the outcome view
@@ -24,7 +23,7 @@ class OutcomeEditView extends ComponentJSON{
         var selector = this;
         
         let outcomes = data.outcomeworkflow_set.map(outcomeworkflow=>
-            <OutcomeWorkflowView objectID={outcomeworkflow} parentID={data.id} renderer={this.props.renderer}/>
+            <OutcomeWorkflowView objectID={outcomeworkflow} parentID={data.id} renderer={this.props.renderer} show_horizontal={true}/>
         );
         if(outcomes.length==0)outcomes=(
             <div class="emptytext">{gettext("Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.")}</div>
@@ -38,7 +37,7 @@ class OutcomeEditView extends ComponentJSON{
                     {outcomes}
                     <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNew.bind(this)}>
                         <img class="create-button" src={iconpath+"add_new_white.svg"}/>
-                        <div>Add new</div>
+                        <div>{gettext("Add new")}</div>
                     </div>
                     <ParentOutcomeBar/>
                 </div>
@@ -48,7 +47,7 @@ class OutcomeEditView extends ComponentJSON{
     
     
     addNew(){
-        newOutcome(this.props.data.id,(response)=>{this.props.dispatch(newOutcomeAction(response))});
+        newOutcome(this.props.data.id);
     }
     
 }
@@ -104,7 +103,7 @@ class ParentOutcomeNodeViewUnconnected extends ComponentJSON{
     }
 }
 const mapParentOutcomeNodeStateToProps = (state,own_props)=>(
-    getParentOutcomeNodeByID(state,own_props.objectID)
+    getOutcomeNodeByID(state,own_props.objectID)
 )
 export const ParentOutcomeNodeView = connect(
     mapParentOutcomeNodeStateToProps,
@@ -159,7 +158,7 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected{
     
 }
 const mapParentOutcomeStateToProps = (state,own_props)=>(
-    getOutcomeByID(state,own_props.objectID,"parent")
+    getOutcomeByID(state,own_props.objectID)
 )
 export const ParentOutcomeView = connect(
     mapParentOutcomeStateToProps,
@@ -221,7 +220,7 @@ class OutcomeBarUnconnected extends ComponentJSON{
     
 }
 const mapOutcomeBarStateToProps = state =>(
-    {data:state.outcomeworkflow,workflow_type:state.workflow.type}
+    {data:state.outcomeworkflow.filter(outcomeworkflow=>state.workflow.outcomeworkflow_set.indexOf(outcomeworkflow.id)>=0),workflow_type:state.workflow.type}
 )
 export const OutcomeBar = connect(
     mapOutcomeBarStateToProps,

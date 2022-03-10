@@ -11,7 +11,8 @@ import {WorkflowView_Outcome} from"./WorkflowView";
 import * as Constants from "./Constants";
 import * as Reducers from "./Reducers";
 import OutcomeTopView from './OutcomeTopView';
-import {getWorkflowParentData, getWorkflowChildData} from './PostFunctions';
+import {getWorkflowData, getWorkflowParentData, getWorkflowChildData, updateValue} from './PostFunctions';
+import {ConnectionBar} from './ConnectedUsers'
 import '../css/base_style.css';
 import '../css/workflow_styles.css';
 
@@ -42,9 +43,22 @@ export class SelectionManager{
     changeSelection(evt,newSelection){
         if(read_only)return;
         if(evt)evt.stopPropagation();
-        if(this.currentSelection)this.currentSelection.setState({selected:false});
+        if(newSelection && newSelection.props.data && newSelection.props.data.lock)return;
+        if(this.currentSelection){
+            this.currentSelection.setState({selected:false});
+            this.currentSelection.props.renderer.lock_update(
+                {object_id:this.currentSelection.props.data.id,
+                    object_type:Constants.object_dictionary[this.currentSelection.objectType]
+                },60*1000,false
+            );
+        }
         this.currentSelection=newSelection;
         if(this.currentSelection){
+            this.currentSelection.props.renderer.lock_update(
+                {object_id:this.currentSelection.props.data.id,
+                    object_type:Constants.object_dictionary[this.currentSelection.objectType]
+                },60*1000,true
+            );
             if($("#sidebar").tabs("option","active")!==0)this.last_sidebar_tab = $("#sidebar").tabs( "option", "active");
             $("#sidebar").tabs("enable",0);
             $("#sidebar").tabs( "option", "active", 0 );
@@ -130,7 +144,8 @@ export class ProjectRenderer{
 
 export class WorkflowRenderer{
     constructor(data_package){
-        this.initial_workflow_data = data_package.data_flat;
+        this.message_queue=[];
+        this.messages_queued=true;
         this.column_choices = data_package.column_choices;
         this.context_choices = data_package.context_choices;
         this.task_choices = data_package.task_choices;
@@ -139,7 +154,6 @@ export class WorkflowRenderer{
         this.outcome_sort_choices = data_package.outcome_sort_choices;
         this.strategy_classification_choices = data_package.strategy_classification_choices;
         this.is_strategy = data_package.is_strategy;
-        this.store = createStore(Reducers.rootWorkflowReducer,this.initial_workflow_data);
         this.column_colours = {}
         this.read_only = data_package.read_only;
         if(data_package.project){
@@ -158,19 +172,21 @@ export class WorkflowRenderer{
     }
     
     render(container,view_type="workflowview"){
-        console.log("rendering a view");
+        console.log(this.store.getState());
         this.view_type=view_type;
         reactDom.render(<WorkflowLoader/>,container[0]);
         let store = this.store;
+        let initial_workflow_data = store.getState();
         var renderer = this;
         this.initial_loading=true;
         this.container = container;
+        this.locks={}
         this.items_to_load = {
-            column:this.initial_workflow_data.column.length,
-            week:this.initial_workflow_data.week.length,
-            node:this.initial_workflow_data.node.length,
+            column:initial_workflow_data.column.filter(x=>!x.deleted).length,
+            week:initial_workflow_data.week.filter(x=>!x.deleted).length,
+            node:initial_workflow_data.node.filter(x=>!x.deleted).length,
         };
-        this.ports_to_render = this.initial_workflow_data.node.length;
+        this.ports_to_render = initial_workflow_data.node.filter(x=>!x.deleted).length;
         
         container.on("component-loaded",(evt,objectType)=>{
             evt.stopPropagation();
@@ -198,14 +214,12 @@ export class WorkflowRenderer{
         });
     
         this.selection_manager = new SelectionManager(); 
+        this.selection_manager.renderer = renderer;
         this.tiny_loader = new TinyLoader(container);
-        console.log("view type is "+view_type);
         if(view_type=="outcomeedit"){
             //get additional data about parent workflow prior to render
-            getWorkflowParentData(this.initial_workflow_data.workflow.id,(response)=>{
-                console.log(response)
-                store.dispatch(Reducers.replaceStoreData(response.data_package));
-                console.log(store.getState());
+            getWorkflowParentData(workflow_model_id,(response)=>{
+                store.dispatch(Reducers.refreshStoreData(response.data_package));
                 reactDom.render(
                     <Provider store = {store}>
                         <WorkflowBaseView view_type={view_type} renderer={this}/>
@@ -216,10 +230,8 @@ export class WorkflowRenderer{
             
         }else if(view_type=="horizontaloutcometable" || view_type=="alignmentanalysis"){
             //get additional data about child workflows prior to render
-            getWorkflowChildData(this.initial_workflow_data.workflow.id,(response)=>{
-                console.log(response)
-                store.dispatch(Reducers.replaceStoreData(response.data_package));
-                console.log(store.getState());
+            getWorkflowChildData(workflow_model_id,(response)=>{
+                store.dispatch(Reducers.refreshStoreData(response.data_package));
                 reactDom.render(
                     <Provider store = {store}>
                         <WorkflowBaseView view_type={view_type} renderer={this}/>
@@ -246,6 +258,116 @@ export class WorkflowRenderer{
         }
         
     }
+    
+    connection_opened(){
+        getWorkflowData(workflow_model_id,(response)=>{
+            let data_flat = response.data_package;
+            console.log(data_flat);
+            this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
+            this.render($("#container"));
+            this.create_connection_bar();
+            this.clear_queue(data_flat.workflow.edit_count);
+        });
+    }
+    
+    clear_queue(edit_count){
+        let started_edits = false;
+        while(this.message_queue.length>0){
+            let message = this.message_queue[0];
+            if(started_edits)this.parsemessage(message);
+            else if(message.edit_count && parseInt(message.edit_count)>=edit_count)started_edits=true;
+            this.message_queue.splice(0,1);
+        }
+        this.messages_queued=false;
+    }
+    
+    parsemessage = function(e){
+        const data = JSON.parse(e.data);
+        if(data.type=="workflow_action"){
+            this.store.dispatch(data.action);
+        }else if(data.type=="lock_update"){
+            this.lock_update_received(data.action);
+        }else if(data.type=="connection_update"){
+            this.connection_update_received(data.action);
+        }else if(data.type=="workflow_parent_updated"){
+            this.parent_workflow_updated(data.edit_count);
+        }else if(data.type=="workflow_child_updated"){
+            this.child_workflow_updated(data.edit_count);
+        }
+    }
+    
+    parent_workflow_updated(edit_count){
+        this.messages_queued=true;
+        let renderer = this;
+        getWorkflowParentData(workflow_model_id,(response)=>{
+            console.log("Got parent data");
+            //remove all the parent node and parent workflow data
+            renderer.store.dispatch(Reducers.replaceStoreData({parent_node:[],parent_workflow:[]}));
+            renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
+            renderer.clear_queue(0);
+        });
+    }
+
+    child_workflow_updated(edit_count){
+        this.messages_queued=true;
+        let renderer = this;
+        getWorkflowChildData(workflow_model_id,(response)=>{
+            console.log("Got child data");
+            //remove all the child workflow data
+            renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
+            renderer.clear_queue(0);
+        });
+    }
+    
+    message_received(e){
+        if(this.messages_queued)this.message_queue.push(e);
+        else this.parsemessage(e);
+    }
+    
+    micro_update(obj){
+        if(this.updateSocket){
+            this.updateSocket.send(JSON.stringify({type:"micro_update",action:obj}))
+        }
+    }
+    
+    change_field(id,object_type,field,value){
+        let json = {};
+        json[field]=value;
+        this.store.dispatch(Reducers.changeField(id,object_type,json));
+        updateValue(id,object_type,json,true);
+    }
+    
+    
+    lock_update(obj,time,lock){
+        if(this.updateSocket){
+            this.updateSocket.send(JSON.stringify({type:"lock_update",lock:{...obj,expires:Date.now()+time,user_id:user_id,user_colour:myColour,lock:lock}}));
+        }
+    }
+    
+    lock_update_received(data){
+        let store = this.store;
+        let object_type=data.object_type;
+        let object_id=data.object_id;
+        if(!this.locks[object_type])this.locks[object_type]={};
+        if(this.locks[object_type][object_id]){
+            clearTimeout(this.locks[object_type][object_id])
+        }
+         store.dispatch(Reducers.createLockAction(object_id,object_type,data.lock,data.user_id,data.user_colour));
+        if(data.lock)this.locks[object_type][object_id] = setTimeout(function(){
+            store.dispatch(Reducers.createLockAction(object_id,object_type,false));
+        },data.expires-Date.now());
+        else this.locks[object_type][object_id]=null;
+       
+    }
+    
+    create_connection_bar(){
+        reactDom.render(
+            <ConnectionBar updateSocket={this.updateSocket} renderer={this}/>,
+            $("#userbar")[0]
+        );
+    }
+    
+    
     
 }
 

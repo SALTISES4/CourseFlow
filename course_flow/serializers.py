@@ -1,5 +1,8 @@
+import re
+
 import bleach
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Q
 from html2text import html2text
 from rest_framework import serializers
 
@@ -25,6 +28,7 @@ from .models import (
     Week,
     WeekWorkflow,
     Workflow,
+    title_max_length,
 )
 from .utils import (
     dateTimeFormat,
@@ -64,6 +68,8 @@ class DescriptionSerializerMixin:
         return bleach_sanitizer(instance.description, tags=bleach_allowed_tags)
 
     def validate_description(self, value):
+        if value is None:
+            return None
         return bleach_sanitizer(value, tags=bleach_allowed_tags)
 
 
@@ -74,7 +80,9 @@ class TitleSerializerMixin:
         return bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
 
     def validate_title(self, value):
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)
+        return bleach_sanitizer(value, tags=bleach_allowed_tags)[
+            :title_max_length
+        ]
 
 
 class DescriptionSerializerTextMixin(serializers.Serializer):
@@ -124,468 +132,10 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
 
-# class OutcomeSerializer(
-#    serializers.ModelSerializer,
-#    TitleSerializerMixin,
-#    DescriptionSerializerMixin,
-# ):
-#
-#    author = serializers.SlugRelatedField(
-#        read_only=True, slug_field="username"
-#    )
-#
-#    class Meta:
-#        model = Outcome
-#        fields = [
-#            "id",
-#            "title",
-#            "description",
-#            "created_on",
-#            "last_modified",
-#            "hash",
-#            "author",
-#            "depth",
-#        ]
-#
-#    def create(self, validated_data):
-#        return Outcome.objects.create(
-#            author=User.objects.get(username=self.initial_data["author"]),
-#            **validated_data
-#        )
-#
-#    def update(self, instance, validated_data):
-#        instance.title = validated_data.get("title", instance.title)
-#        instance.description = validated_data.get(
-#            "description", instance.description
-#        )
-#        instance.save()
-#        return instance
-#
-#
-# class OutcomeNodeSerializer(serializers.ModelSerializer):
-#
-#    outcome = OutcomeSerializer(allow_null=True)
-#
-#    class Meta:
-#        model = OutcomeNode
-#        fields = ["node", "outcome", "added_on", "rank", "id", "degree"]
-#
-#    def update(self, instance, validated_data):
-#        instance.rank = validated_data.get("rank", instance.title)
-#        outcome_data = self.initial_data.pop("outcome")
-#        outcome_serializer = OutcomeSerializer(
-#            Outcome.objects.get(id=outcome_data["id"]), outcome_data
-#        )
-#        outcome_serializer.is_valid()
-#        outcome_serializer.save()
-#        instance.save()
-#        return instance
-#
-#
-# class ParentNodeSerializer(serializers.ModelSerializer):
-#
-#    author = serializers.SlugRelatedField(
-#        read_only=True, slug_field="username"
-#    )
-#
-#    class Meta:
-#        model = Node
-#        fields = [
-#            "id",
-#            "title",
-#            "description",
-#            "last_modified",
-#            "hash",
-#            "author",
-#            "task_classification",
-#            "context_classification",
-#            "column",
-#        ]
-#
-#
-# class ParentWeekSerializer(serializers.ModelSerializer):
-#
-#    author = serializers.SlugRelatedField(
-#        read_only=True, slug_field="username"
-#    )
-#
-#    class Meta:
-#        model = Week
-#        fields = [
-#            "id",
-#            "title",
-#            "description",
-#            "last_modified",
-#            "hash",
-#            "author",
-#        ]
-#
-#
-# class NodeLinkSerializer(serializers.ModelSerializer, TitleSerializerMixin):
-#
-#    author = serializers.SlugRelatedField(
-#        read_only=True, slug_field="username"
-#    )
-#
-#    class Meta:
-#        model = NodeLink
-#        fields = [
-#            "id",
-#            "title",
-#            "source_node",
-#            "target_node",
-#            "source_port",
-#            "target_port",
-#            "created_on",
-#            "last_modified",
-#            "hash",
-#            "author",
-#        ]
-#
-#    def create(self, validated_data):
-#        return Node.objects.create(
-#            author=User.objects.get(username=self.initial_data["author"]),
-#            **validated_data
-#        )
-#
-#    def update(self, instance, validated_data):
-#        instance.title = validated_data.get("title", instance.title)
-#        instance.save()
-#        return instance
-#
-#
-# class NodeSerializer(
-#    serializers.ModelSerializer,
-#    TitleSerializerMixin,
-#    DescriptionSerializerMixin,
-#    TimeRequiredSerializerMixin,
-# ):
-#
-#    author = serializers.SlugRelatedField(
-#        read_only=True, slug_field="username"
-#    )
-#
-#    outcomenode_set = serializers.SerializerMethodField()
-#    columnworkflow = serializers.SerializerMethodField()
-#    outgoing_links = serializers.SerializerMethodField()
-#    linked_workflow_title = serializers.SerializerMethodField()
-#
-#    node_type_display = serializers.CharField(source="get_node_type_display")
-#
-#    class Meta:
-#        model = Node
-#        fields = [
-#            "id",
-#            "title",
-#            "description",
-#            "created_on",
-#            "last_modified",
-#            "column",
-#            "columnworkflow",
-#            "hash",
-#            "author",
-#            "task_classification",
-#            "context_classification",
-#            "node_type",
-#            "outcomenode_set",
-#            "outgoing_links",
-#            "is_original",
-#            "parent_node",
-#            "node_type",
-#            "node_type_display",
-#            "has_autolink",
-#            "represents_workflow",
-#            "linked_workflow",
-#            "linked_workflow_title",
-#        ]
-#
-#    def get_columnworkflow(self, instance):
-#        return instance.column.columnworkflow_set.get(
-#            column=instance.column
-#        ).id
-#
-#    def get_outcomenode_set(self, instance):
-#        links = instance.outcomenode_set.all().order_by("rank")
-#        return OutcomeNodeSerializer(links, many=True).data
-#
-#    def get_outgoing_links(self, instance):
-#        links = instance.outgoing_links.all()
-#        return NodeLinkSerializer(links, many=True).data
-#
-#    def get_linked_workflow_title(self, instance):
-#        if instance.linked_workflow is not None:
-#            return instance.linked_workflow.title
-#
-#    def create(self, validated_data):
-#        return Node.objects.create(
-#            author=User.objects.get(username=self.initial_data["author"]),
-#            **validated_data
-#        )
-#
-#    def update(self, instance, validated_data):
-#        instance.title = validated_data.get("title", instance.title)
-#        instance.description = validated_data.get(
-#            "description", instance.description
-#        )
-#        instance.task_classification = validated_data.get(
-#            "task_classification", instance.task_classification
-#        )
-#        instance.context_classification = validated_data.get(
-#            "context_classification", instance.context_classification
-#        )
-#        instance.save()
-#        return instance
-#
-#
-# class NodeWeekSerializer(serializers.ModelSerializer):
-#
-#    node = NodeSerializer()
-#
-#    class Meta:
-#        model = NodeWeek
-#        fields = ["week", "node", "added_on", "rank", "id"]
-#
-#    def update(self, instance, validated_data):
-#        instance.rank = validated_data["rank"]
-#        instance.save()
-#        return instance
-#
-#
-# class ColumnSerializer(serializers.ModelSerializer, TitleSerializerMixin):
-#    author = serializers.SlugRelatedField(
-#        read_only=True, slug_field="username"
-#    )
-#
-#    column_type_display = serializers.CharField(
-#        source="get_column_type_display"
-#    )
-#
-#    class Meta:
-#        model = Column
-#        fields = [
-#            "id",
-#            "title",
-#            "author",
-#            "created_on",
-#            "last_modified",
-#            "column_type",
-#            "column_type_display",
-#        ]
-#
-#    def update(self, instance, validated_data):
-#        instance.title = validated_data.get("title", instance.title)
-#        instance.save()
-#        return instance
-#
-#    def create(self, validated_data):
-#        return Column.objects.create(
-#            author=User.objects.get(username=self.initial_data["author"]),
-#            **validated_data
-#        )
-#
-#
-# class WeekSerializer(
-#    serializers.ModelSerializer,
-#    TitleSerializerMixin,
-#    DescriptionSerializerMixin,
-# ):
-#
-#    author = serializers.SlugRelatedField(
-#        read_only=True, slug_field="username"
-#    )
-#
-#    nodeweek_set = serializers.SerializerMethodField()
-#    week_type_display = serializers.CharField(source="get_week_type_display")
-#
-#    class Meta:
-#        model = Week
-#        fields = [
-#            "id",
-#            "title",
-#            "description",
-#            "created_on",
-#            "last_modified",
-#            "hash",
-#            "default",
-#            "author",
-#            "nodeweek_set",
-#            "is_original",
-#            "parent_week",
-#            "week_type",
-#            "week_type_display",
-#        ]
-#
-#    def get_nodeweek_set(self, instance):
-#        links = instance.nodeweek_set.all().order_by("rank")
-#        return NodeWeekSerializer(links, many=True).data
-#
-#    def create(self, validated_data):
-#        return Week.objects.create(
-#            author=User.objects.get(username=self.initial_data["author"]),
-#            **validated_data
-#        )
-#
-#    def update(self, instance, validated_data):
-#        instance.title = validated_data.get("title", instance.title)
-#        instance.description = validated_data.get(
-#            "description", instance.description
-#        )
-#        instance.save()
-#        return instance
-#
-#
-# class WeekWorkflowSerializer(serializers.ModelSerializer):
-#
-#    week = WeekSerializer()
-#
-#    class Meta:
-#        model = WeekWorkflow
-#        fields = ["workflow", "week", "added_on", "rank", "id"]
-#
-#    def update(self, instance, validated_data):
-#        instance.rank = validated_data.get("rank", instance.rank)
-#        instance.save()
-#        return instance
-#
-#
-# class ColumnWorkflowSerializer(serializers.ModelSerializer):
-#    column = ColumnSerializer()
-#
-#    class Meta:
-#        model = ColumnWorkflow
-#        fields = ["workflow", "column", "added_on", "rank", "id"]
-#
-#    def update(self, instance, validated_data):
-#        instance.rank = validated_data.get("rank", instance.rank)
-#        instance.save()
-#        return instance
-
-
 class DisciplineSerializer(serializers.ModelSerializer):
     class Meta:
         model = Discipline
         fields = ["id", "title"]
-
-
-#
-# class WorkflowSerializer(
-#    serializers.ModelSerializer,
-#    TitleSerializerMixin,
-#    DescriptionSerializerMixin,
-# ):
-#
-#    weekworkflow_set = serializers.SerializerMethodField()
-#    columnworkflow_set = serializers.SerializerMethodField()
-#
-#    author = serializers.SlugRelatedField(
-#        read_only=True, slug_field="username"
-#    )
-#
-#    def get_weekworkflow_set(self, instance):
-#        links = instance.weekworkflow_set.all().order_by("rank")
-#        return WeekWorkflowSerializer(links, many=True).data
-#
-#    def get_columnworkflow_set(self, instance):
-#        links = instance.columnworkflow_set.all().order_by("rank")
-#        return ColumnWorkflowSerializer(links, many=True).data
-#
-#    def update(self, instance, validated_data):
-#        instance.title = validated_data.get("title", instance.title)
-#        instance.description = validated_data.get(
-#            "description", instance.description
-#        )
-#        instance.outcomes_type = validated_data.get(
-#            "outcomes_type", instance.outcomes_type
-#        )
-#        instance.outcomes_sort = validated_data.get(
-#            "outcomes_sort", instance.outcomes_sort
-#        )
-#        instance.save()
-#        return instance
-#
-#
-# class ProgramSerializer(WorkflowSerializer):
-#    class Meta:
-#        model = Program
-#        fields = [
-#            "id",
-#            "title",
-#            "description",
-#            "author",
-#            "created_on",
-#            "last_modified",
-#            "hash",
-#            "columnworkflow_set",
-#            "weekworkflow_set",
-#            "is_original",
-#            "parent_workflow",
-#            "outcomes_type",
-#            "outcomes_sort",
-#            "type",
-#        ]
-#
-#    def create(self, validated_data):
-#        return Program.objects.create(
-#            author=User.objects.get(username=self.initial_data["author"]),
-#            **validated_data
-#        )
-#
-#
-# class CourseSerializer(WorkflowSerializer):
-#    class Meta:
-#        model = Course
-#        fields = [
-#            "id",
-#            "title",
-#            "description",
-#            "author",
-#            "created_on",
-#            "last_modified",
-#            "hash",
-#            "weekworkflow_set",
-#            "columnworkflow_set",
-#            "is_original",
-#            "parent_workflow",
-#            "outcomes_type",
-#            "outcomes_sort",
-#            "type",
-#        ]
-#
-#    def create(self, validated_data):
-#        return Course.objects.create(
-#            author=User.objects.get(username=self.initial_data["author"]),
-#            **validated_data
-#        )
-#
-#
-# class ActivitySerializer(WorkflowSerializer):
-#    class Meta:
-#        model = Activity
-#        fields = [
-#            "id",
-#            "title",
-#            "description",
-#            "author",
-#            "created_on",
-#            "last_modified",
-#            "hash",
-#            "columnworkflow_set",
-#            "weekworkflow_set",
-#            "is_original",
-#            "parent_workflow",
-#            "outcomes_type",
-#            "outcomes_sort",
-#            "type",
-#        ]
-#
-#    def create(self, validated_data):
-#        if User.objects.filter(username=self.initial_data["author"]).exists():
-#            author = User.objects.get(username=self.initial_data["author"])
-#        else:
-#            author = None
-#        activity = Activity.objects.create(author=author, **validated_data)
-#
-#        return activity
 
 
 class NodeLinkSerializerShallow(
@@ -594,6 +144,8 @@ class NodeLinkSerializerShallow(
     class Meta:
         model = NodeLink
         fields = [
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "source_node",
@@ -601,6 +153,8 @@ class NodeLinkSerializerShallow(
             "source_port",
             "target_port",
         ]
+
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def create(self, validated_data):
         return Node.objects.create(
@@ -621,9 +175,11 @@ class NodeSerializerShallow(
     TimeRequiredSerializerMixin,
 ):
 
+    outgoing_links = serializers.SerializerMethodField()
     outcomenode_set = serializers.SerializerMethodField()
     outcomenode_unique_set = serializers.SerializerMethodField()
     columnworkflow = serializers.SerializerMethodField()
+    column = serializers.SerializerMethodField()
     linked_workflow_data = serializers.SerializerMethodField()
 
     node_type_display = serializers.CharField(source="get_node_type_display")
@@ -631,6 +187,8 @@ class NodeSerializerShallow(
     class Meta:
         model = Node
         fields = [
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -653,13 +211,68 @@ class NodeSerializerShallow(
             "comments",
         ]
 
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+
     def get_columnworkflow(self, instance):
-        return instance.column.columnworkflow_set.get(
-            column=instance.column
-        ).id
+        if instance.column is None:
+            instance.column = (
+                instance.get_workflow()
+                .columns.filter(deleted=False)
+                .order_by("columnworkflow__rank")
+                .first()
+            )
+            instance.save()
+        if instance.column.deleted:
+            workflow = instance.get_workflow()
+            return (
+                ColumnWorkflow.objects.filter(
+                    workflow=workflow, column__deleted=False
+                )
+                .order_by("rank")
+                .first()
+                .id
+            )
+        else:
+            return instance.column.columnworkflow_set.get(
+                column=instance.column
+            ).id
+
+    def get_column(self, instance):
+        if instance.column is None:
+            instance.column = (
+                instance.get_workflow()
+                .columns.filter(deleted=False)
+                .order_by("columnworkflow__rank")
+                .first()
+            )
+            instance.save()
+        if instance.column.deleted:
+            workflow = instance.get_workflow()
+            return (
+                ColumnWorkflow.objects.filter(
+                    workflow=workflow, column__deleted=False
+                )
+                .order_by("rank")
+                .first()
+                .column.id
+            )
+        else:
+            return instance.column.id
 
     def get_outcomenode_set(self, instance):
-        links = instance.outcomenode_set.all().order_by("rank")
+        links = instance.outcomenode_set.exclude(
+            Q(outcome__deleted=True)
+            | Q(outcome__parent_outcomes__deleted=True)
+            | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
+        )
+        return list(map(linkIDMap, links))
+
+    def get_outgoing_links(self, instance):
+        links = instance.outgoing_links.exclude(
+            Q(deleted=True)
+            | Q(target_node__deleted=True)
+            | Q(target_node__week__deleted=True)
+        )
         return list(map(linkIDMap, links))
 
     def get_outcomenode_unique_set(self, instance):
@@ -710,6 +323,8 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
     class Meta:
         model = Workflow
         fields = [
+            "deleted",
+            "deleted_on",
             "title",
             "description",
             "code",
@@ -721,6 +336,8 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
             "time_general_hours",
             "time_specific_hours",
         ]
+
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
 
 class NodeWeekSerializerShallow(serializers.ModelSerializer):
@@ -745,6 +362,8 @@ class ColumnSerializerShallow(
     class Meta:
         model = Column
         fields = [
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "column_type",
@@ -753,6 +372,8 @@ class ColumnSerializerShallow(
             "visible",
             "comments",
         ]
+
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def create(self, validated_data):
         return Column.objects.create(
@@ -780,6 +401,8 @@ class WeekSerializerShallow(
     class Meta:
         model = Week
         fields = [
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -792,8 +415,12 @@ class WeekSerializerShallow(
             "comments",
         ]
 
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+
     def get_nodeweek_set(self, instance):
-        links = instance.nodeweek_set.all().order_by("rank")
+        links = instance.nodeweek_set.filter(node__deleted=False).order_by(
+            "rank"
+        )
         return list(map(linkIDMap, links))
 
     def create(self, validated_data):
@@ -870,6 +497,8 @@ class ProjectSerializerShallow(
     class Meta:
         model = Project
         fields = [
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -882,16 +511,30 @@ class ProjectSerializerShallow(
             "disciplines",
             "type",
             "terminology_dict",
+            "favourite",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     workflowproject_set = serializers.SerializerMethodField()
     terminology_dict = serializers.SerializerMethodField()
+    favourite = serializers.SerializerMethodField()
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     author = serializers.SlugRelatedField(
         read_only=True, slug_field="username"
     )
+
+    def get_favourite(self, instance):
+        user = self.context.get("user")
+        if Favourite.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(instance),
+            object_id=instance.id,
+        ):
+            return True
+        else:
+            return False
 
     def get_terminology_dict(self, instance):
         return [
@@ -905,7 +548,9 @@ class ProjectSerializerShallow(
         ]
 
     def get_workflowproject_set(self, instance):
-        links = instance.workflowproject_set.all().order_by("rank")
+        links = instance.workflowproject_set.filter(
+            workflow__deleted=False
+        ).order_by("rank")
         return list(map(linkIDMap, links))
 
     def update(self, instance, validated_data):
@@ -931,6 +576,8 @@ class OutcomeSerializerShallow(
     class Meta:
         model = Outcome
         fields = [
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "code",
@@ -955,7 +602,25 @@ class OutcomeSerializerShallow(
         ]
 
     child_outcome_links = serializers.SerializerMethodField()
+    outcome_horizontal_links = serializers.SerializerMethodField()
     outcome_horizontal_links_unique = serializers.SerializerMethodField()
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+
+    def get_outcome_horizontal_links(self, instance):
+        if len(instance.outcome_horizontal_links.all()) == 0:
+            return []
+        return list(
+            map(
+                linkIDMap,
+                instance.outcome_horizontal_links.exclude(
+                    Q(parent_outcome__deleted=True)
+                    | Q(parent_outcome__parent_outcomes__deleted=True)
+                    | Q(
+                        parent_outcome__parent_outcomes__parent_outcomes__deleted=True
+                    )
+                ),
+            )
+        )
 
     def get_outcome_horizontal_links_unique(self, instance):
         if len(instance.outcome_horizontal_links.all()) == 0:
@@ -965,7 +630,7 @@ class OutcomeSerializerShallow(
         )
 
     def get_child_outcome_links(self, instance):
-        links = instance.child_outcome_links.all()
+        links = instance.child_outcome_links.filter(child__deleted=False)
         if len(links) == 0:
             return []
         links = links.order_by("rank")
@@ -1034,18 +699,6 @@ class CommentSerializer(serializers.ModelSerializer):
         return instance
 
 
-#
-# class OutcomeProjectSerializerShallow(serializers.ModelSerializer):
-#    class Meta:
-#        model = OutcomeProject
-#        fields = ["project", "outcome", "added_on", "rank", "id"]
-#
-#    def update(self, instance, validated_data):
-#        instance.rank = validated_data.get("rank", instance.rank)
-#        instance.save()
-#        return instance
-
-
 class WorkflowSerializerShallow(
     serializers.ModelSerializer,
     TitleSerializerMixin,
@@ -1057,6 +710,8 @@ class WorkflowSerializerShallow(
     class Meta:
         model = Workflow
         fields = [
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -1082,6 +737,10 @@ class WorkflowSerializerShallow(
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
+            "edit_count",
+            "favourite",
+            "condensed",
+            "importing",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -1089,6 +748,8 @@ class WorkflowSerializerShallow(
     weekworkflow_set = serializers.SerializerMethodField()
     columnworkflow_set = serializers.SerializerMethodField()
     outcomeworkflow_set = serializers.SerializerMethodField()
+    favourite = serializers.SerializerMethodField()
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     strategy_icon = serializers.SerializerMethodField()
 
@@ -1101,6 +762,21 @@ class WorkflowSerializerShallow(
             return instance.author.id
         return None
 
+    def get_favourite(self, instance):
+        user = self.context.get("user", None)
+        if user is None:
+            return False
+        if Favourite.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(
+                instance.get_subclass()
+            ),
+            object_id=instance.id,
+        ):
+            return True
+        else:
+            return False
+
     def get_strategy_icon(self, instance):
         if instance.is_strategy:
             return instance.weeks.first().strategy_classification
@@ -1108,15 +784,21 @@ class WorkflowSerializerShallow(
             return None
 
     def get_weekworkflow_set(self, instance):
-        links = instance.weekworkflow_set.all().order_by("rank")
+        links = instance.weekworkflow_set.filter(week__deleted=False).order_by(
+            "rank"
+        )
         return list(map(linkIDMap, links))
 
     def get_columnworkflow_set(self, instance):
-        links = instance.columnworkflow_set.all().order_by("rank")
+        links = instance.columnworkflow_set.filter(
+            column__deleted=False
+        ).order_by("rank")
         return list(map(linkIDMap, links))
 
     def get_outcomeworkflow_set(self, instance):
-        links = instance.outcomeworkflow_set.all().order_by("rank")
+        links = instance.outcomeworkflow_set.filter(
+            outcome__deleted=False
+        ).order_by("rank")
         return list(map(linkIDMap, links))
 
     def update(self, instance, validated_data):
@@ -1155,6 +837,9 @@ class WorkflowSerializerShallow(
         instance.time_specific_hours = validated_data.get(
             "time_specific_hours", instance.time_specific_hours
         )
+        instance.condensed = validated_data.get(
+            "condensed", instance.condensed
+        )
         instance.save()
         return instance
 
@@ -1166,6 +851,8 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
     class Meta:
         model = Program
         fields = [
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -1194,6 +881,9 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
+            "favourite",
+            "condensed",
+            "importing",
         ]
 
     def get_author_id(self, instance):
@@ -1215,6 +905,8 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
     class Meta:
         model = Course
         fields = [
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -1243,6 +935,9 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
+            "favourite",
+            "condensed",
+            "importing",
         ]
 
     def get_author_id(self, instance):
@@ -1264,6 +959,8 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
     class Meta:
         model = Activity
         fields = [
+            "deleted",
+            "deleted_on",
             "id",
             "title",
             "description",
@@ -1292,6 +989,9 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
+            "favourite",
+            "condensed",
+            "importing",
         ]
 
     def get_author_id(self, instance):
@@ -1313,6 +1013,7 @@ class InfoBoxSerializer(
     serializers.Serializer, TitleSerializerMixin, DescriptionSerializerMixin
 ):
 
+    deleted = serializers.ReadOnlyField()
     id = serializers.ReadOnlyField()
     author = serializers.SerializerMethodField()
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -1363,6 +1064,117 @@ class InfoBoxSerializer(
         return str(instance.author)
 
 
+# class RefreshSerializerWeek(serializers.Serializer):
+#    class Meta:
+#        model = Week
+#        fields = [
+#            "id",
+#            "nodeweek_set",
+#        ]
+#
+#    nodeweek_set = serializers.SerializerMethodField()
+#
+#    def get_nodeweek_set(self, instance):
+#        links = instance.nodeweek_set.filter(node__deleted=False).order_by("rank")
+#        return list(map(linkIDMap, links))
+#
+#
+#
+# class RefreshSerializerWorkflow(serializers.ModelSerializer):
+#
+#    author_id = serializers.SerializerMethodField()
+#
+#    class Meta:
+#        model = Workflow
+#        fields = [
+#            "id",
+#            "columnworkflow_set",
+#            "weekworkflow_set",
+#            "outcomeworkflow_set",
+#        ]
+#
+#    weekworkflow_set = serializers.SerializerMethodField()
+#    columnworkflow_set = serializers.SerializerMethodField()
+#    outcomeworkflow_set = serializers.SerializerMethodField()
+#
+#
+#
+#    def get_weekworkflow_set(self, instance):
+#        links = instance.weekworkflow_set.filter(week__deleted=False).order_by("rank")
+#        return list(map(linkIDMap, links))
+#
+#    def get_columnworkflow_set(self, instance):
+#        links = instance.columnworkflow_set.filter(column__deleted=False).order_by("rank")
+#        return list(map(linkIDMap, links))
+#
+#    def get_outcomeworkflow_set(self, instance):
+#        links = instance.outcomeworkflow_set.filter(outcome__deleted=False).order_by("rank")
+#        return list(map(linkIDMap, links))
+#
+#
+
+
+class RefreshSerializerOutcome(serializers.ModelSerializer):
+    class Meta:
+        model = Outcome
+        fields = [
+            "id",
+            "outcome_horizontal_links",
+            "outcome_horizontal_links_unique",
+        ]
+
+    outcome_horizontal_links = serializers.SerializerMethodField()
+    outcome_horizontal_links_unique = serializers.SerializerMethodField()
+
+    def get_outcome_horizontal_links(self, instance):
+        if len(instance.outcome_horizontal_links.all()) == 0:
+            return []
+        return list(
+            map(
+                linkIDMap,
+                instance.outcome_horizontal_links.exclude(
+                    Q(parent_outcome__deleted=True)
+                    | Q(parent_outcome__parent_outcomes__deleted=True)
+                    | Q(
+                        parent_outcome__parent_outcomes__parent_outcomes__deleted=True
+                    )
+                ),
+            )
+        )
+
+    def get_outcome_horizontal_links_unique(self, instance):
+        if len(instance.outcome_horizontal_links.all()) == 0:
+            return []
+        return list(
+            map(linkIDMap, get_unique_outcomehorizontallinks(instance))
+        )
+
+
+class RefreshSerializerNode(serializers.ModelSerializer):
+
+    outcomenode_set = serializers.SerializerMethodField()
+    outcomenode_unique_set = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Node
+        fields = [
+            "id",
+            "outcomenode_set",
+            "outcomenode_unique_set",
+        ]
+
+    def get_outcomenode_set(self, instance):
+        links = instance.outcomenode_set.exclude(
+            Q(outcome__deleted=True)
+            | Q(outcome__parent_outcomes__deleted=True)
+            | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
+        ).order_by("rank")
+        return list(map(linkIDMap, links))
+
+    def get_outcomenode_unique_set(self, instance):
+        return list(map(linkIDMap, get_unique_outcomenodes(instance)))
+
+
 class OutcomeExportSerializer(
     serializers.ModelSerializer,
     TitleSerializerTextMixin,
@@ -1386,7 +1198,7 @@ class OutcomeExportSerializer(
                 outcome=instance
             ).first()
             if instance.code is None or instance.code == "":
-                return str(outcomeworkflow.rank + 1)
+                return str(outcomeworkflow.get_display_rank() + 1)
             else:
                 return instance.code
         else:
@@ -1397,24 +1209,57 @@ class OutcomeExportSerializer(
                 return (
                     self.get_code(outcomeoutcome.parent)
                     + "."
-                    + str(outcomeoutcome.rank + 1)
+                    + str(outcomeoutcome.get_display_rank() + 1)
                 )
             else:
                 return (
                     self.get_code(outcomeoutcome.parent) + "." + instance.code
                 )
 
-        if instance.code is None or instance.code == "":
-            if instance.depth == 0:
-                return str(
-                    OutcomeWorkflow.objects.filter(outcome=instance)
-                    .first()
-                    .rank
-                )
-            else:
-                return
-        else:
-            return instance.code
+
+class WeekExportSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerTextMixin,
+    DescriptionSerializerTextMixin,
+):
+    class Meta:
+        model = Week
+        fields = [
+            "id",
+            "title",
+            "description",
+            "type",
+        ]
+
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, instance):
+        return "week"
+
+
+class NodeExportSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerTextMixin,
+    DescriptionSerializerTextMixin,
+):
+    class Meta:
+        model = Node
+        fields = [
+            "id",
+            "title",
+            "description",
+            "column_order",
+            "type",
+        ]
+
+    column_order = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+
+    def get_column_order(self, instance):
+        return str(ColumnWorkflow.objects.get(column=instance.column).rank)
+
+    def get_type(self, instance):
+        return "node"
 
 
 #

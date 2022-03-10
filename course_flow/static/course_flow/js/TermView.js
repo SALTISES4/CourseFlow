@@ -24,7 +24,7 @@ class TermView extends WeekViewUnconnected{
                 }
             }
             if(nodeweeks.length==0)nodeweeks.push(
-                <div class="node-week" style={{height:"100%"}}></div>
+                <div class="node-week placeholder" style={{height:"100%"}}></div>
             )
             node_blocks.push(
                 <div class={"node-block term column-"+col} id={this.props.objectID+"-node-block-column-"+col} key={col} >
@@ -32,17 +32,28 @@ class TermView extends WeekViewUnconnected{
                 </div>
             );
         }
+        
+        
+        let style={};
+        if(data.lock){
+            style.border="2px solid "+data.lock.user_colour;
+        }
+        
+        let mouseover_actions = [];
+        if(!read_only){
+            mouseover_actions.push(this.addInsertSibling(data));
+            mouseover_actions.push(this.addDuplicateSelf(data));
+            mouseover_actions.push(this.addDeleteSelf(data));
+        }
+        mouseover_actions.push(this.addCommenting(data));
+        
         return (
-            <div class={"week"+((this.state.selected && " selected")||"")} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
-                {!read_only && <div class="mouseover-container-bypass">
+            <div style={style} class={"week"} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
+                <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
-                        {this.addInsertSibling(data)}
-                        {this.addDuplicateSelf(data)}
-                        {this.addDeleteSelf(data)}
-                        {this.addCommenting(data)}
+                        {mouseover_actions}
                     </div>
                 </div>
-                }
                 <TitleText text={data.title} defaultText={data.week_type_display+" "+(this.props.rank+1)}/>
                 <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                     {node_blocks}

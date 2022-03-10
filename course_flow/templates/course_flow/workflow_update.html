@@ -14,7 +14,7 @@
 
 <div id="container" class="body-wrapper"><div class="load-screen"></div></div>
 <div id="popup-container"></div>
-<div id="sidebar" class="side-bar">
+<div id="sidebar" class="side-bar hide-print">
   <ul>
     <li class="hover-shade">
       <a href="#edit-menu"
@@ -38,6 +38,11 @@
         ><img title='{% trans "Strategies" %}' src="{% static 'course_flow/img/images_svg/strategy_blue.svg' %}"
       /></a>
     </li>
+    <li class="hover-shade">
+      <a href="#restore-bar"
+        ><img title='{% trans "Restore Deleted" %}' src="{% static 'course_flow/img/images_svg/restore_blue.svg' %}"
+      /></a>
+    </li>
     {% endif %}
   </ul>
     <div id="edit-menu" class="right-panel-container"></div>
@@ -46,6 +51,7 @@
         <div id="outcome-bar" class="right-panel-container"></div>
         <div id="strategy-bar" class="right-panel-container"></div>
     {% endif %}
+    <div id="restore-bar" class="right-panel-container"></div>
   <div class="window-close-button" id="side-bar-close-button">
     <img src="{% static 'course_flow/img/images_svg/close.svg' %}" />
   </div>
@@ -82,7 +88,9 @@
 
     
   const read_only = {{read_only|safe}};
-    
+  const allow_comments = {{comment|safe}};
+  console.log("override comments");
+  console.log(allow_comments);
   if(read_only)$("#sidebar").hide();
   else{
       $("#side-bar-close-button").on("click",()=>{
@@ -103,16 +111,63 @@
 //  {% endif %}
 
   const user_id = {{ user.id }};
+  const workflow_model_id = {{ object.id }}
+  const user_name = "{{ user.username }}";
   const create_path=null;
 
   workflow_data_package = {{data_package|safe}}
   var workflow_renderer;
+
+    const openfunction = function(){
+        workflow_renderer.connection_opened();
+    };
+
+   const myColour = 'hsl('+(((user_id*5)%360)+1)+',50%,50%)';
+
+   const changeFieldID = Math.floor(Math.random()*10000);
+
+    function connect(){
+        workflow_renderer.messages_queued=true;
+
+        const updateSocket = new WebSocket(
+        'ws://'+window.location.host+'/ws/update/'+workflow_model_id+'/'
+        );
+
+        workflow_renderer.updateSocket = updateSocket;
+        
+        
+        updateSocket.onmessage = function(e){
+            workflow_renderer.message_received(e);
+        }
+        
+        
+        
+        updateSocket.onopen = openfunction
+        if(updateSocket.readyState==1)openfunction();
+        
+        updateSocket.onclose = function(e){
+           setTimeout(
+                ()=>{
+                    connect();
+                },
+               10000
+           )
+           console.log(e);
+           console.log("Lost connection to server");
+        }
+
+    }
+   
    
   window.addEventListener("load", function(){
       workflow_renderer = new renderers.WorkflowRenderer(workflow_data_package);
-      console.log(workflow_data_package);
+      connect();
+      
+      
+      
+//      console.log(workflow_data_package);
       $(document).ajaxError(renderers.fail_function);
-      workflow_renderer.render($("#container"));
+//      workflow_renderer.render($("#container"));
   });
 </script>
 

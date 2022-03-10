@@ -52,7 +52,7 @@ export function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>cons
     });
 }
 
-export function updateValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
+export function updateValue(objectID,objectType,json,changeField=false,callBackFunction=()=>console.log("success")){
     var t = 1000;
     let previousCall = document.lastUpdateCall;
     document.lastUpdateCall = {time:Date.now(),id:objectID,type:objectType,field:Object.keys(json)[0]};
@@ -63,13 +63,16 @@ export function updateValue(objectID,objectType,json,callBackFunction=()=>consol
     if(previousCall && (previousCall.id!=document.lastUpdateCall.id || previousCall.type!=document.lastUpdateCall.type ||previousCall.field!=document.lastUpdateCall.field)){
        document.lastUpdateCallFunction();
     }
+    let post_object = {
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify(objectType),
+        data:JSON.stringify(json)
+    }
+    if(changeField)post_object.changeFieldID = changeFieldID;
+    else post_object.changeFieldID=0;
     document.lastUpdateCallFunction = ()=>{
         try{
-            $.post(post_paths.update_value, {
-                objectID:JSON.stringify(objectID),
-                objectType:JSON.stringify(objectType),
-                data:JSON.stringify(json)
-            }).done(function(data){
+            $.post(post_paths.update_value, post_object).done(function(data){
                 if(data.action == "posted") callBackFunction(data);
                 else fail_function();
             });
@@ -95,21 +98,6 @@ export function updateValueInstant(objectID,objectType,json,callBackFunction=()=
     }
 }
 
-//Add a new column to the workflow 
-export function newColumn(workflowPk,column_type,callBackFunction=()=>console.log("success")){
-    try{
-        $.post(post_paths.new_column, {
-            workflowPk:workflowPk,
-            column_type:column_type
-        }).done(function(data){
-            if(data.action == "posted") callBackFunction(data);
-            else fail_function();
-        });
-    }catch(err){
-        fail_function();
-    }
-}
-    
 //Add a new node to a week
 export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){
     try{
@@ -193,9 +181,28 @@ export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.l
 }
 
 //Causes the specified object to delete itself
-export function deleteSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
+export function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>console.log("success")){
+    let path;
+    if(soft)path=post_paths.delete_self_soft;
+    else path=post_paths.delete_self;
     try{
-        $.post(post_paths.delete_self, {
+        $.post(path, {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Causes the specified object to undelete itself
+export function restoreSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
+    let path;
+    try{
+        $.post(post_paths.restore_self, {
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType)
         }).done(function(data){
@@ -289,48 +296,66 @@ export function insertChild(objectID,objectType,callBackFunction=()=>console.log
         fail_function();
     }
 }
-    
-//Called when an object in a list is reordered
-export function insertedAt(objectID,objectType,parentID,parentType,newPosition,throughType,callBackFunction=()=>console.log("success")){
-    $(document).off(throughType+"-dropped.insert");
-    $(document).on(throughType+"-dropped.insert",()=>{
-        try{
-            $.post(post_paths.inserted_at, {
-                objectID:JSON.stringify(objectID),
-                objectType:JSON.stringify(objectType),
-                parentID:JSON.stringify(parentID),
-                parentType:JSON.stringify(parentType),
-                newPosition:JSON.stringify(newPosition),
-                throughType:JSON.stringify(throughType)
-            }).done(function(data){
-                $(document).triggerHandler(throughType+"-dropped-success");
-                if(data.action == "posted") callBackFunction(data);
-                else fail_function();
-            });
-        }catch(err){
-            fail_function();
-        }
+
+
+//Called when a node should have its column changed
+export function columnChanged(renderer,objectID,columnID){
+    if(!renderer.dragAction)renderer.dragAction={};
+    if(!renderer.dragAction["nodeweek"])renderer.dragAction["nodeweek"]={};
+    renderer.dragAction["nodeweek"] = {
+        ...renderer.dragAction["nodeweek"],
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify("node"),
+        columnPk:JSON.stringify(columnID),
+        columnChange:JSON.stringify(true),
+    }
+    $(document).off("nodeweek-dropped");
+    $(document).on("nodeweek-dropped",()=>{
+        dragAction(renderer.dragAction["nodeweek"]);
+        renderer.dragAction["nodeweek"]=null;
+        $(document).off("nodeweek-dropped");
     });
 }
- 
-//Called when a node should have its column changed
-export function columnChanged(objectID,columnID,callBackFunction=()=>console.log("success")){
-    
-    $(document).off("nodeweek-dropped-success.columnchange");
-    $(document).on("nodeweek-dropped-success.columnchange",()=>{
-        try{
-    
-            $.post(post_paths.column_changed, {
-                nodePk:JSON.stringify(objectID),
-                columnPk:JSON.stringify(columnID),
-            }).done(function(data){
-                if(data.action == "posted") callBackFunction(data);
-                else fail_function();
-            });
-        }catch(err){
-            fail_function();
-        }
+
+//Called when an object in a list is reordered
+export function insertedAt(renderer,objectID,objectType,parentID,parentType,newPosition,throughType){
+    if(!renderer.dragAction)renderer.dragAction={};
+    if(!renderer.dragAction[throughType])renderer.dragAction[throughType]={};
+    renderer.dragAction[throughType]={
+        ...renderer.dragAction[throughType],
+        objectID:JSON.stringify(objectID),
+        objectType:JSON.stringify(objectType),
+        parentID:JSON.stringify(parentID),
+        parentType:JSON.stringify(parentType),
+        newPosition:JSON.stringify(newPosition),
+        throughType:JSON.stringify(throughType),
+        inserted:JSON.stringify(true),
+    }
+    $(document).off(throughType+"-dropped");
+    $(document).on(throughType+"-dropped",()=>{
+        dragAction(renderer.dragAction[throughType]);
+        renderer.dragAction[throughType]=null;
+        $(document).off(throughType+"-dropped");
     });
+}
+
+
+
+export function dragAction(action_data,callBackFunction=()=>console.log("success")){
+    try{
+        workflow_renderer.tiny_loader.startLoad();
+        $(".ui-draggable").draggable("disable");
+        $.post(post_paths.inserted_at, 
+            action_data
+        ).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+            $(".ui-draggable").draggable("enable");
+            workflow_renderer.tiny_loader.endLoad();
+        });
+    }catch(err){
+        fail_function();
+    }
 }
 
 
@@ -410,7 +435,20 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
     
 }
 
-//Get the list of possible disciplines
+//Get the data from the workflow
+export function getWorkflowData(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_workflow_data,{
+            workflowPk:JSON.stringify(workflowPk)
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the data from all parent workflows
 export function getWorkflowParentData(workflowPk,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_workflow_parent_data,{
@@ -423,7 +461,7 @@ export function getWorkflowParentData(workflowPk,callBackFunction=()=>console.lo
     }
 }
 
-//Get the list of possible disciplines
+//Get the data from all child workflows
 export function getWorkflowChildData(workflowPk,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_workflow_child_data,{
@@ -554,11 +592,23 @@ export function getExport(objectID,objectType,exportType,callBackFunction=()=>co
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType),
             exportType:JSON.stringify(exportType),
-        }).done(function(data){
+        }).done(function(data, status, xhr){
             callBackFunction(data);
         });
     }catch(err){
         fail_function();
     }
 }
+
+//get exported data
+//export function getExport(objectID,objectType,exportType,callBackFunction=()=>console.log("success")){
+//    try{
+//        let a=document.createElement('a');
+//        document.body.append(a);
+//        a.href=get_paths.get_download_export.replace('0',objectID).replace('objecttype',objectType).replace('exporttype',exportType);
+//        a.click();
+//    }catch(err){
+//        fail_function();
+//    }
+//}
 

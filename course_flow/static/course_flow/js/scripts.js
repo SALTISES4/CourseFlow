@@ -702,7 +702,7 @@ function csrfSafeMethod(method) {
   return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
 }
 
-function getCsrfToken() {
+export function getCsrfToken() {
   return document
     .getElementsByName("csrfmiddlewaretoken")[0]
     .getAttribute("value");

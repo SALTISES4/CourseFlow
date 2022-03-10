@@ -15,6 +15,9 @@ a{
     text-decoration: none;
 }
 
+a:hover{
+    text-decoration:underline;
+}
 
 body{
     background:#EEEEEE;
@@ -22,6 +25,12 @@ body{
 
 button{
     cursor:pointer;
+}
+
+.disabled{
+    pointer-events: none;
+    cursor:default;
+    box-shadow:inset 0 0 0 99999px rgba(0,0,0,0.2);
 }
 
 button:hover{
@@ -75,7 +84,6 @@ button:hover{
     justify-content: space-between;
     width:100%;
     font-family:'Open Sans',sans-serif;
-    overflow:hidden;
 }
 
 .workflow-title-bar{
@@ -96,8 +104,6 @@ button:hover{
 
 .floatbar{
     flex-shrink:99;
-    color:white;
-    overflow:hidden;
     color:white;
 
 }
@@ -131,6 +137,62 @@ button:hover{
     padding-left:6px;
     padding-right:6px;
 }
+
+.users-box{
+    position:relative;
+    height:100%;
+}
+
+.users-small .user-indicator{
+    margin-top: 10px;
+}
+
+.user-indicator {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.users-small{
+    display:inline-block;
+    display:flex;
+    flex-wrap:wrap;
+    max-width:76px;
+    gap:20px 2px;
+    height:100%;
+    overflow:hidden;
+}
+
+.users-small-wrapper{
+    height:100%;
+    display:inline-block;
+}
+
+.users-more{
+    display:inline-block;
+    height:100%;
+    color:black;
+    padding-left:3px;
+}
+
+.users-hidden{
+    display:none;
+    position:absolute;
+    top:44px;
+    right:0px;
+    padding:5px;
+    background-color:white;
+    border:1px solid grey;
+}
+
+.users-more:hover+.users-hidden, .users-hidden:hover{
+    display:inline-block;
+}
+
+
 
 .viewbar{
     display:inline-block;
@@ -197,6 +259,11 @@ button:hover{
 
 .topdropbutton > a{
     display:block;
+    color:white;
+}
+
+.topdropbutton > a:hover{
+    text-decoration: none;
 }
 
 /* A tag at the top of the menu that does nothing*/
@@ -280,6 +347,12 @@ button:hover{
     box-sizing:border-box;
     color:#444444;
     position:fixed;
+    display:flex;
+    flex-direction:column;
+}
+
+.left-panel-extra{
+    overflow-y:auto;
 }
 
 .title-image{
@@ -476,21 +549,22 @@ button:hover{
 
 .menu-grid > .workflow-for-menu{
     margin-right:10px;
+    width:400px;
 }
 
 .workflow-for-menu{
     position:relative;
-    width:400px;
     background-color:white;
     margin-bottom:8px;
     padding:10px;
     color:#1976bc;
     border-radius:10px;
     border:2px solid white;
+    max-width:600px;
 }
 
 .workflow-description{
-    font-size:16px;
+    font-size:13px;
     color:#444444;
     margin-bottom:2px;
     white-space:normal;
@@ -563,6 +637,7 @@ button:hover{
     margin-bottom:6px;
     flex-grow:1;
     color:#1976bc;
+    white-space:normal;
 }
 
 .workflow-buttons{
@@ -685,13 +760,23 @@ button:hover{
     list-style:none;
     padding:0;
     margin:0;
-    width:200px;
+    width:100%;
+    display:flex;
+    flex-wrap:wrap;
 }
 
-.user-list .user-label{
-    padding:2px;
-    border:1px solid #1976bc;
+.user-label{
+    padding:5px;
+    border:1px solid lightgrey;
     position:relative;
+    width:400px;
+    display:flex;
+    justify-content:space-between;
+    overflow:hidden;
+    margin-right:5px;
+    margin-top:2px;
+    margin-bottom:2px;
+    border-radius:5px;
 }
 
 .user-list .user-label .workflow-delete-button{
@@ -706,6 +791,7 @@ button:hover{
     vertical-align:top;
     border:none;
     display:inline-block;
+    width:100%;
 }
 
 .user-add button{
@@ -720,6 +806,32 @@ button:hover{
     right:2px;
 }
 
+.user-name{
+    font-size:14px;
+}
+
+.user-username{
+    color:grey;
+    font-size:12px;
+    margin-top:4px;
+    margin-left:8px;
+}
+
+.permission-select{
+    
+}
+
+.message-wrap{
+    color:#444444;
+}
+
+.user-text{
+    font-size:14px;
+}
+
+.permission-select select{
+    border:none;
+}
 
 .action-icon{
   cursor: pointer;
@@ -814,6 +926,14 @@ text {
     height:calc(100% - 50px);
     overflow:scroll;
     position:absolute;
+}
+
+.body-wrapper.printing{
+    top:0px;
+    left:0px;
+    width:100%;
+    height:100%;
+    overflow:visible;
 }
 
 .splash-page{
@@ -1042,6 +1162,11 @@ button, input[type="submit"]{
     top:0px;
 }
 
+.workflow-wrapper.printing{
+    margin-top:0px;
+    background:white;
+}
+
 #content-container{
     font-family:sans-serif;
 }
@@ -1059,6 +1184,10 @@ button, input[type="submit"]{
     -webkit-user-select:none;
         -ms-user-select:none;
             user-select:none;
+}
+
+.printing .workflow-container{
+    margin-right:10px;
 }
 
 .workflow-header{
@@ -1181,10 +1310,8 @@ button, input[type="submit"]{
 }
 
 .week-workflow.dragging{
-    height:100px !important;
+    height:100px;
     overflow:hidden;
-    border-color:#1976bc;
-    border-style:solid;
     border-width:2px;
     border-radius:5px;
 }
@@ -1196,6 +1323,7 @@ button, input[type="submit"]{
 .week-workflow.dragging .node-block{
     display:none;
 }
+
 
 .week-block{
     width:100%;
@@ -1337,6 +1465,39 @@ button, input[type="submit"]{
     min-height:50px;
     border:1px dashed black;
     position:absolute;
+    cursor:move;
+}
+
+.nodeweek-ghost{
+    width:160px;
+    min-height:50px;
+    border:1px dashed black;
+    position:absolute;
+    cursor:move;
+}
+
+.columnworkflow-ghost{
+    width:160px;
+    min-height:50px;
+    border:1px dashed black;
+    position:absolute;
+    z-index:3;
+    cursor:move;
+}
+
+.weekworkflow-ghost{
+    min-height:50px;
+    border:1px dashed black;
+    position:absolute;
+    cursor:move;
+}
+
+.outcomeoutcome-ghost{
+    min-width:300px;
+    min-height:10px;
+    border:1px dashed black;
+    position:absolute;
+    cursor:move;
 }
 
 .node{
@@ -1621,9 +1782,14 @@ ol.children-block{
     padding-left:24px;
 }
 
+.restore-bar-item{
+    border:2px solid #1976bc;
+    border-radius:5px;
+    padding:5px;
+}
+
 
 .outcome-workflow{
-    border:2px solid #1976bc;
     margin-bottom:2px;
 }
 
@@ -1718,6 +1884,32 @@ ol.children-block{
     position:relative;
 }
 
+.outcome-node img{
+    width:16px;
+}
+
+.outcome-node >.outcome>.outcome-title{
+    margin-left:0px;
+}
+
+.outcome-node >.outcome{
+    margin-left:0px;
+}
+
+.outcome-node{
+    display:flex;
+    align-items:center;
+}
+
+.outcome-node .outcome-degree{
+    width:16px;
+    text-align:center;
+}
+
+.outcome-degree{
+    font-family:serif;
+}
+
 .outcome-node-container .outcome-title{
     margin-left:16px;
 }
@@ -1725,6 +1917,7 @@ ol.children-block{
 .outcome-node-container .action-button{
     width:12px;
     height:12px;
+    margin-left:4px;
 }
 
 .outcome-node-container .mouseover-actions{
@@ -2396,6 +2589,15 @@ circle.mouseover{
     position:unset;
 }
 
+.side-bar .character-length{
+    font-size:10px;
+    color:grey;
+}
+
+.side-bar .character-length.overflow{
+    color:red;
+}
+
 .side-bar input.half-width, .side-bar select.half-width{
     width:50%;
 }
@@ -2546,7 +2748,10 @@ circle.mouseover{
 }
 
 .alignment-block .node-drop-row{
-    height:5px;
+    height:auto;
+    padding-left:20px;
+    border-top:2px solid lightgrey;
+    box-sizing:border-box;
 }
 
 .alignment-block .parent-outcome-box,.alignment-block .child-outcome-box{
@@ -2584,7 +2789,6 @@ circle.mouseover{
 }
 
 .alignment-row > *{
-    display:inline-block;
     vertical-align:top;
     margin-right:4px;
 }
@@ -2603,6 +2807,11 @@ circle.mouseover{
     min-width:400px;
 }
 
+.alignment-show-all{
+    color:#1976bc;
+    cursor:pointer;
+}
+
 .alignment-block .outcome-block{
     background-color:white;
 }
@@ -2616,9 +2825,6 @@ circle.mouseover{
     vertical-align: top;
 }
 
-.alignment-block .child-outcome .half-width img{
-    margin-top:6px;
-}
 
 #popup-container{
     position:absolute;

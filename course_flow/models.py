@@ -6,6 +6,7 @@ from django.contrib.contenttypes.fields import (
     GenericRelation,
 )
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
@@ -19,10 +20,16 @@ from course_flow.utils import get_descendant_outcomes
 
 User = get_user_model()
 
+title_max_length = 200
+
 
 class Project(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.CharField(max_length=500, null=True, blank=True)
+    deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
+    description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -54,20 +61,22 @@ class Project(models.Model):
         return [self]
 
     def __str__(self):
-        if self.title is not None and self.title!="":
+        if self.title is not None and self.title != "":
             return self.title
         else:
             return "Project"
-        
+
     class Meta:
         verbose_name = "Project"
         verbose_name_plural = "Projects"
 
 
 class CustomTerm(models.Model):
-    term = models.CharField(max_length=50)
-    translation = models.CharField(max_length=50)
-    translation_plural = models.CharField(max_length=50, null=True)
+    term = models.CharField(max_length=title_max_length)
+    translation = models.CharField(max_length=title_max_length)
+    translation_plural = models.CharField(
+        max_length=title_max_length, null=True
+    )
 
     def get_permission_objects(self):
         return [Project.objects.filter(terminology_dict=self).first()]
@@ -107,6 +116,15 @@ class OutcomeWorkflow(models.Model):
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
+    def get_display_rank(self):
+        if self.outcome.deleted:
+            return -1
+        return list(
+            OutcomeWorkflow.objects.filter(
+                workflow=self.workflow, outcome__deleted=False
+            ).order_by("rank")
+        ).index(self)
+
     def get_permission_objects(self):
         return [self.project, self.outcome]
 
@@ -116,7 +134,11 @@ class OutcomeWorkflow(models.Model):
 
 
 class Column(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
+    deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -165,10 +187,12 @@ class Column(models.Model):
 
     def get_workflow(self):
         return self.workflow_set.first()
-    
+
     def get_display_title(self):
-        if self.title is not None and self.title != "":return self.title
-        else: return self.get_column_type_display()
+        if self.title is not None and self.title != "":
+            return self.title
+        else:
+            return self.get_column_type_display()
 
     def __str__(self):
         return self.get_column_type_display()
@@ -179,6 +203,8 @@ class Column(models.Model):
 
 
 class NodeLink(models.Model):
+    deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
     title = models.CharField(max_length=100, null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     source_node = models.ForeignKey(
@@ -216,9 +242,11 @@ class NodeLink(models.Model):
 
 
 class Outcome(models.Model):
-    title = models.CharField(max_length=500, null=True, blank=True)
-    code = models.CharField(max_length=50, null=True, blank=True)
-    description = models.TextField(max_length=500, null=True, blank=True)
+    deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
+    title = models.TextField(null=True, blank=True)
+    code = models.CharField(max_length=title_max_length, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -293,6 +321,15 @@ class OutcomeOutcome(models.Model):
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
 
+    def get_display_rank(self):
+        if self.child.deleted:
+            return -1
+        return list(
+            OutcomeOutcome.objects.filter(
+                parent=self.parent, child__deleted=False
+            ).order_by("rank")
+        ).index(self)
+
     def get_permission_objects(self):
         return self.get_top_outcome().get_permission_objects()
 
@@ -331,13 +368,13 @@ class OutcomeHorizontalLink(models.Model):
             parent_outcome = self.parent_outcome.parent_outcomes.first()
             if (
                 OutcomeHorizontalLink.objects.filter(
-                    parent_outcome__in=parent_outcome.children.all().values_list(
-                        "id", flat=True
-                    ),
+                    parent_outcome__in=parent_outcome.children.exclude(
+                        deleted=True
+                    ).values_list("id", flat=True),
                     degree=self.degree,
                     outcome=self.outcome,
                 ).count()
-                == parent_outcome.children.all().count()
+                == parent_outcome.children.exclude(deleted=True).count()
             ):
                 new_outcomehorizontallink = OutcomeHorizontalLink.objects.create(
                     outcome=self.outcome,
@@ -390,8 +427,12 @@ class OutcomeHorizontalLink(models.Model):
 
 
 class Node(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.TextField(max_length=500, null=True, blank=True)
+    deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
+    description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(
         User,
         related_name="authored_nodes",
@@ -602,13 +643,13 @@ class OutcomeNode(models.Model):
             parent_outcome = self.outcome.parent_outcomes.first()
             if (
                 OutcomeNode.objects.filter(
-                    outcome__in=parent_outcome.children.all().values_list(
-                        "id", flat=True
-                    ),
+                    outcome__in=parent_outcome.children.exclude(
+                        deleted=True
+                    ).values_list("id", flat=True),
                     degree=self.degree,
                     node=self.node,
                 ).count()
-                == parent_outcome.children.all().count()
+                == parent_outcome.children.exclude(deleted=True).count()
             ):
                 new_outcomenode = OutcomeNode.objects.create(
                     node=self.node, degree=self.degree, outcome=parent_outcome
@@ -647,16 +688,24 @@ class OutcomeNode(models.Model):
         )
         to_delete.delete()
         # Create the new outcomenodes with bulk_create
+        now = timezone.now()
         new_children = [
-            OutcomeNode(degree=degree, node=node, outcome=x)
+            OutcomeNode(degree=degree, node=node, outcome=x, added_on=now)
             for x in descendants
         ]
-        return OutcomeNode.objects.bulk_create(new_children)
+
+        OutcomeNode.objects.bulk_create(new_children)
+
+        return list(OutcomeNode.objects.filter(added_on=now))
 
 
 class Week(models.Model):
-    title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.TextField(max_length=500, null=True, blank=True)
+    deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
+    description = models.TextField(null=True, blank=True)
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
@@ -749,9 +798,18 @@ class Workflow(models.Model):
     def author(self):
         return self.get_subclass().author
 
-    title = models.CharField(max_length=50, null=True, blank=True)
-    description = models.TextField(max_length=500, null=True, blank=True)
-    code = models.CharField(max_length=50, null=True, blank=True)
+    @property
+    def importing(self):
+        return cache.get("workflow" + str(self.pk) + "importing", False)
+
+    deleted = models.BooleanField(default=False)
+    deleted_on = models.DateTimeField(default=timezone.now)
+
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
+    description = models.TextField(null=True, blank=True)
+    code = models.CharField(max_length=title_max_length, null=True, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -762,6 +820,8 @@ class Workflow(models.Model):
     is_strategy = models.BooleanField(default=False)
 
     from_saltise = models.BooleanField(default=False)
+
+    condensed = models.BooleanField(default=False)
 
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
@@ -837,6 +897,8 @@ class Workflow(models.Model):
     time_general_hours = models.PositiveIntegerField(default=0, null=True)
     time_specific_hours = models.PositiveIntegerField(default=0, null=True)
 
+    edit_count = models.PositiveIntegerField(default=0, null=False)
+
     SUBCLASSES = ["activity", "course", "program"]
 
     @property
@@ -877,7 +939,7 @@ class Workflow(models.Model):
         return ids
 
     def __str__(self):
-        if self.title is not None and self.title!="":
+        if self.title is not None and self.title != "":
             return self.title
         else:
             return self.type
@@ -912,7 +974,7 @@ class Activity(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None and self.title!="":
+        if self.title is not None and self.title != "":
             return self.title
         else:
             return self.type
@@ -951,7 +1013,7 @@ class Course(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None and self.title!="":
+        if self.title is not None and self.title != "":
             return self.title
         else:
             return self.type
@@ -977,7 +1039,7 @@ class Program(Workflow):
         return [self]
 
     def __str__(self):
-        if self.title is not None and self.title!="":
+        if self.title is not None and self.title != "":
             return self.title
         else:
             return self.type
@@ -1005,6 +1067,15 @@ class WeekWorkflow(models.Model):
     week = models.ForeignKey(Week, on_delete=models.CASCADE)
     added_on = models.DateTimeField(default=timezone.now)
     rank = models.PositiveIntegerField(default=0)
+
+    def get_display_rank(self):
+        if self.week.deleted:
+            return -1
+        return list(
+            WeekWorkflow.objects.filter(
+                workflow=self.workflow, week__deleted=False
+            ).order_by("rank")
+        ).index(self)
 
     def get_workflow(self):
         return self.workflow
@@ -1047,7 +1118,7 @@ class Favourite(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    text = models.CharField(max_length=500, blank=False,)
+    text = models.TextField(blank=False,)
     created_on = models.DateTimeField(default=timezone.now)
 
 
@@ -1065,15 +1136,33 @@ class ObjectPermission(models.Model):
     PERMISSION_NONE = 0
     PERMISSION_VIEW = 1
     PERMISSION_EDIT = 2
+    PERMISSION_COMMENT = 3
     PERMISSION_CHOICES = (
         (PERMISSION_NONE, _("None")),
         (PERMISSION_VIEW, _("View")),
         (PERMISSION_EDIT, _("Edit")),
+        (PERMISSION_COMMENT, _("Comment")),
     )
     permission_type = models.PositiveIntegerField(
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
 
+
+# class WorkflowAction(models.Model):
+#    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+#    created_on = models.DateTimeField(default=timezone.now)
+#    action_type = models.PositiveIntegerField(choices=ACTION_CHOICES)
+#    action_arguments = models.CharField(blank=False)
+#    undo_type = models.PositiveIntegerField(choices=ACTION_CHOICES)
+#    undo_arguments = models.CharField(blank=False)
+#
+#    NEW_NODE = 0
+#    DELETE_SELF = 1
+#
+#    ACTION_CHOICES = (
+#        (NEW_NODE, _("New Node")),
+#        (DELETE_SELF, _("Delete")),
+#    )
 
 """
 Other receivers
@@ -1092,37 +1181,37 @@ def get_allowed_parent_outcomes(workflow, **kwargs):
     return parent_outcomes
 
 
-@receiver(pre_delete, sender=OutcomeNode)
-def remove_horizontal_outcome_links_on_outcomenode_delete(
-    sender, instance, **kwargs
-):
-    workflow = instance.node.linked_workflow
-    if workflow is not None:
-        linked_outcomes = list(workflow.outcomes.all())
-        parent_outcomes = get_allowed_parent_outcomes(
-            workflow, exclude_outcomenode=instance.pk
-        )
-        OutcomeHorizontalLink.objects.filter(
-            outcome__in=linked_outcomes
-        ).exclude(parent_outcome__in=parent_outcomes).delete()
+# @receiver(pre_delete, sender=OutcomeNode)
+# def remove_horizontal_outcome_links_on_outcomenode_delete(
+#    sender, instance, **kwargs
+# ):
+#    workflow = instance.node.linked_workflow
+#    if workflow is not None:
+#        linked_outcomes = list(workflow.outcomes.all())
+#        parent_outcomes = get_allowed_parent_outcomes(
+#            workflow, exclude_outcomenode=instance.pk
+#        )
+#        OutcomeHorizontalLink.objects.filter(
+#            outcome__in=linked_outcomes
+#        ).exclude(parent_outcome__in=parent_outcomes).delete()
 
 
-@receiver(pre_save, sender=Node)
-def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
-    if instance.pk is None:
-        return
-    old_workflow = Node.objects.get(id=instance.pk).linked_workflow
-    new_workflow = instance.linked_workflow
-    if old_workflow is not None and (
-        new_workflow is None or new_workflow.pk != old_workflow.pk
-    ):
-        linked_outcomes = list(old_workflow.outcomes.all())
-        parent_outcomes = get_allowed_parent_outcomes(
-            old_workflow, exclude_node=instance.pk
-        )
-        OutcomeHorizontalLink.objects.filter(
-            outcome__in=linked_outcomes
-        ).exclude(parent_outcome__in=parent_outcomes).delete()
+# @receiver(pre_save, sender=Node)
+# def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
+#    if instance.pk is None:
+#        return
+#    old_workflow = Node.objects.get(id=instance.pk).linked_workflow
+#    new_workflow = instance.linked_workflow
+#    if old_workflow is not None and (
+#        new_workflow is None or new_workflow.pk != old_workflow.pk
+#    ):
+#        linked_outcomes = list(old_workflow.outcomes.all())
+#        parent_outcomes = get_allowed_parent_outcomes(
+#            old_workflow, exclude_node=instance.pk
+#        )
+#        OutcomeHorizontalLink.objects.filter(
+#            outcome__in=linked_outcomes
+#        ).exclude(parent_outcome__in=parent_outcomes).delete()
 
 
 @receiver(pre_delete, sender=Project)
@@ -1779,6 +1868,7 @@ def create_default_program_content(sender, instance, created, **kwargs):
             author=instance.author,
             is_strategy=instance.is_strategy,
         )
+        instance.condensed = True
         instance.save()
 
 

@@ -2,14 +2,17 @@ import json
 import os
 import time
 
+import pandas as pd
 from celery.result import AsyncResult
+from channels.routing import URLRouter
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.urls import reverse
+from django.urls import re_path, reverse
 from rest_framework.renderers import JSONRenderer
 
 from course_flow import tasks
+from course_flow.consumers import WorkflowUpdateConsumer
 from course_flow.models import (
     Activity,
     Column,
@@ -43,6 +46,18 @@ from course_flow.utils import (
 from .utils import check_order, get_author, login, make_object
 
 TESTJSON_FILENAME = os.path.join(os.path.dirname(__file__), "test_json.json")
+TESTNODESXLS_FILENAME = os.path.join(
+    os.path.dirname(__file__), "test_nodes.xls"
+)
+TESTNODESCSV_FILENAME = os.path.join(
+    os.path.dirname(__file__), "test_nodes.csv"
+)
+TESTOUTCOMESXLS_FILENAME = os.path.join(
+    os.path.dirname(__file__), "test_outcomes.xls"
+)
+TESTOUTCOMESCSV_FILENAME = os.path.join(
+    os.path.dirname(__file__), "test_outcomes.csv"
+)
 
 
 class ModelViewTest(TestCase):
@@ -402,6 +417,7 @@ class ModelViewTest(TestCase):
                 "objectType": JSONRenderer().render("outcome").decode("utf-8"),
                 "parentID": str(child1.id),
                 "newPosition": str(0),
+                "inserted": "true",
                 "parentType": JSONRenderer().render("outcome").decode("utf-8"),
                 "throughType": JSONRenderer()
                 .render("outcomeoutcome")
@@ -422,6 +438,7 @@ class ModelViewTest(TestCase):
                 "objectType": JSONRenderer().render("outcome").decode("utf-8"),
                 "parentID": str(base_outcome.id),
                 "newPosition": str(0),
+                "inserted": "true",
                 "parentType": JSONRenderer().render("outcome").decode("utf-8"),
                 "throughType": JSONRenderer()
                 .render("outcomeoutcome")
@@ -456,8 +473,20 @@ class ModelViewTest(TestCase):
             ).column
             # Add a custom column to the base week
             response = self.client.post(
-                reverse("course_flow:new-column"),
-                {"workflowPk": str(workflow.id), "column_type": i * 10},
+                reverse("course_flow:insert-sibling"),
+                {
+                    "objectID": str(first_column.id),
+                    "objectType": JSONRenderer()
+                    .render("column")
+                    .decode("utf-8"),
+                    "parentID": str(workflow.id),
+                    "parentType": JSONRenderer()
+                    .render("workflow")
+                    .decode("utf-8"),
+                    "throughType": JSONRenderer()
+                    .render("columnworkflow")
+                    .decode("utf-8"),
+                },
             )
             self.assertEqual(response.status_code, 200)
             # Add a node to the base week
@@ -574,6 +603,7 @@ class ModelViewTest(TestCase):
             second_week = WeekWorkflow.objects.get(
                 workflow=workflow, rank=1
             ).week
+            check_order(self, base_week.nodeweek_set)
             # reorder the nodes
             # Move rank 1 up a rank, down a rank, and not at all
             for change in [0, 1, -1, 99, -99]:
@@ -586,6 +616,7 @@ class ModelViewTest(TestCase):
                         "objectType": JSONRenderer()
                         .render("node")
                         .decode("utf-8"),
+                        "inserted": "true",
                         "newPosition": 1 + change,
                         "parentType": JSONRenderer()
                         .render("week")
@@ -613,6 +644,7 @@ class ModelViewTest(TestCase):
                         "objectType": JSONRenderer()
                         .render("node")
                         .decode("utf-8"),
+                        "inserted": "true",
                         "newPosition": position,
                         "parentType": JSONRenderer()
                         .render("week")
@@ -642,6 +674,7 @@ class ModelViewTest(TestCase):
                     .render("week")
                     .decode("utf-8"),
                     "newPosition": 1,
+                    "inserted": "true",
                     "parentType": JSONRenderer()
                     .render("workflow")
                     .decode("utf-8"),
@@ -665,6 +698,7 @@ class ModelViewTest(TestCase):
                     .render("column")
                     .decode("utf-8"),
                     "newPosition": 1,
+                    "inserted": "true",
                     "parentType": JSONRenderer()
                     .render("workflow")
                     .decode("utf-8"),
@@ -742,7 +776,7 @@ class ModelViewTest(TestCase):
         WorkflowProject.objects.create(workflow=activity, project=project)
         WorkflowProject.objects.create(workflow=course, project=project)
         week = course.weeks.create(author=author)
-        node = week.nodes.create(author=author)
+        node = week.nodes.create(author=author, column=course.columns.first())
         response = self.client.post(
             reverse("course_flow:set-linked-workflow"),
             {"nodePk": node.id, "workflowPk": activity.id},
@@ -881,13 +915,33 @@ class ModelViewTest(TestCase):
         user = login(self)
         strategy = Activity.objects.create(author=user, is_strategy=True)
         # add two extra columns
-        self.client.post(
-            reverse("course_flow:new-column"),
-            {"workflowPk": strategy.id, "column_type": 0},
+        response = self.client.post(
+            reverse("course_flow:insert-sibling"),
+            {
+                "objectID": str(strategy.columns.first().id),
+                "objectType": JSONRenderer().render("column").decode("utf-8"),
+                "parentID": str(strategy.id),
+                "parentType": JSONRenderer()
+                .render("workflow")
+                .decode("utf-8"),
+                "throughType": JSONRenderer()
+                .render("columnworkflow")
+                .decode("utf-8"),
+            },
         )
-        self.client.post(
-            reverse("course_flow:new-column"),
-            {"workflowPk": strategy.id, "column_type": 0},
+        response = self.client.post(
+            reverse("course_flow:insert-sibling"),
+            {
+                "objectID": str(strategy.columns.first().id),
+                "objectType": JSONRenderer().render("column").decode("utf-8"),
+                "parentID": str(strategy.id),
+                "parentType": JSONRenderer()
+                .render("workflow")
+                .decode("utf-8"),
+                "throughType": JSONRenderer()
+                .render("columnworkflow")
+                .decode("utf-8"),
+            },
         )
         # add some nodes to simulate a real strategy
         for column in strategy.columns.all():
@@ -1089,6 +1143,7 @@ class ModelViewTest(TestCase):
         columnworkflow1 = ColumnWorkflow.objects.create(
             column=column1, workflow=workflow1
         )
+        WeekWorkflow.objects.create(week=week1, workflow=workflow1)
         node0.column = column1
         node1.column = column1
         node0.save()
@@ -1102,6 +1157,7 @@ class ModelViewTest(TestCase):
                 "objectType": JSONRenderer().render("node").decode("utf-8"),
                 "parentID": week1.id,
                 "newPosition": 1,
+                "inserted": "true",
                 "throughType": JSONRenderer()
                 .render("nodeweek")
                 .decode("utf-8"),
@@ -1110,8 +1166,13 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 401)
         response = self.client.post(
-            reverse("course_flow:change-column"),
-            {"nodePk": to_move.node.id, "columnID": columnworkflow1.id},
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID": to_move.node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "columnChange": "true",
+                "columnPk": str(columnworkflow1.column.id),
+            },
         )
         self.assertEqual(response.status_code, 401)
         user = login(self)
@@ -1122,6 +1183,7 @@ class ModelViewTest(TestCase):
                 "objectType": JSONRenderer().render("node").decode("utf-8"),
                 "parentID": week1.id,
                 "newPosition": 1,
+                "inserted": "true",
                 "throughType": JSONRenderer()
                 .render("nodeweek")
                 .decode("utf-8"),
@@ -1130,8 +1192,13 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
-            reverse("course_flow:change-column"),
-            {"nodePk": to_move.node.id, "columnID": columnworkflow1.id},
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID": to_move.node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "columnChange": "true",
+                "columnPk": str(columnworkflow1.column.id),
+            },
         )
         self.assertEqual(response.status_code, 403)
         # Try to move from their stuff to your own
@@ -1154,6 +1221,7 @@ class ModelViewTest(TestCase):
                 "objectType": JSONRenderer().render("week").decode("utf-8"),
                 "parentID": week2.id,
                 "newPosition": 1,
+                "inserted": "true",
                 "throughType": JSONRenderer()
                 .render("nodeweek")
                 .decode("utf-8"),
@@ -1164,8 +1232,13 @@ class ModelViewTest(TestCase):
             NodeWeek.objects.get(node=to_move.node).week.id, week1.id
         )
         response = self.client.post(
-            reverse("course_flow:change-column"),
-            {"nodePk": to_move.node.id, "columnID": columnworkflow2.id},
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID": to_move.node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "columnChange": "true",
+                "columnPk": str(columnworkflow2.column.id),
+            },
         )
         self.assertEqual(
             Node.objects.get(id=to_move.node.id).column.id, column1.id
@@ -1173,8 +1246,13 @@ class ModelViewTest(TestCase):
         # Try to move from your stuff to theirs
         to_move = NodeWeek.objects.get(week=week2, rank=0)
         response = self.client.post(
-            reverse("course_flow:change-column"),
-            {"nodePk": to_move.node.id, "columnPk": columnworkflow1.column.id},
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID": to_move.node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "columnChange": "true",
+                "columnPk": str(columnworkflow1.column.id),
+            },
         )
         self.assertEqual(
             Node.objects.get(id=to_move.node.id).column.id, column2.id
@@ -1186,6 +1264,7 @@ class ModelViewTest(TestCase):
                 "objectType": JSONRenderer().render("node").decode("utf-8"),
                 "parentID": week1.id,
                 "newPosition": 1,
+                "inserted": "true",
                 "throughType": JSONRenderer()
                 .render("nodeweek")
                 .decode("utf-8"),
@@ -1203,8 +1282,13 @@ class ModelViewTest(TestCase):
             column=column2b, workflow=workflow2
         )
         response = self.client.post(
-            reverse("course_flow:change-column"),
-            {"nodePk": to_move.node.id, "columnPk": column2b.id,},
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID": to_move.node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "columnChange": "true",
+                "columnPk": str(column2b.id),
+            },
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
@@ -1217,6 +1301,7 @@ class ModelViewTest(TestCase):
                 "objectType": JSONRenderer().render("node").decode("utf-8"),
                 "parentID": week2b.id,
                 "newPosition": 0,
+                "inserted": "true",
                 "throughType": JSONRenderer()
                 .render("nodeweek")
                 .decode("utf-8"),
@@ -1711,6 +1796,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeHorizontalLink.objects.all().count(), 4)
 
+    # Previously tested the automatic removal of horizontal links. No longer really a desired feature.
     def test_horizontal_outcome_link_on_node_unlink(self):
         author = login(self)
         program = make_object("program", author)
@@ -1728,7 +1814,7 @@ class ModelViewTest(TestCase):
         )
         node.linked_workflow = None
         node.save()
-        self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
+        # self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
         node.linked_workflow = course
         node.save()
 
@@ -1742,12 +1828,13 @@ class ModelViewTest(TestCase):
         )
         node.linked_workflow = None
         node.save()
-        self.assertEqual(OutcomeHorizontalLink.objects.count(), 1)
+        # self.assertEqual(OutcomeHorizontalLink.objects.count(), 1)
 
         # deleting a node
         node2.delete()
-        self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
+        # self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
 
+    # Previously tested the automatic removal of horizontal links. No longer really a desired feature.
     def test_horizontal_outcome_link_on_outcomenode_delete(self):
         author = login(self)
         program = make_object("program", author)
@@ -1766,7 +1853,7 @@ class ModelViewTest(TestCase):
 
         # test basic scenario
         outcomenode.delete()
-        self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
+        # self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
         outcomenode = OutcomeNode.objects.create(
             node=node, outcome=program_outcome
         )
@@ -1780,7 +1867,7 @@ class ModelViewTest(TestCase):
         node2.save()
         OutcomeNode.objects.create(node=node2, outcome=program_outcome)
         outcomenode.delete()
-        self.assertEqual(OutcomeHorizontalLink.objects.count(), 1)
+        # self.assertEqual(OutcomeHorizontalLink.objects.count(), 1)
 
     def test_horizontal_outcome_link_on_outcome_delete(self):
         author = login(self)
@@ -2913,13 +3000,39 @@ class ExportTest(TestCase):
                 author=author, title="outcome", depth=1
             )
 
-            tasks.async_get_outcomes_excel(
-                author.email, workflow.id, "workflow"
+            tasks.async_send_export_email(
+                author.email,
+                workflow.id,
+                "workflow",
+                "outcomes_csv",
+                "subject",
+                "text",
             )
-            tasks.async_get_outcomes_csv(author.email, workflow.id, "workflow")
+            tasks.async_send_export_email(
+                author.email,
+                workflow.id,
+                "workflow",
+                "outcomes_excel",
+                "subject",
+                "text",
+            )
 
-        tasks.async_get_outcomes_excel(author.email, project.id, "project")
-        tasks.async_get_outcomes_csv(author.email, project.id, "project")
+        tasks.async_send_export_email(
+            author.email,
+            project.id,
+            "project",
+            "outcomes_excel",
+            "subject",
+            "text",
+        )
+        tasks.async_send_export_email(
+            author.email,
+            project.id,
+            "project",
+            "outcomes_csv",
+            "subject",
+            "text",
+        )
 
     def test_export_frameworks(self):
         author = get_author()
@@ -2984,10 +3097,211 @@ class ExportTest(TestCase):
                 parent_outcome=workflow.linked_nodes.first().outcomes.first(),
             )
 
-            tasks.async_get_course_frameworks_excel(
-                author.email, workflow.id, "workflow"
+            tasks.async_send_export_email(
+                author.email,
+                workflow.id,
+                "workflow",
+                "frameworks_excel",
+                "subject",
+                "text",
             )
 
-        tasks.async_get_course_frameworks_excel(
-            author.email, project.id, "project"
+        tasks.async_send_export_email(
+            author.email,
+            project.id,
+            "project",
+            "frameworks_excel",
+            "subject",
+            "text",
+        )
+        tasks.async_send_export_email(
+            author.email,
+            program.id,
+            "workflow",
+            "matrix_excel",
+            "subject",
+            "text",
+        )
+        tasks.async_send_export_email(
+            author.email,
+            project.id,
+            "project",
+            "matrix_excel",
+            "subject",
+            "text",
+        )
+        tasks.async_send_export_email(
+            author.email,
+            program.id,
+            "workflow",
+            "matrix_csv",
+            "subject",
+            "text",
+        )
+        tasks.async_send_export_email(
+            author.email,
+            project.id,
+            "project",
+            "matrix_csv",
+            "subject",
+            "text",
+        )
+
+    def test_export_nodes(self):
+        author = get_author()
+        user = login(self)
+        project = make_object("project", author)
+        for workflow_type in ["activity", "course", "program"]:
+            workflow = make_object(workflow_type, author)
+            WorkflowProject.objects.create(workflow=workflow, project=project)
+            week = workflow.weeks.first()
+            node = week.nodes.create(
+                author=author,
+                title="my title",
+                description="my description",
+                column=workflow.columns.first(),
+            )
+
+            tasks.async_send_export_email(
+                author.email,
+                workflow.id,
+                "workflow",
+                "nodes_csv",
+                "subject",
+                "text",
+            )
+            tasks.async_send_export_email(
+                author.email,
+                workflow.id,
+                "workflow",
+                "nodes_excel",
+                "subject",
+                "text",
+            )
+
+        tasks.async_send_export_email(
+            author.email,
+            project.id,
+            "project",
+            "nodes_excel",
+            "subject",
+            "text",
+        )
+        tasks.async_send_export_email(
+            author.email, project.id, "project", "nodes_csv", "subject", "text"
+        )
+
+
+class ImportTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_import_nodes_xls(self):
+        user = login(self)
+        workflow = Course.objects.create(author=user)
+        filecontents = open(TESTNODESXLS_FILENAME, mode="rb")
+        file_json = pd.read_excel(
+            filecontents, keep_default_na=False
+        ).to_json()
+        tasks.async_import_file_data(
+            workflow.pk, "workflow", "nodes", file_json, user.id
+        )
+        self.assertEqual(
+            Node.objects.filter(week__workflow=workflow).count(), 3
+        )
+        self.assertEqual(Column.objects.filter(workflow=workflow).count(), 4)
+        self.assertEqual(Week.objects.filter(workflow=workflow).count(), 2)
+        self.assertEqual(workflow.weeks.first().title, "Week 1")
+        self.assertEqual(workflow.weeks.first().description, "My week")
+        self.assertEqual(workflow.weeks.all()[1].title, None)
+        self.assertEqual(
+            Node.objects.get(pk=1).column, workflow.columns.all()[1]
+        )
+        self.assertEqual(
+            Node.objects.get(pk=2).column, workflow.columns.all()[3]
+        )
+        self.assertEqual(
+            Node.objects.get(pk=3).column, workflow.columns.all()[0]
+        )
+
+    def test_import_nodes_csv(self):
+        user = login(self)
+        workflow = Course.objects.create(author=user)
+        filecontents = open(TESTNODESCSV_FILENAME, mode="rb")
+        file_json = pd.read_csv(filecontents, keep_default_na=False).to_json()
+        tasks.async_import_file_data(
+            workflow.pk, "workflow", "nodes", file_json, user.id
+        )
+        self.assertEqual(
+            Node.objects.filter(week__workflow=workflow).count(), 3
+        )
+        self.assertEqual(Column.objects.filter(workflow=workflow).count(), 4)
+        self.assertEqual(Week.objects.filter(workflow=workflow).count(), 2)
+        self.assertEqual(workflow.weeks.first().title, "Week 1")
+        self.assertEqual(workflow.weeks.first().description, "My week")
+        self.assertEqual(workflow.weeks.all()[1].title, None)
+        self.assertEqual(
+            Node.objects.get(pk=1).column, workflow.columns.all()[1]
+        )
+        self.assertEqual(
+            Node.objects.get(pk=2).column, workflow.columns.all()[3]
+        )
+        self.assertEqual(
+            Node.objects.get(pk=3).column, workflow.columns.all()[0]
+        )
+
+    def test_import_outcomes_xls(self):
+        user = login(self)
+        workflow = Course.objects.create(author=user)
+        filecontents = open(TESTOUTCOMESXLS_FILENAME, mode="rb")
+        file_json = pd.read_excel(
+            filecontents, keep_default_na=False
+        ).to_json()
+        tasks.async_import_file_data(
+            workflow.pk, "workflow", "outcomes", file_json, user.id
+        )
+        self.assertEqual(Outcome.objects.all().count(), 7)
+        self.assertEqual(Outcome.objects.filter(depth=0).count(), 2)
+        self.assertEqual(Outcome.objects.filter(depth=1).count(), 3)
+        self.assertEqual(Outcome.objects.filter(depth=1, code="").count(), 3)
+        self.assertEqual(Outcome.objects.filter(depth=2).count(), 2)
+        self.assertEqual(Outcome.objects.filter(depth=2, code="").count(), 2)
+        self.assertEqual(Outcome.objects.filter(title="Depth 1").count(), 3)
+        self.assertEqual(Outcome.objects.filter(title="Depth 2").count(), 2)
+        self.assertEqual(
+            Outcome.objects.filter(title="Base Outcome").count(), 1
+        )
+        self.assertEqual(
+            Outcome.objects.get(title="Base Outcome").description,
+            "my description",
+        )
+        self.assertEqual(
+            Outcome.objects.get(title="Base Outcome").code, "01XX"
+        )
+
+    def test_import_outcomes_csv(self):
+        user = login(self)
+        workflow = Course.objects.create(author=user)
+        filecontents = open(TESTOUTCOMESCSV_FILENAME, mode="rb")
+        file_json = pd.read_csv(filecontents, keep_default_na=False).to_json()
+        tasks.async_import_file_data(
+            workflow.pk, "workflow", "outcomes", file_json, user.id
+        )
+        self.assertEqual(Outcome.objects.all().count(), 7)
+        self.assertEqual(Outcome.objects.filter(depth=0).count(), 2)
+        self.assertEqual(Outcome.objects.filter(depth=1).count(), 3)
+        self.assertEqual(Outcome.objects.filter(depth=1, code="").count(), 3)
+        self.assertEqual(Outcome.objects.filter(depth=2).count(), 2)
+        self.assertEqual(Outcome.objects.filter(depth=2, code="").count(), 2)
+        self.assertEqual(Outcome.objects.filter(title="Depth 1").count(), 3)
+        self.assertEqual(Outcome.objects.filter(title="Depth 2").count(), 2)
+        self.assertEqual(
+            Outcome.objects.filter(title="Base Outcome").count(), 1
+        )
+        self.assertEqual(
+            Outcome.objects.get(title="Base Outcome").description,
+            "my description",
+        )
+        self.assertEqual(
+            Outcome.objects.get(title="Base Outcome").code, "01XX"
         )

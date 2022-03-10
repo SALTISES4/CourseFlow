@@ -1,9 +1,11 @@
+
 black
 django-debug-toolbar
 isort
 pre-commit
 pytest-cov
 pytest-django
+pytest-asyncio
 safety
 selenium
 tox

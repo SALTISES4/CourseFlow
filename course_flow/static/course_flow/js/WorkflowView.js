@@ -1,20 +1,20 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, WorkflowTitle} from "./ComponentJSON.js";
-import ColumnWorkflowView from "./ColumnWorkflowView.js";
-import WeekWorkflowView from "./WeekWorkflowView.js";
-import {NodeBarColumnWorkflow} from "./ColumnWorkflowView.js";
-import {NodeBarWeekWorkflow} from "./WeekWorkflowView.js";
-import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents.js";
-import * as Constants from "./Constants.js";
-import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers.js";
-import {OutcomeBar} from "./OutcomeEditView.js";
-import StrategyView from "./Strategy.js";
-import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
-import WorkflowLegend from "./WorkflowLegend.js";
-import {WorkflowOutcomeLegend} from "./WorkflowLegend.js";
-import {getParentWorkflowInfo,getExport} from "./PostFunctions";
+import {ComponentJSON, WorkflowTitle} from "./ComponentJSON";
+import ColumnWorkflowView from "./ColumnWorkflowView";
+import WeekWorkflowView from "./WeekWorkflowView";
+import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";
+import {NodeBarWeekWorkflow} from "./WeekWorkflowView";
+import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
+import * as Constants from "./Constants";
+import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers";
+import {OutcomeBar} from "./OutcomeEditView";
+import StrategyView from "./Strategy";
+import WorkflowOutcomeView from "./WorkflowOutcomeView";
+import WorkflowLegend from "./WorkflowLegend";
+import {WorkflowOutcomeLegend} from "./WorkflowLegend";
+import {getParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
@@ -29,6 +29,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         this.objectType="workflow";
         this.allowed_tabs=[0,1,2,3];
         this.exportDropDown = React.createRef();
+        this.importDropDown = React.createRef();
     }
     
     render(){
@@ -63,7 +64,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                 <OutcomeEditView renderer={renderer}/>
             );
             if(data.type=="program")this.allowed_tabs=[];
-            else this.allowed_tabs=[2];
+            else this.allowed_tabs=[2,4];
         }
         else if(renderer.view_type=="horizontaloutcometable"){
             workflow_content=(
@@ -87,7 +88,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             workflow_content = (
                 <WorkflowView renderer={renderer}/>
             );
-            this.allowed_tabs=[1,2,3];
+            this.allowed_tabs=[1,2,3,4];
         }
         
         
@@ -117,15 +118,21 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                 </div>
             </div>
         );
-            
+
+        let style={};
+        if(data.lock){
+            style.border="2px solid "+data.lock.user_colour;
+        }    
+    
+        let workflow = this;
             
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
-                <div class="workflow-header">
+                <div class="workflow-header" style={style}>
                     <WorkflowForMenu workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
                     <ParentWorkflowIndicator workflow_id={data.id}/>
                 </div>
-                <div class="workflow-view-select">
+                <div class="workflow-view-select hide-print">
                     {view_buttons_sorted}
                 </div>
                 <div class = "workflow-container">
@@ -139,6 +146,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                         $("#floatbar")[0]
                     )}
                     {this.getExportButton()}
+                    {this.getImportButton()}
                     {reactDom.createPortal(
                         <div class="workflow-publication">
                             <img src={publish_icon}/><div>{publish_text}</div>
@@ -162,6 +170,9 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     }
                     {!read_only && !data.is_strategy && data.type != "program" &&
                         <StrategyBar/>
+                    }
+                    {!read_only && 
+                        <RestoreBar renderer={this.props.renderer}/>
                     }
                 </div>
             </div>
@@ -197,6 +208,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     }
                      
     changeView(type){
+        this.props.renderer.selection_manager.changeSelection(null,null);
         this.props.renderer.render(this.props.renderer.container,type);
     }
                      
@@ -207,8 +219,12 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     getExportButton(){
         let exports=[];
         this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
-        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to CSV"));
+        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to .csv"));
         if(this.props.data.type=="course")this.pushExport(exports,"frameworks_excel",gettext("Framework to .xls"));
+        if(this.props.data.type=="program")this.pushExport(exports,"matrix_excel",gettext("Matrix to .xls"));
+        if(this.props.data.type=="program")this.pushExport(exports,"matrix_csv",gettext("Matrix to .csv"));
+        this.pushExport(exports,"nodes_csv",gettext("Nodes to .csv"));
+        this.pushExport(exports,"nodes_excel",gettext("Nodes to .xls"));
         
         
         let export_button = (
@@ -240,6 +256,47 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         evt.preventDefault();
         getExport(this.props.data.id,"workflow",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
     }
+                     
+    getImportButton(){
+        let disabled;
+        if(this.props.data.importing)disabled=true;
+        let imports=[];
+        this.pushImport(imports,"outcomes",gettext("Import Outcomes"),disabled);
+        this.pushImport(imports,"nodes",gettext("Import Nodes"),disabled);
+        
+        let button_class = "floatbardiv hover-shade";
+        if(disabled)button_class+=" disabled";
+        let import_button = (
+            <div id="import-button" class={button_class} onClick={()=>$(this.importDropDown.current).toggleClass("active")}><img src={iconpath+"upload.svg"}/><div>{gettext("Import")}</div>
+                <div class="create-dropdown" ref={this.importDropDown}>
+                    {imports}
+                </div>
+            </div>
+            
+        )
+        
+        return (
+            reactDom.createPortal(
+                import_button,
+                $("#floatbar")[0]
+            )
+        )
+    }
+                     
+    pushImport(imports,import_type,text,disabled){
+        let a_class = "hover-shade";
+        if(disabled)a_class=" disabled";
+        imports.push(
+            <a class={a_class} onClick={this.clickImport.bind(this,import_type)}>
+                {text}
+            </a>
+        )
+    }
+                     
+    clickImport(import_type,evt){
+        evt.preventDefault();
+        renderMessageBox({"object_id":this.props.data.id,"object_type":this.objectType,import_type:import_type},"import",()=>{closeMessageBox()});
+    }
     
 }
 const mapWorkflowStateToProps = state=>({
@@ -268,7 +325,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
             <ColumnWorkflowView key={columnworkflow} objectID={columnworkflow} parentID={data.id} renderer={renderer}/>
         );
         var weekworkflows = data.weekworkflow_set.map((weekworkflow)=>
-            <WeekWorkflowView key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
+            <WeekWorkflowView condensed={data.condensed} key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
         );
         
         
@@ -306,16 +363,38 @@ class WorkflowViewUnconnected extends ComponentJSON{
     
                      
     postMountFunction(){
-        this.makeSortable($(".column-row"),
-          this.props.objectID,
-          "columnworkflow",
-          ".column-workflow",
-          "x");
-        if(!this.props.data.is_strategy)this.makeSortable($(".week-block"),
-          this.props.objectID,
-          "weekworkflow",
-          ".week-workflow",
-          "y");
+        this.makeDragAndDrop();
+        
+        
+    }
+
+    componentDidUpdate(){
+        this.makeDragAndDrop();
+    }
+
+    makeDragAndDrop(){
+        this.makeSortableNode(
+            $(".column-row").children(".column-workflow").not(".ui-draggable"),
+            this.props.objectID,
+            "columnworkflow",
+            ".column-workflow",
+            "x",
+            false,
+            ".column-row",
+            ".column",
+            ".column-row"
+        );
+        this.makeSortableNode(
+            $(".week-block").children(".week-workflow").not(".ui-draggable"),
+            this.props.objectID,
+            "weekworkflow",
+            ".week-workflow",
+            "y",
+            false,
+            ".week-block",
+            ".week",
+            ".week-block"
+        );
     }
 
     stopSortFunction(){
@@ -324,8 +403,14 @@ class WorkflowViewUnconnected extends ComponentJSON{
     
     
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
-        if(type=="columnworkflow")this.props.dispatch(moveColumnWorkflow(id,new_position,new_parent,child_id))
-        if(type=="weekworkflow")this.props.dispatch(moveWeekWorkflow(id,new_position,new_parent,child_id))
+        if(type=="columnworkflow"){
+            this.props.renderer.micro_update(moveColumnWorkflow(id,new_position,new_parent,child_id));
+            insertedAt(this.props.renderer,child_id,"column",new_parent,"workflow",new_position,"columnworkflow");
+        }
+        if(type=="weekworkflow"){
+            this.props.renderer.micro_update(moveWeekWorkflow(id,new_position,new_parent,child_id));
+            insertedAt(this.props.renderer,child_id,"week",new_parent,"workflow",new_position,"weekworkflow");
+        }
     }
                      
     toggleLegend(){
@@ -421,6 +506,116 @@ export const NodeBar = connect(
     mapNodeBarStateToProps,
     null
 )(NodeBarUnconnected)
+
+class RestoreBarUnconnected extends ComponentJSON{
+    
+    constructor(props){
+        super(props);
+        this.objectType="workflow";
+    }
+    
+    
+    render(){
+        let columns = this.props.columns.map((column)=>
+            <RestoreBarItem objectType="column" data={column} renderer={this.props.renderer}/>
+        )
+        let weeks = this.props.weeks.map((week)=>
+            <RestoreBarItem objectType="week" data={week} renderer={this.props.renderer}/>
+        )
+        let nodes = this.props.nodes.map((node)=>
+            <RestoreBarItem objectType="node" data={node} renderer={this.props.renderer}/>
+        )
+        let outcomes = this.props.outcomes.map((outcome)=>
+            <RestoreBarItem objectType="outcome" data={outcome} renderer={this.props.renderer}/>
+        )
+        let nodelinks = this.props.nodelinks.map((nodelink)=>
+            <RestoreBarItem objectType="nodelink" data={nodelink} renderer={this.props.renderer}/>
+        )
+        
+        
+        return reactDom.createPortal(
+            <div id="restore-bar-workflow" class="right-panel-inner">
+                <h4>{gettext("Nodes")}:</h4>
+                <div class="node-bar-column-block">
+                    {nodes}
+                </div>
+                <h4>{gettext("Weeks")}:</h4>
+                <div class="node-bar-column-block">
+                    {weeks}
+                </div>
+                <h4>{gettext("Columns")}:</h4>
+                <div class="node-bar-column-block">
+                    {columns}
+                </div>
+                <h4>{gettext("Outcomes")}:</h4>
+                <div class="node-bar-column-block">
+                    {outcomes}
+                </div>
+                <h4>{gettext("Node Links")}:</h4>
+                <div class="node-bar-column-block">
+                    {nodelinks}
+                </div>
+            </div>
+        ,$("#restore-bar")[0]);
+    }
+    
+}
+const mapRestoreBarStateToProps = state=>({
+    weeks:state.week.filter(x=>x.deleted),
+    columns:state.column.filter(x=>x.deleted),
+    nodes:state.node.filter(x=>x.deleted),
+    outcomes:state.outcome.filter(x=>x.deleted),
+    nodelinks:state.nodelink.filter(x=>x.deleted),
+    
+})
+export const RestoreBar = connect(
+    mapRestoreBarStateToProps,
+    null
+)(RestoreBarUnconnected)
+
+class RestoreBarItem extends React.Component{
+    constructor(props){
+        super(props);
+        //The disabling prevents double clicks from sending two calls
+        this.state={disabled:false};
+    }
+    
+    render(){
+        if(this.state.disabled)return null;
+        else return (
+            <div class="restore-bar-item">
+                <div>{this.getTitle()}</div>
+                <div class="workflow-created">{gettext("Deleted")+" "+this.props.data.deleted_on}</div>
+                <button onClick={this.restore.bind(this)}>{gettext("Restore")}</button>
+                <button onClick={this.delete.bind(this)}>{gettext("Permanently Delete")}</button>
+            </div>
+        );
+    }
+
+    getTitle(){
+        if(this.props.data.title && this.props.data.title !== "")return this.props.data.title;
+        if(this.props.objectType=="node" && (this.props.data.represents_workflow && this.props.data.linked_workflow_data.title && this.props.data.linked_workflow_data.title !== ""))return this.props.data.linked_workflow_data.title;
+        return gettext("Untitled");
+    }
+    
+    restore(){
+        this.setState({disabled:true});
+        this.props.renderer.tiny_loader.startLoad();
+        restoreSelf(this.props.data.id,this.props.objectType,()=>{
+            this.props.renderer.tiny_loader.endLoad();
+        });
+    }
+
+    delete(){
+        this.setState({disabled:true});
+        if(window.confirm(gettext("Are you sure you want to permanently delete this object?"))){
+            this.props.renderer.tiny_loader.startLoad();
+            deleteSelf(this.props.data.id,this.props.objectType,false,()=>{
+                this.props.renderer.tiny_loader.endLoad();
+            });
+        }
+    }
+}
 
 class StrategyBarUnconnected extends ComponentJSON{
     
@@ -530,8 +725,6 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
     }
     
     render(){
-        console.log(this.state);
-        console.log("Parent workflow indicator");
         if(this.state.has_loaded){
             let parent_workflows = this.state.parent_workflows.map(parent_workflow=>
                 <a href={update_path["workflow"].replace("0",parent_workflow.id)} class="panel-favourite">
@@ -543,8 +736,6 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
                     {child_workflow.title || gettext("Unnamed workflow")}
                 </a>
             );
-            console.log(parent_workflows);
-            console.log(child_workflows);
             let return_val=[
                 <hr/>,
                 <a class="panel-item">{gettext("Quick Navigation")}</a>
@@ -559,7 +750,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
             );
             return reactDom.createPortal(
                 return_val,
-                $(".left-panel")[0]
+                $(".left-panel-extra")[0]
             );
             
         }

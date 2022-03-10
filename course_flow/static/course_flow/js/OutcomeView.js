@@ -6,8 +6,8 @@ import OutcomeOutcomeView from "./OutcomeOutcomeView.js";
 import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode.js";
 import {getOutcomeByID, getOutcomeHorizontalLinkByID} from "./FindState.js";
-import {changeField, moveOutcomeOutcome, updateOutcomehorizontallinkDegreeAction} from "./Reducers.js";
-import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
+import {moveOutcomeOutcome} from "./Reducers.js";
+import {updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant} from "./PostFunctions";
 import * as Constants from "./Constants";
 
 //Basic component representing an outcome
@@ -24,30 +24,31 @@ class OutcomeView extends ComponentJSON{
         let data = this.props.data;
         
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} get_alternate={this.props.get_alternate}/>
+            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} show_horizontal={this.props.show_horizontal} />
         );
         
+        
         let outcomehorizontallinks = data.outcome_horizontal_links_unique.map((horizontal_link)=>
-            <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link} renderer={this.props.renderer}/>
+            <OutcomeHorizontalLinkView key={horizontal_link} parent_component={this} objectID={horizontal_link} renderer={this.props.renderer}/>
         );
         let outcomeDiv;
-        if(!this.props.get_alternate && outcomehorizontallinks.length>0){
+        if(this.props.show_horizontal && outcomehorizontallinks.length>0){
             outcomeDiv = (
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number"}>{outcomehorizontallinks.length}</div>
+                    <div class={"outcome-node-indicator-number"}>...</div>
                     <div class={"outcome-node-container"}>{outcomehorizontallinks}</div>
                 </div>
             );
         }
         
-        let actions=[];
-        if(!read_only && data.depth<2)actions.push(this.addInsertChild(data));
+        let mouseover_actions = [];
         if(!read_only){
-            actions.push(this.addInsertSibling(data));
-            actions.push(this.addDuplicateSelf(data));
-            actions.push(this.addDeleteSelf(data));
-            actions.push(this.addCommenting(data));
+            mouseover_actions.push(this.addInsertSibling(data));
+            mouseover_actions.push(this.addDuplicateSelf(data));
+            mouseover_actions.push(this.addDeleteSelf(data));
+            if(data.depth<2)mouseover_actions.push(this.addInsertChild(data));
         }
+        mouseover_actions.push(this.addCommenting(data));
         
         let dropIcon;
         if(data.is_dropped)dropIcon = "droptriangleup";
@@ -57,14 +58,22 @@ class OutcomeView extends ComponentJSON{
         if(data.is_dropped)droptext=gettext("hide");
         else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
+        if(!read_only && data.depth<2 && children.length==0)children.push(
+            <div class="outcome-outcome" style={{height:"5px"}}></div>
+        );
         
+        let style={};
+        if(data.lock){
+            style.border="2px solid "+data.lock.user_colour;
+        }
         
+        let css_class="outcome outcome-"+data.id;
+        if(data.is_dropped)css_class+=" dropped";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
         return(
-            <div
-            class={
-                "outcome"+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")
-            }
+            <div style={style}
+            class={css_class}
             ref={this.maindiv} 
             onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="outcome-title">
@@ -85,33 +94,50 @@ class OutcomeView extends ComponentJSON{
                 </ol>
                 {(!read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>{gettext("+ Add New")}</div>
                 }
-                {(!read_only) && <div class="mouseover-actions">
-                    {actions}
+                <div class="mouseover-actions">
+                    {mouseover_actions}
                 </div>
-                }
                 {
                     this.addEditable(data)
                 }
                 
                 {outcomeDiv}
             </div>
-            
         );
     }
     
     postMountFunction(){
-        
-        this.makeSortable($(this.children_block.current),this.props.objectID,"outcomeoutcome",".outcomeoutcome",false,false,".children-block",false);
+        if(this.props.show_horizontal)this.makeDragAndDrop();
+        if(this.props.show_horizontal)this.updateIndicator();
+    }
+
+    componentDidUpdate(){
+        if(this.props.show_horizontal)this.makeDragAndDrop();
+        if(this.props.show_horizontal)this.updateIndicator();
+    }
+
+    updateIndicator(){
+        let indicator = $(this.maindiv.current).children(".outcome-node-indicator");
+        let indicator_number = indicator.children(".outcome-node-indicator-number");
+        let number = indicator.children(".outcome-node-container").children().length;
+        indicator_number.text(number);
+        if(number>0)indicator.show();
+        else indicator.hide();
+    }
+
+    makeDragAndDrop(){
+        this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome",false,false,".children-block",".outcome");
         if(this.props.data.depth==0)this.makeDroppable();
     }
 
 
     toggleDrop(){
-        this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
+        updateValueInstant(this.props.objectID,Constants.object_dictionary[this.objectType],{is_dropped:!this.props.data.is_dropped});
     }
 
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
-        this.props.dispatch(moveOutcomeOutcome(id,new_position,new_parent,child_id));
+        this.props.renderer.micro_update(moveOutcomeOutcome(id,new_position,new_parent,child_id));
+        insertedAt(this.props.renderer,child_id,"outcome",new_parent,"outcome",new_position,"outcomeoutcome");
     }
 
     stopSortFunction(){
@@ -155,8 +181,6 @@ class OutcomeView extends ComponentJSON{
                     props.renderer.tiny_loader.startLoad();
                     updateOutcomehorizontallinkDegree(props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
-                            let action = updateOutcomehorizontallinkDegreeAction(response_data);
-                            props.dispatch(action);
                             props.renderer.tiny_loader.endLoad();
                         }
                     );
@@ -168,7 +192,7 @@ class OutcomeView extends ComponentJSON{
     
 }
 const mapOutcomeStateToProps = (state,own_props)=>(
-    getOutcomeByID(state,own_props.objectID,own_props.get_alternate,own_props.display_parent_outcomes)
+    getOutcomeByID(state,own_props.objectID)
 )
 export default connect(
     mapOutcomeStateToProps,
@@ -329,19 +353,25 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         if(this.state.is_dropped)droptext=gettext("hide");
         else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
-        let comments;
-        if(this.props.comments)comments=this.addCommenting();
+        let comments=this.addCommenting();
         
         let edit;
         let onClick;
         if(this.props.edit)edit=this.addEditable(data,true);
         onClick=(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this);
         
+        
+        let style={};
+        if(data.lock){
+            style.border="2px solid "+data.lock.user_colour;
+        }
+        
+        let css_class="outcome outcome-"+data.id;
+        if(this.state.is_dropped)css_class+=" dropped";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        
         return(
-            <div
-            class={
-                "outcome"+((this.state.selected && " selected")||"")+((this.state.is_dropped && " dropped")||"")
-            }
+            <div class={css_class} style={style}
             ref={this.maindiv} onClick={onClick}>
                 <div class="outcome-title">
                     <OutcomeTitle data={data} rank={this.props.rank} titles={this.props.titles}/>
@@ -359,10 +389,9 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
                 <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
                     {children}
                 </div>
-                {!read_only && <div class="mouseover-actions">
+                <div class="mouseover-actions">
                     {comments}
                 </div>
-                }
                 {edit}
             </div>
             
@@ -376,7 +405,7 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
     getChildType(outcomeoutcome){
         let data = this.props.data;
         return(
-            <SimpleOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} get_alternate={this.props.get_alternate} comments={this.props.comments} edit={this.props.edit}/>
+            <SimpleOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} comments={this.props.comments} edit={this.props.edit}/>
         );
     }
 
@@ -459,7 +488,7 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
     
     
     toggleDrop(){
-        this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
+        updateValueInstant(this.props.objectID,Constants.object_dictionary[this.objectType],{is_dropped:!this.props.data.is_dropped});
     }
 
     childUpdatedFunction(node_id,outcome_id,value){
@@ -506,14 +535,15 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        //It's possible we don't actually have this data, if the horizontal link is dead
+        if(!data)return null;
         return (
             <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
-                <SimpleOutcomeView get_alternate="parent" objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
-            
-                {!read_only && <div class="mouseover-actions">
+                {!read_only && <div>
                     {this.addDeleteSelf(data,"close.svg")}
                 </div>
                 }
+                <SimpleOutcomeView objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             </div>
         );
     }
@@ -524,12 +554,20 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
         if(window.confirm(gettext("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?"))){
             props.renderer.tiny_loader.startLoad();
             updateOutcomehorizontallinkDegree(data.outcome,data.parent_outcome,0,(response_data)=>{
-                let action = updateOutcomehorizontallinkDegreeAction(response_data);
-                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             });
            
         }
+    }
+
+    postMountFunction(){
+        if(this.props.parent_component)this.props.parent_component.updateIndicator();
+    }
+    componentDidUpdate(){
+        if(this.props.parent_component)this.props.parent_component.updateIndicator();
+    }
+    componentWillUnmount(){
+        if(this.props.parent_component)this.props.parent_component.updateIndicator();
     }
 }
 const mapOutcomeHorizontalLinkStateToProps = (state,own_props)=>(

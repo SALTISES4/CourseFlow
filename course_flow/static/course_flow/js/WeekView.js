@@ -4,8 +4,8 @@ import {ComponentJSON, TitleText} from "./ComponentJSON.js";
 import NodeWeekView from "./NodeWeekView.js";
 import {getWeekByID, getNodeWeekByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
-import {columnChangeNodeWeek, moveNodeWeek, newStrategyAction} from "./Reducers.js";
-import {addStrategy} from "./PostFunctions";
+import {columnChangeNode, moveNodeWeek} from "./Reducers.js";
+import {insertedAt,columnChanged,addStrategy} from "./PostFunctions";
 import {Loader} from "./Constants.js";
 
 //Basic component to represent a Week
@@ -25,24 +25,36 @@ export class WeekViewUnconnected extends ComponentJSON{
             <NodeWeekView key={nodeweek} objectID={nodeweek} parentID={data.id} renderer={renderer}  column_order={this.props.column_order}/>
         );
         if(nodes.length==0)nodes.push(
-            <div class="node-week" style={{height:"100%"}}>Drag and drop nodes from the sidebar to add.</div>
+            <div class="node-week placeholder" style={{height:"100%"}}>Drag and drop nodes from the sidebar to add.</div>
         );
         let css_class = "week";
-        if(this.state.selected)css_class+=" selected";
         if(data.is_strategy)css_class+=" strategy";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        
         let default_text;
         if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
+        
+        let style={};
+        if(data.lock){
+            style.border="2px solid "+data.lock.user_colour;
+        }
+        
+        
+        let mouseover_actions = [];
+        if(!read_only && !renderer.is_strategy){
+            mouseover_actions.push(this.addInsertSibling(data));
+            mouseover_actions.push(this.addDuplicateSelf(data));
+            mouseover_actions.push(this.addDeleteSelf(data));
+        }
+        mouseover_actions.push(this.addCommenting(data));
+        
         return (
-            <div class={css_class} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
-                {!read_only && !renderer.is_strategy && <div class="mouseover-container-bypass">
+            <div style={style} class={css_class} ref={this.maindiv} onClick={(evt)=>selection_manager.changeSelection(evt,this)}>
+                <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
-                        {this.addInsertSibling(data)}
-                        {this.addDuplicateSelf(data)}
-                        {this.addDeleteSelf(data)}
-                        {this.addCommenting(data)}
+                        {mouseover_actions}
                     </div>
                 </div>
-                }
                 <TitleText text={data.title} defaultText={default_text}/>
                 <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                     {nodes}
@@ -84,25 +96,51 @@ export class WeekViewUnconnected extends ComponentJSON{
           false,
           [200,1],
           ".node-block",
-          ".node");
+          ".node",
+          ".week-block",
+        );
         this.makeDroppable()
     }
 
-    stopSortFunction(id,new_position,type,new_parent){
-        //this.props.dispatch(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column))
+
+
+    sortableColumnChangedFunction(id,delta_x,old_column){
+        let columns = this.props.column_order;
+        let old_column_index = columns.indexOf(old_column);
+        let new_column_index = old_column_index+delta_x;
+        if(new_column_index<0 || new_column_index>=columns.length)return;
+        let new_column = columns[new_column_index];
+
+        //A little hack to stop ourselves from sending this update a hundred times per second
+        if(this.recently_sent_column_change){
+            if(this.recently_sent_column_change.column==new_column && Date.now() - this.recently_sent_column_change.lastCall<=500){
+                this.recently_sent_column_change.lastCall = Date.now();
+                return;
+            }
+        }
+        this.recently_sent_column_change={column:new_column,lastCall:Date.now()};
+        this.lockChild(id,true,"nodeweek");
+        this.props.renderer.micro_update(columnChangeNode(id,new_column));
+        columnChanged(this.props.renderer,id,new_column);
     }
+
+
     
-    sortableColumnChangedFunction(id,delta_x){
-        for(let i=0;i<this.props.nodeweeks.length;i++){
-            if(this.props.nodeweeks[i].id==id){
-                this.props.dispatch(columnChangeNodeWeek(this.props.nodeweeks[i].node,delta_x,this.props.column_order));
+    
+    sortableMovedFunction(id,new_position,type,new_parent,child_id){
+        
+        //Correction for if we are in a term
+        if(this.props.nodes_by_column){
+            for(var col in this.props.nodes_by_column){
+                if(this.props.nodes_by_column[col].indexOf(id)>=0){
+                    let previous = this.props.nodes_by_column[col][new_position];
+                    new_position = this.props.data.nodeweek_set.indexOf(previous);
+                }
             }
         }
         
-    }
-    
-    sortableMovedFunction(id,new_position,type,new_parent,child_id){
-        this.props.dispatch(moveNodeWeek(id,new_position,new_parent,this.props.nodes_by_column,child_id))
+        this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
+        insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
     }
 
     makeDroppable(){
@@ -143,8 +181,6 @@ export class WeekViewUnconnected extends ComponentJSON{
                     let loader = new Loader('body');
                     addStrategy(this.props.parentID,new_index,drag_item[0].dataDraggable.strategy,
                         (response_data)=>{
-                            let action = newStrategyAction(response_data);
-                            props.dispatch(action);
                             loader.endLoad();
                         }
                     );

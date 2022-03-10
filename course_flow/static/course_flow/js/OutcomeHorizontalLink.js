@@ -2,8 +2,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON, NodeTitle} from "./ComponentJSON";
-import {getNodeByID, getChildOutcomeWorkflowByID, getOutcomeByID} from "./FindState";
-import {updateOutcomehorizontallinkDegreeAction} from "./Reducers";
+import {getNodeByID, getOutcomeByID, getOutcomeWorkflowByID} from "./FindState";
 import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
 
 
@@ -47,7 +46,6 @@ export class TableHorizontalOutcomeLinkUnconnected extends ComponentJSON{
         props.renderer.tiny_loader.startLoad();
         updateOutcomehorizontallinkDegree(props.outcomeID,props.parent_outcomeID,value,
             (response_data)=>{
-                props.dispatch(updateOutcomehorizontallinkDegreeAction(response_data));
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -124,7 +122,7 @@ const mapTableHorizontalOutcomeLinkStateToProps = (state,own_props)=>{
             break;
         }
     }
-    let child_outcome = getChildOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome;
+    let child_outcome = getOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome;
     if(outcomenode==null)return {data:null,outcomenode:null,outcomeID:child_outcome};
     for(var i=0;i<state.outcomehorizontallink.length;i++){
         if(
@@ -225,7 +223,7 @@ class TableChildOutcomeHeaderUnconnected extends ComponentJSON{
     }
 }
 const mapTableChildOutcomeHeaderStateToProps = (state,own_props)=>(
-    getOutcomeByID(state,getChildOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome,"child")
+    getOutcomeByID(state,getOutcomeWorkflowByID(state,own_props.outcomeworkflowID).data.outcome)
 )
 export const TableChildOutcomeHeader = connect(
     mapTableChildOutcomeHeaderStateToProps,

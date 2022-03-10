@@ -14,24 +14,36 @@ class ColumnView extends ComponentJSON{
     }
     
     render(){
-        this.props.renderer.column_colours[this.props.objectID] = this.getColour();
         let data = this.props.data;
+        this.props.renderer.column_colours[this.props.objectID] = this.getColour();
         var title = data.title;
         if(!title)title=data.column_type_display;
+        
+        let style={};
+        if(data.lock){
+            style.border="2px solid "+data.lock.user_colour;
+        }
+        let css_class = "column";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        
+        let mouseover_actions = [];
+        if(!read_only){
+            mouseover_actions.push(this.addInsertSibling(data));
+            mouseover_actions.push(this.addDuplicateSelf(data));
+            mouseover_actions.push(this.addDeleteSelf(data));
+        }
+        mouseover_actions.push(this.addCommenting(data));
+        
         return (
-            <div ref={this.maindiv} class={"column"+((this.state.selected && " selected")||"")} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
+            <div ref={this.maindiv} style={style} class={css_class} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="column-line">
                     <img src={this.getIcon()}/>
                     <div>{title}</div>
                 </div>
                 {this.addEditable(data)}
-                {!read_only && <div class="mouseover-actions">
-                    {this.addInsertSibling(data)}
-                    {this.addDuplicateSelf(data)}
-                    {this.addDeleteSelf(data)}
-                    {this.addCommenting(data)}
+                <div class="mouseover-actions">
+                    {mouseover_actions}
                 </div>
-                }
             </div>
         );
     }

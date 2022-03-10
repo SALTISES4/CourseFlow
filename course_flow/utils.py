@@ -2,6 +2,7 @@ import time
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.http import HttpResponse, JsonResponse
 
 from course_flow import models
 
@@ -51,15 +52,6 @@ def linkIDMap(link):
     return link.id
 
 
-def get_project_outcomes(project):
-    # this should probably be replaced with a single recursive raw sql call...
-    # but not by me
-    outcomes = project.outcomes.all()
-    for outcome in outcomes:
-        outcomes = outcomes | get_descendant_outcomes(outcome)
-    return outcomes
-
-
 def get_descendant_outcomes(outcome):
     return models.Outcome.objects.filter(
         Q(parent_outcomes=outcome)
@@ -93,17 +85,15 @@ def get_all_outcomes_for_workflow(workflow):
 
 def get_all_outcomes_ordered_for_outcome(outcome):
     outcomes = [outcome]
-    for outcomeoutcome in outcome.child_outcome_links.all().order_by("rank"):
+    for outcomeoutcome in outcome.child_outcome_links.filter(child__deleted=False).order_by("rank"):
         outcomes += get_all_outcomes_ordered_for_outcome(outcomeoutcome.child)
     return outcomes
 
 
 def get_all_outcomes_ordered(workflow):
     outcomes = []
-    for outcomeworkflow in workflow.outcomeworkflow_set.all().order_by("rank"):
-        outcomes += get_all_outcomes_ordered_for_outcome(
-            outcomeworkflow.outcome
-        )
+    for outcomeworkflow in workflow.outcomeworkflow_set.filter(outcome__deleted=False).order_by("rank"):
+        outcomes+=get_all_outcomes_ordered_for_outcome(outcomeworkflow.outcome)
     return outcomes
 
 
@@ -112,12 +102,21 @@ def get_unique_outcomenodes(node):
         Q(parent_outcomes__node=node)
         | Q(parent_outcomes__parent_outcomes__node=node)
     )
-    return node.outcomenode_set.exclude(outcome__in=exclude_outcomes).order_by(
-        "outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
-        "outcome__parent_outcome_links__parent__outcomeworkflow__rank",
-        "outcome__outcomeworkflow__rank",
-        "outcome__parent_outcome_links__parent__parent_outcome_links__rank",
-        "outcome__parent_outcome_links__rank",
+    return (
+        node.outcomenode_set.exclude(
+            Q(outcome__deleted=True)
+            | Q(outcome__parent_outcomes__deleted=True)
+            | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
+        )
+        .exclude(outcome__in=exclude_outcomes)
+        .order_by(
+            "outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
+            "outcome__parent_outcome_links__parent__outcomeworkflow__rank",
+            "outcome__outcomeworkflow__rank",
+            "outcome__parent_outcome_links__parent__parent_outcome_links__rank",
+            "outcome__parent_outcome_links__rank",
+        )
+
     )
 
 
@@ -128,15 +127,53 @@ def get_unique_outcomehorizontallinks(outcome):
             parent_outcomes__parent_outcomes__reverse_horizontal_outcomes=outcome
         )
     )
-    return outcome.outcome_horizontal_links.exclude(
-        parent_outcome__in=exclude_outcomes
-    ).order_by(
-        "parent_outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
-        "parent_outcome__parent_outcome_links__parent__outcomeworkflow__rank",
-        "parent_outcome__outcomeworkflow__rank",
-        "parent_outcome__parent_outcome_links__parent__parent_outcome_links__rank",
-        "parent_outcome__parent_outcome_links__rank",
+    return (
+        outcome.outcome_horizontal_links.exclude(
+            Q(parent_outcome__deleted=True)
+            | Q(parent_outcome__parent_outcomes__deleted=True)
+            | Q(parent_outcome__parent_outcomes__parent_outcomes__deleted=True)
+        )
+        .exclude(parent_outcome__in=exclude_outcomes)
+        .order_by(
+            "parent_outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
+            "parent_outcome__parent_outcome_links__parent__outcomeworkflow__rank",
+            "parent_outcome__outcomeworkflow__rank",
+            "parent_outcome__parent_outcome_links__parent__parent_outcome_links__rank",
+            "parent_outcome__parent_outcome_links__rank",
+        )
     )
+
+def get_parent_nodes_for_workflow(workflow):
+    nodes = (models.Node.objects.filter(linked_workflow=workflow)
+        .exclude(
+            Q(deleted=True)
+            | Q(week__deleted=True)
+            | Q(week__workflow__deleted=True)
+        )
+        .prefetch_related("outcomenode_set")
+    )
+    return nodes
+
+def get_nondeleted_favourites(user):
+    return models.Favourite.objects.filter(user=user).exclude(
+        Q(
+            object_id__in=models.Workflow.objects.filter(
+                Q(deleted=True) | Q(project__deleted=True)
+            )
+        )
+        | Q(object_id__in=models.Project.objects.filter(deleted=True))
+    )
+
+
+def save_serializer(serializer) -> HttpResponse:
+    if serializer:
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse({"action": "posted"})
+        else:
+            return JsonResponse({"action": "error"})
+    else:
+        return JsonResponse({"action": "error"})
 
 
 def benchmark(identifier, last_time):

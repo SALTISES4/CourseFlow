@@ -1,5 +1,11 @@
 import * as React from "react";
 
+export const lock_times = {
+    move:5000,
+    update:5000,
+    select:60000,
+}
+
 export const node_keys=["activity","course","program"];
 export const columnwidth = 160
 export const nodewidth = 200;
@@ -91,14 +97,17 @@ export const default_column_settings = {
     20:{colour:"#369934",icon:"other"}
 }
 export const object_dictionary = {
+    nodelink:"nodelink",
     node:"node",
     week:"week",
     column:"column",
     outcome:"outcome",
     outcome_base:"outcome",
-    workflow:"workflow"
+    workflow:"workflow",
+    outcomenode:"outcomenode",
 }
 export const parent_dictionary = {
+    nodelink:"node",
     node:"week",
     week:"workflow",
     column:"workflow",
@@ -111,6 +120,12 @@ export const through_parent_dictionary = {
     column:"columnworkflow",
     outcome:"outcomeoutcome",
     outcome_base:"outcomeworkflow"
+}
+export const permission_keys = {
+    "none":0,
+    "view":1,
+    "edit":2,
+    "comment":3,
 }
 //get all the possible custom names. This is super clunky, should probably be switched to ngettext
 export function custom_text_base(){
@@ -145,6 +160,7 @@ function missing_translations(){
     gettext("activity");
     gettext("course");
     gettext("program");
+    gettext("project");
 }
 
 
@@ -200,8 +216,6 @@ export function getIntersection(list1,list2){
 
 //take a list of objects, then filter it based on which appear in the id list. The list is then resorted to match the order in the id list.
 export function filterThenSortByID(object_list,id_list){
-    console.log(object_list);
-    console.log(id_list);
     return object_list.filter(obj=>id_list.includes(obj.id)).sort((a,b)=> id_list.indexOf(a.id)-id_list.indexOf(b.id));
 }
 

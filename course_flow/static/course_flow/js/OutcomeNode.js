@@ -3,8 +3,7 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON";
 import {SimpleOutcomeView} from "./OutcomeView";
-import {getOutcomeNodeByID, getTableOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getNodeByID, getChildWorkflowByID, getChildOutcomeWorkflowByID} from "./FindState";
-import {updateOutcomenodeDegreeAction} from "./Reducers";
+import {getOutcomeNodeByID, getTableOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getNodeByID, getChildWorkflowByID, getOutcomeWorkflowByID} from "./FindState";
 import {updateOutcomenodeDegree} from "./PostFunctions";
 import * as Constants from "./Constants";
 import {TableChildWorkflowView} from "./OutcomeHorizontalLink"
@@ -22,28 +21,26 @@ class OutcomeNodeView extends ComponentJSON{
         if(data.outcome==-1)return null;
         
         return (
-            <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
-                <SimpleOutcomeView objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id}/>
-            
-                {!read_only && <div class="mouseover-actions">
+            <div class={"outcome-node outcomenode-"+data.id} id={data.id} ref={this.maindiv}>
+                {!read_only && <div>
                     {this.addDeleteSelf(data,"close.svg")}
                 </div>
                 }
+                {Constants.getCompletionImg(data.degree,this.props.outcomes_type)}
+                <SimpleOutcomeView comments={true} edit={true}  objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
             </div>
         );
     }
     
     deleteSelf(data){
         let props=this.props;
+        if(this.props.deleteSelfOverride)this.props.deleteSelfOverride();
         //Temporary confirmation; add better confirmation dialogue later
-        if(window.confirm("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?")){
+        else {
             props.renderer.tiny_loader.startLoad();
             updateOutcomenodeDegree(data.node,data.outcome,0,(response_data)=>{
-                let action = updateOutcomenodeDegreeAction(response_data);
-                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             });
-           
         }
     }
     
@@ -220,7 +217,6 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
         props.renderer.tiny_loader.startLoad();
         updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
             (response_data)=>{
-                props.dispatch(updateOutcomenodeDegreeAction(response_data));
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -238,7 +234,6 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
         props.renderer.tiny_loader.startLoad();
         updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
             (response_data)=>{
-                props.dispatch(updateOutcomenodeDegreeAction(response_data));
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -311,7 +306,7 @@ const mapTableOutcomeGroupStateToProps = (state,own_props)=>{
             if(linked_workflow==null)continue;
             let outcomeworkflows = getChildWorkflowByID(state,linked_workflow).data.outcomeworkflow_set;
             for(let j=0;j<outcomeworkflows.length;j++){
-                child_outcomes.push(getChildOutcomeWorkflowByID(state,outcomeworkflows[j]).data.outcome);
+                child_outcomes.push(getOutcomeWorkflowByID(state,outcomeworkflows[j]).data.outcome);
             }
         }
         return {child_outcomes:child_outcomes};

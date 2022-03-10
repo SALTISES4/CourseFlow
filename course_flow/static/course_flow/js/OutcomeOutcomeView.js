@@ -17,17 +17,19 @@ class OutcomeOutcomeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        let my_class = "outcome-outcome";
+        if(data.no_drag)my_class+=" no-drag";
         
         return (
-            <li class="outcome-outcome" id={data.id} ref={this.maindiv} data-child-id={data.child}>
-                <OutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} get_alternate={this.props.get_alternate} renderer={this.props.renderer}/>
+            <li class={my_class} id={data.id} ref={this.maindiv} data-child-id={data.child}>
+                <OutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer} show_horizontal={this.props.show_horizontal}/>
             </li>
         );
     }
     
 }
 const mapOutcomeOutcomeStateToProps = (state,own_props)=>(
-    getOutcomeOutcomeByID(state,own_props.objectID,own_props.get_alternate)
+    getOutcomeOutcomeByID(state,own_props.objectID)
 )
 export default connect(
     mapOutcomeOutcomeStateToProps,
@@ -80,7 +82,7 @@ export class SimpleOutcomeOutcomeViewUnconnected extends ComponentJSON{
     getChildType(){
         let data = this.props.data;
         return (
-            <SimpleOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} get_alternate={this.props.get_alternate} comments={this.props.comments} edit={this.props.edit} renderer={this.props.renderer}/>
+            <SimpleOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} comments={this.props.comments} edit={this.props.edit} renderer={this.props.renderer}/>
         );
     }
     

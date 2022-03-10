@@ -6,8 +6,7 @@ import NodeLinkView from "./NodeLinkView.js";
 import OutcomeNodeView from "./OutcomeNode.js";
 import {getNodeByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
-import {changeField, updateOutcomenodeDegreeAction} from "./Reducers.js";
-import {updateOutcomenodeDegree} from "./PostFunctions.js"
+import {updateOutcomenodeDegree, updateValueInstant} from "./PostFunctions.js"
 
 
 //Basic component to represent a Node
@@ -73,10 +72,17 @@ class NodeView extends ComponentJSON{
         if(data.is_dropped)dropIcon = "droptriangleup";
         else dropIcon = "droptriangledown";
         let linkIcon;
+        let linktext = gettext("Visit workflow");
+        let clickfunc = this.doubleClick.bind(this);
+        if(data.linked_workflow_data){
+            if(data.linked_workflow_data.deleted)linktext=gettext("<Deleted Workflow>")
+            if(data.linked_workflow_data.deleted)clickfunc=null;
+        }
+        
         if(data.linked_workflow)linkIcon=(
-            <div class="hover-shade linked-workflow" onClick={this.doubleClick.bind(this)}>
+            <div class="hover-shade linked-workflow" onClick={clickfunc}>
                 <img src={iconpath+"wflink.svg"}/>
-                <div>{gettext("Visit linked workflow")}</div>
+                <div>{linktext}</div>
             </div>
         );
         let dropText = "";
@@ -90,15 +96,26 @@ class NodeView extends ComponentJSON{
         }
         else descriptionText = data.description;
         
-        
+        let style = {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:this.props.renderer.column_colours[data.column]};
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
+        }
+        let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
+        if(data.is_dropped)css_class+=" dropped";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+
+        let mouseover_actions = [];
+        if(!read_only){
+            mouseover_actions.push(this.addInsertSibling(data));
+            mouseover_actions.push(this.addDuplicateSelf(data));
+            mouseover_actions.push(this.addDeleteSelf(data));
+        }
+        mouseover_actions.push(this.addCommenting(data));
+
         return (
             <div 
-                style={
-                    {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:this.props.renderer.column_colours[data.column]}
-                } 
-                class={
-                    "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
-                }
+                style={style} 
+                class={css_class}
                 id={data.id} 
                 ref={this.maindiv} 
                 onClick={(evt)=>selection_manager.changeSelection(evt,this)}
@@ -123,13 +140,9 @@ class NodeView extends ComponentJSON{
                         <div class="node-drop-time">{data.time_required && (data.time_required+" "+this.props.renderer.time_choices[data.time_units].name)}</div>
                     </div>
                 </div> 
-                {!read_only && <div class="mouseover-actions">
-                    {this.addInsertSibling(data)}
-                    {this.addDuplicateSelf(data)}
-                    {this.addDeleteSelf(data)}
-                    {this.addCommenting(data)}
+                <div class="mouseover-actions">
+                    {mouseover_actions}
                 </div>
-                }
                 {this.addEditable(data)}
                 {nodePorts}
                 {node_links}
@@ -161,7 +174,7 @@ class NodeView extends ComponentJSON{
     }
     
     toggleDrop(){
-        this.props.dispatch(changeField(this.props.objectID,this.objectType,"is_dropped",!this.props.data.is_dropped));
+        updateValueInstant(this.props.objectID,this.objectType,{is_dropped:!this.props.data.is_dropped});
     }
 
     doubleClick(evt){
@@ -208,8 +221,6 @@ class NodeView extends ComponentJSON{
                     props.renderer.tiny_loader.startLoad();
                     updateOutcomenodeDegree(this.props.objectID,drag_item[0].dataDraggable.outcome,1,
                         (response_data)=>{
-                            let action = updateOutcomenodeDegreeAction(response_data);
-                            props.dispatch(action);
                             props.renderer.tiny_loader.endLoad();
                         }
                     );
@@ -268,7 +279,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
             <div 
                 
                 class={
-                    "node column-"+data.column+((this.state.selected && " selected")||"")+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
+                    "node column-"+data.column+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
                 }
                 style={
                     {backgroundColor:this.props.renderer.column_colours[data.column]}

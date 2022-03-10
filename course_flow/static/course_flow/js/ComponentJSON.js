@@ -2,9 +2,8 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
-import {newNodeAction, deleteSelfAction, insertBelowAction, insertChildAction, setLinkedWorkflowAction, changeField, newNodeLinkAction, newStrategyAction, toggleStrategyAction} from "./Reducers.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {newNode, newNodeLink, duplicateSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment} from "./PostFunctions.js"
+import {newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment} from "./PostFunctions.js"
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -22,40 +21,57 @@ export class ComponentJSON extends React.Component{
     
     postMountFunction(){};
     
-    makeSortableNode(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false){
+    makeSortableNode(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false,containment=".workflow-container"){
+        let cursorAt={};
+        if(draggable_type=="weekworkflow")cursorAt={top:20};
+        if(draggable_type=="nodeweek")cursorAt={top:20,left:50};
         if(read_only)return;
         var props = this.props;
         sortable_block.draggable({
-            containment:".workflow-container",
+            containment:containment,
             axis:axis,
             cursor:"move",
-            cursorAt:{top:20,left:100},
+            cursorAt:cursorAt,
             handle:handle,
             distance:10,
             refreshPositions:true,
             helper:(e,item)=>{
                 var helper = $(document.createElement('div'));
-                helper.addClass("node-ghost");
+                helper.addClass(draggable_type+"-ghost");
                 helper.appendTo(".workflow-container");
+                helper.width($(e.target).width());
                 return helper;
             },
             start:(e,ui)=>{
+                var drag_item = $(e.target);
+                if(drag_item.hasClass("placeholder") || drag_item.hasClass("no-drag")){e.preventDefault();return false;}
+                if(drag_item.children(".locked:not(.locked-"+user_id+")").length>0){e.preventDefault();return false;}
                 $(".workflow-canvas").addClass("dragging-"+draggable_type);
                 $(draggable_selector).addClass("dragging");
-                
+                var old_parent_id = parent_id;
+                drag_item.attr("data-old-parent-id",parent_id);
+                var old_index = drag_item.prevAll().length;
+                drag_item.attr("data-old-index",old_index);
+                props.renderer.selection_manager.changeSelection(null,null);
+                this.startSortFunction(parseInt(drag_item.attr("data-child-id")),draggable_type);
                 
             },
             drag:(e,ui)=>{
-                
-                var delta_x= Math.round((ui.helper.offset().left-$("#"+$(e.target).attr("id")+draggable_selector).children(handle).first().offset().left)/Constants.columnwidth);
-                if(delta_x!=0){
-                    this.sortableColumnChangedFunction($(e.target).attr("id"),delta_x);
+                if(draggable_type=="nodeweek"){
+                    let new_target = $("#"+$(e.target).attr("id")+draggable_selector);
+                    var delta_x= Math.round((ui.helper.offset().left-$("#"+$(e.target).attr("id")+draggable_selector).children(handle).first().offset().left)/Constants.columnwidth);
+                    if(delta_x!=0){
+                        let child_id = parseInt($(e.target).attr("data-child-id"));
+                        this.sortableColumnChangedFunction(child_id,delta_x,parseInt(new_target.attr("data-column-id")));
+                    }
                 }
+                //$("#"+$(e.target).attr("id")+draggable_selector).addClass("selected");
             },
             stop:(e,ui)=>{
                 $(".workflow-canvas").removeClass("dragging-"+draggable_type);
                 $(draggable_selector).removeClass("dragging");
                 $(document).triggerHandler(draggable_type+"-dropped");
+                //$("#"+$(e.target).attr("id")+draggable_selector).removeClass("selected");
             
             }
             
@@ -71,15 +87,22 @@ export class ComponentJSON extends React.Component{
                 var drag_helper = ui.helper;
                 var new_index = drop_item.prevAll().length;
                 var new_parent_id = parseInt(drop_item.parent().attr("id")); 
-                
-                if(drag_item.hasClass("new-node")){
+                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
                     drag_helper.addClass("valid-drop");
                     drop_item.addClass("new-node-drop-over");
-                   
-                }else if(drag_item.hasClass("node-week")){
-                    this.sortableMovedFunction(
-                        parseInt(drag_item.attr("id")),new_index,draggable_type,new_parent_id,drag_item.attr("data-child-id")
-                    );
+                }else if(drag_item.is(draggable_selector)){
+                    var old_parent_id = parseInt(drag_item.attr("data-old-parent-id"));
+                    var old_index = parseInt(drag_item.attr("data-old-index"));
+                    if(old_parent_id!=new_parent_id || old_index!=new_index){
+                        drag_item.attr("data-old-parent-id",new_parent_id)
+                        drag_item.attr("data-old-index",new_index);
+                        let child_id = parseInt(drag_item.attr("data-child-id"));
+                        this.sortableMovedFunction(
+                            parseInt(drag_item.attr("id")),
+                            new_index,draggable_type,new_parent_id,child_id
+                        );
+                        this.lockChild(child_id,true,draggable_type);
+                    }
                 }else{
                     console.log(drag_item);
                 }
@@ -88,7 +111,7 @@ export class ComponentJSON extends React.Component{
                 var drag_item = ui.draggable;
                 var drag_helper = ui.helper;
                 var drop_item = $(e.target);
-                if(drag_item.hasClass("new-node")){
+                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
                     drag_helper.removeClass("valid-drop");
                     drop_item.removeClass("new-node-drop-over");
                 }
@@ -98,11 +121,10 @@ export class ComponentJSON extends React.Component{
                 var drop_item = $(e.target);
                 var drag_item = ui.draggable;
                 var new_index = drop_item.prevAll().length+1;
-                if(drag_item.hasClass("new-node")){
+                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
                     newNode(this.props.objectID,new_index,drag_item[0].dataDraggable.column,drag_item[0].dataDraggable.column_type,
                         (response_data)=>{
-                            let action = newNodeAction(response_data);
-                            props.dispatch(action);
+                        
                         }
                     );
                 }
@@ -111,60 +133,81 @@ export class ComponentJSON extends React.Component{
         
     }
     
-    makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith=false,handle=false){
-        if(read_only)return;
-        var props = this.props;
-        sortable_block.sortable({
-            containment:".workflow-container",
-            axis:axis,
-            cursor:"move",
-            grid:grid,
-            cursorAt:{top:20},
-            handle:handle,
-            tolerance:"pointer",
-            distance:10,
-            connectWith:connectWith,
-            start:(e,ui)=>{
-                $(".workflow-canvas").addClass("dragging-"+draggable_type);
-                $(draggable_selector).addClass("dragging");
-                //Calls a refresh of the sortable in case adding the draggable class resized the object (which it does in many cases)
-                sortable_block.sortable("refresh");
-                //Fix the vertical containment. This is especially necessary when the item resizes.
-                var sort = $(sortable_block).sortable("instance");
-                sort.containment[3]+=sort.currentItem[0].offsetTop+sort.currentItem[0].offsetHeight;
-                
-            },
-            //Tell the dragging object that we are dragging it
-            sort:(e,ui)=>{
-                //figure out if the order has changed
-                var placeholder_index = ui.placeholder.prevAll().not(".ui-sortable-helper").length;
-                if(ui.placeholder.parent()[0]!=ui.item.parent()[0]||ui.item.prevAll().not(".ui-sortable-placeholder").length!=placeholder_index){
-                    var new_parent_id = parseInt(ui.placeholder.parent().attr("id"));
-                    this.sortableMovedFunction(parseInt(ui.item.attr("id")),placeholder_index,draggable_type,new_parent_id,ui.item.attr("data-child-id"));
-                }
-                
-                ui.item.triggerHandler("dragging");
-            },
-            stop:(evt,ui)=>{
-                $(".workflow-canvas").removeClass("dragging-"+draggable_type);
-                $(draggable_selector).removeClass("dragging");
-                var object_id = parseInt(ui.item.attr("id"));
-                var new_position = ui.item.prevAll().length;
-                var new_parent_id = parseInt(ui.item.parent().attr("id"));
-                $(draggable_selector).removeClass("dragging");
-                //Automatic scroll, useful when moving weeks that shrink significantly to make sure the dropped item is kept in focus. This should be updated to only scroll if the item ends up outside the viewport, and to scroll the minimum amount to keep it within.
-                $("#container").animate({
-                    scrollTop: ui.item.offset().top-200
-                },20);
-                $(document).triggerHandler(draggable_type+"-dropped");
-                this.stopSortFunction();
-            }
-        });
-        
+    stopSortFunction(){
         
     }
     
-    //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+    startSortFunction(id,through_type){
+        this.lockChild(id,true,through_type);
+    }
+    
+    
+    lockChild(id,lock,through_type){
+        let object_type;
+        if(through_type=="nodeweek")object_type="node";
+        if(through_type=="weekworkflow")object_type="week";
+        if(through_type=="columnworkflow")object_type="column";
+        if(through_type=="outcomeoutcome")object_type="outcome";
+        this.props.renderer.lock_update(
+            {object_id:id,object_type:object_type},Constants.lock_times.move,lock
+        );
+    }
+    
+//    makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith=false,handle=false){
+//        if(read_only)return;
+//        var props = this.props;
+//        sortable_block.sortable({
+//            containment:".workflow-container",
+//            axis:axis,
+//            cursor:"move",
+//            grid:grid,
+//            cursorAt:{top:20},
+//            handle:handle,
+//            tolerance:"pointer",
+//            distance:10,
+//            connectWith:connectWith,
+//            start:(e,ui)=>{
+//                $(".workflow-canvas").addClass("dragging-"+draggable_type);
+//                $(draggable_selector).addClass("dragging");
+//                //Calls a refresh of the sortable in case adding the draggable class resized the object (which it does in many cases)
+//                sortable_block.sortable("refresh");
+//                //Fix the vertical containment. This is especially necessary when the item resizes.
+//                var sort = $(sortable_block).sortable("instance");
+//                sort.containment[3]+=sort.currentItem[0].offsetTop+sort.currentItem[0].offsetHeight;
+//                
+//            },
+//            //Tell the dragging object that we are dragging it
+//            sort:(e,ui)=>{
+//                //figure out if the order has changed
+//                var placeholder_index = ui.placeholder.prevAll().not(".ui-sortable-helper").length;
+//                if(ui.placeholder.parent()[0]!=ui.item.parent()[0]||ui.item.prevAll().not(".ui-sortable-placeholder").length!=placeholder_index){
+//                    console.log("sortable has been moved");
+//                    var new_parent_id = parseInt(ui.placeholder.parent().attr("id"));
+//                    this.sortableMovedFunction(parseInt(ui.item.attr("id")),placeholder_index,draggable_type,new_parent_id,ui.item.attr("data-child-id"));
+//                }
+//                
+//                ui.item.triggerHandler("dragging");
+//            },
+//            stop:(evt,ui)=>{
+//                $(".workflow-canvas").removeClass("dragging-"+draggable_type);
+//                $(draggable_selector).removeClass("dragging");
+//                var object_id = parseInt(ui.item.attr("id"));
+//                var new_position = ui.item.prevAll().length;
+//                var new_parent_id = parseInt(ui.item.parent().attr("id"));
+//                $(draggable_selector).removeClass("dragging");
+//                //Automatic scroll, useful when moving weeks that shrink significantly to make sure the dropped item is kept in focus. This should be updated to only scroll if the item ends up outside the viewport, and to scroll the minimum amount to keep it within.
+//                $("#container").animate({
+//                    scrollTop: ui.item.offset().top-200
+//                },20);
+//                $(document).triggerHandler(draggable_type+"-dropped");
+//                this.stopSortFunction();
+//            }
+//        });
+//        
+//        
+//    }
+    
+    //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDeleteSelf(data,alt_icon){
         let icon=alt_icon || "rubbish.svg";
         return (
@@ -173,6 +216,7 @@ export class ComponentJSON extends React.Component{
     }
     
     deleteSelf(data){
+        var props = this.props;
         //Temporary confirmation; add better confirmation dialogue later
         if(this.props.renderer)this.props.renderer.selection_manager.deleted(this);
         if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
@@ -182,11 +226,16 @@ export class ComponentJSON extends React.Component{
         let extra_data = this.props.column_order;
         if(Constants.object_dictionary[this.objectType]=="outcome")extra_data=this.props.outcomenodes;
         if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.object_dictionary[this.objectType]+"?")){
-            this.props.dispatch(deleteSelfAction(data.id,this.props.throughParentID,this.objectType,extra_data));
+            props.renderer.tiny_loader.startLoad();
+            deleteSelf(data.id,Constants.object_dictionary[this.objectType],true,
+                (response_data)=>{
+                    props.renderer.tiny_loader.endLoad();
+                }
+            );
         }
     }
     
-    //Adds a button that deltes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+    //Adds a button that duplicates the item (with a confirmation).
     addDuplicateSelf(data){
         return (
             <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext={gettext("Duplicate")} handleClick={this.duplicateSelf.bind(this,data)}/>
@@ -204,8 +253,6 @@ export class ComponentJSON extends React.Component{
             Constants.parent_dictionary[type],
             Constants.through_parent_dictionary[type],
             (response_data)=>{
-                let action = insertBelowAction(response_data,type);
-                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -229,8 +276,6 @@ export class ComponentJSON extends React.Component{
             Constants.parent_dictionary[type],
             Constants.through_parent_dictionary[type],
             (response_data)=>{
-                let action = insertBelowAction(response_data,type);
-                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -250,8 +295,6 @@ export class ComponentJSON extends React.Component{
         props.renderer.tiny_loader.startLoad();
         insertChild(data.id,Constants.object_dictionary[type],
             (response_data)=>{
-                let action = insertChildAction(response_data,Constants.object_dictionary[type]);
-                props.dispatch(action);
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -378,8 +421,7 @@ export class ComponentJSON extends React.Component{
                             <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
                             <button  id="linked-workflow-editor" onClick={()=>{
                                 getLinkedWorkflowMenu(data,(response_data)=>{
-                                    let action = setLinkedWorkflowAction(response_data);
-                                    props.dispatch(action);
+                                    console.log("linked a workflow");
                                 });
                             }}>
                                 {gettext("Change")}
@@ -404,6 +446,8 @@ export class ComponentJSON extends React.Component{
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
                             </select>
+                            <label for="condensed">{gettext("Condensed View")}</label>
+                            <input type="checkbox" name="condensed" checked={data.condensed} onChange={this.checkboxChanged.bind(this,"condensed")}/>
                             {data.is_strategy && 
                                 [
                                 <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>,
@@ -424,8 +468,6 @@ export class ComponentJSON extends React.Component{
                                 let loader = new Constants.Loader('body');
                                 toggleStrategy(data.id,data.is_strategy,
                                 (response_data)=>{
-                                    let action = toggleStrategyAction(response_data);
-                                    props.dispatch(action);
                                     loader.endLoad();
                                 })
                             }}>
@@ -453,15 +495,15 @@ export class ComponentJSON extends React.Component{
         if(!value)value="";
         if(field=="colour")value=parseInt(value.replace("#",""),16);
         if(evt.target.type=="number"&&value=="")value=0;
-        this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,value));
+        this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,value);
     }
 
     checkboxChanged(field,evt){
-         this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked));
+         this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
     }
 
     valueChanged(field,new_value){
-        this.props.dispatch(changeField(this.props.data.id,Constants.object_dictionary[this.objectType],field,new_value));
+        this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,new_value);
     }
 }
 
@@ -480,11 +522,12 @@ export class NodeLinkSVG extends React.Component{
 
             var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
             var path=(this.getPath(path_array));
-
+            let stroke="black";
+            if(this.props.style && this.props.style.stroke)stroke=this.props.style.stroke;
             return (
-                <g fill="none" stroke="black">
-                    <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"+((this.props.selected && " selected")||"")}/>
-                    <path opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
+                <g fill="none" stroke={stroke}>
+                    <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"}/>
+                    <path style={this.props.style} opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
                 </g>
             );
         }catch(err){return null;}
@@ -666,10 +709,7 @@ export class NodePorts extends React.Component{
     nodeLinkAdded(target,source_port,target_port){
         let props=this.props;
         if(target==this.props.nodeID)return;
-        newNodeLink(props.nodeID,target,Constants.port_keys.indexOf(source_port),Constants.port_keys.indexOf(target_port),(response_data)=>{
-            let action = newNodeLinkAction(response_data);
-            props.dispatch(action);
-        });
+        newNodeLink(props.nodeID,target,Constants.port_keys.indexOf(source_port),Constants.port_keys.indexOf(target_port));
     }
 }
 
@@ -731,8 +771,12 @@ export class CommentBox extends React.Component{
                 <div class="comment-block">
                     {comments}
                 </div>
-                <textarea ref={this.input}/>
-                <button class="menu-create" onClick={this.appendComment.bind(this)}>{gettext("Submit")}</button>
+                {(!read_only || allow_comments) && 
+                    [
+                        <textarea ref={this.input}/>,
+                        <button class="menu-create" onClick={this.appendComment.bind(this)}>{gettext("Submit")}</button>
+                    ]
+                }
             </div>,
             comment_indicator
             ],
@@ -801,7 +845,19 @@ export class WorkflowTitle extends React.Component{
     }
 }
 
-//Title text for a workflow
+//Title text for a week
+export class WeekTitle extends React.Component{
+    
+    render(){
+        let data = this.props.data;
+        let default_text = data.week_type_display+" "+(this.props.rank+1);
+        return (
+            <TitleText text={data.title} defaultText={default_text}/>
+        )
+    }
+}
+
+//Title text for a node
 export class NodeTitle extends React.Component{
     
     render(){
@@ -846,18 +902,34 @@ export class OutcomeTitle extends React.Component{
 
 }
 
+//Returns the outcome title as a string
+export function getOutcomeTitle(data,rank){
+    let text = data.title;
+    if(data.title==null || data.title==""){
+        text=gettext("Untitled");
+    }
+
+    return rank.join(".")+" - "+ text;
+
+}
+
 //Quill div
 export class QuillDiv extends React.Component{
     constructor(props){
         super(props);
         this.maindiv = React.createRef();
+        if(props.text)this.state={charlength:props.text.length};
+        else this.state={charlength:0};
     }
     
     render(){
         
         return(
-            <div ref={this.maindiv} class="quill-div">
-                
+            <div>
+                <div ref={this.maindiv} class="quill-div">
+
+                </div>
+                <div class={"character-length"}>{this.state.charlength+" "+gettext("characters")}</div>
             </div>
         );
     }
@@ -874,7 +946,9 @@ export class QuillDiv extends React.Component{
         });
         if(this.props.text)quill.clipboard.dangerouslyPasteHTML(this.props.text);
         quill.on('text-change',()=>{
-            this.props.textChangeFunction(quill_container.childNodes[0].innerHTML.replace(/\<p\>\<br\>\<\/p\>\<ul\>/g,"\<ul\>"));
+            let text = quill_container.childNodes[0].innerHTML.replace(/\<p\>\<br\>\<\/p\>\<ul\>/g,"\<ul\>");
+            this.props.textChangeFunction(text);
+            this.setState({charlength:text.length});
         });
         let toolbar = quill.getModule('toolbar');
         toolbar.defaultLinkFunction=toolbar.handlers['link'];
@@ -886,6 +960,7 @@ export class QuillDiv extends React.Component{
             }
             this.defaultLinkFunction(value);
         });
+        
     }
     
     

@@ -16,6 +16,7 @@ def course_flow_patterns():
         url(r"logout/$", views.logout_view, name="logout"),
         url(r"myprojects/$", views.myprojects_view, name="my-projects"),
         url(r"mytemplates/$", views.mytemplates_view, name="my-templates"),
+        url(r"myshared/$", views.myshared_view, name="my-shared"),
         url(r"myfavourites/$", views.myfavourites_view, name="my-favourites"),
         url(r"explore/$", views.ExploreView.as_view(), name="explore"),
         url(r"import/$", views.import_view, name="import"),
@@ -33,6 +34,16 @@ def course_flow_patterns():
             r"^workflow/updatevalue/$", views.update_value, name="update-value"
         ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
+        url(
+            r"^workflow/restore-self/$",
+            views.restore_self,
+            name="restore-self",
+        ),
+        url(
+            r"^workflow/delete-self-soft/$",
+            views.delete_self_soft,
+            name="delete-self-soft",
+        ),
         url(
             r"^workflow/update-outcomenode-degree/$",
             views.update_outcomenode_degree,
@@ -70,14 +81,10 @@ def course_flow_patterns():
         ),
         url(r"^workflow/inserted-at/$", views.inserted_at, name="inserted-at"),
         url(
-            r"^node/change-column/$", views.change_column, name="change-column"
-        ),
-        url(
             r"^outcome/update-outcomehorizontallink-degree/$",
             views.update_outcomehorizontallink_degree,
             name="update-outcomehorizontallink-degree",
         ),
-        url(r"^workflow/column/new", views.new_column, name="new-column"),
         url(r"^workflow/node/new", views.new_node, name="new-node"),
         url(
             r"^workflow/outcome/new",
@@ -218,6 +225,12 @@ def course_flow_patterns():
             name="get-parent-workflow-info",
         ),
         url(r"^exports/get/$", views.get_export, name="get-export",),
+        url(r"^imports/import-data/$", views.import_data, name="import-data",),
+        url(
+            r"^downloads/exports/get/(?P<pk>[0-9]+)/(?P<object_type>[a-z]+)/(?P<export_type>[a-z_]+)/$",
+            views.get_export_download,
+            name="get-export-download",
+        ),
         url(
             r"^jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),

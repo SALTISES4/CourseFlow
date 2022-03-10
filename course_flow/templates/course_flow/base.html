@@ -143,14 +143,16 @@
     {% block header %}{% endblock %}
   </head>
   <body id="site">
-    <div class="topnav">
+    <div class="topnav hide-print">
       <div class="titlebar">
         <div class="title">
         </div>
         <div class="floatbar">
           <div id="username-container" class="topdropwrapper">
             <button id="username" class="topdropbutton">
-              {{ user.username }}
+              <a class="username-link" href="{% url 'course_flow:home' %}">
+                  {{ user.username }}
+              </a>
             </button>
           </div>
           {% if user.username %}
@@ -188,11 +190,13 @@
             </div>
             <div id="floatbar" class="floatbar">
             </div>
+            <div id="userbar" class="floatbar">
+            </div>
             <div id="viewbar" class="viewbar">
             </div>
           </div>
     </div>
-    <div class="left-panel">
+    <div class="left-panel hide-print">
       <img class="title-image" src="{% static 'course_flow/img/images_svg/logo-courseflow-beta.svg' %}"/>
       <a class="panel-item hover-shade" href="{% url 'course_flow:home' %}">
         <img src="{% static 'course_flow/img/images_svg/home_black.svg' %}"/>
@@ -206,28 +210,35 @@
         <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
         <div>{% trans 'My Templates' %}</div>
       </a>
+      <a class="panel-item hover-shade" href="{% url 'course_flow:my-shared' %}">
+        <img src="{% static 'course_flow/img/images_svg/add_person_black.svg' %}"/>
+        <div>{% trans 'Shared With Me' %}</div>
+      </a>
       <a class="panel-item hover-shade" href={% course_flow_return_url %}>
         <img src="{% static 'course_flow/img/images_svg/return_to_project.svg' %}"/>
         <div>{% course_flow_return_title %}</div>
       </a>
 
       <hr>
-      <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
-        {% trans 'My Favourites' %}
-      </a>
-        {% for favourite in user.favourite_set.all|slice:":5" %}
-          <a class="panel-favourite hover-shade"
-             {% if favourite.content_object.type == "project" %}
-                href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
-             {% else %}
-                href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
-             {% endif %}
-             >
-            {{ favourite.content_object }}
+      <div class="left-panel-extra">
+          <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
+            {% trans 'My Favourites' %}
           </a>
-        {% endfor %}
-      <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
-
+            {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
+              <a class="panel-favourite hover-shade"
+                 {% if favourite.content_object.type == "project" %}
+                    href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
+                 {% else %}
+                    href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
+                 {% endif %}
+                 >
+                {{ favourite.content_object }}
+              </a>
+            {% endfor %}
+          <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
+        </div>
+        <hr>
+        <a class="panel-item hover-shade" href="{% url 'course_flow:import' %}">{% trans "Import from old CourseFlow" %}</a>
     </div>
 
     {% block body %}{% endblock %}
@@ -247,18 +258,18 @@
         "{% url 'course_flow:get-target-projects' %}",
       set_linked_workflow: "{% url 'course_flow:set-linked-workflow' %}",
       update_value: "{% url 'course_flow:update-value' %}",
-      new_column: "{% url 'course_flow:new-column' %}",
       new_node: "{% url 'course_flow:new-node' %}",
       new_outcome: "{% url 'course_flow:new-outcome-for-workflow' %}",
       add_strategy: "{% url 'course_flow:add-strategy' %}",
       toggle_strategy: "{% url 'course_flow:toggle-strategy' %}",
       new_node_link: "{% url 'course_flow:new-node-link' %}",
       delete_self: "{% url 'course_flow:delete-self' %}",
+      restore_self: "{% url 'course_flow:restore-self' %}",
+      delete_self_soft: "{% url 'course_flow:delete-self-soft' %}",
       duplicate_self: "{% url 'course_flow:duplicate-self' %}",
       insert_sibling: "{% url 'course_flow:insert-sibling' %}",
       insert_child: "{% url 'course_flow:insert-child' %}",
       inserted_at: "{% url 'course_flow:inserted-at' %}",
-      column_changed: "{% url 'course_flow:change-column' %}",
       update_outcomehorizontallink_degree: "{% url 'course_flow:update-outcomehorizontallink-degree' %}",
       update_outcomenode_degree:
         "{% url 'course_flow:update-outcomenode-degree' %}",
@@ -282,6 +293,8 @@
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
+      get_download_export: "{% url 'course_flow:get-export-download' pk='0' object_type='objecttype' export_type='exporttype' %}",
+      import: "{% url 'course_flow:import' %}",
     };
 
     const update_path = {
@@ -294,7 +307,6 @@
 
     $("#logout").on("click",()=>{
         window.location.replace("{% url 'course_flow:logout' %}");
-        console.log("logging out");
     });
 
     //reload if we got here using forward or back button
@@ -306,28 +318,38 @@
       location.reload();
     }
 
-    // Broadcast that you're opening a page.
-    localStorage.openpages = "";
-    localStorage.openpages = window.location;
-    var onLocalStorageEvent = function(e) {
-      //Listen for whether the same page opens anywhere else, sending own page location back if they match
-      if (e.key == "openpages" && e.newValue == window.location) {
-        localStorage.page_used = "";
-        localStorage.page_used = window.location;
-      }
-      //Listen for ping back from other open pages, showing alert
-      if (e.key == "page_used" && e.newValue == window.location) {
-        alert(
-          "Warning: this page is already open in another tab or window. Editing the same page in multiple tabs or windows can lead to data loss on your file."
-        );
-      }
-    };
-    window.addEventListener("storage", onLocalStorageEvent, false);
+//    // Broadcast that you're opening a page.
+//    localStorage.openpages = "";
+//    localStorage.openpages = window.location;
+//    var onLocalStorageEvent = function(e) {
+//      //Listen for whether the same page opens anywhere else, sending own page location back if they match
+//      if (e.key == "openpages" && e.newValue == window.location) {
+//        localStorage.page_used = "";
+//        localStorage.page_used = window.location;
+//      }
+//      //Listen for ping back from other open pages, showing alert
+//      if (e.key == "page_used" && e.newValue == window.location) {
+//        alert(
+//          "Warning: this page is already open in another tab or window. Editing the same page in multiple tabs or windows can lead to data loss on your file."
+//        );
+//      }
+//    };
+//    window.addEventListener("storage", onLocalStorageEvent, false);
   </script>
   {% endblock %} {% block read_only_scripts %} {% endblock %}
   <!-- -->
-  {% block scripts %}
-  <script nonce="{{ request.csp_nonce }}">
+    {% block scripts %}
+    <script nonce="{{ request.csp_nonce }}">
+        window.addEventListener("beforeprint",()=>{
+        $(".hide-print").hide();
+        $(".workflow-wrapper, #container").addClass("printing");
+    });
+    window.addEventListener("afterprint",()=>{
+        $(".hide-print").show()
+        $(".workflow-wrapper, #container").removeClass("printing");
+    });
+
+
     window.addEventListener("load", function() {
       const feedback = () => {
         return user_feedback.h(user_feedback.App, {
@@ -357,6 +379,6 @@
         document.getElementById("user-feedback-app")
       );
     });
-  </script>
-  {% endblock %}
+    </script>
+    {% endblock %}
 </html>
