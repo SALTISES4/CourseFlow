@@ -1,6 +1,7 @@
 import json
 import math
-import time
+
+# import time
 from functools import reduce
 from itertools import chain
 
@@ -93,20 +94,14 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     bleach_sanitizer,
     serializer_lookups_shallow,
 )
-from .utils import (
-    benchmark,
-    dateTimeFormat,
+from .utils import (  # benchmark,; dateTimeFormat,; get_parent_model,; get_parent_model_str,; get_unique_outcomehorizontallinks,; get_unique_outcomenodes,
     dateTimeFormatNoSpace,
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,
     get_descendant_outcomes,
     get_model_from_str,
     get_nondeleted_favourites,
-    get_parent_model,
-    get_parent_model_str,
     get_parent_nodes_for_workflow,
-    get_unique_outcomehorizontallinks,
-    get_unique_outcomenodes,
     save_serializer,
 )
 
@@ -150,7 +145,7 @@ class UserCanEditProjectMixin(UserPassesTestMixin):
 
 
 class CreateView_No_Autocomplete(CreateView):
-    def get_form(self):
+    def get_form(self, *args, **kwargs):
         form = super(CreateView, self).get_form()
         form.fields["title"].widget.attrs.update({"autocomplete": "off"})
         form.fields["description"].widget.attrs.update({"autocomplete": "off"})
@@ -1803,7 +1798,7 @@ def import_data(request: HttpRequest) -> HttpResponse:
             )
         else:
             return JsonResponse({"action": "error"})
-    except:
+    except Exception:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
 
@@ -1815,7 +1810,7 @@ def get_export(request: HttpRequest) -> HttpResponse:
     task_type = json.loads(request.POST.get("exportType"))
     subject = _("Your Outcomes Export")
     text = _("Hi there! Here are the results of your recent export.")
-    task = tasks.async_send_export_email(
+    tasks.async_send_export_email(
         request.user.email, object_id, object_type, task_type, subject, text,
     )
     return JsonResponse({"action": "posted"})
@@ -1828,7 +1823,7 @@ def get_export_download(
 ) -> HttpResponse:
     object_id = pk
     task_type = export_type
-    if settings.DEBUG != True:
+    if not settings.DEBUG:
         return HttpResponse()
     model_object = get_model_from_str(object_type).objects.get(pk=object_id)
     if task_type == "outcomes_excel":
@@ -3329,7 +3324,7 @@ def new_node(request: HttpRequest) -> HttpResponse:
     actions.dispatch_wf(
         week.get_workflow(), actions.newNodeAction(response_data)
     )
-    return JsonResponse({"action": "posted",})
+    return JsonResponse({"action": "posted"})
 
 
 @user_can_edit("workflowPk")
@@ -3480,7 +3475,7 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
             actions.dispatch_wf(
                 workflow, actions.newStrategyAction(response_data)
             )
-            return JsonResponse({"action": "posted",})
+            return JsonResponse({"action": "posted"})
 
         else:
             raise ValidationError("User cannot access this strategy")
@@ -3514,7 +3509,7 @@ def new_node_link(request: HttpRequest) -> HttpResponse:
     actions.dispatch_wf(
         node.get_workflow(), actions.newNodeLinkAction(response_data)
     )
-    return JsonResponse({"action": "posted",})
+    return JsonResponse({"action": "posted"})
 
 
 # Add a new child to a model
@@ -4117,7 +4112,7 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
         actions.dispatch_wf(
             node.linked_workflow, update_action,
         )
-    return JsonResponse({"action": "posted",})
+    return JsonResponse({"action": "posted"})
 
 
 # Add a parent outcome to an outcome
@@ -4177,7 +4172,7 @@ def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
         workflow,
         actions.updateOutcomehorizontallinkDegreeAction(response_data),
     )
-    return JsonResponse({"action": "posted",})
+    return JsonResponse({"action": "posted"})
 
 
 # Do not call if duplicating the parent workflow
@@ -4202,7 +4197,7 @@ def set_linked_workflow(node: Node, workflow):
 @user_can_edit("nodePk")
 @user_can_view_or_none("workflowPk")
 def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
-    last_time = time.time()
+    # last_time = time.time()
     try:
         node_id = json.loads(request.POST.get("nodePk"))
         workflow_id = json.loads(request.POST.get("workflowPk"))
@@ -4240,7 +4235,7 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
     actions.dispatch_wf(
         parent_workflow, actions.setLinkedWorkflowAction(response_data)
     )
-    return JsonResponse({"action": "posted",})
+    return JsonResponse({"action": "posted"})
 
 
 # Creates strategy from week or turns strategy into week
@@ -4286,7 +4281,7 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
 
     actions.dispatch_wf(workflow, actions.toggleStrategyAction(response_data))
 
-    return JsonResponse({"action": "posted",})
+    return JsonResponse({"action": "posted"})
 
 
 """
@@ -4320,7 +4315,7 @@ def delete_self(request: HttpRequest) -> HttpResponse:
         workflow = None
         extra_data = None
         parent_id = None
-        object_suffix = ""
+        # object_suffix = ""
         try:
             workflow = model.get_workflow()
         except AttributeError:
@@ -4439,7 +4434,7 @@ def restore_self(request: HttpRequest) -> HttpResponse:
         parent_id = None
         throughparent_id = None
         throughparent_index = None
-        object_suffix = ""
+        # object_suffix = ""
         try:
             workflow = model.get_workflow()
         except AttributeError:
@@ -4594,7 +4589,7 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
         workflow = None
         extra_data = None
         parent_id = None
-        object_suffix = ""
+        # object_suffix = ""
         try:
             workflow = model.get_workflow()
         except AttributeError:
