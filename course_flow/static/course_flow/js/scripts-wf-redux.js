@@ -181,12 +181,15 @@ export class WorkflowRenderer{
         this.initial_loading=true;
         this.container = container;
         this.locks={}
+        let weeks = initial_workflow_data.week.filter(x=>!x.deleted);
         this.items_to_load = {
             column:initial_workflow_data.column.filter(x=>!x.deleted).length,
-            week:initial_workflow_data.week.filter(x=>!x.deleted).length,
-            node:initial_workflow_data.node.filter(x=>!x.deleted).length,
+            week:weeks.length,
+            node:weeks.reduce((previousValue,currentValue)=>
+                previousValue+currentValue.nodeweek_set.length
+            ,0)
         };
-        this.ports_to_render = initial_workflow_data.node.filter(x=>!x.deleted).length;
+        this.ports_to_render = this.items_to_load.node;
         
         container.on("component-loaded",(evt,objectType)=>{
             evt.stopPropagation();
