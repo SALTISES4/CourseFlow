@@ -826,7 +826,10 @@ export class ExploreMenu extends React.Component{
             <WorkflowForMenu selected={(this.state.selected==object.id)} key={object.id} type={"exploremenu"} workflow_data={object} duplicate={"import"} objectType={object.type} previewAction={this.selectItem.bind(this,object.id,object.type)}/>  
         )
         let disciplines = this.props.disciplines.map(discipline=>
-            <li><label><input class = "fillable"  type="checkbox" name="disc[]" value={discipline.id}/>{discipline.title}</label></li>                                            
+            <li>
+                <input class = "fillable"  id={"disc-"+discipline.id} type="checkbox" name="disc[]" value={discipline.id}/>
+                <label for={"disc-"+discipline.id} class="input">{discipline.title}</label>
+            </li>                                            
         )
         let page_buttons = [];
         for(let i=0;i<this.props.pages.page_count;i++){
@@ -838,26 +841,27 @@ export class ExploreMenu extends React.Component{
         }
         return(
             <div class="explore-menu">
-                <h3>{gettext("Explore")+":"}</h3>
+                <h3>{gettext("Explore our database")+":"}</h3>
                 <form id="search-parameters" action={explore_path} method="GET">
                     <div>
                         <div>
-                            <h4>{gettext("Filters")+":"}</h4>
-                            <label><div>{gettext("Title")+":"}</div><input autocomplete="off" class = "fillable" id="search-title" name="title"/></label>
-                            <label><div>{gettext("Description")+":"}</div><input autocomplete="off" class = "fillable"  id="search-description" name="des"/></label>
-                            <label><div>{gettext("Author (Username)")+":"}</div><input autocomplete="off" class = "fillable"  id="search-author" name="auth"/></label>
+                            <label for="search-keyword">{gettext("Keywords")+":"}</label>
+                            <div class="flex-wrap">
+                                <input autocomplete="off" class = "fillable" id="search-keyword" name="keyword"/>
+                                <input id="submit" type="submit" value={gettext("Search")}/>
+                            </div>
                         </div>
                         <div>
-                            <h4>{gettext("Allowed Types")+":"}</h4>
+                            <label>{gettext("Allowed Types")+":"}</label>
                             <ul id="search-type" class="search-checklist-block">
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="activity" checked/>{gettext("Activity")}</label></li>
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="course" checked/>{gettext("Course")}</label></li>
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="program" checked/>{gettext("Program")}</label></li>
-                                <li><label><input class = "fillable"  type="checkbox" name="types[]" value="project" checked/>{gettext("Project")}</label></li>
+                                <li><input class = "fillable" id="activity" type="checkbox" name="types[]" value="activity"/><label for="activity" class="input">{gettext("Activity")}</label></li>
+                                <li><input class = "fillable" id="course" type="checkbox" name="types[]" value="course"/><label for="course" class="input">{gettext("Course")}</label></li>
+                                <li><input class = "fillable" id="program" type="checkbox" name="types[]" value="program"/><label for="program" class="input">{gettext("Program")}</label></li>
+                                <li><input class = "fillable" id="project" type="checkbox" name="types[]" value="project"/><label for="project" class="input">{gettext("Project")}</label></li>
                             </ul>
                         </div>
                         <div>
-                            <h4>{gettext("Disciplines (leave blank for all):")}</h4>
+                            <label>{gettext("Disciplines (leave blank for all):")}</label>
                             <ul id="search-discipline" class="search-checklist-block">
                                 {disciplines}
                             </ul>
@@ -869,40 +873,36 @@ export class ExploreMenu extends React.Component{
                             <select class="fillable" name="results">
                                 <option value="10">10</option>
                                 <option value="20">20</option>
-                                <option value="50">50</option>
+                                <option selected value="50">50</option>
                                 <option value="100">100</option>
                             </select>
                         </label>
-                        <input id="submit" type="submit" value={gettext("Search")}/>
                         
                     </div>
                 </form>
                 <hr/>
                 <div class="explore-main">
-                    <div class="explore-results">
-                        {objects.length>0 &&
-                            [
-                            <p>
-                                {gettext("Showing results")} {this.props.pages.results_per_page*(this.props.pages.current_page-1)+1}-{(this.props.pages.results_per_page*this.props.pages.current_page)} ({this.props.pages.total_results} {gettext("total results")})
+                    {objects.length>0 &&
+                        [
+                        <p>
+                            {gettext("Showing results")} {this.props.pages.results_per_page*(this.props.pages.current_page-1)+1}-{(this.props.pages.results_per_page*this.props.pages.current_page)} ({this.props.pages.total_results} {gettext("total results")})
 
-                            </p>,
-                            <p>
-                                <button id="prev-page-button" disabled={(this.props.pages.current_page==1)} onClick={
-                                    this.toPage.bind(this,this.props.pages.current_page-1)
-                                }>{gettext("Previous")}</button>
-                                    {page_buttons}
-                                <button id="next-page-button" disabled={(this.props.pages.current_page==this.props.pages.page_count)} onClick={
-                                    this.toPage.bind(this,this.props.pages.current_page+1)
-                                }>{gettext("Next")}</button>
-                            </p>,
-                            objects]
-                        }
-                        {objects.length==0 &&
-                            <p>{gettext("No results were found. Adjust your search parameters, and make sure you have at least one allowed type selected.")}</p>
-                        }
-                    </div>
-                    <div class="explore-preview">
-
+                        </p>,
+                        <p>
+                            <button id="prev-page-button" disabled={(this.props.pages.current_page==1)} onClick={
+                                this.toPage.bind(this,this.props.pages.current_page-1)
+                            }>{gettext("Previous")}</button>
+                                {page_buttons}
+                            <button id="next-page-button" disabled={(this.props.pages.current_page==this.props.pages.page_count)} onClick={
+                                this.toPage.bind(this,this.props.pages.current_page+1)
+                            }>{gettext("Next")}</button>
+                        </p>]
+                    }
+                    {objects.length==0 &&
+                        <p>{gettext("No results were found. Adjust your search parameters, and make sure you have at least one allowed type selected.")}</p>
+                    }
+                    <div class="menu-grid">
+                        {objects}
                     </div>
                 </div>
             </div>

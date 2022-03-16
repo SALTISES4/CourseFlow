@@ -99,7 +99,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             {type:"alignmentanalysis",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
             {type:"competencymatrix",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
             {type:"grid",name:gettext("Grid View"),disabled:["activity", "course"]},
-            {type:"horizontaloutcometable",name:gettext("Alignment Table"),disabled:["activity"]}
+            //{type:"horizontaloutcometable",name:gettext("Alignment Table"),disabled:["activity"]}
         ].filter(item=>item.disabled.indexOf(data.type)==-1).map(
             (item)=>{
                 let view_class = "hover-shade";

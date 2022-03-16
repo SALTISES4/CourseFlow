@@ -44,7 +44,7 @@
                 {% endfor %}
             </div>
             <div class="home-item">
-                <a class="hover-shade" href='{% url "course_flow:explore" %}'><h4>{% trans "Explore" %}</h4>
+                <a class="hover-shade" href='{% url "course_flow:explore" %}?types[]=activity&types[]=course&types[]=program&types[]=project'><h4>{% trans "Explore" %}</h4>
                 <p>{% trans "Explore published material by other users" %}</p>
                 <div class="home-item-icon-container">
                 <img src = "{% static 'course_flow/img/images_svg/explore.svg' %}"/>

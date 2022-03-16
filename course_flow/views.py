@@ -196,20 +196,24 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self):
         types = self.request.GET.getlist("types[]", None)
-        author = self.request.GET.get("auth", None)
+        
+        keywords = self.request.GET.get("keyword","").split(' ')
+        q_objects = Q()
+        for keyword in keywords:
+            q_objects &= (
+                Q(author__first_name__icontains=keyword)
+                |Q(author__username__icontains=keyword)
+                |Q(author__last_name__icontains=keyword)
+                |Q(title__icontains=keyword)
+                |Q(description__icontains=keyword)
+            )
+        print (keywords)
+        
         disciplines = self.request.GET.getlist("disc[]", None)
-        title = self.request.GET.get("title", None)
-        description = self.request.GET.get("des", None)
         sort = self.request.GET.get("sort", None)  # noqa F841
         page = self.request.GET.get("page", 1)
         results = self.request.GET.get("results", 20)
         filter_kwargs = {}
-        if title:
-            filter_kwargs["title__icontains"] = title
-        if description:
-            filter_kwargs["description__icontains"] = description
-        if author:
-            filter_kwargs["author__username__icontains"] = author
         if page:
             page = int(page)
         else:
@@ -228,14 +232,14 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                     get_model_from_str(model_type)
                     .objects.filter(published=True)
                     .filter(**filter_kwargs)
-                    .exclude(author=self.request.user)
+                    .filter(q_objects)
                     .exclude(deleted=True)
                     .distinct()
                     if model_type == "project"
                     else get_model_from_str(model_type)
                     .objects.filter(published=True)
                     .filter(**filter_kwargs)
-                    .exclude(author=self.request.user)
+                    .filter(q_objects)
                     .exclude(Q(deleted=True) | Q(project__deleted=True))
                     .distinct()
                     for model_type in types
@@ -3077,6 +3081,11 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
     try:
         with transaction.atomic():
             clone = fast_duplicate_workflow(workflow, request.user)
+            try:
+                clone.title = clone.title+_("(copy)")
+                clone.save()
+            except (ValidationError, TypeError):
+                pass
 
             WorkflowProject.objects.create(project=project, workflow=clone)
 
@@ -3109,6 +3118,11 @@ def duplicate_strategy_ajax(request: HttpRequest) -> HttpResponse:
     try:
         with transaction.atomic():
             clone = fast_duplicate_workflow(workflow, request.user)
+            try:
+                clone.title = clone.title+_("(copy)")
+                clone.save()
+            except (ValidationError, TypeError):
+                pass
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -3211,6 +3225,11 @@ def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     try:
         with transaction.atomic():
             clone = fast_duplicate_project(project, request.user)
+            try:
+                clone.title = clone.title+_("(copy)")
+                clone.save()
+            except (ValidationError, TypeError):
+                pass
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -3647,6 +3666,11 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 newthroughmodel = WeekWorkflow.objects.create(
                     workflow=parent, week=newmodel, rank=through.rank + 1
                 )
+                try:
+                    newmodel.title = newmodel.title+_("(copy)")
+                    newmodel.save()
+                except (ValidationError, TypeError):
+                    pass
                 new_model_serialized = WeekSerializerShallow(newmodel).data
                 new_through_serialized = WeekWorkflowSerializerShallow(
                     newthroughmodel
@@ -3675,6 +3699,11 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 newthroughmodel = NodeWeek.objects.create(
                     week=parent, node=newmodel, rank=through.rank + 1
                 )
+                try:
+                    newmodel.title = newmodel.title+_("(copy)")
+                    newmodel.save()
+                except (ValidationError, TypeError):
+                    pass
                 new_model_serialized = NodeSerializerShallow(newmodel).data
                 new_through_serialized = NodeWeekSerializerShallow(
                     newthroughmodel
@@ -3694,6 +3723,11 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 newthroughmodel = ColumnWorkflow.objects.create(
                     workflow=parent, column=newmodel, rank=through.rank + 1
                 )
+                try:
+                    newmodel.title = newmodel.title+_("(copy)")
+                    newmodel.save()
+                except (ValidationError, TypeError):
+                    pass
                 new_model_serialized = ColumnSerializerShallow(newmodel).data
                 new_through_serialized = ColumnWorkflowSerializerShallow(
                     newthroughmodel
@@ -3702,6 +3736,11 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
             elif object_type == "outcome":
                 model = Outcome.objects.get(id=object_id)
                 newmodel = fast_duplicate_outcome(model, request.user)
+                try:
+                    newmodel.title = newmodel.title+_("(copy)")
+                    newmodel.save()
+                except (ValidationError, TypeError):
+                    pass
                 if parent_type == "outcome":
                     parent = Outcome.objects.get(id=parent_id)
                     through = OutcomeOutcome.objects.get(
