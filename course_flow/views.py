@@ -45,7 +45,7 @@ from .models import (  # OutcomeProject,
     Column,
     ColumnWorkflow,
     Course,
-    CustomTerm,
+    ObjectSet,
     Discipline,
     Favourite,
     Node,
@@ -77,6 +77,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
+    ObjectSetSerializerShallow,
     OutcomeHorizontalLinkSerializerShallow,
     OutcomeNodeSerializerShallow,
     OutcomeOutcomeSerializerShallow,
@@ -1351,6 +1352,9 @@ def get_workflow_data_flat(workflow, user):
         outcomenodes = OutcomeNode.objects.filter(
             node__week__workflow=workflow
         )
+        objectsets = ObjectSet.objects.filter(
+            project__workflows=workflow
+        )
 
     data_flat = {
         "workflow": SerializerClass(workflow, context={"user": user}).data,
@@ -1379,6 +1383,9 @@ def get_workflow_data_flat(workflow, user):
         ).data
         data_flat["outcomenode"] = OutcomeNodeSerializerShallow(
             outcomenodes, many=True
+        ).data
+        data_flat["objectset"] = ObjectSetSerializerShallow(
+            objectsets, many=True
         ).data
         if workflow.type == "course":
             data_flat["strategy"] = WorkflowSerializerShallow(
@@ -1780,9 +1787,13 @@ Import/Export  methods
 
 
 @user_can_edit(False)
-def import_data(request: HttpRequest) -> HttpResponse:
-    object_id = request.POST.get("objectID")
-    object_type = request.POST.get("objectType")
+def import_data(request: HttpRequest) -> JsonResponse:
+    print(request.POST)
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    print(request.user.id)
+    print(object_id)
+    print(object_type)
     task_type = request.POST.get("importType")
     file = request.FILES.get("myFile")
     try:
@@ -1814,15 +1825,26 @@ def import_data(request: HttpRequest) -> HttpResponse:
 
 @user_can_view(False)
 def get_export(request: HttpRequest) -> HttpResponse:
+    print(request.POST)
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-    task_type = json.loads(request.POST.get("exportType"))
-    subject = _("Your Outcomes Export")
-    text = _("Hi there! Here are the results of your recent export.")
-    task = tasks.async_send_export_email(
-        request.user.email, object_id, object_type, task_type, subject, text,
-    )
+    try:
+        print(object_id)
+        print(object_type)
+    
+    except:
+        return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
+    
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+#    task_type = json.loads(request.POST.get("exportType"))
+#    subject = _("Your Outcomes Export")
+#    text = _("Hi there! Here are the results of your recent export.")
+#    task = tasks.async_send_export_email(
+#        request.user.email, object_id, object_type, task_type, subject, text,
+#    )
+#    return JsonResponse({"action": "posted"})
 
 
 # enable for testing/download
@@ -3267,13 +3289,12 @@ Creation methods
 def add_terminology(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     term = json.loads(request.POST.get("term"))
-    translation = json.loads(request.POST.get("translation"))
+    title = json.loads(request.POST.get("title"))
     translation_plural = json.loads(request.POST.get("translation_plural"))
     try:
-        CustomTerm.objects.filter(term=term, project=project,).delete()
-        project.terminology_dict.create(
+        project.object_sets.create(
             term=term,
-            translation=translation,
+            title=title,
             translation_plural=translation_plural,
         )
     except ValidationError:
@@ -3282,7 +3303,7 @@ def add_terminology(request: HttpRequest) -> HttpResponse:
         {
             "action": "posted",
             "new_dict": ProjectSerializerShallow(project).data[
-                "terminology_dict"
+                "object_sets"
             ],
         }
     )
@@ -3512,10 +3533,11 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
 def new_node_link(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     target_id = json.loads(request.POST.get("objectID"))
+    target_type = json.loads(request.POST.get("objectType"))
     source_port = json.loads(request.POST.get("sourcePort"))
     target_port = json.loads(request.POST.get("targetPort"))
     node = Node.objects.get(pk=node_id)
-    target = Node.objects.get(pk=target_id)
+    target = get_model_from_str(target_type).objects.get(pk=target_id)
     try:
         node_link = NodeLink.objects.create(
             author=node.author,
@@ -3659,8 +3681,8 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     try:
         with transaction.atomic():
             if object_type == "week":
-                model = Week.objects.get(id=object_id)
-                parent = Workflow.objects.get(id=parent_id)
+                model = get_model_from_str(object_type).objects.get(id=object_id)
+                parent = get_model_from_str(parent_type).objects.get(id=parent_id)
                 through = WeekWorkflow.objects.get(week=model, workflow=parent)
                 newmodel = fast_duplicate_week(model, request.user)
                 newthroughmodel = WeekWorkflow.objects.create(
@@ -3692,8 +3714,8 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                     ).data,
                 }
             elif object_type == "node":
-                model = Node.objects.get(id=object_id)
-                parent = Week.objects.get(id=parent_id)
+                model = get_model_from_str(object_type).objects.get(id=object_id)
+                parent = get_model_from_str(parent_type).objects.get(id=parent_id)
                 through = NodeWeek.objects.get(node=model, week=parent)
                 newmodel = duplicate_node(model, request.user, None, None)
                 newthroughmodel = NodeWeek.objects.create(
@@ -3714,8 +3736,8 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                     ).data,
                 }
             elif object_type == "column":
-                model = Column.objects.get(id=object_id)
-                parent = Workflow.objects.get(id=parent_id)
+                model = get_model_from_str(object_type).objects.get(id=object_id)
+                parent = get_model_from_str(parent_type).objects.get(id=parent_id)
                 through = ColumnWorkflow.objects.get(
                     column=model, workflow=parent
                 )
@@ -3734,7 +3756,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 ).data
                 new_children_serialized = None
             elif object_type == "outcome":
-                model = Outcome.objects.get(id=object_id)
+                model = get_model_from_str(object_type).objects.get(id=object_id)
                 newmodel = fast_duplicate_outcome(model, request.user)
                 try:
                     newmodel.title = newmodel.title+_("(copy)")
@@ -3742,7 +3764,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 except (ValidationError, TypeError):
                     pass
                 if parent_type == "outcome":
-                    parent = Outcome.objects.get(id=parent_id)
+                    parent = get_model_from_str(parent_type).objects.get(id=parent_id)
                     through = OutcomeOutcome.objects.get(
                         child=model, parent=parent
                     )
@@ -3753,7 +3775,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                         newthroughmodel
                     ).data
                 elif parent_type == "workflow":
-                    parent = Workflow.objects.get(id=parent_id)
+                    parent = get_model_from_str(parent_type).objects.get(id=parent_id)
                     through = OutcomeWorkflow.objects.get(
                         outcome=model, workflow=parent
                     )
@@ -4165,11 +4187,12 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
 def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
 
     outcome_id = json.loads(request.POST.get("outcomePk"))
+    object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("objectID"))
     degree = json.loads(request.POST.get("degree"))
     try:
         outcome = Outcome.objects.get(id=outcome_id)
-        parent_outcome = Outcome.objects.get(id=parent_id)
+        parent_outcome = get_model_from_str(object_type).objects.get(id=parent_id)
         if (
             OutcomeHorizontalLink.objects.filter(
                 parent_outcome=parent_outcome, outcome=outcome, degree=degree
@@ -4326,6 +4349,54 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
     actions.dispatch_wf(workflow, actions.toggleStrategyAction(response_data))
 
     return JsonResponse({"action": "posted",})
+
+
+@user_can_edit(False)
+@user_can_view("objectsetPk")
+def update_object_set(request: HttpRequest) -> HttpResponse:
+    try:
+        object_id = json.loads(request.POST.get("objectID"))
+        object_type = json.loads(request.POST.get("objectType"))
+        objectset_id = json.loads(request.POST.get("objectsetPk"))
+        add = json.loads(request.POST.get("add"))
+        objects = get_model_from_str(object_type).objects
+        if hasattr(objects, "get_subclass"):
+            objects_to_update = [objects.get_subclass(pk=object_id)]
+        else:
+            objects_to_update = [objects.get(pk=object_id)]
+            if object_type=="outcome":
+                objects_to_update+=list(get_descendant_outcomes(objects_to_update[0]))
+        objectset = ObjectSet.objects.get(id=objectset_id)
+        if add:
+            for object_to_update in objects_to_update:
+                object_to_update.sets.add(objectset)
+                object_to_update.save()
+        else:
+            for object_to_update in objects_to_update:
+                object_to_update.sets.remove(objectset)
+                object_to_update.save()
+        
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    try:
+        workflow = objects_to_update[0].get_workflow()
+        if len(objects_to_update)==1:
+            action = actions.changeField(object_id, object_type, {"sets":[object_set.id for object_set in object_to_update.sets.all()]})
+        else:
+            action = actions.changeFieldMany([obj.id for obj in objects_to_update],object_type,{"sets":[object_set.id for object_set in object_to_update.sets.all()]})
+        actions.dispatch_wf(
+            workflow,
+            action
+        )
+        if object_type == "outcome":
+            actions.dispatch_to_parent_wf(
+                workflow, 
+                action
+            )
+    except AttributeError:
+        pass
+
+    return JsonResponse({"action": "posted"})
 
 
 """

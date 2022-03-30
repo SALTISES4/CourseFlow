@@ -158,16 +158,8 @@ export class WorkflowRenderer{
         this.read_only = data_package.read_only;
         if(data_package.project){
             $("#floatbar").append("<a id='project-return' href='"+update_path["project"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Project")+"</div></div>");
-            let custom_text_base = Constants.custom_text_base();
-            for(let i=0;i<data_package.project.terminology_dict.length;i++){
-                let term = data_package.project.terminology_dict[i];
-                let custom_text = custom_text_base[term.term]
-                if(custom_text){
-                    if(custom_text["singular_key"])django.catalog[custom_text["singular_key"]]=term.translation;
-                    if(custom_text["plural_key"])django.catalog[custom_text["plural_key"]]=term.translation_plural;
-                    
-                }
-            }
+            
+            
         }
     }
     
@@ -218,7 +210,7 @@ export class WorkflowRenderer{
     
         this.selection_manager = new SelectionManager(); 
         this.selection_manager.renderer = renderer;
-        this.tiny_loader = new TinyLoader(container);
+        this.tiny_loader = new TinyLoader($("body")[0]);
         if(view_type=="outcomeedit"){
             //get additional data about parent workflow prior to render
             getWorkflowParentData(workflow_model_id,(response)=>{
@@ -387,7 +379,7 @@ export class OutcomeRenderer{
     render(container){
         this.container=container;
         this.selection_manager = new SelectionManager(); 
-        this.tiny_loader = new TinyLoader(container);
+        this.tiny_loader = new TinyLoader($("body")[0]);
         reactDom.render(
             <Provider store = {this.store}>
                 <OutcomeTopView objectID={this.initial_data.outcome[0].id} renderer={this}/>

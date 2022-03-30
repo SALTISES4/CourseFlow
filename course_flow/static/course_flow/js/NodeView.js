@@ -98,6 +98,7 @@ class NodeView extends ComponentJSON{
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
+        if(Constants.checkSetHidden(data,this.props.object_sets))style.display="none";
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
@@ -160,7 +161,7 @@ class NodeView extends ComponentJSON{
         $(this.maindiv.current).on("dblclick",this.doubleClick.bind(this));
     }
 
-    componentDidUpdate(prevProps){
+    componentDidUpdate(prevProps, prevState){
         if(this.props.data.is_dropped==prevProps.data.is_dropped)this.updatePorts();
         else Constants.triggerHandlerEach($(".node"),"component-updated");
         if(this.state.port_render)this.setState({initial_render:false,port_render:false});

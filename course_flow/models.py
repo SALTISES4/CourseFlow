@@ -51,7 +51,7 @@ class Project(models.Model):
         "ObjectPermission", related_query_name="project"
     )
 
-    terminology_dict = models.ManyToManyField("CustomTerm", blank=True)
+    object_sets = models.ManyToManyField("ObjectSet", blank=True)
 
     @property
     def type(self):
@@ -71,15 +71,15 @@ class Project(models.Model):
         verbose_name_plural = "Projects"
 
 
-class CustomTerm(models.Model):
+class ObjectSet(models.Model):
     term = models.CharField(max_length=title_max_length)
-    translation = models.CharField(max_length=title_max_length)
+    title = models.CharField(max_length=title_max_length)
     translation_plural = models.CharField(
         max_length=title_max_length, null=True
     )
 
     def get_permission_objects(self):
-        return [Project.objects.filter(terminology_dict=self).first()]
+        return [Project.objects.filter(object_sets=self).first()]
 
 
 class WorkflowProject(models.Model):
@@ -257,6 +257,8 @@ class Outcome(models.Model):
 
     is_dropped = models.BooleanField(default=True)
     depth = models.PositiveIntegerField(default=0)
+    
+    sets = models.ManyToManyField("ObjectSet", blank=True)
 
     children = models.ManyToManyField(
         "Outcome",
@@ -275,10 +277,10 @@ class Outcome(models.Model):
     comments = models.ManyToManyField(
         "Comment", blank=True, related_name="outcome"
     )
-
+    
     @property
     def type(self):
-        return "outcome"
+        return self.get_workflow().type+" outcome"
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -452,6 +454,8 @@ class Node(models.Model):
     comments = models.ManyToManyField(
         "Comment", blank=True, related_name="node"
     )
+    
+    sets = models.ManyToManyField("ObjectSet", blank=True)
 
     NONE = 0
     INDIVIDUAL = 1
@@ -600,7 +604,7 @@ class Node(models.Model):
         through="NodeCompletionStatus",
         blank=True,
     )
-
+    
     def get_permission_objects(self):
         return [self.get_workflow().get_subclass()]
 
@@ -1801,12 +1805,18 @@ def set_week_type_default(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=OutcomeOutcome)
 def set_outcome_depth_default(sender, instance, created, **kwargs):
-    child = instance.child
     try:
-        child.depth = instance.parent.depth + 1
-        child.save()
+        set_list = list(instance.parent.sets)
+        outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(instance.child)
+        for outcomeoutcome in [instance]+list(outcomeoutcomes):
+            child = outcomeoutcome.child
+            parent = outcomeoutcome.parent
+            child.depth = parent.depth + 1
+            child.sets.clear()
+            child.sets.add(*set_list)
+            child.save()
     except ValidationError:
-        print("couldn't set default outcome depth")
+        print("couldn't set default outcome depth or copy sets")
 
 
 @receiver(post_save, sender=Node)

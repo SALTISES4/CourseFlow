@@ -3,7 +3,7 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {ComponentJSON, NodeTitle, TitleText, OutcomeTitle, getOutcomeTitle, WeekTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
-import {getOutcomeByID,getOutcomeOutcomeByID, getChildWorkflowByID, getWeekByID} from "./FindState";
+import {getOutcomeByID,getOutcomeOutcomeByID, getChildWorkflowByID, getWeekByID, getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
 import OutcomeView from "./OutcomeView";
 import {SimpleOutcomeView} from "./OutcomeView";
 import OutcomeNodeView from "./OutcomeNode";
@@ -14,19 +14,28 @@ class AlignmentView extends ComponentJSON{
     constructor(props){
         super(props);
         this.objectType="workflow";
-        this.state={active:0,sort:"outcome"};
+        this.state={active:0,active2:0,sort:"outcome"};
     }
     
     render(){
         let data = this.props.data;
-        let view_buttons_outcomes = this.props.outcomes.map((outcome,i)=>{
-            let view_class = "hover-shade";
-            if(this.state.sort=="outcome" && i==this.state.active)view_class+=" active";
-            return(
-                <div id={"button-outcome-"+outcome.data.id} class={view_class} onClick={this.changeView.bind(this,i,"outcome")}>
-                    <OutcomeTitle data={outcome.data} rank={outcome.rank} titles={outcome.titles}/>
+        let view_buttons_outcomes = this.props.outcomes.map((category,i)=>{
+            return([
+                <h4>{category.objectset.title}:</h4>,
+                <div class="workflow-view-select hide-print">
+                    {category.outcomes.map((outcome,j)=>{
+                        let view_class = "hover-shade";
+                        if(this.state.sort=="outcome" && i==this.state.active && j==this.state.active2)view_class+=" active";
+                        console.log("button outcome");
+                        console.log(outcome);
+                        return(
+                            <div id={"button-outcome-"+outcome.data.id} class={view_class} onClick={this.changeView.bind(this,i,"outcome",j)}>
+                                <OutcomeTitle data={outcome.data} rank={outcome.rank} titles={outcome.titles}/>
+                            </div>
+                        );
+                    })}
                 </div>
-            );
+            ])
         });
         let view_buttons_terms = this.props.terms.map((week,i)=>{
             let view_class = "hover-shade";
@@ -43,14 +52,36 @@ class AlignmentView extends ComponentJSON{
         let alignment_block;
         let alignment_reverse_block;
 
-        if(view_buttons_outcomes.length==0){
+        console.log("ACTIVE STATE:")
+        console.log(this.state.active);
+        let outcome_data;
+        if(this.state.sort=="outcome"){
+            let found=false;
+            try{
+                outcome_data = this.props.outcomes[this.state.active].outcomes[this.state.active2].data;
+            }catch(err){
+                console.log("Bad index on outcomes, resetting");
+                for(var i=0;i<this.props.outcomes.length;i++){
+                    console.log("checking outcome");
+                    console.log(this.props.outcomes[i]);
+                    if(this.props.outcomes[i].outcomes.length>=1)this.changeView(i,"outcome",0);
+                    return null;
+                }
+                console.log("setting to none");
+                this.changeView(-1,"outcome",0);
+                return null;
+            }
+        }
+
+
+        if(this.state.active==-1){
             view_buttons_outcomes=gettext("No outcomes have been added yet. Use the Edit Outcomes menu to get started");
         }else if(this.state.sort=="outcome"){
             outcomes_block=(
-                <AlignmentOutcomesBlock workflow_type={data.type} renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
+                <AlignmentOutcomesBlock workflow_type={data.type} renderer={this.props.renderer} data={outcome_data} outcomes_type={data.outcomes_type}/>
             );
             alignment_reverse_block=(
-                <AlignmentHorizontalReverseBlock sort="outcome" renderer={this.props.renderer} data={this.props.outcomes[this.state.active].data} outcomes_type={data.outcomes_type}/>
+                <AlignmentHorizontalReverseBlock sort="outcome" renderer={this.props.renderer} data={outcome_data} outcomes_type={data.outcomes_type}/>
             );
         }
 
@@ -63,9 +94,8 @@ class AlignmentView extends ComponentJSON{
         return(
             <div class="workflow-details">
                 <h3>{gettext("Filters")}:</h3>
-                <div class="workflow-view-select hide-print">
-                    {view_buttons_outcomes}
-                </div>
+                {view_buttons_outcomes}
+                <h4>{gettext("Sections")}:</h4>
                 <div class="workflow-view-select hide-print">
                     {view_buttons_terms}
                 </div>
@@ -78,19 +108,21 @@ class AlignmentView extends ComponentJSON{
         );
     }
     
-    changeView(index, sort){
-        this.setState({active:index,sort:sort});
+    changeView(index, sort, index2=0){
+        this.setState({active:index,sort:sort,active2:index2});
     }
 
 }
-const mapAlignmentStateToProps = state=>({
-    data:state.workflow,
-    outcomes:Constants.filterThenSortByID(
-        state.outcomeworkflow,
-        state.workflow.outcomeworkflow_set
-    ).map(ocwf=>getOutcomeByID(state,ocwf.outcome)),
-    terms:Constants.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(wwf=>getWeekByID(state,wwf.week).data)
-});
+const mapAlignmentStateToProps = state=>{
+    let outcomes = getSortedOutcomesFromOutcomeWorkflowSet(state,state.workflow.outcomeworkflow_set).map(category=>
+        ({...category,outcomes:category.outcomes.map(outcome=>getOutcomeByID(state,outcome.id))})
+    );
+    return {
+        data:state.workflow,
+        outcomes:outcomes,
+        terms:Constants.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(wwf=>getWeekByID(state,wwf.week).data)
+    }
+};
 export default connect(
     mapAlignmentStateToProps,
     null
@@ -339,14 +371,19 @@ export const AlignmentHorizontalReverseWeek = connect(
 
 
 
-class AlignmentHorizontalReverseNodeUnconnected extends React.Component{
+class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
     constructor(props){
         super(props);
+        this.objectType="node";
         this.state={};
     }
     
     render(){
         let data = this.props.data;
+        let data_override;
+        if(data.represents_workflow) data_override = {...data,...data.linked_workflow_data};
+        else data_override={...data};
+        let selection_manager = this.props.renderer.selection_manager;
         
         let child_outcomes = this.props.child_outcomes.map(child_outcome=>{
             
@@ -402,10 +439,19 @@ class AlignmentHorizontalReverseNodeUnconnected extends React.Component{
                 </div>
             );
         }
+
+        let style={backgroundColor:this.props.renderer.column_colours[data.column]};
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
+        }
         
         return (
             <div class="node-week">
-                <div style={{backgroundColor:this.props.renderer.column_colours[data.column]}} class={"node column-"+data.column}>
+                <div 
+                    style={style} 
+                    class={"node column-"+data.column} 
+                    onClick={(evt)=>selection_manager.changeSelection(evt,this)}
+                >
                     <div class="node-top-row">
                         <NodeTitle data={data}/>
                     </div>
@@ -413,6 +459,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends React.Component{
                         {child_outcomes}
                     </div>
                     <div class="node-drop-row">{show_all}</div>
+                    {this.addEditable(data_override,true)}
                 </div>
             </div>
         );
@@ -608,11 +655,14 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
         let allowed_outcome_ids = [base_outcome.id];
         getDescendantOutcomes(state,base_outcome,allowed_outcome_ids);
         let allowed_outcomes = state.outcome.filter(outcome=>allowed_outcome_ids.includes(outcome.id));
+        
 
-        let allowed_child_outcome_ids = state.outcomehorizontallink.filter(hl=>allowed_outcome_ids.indexOf(hl.parent_outcome)>=0).map(hl=>hl.outcome);
+        let allowed_child_outcome_ids_from_outcomes = state.outcomehorizontallink.filter(hl=>allowed_outcome_ids.indexOf(hl.parent_outcome)>=0).map(hl=>hl.outcome);
+        let allowed_child_outcome_ids = state.outcome.filter(outcome=>allowed_child_outcome_ids_from_outcomes.indexOf(outcome.id)>=0).filter(outcome=>!Constants.checkSetHidden(outcome,state.objectset)).map(outcome=>outcome.id);
 
 
-        let allowed_node_ids = state.outcomenode.filter(outcomenode=>allowed_outcome_ids.includes(outcomenode.outcome)).map(outcomenode=>outcomenode.node);
+        let allowed_node_ids_from_outcomes = state.outcomenode.filter(outcomenode=>allowed_outcome_ids.includes(outcomenode.outcome)).map(outcomenode=>outcomenode.node);
+        let allowed_node_ids = state.node.filter(node=>allowed_node_ids_from_outcomes.indexOf(node.id)>=0).filter(node=>!Constants.checkSetHidden(node,state.objectset)).map(node=>node.id);
 
         let nodeweeks = state.nodeweek.filter(nodeweek=>allowed_node_ids.includes(nodeweek.node));
         let allowed_week_ids = nodeweeks.map(nodeweek=>nodeweek.week);
@@ -621,11 +671,22 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
         return {weekworkflows:weekworkflows,restriction_set:{weeks:allowed_week_ids,nodes:allowed_node_ids,parent_outcomes:allowed_outcome_ids,child_outcomes:allowed_child_outcome_ids}};
     }else if(own_props.sort=="week"){
         let allowed_outcome_ids = [];
+        
+        let allowed_node_ids = state.node.filter(node=>!Constants.checkSetHidden(node,state.objectset)).map(node=>node.id);
+        
+        let allowed_child_outcome_ids = state.outcome.filter(outcome=>!Constants.checkSetHidden(outcome,state.objectset)).map(outcome=>outcome.id);
+        
+        
         for(let i=0;i<own_props.base_outcomes.length;i++){
-            allowed_outcome_ids.push(own_props.base_outcomes[i].data.id);
-            getDescendantOutcomes(state,own_props.base_outcomes[i].data,allowed_outcome_ids);
+            for(let j=0;j<own_props.base_outcomes[i].outcomes.length;j++){
+                allowed_outcome_ids.push(own_props.base_outcomes[i].outcomes[j].data.id);
+                getDescendantOutcomes(state,own_props.base_outcomes[i].outcomes[j].data,allowed_outcome_ids);
+            }
         }
-        return {weekworkflows:weekworkflows,restriction_set:{weeks:[own_props.data.id],parent_outcomes:allowed_outcome_ids}};
+        
+        
+        
+        return {weekworkflows:weekworkflows,restriction_set:{weeks:[own_props.data.id],nodes:allowed_node_ids,parent_outcomes:allowed_outcome_ids,child_outcomes:allowed_child_outcome_ids}};
     }
     
     

@@ -2635,7 +2635,7 @@ class ModelViewTest(TestCase):
             {
                 "objectID": project.terminology_dict.first().id,
                 "objectType": JSONRenderer()
-                .render("customterm")
+                .render("objectset")
                 .decode("utf-8"),
             },
         )

@@ -61,6 +61,13 @@ export const gridMenuItemAdded = (response_data) => {
     }
 }
 
+export const toggleObjectSet = (id) => {
+    return {
+        type: "objectset/toggleObjectSet",
+        payload:{id:id}
+    }
+}
+
 export const replaceStoreData = (data_package) =>{
     return {
         type: 'replaceStoreData',
@@ -1227,6 +1234,16 @@ export function outcomeReducer(state=[],action){
                 }
             }
             return state;
+        case 'outcome/changeFieldMany':
+        case 'outcome_base/changeFieldMany':
+            if(action.payload.changeFieldID==changeFieldID)return state;
+            var new_state = state.slice();
+            for(var i=0;i<state.length;i++){
+                if(action.payload.ids.indexOf(state[i].id)>=0){
+                    new_state[i] = {...state[i],...action.payload.json};
+                }
+            }
+            return new_state;
         case 'outcomehorizontallink/updateDegree':
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomehorizontallink==-1)return state;
@@ -1607,6 +1624,20 @@ export function saltiseStrategyReducer(state=[],action){
             return state;
     }
 }
+export function objectSetReducer(state=[],action){
+    switch(action.type){
+        case 'objectset/toggleObjectSet':
+            for(var i=0;i<state.length;i++){ 
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],hidden:(!new_state[i].hidden)};
+                    return new_state;
+                }
+            }
+        default:
+            return state;
+    }
+}
 
 export function gridMenuReducer(state={},action){
     switch(action.type){
@@ -1674,6 +1705,7 @@ export const rootWorkflowReducer = Redux.combineReducers({
     child_workflow:childWorkflowReducer,
     strategy:strategyReducer,
     saltise_strategy:saltiseStrategyReducer,
+    objectset:objectSetReducer,
 });
 
 export const rootOutcomeReducer = Redux.combineReducers({

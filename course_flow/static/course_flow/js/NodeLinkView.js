@@ -35,6 +35,7 @@ class NodeLinkView extends ComponentJSON{
             style.stroke=data.lock.user_colour;
             style.opacity=1;
         }
+        if(this.source_node.css("display")=="none"||this.target_node.css("display")=="none")style["display"]="none";
         
         var source_dims = {width:this.source_node.outerWidth(),height:this.source_node.outerHeight()};
         var target_dims = {width:this.target_node.outerWidth(),height:this.target_node.outerHeight()};

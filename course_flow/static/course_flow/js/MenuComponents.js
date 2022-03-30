@@ -4,9 +4,10 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology, getExport} from "./PostFunctions";
 import {gridMenuItemAdded} from "./Reducers";
-import {custom_text_base,Loader} from "./Constants";
+import {object_sets_types,Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
 import {ImportMenu} from "./ImportMenu";
+import {ExportMenu} from "./ExportMenu";
 import {WorkflowTitle} from "./ComponentJSON";
 
 export class MessageBox extends React.Component{
@@ -23,6 +24,9 @@ export class MessageBox extends React.Component{
         );
         if(this.props.message_type=="import")menu=(
             <ImportMenu data={this.props.message_data} actionFunction={this.props.actionFunction}/>
+        );
+        if(this.props.message_type=="export")menu=(
+            <ExportMenu data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
         return(
             <div class="screen-barrier" onClick={(evt)=>evt.stopPropagation()}>
@@ -576,45 +580,58 @@ class ProjectMenuUnconnected extends React.Component{
     componentDidUpdate(){
     }
 
-                     
     getExportButton(){
-        let exports=[];
-        this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
-        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to .csv"));
-        this.pushExport(exports,"frameworks_excel",gettext("Course Framework to .xls"));
-        this.pushExport(exports,"matrix_excel",gettext("Program Matrix to .xls"));
-        this.pushExport(exports,"matrix_csv",gettext("Program Matrix to .csv"));
-        
-        
         let export_button = (
-            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("activate")}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
-                <div class="create-dropdown" ref={this.exportDropDown}>
-                    {exports}
-                </div>
+            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>renderMessageBox(this.state,"export",closeMessageBox)}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
             </div>
             
-        )
-        
+        );
         return (
             reactDom.createPortal(
                 export_button,
                 $("#floatbar")[0]
             )
-        )
+        );
     }
                      
-    pushExport(exports,export_type,text){
-        exports.push(
-            <a class="hover-shade" onClick={this.clickExport.bind(this,export_type)}>
-                {text}
-            </a>
-        )
-    }
-                     
-    clickExport(export_type,evt){
-        evt.preventDefault();
-        getExport(this.props.project.id,"project",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
-    }
+//    getExportButton(){
+//        let exports=[];
+//        this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
+//        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to .csv"));
+//        this.pushExport(exports,"frameworks_excel",gettext("Course Framework to .xls"));
+//        this.pushExport(exports,"matrix_excel",gettext("Program Matrix to .xls"));
+//        this.pushExport(exports,"matrix_csv",gettext("Program Matrix to .csv"));
+//        
+//        
+//        let export_button = (
+//            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("activate")}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
+//                <div class="create-dropdown" ref={this.exportDropDown}>
+//                    {exports}
+//                </div>
+//            </div>
+//            
+//        )
+//        
+//        return (
+//            reactDom.createPortal(
+//                export_button,
+//                $("#floatbar")[0]
+//            )
+//        )
+//    }
+//                     
+//    pushExport(exports,export_type,text){
+//        exports.push(
+//            <a class="hover-shade" onClick={this.clickExport.bind(this,export_type)}>
+//                {text}
+//            </a>
+//        )
+//    }
+//                     
+//    clickExport(export_type,evt){
+//        evt.preventDefault();
+//        getExport(this.props.project.id,"project",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
+//    }
 }
 export const ProjectMenu = connect(
     state=>({data_package:state}),
@@ -625,7 +642,8 @@ export const ProjectMenu = connect(
 export class ProjectEditMenu extends React.Component{
     constructor(props){
         super(props);
-        this.state={...props.data,selected_term:"none"};
+        this.state={...props.data,selected_set:"none"};
+        this.object_set_updates={};
     }
     
     render(){
@@ -642,16 +660,18 @@ export class ProjectEditMenu extends React.Component{
             );
         }
         
-        let custom_text = custom_text_base();
-        
-        let dict_options = Object.keys(custom_text).filter(key=>!data.terminology_dict[key]).map(key=>
-            <option value={key}>{custom_text[key].singular}</option>                                       
+        let object_sets=object_sets_types();
+        let set_options = Object.keys(object_sets).map(key=>
+            <option value={key}>{object_sets[key]}</option>
         );
-        let selected_term;
-        if(this.state.selected_term)selected_term=custom_text[this.state.selected_term];
-        let dict_added = data.terminology_dict.map(item=>
+        
+        let selected_set;
+        if(this.state.selected_set)selected_set=object_sets[this.state.selected_set];
+        console.log(data);
+        let sets_added = data.object_sets.map(item=>
             <div class="nomenclature-row">
-                <div>{(custom_text[item.term] && custom_text[item.term].singular)+": "+item.translation+"/"+item.translation_plural}</div>
+                <div>{object_sets[item.term]+": "}</div>
+                <input value={item.title} onChange={this.termChanged.bind(this,item.id)}/>
                 <div class="window-close-button" onClick={this.deleteTerm.bind(this,item.id)}>
                     <img src={iconpath+"close.svg"}/>
                 </div>
@@ -698,16 +718,15 @@ export class ProjectEditMenu extends React.Component{
                     <label for="published">{gettext("Is Published (visible to all users)")}</label>
                 </div>
                 <div>
-                    <h4>{gettext("Custom Nomenclature")+":"}</h4>
-                    {dict_added}
+                    <h4>{gettext("View sets")+":"}</h4>
+                    {sets_added}
                     <div class="nomenclature-row">
-                        <select id="nomenclature-select" value={this.state.selected_term} onChange={this.inputChanged.bind(this,"selected_term")}>
-                            <option value="none">{gettext("Select a term")}</option>
-                            {dict_options}
+                        <select id="nomenclature-select" value={this.state.selected_set} onChange={this.inputChanged.bind(this,"selected_set")}>
+                            <option value="none">{gettext("Select a type")}</option>
+                            {set_options}
                         </select>
-                        <input placeholder={gettext("custom value")} type="text" id="term-singular" maxlength="50" value={data.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_term==null || selected_term.singular==null)}/>
-                        <input  placeholder={gettext("pluralization")} type="text" id="term-plural" maxlength="50" value={data.termplural} onChange={this.inputChanged.bind(this,"termplural")} disabled={(selected_term==null || selected_term.plural==null)}/>
-                        <button onClick={this.addTerm.bind(this)} disabled={this.addTermDisabled(selected_term)}>
+                        <input placeholder={gettext("Set Name")} type="text" id="term-singular" maxlength="50" value={this.state.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_set==null)}/>
+                        <button onClick={this.addTerm.bind(this)} disabled={this.addTermDisabled(selected_set)}>
                             {gettext("Add")}
                         </button>
                     </div>
@@ -720,12 +739,12 @@ export class ProjectEditMenu extends React.Component{
     }
     
     deleteTerm(id){
-        let new_state_dict=this.state.terminology_dict.slice()
+        let new_state_dict=this.state.object_sets.slice()
         for(let i=0;i<new_state_dict.length;i++){
             if(new_state_dict[i].id==id){
                 deleteSelf(id,"customterm");
                 new_state_dict.splice(i,1);
-                this.setState({terminology_dict:new_state_dict});
+                this.setState({object_sets:new_state_dict});
                 break;
             }
         }
@@ -733,17 +752,32 @@ export class ProjectEditMenu extends React.Component{
     
     addTerm(){
         let term = $("#nomenclature-select")[0].value;
-        let translation_singular = $("#term-singular")[0].value;
-        let translation_plural = $("#term-plural")[0].value
-        addTerminology(this.state.id,term,translation_singular,translation_plural,response_data=>{
-            this.setState({terminology_dict:response_data.new_dict,selected_term:"none",termsingular:"",termplural:""})
+        let title = $("#term-singular")[0].value;
+        addTerminology(this.state.id,term,title,"",response_data=>{
+            this.setState({object_sets:response_data.new_dict,selected_set:"none",termsingular:""})
         });
     }
+
+    termChanged(id,evt){
+        let new_sets = this.state.object_sets.slice()
+        for(var i=0;i<new_sets.length;i++){
+            if(new_sets[i].id==id){
+                new_sets[i]={...new_sets[i],title:evt.target.value};
+                this.object_set_updates[id]={title:evt.target.value};
+            }
+        }
+        this.setState({object_sets:new_sets});
+    }
+
+    updateTerms(){
+        for(var object_set_id in this.object_set_updates){
+            updateValueInstant(object_set_id,"objectset",this.object_set_updates[object_set_id]);
+        }
+    }
     
-    addTermDisabled(selected_term){
-        if(!selected_term)return true;
+    addTermDisabled(selected_set){
+        if(!selected_set)return true;
         if(!this.state.termsingular)return true;
-        if(selected_term.plural&&!this.state.termplural)return true;
         return false;
     }
 
@@ -773,7 +807,7 @@ export class ProjectEditMenu extends React.Component{
     inputChanged(field,evt){
         var new_state={}
         new_state[field]=evt.target.value;
-        if(field=="selected_term"){new_state["termsingular"]="";new_state["termplural"]="";}
+        if(field=="selected_set"){new_state["termsingular"]="";}
         this.setState(new_state);
     }
 
@@ -796,6 +830,7 @@ export class ProjectEditMenu extends React.Component{
         actions.push(
             <button id="save-changes" onClick={()=>{
                 updateValueInstant(this.state.id,"project",{title:this.state.title,description:this.state.description,published:this.state.published,disciplines:this.state.disciplines});
+                this.updateTerms();
                 this.props.actionFunction(this.state);
                 closeMessageBox();
             }}>

@@ -5,7 +5,7 @@ import {ComponentJSON, OutcomeTitle} from "./ComponentJSON";
 import OutcomeWorkflowView from "./OutcomeWorkflowView";
 import {OutcomeBarOutcomeView, OutcomeBarOutcomeViewUnconnected} from "./OutcomeView";
 import OutcomeView from "./OutcomeView";
-import {getParentWorkflowByID,getOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID} from "./FindState";
+import {getParentWorkflowByID,getOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getSortedOutcomesFromOutcomeWorkflowSet,getSortedOutcomeNodesFromNodes} from "./FindState";
 import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents';
 import {newOutcome} from "./PostFunctions";
 import * as Constants from "./Constants";
@@ -21,19 +21,21 @@ class OutcomeEditView extends ComponentJSON{
     render(){
         let data = this.props.data;
         var selector = this;
-        
-        let outcomes = data.outcomeworkflow_set.map(outcomeworkflow=>
-            <OutcomeWorkflowView objectID={outcomeworkflow} parentID={data.id} renderer={this.props.renderer} show_horizontal={true}/>
+        let outcomes = data.map(category=>
+            <div>
+                <h4 class="drag-and-drop">{category.objectset.title+":"}</h4>
+                {category.outcomes.map(outcome=>
+                    <OutcomeView key={outcome.id} objectID={outcome.id} parentID={this.props.workflow.id} renderer={this.props.renderer} show_horizontal={true}/>
+                )}
+            </div>
         );
         if(outcomes.length==0)outcomes=(
             <div class="emptytext">{gettext("Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.")}</div>
         )
-        let titlestr = Constants.capWords(gettext(data.type+" outcomes"));
         
         return(
             <div class="workflow-details">
                 <div class="outcome-edit">
-                    <h4>{titlestr}</h4>
                     {outcomes}
                     <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNew.bind(this)}>
                         <img class="create-button" src={iconpath+"add_new_white.svg"}/>
@@ -47,15 +49,16 @@ class OutcomeEditView extends ComponentJSON{
     
     
     addNew(){
-        newOutcome(this.props.data.id);
+        newOutcome(this.props.workflow.id);
     }
     
 }
-const mapWorkflowStateToProps = state=>({
-    data:state.workflow
+const mapEditViewStateToProps = state=>({
+    data:getSortedOutcomesFromOutcomeWorkflowSet(state,state.workflow.outcomeworkflow_set),
+    workflow:state.workflow
 })
 export default connect(
-    mapWorkflowStateToProps,
+    mapEditViewStateToProps,
     null
 )(OutcomeEditView)
 
@@ -191,19 +194,21 @@ export const ParentOutcomeOutcomeView = connect(
 class OutcomeBarUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
-        var outcomebaroutcomes = data.map((outcome)=>
-            <OutcomeBarOutcomeView key={outcome.outcome} objectID={outcome.outcome}/>
+        var outcomebaroutcomes = data.map((category)=>
+            <div>
+                <h4 class="drag-and-drop">{category.objectset.title+":"}</h4>
+                {category.outcomes.map(outcome=>
+                    <OutcomeBarOutcomeView key={outcome.id} objectID={outcome.id}/>
+                )}
+            </div>
         );
         
         if(outcomebaroutcomes.length==0){
             outcomebaroutcomes=gettext("Add outcomes to this workflow in by clicking the button below.");
         }
-        
         let edittext=Constants.capWords(gettext("Edit")+" "+gettext(this.props.workflow_type+" outcomes"));
-        let titlestr=Constants.capWords(gettext(this.props.workflow_type+" outcomes"));
         return reactDom.createPortal(
             <div id="outcome-bar-workflow" class="right-panel-inner">
-                <h4 class="drag-and-drop">{titlestr}:</h4>
                 <div class="outcome-bar-outcome-block">
                     {outcomebaroutcomes}
                 </div>
@@ -220,7 +225,7 @@ class OutcomeBarUnconnected extends ComponentJSON{
     
 }
 const mapOutcomeBarStateToProps = state =>(
-    {data:state.outcomeworkflow.filter(outcomeworkflow=>state.workflow.outcomeworkflow_set.indexOf(outcomeworkflow.id)>=0),workflow_type:state.workflow.type}
+    {data:getSortedOutcomesFromOutcomeWorkflowSet(state,state.workflow.outcomeworkflow_set),workflow_type:state.workflow.type}
 )
 export const OutcomeBar = connect(
     mapOutcomeBarStateToProps,
@@ -231,19 +236,25 @@ export const OutcomeBar = connect(
 class ParentOutcomeBarUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
-        var outcomebaroutcomes = data.map((node)=>node.outcomenode_unique_set.map(outcomenode=>
-            <ParentOutcomeNodeView key={outcomenode} objectID={outcomenode}/>
-        ));
+        var outcomebaroutcomes = data.map((category)=>
+            <div>
+                <h4 class="drag-and-drop">{category.objectset.title+":"}</h4>
+                {category.outcomes.map(outcome=>
+                    <div class="parent-outcome-node">
+                        {Constants.getCompletionImg(outcome.degree,1)}
+                        <ParentOutcomeView key={outcome.id} objectID={outcome.id} renderer={this.props.renderer}/>
+                    </div>
+                )}
+            </div>
+        );
+        
         
         if(outcomebaroutcomes.length==0){
             outcomebaroutcomes=gettext("Here you can find outcomes from the workflows that contain a node linked to this workflow. This allows you to create relationships between the outcomes at different levels (ex. program to course), called 'alignment'. Link this workflow to a node in another to do so.");
         }
         
-        let titlestr=gettext("Assigned")+" "+Constants.capWords(gettext(this.props.workflow_type+" outcomes"));
-        
         return reactDom.createPortal(
             <div id="outcome-bar-workflow" class="right-panel-inner">
-                <h4 class="drag-and-drop">{titlestr}</h4>
                 <div class="outcome-bar-outcome-block">
                     {outcomebaroutcomes}
                 </div>
@@ -253,7 +264,7 @@ class ParentOutcomeBarUnconnected extends ComponentJSON{
     
 }
 const mapParentOutcomeBarStateToProps = state =>{
-    return {data:state.parent_node,workflow_type:Constants.parent_workflow_type[state.workflow.type]}
+    return {data:getSortedOutcomeNodesFromNodes(state,state.parent_node),workflow:state.workflow}
 }
 export const ParentOutcomeBar = connect(
     mapParentOutcomeBarStateToProps,

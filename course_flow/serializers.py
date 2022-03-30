@@ -17,6 +17,7 @@ from .models import (
     Node,
     NodeLink,
     NodeWeek,
+    ObjectSet,
     Outcome,
     OutcomeHorizontalLink,
     OutcomeNode,
@@ -214,6 +215,7 @@ class NodeSerializerShallow(
             "linked_workflow_data",
             "is_dropped",
             "comments",
+            "sets",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -316,6 +318,21 @@ class NodeSerializerShallow(
         )
         instance.time_units = validated_data.get(
             "time_units", instance.time_units
+        )
+        instance.ponderation_theory = validated_data.get(
+            "ponderation_theory", instance.ponderation_theory
+        )
+        instance.ponderation_practical = validated_data.get(
+            "ponderation_practical", instance.ponderation_practical
+        )
+        instance.ponderation_individual = validated_data.get(
+            "ponderation_individual", instance.ponderation_individual
+        )
+        instance.time_general_hours = validated_data.get(
+            "time_general_hours", instance.time_general_hours
+        )
+        instance.time_specific_hours = validated_data.get(
+            "time_specific_hours", instance.time_specific_hours
         )
         instance.is_dropped = validated_data.get(
             "is_dropped", instance.is_dropped
@@ -515,14 +532,14 @@ class ProjectSerializerShallow(
             "workflowproject_set",
             "disciplines",
             "type",
-            "terminology_dict",
+            "object_sets",
             "favourite",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     workflowproject_set = serializers.SerializerMethodField()
-    terminology_dict = serializers.SerializerMethodField()
+    object_sets = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
@@ -541,15 +558,15 @@ class ProjectSerializerShallow(
         else:
             return False
 
-    def get_terminology_dict(self, instance):
+    def get_object_sets(self, instance):
         return [
             {
-                "id": term.id,
-                "term": term.term,
-                "translation": term.translation,
-                "translation_plural": term.translation_plural,
+                "id": object_set.id,
+                "term": object_set.term,
+                "title": object_set.title,
+                "translation_plural": object_set.translation_plural,
             }
-            for term in instance.terminology_dict.all()
+            for object_set in instance.object_sets.all()
         ]
 
     def get_workflowproject_set(self, instance):
@@ -594,6 +611,7 @@ class OutcomeSerializerShallow(
             "depth",
             "type",
             "comments",
+            "sets",
         ]
 
         read_only_fields = [
@@ -604,6 +622,7 @@ class OutcomeSerializerShallow(
             "depth",
             "type",
             "comments",
+            "sets",
         ]
 
     child_outcome_links = serializers.SerializerMethodField()
@@ -1013,6 +1032,25 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
 
         return activity
 
+class ObjectSetSerializerShallow(
+    serializers.ModelSerializer,
+    TitleSerializerMixin,
+):
+    class Meta:
+        model = ObjectSet
+        fields = [
+            "id",
+            "title",
+            "translation_plural",
+            "term"
+        ]
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.translation_plural = validated_data.get("translation_plural", instance.translation_plural)
+        instance.save()
+        return instance
+
 
 class InfoBoxSerializer(
     serializers.Serializer, TitleSerializerMixin, DescriptionSerializerMixin
@@ -1293,4 +1331,5 @@ serializer_lookups_shallow = {
     "outcome": OutcomeSerializerShallow,
     "outcomeoutcome": OutcomeOutcomeSerializerShallow,
     "outcomeworkflow": OutcomeWorkflowSerializerShallow,
+    "objectset":ObjectSetSerializerShallow,
 }

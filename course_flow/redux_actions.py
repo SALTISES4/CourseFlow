@@ -184,6 +184,17 @@ def changeField(id, objectType, json, changeFieldID=0):
         },
     }
 
+def changeFieldMany(ids, objectType, json, changeFieldID=0):
+    return {
+        "type": objectType + "/changeFieldMany",
+        "payload": {
+            "ids": ids,
+            "objectType": objectType,
+            "json": json,
+            "changeFieldID": changeFieldID,
+        },
+    }
+
 
 def updateOutcomenodeDegreeAction(response_data):
     return {"type": "outcomenode/updateDegree", "payload": response_data}

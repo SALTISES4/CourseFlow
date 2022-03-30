@@ -27,9 +27,25 @@ class CompetencyMatrixView extends ComponentJSON{
                 </div>
             );
         }else{
-            let outcomes = this.props.outcomes_tree.map((outcome)=>
-                <MatrixOutcomeView renderer={this.props.renderer} tree_data={outcome} objectID={outcome.id} dropped_list={this.state.dropped_list}/>
-            );
+            console.log("finding outcomes");
+            let outcomes = this.props.outcomes_tree.map(category=>{
+                let category_outcomes = category.outcomes.map((outcome)=>
+                    <MatrixOutcomeView renderer={this.props.renderer} tree_data={outcome} objectID={outcome.id} dropped_list={this.state.dropped_list}/>
+                );
+                
+                if(this.props.object_sets.length>0)return [
+                    <div class="table-cell nodewrapper">
+                        <div class="outcome">
+                            <h4>{category.title}</h4>
+                        </div>
+                    </div>
+                ,
+                ...category_outcomes];
+                else return category_outcomes;
+            });
+            
+            console.log("rendering competency matrix view");
+            console.log(outcomes);
             
             let weekworkflows = data.weekworkflow_set.map((weekworkflow,i)=>
                 <MatrixWeekWorkflowView renderer={this.props.renderer} objectID={weekworkflow} rank={i} outcomes_tree={this.props.outcomes_tree} dropped_list={this.state.dropped_list}/>                                         
@@ -42,11 +58,11 @@ class CompetencyMatrixView extends ComponentJSON{
                             <div class="outcome-head"></div>
                             <div class="table-cell nodewrapper blank"><div class="outcome"></div></div>
                             <div class="outcome-cells">{outcomes}</div>
-                            <div class="table-cell nodewrapper blank"><div class="outcome"></div></div>
+                            <div class="table-cell nodewrapper"><div class="outcome"><h4>{gettext("Hours")}</h4></div></div>
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("General Education")}</div></div>
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("Specific Education")}</div></div>
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("Total Hours")}</div></div>
-                            <div class="table-cell nodewrapper blank"><div class="outcome"></div></div>
+                            <div class="table-cell nodewrapper"><div class="outcome"><h4>{gettext("Ponderation")}</h4></div></div>
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("Theory")}</div></div>
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("Practical")}</div></div>
                             <div class="table-cell nodewrapper"><div class="outcome">{gettext("Individual Work")}</div></div>
@@ -221,8 +237,14 @@ class CompetencyMatrixView extends ComponentJSON{
 const mapStateToProps = (state,own_props)=>{
     let outcomes_tree = Constants.createOutcomeTree(state);
     let outcomes_ordered = [];
-    Constants.flattenOutcomeTree(outcomes_tree,outcomes_ordered);
-    return {workflow:state.workflow,outcomes_tree:outcomes_tree,outcomes_ordered:outcomes_ordered};
+    console.log("outcomes_tree");
+    console.log(outcomes_tree);
+    for(let i=0;i<outcomes_tree.length;i++){
+        if(state.objectset.length>0)outcomes_ordered.push(null);
+        Constants.flattenOutcomeTree(outcomes_tree[i].outcomes,outcomes_ordered);
+    }
+    console.log(outcomes_ordered);
+    return {workflow:state.workflow,outcomes_tree:outcomes_tree,outcomes_ordered:outcomes_ordered,object_sets:state.objectset};
 }
 export default connect(
     mapStateToProps,
@@ -315,13 +337,20 @@ class MatrixWeekViewUnconnected extends ComponentJSON{
         
         let default_text = data.week_type_display+" "+(this.props.rank+1);
         
-        let nodeweeks = data.nodeweek_set.map(nodeweek=>
-            <MatrixNodeWeekView outcomes_tree={this.props.outcomes_tree} renderer={this.props.renderer} objectID={nodeweek} dropped_list={this.props.dropped_list}/>
+        let nodes = this.props.nodes.map(node=>
+            <MatrixNodeView outcomes_tree={this.props.outcomes_tree} renderer={this.props.renderer} objectID={node.id} dropped_list={this.props.dropped_list}/>
         )
         
-        let outcomecells = this.props.outcomes_tree.map(outcome=>
-            <MatrixWeekOutcomeBlockView renderer={this.props.renderer} data={outcome} dropped_list={this.props.dropped_list}/>
-        )
+        let outcomecells = this.props.outcomes_tree.map(category=>{
+            let categories = category.outcomes.map(outcome=>
+                <MatrixWeekOutcomeBlockView renderer={this.props.renderer} data={outcome} dropped_list={this.props.dropped_list}/>
+            )
+            if(this.props.object_sets.length>0)return [
+                <div class="table-cell"></div>,
+                ...categories
+            ];
+            else return categories;
+        });
         
         return (
             <div class="week">
@@ -342,7 +371,7 @@ class MatrixWeekViewUnconnected extends ComponentJSON{
                     <div class="table-cell">{this.props.total_time}</div>
                     <div class="table-cell">{this.props.total_required}</div>
                 </div>
-                {nodeweeks}
+                {nodes}
             </div>
         )
     }
@@ -351,7 +380,7 @@ class MatrixWeekViewUnconnected extends ComponentJSON{
 const mapWeekStateToProps = (state,own_props)=>{
     let data = getWeekByID(state,own_props.objectID).data;
     let node_weeks = Constants.filterThenSortByID(state.nodeweek,data.nodeweek_set);
-    let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node));
+    let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Constants.checkSetHidden(node,state.objectset));
     let linked_wf_data = nodes_data.map(node=>{
         if(node.represents_workflow)return {...node,...node.linked_workflow_data};
         return node
@@ -384,7 +413,7 @@ const mapWeekStateToProps = (state,own_props)=>{
     
     
     
-    return {data:data,total_theory:total_theory,total_practical:total_practical,total_individual:total_individual,total_required:total_required,total_time:total_time,general_education:general_education,specific_education:specific_education};
+    return {data:data,total_theory:total_theory,total_practical:total_practical,total_individual:total_individual,total_required:total_required,total_time:total_time,general_education:general_education,specific_education:specific_education,object_sets:state.objectset,nodes:nodes_data};
 }
 export const MatrixWeekView = connect(
     mapWeekStateToProps,
@@ -417,28 +446,28 @@ class MatrixWeekOutcomeBlockView extends React.Component{
     }
 }
 
-class MatrixNodeWeekViewUnconnected extends ComponentJSON{
-    constructor(props){
-        super(props);
-        this.objectType="nodeweek";
-    }
-    
-    render(){
-        let data = this.props.data;
-        
-        return (
-            <MatrixNodeView outcomes_tree={this.props.outcomes_tree} renderer={this.props.renderer} objectID={data.node} dropped_list={this.props.dropped_list}/>
-        )
-    }
-    
-}
-const mapNodeWeekStateToProps = (state,own_props)=>(
-    getNodeWeekByID(state,own_props.objectID)
-)
-export const MatrixNodeWeekView = connect(
-    mapNodeWeekStateToProps,
-    null
-)(MatrixNodeWeekViewUnconnected)
+//class MatrixNodeWeekViewUnconnected extends ComponentJSON{
+//    constructor(props){
+//        super(props);
+//        this.objectType="nodeweek";
+//    }
+//    
+//    render(){
+//        let data = this.props.data;
+//        
+//        return (
+//            <MatrixNodeView outcomes_tree={this.props.outcomes_tree} renderer={this.props.renderer} objectID={data.node} dropped_list={this.props.dropped_list}/>
+//        )
+//    }
+//    
+//}
+//const mapNodeWeekStateToProps = (state,own_props)=>(
+//    getNodeWeekByID(state,own_props.objectID)
+//)
+//export const MatrixNodeWeekView = connect(
+//    mapNodeWeekStateToProps,
+//    null
+//)(MatrixNodeWeekViewUnconnected)
 
 class MatrixNodeViewUnconnected extends ComponentJSON{
     constructor(props){
@@ -461,9 +490,20 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
-        let outcomenodes = this.props.outcomes_tree.map(outcome=>
-            <MatrixOutcomeBlockView renderer={this.props.renderer} nodeID={data.id} data={outcome} outcomes_type={this.props.outcomes_type} dropped_list={this.props.dropped_list}/>
-        )
+        console.log("In a matrix node view");
+        console.log("Here's the outcomes tree");
+        console.log(this.props.outcomes_tree);
+        
+        let outcomenodes = this.props.outcomes_tree.map(category=>{
+            let categories = category.outcomes.map(outcome=>
+                <MatrixOutcomeBlockView renderer={this.props.renderer} nodeID={data.id} data={outcome} outcomes_type={this.props.outcomes_type} dropped_list={this.props.dropped_list}/>
+            )
+            if(this.props.object_sets.length>0)return [
+                <div class="table-cell"></div>,
+                ...categories
+            ];
+            else return categories;
+        })
         
         return (
             <div class="node-row">
@@ -509,7 +549,8 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
 }
 const mapNodeStateToProps = (state,own_props)=>({
     data:getNodeByID(state,own_props.objectID).data,
-    outcomes_type:state.workflow.outcomes_type
+    outcomes_type:state.workflow.outcomes_type,
+    object_sets:state.objectset,
 })
 export const MatrixNodeView = connect(
     mapNodeStateToProps,

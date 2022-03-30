@@ -215,6 +215,11 @@ def course_flow_patterns():
             views.add_terminology,
             name="add-terminology",
         ),
+        url(
+            r"^workflow/updateobjectset/$",
+            views.update_object_set,
+            name="update-object-set",
+        ),
         url(r"^comments/add/$", views.add_comment, name="add-comment",),
         url(
             r"^comments/remove/$", views.remove_comment, name="remove-comment",

@@ -71,37 +71,39 @@ class GridWeekViewUnconnected extends ComponentJSON{
 const mapWeekStateToProps = (state,own_props)=>{
     let data = own_props.data;
     let node_weeks = Constants.filterThenSortByID(state.nodeweek,data.nodeweek_set);
-    let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node));
+    let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Constants.checkSetHidden(node,state.objectset));
     
-    
-    let linked_wf_data = nodes_data.map(node=>node.linked_workflow_data);
-    let general_education = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let override_data = nodes_data.map(node=>{
+        if(node.represents_workflow)return {...node,...node.linked_workflow_data};
+        else return node;
+    })
+    let general_education = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.time_general_hours)return previousValue+currentValue.time_general_hours;
         return previousValue;
     },0);
-    let specific_education = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let specific_education = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.time_specific_hours)return previousValue+currentValue.time_specific_hours;
         return previousValue;
     },0);
-    let total_theory = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let total_theory = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.ponderation_theory)return previousValue+currentValue.ponderation_theory;
         return previousValue;
     },0);
-    let total_practical = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let total_practical = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.ponderation_practical)return previousValue+currentValue.ponderation_practical;
         return previousValue;
     },0);
-    let total_individual = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let total_individual = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.ponderation_individual)return previousValue+currentValue.ponderation_individual;
         return previousValue;
     },0);
     let total_time = total_theory+total_practical+total_individual;
-    let total_required = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let total_required = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.time_required)return previousValue+parseInt(currentValue.time_required);
         return previousValue;
     },0);
     
-    return {nodes:nodes_data,general_education:general_education,specific_education:specific_education,total_theory:total_theory,total_practical:total_practical,total_individual:total_individual,total_time:total_time,total_required:total_required};
+    return {nodes:override_data,general_education:general_education,specific_education:specific_education,total_theory:total_theory,total_practical:total_practical,total_individual:total_individual,total_time:total_time,total_required:total_required};
 }
 export const GridWeekView = connect(
     mapWeekStateToProps,

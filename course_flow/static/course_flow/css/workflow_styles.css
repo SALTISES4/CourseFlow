@@ -1074,6 +1074,17 @@ ol.children-block{
     margin-top:140px;
 }
 
+.outcome-row.outcome-category{
+    border-bottom:2px solid lightgrey;
+    border-top:2px solid lightgrey;
+}
+
+.outcome-row.outcome-category h4{
+    margin-left:5px;
+    margin-top:0px;
+    margin-bottom:0px;
+}
+
 .outcome-table .table-cell.nodewrapper{
     position:relative;
 }

@@ -3,7 +3,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment} from "./PostFunctions.js"
+import {newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, updateObjectSet} from "./PostFunctions.js"
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -334,16 +334,39 @@ export class ComponentJSON extends React.Component{
     addEditable(data,no_delete=false){
         if(read_only)return null;
         if(this.state.selected){
+            console.log("SELECTED OBJ");
+            console.log(data);
             var type=Constants.object_dictionary[this.objectType];
             let title_length="50";
             if(type=="outcome")title_length="500";
             var props = this.props;
             let override = false;
-            console.log("SELECTED NODE:");
-            console.log(data);
             let title=data.title || "";
             let description=data.description || "";
             if(data.represents_workflow)override=true;
+            
+            let sets;
+            if(this.props.object_sets && ["node","outcome"].indexOf(type)>=0){
+                let term_type=data.type;
+                if(type=="node")term_type=data.node_type_display.toLowerCase();
+                
+                let allowed_sets = this.props.object_sets.filter(set=>set.term == workflow_type+" "+type);
+                if(allowed_sets.length>=0){
+                    let disable_sets=false;
+                    if(data.depth)disable_sets=true;
+                    let set_options = allowed_sets.map(set=>
+                        <div>
+                            <input disabled={disable_sets} type="checkbox" name={set.id} checked={data.sets.indexOf(set.id)>=0} onChange={this.setChanged.bind(this,set.id)}/>
+                            <label for={set.id}>{set.title}</label>   
+                        </div>
+                    );
+                    sets = (
+                        [<h4>{gettext("Sets")}:</h4>,
+                        set_options]
+                    );
+                }
+            }
+            
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
                     <h3>{gettext("Edit ")+type+":"}</h3>
@@ -426,9 +449,16 @@ export class ComponentJSON extends React.Component{
                             <h4>{gettext("Linked Workflow")}:</h4>
                             <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
                             <button  id="linked-workflow-editor" onClick={()=>{
-                                getLinkedWorkflowMenu(data,(response_data)=>{
-                                    console.log("linked a workflow");
-                                });
+                                props.renderer.tiny_loader.startLoad();
+                                getLinkedWorkflowMenu(
+                                    data,
+                                    (response_data)=>{
+                                        console.log("linked a workflow");
+                                    },
+                                    ()=>{
+                                        props.renderer.tiny_loader.endLoad();
+                                    }
+                                );
                             }}>
                                 {gettext("Change")}
                             </button>
@@ -486,7 +516,7 @@ export class ComponentJSON extends React.Component{
                             </button>
                         </div>
                     }
-
+                    {sets}
                     {(!no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && 
                         [<h4>{gettext("Delete")}:</h4>,
                         this.addDeleteSelf(data)]
@@ -498,10 +528,24 @@ export class ComponentJSON extends React.Component{
     
     inputChanged(field,evt){
         let value=evt.target.value;
-        if(!value)value="";
+        if(evt.target.type=="number")value=parseInt(value)||0;
+        else if(!value)value="";
         if(field=="colour")value=parseInt(value.replace("#",""),16);
         if(evt.target.type=="number"&&value=="")value=0;
         this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,value);
+    }
+
+    setChanged(set_id,evt){
+        this.props.renderer.tiny_loader.startLoad();
+        updateObjectSet(
+            this.props.data.id,
+            Constants.object_dictionary[this.objectType],
+            set_id,
+            evt.target.checked,
+            ()=>{
+                this.props.renderer.tiny_loader.endLoad();
+            }
+        )
     }
 
     checkboxChanged(field,evt){
@@ -663,11 +707,13 @@ export class NodePorts extends React.Component{
                 cy={Constants.node_ports[port_type][port][1]*node_dimensions.height}/>
             )
         }
+        var style={};
+        if($(this.props.node_div.current).css("display")=="none")style["display"]="none";
         var transform;
         if(this.state.node_offset)transform = "translate("+this.state.node_offset.left+","+this.state.node_offset.top+")"
         else transform = "translate(0,0)";
         return(
-            <g class={'node-ports port-'+this.props.nodeID} stroke="black" stroke-width="2" fill="white" transform={transform}>
+            <g style={style} class={'node-ports port-'+this.props.nodeID} stroke="black" stroke-width="2" fill="white" transform={transform}>
                 {ports}
             </g>
         )
@@ -700,6 +746,7 @@ export class NodePorts extends React.Component{
     }
     
     updatePorts(){
+        
         if(!this.props.node_div.current)return;
         var node = $(this.props.node_div.current);
         var node_offset = Constants.getCanvasOffset(node);

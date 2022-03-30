@@ -138,8 +138,6 @@ class UserLabel extends React.Component{
     }
     
     onChange(evt){
-        console.log(evt.target.value);
-        console.log(this.props.user);
         switch(evt.target.value){
             case "none":
                 if(window.confirm("Are you sure you want to remove this user?")){

@@ -8,7 +8,7 @@ import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";
 import {NodeBarWeekWorkflow} from "./WeekWorkflowView";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
 import * as Constants from "./Constants";
-import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers";
+import {moveColumnWorkflow, moveWeekWorkflow, toggleObjectSet} from "./Reducers";
 import {OutcomeBar} from "./OutcomeEditView";
 import StrategyView from "./Strategy";
 import WorkflowOutcomeView from "./WorkflowOutcomeView";
@@ -173,6 +173,9 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     }
                     {!read_only && 
                         <RestoreBar renderer={this.props.renderer}/>
+                    }
+                    {
+                        <ViewBar renderer={this.props.renderer}/>
                     }
                 </div>
             </div>
@@ -426,6 +429,34 @@ export const WorkflowView =  connect(
     null
 )(WorkflowViewUnconnected)
 
+
+class ViewBarUnconnected extends ComponentJSON{
+     
+    render(){
+        let sets=(
+            <div class="node-bar-sort-block">
+                {this.props.object_sets.map((set)=>
+                    <div><input type="checkbox" id={"set"+set.id} value={set.id} checked={(!set.hidden)} onChange={this.toggleHidden.bind(this,set.id)}/><label for={"set"+set.id}>{set.title}</label></div>
+
+                )}
+            </div>
+        );
+        return reactDom.createPortal(
+            <div id="node-bar-workflow" class="right-panel-inner">
+                <h4>{gettext("Object Sets")+":"}</h4>
+                {sets}
+            </div>
+        ,$("#view-bar")[0]);
+    }
+    
+    toggleHidden(id){
+        this.props.dispatch(toggleObjectSet(id));
+    }
+}
+export const ViewBar =  connect(
+    (state)=>({object_sets:state.objectset}),
+    null
+)(ViewBarUnconnected)
 
 
 class NodeBarUnconnected extends ComponentJSON{
