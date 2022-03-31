@@ -26,8 +26,6 @@ class AlignmentView extends ComponentJSON{
                     {category.outcomes.map((outcome,j)=>{
                         let view_class = "hover-shade";
                         if(this.state.sort=="outcome" && i==this.state.active && j==this.state.active2)view_class+=" active";
-                        console.log("button outcome");
-                        console.log(outcome);
                         return(
                             <div id={"button-outcome-"+outcome.data.id} class={view_class} onClick={this.changeView.bind(this,i,"outcome",j)}>
                                 <OutcomeTitle data={outcome.data} rank={outcome.rank} titles={outcome.titles}/>
@@ -52,22 +50,16 @@ class AlignmentView extends ComponentJSON{
         let alignment_block;
         let alignment_reverse_block;
 
-        console.log("ACTIVE STATE:")
-        console.log(this.state.active);
         let outcome_data;
         if(this.state.sort=="outcome"){
             let found=false;
             try{
                 outcome_data = this.props.outcomes[this.state.active].outcomes[this.state.active2].data;
             }catch(err){
-                console.log("Bad index on outcomes, resetting");
                 for(var i=0;i<this.props.outcomes.length;i++){
-                    console.log("checking outcome");
-                    console.log(this.props.outcomes[i]);
                     if(this.props.outcomes[i].outcomes.length>=1)this.changeView(i,"outcome",0);
                     return null;
                 }
-                console.log("setting to none");
                 this.changeView(-1,"outcome",0);
                 return null;
             }

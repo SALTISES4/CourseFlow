@@ -485,7 +485,6 @@ class ProjectMenuUnconnected extends React.Component{
     constructor(props){
         super(props);
         this.state={...props.project,all_disciplines:[]};
-        this.exportDropDown = React.createRef();
     }
     
     render(){
@@ -667,7 +666,6 @@ export class ProjectEditMenu extends React.Component{
         
         let selected_set;
         if(this.state.selected_set)selected_set=object_sets[this.state.selected_set];
-        console.log(data);
         let sets_added = data.object_sets.map(item=>
             <div class="nomenclature-row">
                 <div>{object_sets[item.term]+": "}</div>
@@ -964,35 +962,35 @@ export class ExploreMenu extends React.Component{
 
     selectItem(id,type){
         this.setState({selected:id})
-        let loader = new renderers.TinyLoader();
-        loader.startLoad();
-        switch(type){
-            case "activity":
-            case "course":
-            case "program":
-                $.post(post_paths.get_workflow_data,{
-                    workflowPk:JSON.stringify(id),
-                }).done(function(data){
-                    if(data.action=="posted"){
-                        loader.endLoad();
-                        var workflow_renderer = new renderers.WorkflowRenderer(JSON.parse(data.data_package));
-                        workflow_renderer.render($(".explore-preview"));
-                    }
-                    else console.log("couldn't show preview");
-                });
-                break;
-            case "project":
-                $.post(post_paths.get_project_data,{
-                    projectPk:JSON.stringify(id),
-                }).done(function(data){
-                    if(data.action=="posted"){
-                        loader.endLoad();
-                        var project_renderer = new renderers.ProjectRenderer(data.data_package,JSON.parse(data.project_data));
-                        project_renderer.render($(".explore-preview"));
-                    }
-                    else console.log("couldn't show preview");
-                });
-                break;
+//        let loader = new renderers.TinyLoader();
+//        loader.startLoad();
+//        switch(type){
+//            case "activity":
+//            case "course":
+//            case "program":
+//                $.post(post_paths.get_workflow_data,{
+//                    workflowPk:JSON.stringify(id),
+//                }).done(function(data){
+//                    if(data.action=="posted"){
+//                        loader.endLoad();
+//                        var workflow_renderer = new renderers.WorkflowRenderer(JSON.parse(data.data_package));
+//                        workflow_renderer.render($(".explore-preview"));
+//                    }
+//                    else console.log("couldn't show preview");
+//                });
+//                break;
+//            case "project":
+//                $.post(post_paths.get_project_data,{
+//                    projectPk:JSON.stringify(id),
+//                }).done(function(data){
+//                    if(data.action=="posted"){
+//                        loader.endLoad();
+//                        var project_renderer = new renderers.ProjectRenderer(data.data_package,JSON.parse(data.project_data));
+//                        project_renderer.render($(".explore-preview"));
+//                    }
+//                    else console.log("couldn't show preview");
+//                });
+//                break;
 //            case "outcome":
 //                $.post(post_paths.get_outcome_data,{
 //                    outcomePk:JSON.stringify(id),
@@ -1005,10 +1003,10 @@ export class ExploreMenu extends React.Component{
 //                    else console.log("couldn't show preview");
 //                });
 //                break;
-                
-            default: 
-                return;
-        }
+//                
+//            default: 
+//                return;
+//        }
         
     }
 }

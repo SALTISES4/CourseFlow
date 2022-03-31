@@ -334,8 +334,6 @@ export class ComponentJSON extends React.Component{
     addEditable(data,no_delete=false){
         if(read_only)return null;
         if(this.state.selected){
-            console.log("SELECTED OBJ");
-            console.log(data);
             var type=Constants.object_dictionary[this.objectType];
             let title_length="50";
             if(type=="outcome")title_length="500";

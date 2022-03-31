@@ -12,43 +12,38 @@ from course_flow import export_functions, import_functions
 from course_flow import redux_actions as actions
 
 from .celery import try_async
-from .models import User
+from .models import User, ObjectSet
 from .utils import dateTimeFormatNoSpace, get_model_from_str
 
 
 @try_async
 @shared_task
 def async_send_export_email(
-    user_email, pk, object_type, task_type, email_subject, email_text
+    user_email, pk, object_type, export_type, export_format, allowed_sets, email_subject, email_text
 ):
     model_object = get_model_from_str(object_type).objects.get(pk=pk)
-    if task_type == "outcomes_excel":
-        file = export_functions.get_outcomes_excel(model_object, object_type)
-        file_type = "xlsx"
-    elif task_type == "outcomes_csv":
-        file = export_functions.get_outcomes_csv(model_object, object_type)
-        file_type = "csv"
-    elif task_type == "frameworks_excel":
-        file = export_functions.get_course_frameworks_excel(
-            model_object, object_type
+    if object_type=="project":
+        project_sets = ObjectSet.objects.filter(project=model_object)
+    else:
+        project_sets = ObjectSet.objects.filter(project=model_object.get_project())
+    allowed_sets = project_sets.filter(id__in=allowed_sets)
+    if export_type == "outcome":
+        file = export_functions.get_outcomes_export(model_object, object_type, export_format, allowed_sets)
+    elif export_type == "framework":
+        file = export_functions.get_course_frameworks_export(
+            model_object, object_type, export_format, allowed_sets
         )
-        file_type = "xlsx"
-    elif task_type == "matrix_excel":
-        file = export_functions.get_program_matrix_excel(
-            model_object, object_type
+    elif export_type == "matrix":
+        file = export_functions.get_program_matrix_export(
+            model_object, object_type, export_format, allowed_sets
         )
-        file_type = "xlsx"
-    elif task_type == "matrix_csv":
-        file = export_functions.get_program_matrix_csv(
-            model_object, object_type
-        )
-        file_type = "csv"
-    elif task_type == "nodes_excel":
-        file = export_functions.get_nodes_excel(model_object, object_type)
-        file_type = "xlsx"
-    elif task_type == "nodes_csv":
-        file = export_functions.get_nodes_csv(model_object, object_type)
-        file_type = "csv"
+    elif export_type == "node":
+        file = export_functions.get_nodes_export(model_object, object_type, export_format, allowed_sets)
+    if export_format == "excel":
+        file_ext="xlsx"
+    elif export_format == "csv":
+        file_ext="csv"
+    
     filename = (
         object_type
         + "_"
@@ -56,14 +51,14 @@ def async_send_export_email(
         + "_"
         + timezone.now().strftime(dateTimeFormatNoSpace())
         + "."
-        + file_type
+        + file_ext
     )
     email = EmailMessage(
         email_subject, email_text, settings.DEFAULT_FROM_EMAIL, [user_email],
     )
-    if file_type == "csv":
+    if export_format == "csv":
         file_data = "text/csv"
-    elif file_type == "xlsx":
+    elif export_format == "excel":
         file_data = (
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )

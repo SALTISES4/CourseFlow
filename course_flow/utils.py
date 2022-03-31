@@ -96,6 +96,11 @@ def get_all_outcomes_ordered(workflow):
         outcomes+=get_all_outcomes_ordered_for_outcome(outcomeworkflow.outcome)
     return outcomes
 
+def get_all_outcomes_ordered_filtered(workflow,extra_filter):
+    outcomes = []
+    for outcome in models.Outcome.objects.filter(workflow=workflow,deleted=False).filter(extra_filter).order_by("outcomeworkflow__rank"):
+        outcomes+=get_all_outcomes_ordered_for_outcome(outcome)
+    return outcomes
 
 def get_unique_outcomenodes(node):
     exclude_outcomes = models.Outcome.objects.filter(

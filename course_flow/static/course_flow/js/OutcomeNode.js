@@ -45,16 +45,11 @@ class OutcomeNodeView extends ComponentJSON{
     }
 
     checkHidden(){
-        console.log("checking hidden");
-        console.log(($(this.maindiv.current).children(".outcome")))
         if($(this.maindiv.current).children(".outcome").length==0)$(this.maindiv.current).css("display","none");
         else $(this.maindiv.current).css("display","");
         let indicator = $(this.maindiv.current).closest(".outcome-node-indicator")
-        console.log(indicator);
         if(indicator.length>=0){
             let num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
-            console.log("num_outcomenodes");
-            console.log(num_outcomenodes);
             indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
             if(num_outcomenodes==0)indicator.css("display","none");
             else indicator.css("display","");

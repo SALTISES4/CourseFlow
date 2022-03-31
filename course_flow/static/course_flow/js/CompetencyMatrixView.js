@@ -27,7 +27,6 @@ class CompetencyMatrixView extends ComponentJSON{
                 </div>
             );
         }else{
-            console.log("finding outcomes");
             let outcomes = this.props.outcomes_tree.map(category=>{
                 let category_outcomes = category.outcomes.map((outcome)=>
                     <MatrixOutcomeView renderer={this.props.renderer} tree_data={outcome} objectID={outcome.id} dropped_list={this.state.dropped_list}/>
@@ -44,8 +43,6 @@ class CompetencyMatrixView extends ComponentJSON{
                 else return category_outcomes;
             });
             
-            console.log("rendering competency matrix view");
-            console.log(outcomes);
             
             let weekworkflows = data.weekworkflow_set.map((weekworkflow,i)=>
                 <MatrixWeekWorkflowView renderer={this.props.renderer} objectID={weekworkflow} rank={i} outcomes_tree={this.props.outcomes_tree} dropped_list={this.state.dropped_list}/>                                         
@@ -237,13 +234,10 @@ class CompetencyMatrixView extends ComponentJSON{
 const mapStateToProps = (state,own_props)=>{
     let outcomes_tree = Constants.createOutcomeTree(state);
     let outcomes_ordered = [];
-    console.log("outcomes_tree");
-    console.log(outcomes_tree);
     for(let i=0;i<outcomes_tree.length;i++){
         if(state.objectset.length>0)outcomes_ordered.push(null);
         Constants.flattenOutcomeTree(outcomes_tree[i].outcomes,outcomes_ordered);
     }
-    console.log(outcomes_ordered);
     return {workflow:state.workflow,outcomes_tree:outcomes_tree,outcomes_ordered:outcomes_ordered,object_sets:state.objectset};
 }
 export default connect(
@@ -490,9 +484,6 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
-        console.log("In a matrix node view");
-        console.log("Here's the outcomes tree");
-        console.log(this.props.outcomes_tree);
         
         let outcomenodes = this.props.outcomes_tree.map(category=>{
             let categories = category.outcomes.map(outcome=>

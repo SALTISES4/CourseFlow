@@ -196,8 +196,6 @@ class UserAdd extends React.Component{
                 component.setState({selected:null});
             },
             select:(evt,ui)=>{
-                console.log("selecting");
-                console.log(ui);
                 this.setState({selected:ui.item.user})
             },
             minLength:1,
@@ -207,8 +205,6 @@ class UserAdd extends React.Component{
 
     addClick(value){
         if(this.state.selected){
-            console.log("PERMISSION TYPE:");
-            console.log(Constants.permission_keys[value]);
             this.props.permissionChange(Constants.permission_keys[value],this.state.selected);
             $(this.input.current).val(null);
                 this.setState({selected:null})

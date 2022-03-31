@@ -314,13 +314,10 @@ export class Loader{
 //Check if an object (such as a node or an outcome) should be hidden based on its sets and the currently active object sets
 export function checkSetHidden(data,objectsets){
     let hidden=false;
-    console.log("checking hidden");
     if(data.sets.length>0 && objectsets){
         hidden=true;
-        console.log("hidden=true")
         for(var i=0;i<objectsets.length;i++){
             if(!objectsets[i].hidden && data.sets.indexOf(objectsets[i].id)>=0){
-                console.log("hidden false");
                 hidden=false;
                 break;
             }

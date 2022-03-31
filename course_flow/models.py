@@ -16,7 +16,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from course_flow.utils import get_descendant_outcomes
+from course_flow.utils import get_descendant_outcomes, get_all_outcomes_for_outcome
 
 User = get_user_model()
 
@@ -1806,7 +1806,7 @@ def set_week_type_default(sender, instance, created, **kwargs):
 @receiver(post_save, sender=OutcomeOutcome)
 def set_outcome_depth_default(sender, instance, created, **kwargs):
     try:
-        set_list = list(instance.parent.sets)
+        set_list = list(instance.parent.sets.all())
         outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(instance.child)
         for outcomeoutcome in [instance]+list(outcomeoutcomes):
             child = outcomeoutcome.child

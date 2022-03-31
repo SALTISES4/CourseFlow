@@ -1788,12 +1788,8 @@ Import/Export  methods
 
 @user_can_edit(False)
 def import_data(request: HttpRequest) -> JsonResponse:
-    print(request.POST)
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-    print(request.user.id)
-    print(object_id)
-    print(object_type)
     task_type = request.POST.get("importType")
     file = request.FILES.get("myFile")
     try:
@@ -1825,65 +1821,56 @@ def import_data(request: HttpRequest) -> JsonResponse:
 
 @user_can_view(False)
 def get_export(request: HttpRequest) -> HttpResponse:
-    print(request.POST)
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
+    export_type = request.POST.get("export_type")
+    export_format = request.POST.get("export_format")
+    allowed_sets = request.POST.getlist("object_sets[]",[])
     try:
-        print(object_id)
-        print(object_type)
+        subject = _("Your CourseFlow Export")
+        text = _("Hi there! Here are the results of your recent export.")
+        task = tasks.async_send_export_email(
+            request.user.email, object_id, object_type, export_type,export_format, allowed_sets, subject, text,
+        )
     
     except:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
     
-    object_id = json.loads(request.POST.get("objectID"))
-    object_type = json.loads(request.POST.get("objectType"))
-#    task_type = json.loads(request.POST.get("exportType"))
-#    subject = _("Your Outcomes Export")
-#    text = _("Hi there! Here are the results of your recent export.")
-#    task = tasks.async_send_export_email(
-#        request.user.email, object_id, object_type, task_type, subject, text,
-#    )
-#    return JsonResponse({"action": "posted"})
 
 
 # enable for testing/download
 @user_can_view(False)
-def get_export_download(
-    request: HttpRequest, pk, object_type, export_type
-) -> HttpResponse:
-    object_id = pk
-    task_type = export_type
-    if settings.DEBUG != True:
-        return HttpResponse()
+def get_export_download(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    export_type = request.POST.get("export_type")
+    export_format = request.POST.get("export_format")
+    allowed_sets = request.POST.getlist("object_sets[]","[]")
     model_object = get_model_from_str(object_type).objects.get(pk=object_id)
-    if task_type == "outcomes_excel":
-        file = export_functions.get_outcomes_excel(model_object, object_type)
-        file_type = "xlsx"
-    elif task_type == "outcomes_csv":
-        file = export_functions.get_outcomes_csv(model_object, object_type)
-        file_type = "csv"
-    elif task_type == "frameworks_excel":
-        file = export_functions.get_course_frameworks_excel(
-            model_object, object_type
+    
+    if object_type=="project":
+        project_sets = ObjectSet.objects.filter(project=model_object)
+    else:
+        project_sets = ObjectSet.objects.filter(project=model_object.get_project())
+    allowed_sets = project_sets.filter(id__in=allowed_sets)
+    if export_type == "outcome":
+        file = export_functions.get_outcomes_export(model_object, object_type, export_format, allowed_sets)
+    elif export_type == "framework":
+        file = export_functions.get_course_frameworks_export(
+            model_object, object_type, export_format, allowed_sets
         )
-        file_type = "xlsx"
-    elif task_type == "matrix_excel":
-        file = export_functions.get_program_matrix_excel(
-            model_object, object_type
+    elif export_type == "matrix":
+        file = export_functions.get_program_matrix_export(
+            model_object, object_type, export_format, allowed_sets
         )
-        file_type = "xlsx"
-    elif task_type == "matrix_csv":
-        file = export_functions.get_program_matrix_csv(
-            model_object, object_type
-        )
-        file_type = "csv"
-    elif task_type == "nodes_excel":
-        file = export_functions.get_nodes_excel(model_object, object_type)
-        file_type = "xlsx"
-    elif task_type == "nodes_csv":
-        file = export_functions.get_nodes_csv(model_object, object_type)
-        file_type = "csv"
+    elif export_type == "node":
+        file = export_functions.get_nodes_export(model_object, object_type, export_format, allowed_sets)
+    if export_format == "excel":
+        file_ext="xlsx"
+    elif export_format == "csv":
+        file_ext="csv"
+    
     filename = (
         object_type
         + "_"
@@ -1891,11 +1878,12 @@ def get_export_download(
         + "_"
         + timezone.now().strftime(dateTimeFormatNoSpace())
         + "."
-        + file_type
+        + file_ext
     )
-    if file_type == "csv":
+    
+    if export_format == "csv":
         file_data = "text/csv"
-    elif file_type == "xlsx":
+    elif export_format == "excel":
         file_data = (
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
@@ -3914,9 +3902,6 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    print(get_model_from_str(object_type))
-    print(get_model_from_str(object_type).objects.get(id=object_id))
-    print(get_model_from_str(object_type).objects.get(id=object_id).author)
     return JsonResponse(
         {
             "action": "posted",
@@ -3959,15 +3944,6 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
             user_list = list(user_list)
             q_objects = Q(username__icontains=name_filter)
             for q_filter in filters:
-                print(q_filter)
-                print(
-                    User.objects.filter(
-                        Q(
-                            first_name__icontains=q_filter[0],
-                            last_name__icontains=q_filter[1],
-                        )
-                    )
-                )
                 q_objects |= Q(
                     first_name__icontains=q_filter[0],
                     last_name__icontains=q_filter[1],

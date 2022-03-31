@@ -10,7 +10,6 @@ export class ImportMenu extends React.Component{
     }
     
     render(){
-        console.log(root);
         
         return(
             <div class="message-wrap">
