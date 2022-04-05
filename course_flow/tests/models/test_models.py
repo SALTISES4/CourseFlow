@@ -1711,76 +1711,77 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeHorizontalLink.objects.all().count(), 4)
 
-    def test_horizontal_outcome_link_on_node_unlink(self):
-        author = login(self)
-        program = make_object("program", author)
-        course = make_object("course", author)
-        program_outcome = program.outcomes.create(author=author)
-        course_outcome = course.outcomes.create(author=author)
-        node = program.weeks.create(author=author).nodes.create(author=author)
-        node.linked_workflow = course
-        node.save()
-        OutcomeNode.objects.create(node=node, outcome=program_outcome)
-
-        # test basic scenario
-        horizontal_link = OutcomeHorizontalLink.objects.create(
-            outcome=course_outcome, parent_outcome=program_outcome
-        )
-        node.linked_workflow = None
-        node.save()
-        self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
-        node.linked_workflow = course
-        node.save()
-
-        # more complex scenario with multiple linked nodes
-        node2 = program.weeks.first().nodes.create(author=author)
-        node2.linked_workflow = course
-        node2.save()
-        OutcomeNode.objects.create(node=node2, outcome=program_outcome)
-        horizontal_link = OutcomeHorizontalLink.objects.create(
-            outcome=course_outcome, parent_outcome=program_outcome
-        )
-        node.linked_workflow = None
-        node.save()
-        self.assertEqual(OutcomeHorizontalLink.objects.count(), 1)
-
-        # deleting a node
-        node2.delete()
-        self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
-
-    def test_horizontal_outcome_link_on_outcomenode_delete(self):
-        author = login(self)
-        program = make_object("program", author)
-        course = make_object("course", author)
-        program_outcome = program.outcomes.create(author=author)
-        course_outcome = course.outcomes.create(author=author)
-        node = program.weeks.create(author=author).nodes.create(author=author)
-        node.linked_workflow = course
-        node.save()
-        horizontal_link = OutcomeHorizontalLink.objects.create(
-            outcome=course_outcome, parent_outcome=program_outcome
-        )
-        outcomenode = OutcomeNode.objects.create(
-            node=node, outcome=program_outcome
-        )
-
-        # test basic scenario
-        outcomenode.delete()
-        self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
-        outcomenode = OutcomeNode.objects.create(
-            node=node, outcome=program_outcome
-        )
-        horizontal_link = OutcomeHorizontalLink.objects.create(
-            outcome=course_outcome, parent_outcome=program_outcome
-        )
-
-        # more complex scenario with multiple linked nodes
-        node2 = program.weeks.first().nodes.create(author=author)
-        node2.linked_workflow = course
-        node2.save()
-        OutcomeNode.objects.create(node=node2, outcome=program_outcome)
-        outcomenode.delete()
-        self.assertEqual(OutcomeHorizontalLink.objects.count(), 1)
+    #
+    #    def test_horizontal_outcome_link_on_node_unlink(self):
+    #        author = login(self)
+    #        program = make_object("program", author)
+    #        course = make_object("course", author)
+    #        program_outcome = program.outcomes.create(author=author)
+    #        course_outcome = course.outcomes.create(author=author)
+    #        node = program.weeks.create(author=author).nodes.create(author=author)
+    #        node.linked_workflow = course
+    #        node.save()
+    #        OutcomeNode.objects.create(node=node, outcome=program_outcome)
+    #
+    #        # test basic scenario
+    #        horizontal_link = OutcomeHorizontalLink.objects.create(
+    #            outcome=course_outcome, parent_outcome=program_outcome
+    #        )
+    #        node.linked_workflow = None
+    #        node.save()
+    #        self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
+    #        node.linked_workflow = course
+    #        node.save()
+    #
+    #        # more complex scenario with multiple linked nodes
+    #        node2 = program.weeks.first().nodes.create(author=author)
+    #        node2.linked_workflow = course
+    #        node2.save()
+    #        OutcomeNode.objects.create(node=node2, outcome=program_outcome)
+    #        horizontal_link = OutcomeHorizontalLink.objects.create(
+    #            outcome=course_outcome, parent_outcome=program_outcome
+    #        )
+    #        node.linked_workflow = None
+    #        node.save()
+    #        self.assertEqual(OutcomeHorizontalLink.objects.count(), 1)
+    #
+    #        # deleting a node
+    #        node2.delete()
+    #        self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
+    #
+    #    def test_horizontal_outcome_link_on_outcomenode_delete(self):
+    #        author = login(self)
+    #        program = make_object("program", author)
+    #        course = make_object("course", author)
+    #        program_outcome = program.outcomes.create(author=author)
+    #        course_outcome = course.outcomes.create(author=author)
+    #        node = program.weeks.create(author=author).nodes.create(author=author)
+    #        node.linked_workflow = course
+    #        node.save()
+    #        horizontal_link = OutcomeHorizontalLink.objects.create(
+    #            outcome=course_outcome, parent_outcome=program_outcome
+    #        )
+    #        outcomenode = OutcomeNode.objects.create(
+    #            node=node, outcome=program_outcome
+    #        )
+    #
+    #        # test basic scenario
+    #        outcomenode.delete()
+    #        self.assertEqual(OutcomeHorizontalLink.objects.count(), 0)
+    #        outcomenode = OutcomeNode.objects.create(
+    #            node=node, outcome=program_outcome
+    #        )
+    #        horizontal_link = OutcomeHorizontalLink.objects.create(
+    #            outcome=course_outcome, parent_outcome=program_outcome
+    #        )
+    #
+    #        # more complex scenario with multiple linked nodes
+    #        node2 = program.weeks.first().nodes.create(author=author)
+    #        node2.linked_workflow = course
+    #        node2.save()
+    #        OutcomeNode.objects.create(node=node2, outcome=program_outcome)
+    #        outcomenode.delete()
+    #        self.assertEqual(OutcomeHorizontalLink.objects.count(), 1)
 
     def test_horizontal_outcome_link_on_outcome_delete(self):
         author = login(self)

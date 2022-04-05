@@ -1110,7 +1110,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             )
             time.sleep(2.5)
             selenium.find_element_by_id("toggle-strategy-editor").click()
-            time.sleep(2)
+            time.sleep(4)
             selenium.find_element_by_css_selector(
                 "a[href='#strategy-bar']"
             ).click()
@@ -1329,7 +1329,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
 
             # Toggle one of the children. We expect to lose the top outcome to partial completion
             outcome1_toggle.perform()
-            time.sleep(1)
+            time.sleep(3)
             assert_image(base_img, "/nocheck")
             assert_image(base_total_img, "/nocheck")
             assert_image(base_grandtotal_img, "/nocheck")
@@ -1341,7 +1341,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert_image(outcome2_grandtotal_img, "/check")
             # check that re-toggling outcome 1 adds the parent
             outcome1_toggle.perform()
-            time.sleep(1)
+            time.sleep(3)
             assert_image(base_img, "solid_check")
             assert_image(base_total_img, "/check")
             assert_image(base_grandtotal_img, "/check")
@@ -1353,7 +1353,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert_image(outcome2_grandtotal_img, "/check")
             # check that removing the base outcome clears all
             base_toggle.perform()
-            time.sleep(1)
+            time.sleep(3)
             assert_no_image(base_img)
             assert_no_image(base_total_img)
             assert_no_image(base_grandtotal_img)
@@ -1365,7 +1365,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             assert_no_image(outcome2_grandtotal_img)
             # check completion when not all children are toggled
             outcome1_toggle.perform()
-            time.sleep(1)
+            time.sleep(3)
             assert_image(base_img, "/nocheck")
             assert_image(base_total_img, "/nocheck")
             assert_image(base_grandtotal_img, "/nocheck")
@@ -1381,7 +1381,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
                 selenium.find_element_by_css_selector(outcome2_cell2),
                 selenium.find_element_by_css_selector(outcome2_input2),
             ).perform()
-            time.sleep(1)
+            time.sleep(3)
 
             assert_image(base_img, "/nocheck")
             assert_image(base_img2, "/nocheck")
@@ -1569,7 +1569,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
 
         # Toggle the base outcome. Check to make sure the children and totals columns behave as expected
         base_toggle.perform()
-        time.sleep(1)
+        time.sleep(3)
         assert_image(base_img, "solid_check")
         assert_image(base_total_img, "/check")
         assert_image(base_grandtotal_img, "/check")
@@ -1582,7 +1582,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
 
         # Toggle one of the children. We expect to lose the top outcome to partial completion
         outcome1_toggle.perform()
-        time.sleep(1)
+        time.sleep(3)
         assert_image(base_img, "/nocheck")
         assert_image(base_total_img, "/nocheck")
         assert_image(base_grandtotal_img, "/nocheck")
@@ -1594,7 +1594,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         assert_image(outcome2_grandtotal_img, "/check")
         # check that re-toggling outcome 1 adds the parent
         outcome1_toggle.perform()
-        time.sleep(1)
+        time.sleep(3)
         assert_image(base_img, "solid_check")
         assert_image(base_total_img, "/check")
         assert_image(base_grandtotal_img, "/check")
@@ -1606,7 +1606,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         assert_image(outcome2_grandtotal_img, "/check")
         # check that removing the base outcome clears all
         base_toggle.perform()
-        time.sleep(1)
+        time.sleep(5)
         assert_no_image(base_img)
         assert_no_image(base_total_img)
         assert_no_image(base_grandtotal_img)
@@ -1618,7 +1618,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
         assert_no_image(outcome2_grandtotal_img)
         # check completion when not all children are toggled
         outcome1_toggle.perform()
-        time.sleep(1)
+        time.sleep(3)
         assert_image(base_img, "/nocheck")
         assert_image(base_total_img, "/nocheck")
         assert_image(base_grandtotal_img, "/nocheck")
@@ -1634,7 +1634,7 @@ class SeleniumWorkflowsTestCase(StaticLiveServerTestCase):
             selenium.find_element_by_css_selector(outcome2_cell2),
             selenium.find_element_by_css_selector(outcome2_input2),
         ).perform()
-        time.sleep(1)
+        time.sleep(3)
 
         assert_image(base_img, "/nocheck")
         assert_image(base_img2, "/nocheck")
