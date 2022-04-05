@@ -1091,38 +1091,38 @@ def get_allowed_parent_outcomes(workflow, **kwargs):
     parent_outcomes = [ocn.outcome for ocn in parent_outcomenodes]
     return parent_outcomes
 
-
-@receiver(pre_delete, sender=OutcomeNode)
-def remove_horizontal_outcome_links_on_outcomenode_delete(
-    sender, instance, **kwargs
-):
-    workflow = instance.node.linked_workflow
-    if workflow is not None:
-        linked_outcomes = list(workflow.outcomes.all())
-        parent_outcomes = get_allowed_parent_outcomes(
-            workflow, exclude_outcomenode=instance.pk
-        )
-        OutcomeHorizontalLink.objects.filter(
-            outcome__in=linked_outcomes
-        ).exclude(parent_outcome__in=parent_outcomes).delete()
-
-
-@receiver(pre_save, sender=Node)
-def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
-    if instance.pk is None:
-        return
-    old_workflow = Node.objects.get(id=instance.pk).linked_workflow
-    new_workflow = instance.linked_workflow
-    if old_workflow is not None and (
-        new_workflow is None or new_workflow.pk != old_workflow.pk
-    ):
-        linked_outcomes = list(old_workflow.outcomes.all())
-        parent_outcomes = get_allowed_parent_outcomes(
-            old_workflow, exclude_node=instance.pk
-        )
-        OutcomeHorizontalLink.objects.filter(
-            outcome__in=linked_outcomes
-        ).exclude(parent_outcome__in=parent_outcomes).delete()
+#
+#@receiver(pre_delete, sender=OutcomeNode)
+#def remove_horizontal_outcome_links_on_outcomenode_delete(
+#    sender, instance, **kwargs
+#):
+#    workflow = instance.node.linked_workflow
+#    if workflow is not None:
+#        linked_outcomes = list(workflow.outcomes.all())
+#        parent_outcomes = get_allowed_parent_outcomes(
+#            workflow, exclude_outcomenode=instance.pk
+#        )
+#        OutcomeHorizontalLink.objects.filter(
+#            outcome__in=linked_outcomes
+#        ).exclude(parent_outcome__in=parent_outcomes).delete()
+#
+#
+#@receiver(pre_save, sender=Node)
+#def remove_horizontal_outcome_links_on_node_unlink(sender, instance, **kwargs):
+#    if instance.pk is None:
+#        return
+#    old_workflow = Node.objects.get(id=instance.pk).linked_workflow
+#    new_workflow = instance.linked_workflow
+#    if old_workflow is not None and (
+#        new_workflow is None or new_workflow.pk != old_workflow.pk
+#    ):
+#        linked_outcomes = list(old_workflow.outcomes.all())
+#        parent_outcomes = get_allowed_parent_outcomes(
+#            old_workflow, exclude_node=instance.pk
+#        )
+#        OutcomeHorizontalLink.objects.filter(
+#            outcome__in=linked_outcomes
+#        ).exclude(parent_outcome__in=parent_outcomes).delete()
 
 
 @receiver(pre_delete, sender=Project)

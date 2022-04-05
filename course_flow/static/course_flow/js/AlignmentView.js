@@ -391,7 +391,7 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
                     for(let i=0;i<state.outcomenode.length;i++){
                         if(state.outcomenode[i].outcome==parent_outcome.id && state.outcomenode[i].node==node.id)return state.outcomenode[i];
                     } 
-                    return null;
+                    return {degree:0};
                 });
                 
                 return {parent_outcomes:my_parent_outcomes,outcomenodes:my_outcomenodes};
