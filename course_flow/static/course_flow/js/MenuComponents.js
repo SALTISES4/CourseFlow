@@ -737,13 +737,15 @@ export class ProjectEditMenu extends React.Component{
     }
     
     deleteTerm(id){
-        let new_state_dict=this.state.object_sets.slice()
-        for(let i=0;i<new_state_dict.length;i++){
-            if(new_state_dict[i].id==id){
-                deleteSelf(id,"customterm");
-                new_state_dict.splice(i,1);
-                this.setState({object_sets:new_state_dict});
-                break;
+        if(window.confirm(gettext("Are you sure you want to delete this ")+gettext("set")+"?")){
+            let new_state_dict=this.state.object_sets.slice()
+            for(let i=0;i<new_state_dict.length;i++){
+                if(new_state_dict[i].id==id){
+                    deleteSelf(id,"objectset");
+                    new_state_dict.splice(i,1);
+                    this.setState({object_sets:new_state_dict});
+                    break;
+                }
             }
         }
     }

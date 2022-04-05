@@ -1467,9 +1467,14 @@ button, input[type="submit"]{
 .node-week{
     width:100%;
     display:block;
+    position:relative;
     min-height:50px;
     padding-top:30px;
-    position:relative;
+}
+
+.node-week.empty{
+    min-height:0px;
+    padding-top:0px;
 }
 
 .node-week.dragging.ui-sortable-helper .node{

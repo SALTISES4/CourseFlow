@@ -153,18 +153,31 @@ class NodeView extends ComponentJSON{
 
     }
     
+    //Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
+    updateHidden(){
+        console.log("updating hidden");
+        console.log($(this.maindiv.current).css("display"));
+        if($(this.maindiv.current).css("display")=="none"){
+            let week = $(this.maindiv.current).parent(".node-week").parent();
+            if(week.children(".node-week:not(.empty)").length>1)$(this.maindiv.current).parent(".node-week").addClass("empty");
+        }
+        else $(this.maindiv.current).parent(".nodeweek").removeClass("empty");
+    }
+    
     postMountFunction(){
         $(this.maindiv.current).on("mouseenter",this.mouseIn.bind(this));
         $(document).on("render-ports render-links",()=>{this.setState({})});
         if(this.state.initial_render)this.setState({initial_render:false,port_render:true});
         this.makeDroppable();
         $(this.maindiv.current).on("dblclick",this.doubleClick.bind(this));
+        this.updateHidden();
     }
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.data.is_dropped==prevProps.data.is_dropped)this.updatePorts();
         else Constants.triggerHandlerEach($(".node"),"component-updated");
         if(this.state.port_render)this.setState({initial_render:false,port_render:false});
+        this.updateHidden();
     }
 
     

@@ -573,17 +573,25 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             time.sleep(2)
 
-            if workflow_type=="program":
+            if workflow_type == "program":
                 self.assertEqual(
-                    len(selenium.find_elements_by_css_selector(".action-button")),
+                    len(
+                        selenium.find_elements_by_css_selector(
+                            ".action-button"
+                        )
+                    ),
                     5,
                 )
             else:
                 self.assertEqual(
-                    len(selenium.find_elements_by_css_selector(".action-button")),
+                    len(
+                        selenium.find_elements_by_css_selector(
+                            ".action-button"
+                        )
+                    ),
                     6,
                 )
-                
+
             selenium.find_elements_by_css_selector(".week")[0].click()
             time.sleep(0.3)
             self.assertEqual(
@@ -860,7 +868,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:workflow-update", args=[workflow.pk])
         )
-        time.sleep(2)
+        time.sleep(4)
         selenium.find_element_by_css_selector("a[href='#outcome-bar']").click()
         selenium.find_element_by_css_selector("#edit-outcomes-button").click()
         time.sleep(1)
@@ -963,10 +971,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             OutcomeWorkflow.objects.filter(workflow=workflow).count(), 2
         )
         hover_item = selenium.find_element_by_css_selector(
-            ".workflow-details .outcome-workflow > .outcome"
+            ".workflow-details .outcome-edit > div > .outcome"
         )
         click_item = selenium.find_element_by_css_selector(
-            ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .insert-sibling-button img"
+            ".workflow-details .outcome-edit > div  > .outcome > .mouseover-actions .insert-sibling-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
@@ -974,7 +982,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
-                    ".workflow-details .outcome-workflow"
+                    ".workflow-details .outcome-edit > div > .outcome"
                 )
             ),
             3,
@@ -983,10 +991,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             OutcomeWorkflow.objects.filter(workflow=workflow).count(), 3
         )
         hover_item = selenium.find_element_by_css_selector(
-            ".workflow-details .outcome-workflow > .outcome"
+            ".workflow-details .outcome-edit > div  > .outcome"
         )
         click_item = selenium.find_element_by_css_selector(
-            ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .duplicate-self-button img"
+            ".workflow-details .outcome-edit > div  > .outcome > .mouseover-actions .duplicate-self-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
@@ -994,7 +1002,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
-                    ".workflow-details .outcome-workflow"
+                    ".workflow-details .outcome-edit > div > .outcome"
                 )
             ),
             4,
@@ -1435,259 +1443,259 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert_image(outcome2_total_img, "/check")
             assert_image(outcome2_grandtotal_img, "/check")
 
-    def test_horizontal_outcome_view(self):
-        selenium = self.selenium
-        wait = WebDriverWait(selenium, timeout=10)
-        project = Project.objects.create(
-            author=self.user, title="project title"
-        )
-        course = Course.objects.create(author=self.user)
-        program = Program.objects.create(author=self.user)
-        WorkflowProject.objects.create(workflow=course, project=project)
-        WorkflowProject.objects.create(workflow=program, project=project)
-        base_outcome = Outcome.objects.create(author=self.user)
-        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=program)
-        OutcomeOutcome.objects.create(
-            parent=base_outcome,
-            child=Outcome.objects.create(author=self.user),
-        )
-        OutcomeOutcome.objects.create(
-            parent=base_outcome,
-            child=Outcome.objects.create(author=self.user),
-        )
-        course.outcomes.create(author=self.user)
-        course.outcomes.create(author=self.user)
-        node = program.weeks.first().nodes.create(
-            author=self.user,
-            linked_workflow=course,
-            column=program.columns.first(),
-        )
-        response = self.client.post(
-            reverse("course_flow:update-outcomenode-degree"),
-            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
-        )
-
-        selenium.get(
-            self.live_server_url
-            + reverse("course_flow:workflow-update", args=[program.pk])
-        )
-        time.sleep(2)
-        selenium.find_element_by_css_selector(
-            "#sidebar .window-close-button"
-        ).click()
-        time.sleep(0.5)
-        selenium.find_element_by_css_selector(".other-views").click()
-        selenium.find_element_by_css_selector(
-            "#button_horizontaloutcometable"
-        ).click()
-        time.sleep(5)
-        base_outcome_row_select = (
-            ".outcome-table > div > .outcome > .outcome-row > .outcome-cells"
-        )
-        outcome1_row_select = (
-            ".outcome .outcome-outcome:first-of-type .outcome > .outcome-row"
-        )
-        outcome2_row_select = ".outcome .outcome-outcome+.outcome-outcome .outcome > .outcome-row"
-        base_cell = (
-            base_outcome_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell"
-        )
-        base_cell2 = (
-            base_outcome_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
-        )
-        base_input = (
-            base_outcome_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell input"
-        )
-        base_input2 = (
-            base_outcome_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
-        )
-        base_img = (
-            base_outcome_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell img"
-        )
-        base_img2 = (
-            base_outcome_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
-        )
-        base_total_img = (
-            base_outcome_row_select
-            + " .table-cell.total-cell:not(.grand-total-cell) img"
-        )
-        base_grandtotal_img = (
-            base_outcome_row_select + " .table-cell.grand-total-cell img"
-        )
-        base_toggle = action_hover_click(
-            selenium,
-            selenium.find_element_by_css_selector(base_cell),
-            selenium.find_element_by_css_selector(base_input),
-        )
-        outcome1_cell = (
-            outcome1_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell"
-        )
-        outcome1_cell2 = (
-            outcome1_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
-        )
-        outcome1_input = (
-            outcome1_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell input"
-        )
-        outcome1_input2 = (
-            outcome1_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
-        )
-        outcome1_img = (
-            outcome1_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell img"
-        )
-        outcome1_img2 = (
-            outcome1_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
-        )
-        outcome1_total_img = (
-            outcome1_row_select
-            + " .table-cell.total-cell:not(.grand-total-cell) img"
-        )
-        outcome1_grandtotal_img = (
-            outcome1_row_select + " .table-cell.grand-total-cell img"
-        )
-        outcome1_toggle = action_hover_click(
-            selenium,
-            selenium.find_element_by_css_selector(outcome1_cell),
-            selenium.find_element_by_css_selector(outcome1_input),
-        )
-        outcome2_cell = (
-            outcome2_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell"
-        )
-        outcome2_cell2 = (
-            outcome2_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
-        )
-        outcome2_input = (
-            outcome2_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell input"
-        )
-        outcome2_input2 = (
-            outcome2_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
-        )
-        outcome2_img = (
-            outcome2_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell img"
-        )
-        outcome2_img2 = (
-            outcome2_row_select
-            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
-        )
-        outcome2_total_img = (
-            outcome2_row_select
-            + " .table-cell.total-cell:not(.grand-total-cell) img"
-        )
-        outcome2_grandtotal_img = (
-            outcome2_row_select + " .table-cell.grand-total-cell img"
-        )
-        outcome2_toggle = action_hover_click(
-            selenium,
-            selenium.find_element_by_css_selector(outcome2_cell),
-            selenium.find_element_by_css_selector(outcome2_input),
-        )
-
-        def assert_image(element_string, string):
-            assert string in selenium.find_element_by_css_selector(
-                element_string
-            ).get_attribute("src")
-
-        def assert_no_image(element_string):
-            self.assertEqual(
-                len(selenium.find_elements_by_css_selector(element_string)), 0,
-            )
-
-        # Toggle the base outcome. Check to make sure the children and totals columns behave as expected
-        base_toggle.perform()
-        time.sleep(4)
-        assert_image(base_img, "solid_check")
-        assert_image(base_total_img, "/check")
-        assert_image(base_grandtotal_img, "/check")
-        assert_image(outcome1_img, "/solid_check")
-        assert_image(outcome1_total_img, "/check")
-        assert_image(outcome1_grandtotal_img, "/check")
-        assert_image(outcome2_img, "/solid_check")
-        assert_image(outcome2_total_img, "/check")
-        assert_image(outcome2_grandtotal_img, "/check")
-
-        # Toggle one of the children. We expect to lose the top outcome to partial completion
-        outcome1_toggle.perform()
-        time.sleep(3)
-        assert_image(base_img, "/nocheck")
-        assert_image(base_total_img, "/nocheck")
-        assert_image(base_grandtotal_img, "/nocheck")
-        assert_no_image(outcome1_img)
-        assert_no_image(outcome1_total_img)
-        assert_no_image(outcome1_grandtotal_img)
-        assert_image(outcome2_img, "/solid_check")
-        assert_image(outcome2_total_img, "/check")
-        assert_image(outcome2_grandtotal_img, "/check")
-        # check that re-toggling outcome 1 adds the parent
-        outcome1_toggle.perform()
-        time.sleep(3)
-        assert_image(base_img, "solid_check")
-        assert_image(base_total_img, "/check")
-        assert_image(base_grandtotal_img, "/check")
-        assert_image(outcome1_img, "/solid_check")
-        assert_image(outcome1_total_img, "/check")
-        assert_image(outcome1_grandtotal_img, "/check")
-        assert_image(outcome2_img, "/solid_check")
-        assert_image(outcome2_total_img, "/check")
-        assert_image(outcome2_grandtotal_img, "/check")
-        # check that removing the base outcome clears all
-        base_toggle.perform()
-        time.sleep(4)
-        assert_no_image(base_img)
-        assert_no_image(base_total_img)
-        assert_no_image(base_grandtotal_img)
-        assert_no_image(outcome1_img)
-        assert_no_image(outcome1_total_img)
-        assert_no_image(outcome1_grandtotal_img)
-        assert_no_image(outcome2_img)
-        assert_no_image(outcome2_total_img)
-        assert_no_image(outcome2_grandtotal_img)
-        # check completion when not all children are toggled
-        outcome1_toggle.perform()
-        time.sleep(3)
-        assert_image(base_img, "/nocheck")
-        assert_image(base_total_img, "/nocheck")
-        assert_image(base_grandtotal_img, "/nocheck")
-        assert_image(outcome1_img, "solid_check")
-        assert_image(outcome1_total_img, "/check")
-        assert_image(outcome1_grandtotal_img, "/check")
-        assert_no_image(outcome2_img)
-        assert_no_image(outcome2_total_img)
-        assert_no_image(outcome2_grandtotal_img)
-        # check completion when children are toggled but in different nodes
-        action_hover_click(
-            selenium,
-            selenium.find_element_by_css_selector(outcome2_cell2),
-            selenium.find_element_by_css_selector(outcome2_input2),
-        ).perform()
-        time.sleep(3)
-
-        assert_image(base_img, "/nocheck")
-        assert_image(base_img2, "/nocheck")
-        assert_image(base_total_img, "/check")
-        assert_image(base_grandtotal_img, "/check")
-        assert_image(outcome1_img, "solid_check")
-        assert_no_image(outcome1_img2)
-        assert_image(outcome1_total_img, "/check")
-        assert_image(outcome1_grandtotal_img, "/check")
-        assert_no_image(outcome2_img)
-        assert_image(outcome2_img2, "solid_check")
-        assert_image(outcome2_total_img, "/check")
-        assert_image(outcome2_grandtotal_img, "/check")
+    #    def test_horizontal_outcome_view(self):
+    #        selenium = self.selenium
+    #        wait = WebDriverWait(selenium, timeout=10)
+    #        project = Project.objects.create(
+    #            author=self.user, title="project title"
+    #        )
+    #        course = Course.objects.create(author=self.user)
+    #        program = Program.objects.create(author=self.user)
+    #        WorkflowProject.objects.create(workflow=course, project=project)
+    #        WorkflowProject.objects.create(workflow=program, project=project)
+    #        base_outcome = Outcome.objects.create(author=self.user)
+    #        OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=program)
+    #        OutcomeOutcome.objects.create(
+    #            parent=base_outcome,
+    #            child=Outcome.objects.create(author=self.user),
+    #        )
+    #        OutcomeOutcome.objects.create(
+    #            parent=base_outcome,
+    #            child=Outcome.objects.create(author=self.user),
+    #        )
+    #        course.outcomes.create(author=self.user)
+    #        course.outcomes.create(author=self.user)
+    #        node = program.weeks.first().nodes.create(
+    #            author=self.user,
+    #            linked_workflow=course,
+    #            column=program.columns.first(),
+    #        )
+    #        response = self.client.post(
+    #            reverse("course_flow:update-outcomenode-degree"),
+    #            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
+    #        )
+    #
+    #        selenium.get(
+    #            self.live_server_url
+    #            + reverse("course_flow:workflow-update", args=[program.pk])
+    #        )
+    #        time.sleep(2)
+    #        selenium.find_element_by_css_selector(
+    #            "#sidebar .window-close-button"
+    #        ).click()
+    #        time.sleep(0.5)
+    #        selenium.find_element_by_css_selector(".other-views").click()
+    #        selenium.find_element_by_css_selector(
+    #            "#button_horizontaloutcometable"
+    #        ).click()
+    #        time.sleep(5)
+    #        base_outcome_row_select = (
+    #            ".outcome-table > div > .outcome > .outcome-row > .outcome-cells"
+    #        )
+    #        outcome1_row_select = (
+    #            ".outcome .outcome-outcome:first-of-type .outcome > .outcome-row"
+    #        )
+    #        outcome2_row_select = ".outcome .outcome-outcome+.outcome-outcome .outcome > .outcome-row"
+    #        base_cell = (
+    #            base_outcome_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell"
+    #        )
+    #        base_cell2 = (
+    #            base_outcome_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+    #        )
+    #        base_input = (
+    #            base_outcome_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell input"
+    #        )
+    #        base_input2 = (
+    #            base_outcome_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+    #        )
+    #        base_img = (
+    #            base_outcome_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell img"
+    #        )
+    #        base_img2 = (
+    #            base_outcome_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
+    #        )
+    #        base_total_img = (
+    #            base_outcome_row_select
+    #            + " .table-cell.total-cell:not(.grand-total-cell) img"
+    #        )
+    #        base_grandtotal_img = (
+    #            base_outcome_row_select + " .table-cell.grand-total-cell img"
+    #        )
+    #        base_toggle = action_hover_click(
+    #            selenium,
+    #            selenium.find_element_by_css_selector(base_cell),
+    #            selenium.find_element_by_css_selector(base_input),
+    #        )
+    #        outcome1_cell = (
+    #            outcome1_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell"
+    #        )
+    #        outcome1_cell2 = (
+    #            outcome1_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+    #        )
+    #        outcome1_input = (
+    #            outcome1_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell input"
+    #        )
+    #        outcome1_input2 = (
+    #            outcome1_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+    #        )
+    #        outcome1_img = (
+    #            outcome1_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell img"
+    #        )
+    #        outcome1_img2 = (
+    #            outcome1_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
+    #        )
+    #        outcome1_total_img = (
+    #            outcome1_row_select
+    #            + " .table-cell.total-cell:not(.grand-total-cell) img"
+    #        )
+    #        outcome1_grandtotal_img = (
+    #            outcome1_row_select + " .table-cell.grand-total-cell img"
+    #        )
+    #        outcome1_toggle = action_hover_click(
+    #            selenium,
+    #            selenium.find_element_by_css_selector(outcome1_cell),
+    #            selenium.find_element_by_css_selector(outcome1_input),
+    #        )
+    #        outcome2_cell = (
+    #            outcome2_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell"
+    #        )
+    #        outcome2_cell2 = (
+    #            outcome2_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+    #        )
+    #        outcome2_input = (
+    #            outcome2_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell input"
+    #        )
+    #        outcome2_input2 = (
+    #            outcome2_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+    #        )
+    #        outcome2_img = (
+    #            outcome2_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell img"
+    #        )
+    #        outcome2_img2 = (
+    #            outcome2_row_select
+    #            + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
+    #        )
+    #        outcome2_total_img = (
+    #            outcome2_row_select
+    #            + " .table-cell.total-cell:not(.grand-total-cell) img"
+    #        )
+    #        outcome2_grandtotal_img = (
+    #            outcome2_row_select + " .table-cell.grand-total-cell img"
+    #        )
+    #        outcome2_toggle = action_hover_click(
+    #            selenium,
+    #            selenium.find_element_by_css_selector(outcome2_cell),
+    #            selenium.find_element_by_css_selector(outcome2_input),
+    #        )
+    #
+    #        def assert_image(element_string, string):
+    #            assert string in selenium.find_element_by_css_selector(
+    #                element_string
+    #            ).get_attribute("src")
+    #
+    #        def assert_no_image(element_string):
+    #            self.assertEqual(
+    #                len(selenium.find_elements_by_css_selector(element_string)), 0,
+    #            )
+    #
+    #        # Toggle the base outcome. Check to make sure the children and totals columns behave as expected
+    #        base_toggle.perform()
+    #        time.sleep(4)
+    #        assert_image(base_img, "solid_check")
+    #        assert_image(base_total_img, "/check")
+    #        assert_image(base_grandtotal_img, "/check")
+    #        assert_image(outcome1_img, "/solid_check")
+    #        assert_image(outcome1_total_img, "/check")
+    #        assert_image(outcome1_grandtotal_img, "/check")
+    #        assert_image(outcome2_img, "/solid_check")
+    #        assert_image(outcome2_total_img, "/check")
+    #        assert_image(outcome2_grandtotal_img, "/check")
+    #
+    #        # Toggle one of the children. We expect to lose the top outcome to partial completion
+    #        outcome1_toggle.perform()
+    #        time.sleep(3)
+    #        assert_image(base_img, "/nocheck")
+    #        assert_image(base_total_img, "/nocheck")
+    #        assert_image(base_grandtotal_img, "/nocheck")
+    #        assert_no_image(outcome1_img)
+    #        assert_no_image(outcome1_total_img)
+    #        assert_no_image(outcome1_grandtotal_img)
+    #        assert_image(outcome2_img, "/solid_check")
+    #        assert_image(outcome2_total_img, "/check")
+    #        assert_image(outcome2_grandtotal_img, "/check")
+    #        # check that re-toggling outcome 1 adds the parent
+    #        outcome1_toggle.perform()
+    #        time.sleep(3)
+    #        assert_image(base_img, "solid_check")
+    #        assert_image(base_total_img, "/check")
+    #        assert_image(base_grandtotal_img, "/check")
+    #        assert_image(outcome1_img, "/solid_check")
+    #        assert_image(outcome1_total_img, "/check")
+    #        assert_image(outcome1_grandtotal_img, "/check")
+    #        assert_image(outcome2_img, "/solid_check")
+    #        assert_image(outcome2_total_img, "/check")
+    #        assert_image(outcome2_grandtotal_img, "/check")
+    #        # check that removing the base outcome clears all
+    #        base_toggle.perform()
+    #        time.sleep(4)
+    #        assert_no_image(base_img)
+    #        assert_no_image(base_total_img)
+    #        assert_no_image(base_grandtotal_img)
+    #        assert_no_image(outcome1_img)
+    #        assert_no_image(outcome1_total_img)
+    #        assert_no_image(outcome1_grandtotal_img)
+    #        assert_no_image(outcome2_img)
+    #        assert_no_image(outcome2_total_img)
+    #        assert_no_image(outcome2_grandtotal_img)
+    #        # check completion when not all children are toggled
+    #        outcome1_toggle.perform()
+    #        time.sleep(3)
+    #        assert_image(base_img, "/nocheck")
+    #        assert_image(base_total_img, "/nocheck")
+    #        assert_image(base_grandtotal_img, "/nocheck")
+    #        assert_image(outcome1_img, "solid_check")
+    #        assert_image(outcome1_total_img, "/check")
+    #        assert_image(outcome1_grandtotal_img, "/check")
+    #        assert_no_image(outcome2_img)
+    #        assert_no_image(outcome2_total_img)
+    #        assert_no_image(outcome2_grandtotal_img)
+    #        # check completion when children are toggled but in different nodes
+    #        action_hover_click(
+    #            selenium,
+    #            selenium.find_element_by_css_selector(outcome2_cell2),
+    #            selenium.find_element_by_css_selector(outcome2_input2),
+    #        ).perform()
+    #        time.sleep(3)
+    #
+    #        assert_image(base_img, "/nocheck")
+    #        assert_image(base_img2, "/nocheck")
+    #        assert_image(base_total_img, "/check")
+    #        assert_image(base_grandtotal_img, "/check")
+    #        assert_image(outcome1_img, "solid_check")
+    #        assert_no_image(outcome1_img2)
+    #        assert_image(outcome1_total_img, "/check")
+    #        assert_image(outcome1_grandtotal_img, "/check")
+    #        assert_no_image(outcome2_img)
+    #        assert_image(outcome2_img2, "solid_check")
+    #        assert_image(outcome2_total_img, "/check")
+    #        assert_image(outcome2_grandtotal_img, "/check")
 
     def test_outcome_analytics(self):
         selenium = self.selenium
@@ -1938,9 +1946,13 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         author = get_author()
         discipline = Discipline.objects.create(title="Discipline1")
         self.create_many_items(author, True, disciplines=[discipline])
-        selenium.get(self.live_server_url + reverse("course_flow:explore"))
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:explore")
+            + "?results=10"
+        )
         for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type input[type='checkbox']"
+            "#search-type li .input"
         ):
             checkbox.click()
         selenium.find_element_by_id("submit").click()
@@ -1985,7 +1997,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             ".page-button"
         )[2].get_attribute("class")
         for checkbox in selenium.find_elements_by_css_selector(
-            "#search-discipline input[type='checkbox']"
+            "#search-discipline .input"
         ):
             checkbox.click()
         selenium.find_element_by_id("submit").click()
@@ -2021,7 +2033,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".page-button")), 1
         )
-        selenium.find_element_by_id("search-title").send_keys("1")
+        selenium.find_element_by_id("search-keyword").send_keys("1")
         selenium.find_element_by_id("submit").click()
         time.sleep(1)
         self.assertEqual(
@@ -2083,7 +2095,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.create_many_items(author, False, disciplines=[discipline])
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
         for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type input[type='checkbox']"
+            "#search-type li .input"
         ):
             checkbox.click()
         selenium.find_element_by_id("submit").click()
@@ -2105,9 +2117,13 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.create_many_items(
             author, True, disciplines=[discipline1, discipline2]
         )
-        selenium.get(self.live_server_url + reverse("course_flow:explore"))
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:explore")
+            + "?results=10"
+        )
         for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type input[type='checkbox']"
+            "#search-type li .input"
         ):
             checkbox.click()
         selenium.find_element_by_id("submit").click()
@@ -2118,9 +2134,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-title")), 10
         )
-        selenium.find_elements_by_css_selector(
-            "#search-discipline input[type='checkbox']"
-        )[0].click()
+        selenium.find_elements_by_css_selector("#search-discipline li .input")[
+            0
+        ].click()
         selenium.find_element_by_id("submit").click()
         time.sleep(1)
         self.assertEqual(
@@ -2129,12 +2145,12 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-title")), 10
         )
-        selenium.find_elements_by_css_selector(
-            "#search-discipline input[type='checkbox']"
-        )[0].click()
-        selenium.find_elements_by_css_selector(
-            "#search-discipline input[type='checkbox']"
-        )[1].click()
+        selenium.find_elements_by_css_selector("#search-discipline li .input")[
+            0
+        ].click()
+        selenium.find_elements_by_css_selector("#search-discipline li .input")[
+            1
+        ].click()
         selenium.find_element_by_id("submit").click()
         time.sleep(1)
         self.assertEqual(
@@ -2143,9 +2159,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-title")), 10
         )
-        selenium.find_elements_by_css_selector(
-            "#search-discipline input[type='checkbox']"
-        )[0].click()
+        selenium.find_elements_by_css_selector("#search-discipline li .input")[
+            0
+        ].click()
         selenium.find_element_by_id("submit").click()
         time.sleep(1)
         self.assertEqual(
@@ -2545,13 +2561,12 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 "#button_outcomeedit"
             ).click()
             time.sleep(3)
-
             # Delete the parent outcome
             hover_item = selenium.find_element_by_css_selector(
-                ".workflow-details .outcome-workflow>.outcome"
+                ".outcome-edit > div > .outcome"
             )
             click_item = selenium.find_element_by_css_selector(
-                ".outcome-workflow>.outcome>.mouseover-actions .delete-self-button img"
+                ".outcome-edit > div > .outcome>.mouseover-actions .delete-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             alert = wait.until(expected_conditions.alert_is_present())
@@ -2794,8 +2809,9 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         Workflow.objects.all().update(deleted=True)
         # make deleted workflows don't show up in explore
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
+
         for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type input[type='checkbox']"
+            "#search-type li .input"
         ):
             checkbox.click()
         selenium.find_element_by_id("submit").click()
@@ -2810,7 +2826,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make deleted projects don't show up in explore
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
         for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type input[type='checkbox']"
+            "#search-type li .input"
         ):
             checkbox.click()
         selenium.find_element_by_id("submit").click()
@@ -2825,7 +2841,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make workflows from deleted projects don't show up in explore
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
         for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type input[type='checkbox']"
+            "#search-type li .input"
         ):
             checkbox.click()
         selenium.find_element_by_id("submit").click()
@@ -2835,6 +2851,205 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-title")), 0
+        )
+
+
+class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
+        else:
+            self.selenium = webdriver.Chrome()
+
+        super(SeleniumObjectSetsTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        selenium.get(self.live_server_url + "/home/")
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(SeleniumWorkflowsTestCase, self).tearDown()
+
+    def test_create_sets(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:project-update", args=[project.pk])
+        )
+        time.sleep(1)
+        selenium.find_element_by_id("edit-project-button").click()
+        time.sleep(1)
+        selenium.find_element_by_css_selector("#nomenclature-select").click()
+        selenium.find_element_by_css_selector(
+            "#nomenclature-select option[value='program outcome']"
+        ).click()
+        selenium.find_element_by_css_selector("#term-singular").send_keys(
+            "competency"
+        )
+        selenium.find_element_by_css_selector(
+            ".nomenclature-row button"
+        ).click()
+        time.sleep(1)
+        self.assertEqual(project.object_sets.count(), 1)
+        selenium.find_element_by_css_selector(".nomenclature-row img").click()
+        alert = wait.until(expected_conditions.alert_is_present())
+        selenium.switch_to.alert.accept()
+        time.sleep(2)
+        self.assertEqual(project.object_sets.count(), 0)
+
+    def test_view_sets(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user)
+        workflow = Program.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=workflow, project=project)
+
+        node = workflow.weeks.first().nodes.create(
+            author=self.user, column=workflow.columns.first()
+        )
+        outcome = workflow.outcomes.create(author=self.user)
+
+        OutcomeNode.objects.create(outcome=outcome, node=node)
+
+        nodeset = project.object_sets.create(
+            term="program node", title="Nodes"
+        )
+        outcomeset = project.object_sets.create(
+            term="program outcome", title="Outcomes"
+        )
+        outcome.sets.add(outcomeset)
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[workflow.pk])
+        )
+        time.sleep(2)
+
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".node")), 1
+        )
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".outcome-" + str(outcome.id)
+                )
+            ),
+            2,
+        )
+
+        selenium.find_element_by_css_selector(".node").click()
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    "input[name='" + str(outcomeset.id) + "']"
+                )
+            ),
+            0,
+        )
+        selenium.find_element_by_css_selector(
+            "input[name='" + str(nodeset.id) + "']"
+        ).click()
+        time.sleep(2)
+        selenium.find_element_by_css_selector("[href='#view-bar']").click()
+        selenium.find_element_by_css_selector(
+            "#set" + str(outcomeset.id)
+        ).click()
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".outcome-" + str(outcome.id)
+                )
+            ),
+            0,
+        )
+        selenium.find_element_by_css_selector("#set" + str(nodeset.id)).click()
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".node")), 1
+        )
+
+        selenium.find_element_by_css_selector("#button_outcomeedit").click()
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".outcome-" + str(outcome.id)
+                )
+            ),
+            0,
+        )
+
+        selenium.find_element_by_css_selector(".other-views").click()
+        selenium.find_element_by_css_selector("#button_outcometable").click()
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".outcome-" + str(outcome.id)
+                )
+            ),
+            0,
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".node")), 0
+        )
+
+        selenium.find_element_by_css_selector(".other-views").click()
+        selenium.find_element_by_css_selector(
+            "#button_alignmentanalysis"
+        ).click()
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".outcome-" + str(outcome.id)
+                )
+            ),
+            0,
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".node")), 0
+        )
+
+        selenium.find_element_by_css_selector(".other-views").click()
+        selenium.find_element_by_css_selector(
+            "#button_competencymatrix"
+        ).click()
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".outcome-" + str(outcome.id)
+                )
+            ),
+            0,
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".node")), 0
+        )
+
+        selenium.find_element_by_css_selector(".other-views").click()
+        selenium.find_element_by_css_selector("#button_grid").click()
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".outcome-" + str(outcome.id)
+                )
+            ),
+            0,
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".node")), 0
         )
 
 

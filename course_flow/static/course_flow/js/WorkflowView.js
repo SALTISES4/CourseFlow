@@ -174,7 +174,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     {!read_only && 
                         <RestoreBar renderer={this.props.renderer}/>
                     }
-                    {
+                    {!data.is_strategy &&
                         <ViewBar renderer={this.props.renderer}/>
                     }
                 </div>
