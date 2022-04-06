@@ -2862,7 +2862,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         else:
             self.selenium = webdriver.Chrome()
 
-        super(SeleniumObjectSetsTestCase, self).setUp()
+        super(ChannelsStaticLiveServerTestCase, self).setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -2876,7 +2876,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(SeleniumWorkflowsTestCase, self).tearDown()
+        super(ChannelsStaticLiveServerTestCase, self).tearDown()
 
     def test_create_sets(self):
         selenium = self.selenium
