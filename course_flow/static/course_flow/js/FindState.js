@@ -137,8 +137,6 @@ function findTopRank(state,outcome,get_alternate){
     }
 }
 export const getOutcomeByID = (state,id,get_alternate,display_parent_outcomes)=>{
-    console.log("getting an outcome");
-    console.log(get_alternate);
     let state_section;
     if(get_alternate=="child")state_section=state.child_outcome;
     else if(get_alternate=="parent")state_section=state.parent_outcome;
@@ -199,8 +197,6 @@ export const getChildOutcomeWorkflowByID = (state,id)=>{
     }
 }
 export const getOutcomeOutcomeByID = (state,id,get_alternate)=>{
-    console.log("getting an outcomeoutcome");
-    console.log(get_alternate);
     let state_section;
     if(get_alternate=="child")state_section=state.child_outcomeoutcome;
     else if(get_alternate=="parent")state_section=state.parent_outcomeoutcome;
