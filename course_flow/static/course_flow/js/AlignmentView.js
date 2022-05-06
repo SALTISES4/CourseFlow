@@ -57,8 +57,10 @@ class AlignmentView extends ComponentJSON{
                 outcome_data = this.props.outcomes[this.state.active].outcomes[this.state.active2].data;
             }catch(err){
                 for(var i=0;i<this.props.outcomes.length;i++){
-                    if(this.props.outcomes[i].outcomes.length>=1)this.changeView(i,"outcome",0);
-                    return null;
+                    if(this.props.outcomes[i].outcomes.length>=1){
+                        this.changeView(i,"outcome",0);
+                        return null;
+                    }
                 }
                 this.changeView(-1,"outcome",0);
                 return null;

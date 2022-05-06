@@ -23,7 +23,7 @@ class OutcomeEditView extends ComponentJSON{
         var selector = this;
         let outcomes = data.map(category=>
             <div>
-                <h4 class="drag-and-drop">{category.objectset.title+":"}</h4>
+                <h4>{category.objectset.title+":"}</h4>
                 {category.outcomes.map(outcome=>
                     <OutcomeView key={outcome.id} objectID={outcome.id} parentID={this.props.workflow.id} renderer={this.props.renderer} show_horizontal={true}/>
                 )}

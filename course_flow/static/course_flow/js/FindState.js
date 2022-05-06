@@ -227,11 +227,15 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (state,outcomeworkflow_se
     let base_title = Constants.capWords(gettext(outcomes[0].type));
     let object_sets = state.objectset.filter(objectset=>objectset.term==outcomes[0].type);
     if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes}];
-    let categories = [
-        {
+    let uncategorized = outcomes.filter(outcome=>outcome.sets.length==0)
+    let categories=[];
+    if(uncategorized.length>0)categories=
+        [{
             objectset:{title:gettext("Uncategorized")},
-            outcomes:outcomes.filter(outcome=>outcome.sets.length==0)
-        },
+            outcomes:uncategorized
+        }];
+    categories = [
+        ...categories,
         ...object_sets.filter(objectset=>!objectset.hidden).map(
             (objectset)=>({
                 objectset:objectset,
