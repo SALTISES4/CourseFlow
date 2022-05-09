@@ -3439,8 +3439,7 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
             + model.check_child_outcomes(),
             many=True,
         ).data
-        if degree == 0:
-            OutcomeNode.objects.filter(node=model.node, degree=0).delete()
+        OutcomeNode.objects.filter(node=model.node, degree=0).delete()
         new_node_data = NodeSerializerShallow(model.node).data
         new_outcomenode_set = new_node_data["outcomenode_set"]
         new_outcomenode_unique_set = new_node_data["outcomenode_unique_set"]
@@ -3485,10 +3484,9 @@ def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
             + model.check_child_outcomes(),
             many=True,
         ).data
-        if degree == 0:
-            OutcomeHorizontalLink.objects.filter(
-                outcome=outcome, degree=0
-            ).delete()
+        OutcomeHorizontalLink.objects.filter(
+            outcome=outcome, degree=0
+        ).delete()
         new_outcome_data = OutcomeSerializerShallow(model.outcome).data
         new_outcome_horizontal_links = new_outcome_data[
             "outcome_horizontal_links"
