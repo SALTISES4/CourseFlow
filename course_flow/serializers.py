@@ -628,7 +628,14 @@ class OutcomeSerializerShallow(
     child_outcome_links = serializers.SerializerMethodField()
     outcome_horizontal_links = serializers.SerializerMethodField()
     outcome_horizontal_links_unique = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+
+    def get_type(self, instance):
+        my_type = self.context.get("type", None)
+        if my_type is None:
+            my_type = instance.get_workflow().type + " outcome"
+        return my_type
 
     def get_outcome_horizontal_links(self, instance):
         if len(instance.outcome_horizontal_links.all()) == 0:
@@ -1032,22 +1039,19 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
 
         return activity
 
+
 class ObjectSetSerializerShallow(
-    serializers.ModelSerializer,
-    TitleSerializerMixin,
+    serializers.ModelSerializer, TitleSerializerMixin,
 ):
     class Meta:
         model = ObjectSet
-        fields = [
-            "id",
-            "title",
-            "translation_plural",
-            "term"
-        ]
+        fields = ["id", "title", "translation_plural", "term"]
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
-        instance.translation_plural = validated_data.get("translation_plural", instance.translation_plural)
+        instance.translation_plural = validated_data.get(
+            "translation_plural", instance.translation_plural
+        )
         instance.save()
         return instance
 
@@ -1331,5 +1335,5 @@ serializer_lookups_shallow = {
     "outcome": OutcomeSerializerShallow,
     "outcomeoutcome": OutcomeOutcomeSerializerShallow,
     "outcomeworkflow": OutcomeWorkflowSerializerShallow,
-    "objectset":ObjectSetSerializerShallow,
+    "objectset": ObjectSetSerializerShallow,
 }

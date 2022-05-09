@@ -1265,7 +1265,10 @@ def get_parent_outcome_data(workflow, user):
     outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
         outcome__in=outcomes, parent_outcome__in=parent_outcomes
     )
-
+    if len(parent_workflows) > 0:
+        outcome_type = parent_workflows[0].type + " outcome"
+    else:
+        outcome_type = workflow.type + " outcome"
     return {
         "parent_workflow": WorkflowSerializerShallow(
             parent_workflows, many=True
@@ -1277,7 +1280,9 @@ def get_parent_outcome_data(workflow, user):
         "outcomenode": OutcomeNodeSerializerShallow(
             parent_outcomenodes, many=True
         ).data,
-        "outcome": OutcomeSerializerShallow(parent_outcomes, many=True).data,
+        "outcome": OutcomeSerializerShallow(
+            parent_outcomes, many=True, context={"type": outcome_type}
+        ).data,
         "outcomeoutcome": OutcomeOutcomeSerializerShallow(
             parent_outcomeoutcomes, many=True
         ).data,
@@ -1323,7 +1328,9 @@ def get_child_outcome_data(workflow, user):
             child_workflow_outcomeworkflows, many=True
         ).data,
         "outcome": OutcomeSerializerShallow(
-            child_workflow_outcomes, many=True
+            child_workflow_outcomes,
+            many=True,
+            context={"type": linked_workflows[0].type + " outcome"},
         ).data,
         "outcomeoutcome": OutcomeOutcomeSerializerShallow(
             child_workflow_outcomeoutcomes, many=True
@@ -1373,7 +1380,7 @@ def get_workflow_data_flat(workflow, user):
             outcomeworkflows, many=True
         ).data
         data_flat["outcome"] = OutcomeSerializerShallow(
-            outcomes, many=True
+            outcomes, many=True, context={"type": workflow.type + " outcome"}
         ).data
         data_flat["outcomeoutcome"] = OutcomeOutcomeSerializerShallow(
             outcomeoutcomes, many=True
@@ -4234,8 +4241,7 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
             + model.check_child_outcomes(),
             many=True,
         ).data
-        if degree == 0:
-            OutcomeNode.objects.filter(node=model.node, degree=0).delete()
+        OutcomeNode.objects.filter(node=model.node, degree=0).delete()
         new_node_data = NodeSerializerShallow(model.node).data
         new_outcomenode_set = new_node_data["outcomenode_set"]
         new_outcomenode_unique_set = new_node_data["outcomenode_unique_set"]
@@ -4290,10 +4296,9 @@ def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
             + model.check_child_outcomes(),
             many=True,
         ).data
-        if degree == 0:
-            OutcomeHorizontalLink.objects.filter(
-                outcome=outcome, degree=0
-            ).delete()
+        OutcomeHorizontalLink.objects.filter(
+            outcome=outcome, degree=0
+        ).delete()
         new_outcome_data = OutcomeSerializerShallow(model.outcome).data
         new_outcome_horizontal_links = new_outcome_data[
             "outcome_horizontal_links"

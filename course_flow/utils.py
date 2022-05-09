@@ -63,7 +63,9 @@ def get_all_outcomes_for_outcome(outcome):
     outcomes = models.Outcome.objects.filter(
         Q(parent_outcomes=outcome)
         | Q(parent_outcomes__parent_outcomes=outcome)
-    ).prefetch_related("outcome_horizontal_links", "child_outcome_links")
+    ).prefetch_related(
+        "outcome_horizontal_links", "child_outcome_links", "sets"
+    )
     outcomeoutcomes = models.OutcomeOutcome.objects.filter(
         Q(parent=outcome) | Q(parent__parent_outcomes=outcome)
     )
@@ -75,7 +77,9 @@ def get_all_outcomes_for_workflow(workflow):
         Q(workflow=workflow)
         | Q(parent_outcomes__workflow=workflow)
         | Q(parent_outcomes__parent_outcomes__workflow=workflow)
-    ).prefetch_related("outcome_horizontal_links", "child_outcome_links")
+    ).prefetch_related(
+        "outcome_horizontal_links", "child_outcome_links", "sets"
+    )
     outcomeoutcomes = models.OutcomeOutcome.objects.filter(
         Q(parent__workflow=workflow)
         | Q(parent__parent_outcomes__workflow=workflow)
@@ -85,22 +89,34 @@ def get_all_outcomes_for_workflow(workflow):
 
 def get_all_outcomes_ordered_for_outcome(outcome):
     outcomes = [outcome]
-    for outcomeoutcome in outcome.child_outcome_links.filter(child__deleted=False).order_by("rank"):
+    for outcomeoutcome in outcome.child_outcome_links.filter(
+        child__deleted=False
+    ).order_by("rank"):
         outcomes += get_all_outcomes_ordered_for_outcome(outcomeoutcome.child)
     return outcomes
 
 
 def get_all_outcomes_ordered(workflow):
     outcomes = []
-    for outcomeworkflow in workflow.outcomeworkflow_set.filter(outcome__deleted=False).order_by("rank"):
-        outcomes+=get_all_outcomes_ordered_for_outcome(outcomeworkflow.outcome)
+    for outcomeworkflow in workflow.outcomeworkflow_set.filter(
+        outcome__deleted=False
+    ).order_by("rank"):
+        outcomes += get_all_outcomes_ordered_for_outcome(
+            outcomeworkflow.outcome
+        )
     return outcomes
 
-def get_all_outcomes_ordered_filtered(workflow,extra_filter):
+
+def get_all_outcomes_ordered_filtered(workflow, extra_filter):
     outcomes = []
-    for outcome in models.Outcome.objects.filter(workflow=workflow,deleted=False).filter(extra_filter).order_by("outcomeworkflow__rank"):
-        outcomes+=get_all_outcomes_ordered_for_outcome(outcome)
+    for outcome in (
+        models.Outcome.objects.filter(workflow=workflow, deleted=False)
+        .filter(extra_filter)
+        .order_by("outcomeworkflow__rank")
+    ):
+        outcomes += get_all_outcomes_ordered_for_outcome(outcome)
     return outcomes
+
 
 def get_unique_outcomenodes(node):
     exclude_outcomes = models.Outcome.objects.filter(
@@ -121,7 +137,6 @@ def get_unique_outcomenodes(node):
             "outcome__parent_outcome_links__parent__parent_outcome_links__rank",
             "outcome__parent_outcome_links__rank",
         )
-
     )
 
 
@@ -148,8 +163,10 @@ def get_unique_outcomehorizontallinks(outcome):
         )
     )
 
+
 def get_parent_nodes_for_workflow(workflow):
-    nodes = (models.Node.objects.filter(linked_workflow=workflow)
+    nodes = (
+        models.Node.objects.filter(linked_workflow=workflow)
         .exclude(
             Q(deleted=True)
             | Q(week__deleted=True)
@@ -158,6 +175,7 @@ def get_parent_nodes_for_workflow(workflow):
         .prefetch_related("outcomenode_set")
     )
     return nodes
+
 
 def get_nondeleted_favourites(user):
     return models.Favourite.objects.filter(user=user).exclude(

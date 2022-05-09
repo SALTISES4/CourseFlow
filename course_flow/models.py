@@ -16,7 +16,10 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from course_flow.utils import get_descendant_outcomes, get_all_outcomes_for_outcome
+from course_flow.utils import (
+    get_all_outcomes_for_outcome,
+    get_descendant_outcomes,
+)
 
 User = get_user_model()
 
@@ -257,7 +260,7 @@ class Outcome(models.Model):
 
     is_dropped = models.BooleanField(default=True)
     depth = models.PositiveIntegerField(default=0)
-    
+
     sets = models.ManyToManyField("ObjectSet", blank=True)
 
     children = models.ManyToManyField(
@@ -277,10 +280,6 @@ class Outcome(models.Model):
     comments = models.ManyToManyField(
         "Comment", blank=True, related_name="outcome"
     )
-    
-    @property
-    def type(self):
-        return self.get_workflow().type+" outcome"
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -454,7 +453,7 @@ class Node(models.Model):
     comments = models.ManyToManyField(
         "Comment", blank=True, related_name="node"
     )
-    
+
     sets = models.ManyToManyField("ObjectSet", blank=True)
 
     NONE = 0
@@ -604,7 +603,7 @@ class Node(models.Model):
         through="NodeCompletionStatus",
         blank=True,
     )
-    
+
     def get_permission_objects(self):
         return [self.get_workflow().get_subclass()]
 
@@ -1807,8 +1806,10 @@ def set_week_type_default(sender, instance, created, **kwargs):
 def set_outcome_depth_default(sender, instance, created, **kwargs):
     try:
         set_list = list(instance.parent.sets.all())
-        outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(instance.child)
-        for outcomeoutcome in [instance]+list(outcomeoutcomes):
+        outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
+            instance.child
+        )
+        for outcomeoutcome in [instance] + list(outcomeoutcomes):
             child = outcomeoutcome.child
             parent = outcomeoutcome.parent
             child.depth = parent.depth + 1

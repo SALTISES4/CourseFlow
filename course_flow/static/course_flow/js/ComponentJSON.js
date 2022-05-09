@@ -346,9 +346,9 @@ export class ComponentJSON extends React.Component{
             let sets;
             if(this.props.object_sets && ["node","outcome"].indexOf(type)>=0){
                 let term_type=data.type;
-                if(type=="node")term_type=data.node_type_display.toLowerCase();
+                if(type=="node")term_type=data.node_type_display.toLowerCase()+" "+term_type;
                 
-                let allowed_sets = this.props.object_sets.filter(set=>set.term == workflow_type+" "+type);
+                let allowed_sets = this.props.object_sets.filter(set=>set.term==term_type);
                 if(allowed_sets.length>=0){
                     let disable_sets=false;
                     if(data.depth)disable_sets=true;

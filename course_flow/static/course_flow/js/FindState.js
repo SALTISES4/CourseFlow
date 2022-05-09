@@ -224,7 +224,7 @@ export const getSortedOutcomesFromOutcomeWorkflowSet = (state,outcomeworkflow_se
     let outcome_ids = Constants.filterThenSortByID(state.outcomeworkflow,outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
     let outcomes = Constants.filterThenSortByID(state.outcome,outcome_ids);
     if(outcomes.length==0)return outcomes;
-    let base_title = Constants.capWords(gettext(outcomes[0].type));
+    let base_title = Constants.capWords(gettext("outcomes"));
     let object_sets = state.objectset.filter(objectset=>objectset.term==outcomes[0].type);
     if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes}];
     let uncategorized = outcomes.filter(outcome=>outcome.sets.length==0)
@@ -255,7 +255,7 @@ export const getSortedOutcomeNodesFromNodes = (state,nodes)=>{
         (outcome,i)=>({...outcome,degree:outcomenodes[i].degree})
     );
     if(outcomes.length==0)return outcomes;
-    let base_title = Constants.capWords(gettext(outcomes[0].type));
+    let base_title = Constants.capWords(gettext("outcomes"));
     let object_sets = state.objectset.filter(objectset=>objectset.term==outcomes[0].type);
     if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes}];
     let categories = [
