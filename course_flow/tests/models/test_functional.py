@@ -2915,7 +2915,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         WorkflowProject.objects.create(workflow=workflow, project=project)
 
         node = workflow.weeks.first().nodes.create(
-            author=self.user, column=workflow.columns.first()
+            author=self.user, column=workflow.columns.first(),node_type=2
         )
         outcome = workflow.outcomes.create(author=self.user)
 
@@ -2956,9 +2956,11 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             ),
             0,
         )
-        selenium.find_element_by_css_selector(
+        element = selenium.find_element_by_css_selector(
             "input[name='" + str(nodeset.id) + "']"
-        ).click()
+        )
+        selenium.execute_script("arguments[0].scrollIntoView();",element);
+        element.click()
         time.sleep(2)
         selenium.find_element_by_css_selector("[href='#view-bar']").click()
         selenium.find_element_by_css_selector(

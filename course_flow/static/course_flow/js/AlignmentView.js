@@ -62,8 +62,10 @@ class AlignmentView extends ComponentJSON{
                         return null;
                     }
                 }
-                this.changeView(-1,"outcome",0);
-                return null;
+                if(this.state.active!=-1||this.state.active2!=0){
+                    this.changeView(-1,"outcome",0);
+                    return null;
+                }
             }
         }
 
