@@ -1323,7 +1323,7 @@ def get_child_outcome_data(workflow, user):
         outcome_type = linked_workflows[0].type + " outcome"
     else:
         outcome_type = workflow.type + " outcome"
-        
+
     return {
         "node": NodeSerializerShallow(nodes, many=True).data,
         "child_workflow": WorkflowSerializerShallow(
@@ -1333,9 +1333,7 @@ def get_child_outcome_data(workflow, user):
             child_workflow_outcomeworkflows, many=True
         ).data,
         "outcome": OutcomeSerializerShallow(
-            child_workflow_outcomes,
-            many=True,
-            context={"type": outcome_type},
+            child_workflow_outcomes, many=True, context={"type": outcome_type},
         ).data,
         "outcomeoutcome": OutcomeOutcomeSerializerShallow(
             child_workflow_outcomeoutcomes, many=True

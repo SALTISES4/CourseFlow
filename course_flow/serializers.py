@@ -1215,7 +1215,7 @@ class RefreshSerializerNode(serializers.ModelSerializer):
             Q(outcome__deleted=True)
             | Q(outcome__parent_outcomes__deleted=True)
             | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
-        ).order_by("rank")
+        )
         return list(map(linkIDMap, links))
 
     def get_outcomenode_unique_set(self, instance):

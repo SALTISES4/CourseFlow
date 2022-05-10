@@ -1,3 +1,4 @@
+import time
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -17,6 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
 from course_flow.utils import (
+    benchmark,
     get_all_outcomes_for_outcome,
     get_descendant_outcomes,
 )
@@ -1520,22 +1522,23 @@ def reorder_for_deleted_outcome_outcome(sender, instance, **kwargs):
         out_of_order_link.save()
 
 
-@receiver(pre_delete, sender=OutcomeNode)
-def reorder_for_deleted_outcome_node(sender, instance, **kwargs):
-    for out_of_order_link in OutcomeNode.objects.filter(
-        node=instance.node, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
+#
+# @receiver(pre_delete, sender=OutcomeNode)
+# def reorder_for_deleted_outcome_node(sender, instance, **kwargs):
+#    for out_of_order_link in OutcomeNode.objects.filter(
+#        node=instance.node, rank__gt=instance.rank
+#    ):
+#        out_of_order_link.rank -= 1
+#        out_of_order_link.save()
 
-
-@receiver(pre_delete, sender=OutcomeHorizontalLink)
-def reorder_for_deleted_outcome_horizontal_link(sender, instance, **kwargs):
-    for out_of_order_link in OutcomeNode.objects.filter(
-        outcome=instance.outcome, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
+#
+# @receiver(pre_delete, sender=OutcomeHorizontalLink)
+# def reorder_for_deleted_outcome_horizontal_link(sender, instance, **kwargs):
+#    for out_of_order_link in OutcomeNode.objects.filter(
+#        outcome=instance.outcome, rank__gt=instance.rank
+#    ):
+#        out_of_order_link.rank -= 1
+#        out_of_order_link.save()
 
 
 @receiver(pre_save, sender=NodeWeek)
@@ -1669,14 +1672,16 @@ def delete_existing_outcome_node(sender, instance, **kwargs):
             instance.rank = new_parent_count
 
 
-@receiver(post_save, sender=OutcomeNode)
-def reorder_for_created_outcome_node(sender, instance, created, **kwargs):
-    if created:
-        for out_of_order_link in OutcomeNode.objects.filter(
-            node=instance.node, rank__gte=instance.rank
-        ).exclude(outcome=instance.outcome):
-            out_of_order_link.rank += 1
-            out_of_order_link.save()
+#
+#
+# @receiver(post_save, sender=OutcomeNode)
+# def reorder_for_created_outcome_node(sender, instance, created, **kwargs):
+#    if created:
+#        for out_of_order_link in OutcomeNode.objects.filter(
+#            node=instance.node, rank__gte=instance.rank
+#        ).exclude(outcome=instance.outcome):
+#            out_of_order_link.rank += 1
+#            out_of_order_link.save()
 
 
 @receiver(pre_save, sender=OutcomeHorizontalLink)
@@ -1694,16 +1699,16 @@ def delete_existing_horizontal_link(sender, instance, **kwargs):
             instance.rank = new_parent_count
 
 
-@receiver(post_save, sender=OutcomeHorizontalLink)
-def reorder_for_created_horizontal_outcome_link(
-    sender, instance, created, **kwargs
-):
-    if created:
-        for out_of_order_link in OutcomeHorizontalLink.objects.filter(
-            outcome=instance.outcome, rank__gte=instance.rank
-        ).exclude(parent_outcome=instance.parent_outcome):
-            out_of_order_link.rank += 1
-            out_of_order_link.save()
+# @receiver(post_save, sender=OutcomeHorizontalLink)
+# def reorder_for_created_horizontal_outcome_link(
+#    sender, instance, created, **kwargs
+# ):
+#    if created:
+#        for out_of_order_link in OutcomeHorizontalLink.objects.filter(
+#            outcome=instance.outcome, rank__gte=instance.rank
+#        ).exclude(parent_outcome=instance.parent_outcome):
+#            out_of_order_link.rank += 1
+#            out_of_order_link.save()
 
 
 """
