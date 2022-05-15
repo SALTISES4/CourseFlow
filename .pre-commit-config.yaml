@@ -25,7 +25,7 @@ repos:
       - id: npm-audit
         name: npm-audit
         language: system
-        entry: npm audit --audit-level=high
+        entry: npm audit --audit-level=critical
         always_run: true
         exclude: ".*"
         verbose: true
