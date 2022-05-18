@@ -319,6 +319,33 @@
     ) {
       location.reload();
     }
+      
+    //Fix Quilljs's link sanitization
+    const Link = Quill.import('formats/link')
+    // Override the existing property on the Quill global object and add custom protocols
+    Link.PROTOCOL_WHITELIST = ['http', 'https'];
+
+    class CustomLinkSanitizer extends Link {
+      static sanitize(url) {
+        // Run default sanitize method from Quill
+        const sanitizedUrl = super.sanitize(url);
+
+        // Not whitelisted URL based on protocol so, let's return `blank`
+        if (!sanitizedUrl || sanitizedUrl === 'about:blank') return sanitizedUrl;
+
+        // Verify if the URL already have a whitelisted protocol
+        const hasWhitelistedProtocol = this.PROTOCOL_WHITELIST.some(function(protocol) {
+          return sanitizedUrl.startsWith(protocol);
+        })
+
+        if (hasWhitelistedProtocol) return sanitizedUrl;
+
+        // if not, then append only 'http' to not to be a relative URL
+        return `http://${sanitizedUrl}`;
+      }
+    }
+
+    Quill.register(CustomLinkSanitizer, true)
 
 //    // Broadcast that you're opening a page.
 //    localStorage.openpages = "";
