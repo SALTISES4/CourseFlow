@@ -373,22 +373,22 @@ export class ComponentJSON extends React.Component{
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
                     <h3>{gettext("Edit ")+type+":"}</h3>
-                    {((type=="outcome" && data.depth==0)||(type=="workflow" && data.type=="course")) &&
-                        <div>
-                            <h4>{gettext("Code (Optional)")}:</h4>
-                            <input autocomplete="off" id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
-                        </div>
-                    }
                     {["node","week","column","workflow","outcome"].indexOf(type)>=0 &&
                         <div>
                             <h4>{gettext("Title")}:</h4>
-                            <input disabled={override} autocomplete="off" id="title-editor" type="text" value={title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
+                            <textarea disabled={override} autocomplete="off" id="title-editor" type="text" value={title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow","outcome"].indexOf(type)>=0 &&
                         <div>
                             <h4>{gettext("Description")}:</h4>
                             <QuillDiv  disabled={override} text={description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
+                        </div>
+                    }
+                    {((type=="outcome" && data.depth==0)||(type=="workflow" && data.type=="course")) &&
+                        <div>
+                            <h4>{gettext("Code (Optional)")}:</h4>
+                            <input autocomplete="off" id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
