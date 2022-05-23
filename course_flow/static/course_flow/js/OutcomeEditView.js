@@ -6,8 +6,9 @@ import OutcomeWorkflowView from "./OutcomeWorkflowView";
 import {OutcomeBarOutcomeView, OutcomeBarOutcomeViewUnconnected} from "./OutcomeView";
 import OutcomeView from "./OutcomeView";
 import {getParentWorkflowByID,getOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getSortedOutcomesFromOutcomeWorkflowSet,getSortedOutcomeNodesFromNodes} from "./FindState";
+import {moveOutcomeWorkflow} from "./Reducers";
 import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents';
-import {newOutcome} from "./PostFunctions";
+import {newOutcome, insertedAt} from "./PostFunctions";
 import * as Constants from "./Constants";
 
 //Basic component representing the outcome view
@@ -24,9 +25,15 @@ class OutcomeEditView extends ComponentJSON{
         let outcomes = data.map(category=>
             <div>
                 <h4>{category.objectset.title+":"}</h4>
-                {category.outcomes.map(outcome=>
-                    <OutcomeView key={outcome.id} objectID={outcome.id} parentID={this.props.workflow.id} renderer={this.props.renderer} show_horizontal={true}/>
-                )}
+                <div ref={this.maindiv}>
+                    {category.outcomes.map(outcome=>{
+                        let my_class = "outcome-workflow";
+                        if(outcome.through_no_drag)my_class+=" no-drag";
+                        return (<div class={my_class} data-child-id={outcome.id} id={outcome.outcomeworkflow} key={outcome.outcomeworkflow}>
+                            <OutcomeView key={outcome.id} objectID={outcome.id} parentID={this.props.workflow.id} renderer={this.props.renderer} show_horizontal={true}/>
+                        </div>);
+                    })}
+                </div>
             </div>
         );
         if(outcomes.length==0)outcomes=(
@@ -46,7 +53,26 @@ class OutcomeEditView extends ComponentJSON{
             </div>
         );
     }
+
+
+    postMountFunction(){
+        this.makeDragAndDrop();
+    }
+    componentDidUpdate(){
+        this.makeDragAndDrop();
+    }
+    stopSortFunction(){
+        
+    }
+    makeDragAndDrop(){
+        this.makeSortableNode($(this.maindiv.current).children(".outcome-workflow").not("ui-draggable"),this.props.objectID,"outcomeworkflow",".outcome-workflow");
+        if(this.props.data.depth==0)this.makeDroppable();
+    }
     
+    sortableMovedFunction(id,new_position,type,new_parent,child_id){
+        this.props.renderer.micro_update(moveOutcomeWorkflow(id,new_position,this.props.workflow.id,child_id));
+        insertedAt(this.props.renderer,child_id,"outcome",this.props.workflow.id,"workflow",new_position,"outcomeworkflow");
+    }
     
     addNew(){
         newOutcome(this.props.workflow.id);

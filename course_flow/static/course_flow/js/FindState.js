@@ -221,8 +221,13 @@ export const getStrategyByID = (state,id)=>{
 }
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export const getSortedOutcomesFromOutcomeWorkflowSet = (state,outcomeworkflow_set)=>{
-    let outcome_ids = Constants.filterThenSortByID(state.outcomeworkflow,outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
+    let outcomeworkflows = Constants.filterThenSortByID(state.outcomeworkflow,outcomeworkflow_set);
+    let outcome_ids = outcomeworkflows.map(outcomeworkflow=>outcomeworkflow.outcome);
     let outcomes = Constants.filterThenSortByID(state.outcome,outcome_ids);
+    for(var i=0;i<outcomes.length;i++){
+        outcomes[i].outcomeworkflow=outcomeworkflows[i].id;
+        outcomes[i].through_no_drag=outcomeworkflows[i].no_drag;
+    };
     if(outcomes.length==0)return outcomes;
     let base_title = Constants.capWords(gettext("outcomes"));
     let object_sets = state.objectset.filter(objectset=>objectset.term==outcomes[0].type);

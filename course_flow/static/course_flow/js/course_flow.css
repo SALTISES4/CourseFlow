@@ -1542,6 +1542,14 @@ button, input[type="submit"]{
     cursor:move;
 }
 
+.outcomeworkflow-ghost{
+    min-width:300px;
+    min-height:10px;
+    border:1px dashed black;
+    position:absolute;
+    cursor:move;
+}
+
 .node{
     width:200px;
     border:solid 1px black;

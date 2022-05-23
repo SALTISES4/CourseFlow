@@ -61,6 +61,13 @@ export const moveOutcomeOutcome = (id,new_position,new_parent,child_id) => {
     }
 }
 
+export const moveOutcomeWorkflow = (id,new_position,new_parent,child_id) => {
+    return {
+        type: 'outcomeworkflow/movedTo',
+        payload:{id:id,new_index:new_position,new_parent:new_parent,child_id:child_id}
+    }
+}
+
 export const gridMenuItemAdded = (response_data) => {
     return {
         type: "gridmenu/itemAdded",
@@ -109,6 +116,14 @@ export function workflowReducer(state={},action){
             if(old_index>=0){
                 new_state.weekworklow_set=new_state.weekworkflow_set.slice();
                 new_state.weekworkflow_set.splice(old_index,1,action.payload.new_id);
+            }
+            return new_state;
+        case 'outcomeworkflow/changeID':
+            var new_state={...state};
+            var old_index = state.outcomeworkflow_set.indexOf(action.payload.old_id);
+            if(old_index>=0){
+                new_state.outcomeworklow_set=new_state.outcomeworkflow_set.slice();
+                new_state.outcomeworkflow_set.splice(old_index,1,action.payload.new_id);
             }
             return new_state;
         case 'columnworkflow/changeID':
@@ -270,6 +285,23 @@ export function outcomeworkflowReducer(state=[],action){
                 
             }
             return new_state;
+        case 'outcomeworkflow/movedTo':
+            new_state = state.slice();
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    new_state[i]={...state[i],no_drag:true}
+                }
+            }
+            return new_state;
+        case 'outcomeworkflow/changeID':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.old_id){
+                    var new_state=state.slice();
+                    new_state[i]={...new_state[i],id:action.payload.new_id,no_drag:false}
+                    return new_state;
+                }
+            }
+            return state;
         case 'outcome_base/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].outcome==action.payload.id){

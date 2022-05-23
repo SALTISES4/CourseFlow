@@ -24,7 +24,7 @@ class OutcomeView extends ComponentJSON{
         let data = this.props.data;
         if(Constants.checkSetHidden(data,this.props.object_sets))return null;
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} show_horizontal={this.props.show_horizontal} />
+            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} show_horizontal={this.props.show_horizontal} parent_depth={this.props.data.depth}/>
         );
         
         
@@ -89,7 +89,7 @@ class OutcomeView extends ComponentJSON{
                         </div>
                     </div>
                 }
-                <ol class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
+                <ol class={"children-block children-block-"+this.props.data.depth} id={this.props.objectID+"-children-block"} ref={this.children_block}>
                     {children}
                 </ol>
                 {(!read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>{gettext("+ Add New")}</div>
@@ -126,7 +126,7 @@ class OutcomeView extends ComponentJSON{
 //    }
 
     makeDragAndDrop(){
-        this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome",false,false,".children-block",".outcome");
+        this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome-"+this.props.data.depth,false,false,".children-block-"+this.props.data.depth,".outcome");
         if(this.props.data.depth==0)this.makeDroppable();
     }
 

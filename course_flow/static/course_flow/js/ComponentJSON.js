@@ -105,7 +105,7 @@ export class ComponentJSON extends React.Component{
                         this.lockChild(child_id,true,draggable_type);
                     }
                 }else{
-                    console.log(drag_item);
+//                    console.log(drag_item);
                 }
             },
             out:(e,ui)=>{
@@ -149,6 +149,7 @@ export class ComponentJSON extends React.Component{
         if(through_type=="weekworkflow")object_type="week";
         if(through_type=="columnworkflow")object_type="column";
         if(through_type=="outcomeoutcome")object_type="outcome";
+        if(through_type=="outcomeworkflow")object_type="outcome";
         this.props.renderer.lock_update(
             {object_id:id,object_type:object_type},Constants.lock_times.move,lock
         );
