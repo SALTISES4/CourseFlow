@@ -1834,6 +1834,9 @@ def create_default_node_content(sender, instance, created, **kwargs):
         if instance.node_type == instance.ACTIVITY_NODE:
             instance.has_autolink = True
             instance.save()
+        elif instance.node_type == instance.PROGRAM_NODE:
+            instance.time_units = instance.CREDITS
+            instance.save()
 
 
 @receiver(post_save, sender=Activity)
@@ -1873,9 +1876,9 @@ def create_default_course_content(sender, instance, created, **kwargs):
             author=instance.author,
             is_strategy=instance.is_strategy,
         )
+        instance.time_units = instance.CREDITS
         instance.save()
-
-
+        
 @receiver(post_save, sender=Program)
 def create_default_program_content(sender, instance, created, **kwargs):
     if created and instance.is_original:
