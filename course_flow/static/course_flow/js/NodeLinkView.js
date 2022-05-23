@@ -17,18 +17,19 @@ class NodeLinkView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        if(!this.source_node||!this.source_node.outerWidth()||!this.target_node||!this.target_node.outerWidth()){
+        if(!this.source_node||!this.source_node.outerWidth()||!this.target_node||!this.target_node.outerWidth() || !this.target_port_handle || this.target_port_handle.empty()){
             this.source_node = $(this.props.node_div.current);
+            this.target_node = $("#"+data.target_node+".node");
+            this.source_node.on(this.rerenderEvents,this.rerender.bind(this));
+            this.target_node.on(this.rerenderEvents,this.rerender.bind(this));
             this.source_port_handle = d3.select(
                 "g.port-"+data.source_node+" circle[data-port-type='source'][data-port='"+Constants.port_keys[data.source_port]+"']"
             );
-            this.target_node = $("#"+data.target_node+".node");
             this.target_port_handle = d3.select(
                 "g.port-"+data.target_node+" circle[data-port-type='target'][data-port='"+Constants.port_keys[data.target_port]+"']"
             );
-            this.source_node.on(this.rerenderEvents,this.rerender.bind(this));
-            this.target_node.on(this.rerenderEvents,this.rerender.bind(this));
         }
+        
         
         let style={};
         if(data.lock){
@@ -44,11 +45,12 @@ class NodeLinkView extends ComponentJSON{
         
         if(!this.source_node.is(':visible') || !this.target_node.is(':visible'))return null;
         
-        console.log("NodeLink");
+        console.log("NodeLink id "+data.id);
         console.log(source_dims);
         console.log(this.source_node);
-        console.log();
-        console.log();
+        console.log(target_dims);
+        console.log(this.target_node);
+        console.log(this.target_port_handle);
         
         return(
             <div>

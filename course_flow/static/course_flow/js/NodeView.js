@@ -190,7 +190,7 @@ class NodeView extends ComponentJSON{
     doubleClick(evt){
         evt.stopPropagation();
         if(this.props.data.linked_workflow){
-            window.location=update_path["workflow"].replace("0",this.props.data.linked_workflow);
+            window.open(update_path["workflow"].replace("0",this.props.data.linked_workflow));
         }
     }
 

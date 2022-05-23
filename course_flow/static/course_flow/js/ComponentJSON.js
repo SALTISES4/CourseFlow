@@ -576,6 +576,7 @@ export class NodeLinkSVG extends React.Component{
             const target_point=[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])];
 
             var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
+            console.log(path_array);
             var path=(this.getPath(path_array));
             let stroke="black";
             if(this.props.style && this.props.style.stroke)stroke=this.props.style.stroke;
@@ -585,7 +586,7 @@ export class NodeLinkSVG extends React.Component{
                     <path style={this.props.style} opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
                 </g>
             );
-        }catch(err){return null;}
+        }catch(err){console.log("could not draw a node link");return null;}
     }
     
     getPathArray(source_point,source_port,target_point,target_port){
