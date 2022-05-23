@@ -45,12 +45,6 @@ class NodeLinkView extends ComponentJSON{
         
         if(!this.source_node.is(':visible') || !this.target_node.is(':visible'))return null;
         
-        console.log("NodeLink id "+data.id);
-        console.log(source_dims);
-        console.log(this.source_node);
-        console.log(target_dims);
-        console.log(this.target_node);
-        console.log(this.target_port_handle);
         
         return(
             <div>
