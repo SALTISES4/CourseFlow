@@ -94,7 +94,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         
         let view_buttons = [
             {type:"workflowview",name:gettext("Workflow View"),disabled:[]},
-            {type:"outcomeedit",name:Constants.capWords(gettext("Edit")+" "+gettext(data.type+" outcomes")),disabled:[]},
+            {type:"outcomeedit",name:Constants.capWords(gettext("View")+" "+gettext(data.type+" outcomes")),disabled:[]},
             {type:"outcometable",name:Constants.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
             {type:"alignmentanalysis",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
             {type:"competencymatrix",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
