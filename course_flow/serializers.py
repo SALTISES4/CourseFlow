@@ -435,6 +435,7 @@ class WeekSerializerShallow(
             "is_strategy",
             "strategy_classification",
             "comments",
+            "is_dropped",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -458,6 +459,9 @@ class WeekSerializerShallow(
         )
         instance.strategy_classification = validated_data.get(
             "strategy_classification", instance.strategy_classification
+        )
+        instance.is_dropped = validated_data.get(
+            "is_dropped", instance.is_dropped
         )
         instance.save()
         return instance

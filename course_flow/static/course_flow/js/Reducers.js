@@ -12,6 +12,13 @@ export const createLockAction = (object_id,object_type,lock,user_id,user_colour)
     }
 }
 
+export const reloadCommentsAction = (id,objectType,comment_data) => {
+    return {
+        type: objectType+'/reloadComments',
+        payload:{id:id,objectType:objectType,comment_data,comment_data}
+    }
+}
+
 export const moveColumnWorkflow = (id,new_position,new_parent,child_id) => {
     return {
         type: 'columnworkflow/movedTo',
@@ -442,6 +449,16 @@ export function columnReducer(state=[],action){
             new_state=state.slice();
             new_state.push(...action.payload.columns_added);
             return new_state;
+        case 'column/reloadComments':
+            var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                let obj = new_state[i];
+                if(obj.id==action.payload.id){
+                    new_state[i]={...obj,comments:action.payload.comment_data};
+                    return new_state;
+                }
+            }
+            return state;
         default:
             return state;
     }
@@ -692,6 +709,16 @@ export function weekReducer(state=[],action){
             new_state=state.slice();
             new_state.push(action.payload.strategy);
             return new_state;
+        case 'week/reloadComments':
+            var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                let obj = new_state[i];
+                if(obj.id==action.payload.id){
+                    new_state[i]={...obj,comments:action.payload.comment_data};
+                    return new_state;
+                }
+            }
+            return state;
         default:
             return state;
     }
@@ -969,6 +996,16 @@ export function nodeReducer(state=[],action){
                 }
             }
             return new_state;
+        case 'node/reloadComments':
+            var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                let obj = new_state[i];
+                if(obj.id==action.payload.id){
+                    new_state[i]={...obj,comments:action.payload.comment_data};
+                    return new_state;
+                }
+            }
+            return state;
         default:
             return state;
     }
@@ -1258,7 +1295,7 @@ export function outcomeReducer(state=[],action){
             }
             return state;
         case 'outcome/updateHorizontalLinks':
-            new_state=state.slice();
+            var new_state=state.slice();
             for(var i=0;i<action.payload.data.length;i++){
                 let new_outcome_data = action.payload.data[i];
                 for(var j=0;j<new_state.length;j++){
@@ -1268,6 +1305,17 @@ export function outcomeReducer(state=[],action){
                 }
             }
             return new_state;
+        case 'outcome/reloadComments':
+        case 'outcome_base/reloadComments':
+            var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                let obj = new_state[i];
+                if(obj.id==action.payload.id){
+                    new_state[i]={...obj,comments:action.payload.comment_data};
+                    return new_state;
+                }
+            }
+            return state;
         default:
             return state;
     }

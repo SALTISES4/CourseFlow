@@ -33,11 +33,19 @@ class TermView extends WeekViewUnconnected{
             );
         }
         
+        let css_class = "week";
+        if(data.is_strategy)css_class+=" strategy";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        if(data.is_dropped)css_class+=" dropped";
+        
         
         let style={};
         if(data.lock){
             style.border="2px solid "+data.lock.user_colour;
         }
+        let dropIcon;
+        if(data.is_dropped)dropIcon = "droptriangleup";
+        else dropIcon = "droptriangledown";
         
         let mouseover_actions = [];
         if(!read_only){
@@ -48,7 +56,7 @@ class TermView extends WeekViewUnconnected{
         mouseover_actions.push(this.addCommenting(data));
         
         return (
-            <div style={style} class={"week"} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
+            <div style={style} class={css_class} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="mouseover-container-bypass">
                     <div class="mouseover-actions">
                         {mouseover_actions}
@@ -57,6 +65,12 @@ class TermView extends WeekViewUnconnected{
                 <TitleText text={data.title} defaultText={data.week_type_display+" "+(this.props.rank+1)}/>
                 <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                     {node_blocks}
+                </div>
+                <div class = "week-drop-row hover-shade" onClick={this.toggleDrop.bind(this)}>
+                    <div class = "node-drop-side node-drop-left"></div>
+                    <div class = "node-drop-middle"><img src={iconpath+dropIcon+".svg"}/></div>
+                    <div class = "node-drop-side node-drop-right">
+                    </div>
                 </div>
                 {this.addEditable(data)}
             </div>

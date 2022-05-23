@@ -731,6 +731,8 @@ class Week(models.Model):
         "Workflow", on_delete=models.SET_NULL, null=True
     )
 
+    is_dropped = models.BooleanField(default=True)
+
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     nodes = models.ManyToManyField(Node, through="NodeWeek", blank=True)

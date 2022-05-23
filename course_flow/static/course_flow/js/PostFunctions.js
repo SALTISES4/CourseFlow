@@ -236,6 +236,21 @@ export function removeComment(objectID,objectType,commentPk,callBackFunction=()=
     }
 }
 
+//Removes all comments from the object
+export function removeAllComments(objectID,objectType,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.remove_all_comments, {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 
 //Causes the specified throughmodel to update its degree
 export function updateOutcomenodeDegree(nodeID,outcomeID,value,callBackFunction=()=>console.log("success")){

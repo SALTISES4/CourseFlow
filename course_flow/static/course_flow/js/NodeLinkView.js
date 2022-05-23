@@ -41,6 +41,15 @@ class NodeLinkView extends ComponentJSON{
         var target_dims = {width:this.target_node.outerWidth(),height:this.target_node.outerHeight()};
         if(!source_dims.width||!target_dims.width)return null;
         var selector=this;
+        
+        if(!this.source_node.is(':visible') || !this.target_node.is(':visible'))return null;
+        
+        console.log("NodeLink");
+        console.log(source_dims);
+        console.log(this.source_node);
+        console.log();
+        console.log();
+        
         return(
             <div>
                 {reactDom.createPortal(

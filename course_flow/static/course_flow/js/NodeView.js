@@ -155,8 +155,6 @@ class NodeView extends ComponentJSON{
     
     //Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
     updateHidden(){
-        console.log("updating hidden");
-        console.log($(this.maindiv.current).css("display"));
         if($(this.maindiv.current).css("display")=="none"){
             let week = $(this.maindiv.current).parent(".node-week").parent();
             if(week.children(".node-week:not(.empty)").length>1)$(this.maindiv.current).parent(".node-week").addClass("empty");

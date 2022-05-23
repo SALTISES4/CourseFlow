@@ -1,9 +1,10 @@
 import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
-import * as Constants from "./Constants.js";
+import * as Constants from "./Constants";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, updateObjectSet} from "./PostFunctions.js"
+import {reloadCommentsAction} from "./Reducers";
+import {newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -306,7 +307,7 @@ export class ComponentJSON extends React.Component{
         return(
             [
                 <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext={gettext("Comments")} handleClick={this.commentClick.bind(this)}/>,
-                <CommentBox show={this.state.show_comments} comments={this.state.comment_data} parent={this}/>
+                <CommentBox show={this.state.show_comments} comments={this.props.data.comments} parent={this}/>
             ]
         );
     }
@@ -314,17 +315,21 @@ export class ComponentJSON extends React.Component{
     commentClick(evt){
         evt.stopPropagation();
         if(!this.state.show_comments){
-            this.reloadComments();
+            this.reloadComments(true);
         }else(this.setState({show_comments:false}));
     }
 
-    reloadComments(){
+    reloadComments(show_comments){
         let props = this.props;
         let data = props.data;
         props.renderer.tiny_loader.startLoad();
         getCommentsForObject(data.id,Constants.object_dictionary[this.objectType],
             (response_data)=>{
-                this.setState({show_comments:true,comment_data:response_data.data_package});
+                this.props.dispatch(reloadCommentsAction(this.props.data.id,Constants.object_dictionary[this.objectType],response_data.data_package));
+                if(show_comments){
+                    this.setState({show_comments:true});
+                }
+                //this.setState({show_comments:true,comment_data:response_data.data_package});
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -562,9 +567,11 @@ export class NodeLinkSVG extends React.Component{
         
         try{
             const source_transform=Constants.getSVGTranslation(this.props.source_port_handle.select(function(){
-                return this.parentNode}).attr("transform"));
+                return this.parentNode
+            }).attr("transform"));
             const target_transform=Constants.getSVGTranslation(this.props.target_port_handle.select(function(){
-                return this.parentNode}).attr("transform"));
+                return this.parentNode
+            }).attr("transform"));
             const source_point=[parseInt(this.props.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.props.source_port_handle.attr("cy"))+parseInt(source_transform[1])];
             const target_point=[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])];
 
@@ -828,6 +835,12 @@ export class CommentBox extends React.Component{
                         <button class="menu-create" onClick={this.appendComment.bind(this)}>{gettext("Submit")}</button>
                     ]
                 }
+                {(!read_only && comments.length>1) && 
+                    [
+                        <hr/>,
+                        <button class="menu-create small" onClick={this.removeAllComments.bind(this)}>{gettext("Clear All Comments")}</button>
+                    ]
+                }
             </div>,
             comment_indicator
             ],
@@ -840,6 +853,16 @@ export class CommentBox extends React.Component{
         let props = parent.props;
         if(window.confirm(gettext("Are you sure you want to permanently clear this comment?"))){
             removeComment(props.objectID,Constants.object_dictionary[parent.objectType],id,
+                parent.reloadComments.bind(parent)
+            );
+        }
+    }
+
+    removeAllComments(){
+        let parent = this.props.parent;
+        let props = parent.props;
+        if(window.confirm(gettext("Are you sure you want to permanently clear all comments from this object?"))){
+            removeAllComments(props.objectID,Constants.object_dictionary[parent.objectType],
                 parent.reloadComments.bind(parent)
             );
         }

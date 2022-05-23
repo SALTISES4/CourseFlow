@@ -4524,6 +4524,21 @@ def remove_comment(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
+@user_can_edit(False)
+def remove_all_comments(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+
+    try:
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        model.comments.all().delete()
+
+    except (ProtectedError, ObjectDoesNotExist):
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
+
 @user_can_delete(False)
 def delete_self(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
