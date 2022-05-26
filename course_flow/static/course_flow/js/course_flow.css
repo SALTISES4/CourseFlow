@@ -523,7 +523,7 @@ button:hover{
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
 }
 
-.project-menu .create-dropdown{
+.project-menu .create-dropdown, .home-tabs .create-dropdown{
     margin-top:-20px;
 }
 
@@ -2554,6 +2554,34 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     pointer-events:none;
 }
 
+.nodelinkwrapper{
+    width:100px;
+    height:100px;
+    overflow:hidden;
+    pointer-events: none;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.nodelinktext {
+    text-anchor: middle;
+    dominant-baseline: middle;
+    max-width: 100px;
+    max-height: 100px;
+    white-space: normal;
+    background: white;
+    padding: 2px;
+    border: 1px solid black;
+    font-size: 10px;
+    text-align: center;
+    width:-webkit-fit-content;
+    width:-moz-fit-content;
+    width:fit-content;
+    pointer-events:all;
+}
+
+
 .workflow-canvas circle, .workflow-canvas path.nodelink{
     pointer-events:auto;
 }
@@ -2718,6 +2746,27 @@ circle.mouseover{
     width:100%;
     height:100%;
 }
+
+.slidecontainer{
+    width:100%;
+}
+
+.range-slider{
+  -webkit-appearance: none;
+          appearance: none;
+  width: 100%; /* Full-width */
+  height: 25px; /* Specified height */
+  background: #d3d3d3; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  transition: opacity .2s;
+  border-radius:20px;
+}
+
+.range-slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
 
 .node-bar-column-workflow{
     width:100%;

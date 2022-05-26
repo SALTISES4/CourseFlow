@@ -228,6 +228,7 @@ class NodeLink(models.Model):
     target_port = models.PositiveIntegerField(choices=TARGET_PORTS, default=0)
 
     dashed = models.BooleanField(default=False)
+    text_position = models.PositiveSmallIntegerField(default=20)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -1878,7 +1879,8 @@ def create_default_course_content(sender, instance, created, **kwargs):
         )
         instance.time_units = instance.CREDITS
         instance.save()
-        
+
+
 @receiver(post_save, sender=Program)
 def create_default_program_content(sender, instance, created, **kwargs):
     if created and instance.is_original:

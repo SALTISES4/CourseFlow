@@ -36,6 +36,7 @@ class NodeLinkView extends ComponentJSON{
             style.stroke=data.lock.user_colour;
             style.opacity=1;
         }
+        if(data.dashed)style.strokeDasharray="5,5"
         if(this.source_node.css("display")=="none"||this.target_node.css("display")=="none")style["display"]="none";
         
         var source_dims = {width:this.source_node.outerWidth(),height:this.source_node.outerHeight()};
@@ -49,7 +50,7 @@ class NodeLinkView extends ComponentJSON{
         return(
             <div>
                 {reactDom.createPortal(
-                    <NodeLinkSVG style={style} source_port_handle={this.source_port_handle} source_port={data.source_port} target_port_handle={this.target_port_handle} target_port={data.target_port} clickFunction={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,selector)} selected={this.state.selected} source_dimensions={source_dims} target_dimensions={target_dims}/>
+                    <NodeLinkSVG style={style} title={data.title} text_position={data.text_position} source_port_handle={this.source_port_handle} source_port={data.source_port} target_port_handle={this.target_port_handle} target_port={data.target_port} clickFunction={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,selector)} selected={this.state.selected} source_dimensions={source_dims} target_dimensions={target_dims}/>
                     ,$(".workflow-canvas")[0])}
                 {this.addEditable(data)}
             </div>

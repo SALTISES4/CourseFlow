@@ -1075,6 +1075,16 @@ export function nodelinkReducer(state=[],action){
                 }
             }
             return state;
+        case 'nodelink/changeField':
+            if(action.payload.changeFieldID==changeFieldID)return state;
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i],...action.payload.json};
+                    return new_state;
+                }
+            }
+            return state;
         case 'node/insertBelow':
         case 'node/newNode':
         case 'node/deleteSelf':

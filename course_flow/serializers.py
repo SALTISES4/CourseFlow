@@ -153,6 +153,8 @@ class NodeLinkSerializerShallow(
             "target_node",
             "source_port",
             "target_port",
+            "dashed",
+            "text_position",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -165,6 +167,10 @@ class NodeLinkSerializerShallow(
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
+        instance.dashed = validated_data.get("dashed", instance.dashed)
+        instance.text_position = validated_data.get(
+            "text_position", instance.text_position
+        )
         instance.save()
         return instance
 
@@ -1325,6 +1331,7 @@ class NodeExportSerializer(
 
 
 serializer_lookups_shallow = {
+    "nodelink": NodeLinkSerializerShallow,
     "node": NodeSerializerShallow,
     "nodeweek": NodeWeekSerializerShallow,
     "week": WeekSerializerShallow,

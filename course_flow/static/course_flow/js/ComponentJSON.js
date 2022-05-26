@@ -374,7 +374,7 @@ export class ComponentJSON extends React.Component{
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
                     <h3>{gettext("Edit ")+type+":"}</h3>
-                    {["node","week","column","workflow","outcome"].indexOf(type)>=0 &&
+                    {["node","week","column","workflow","outcome","nodelink"].indexOf(type)>=0 &&
                         <div>
                             <h4>{gettext("Title")}:</h4>
                             <textarea disabled={override} autocomplete="off" id="title-editor" type="text" value={title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
@@ -477,6 +477,21 @@ export class ComponentJSON extends React.Component{
                             <label for="has_autolink">{gettext("Draw arrow to next node")}</label>
                         </div>
                     }
+                    {type=="nodelink" &&
+                        <div>
+                            <h4>{gettext("Style")}:</h4>
+                            <div>
+                                <input type="checkbox" name="dashed" checked={data.dashed} onChange={this.checkboxChanged.bind(this,"dashed")}/>
+                                <label for="dashed">{gettext("Dashed Line")}</label>
+                            </div>
+                            <div>
+                                <label for="text-position-range">{gettext("Text Position")}</label>
+                                <div class="slidecontainer">
+                                      <input type="range" min="1" max="100" value={data.text_position} class="range-slider" id="text-position-range" onChange={this.inputChanged.bind(this,"text_position")}/>               
+                                </div>
+                            </div>
+                        </div>
+                    }
                     {type=="workflow" &&
                         <div>
                             <h4>{gettext("Settings")}:</h4>
@@ -566,7 +581,7 @@ export class ComponentJSON extends React.Component{
 export class NodeLinkSVG extends React.Component{
     render(){
         
-        try{
+        //try{
             const source_transform=Constants.getSVGTranslation(this.props.source_port_handle.select(function(){
                 return this.parentNode
             }).attr("transform"));
@@ -578,23 +593,39 @@ export class NodeLinkSVG extends React.Component{
 
             var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
             
-            var path=(this.getPath(path_array));
+            
+            var path=(this.getPath(path_array.findPath()));
+            
             let stroke="black";
             if(this.props.style && this.props.style.stroke)stroke=this.props.style.stroke;
+            
+            let title;
+            if(this.props.title && this.props.title!=""){
+                let text_position=path_array.getFractionalPoint(this.props.text_position/100.0);
+                title = (
+                    <foreignObject width="100" height="100" x={text_position[0]-50} y={text_position[1]-50}>
+                    <div class="nodelinkwrapper">
+                        <div class="nodelinktext" onClick={this.props.clickFunction}>{this.props.title}</div>
+                    </div>
+                    </foreignObject>
+                )
+            }
+            
             return (
                 <g fill="none" stroke={stroke}>
                     <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"}/>
                     <path style={this.props.style} opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
+                    {title}
                 </g>
             );
-        }catch(err){console.log("could not draw a node link");return null;}
+        //}catch(err){console.log("could not draw a node link");return null;}
     }
     
     getPathArray(source_point,source_port,target_point,target_port){
         var source_dims = [this.props.source_dimensions.width,this.props.source_dimensions.height];
         var target_dims = [this.props.target_dimensions.width,this.props.target_dimensions.height];
         var path_generator = new PathGenerator(source_point,source_port,target_point,target_port,source_dims,target_dims);
-        return path_generator.findPath();
+        return path_generator;
     }
 
     getPath(path_array){
@@ -1081,6 +1112,7 @@ export class PathGenerator{
         this.hasTicked = {source:false,target:false};
         this.node_dims = {source:source_dims,target:target_dims};
         this.findcounter=0;
+        this.full_array=[];
     }
     
     //finds and returns the path
@@ -1088,7 +1120,45 @@ export class PathGenerator{
         try{
             this.findNextPoint();
         }catch(err){console.log("error calculating path")};
-        return this.joinArrays();
+        this.full_array=this.joinArrays();
+        return this.full_array;
+    }
+    
+    //gets the total length of our path
+    getPathLength(){
+        let length=0;
+        for(var i=1;i<this.full_array.length;i++){
+            let seg_len = mathnorm(mathsubtract(this.full_array[i],this.full_array[i-1]));
+            length+=seg_len;
+        }
+        return length;
+    }
+    
+    //gets the point at the given fraction of our path length
+    getFractionalPoint(position){
+        console.log("getting fractional length");
+        console.log(position);
+        let length = this.getPathLength();
+        console.log(length);
+        if(length==0)return [0,0];
+        let point = this.full_array[1];
+        let run_length=0;
+        let target_length=length*position;
+        for(var i=1;i<this.full_array.length;i++){
+            console.log("on an iteration");
+            console.log(run_length);
+            console.log(target_length);
+            let seg = mathsubtract(this.full_array[i],this.full_array[i-1]);
+            let seg_len = mathnorm(seg);
+            console.log(seg_len);
+            if(run_length+seg_len<target_length)run_length+=seg_len;
+            else{
+                let remaining_len=target_length-run_length;
+                return mathadd(this.full_array[i-1],mathmultiply(seg,remaining_len/seg_len));
+            }
+        }
+        return point;
+        
     }
     
     //Recursively checks to see whether we need to move around a node, if not, we just need to join the arrays
