@@ -38,7 +38,7 @@ from .utils import (
     linkIDMap,
 )
 
-bleach_allowed_tags = [
+bleach_allowed_tags_description = [
     "b",
     "u",
     "em",
@@ -54,6 +54,13 @@ bleach_allowed_tags = [
     "sup",
 ]
 
+bleach_allowed_tags_title = [
+    "b",
+    "u",
+    "em",
+    "i",
+]
+
 
 def bleach_sanitizer(value, **kwargs):
     if value is not None:
@@ -66,22 +73,24 @@ class DescriptionSerializerMixin:
     description = serializers.SerializerMethodField()
 
     def get_description(self, instance):
-        return bleach_sanitizer(instance.description, tags=bleach_allowed_tags)
+        return bleach_sanitizer(
+            instance.description, tags=bleach_allowed_tags_description
+        )
 
     def validate_description(self, value):
         if value is None:
             return None
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)
+        return bleach_sanitizer(value, tags=bleach_allowed_tags_description)
 
 
 class TitleSerializerMixin:
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
-        return bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
+        return bleach_sanitizer(instance.title, tags=bleach_allowed_tags_title)
 
     def validate_title(self, value):
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)[
+        return bleach_sanitizer(value, tags=bleach_allowed_tags_title)[
             :title_max_length
         ]
 
@@ -93,7 +102,9 @@ class DescriptionSerializerTextMixin(serializers.Serializer):
         if instance.description is None:
             return None
         returnval = html2text(
-            bleach_sanitizer(instance.description, tags=bleach_allowed_tags)
+            bleach_sanitizer(
+                instance.description, tags=bleach_allowed_tags_description
+            )
         )
         return returnval
 
@@ -105,7 +116,7 @@ class TitleSerializerTextMixin(serializers.Serializer):
         if instance.title is None:
             return None
         returnval = html2text(
-            bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
+            bleach_sanitizer(instance.title, tags=bleach_allowed_tags_title)
         )
         return returnval
 
@@ -114,12 +125,10 @@ class TimeRequiredSerializerMixin:
     time_required = serializers.SerializerMethodField()
 
     def get_time_required(self, instance):
-        return bleach_sanitizer(
-            instance.time_required, tags=bleach_allowed_tags
-        )
+        return bleach_sanitizer(instance.time_required, tags=[])
 
     def validate_time_required(self, value):
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)
+        return bleach_sanitizer(value, tags=[])
 
 
 class UserSerializer(serializers.ModelSerializer):

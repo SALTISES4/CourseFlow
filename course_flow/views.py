@@ -90,7 +90,8 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
     WorkflowSerializerShallow,
-    bleach_allowed_tags,
+    bleach_allowed_tags_description,
+    bleach_allowed_tags_title,
     bleach_sanitizer,
     serializer_lookups_shallow,
 )
@@ -4216,8 +4217,8 @@ def update_value(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-@user_can_edit("nodePk")
-@user_can_view("outcomePk")
+# @user_can_edit("nodePk")
+# @user_can_view("outcomePk")
 def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     outcome_id = json.loads(request.POST.get("outcomePk"))
@@ -4225,6 +4226,7 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
 
     try:
         node = Node.objects.get(id=node_id)
+        print(node.outcomes.all().count())
         workflow = node.get_workflow()
         if (
             OutcomeNode.objects.filter(
@@ -4244,6 +4246,8 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
             + model.check_child_outcomes(),
             many=True,
         ).data
+        print(new_outcomenodes)
+        print(len(new_outcomenodes))
         OutcomeNode.objects.filter(node=model.node, degree=0).delete()
         new_node_data = NodeSerializerShallow(model.node).data
         new_outcomenode_set = new_node_data["outcomenode_set"]
@@ -5016,7 +5020,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_project = Project.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    project["title"], tags=bleach_allowed_tags
+                    project["title"], tags=bleach_allowed_tags_title
                 ),
             )
             id_dict["project"][project["id"]] = new_project
@@ -5024,7 +5028,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
         #            new_outcome = Outcome.objects.create(
         #                author=request.user,
         #                title=bleach_sanitizer(
-        #                    outcome["title"], tags=bleach_allowed_tags
+        #                    outcome["title"], tags=bleach_allowed_tags_title
         #                ),
         #            )
         #            id_dict["outcome"][outcome["id"]] = new_outcome
@@ -5032,10 +5036,11 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_activity = Activity.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    activity["title"], tags=bleach_allowed_tags
+                    activity["title"], tags=bleach_allowed_tags_title
                 ),
                 description=bleach_sanitizer(
-                    activity["description"], tags=bleach_allowed_tags
+                    activity["description"],
+                    tags=bleach_allowed_tags_description,
                 ),
                 outcomes_type=activity["outcomes_type"],
             )
@@ -5047,10 +5052,10 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_course = Course.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    course["title"], tags=bleach_allowed_tags
+                    course["title"], tags=bleach_allowed_tags_title
                 ),
                 description=bleach_sanitizer(
-                    course["description"], tags=bleach_allowed_tags
+                    course["description"], tags=bleach_allowed_tags_description
                 ),
                 outcomes_type=course["outcomes_type"],
             )
@@ -5062,10 +5067,11 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_program = Program.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    program["title"], tags=bleach_allowed_tags
+                    program["title"], tags=bleach_allowed_tags_title
                 ),
                 description=bleach_sanitizer(
-                    program["description"], tags=bleach_allowed_tags
+                    program["description"],
+                    tags=bleach_allowed_tags_description,
                 ),
                 outcomes_type=program["outcomes_type"],
             )
@@ -5092,7 +5098,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_week = Week.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    week["title"], tags=bleach_allowed_tags
+                    week["title"], tags=bleach_allowed_tags_title
                 ),
             )
             id_dict["week"][week["id"]] = new_week
@@ -5100,10 +5106,10 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_node = Node.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    node["title"], tags=bleach_allowed_tags
+                    node["title"], tags=bleach_allowed_tags_title
                 ),
                 description=bleach_sanitizer(
-                    node["description"], tags=bleach_allowed_tags
+                    node["description"], tags=bleach_allowed_tags_description
                 ),
                 task_classification=task_dict.get(node["task_classification"])
                 or 0,
@@ -5112,9 +5118,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 )
                 or 0,
                 time_units=time_unit_dict.get(node["time_units"]) or 0,
-                time_required=bleach_sanitizer(
-                    node["time_required"], tags=bleach_allowed_tags
-                ),
+                time_required=bleach_sanitizer(node["time_required"], tags=[]),
             )
             id_dict["node"][node["id"]] = new_node
 
@@ -5199,7 +5203,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 source_node=id_dict["node"][nodelink["source"]],
                 target_node=id_dict["node"][nodelink["target"]],
                 title=bleach_sanitizer(
-                    nodelink["title"], tags=bleach_allowed_tags
+                    nodelink["title"], tags=bleach_allowed_tags_title
                 ),
                 dashed=nodelink["style"] or False,
             )

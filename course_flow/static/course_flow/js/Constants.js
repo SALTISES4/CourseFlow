@@ -345,4 +345,8 @@ export function download(filename, text) {
     }
 }
 
+export function unescapeCharacters(string){
+    return string.replace(/\&amp;/g,"&").replace(/\&gt;/g,">").replace(/\&lt;/g,"<")
+}
+
 

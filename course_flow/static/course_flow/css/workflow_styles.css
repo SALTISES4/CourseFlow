@@ -1563,6 +1563,10 @@ circle.mouseover{
     position:unset;
 }
 
+.side-bar .quill-div.title-input{
+    min-height:60px;
+}
+
 .side-bar .character-length{
     font-size:10px;
     color:grey;

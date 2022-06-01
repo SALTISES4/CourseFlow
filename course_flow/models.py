@@ -693,8 +693,11 @@ class OutcomeNode(models.Model):
         degree = self.degree
         # Get the descendants (all descendant outcomes that don't already have an outcomenode of this degree and node)
         descendants = get_descendant_outcomes(outcome).exclude(
-            outcomenode__node=node, outcomenode__degree=degree
+            outcomenode__in=OutcomeNode.objects.filter(
+                node=node, degree=degree
+            )
         )
+
         # Delete the outcomenodes of any descendants that still have an outcomenode to this node (i.e. clear those of other degrees, we are using bulk create so they won't get automatically deleted)
         to_delete = OutcomeNode.objects.filter(
             outcome__in=descendants.values_list("pk", flat=True), node=node

@@ -345,7 +345,7 @@ export class ComponentJSON extends React.Component{
             if(type=="outcome")title_length="500";
             var props = this.props;
             let override = false;
-            let title=data.title || "";
+            let title=Constants.unescapeCharacters(data.title || "");
             let description=data.description || "";
             if(data.represents_workflow)override=true;
             
@@ -1136,21 +1136,14 @@ export class PathGenerator{
     
     //gets the point at the given fraction of our path length
     getFractionalPoint(position){
-        console.log("getting fractional length");
-        console.log(position);
         let length = this.getPathLength();
-        console.log(length);
         if(length==0)return [0,0];
         let point = this.full_array[1];
         let run_length=0;
         let target_length=length*position;
         for(var i=1;i<this.full_array.length;i++){
-            console.log("on an iteration");
-            console.log(run_length);
-            console.log(target_length);
             let seg = mathsubtract(this.full_array[i],this.full_array[i-1]);
             let seg_len = mathnorm(seg);
-            console.log(seg_len);
             if(run_length+seg_len<target_length)run_length+=seg_len;
             else{
                 let remaining_len=target_length-run_length;
