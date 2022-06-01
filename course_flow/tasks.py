@@ -12,23 +12,34 @@ from course_flow import export_functions, import_functions
 from course_flow import redux_actions as actions
 
 from .celery import try_async
-from .models import User, ObjectSet
+from .models import ObjectSet, User
 from .utils import dateTimeFormatNoSpace, get_model_from_str
 
 
 @try_async
 @shared_task
 def async_send_export_email(
-    user_email, pk, object_type, export_type, export_format, allowed_sets, email_subject, email_text
+    user_email,
+    pk,
+    object_type,
+    export_type,
+    export_format,
+    allowed_sets,
+    email_subject,
+    email_text,
 ):
     model_object = get_model_from_str(object_type).objects.get(pk=pk)
-    if object_type=="project":
+    if object_type == "project":
         project_sets = ObjectSet.objects.filter(project=model_object)
     else:
-        project_sets = ObjectSet.objects.filter(project=model_object.get_project())
+        project_sets = ObjectSet.objects.filter(
+            project=model_object.get_project()
+        )
     allowed_sets = project_sets.filter(id__in=allowed_sets)
     if export_type == "outcome":
-        file = export_functions.get_outcomes_export(model_object, object_type, export_format, allowed_sets)
+        file = export_functions.get_outcomes_export(
+            model_object, object_type, export_format, allowed_sets
+        )
     elif export_type == "framework":
         file = export_functions.get_course_frameworks_export(
             model_object, object_type, export_format, allowed_sets
@@ -38,16 +49,20 @@ def async_send_export_email(
             model_object, object_type, export_format, allowed_sets
         )
     elif export_type == "node":
-        file = export_functions.get_nodes_export(model_object, object_type, export_format, allowed_sets)
+        file = export_functions.get_nodes_export(
+            model_object, object_type, export_format, allowed_sets
+        )
     if export_format == "excel":
-        file_ext="xlsx"
+        file_ext = "xlsx"
     elif export_format == "csv":
-        file_ext="csv"
-    
+        file_ext = "csv"
+
     filename = (
         object_type
         + "_"
         + str(pk)
+        + "_"
+        + export_type
         + "_"
         + timezone.now().strftime(dateTimeFormatNoSpace())
         + "."

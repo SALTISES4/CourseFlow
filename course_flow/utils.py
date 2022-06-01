@@ -1,3 +1,4 @@
+import re
 import time
 
 from django.contrib.contenttypes.models import ContentType
@@ -22,6 +23,10 @@ owned_throughmodels = [
     "outcomeoutcome",
     "outcome",
 ]
+
+
+def get_alphanum(string):
+    return re.sub(r"\W+", "", string)
 
 
 def dateTimeFormat():
