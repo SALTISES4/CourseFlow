@@ -464,11 +464,11 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         return(
             <div
             class={
-                "outcome"+((data.is_dropped && " dropped")||"")
+                "outcome depth-"+data.depth+((data.is_dropped && " dropped")||"")
             }
             ref={this.maindiv}>
                 <div class = "outcome-row">
-                    <div class="outcome-head" style={{width:400-data.depth*44}}>
+                    <div class="outcome-head" style={{paddingLeft:data.depth*12}}>
                         <div class="outcome-title">
                             <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
                         </div>

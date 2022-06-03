@@ -52,7 +52,7 @@ class CompetencyMatrixView extends ComponentJSON{
                 <div class="workflow-details">
                     <div ref={this.maindiv} class="outcome-table competency-matrix">
                         <div class="outcome-row node-row">
-                            <div class="outcome-head"></div>
+                            <div class="outcome-head empty"></div>
                             <div class="table-cell nodewrapper blank"><div class="outcome"></div></div>
                             <div class="outcome-cells">{outcomes}</div>
                             <div class="table-cell nodewrapper"><div class="outcome"><h4>{gettext("Hours")}</h4></div></div>

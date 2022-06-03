@@ -2026,10 +2026,15 @@ ol.children-block{
 
 .outcome-table .outcome{
     max-width:none;
-    padding-top:0;
-    padding-bottom:0;
+    padding:0;
     border:0px;
-    font-size: 14px;
+    font-size: 12px;
+    margin-left:0px;
+}
+
+.outcome-table .children-block{
+    margin-left:0px;
+    border-left:0px;
 }
 
 .outcome-table .outcome-title{
@@ -2039,6 +2044,15 @@ ol.children-block{
 
 .outcome-table .outcome-drop{
     margin-top:-2px;
+    margin-left:-5px;
+}
+
+.outcome-table .node-row .outcome-head{
+    background:white;
+    position:sticky;
+    left:0px;
+    height:100%;
+    z-index:1;
 }
 
 .outcome-table .table-cell{
@@ -2139,7 +2153,7 @@ ol.children-block{
 }
 
 .competency-matrix .outcome-row.node-row{
-    margin-top:200px;
+    padding-top:200px;
 }
 
 .competency-matrix .node{
@@ -2150,6 +2164,10 @@ ol.children-block{
 }
 
 .competency-matrix .week .node-row:first-child{
+    background:#E0E0E0;
+}
+
+.competency-matrix .week .node-row:first-child .outcome-header{
     background:#E0E0E0;
 }
 
@@ -2241,7 +2259,23 @@ ol.children-block{
 
 .outcome-table.node-rows .outcome-head{
     display:inline-block;
-    width:422px;
+    width:380px;
+    position:sticky;
+    left:0px;
+    background:white;
+    z-index:1;
+    box-sizing:border-box;
+    border-right:2px solid lightgray;
+}
+
+.outcome-table .outcome-head.empty{
+    border-right-color:white;
+    position:relative;
+    
+}
+
+.outcome-table.node-rows .outcome .outcome .outcome-head{
+    border-left:2px solid #1976bc;
 }
 
 .outcome-row{
@@ -2250,7 +2284,11 @@ ol.children-block{
 
 
 .outcome-row.node-row{
-    margin-top:140px;
+    padding-top:140px;
+    position:sticky;
+    top:46px;
+    z-index:2;
+    background:white;
 }
 
 .outcome-row.outcome-category{

@@ -69,7 +69,7 @@ class WorkflowOutcomeView extends ComponentJSON{
 
             return(
                 <div class="outcome-table node-rows">
-                    <div class="outcome-row node-row"><div class="outcome-head"></div><div class="outcome-cells">{nodes}</div>
+                    <div class="outcome-row node-row"><div class="outcome-head empty"></div><div class="outcome-cells">{nodes}</div>
                     <div class="table-cell blank-cell"><div class="node-category-header"></div></div><div class="table-cell total-cell grand-total-cell"><div class="total-header">Grand Total</div></div></div>
                     {outcomes}
                 </div>
