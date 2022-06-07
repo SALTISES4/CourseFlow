@@ -581,7 +581,7 @@ export class ComponentJSON extends React.Component{
 export class NodeLinkSVG extends React.Component{
     render(){
         
-        //try{
+        try{
             const source_transform=Constants.getSVGTranslation(this.props.source_port_handle.select(function(){
                 return this.parentNode
             }).attr("transform"));
@@ -618,7 +618,7 @@ export class NodeLinkSVG extends React.Component{
                     {title}
                 </g>
             );
-        //}catch(err){console.log("could not draw a node link");return null;}
+        }catch(err){console.log("could not draw a node link");return null;}
     }
     
     getPathArray(source_point,source_port,target_point,target_port){

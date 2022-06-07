@@ -4217,8 +4217,8 @@ def update_value(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-# @user_can_edit("nodePk")
-# @user_can_view("outcomePk")
+@user_can_edit("nodePk")
+@user_can_view("outcomePk")
 def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     outcome_id = json.loads(request.POST.get("outcomePk"))
@@ -4226,7 +4226,6 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
 
     try:
         node = Node.objects.get(id=node_id)
-        print(node.outcomes.all().count())
         workflow = node.get_workflow()
         if (
             OutcomeNode.objects.filter(
@@ -4246,8 +4245,6 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
             + model.check_child_outcomes(),
             many=True,
         ).data
-        print(new_outcomenodes)
-        print(len(new_outcomenodes))
         OutcomeNode.objects.filter(node=model.node, degree=0).delete()
         new_node_data = NodeSerializerShallow(model.node).data
         new_outcomenode_set = new_node_data["outcomenode_set"]

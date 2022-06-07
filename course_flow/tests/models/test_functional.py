@@ -971,10 +971,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             OutcomeWorkflow.objects.filter(workflow=workflow).count(), 2
         )
         hover_item = selenium.find_element_by_css_selector(
-            ".workflow-details .outcome-edit > div > .outcome"
+            ".workflow-details .outcome-workflow > .outcome"
         )
         click_item = selenium.find_element_by_css_selector(
-            ".workflow-details .outcome-edit > div  > .outcome > .mouseover-actions .insert-sibling-button img"
+            ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .insert-sibling-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
@@ -982,7 +982,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
-                    ".workflow-details .outcome-edit > div > .outcome"
+                    ".workflow-details .outcome-workflow > .outcome"
                 )
             ),
             3,
@@ -991,10 +991,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             OutcomeWorkflow.objects.filter(workflow=workflow).count(), 3
         )
         hover_item = selenium.find_element_by_css_selector(
-            ".workflow-details .outcome-edit > div  > .outcome"
+            ".workflow-details .outcome-workflow > .outcome"
         )
         click_item = selenium.find_element_by_css_selector(
-            ".workflow-details .outcome-edit > div  > .outcome > .mouseover-actions .duplicate-self-button img"
+            ".workflow-details .outcome-workflow > .outcome > .mouseover-actions .duplicate-self-button img"
         )
         action_hover_click(selenium, hover_item, click_item).perform()
         time.sleep(2)
@@ -1002,7 +1002,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
-                    ".workflow-details .outcome-edit > div > .outcome"
+                    ".workflow-details .outcome-workflow > .outcome"
                 )
             ),
             4,
@@ -1892,6 +1892,12 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 )
             ).perform()
             time.sleep(2)
+            selenium.window_handles
+            windows = selenium.window_handles
+            selenium.switch_to_window(windows[0])
+            selenium.close()
+            selenium.switch_to_window(windows[1])
+            time.sleep(10)
             assert (
                 workflow_types[i - 1]
                 in selenium.find_element_by_css_selector(
@@ -2563,10 +2569,10 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(3)
             # Delete the parent outcome
             hover_item = selenium.find_element_by_css_selector(
-                ".outcome-edit > div > .outcome"
+                ".outcome-edit .outcome-workflow > .outcome"
             )
             click_item = selenium.find_element_by_css_selector(
-                ".outcome-edit > div > .outcome>.mouseover-actions .delete-self-button img"
+                ".outcome-edit .outcome-workflow > .outcome>.mouseover-actions .delete-self-button img"
             )
             action_hover_click(selenium, hover_item, click_item).perform()
             alert = wait.until(expected_conditions.alert_is_present())
