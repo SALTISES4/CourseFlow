@@ -3,6 +3,7 @@ import re
 import bleach
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.utils.translation import gettext as _
 from html2text import html2text
 from rest_framework import serializers
 
@@ -36,6 +37,7 @@ from .utils import (
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
     linkIDMap,
+    multiple_replace,
 )
 
 bleach_allowed_tags_description = [
@@ -106,19 +108,40 @@ class DescriptionSerializerTextMixin(serializers.Serializer):
                 instance.description, tags=bleach_allowed_tags_description
             )
         )
-        return returnval
+        return re.sub("\n\n$", "", returnval)
 
 
 class TitleSerializerTextMixin(serializers.Serializer):
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
-        if instance.title is None:
-            return None
+        title = instance.title
+
+        if self.get_type(instance) == "node":
+            if (
+                instance.linked_workflow is not None
+                and instance.represents_workflow
+            ):
+                title = instance.linked_workflow.title
+
+        if title is None or title == "":
+            if self.get_type(instance) == "week":
+                return (
+                    _("Term")
+                    + " "
+                    + str(
+                        WeekWorkflow.objects.filter(week=instance)
+                        .first()
+                        .get_display_rank()
+                        + 1
+                    )
+                )
+            else:
+                return _("Untitled")
         returnval = html2text(
-            bleach_sanitizer(instance.title, tags=bleach_allowed_tags_title)
+            bleach_sanitizer(title, tags=bleach_allowed_tags_title)
         )
-        return returnval
+        return re.sub("\n\n$", "", returnval)
 
 
 class TimeRequiredSerializerMixin:
@@ -1282,6 +1305,9 @@ class OutcomeExportSerializer(
                     self.get_code(outcomeoutcome.parent) + "." + instance.code
                 )
 
+    def get_type(self, instance):
+        return "outcome"
+
 
 class WeekExportSerializer(
     serializers.ModelSerializer,
@@ -1296,6 +1322,8 @@ class WeekExportSerializer(
             "description",
             "type",
         ]
+
+    objectType = "week"
 
     type = serializers.SerializerMethodField()
 
@@ -1326,6 +1354,26 @@ class NodeExportSerializer(
 
     def get_type(self, instance):
         return "node"
+
+
+class WorkflowExportSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerTextMixin,
+    DescriptionSerializerTextMixin,
+):
+    class Meta:
+        model = Workflow
+        fields = [
+            "id",
+            "title",
+            "description",
+            "type",
+        ]
+
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, instance):
+        return "workflow"
 
 
 #

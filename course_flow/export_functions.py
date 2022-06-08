@@ -22,6 +22,7 @@ from .serializers import (
     NodeExportSerializer,
     OutcomeExportSerializer,
     WeekExportSerializer,
+    WorkflowExportSerializer,
 )
 from .utils import (
     dateTimeFormatNoSpace,
@@ -30,17 +31,18 @@ from .utils import (
     get_all_outcomes_ordered_for_outcome,
     get_alphanum,
     get_model_from_str,
+    get_outcomenodes,
     get_parent_nodes_for_workflow,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
 )
 
-
-def get_displayed_title(node):
-    if node.linked_workflow is not None and node.represents_workflow:
-        return node.linked_workflow.title
-    else:
-        return _("Untitled Node") if node.title is None else node.title
+#
+# def get_displayed_title(node):
+#    if node.linked_workflow is not None and node.represents_workflow:
+#        return node.linked_workflow.title
+#    else:
+#        return _("Untitled Node") if node.title is None else node.title
 
 
 def get_str(obj, key):
@@ -115,20 +117,22 @@ def get_framework_line_for_outcome(outcome, columns, allowed_sets):
             .filter(allowed_sets_Q(allowed_sets))
             .distinct()
         )
+        nodes_serialized = NodeExportSerializer(nodes, many=True).data
         dict_data[str(3 + i)] = "\n".join(
-            [get_displayed_title(node) for node in nodes]
+            [node["title"] for node in nodes_serialized]
         )
     return dict_data
 
 
 def get_course_framework(workflow, allowed_sets):
+    workflow_serialized = WorkflowExportSerializer(workflow).data
     num_columns = workflow.columns.all().count()
     df_columns = max(6, 3 + num_columns)
     df = pd.DataFrame(columns=[str(i) for i in range(num_columns)])
     df = df.append(
         {
             "0": _("Course Title"),
-            "1": workflow.title,
+            "1": workflow_serialized["title"],
             "2": _("Ponderation Theory/Practical/Individual"),
             "3": str(workflow.ponderation_theory)
             + "/"
@@ -160,7 +164,7 @@ def get_course_framework(workflow, allowed_sets):
     )
     parent_outcomes = []
     for node in nodes:
-        outcomenodes = get_unique_outcomenodes(node)
+        outcomenodes = get_outcomenodes(node)
         outcomes_unfiltered = [ocn.outcome for ocn in outcomenodes]
         outcomes_filtered = filter(
             lambda oc: check_allowed_sets(oc, allowed_sets),
@@ -202,7 +206,12 @@ def get_course_framework(workflow, allowed_sets):
                 {
                     "0": _("Prerequisites"),
                     "1": ", ".join(
-                        [get_displayed_title(req) for req in prereqs]
+                        [
+                            req["title"]
+                            for req in NodeExportSerializer(
+                                prereqs, many=True
+                            ).data
+                        ]
                     ),
                 },
                 ignore_index=True,
@@ -212,7 +221,12 @@ def get_course_framework(workflow, allowed_sets):
                 {
                     "0": _("Required For"),
                     "1": ", ".join(
-                        [get_displayed_title(req) for req in postreqs]
+                        [
+                            req["title"]
+                            for req in NodeExportSerializer(
+                                postreqs, many=True
+                            ).data
+                        ]
                     ),
                 },
                 ignore_index=True,
@@ -272,8 +286,14 @@ def get_outcomes_export(
             df = pd.DataFrame(
                 {}, columns=["code", "title", "description", "id", "depth"]
             )
-            for workflow in workflows:
-                df = df.append({"title": workflow.title}, ignore_index=True)
+            workflows_serialized = WorkflowExportSerializer(
+                workflows, many=True
+            ).data
+            for i, workflow in enumerate(workflows):
+                df = df.append(
+                    {"title": workflows_serialized[i]["title"]},
+                    ignore_index=True,
+                )
                 df = pd.concat(
                     [df, get_workflow_outcomes_table(workflow, allowed_sets)]
                 )
@@ -306,8 +326,13 @@ def get_course_frameworks_export(
                 writer.save()
         elif export_format == "csv":
             df = pd.DataFrame({})
-            for workflow in workflows:
-                df = df.append({"0": workflow.title}, ignore_index=True)
+            workflows_serialized = WorkflowExportSerializer(
+                workflows, many=True
+            ).data
+            for i, workflow in enumerate(workflows):
+                df = df.append(
+                    {"0": workflows_serialized[i]["title"]}, ignore_index=True
+                )
                 df = pd.concat(
                     [df, get_course_framework(workflow, allowed_sets)]
                 )
@@ -340,8 +365,13 @@ def get_program_matrix_export(
                 writer.save()
         elif export_format == "csv":
             df = pd.DataFrame({})
-            for workflow in workflows:
-                df = df.append({"0": workflow.title}, ignore_index=True)
+            workflows_serialized = WorkflowExportSerializer(
+                workflows, many=True
+            ).data
+            for i, workflow in enumerate(workflows):
+                df = df.append(
+                    {"0": workflows_serialized[i]["title"]}, ignore_index=True
+                )
                 df = pd.concat(
                     [df, get_program_matrix(workflow, True, allowed_sets)]
                 )
@@ -373,8 +403,14 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
                 {},
                 columns=["type", "title", "description", "column_order", "id"],
             )
-            for workflow in workflows:
-                df = df.append({"title": workflow.title}, ignore_index=True)
+            workflows_serialized = WorkflowExportSerializer(
+                workflows, many=True
+            ).data
+            for i, workflow in enumerate(workflows):
+                df = df.append(
+                    {"title": workflows_serialized[i]["title"]},
+                    ignore_index=True,
+                )
                 df = pd.concat(
                     [df, get_workflow_nodes_table(workflow, allowed_sets)]
                 )
@@ -523,22 +559,10 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
 def get_matrix_row_header(row):
     if row["type"] == "node":
         node = row["object"]
-        return get_displayed_title(node)
+        return NodeExportSerializer(node).data["title"]
     else:
         week = row["object"]
-        if week.title is not None and week.title != "":
-            return week.title
-        else:
-            return (
-                _("Term")
-                + " "
-                + str(
-                    WeekWorkflow.objects.filter(week=week)
-                    .first()
-                    .get_display_rank()
-                    + 1
-                )
-            )
+        return WeekExportSerializer(week).data["title"]
 
 
 def evaluate_outcome(node, outcomes):

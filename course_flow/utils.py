@@ -29,6 +29,12 @@ def get_alphanum(string):
     return re.sub(r"\W+", "", string)
 
 
+# Create a regex from dict keys
+def multiple_replace(dict, text):
+    regex = re.compile("(%s)" % "|".join(map(re.escape, dict.keys())))
+    return regex.sub(lambda mo: dict[mo.string[mo.start() : mo.end()]], text)
+
+
 def dateTimeFormat():
     return "%Y/%m/%d"
 
@@ -142,6 +148,20 @@ def get_unique_outcomenodes(node):
             "outcome__parent_outcome_links__parent__parent_outcome_links__rank",
             "outcome__parent_outcome_links__rank",
         )
+    )
+
+
+def get_outcomenodes(node):
+    return node.outcomenode_set.exclude(
+        Q(outcome__deleted=True)
+        | Q(outcome__parent_outcomes__deleted=True)
+        | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
+    ).order_by(
+        "outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
+        "outcome__parent_outcome_links__parent__outcomeworkflow__rank",
+        "outcome__outcomeworkflow__rank",
+        "outcome__parent_outcome_links__parent__parent_outcome_links__rank",
+        "outcome__parent_outcome_links__rank",
     )
 
 
