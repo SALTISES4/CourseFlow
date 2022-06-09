@@ -3111,7 +3111,11 @@ class ExportTest(TestCase):
             for workflow_type in ["course", "course", "course"]
         ]
         nodes = [
-            week.nodes.create(author=author, linked_workflow=workflow)
+            week.nodes.create(
+                author=author,
+                linked_workflow=workflow,
+                column=program.columns.first(),
+            )
             for workflow in workflows
         ]
         base_outcome = program.outcomes.create(author=author, title="outcome")
