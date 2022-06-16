@@ -136,10 +136,19 @@
 
     function connect(){
         workflow_renderer.messages_queued=true;
+        
+        let websocket_prefix;
+        if (window.location.protocol == "https:") {
+           websocket_prefix = "wss";
+        }else{
+           websocket_prefix = "ws";
+        }
 
         const updateSocket = new WebSocket(
-        'ws://'+window.location.host+'/ws/update/'+workflow_model_id+'/'
+            websocket_prefix+'://'+window.location.host+'/ws/update/'+workflow_model_id+'/'
         );
+        console.log(window.location.protocol);
+        console.log(websocket_prefix);
 
         workflow_renderer.updateSocket = updateSocket;
         
