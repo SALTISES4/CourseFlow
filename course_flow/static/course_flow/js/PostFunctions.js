@@ -4,12 +4,36 @@ export function fail_function(){
     alert("Something went wrong. Please reload the page.")
 }
 
-export function getAddedWorkflowMenu(projectPk,type_filter,get_strategies,updateFunction){
+export function getAddedWorkflowMenu(projectPk,type_filter,get_strategies,self_only,updateFunction){
     $.post(post_paths.get_possible_added_workflows,{
         projectPk:JSON.stringify(projectPk),
         type_filter:JSON.stringify(type_filter),
         get_strategies:JSON.stringify(get_strategies),
+        self_only:JSON.stringify(self_only),
     },(data)=>openAddedWorkflowMenu(data,updateFunction));
+}
+
+//get the workflow's context data
+export function getWorkflowContext(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_workflow_context, {
+            workflowPk:JSON.stringify(workflowPk),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+export function getWorkflowSelectMenu(projectPk,type_filter,get_strategies,self_only,updateFunction){
+    $.post(post_paths.get_possible_added_workflows,{
+        projectPk:JSON.stringify(projectPk),
+        type_filter:JSON.stringify(type_filter),
+        get_strategies:JSON.stringify(get_strategies),
+        self_only:JSON.stringify(self_only),
+    },(data)=>openWorkflowSelectMenu(data,updateFunction));
 }
 
 export function getLinkedWorkflowMenu(nodeData,updateFunction,callBackFunction=()=>console.log("success")){
@@ -39,6 +63,12 @@ export function openLinkedWorkflowMenu(response,updateFunction){
 export function openAddedWorkflowMenu(response,updateFunction){
     if(response.action=="posted"){
         renderMessageBox(response,"added_workflow_menu",updateFunction);
+    }else alert("Failed to find your workflows.");
+}
+
+export function openWorkflowSelectMenu(response,updateFunction){
+    if(response.action=="posted"){
+        renderMessageBox(response,"workflow_select_menu",updateFunction);
     }else alert("Failed to find your workflows.");
 }
 

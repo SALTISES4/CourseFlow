@@ -84,7 +84,7 @@ export const getNodeByID = (state,id)=>{
     for(var i in state.node){
         var node = state.node[i];
         if(node.id==id){
-            return {data:node,object_sets:state.objectset};
+            return {data:node,column:state.column.find(column=>column.id==node.column),object_sets:state.objectset};
         }
     }
     console.log("failed to find node");

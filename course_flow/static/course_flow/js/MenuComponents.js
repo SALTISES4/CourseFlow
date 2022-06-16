@@ -13,7 +13,7 @@ import {WorkflowTitle} from "./ComponentJSON";
 export class MessageBox extends React.Component{
     render(){
         var menu;
-        if(this.props.message_type=="linked_workflow_menu"||this.props.message_type=="target_project_menu" || this.props.message_type=="added_workflow_menu")menu=(
+        if(this.props.message_type=="linked_workflow_menu"||this.props.message_type=="target_project_menu" || this.props.message_type=="added_workflow_menu" || this.props.message_type=="workflow_select_menu")menu=(
             <WorkflowsMenu type={this.props.message_type} data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
         if(this.props.message_type=="project_edit_menu")menu=(
@@ -38,12 +38,11 @@ export class MessageBox extends React.Component{
     }
 }
 
-
 export class WorkflowsMenu extends React.Component{
     constructor(props){
         super(props);
         this.state={};
-        if(this.props.type=="linked_workflow_menu"||this.props.type=="added_workflow_menu")this.project_workflows = props.data.data_package.current_project.sections[0].objects.map((object)=>object.id);
+        if(this.props.type=="linked_workflow_menu"||this.props.type=="added_workflow_menu")this.project_workflows = props.data.data_package.current_project.sections.map(section=>section.objects.map((object)=>object.id)).flat();
     }
     
     render(){
@@ -107,9 +106,14 @@ export class WorkflowsMenu extends React.Component{
                     {gettext("cancel")}
                 </button>
             );
-        }else if(this.props.type=="added_workflow_menu"){
-            var text=gettext("duplicate");
-            if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text=gettext("copy to current project");
+        }else if(this.props.type=="added_workflow_menu" || this.props.type=="workflow_select_menu"){
+            var text;
+            if(this.props.type=="added_workflow_menu"){
+                text=gettext("duplicate");
+                if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text=gettext("copy to current project");
+            }else{
+                text=gettext("select");
+            }
             actions.push(
                 <button id="set-linked-workflow" disabled={!this.state.selected} onClick={()=>{
                     
@@ -366,7 +370,7 @@ export class MenuSection extends React.Component{
             if(is_strategy)import_text+=gettext(" strategy")
             adds.push(
                 <a class="hover-shade" onClick={()=>{
-                    getAddedWorkflowMenu(parentID,section_type,is_strategy,(response_data)=>{
+                    getAddedWorkflowMenu(parentID,section_type,is_strategy,false,(response_data)=>{
                         if(response_data.workflowID!=null){
                             let loader = new Loader('body');
                             duplicateBaseItem(

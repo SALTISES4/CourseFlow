@@ -436,7 +436,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
             );
         }
 
-        let style={backgroundColor:this.props.renderer.column_colours[data.column]};
+        let style={backgroundColor:Constants.getColumnColour(this.props.column)};
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
@@ -469,6 +469,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
     for(var i=0;i<state.node.length;i++){
         if(state.node[i].id==own_props.objectID){
             let node=state.node[i];
+            let column = state.column.find(column=>column.id==node.column)
             let outcomenodes = Constants.filterThenSortByID(state.outcomenode,node.outcomenode_unique_set);
             if(own_props.restriction_set && own_props.restriction_set.parent_outcomes){
                 outcomenodes = outcomenodes.filter(ocn=>own_props.restriction_set.parent_outcomes.indexOf(ocn.outcome)>=0);
@@ -479,7 +480,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
             }
             let child_workflow = getChildWorkflowByID(state,node.linked_workflow);
             let child_outcomes = Constants.filterThenSortByID(state.outcomeworkflow,child_workflow.data.outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
-            return {data:node,child_outcomes:child_outcomes,outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
+            return {data:node,column:column,child_outcomes:child_outcomes,outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
             
         }
     }

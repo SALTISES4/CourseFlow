@@ -476,7 +476,7 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
         else data_override = data;
         let selection_manager = this.props.renderer.selection_manager;
         
-        let style = {backgroundColor:this.props.renderer.column_colours[data.column]}
+        let style = {backgroundColor:Constants.getColumnColour(this.props.column)}
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
@@ -542,6 +542,7 @@ const mapNodeStateToProps = (state,own_props)=>({
     data:getNodeByID(state,own_props.objectID).data,
     outcomes_type:state.workflow.outcomes_type,
     object_sets:state.objectset,
+    column:state.column.find(column=>column.id==node.column),
 })
 export const MatrixNodeView = connect(
     mapNodeStateToProps,

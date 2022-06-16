@@ -15,7 +15,6 @@ class ColumnView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        this.props.renderer.column_colours[this.props.objectID] = this.getColour();
         var title = data.title;
         if(!title)title=data.column_type_display;
         
@@ -47,11 +46,6 @@ class ColumnView extends ComponentJSON{
             </div>
         );
     }
-    
-    getColour(){
-        if(this.props.data.colour===null)return Constants.default_column_settings[this.props.data.column_type].colour;
-        else return "#"+this.props.data.colour?.toString(16);
-    }
 
     getIcon(){
         return iconpath+Constants.default_column_settings[this.props.data.column_type].icon+".svg";
@@ -75,7 +69,7 @@ class NodeBarColumnUnconnected extends ComponentJSON{
         if(data)title = data.title;
         if(!title)title=data.column_type_display;
         return(
-            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:this.props.renderer.column_colours[this.props.objectID]}}>
+            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:Constants.getColumnColour(data)}}>
                 {title}
             </div>
         );
