@@ -507,6 +507,7 @@ button:hover{
     margin-top:20px;
 }
 
+
 .menu-create>*{
     vertical-align:middle;
     display:inline-block;
@@ -522,7 +523,7 @@ button:hover{
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
 }
 
-.project-menu .create-dropdown{
+.project-menu .create-dropdown, .home-tabs .create-dropdown{
     margin-top:-20px;
 }
 
@@ -681,11 +682,30 @@ button:hover{
     width:100%;
     background-color:white;
     padding:50px;
+    gap:30px;
+    box-sizing:border-box;
 }
 
-.explore-menu .explore-results, .explore-menu .explore-preview{
+.explore-menu .explore-menu .explore-preview{
     display:inline-block;
     vertical-align: top;
+}
+
+.explore-menu input[type="checkbox"]{
+    visibility:hidden;
+    position:absolute;
+}
+
+.explore-menu label.input{
+    background:#f4f4f4;
+    padding:5px 15px 5px 15px;
+    border-radius:15px;
+    border:1px solid transparent;
+}
+
+.explore-menu input:checked+label.input{
+    background:#e8f1f8;
+    border:1px solid #1976bc;
 }
 
 .explore-menu .explore-preview{
@@ -694,6 +714,11 @@ button:hover{
 
 .explore-menu .explore-main{
     white-space: nowrap;
+}
+
+.flex-wrap{
+    display:flex;
+    flex-wrap:wrap;
 }
 
 .search-checklist-block{
@@ -712,13 +737,24 @@ button:hover{
 #search-parameters > div{
     display:flex;
     flex-wrap:wrap;
+    gap:30px;
 }
+
+#search-type{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    margin:0;
+}
+
 #search-parameters > div >div+div{
-    margin-left:50px;
 }
 
 #search-discipline{
-    column-count:4;
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    margin:0;
 }
 #search-parameters label div{
     width:200px;
@@ -1295,8 +1331,9 @@ button, input[type="submit"]{
 
 .week{
     background:#f5f5f5;
-    min-height:200px;
+    min-height:100px;
     padding:10px;
+    padding-bottom:24px;
     margin-top:5px;
     box-sizing:border-box;
     border:2px solid white;
@@ -1432,9 +1469,14 @@ button, input[type="submit"]{
 .node-week{
     width:100%;
     display:block;
+    position:relative;
     min-height:50px;
     padding-top:30px;
-    position:relative;
+}
+
+.node-week.empty{
+    min-height:0px;
+    padding-top:0px;
 }
 
 .node-week.dragging.ui-sortable-helper .node{
@@ -1493,6 +1535,14 @@ button, input[type="submit"]{
 }
 
 .outcomeoutcome-ghost{
+    min-width:300px;
+    min-height:10px;
+    border:1px dashed black;
+    position:absolute;
+    cursor:move;
+}
+
+.outcomeworkflow-ghost{
     min-width:300px;
     min-height:10px;
     border:1px dashed black;
@@ -1598,6 +1648,26 @@ button, input[type="submit"]{
     cursor:pointer;
 }
 
+
+.week > .node-block{
+    display:none;
+}
+
+.week.dropped > .node-block{
+    display:block;
+}
+
+.week-drop-row{
+    position:absolute;
+    bottom:0px;
+    left:0px;
+    width:100%;
+    height:20px;
+    border-radius:0 0 5px 5px;
+    overflow:hidden;
+    cursor:pointer;
+}
+
 .node-drop-side{
     display:inline-block;
     vertical-align: middle;
@@ -1635,7 +1705,7 @@ button, input[type="submit"]{
     height:100%;
 }
 
-.node-drop-row img{
+.node-drop-row img,.week-drop-row img{
     width:12px;
     vertical-align:middle;
     display:inline-block;
@@ -1956,10 +2026,15 @@ ol.children-block{
 
 .outcome-table .outcome{
     max-width:none;
-    padding-top:0;
-    padding-bottom:0;
+    padding:0;
     border:0px;
-    font-size: 14px;
+    font-size: 12px;
+    margin-left:0px;
+}
+
+.outcome-table .children-block{
+    margin-left:0px;
+    border-left:0px;
 }
 
 .outcome-table .outcome-title{
@@ -1969,6 +2044,15 @@ ol.children-block{
 
 .outcome-table .outcome-drop{
     margin-top:-2px;
+    margin-left:-5px;
+}
+
+.outcome-table .node-row .outcome-head{
+    background:white;
+    position:sticky;
+    left:0px;
+    height:100%;
+    z-index:1;
 }
 
 .outcome-table .table-cell{
@@ -2069,7 +2153,7 @@ ol.children-block{
 }
 
 .competency-matrix .outcome-row.node-row{
-    margin-top:200px;
+    padding-top:200px;
 }
 
 .competency-matrix .node{
@@ -2080,6 +2164,10 @@ ol.children-block{
 }
 
 .competency-matrix .week .node-row:first-child{
+    background:#E0E0E0;
+}
+
+.competency-matrix .week .node-row:first-child .outcome-header{
     background:#E0E0E0;
 }
 
@@ -2171,7 +2259,22 @@ ol.children-block{
 
 .outcome-table.node-rows .outcome-head{
     display:inline-block;
-    width:422px;
+    width:380px;
+    position:sticky;
+    left:0px;
+    background:white;
+    z-index:1;
+    box-sizing:border-box;
+    border-right:2px solid lightgray;
+}
+
+.outcome-table .outcome-head.empty{
+    border-right-color:white;
+    position:relative;
+}
+
+.outcome-table.node-rows .outcome .outcome .outcome-head{
+    border-left:2px solid #1976bc;
 }
 
 .outcome-row{
@@ -2180,7 +2283,22 @@ ol.children-block{
 
 
 .outcome-row.node-row{
-    margin-top:140px;
+    padding-top:140px;
+    position:sticky;
+    top:46px;
+    z-index:2;
+    background:white;
+}
+
+.outcome-row.outcome-category{
+    border-bottom:2px solid lightgrey;
+    border-top:2px solid lightgrey;
+}
+
+.outcome-row.outcome-category h4{
+    margin-left:5px;
+    margin-top:0px;
+    margin-bottom:0px;
 }
 
 .outcome-table .table-cell.nodewrapper{
@@ -2376,6 +2494,7 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 }
 
 .comment-box{
+    text-align:left;
     position:absolute;
     width:200px;
     max-height:400px;
@@ -2400,6 +2519,11 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     resize:none;
     margin:0px;
     margin-top:4px;
+}
+
+.comment-box button.small{
+    padding:4px;
+    font-size:10px;
 }
 
 .comment-box textarea{
@@ -2431,10 +2555,15 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 .comment-indicator{
     position:absolute;
     right:0px;
-    bottom:0px;
+    top:0px;
     border-radius:5px;
     background:white;
     height:20px;
+}
+
+.week > .comment-indicator{
+    margin-right:10px;
+    margin-top:10px;
 }
 
 .comment-indicator img{
@@ -2461,6 +2590,34 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     top:0px;
     pointer-events:none;
 }
+
+.nodelinkwrapper{
+    width:100px;
+    height:100px;
+    overflow:hidden;
+    pointer-events: none;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.nodelinktext {
+    text-anchor: middle;
+    dominant-baseline: middle;
+    max-width: 100px;
+    max-height: 100px;
+    white-space: normal;
+    background: white;
+    padding: 2px;
+    border: 1px solid black;
+    font-size: 10px;
+    text-align: center;
+    width:-webkit-fit-content;
+    width:-moz-fit-content;
+    width:fit-content;
+    pointer-events:all;
+}
+
 
 .workflow-canvas circle, .workflow-canvas path.nodelink{
     pointer-events:auto;
@@ -2589,6 +2746,10 @@ circle.mouseover{
     position:unset;
 }
 
+.side-bar .quill-div.title-input{
+    min-height:60px;
+}
+
 .side-bar .character-length{
     font-size:10px;
     color:grey;
@@ -2626,6 +2787,27 @@ circle.mouseover{
     width:100%;
     height:100%;
 }
+
+.slidecontainer{
+    width:100%;
+}
+
+.range-slider{
+  -webkit-appearance: none;
+          appearance: none;
+  width: 100%; /* Full-width */
+  height: 25px; /* Specified height */
+  background: #d3d3d3; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  transition: opacity .2s;
+  border-radius:20px;
+}
+
+.range-slider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
 
 .node-bar-column-workflow{
     width:100%;

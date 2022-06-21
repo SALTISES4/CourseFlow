@@ -5,7 +5,7 @@ import NodeWeekView from "./NodeWeekView.js";
 import {getWeekByID, getNodeWeekByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
 import {columnChangeNode, moveNodeWeek} from "./Reducers.js";
-import {insertedAt,columnChanged,addStrategy} from "./PostFunctions";
+import {insertedAt,columnChanged,addStrategy,updateValueInstant} from "./PostFunctions";
 import {Loader} from "./Constants.js";
 
 //Basic component to represent a Week
@@ -30,6 +30,7 @@ export class WeekViewUnconnected extends ComponentJSON{
         let css_class = "week";
         if(data.is_strategy)css_class+=" strategy";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        if(data.is_dropped)css_class+=" dropped";
         
         let default_text;
         if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
@@ -38,7 +39,9 @@ export class WeekViewUnconnected extends ComponentJSON{
         if(data.lock){
             style.border="2px solid "+data.lock.user_colour;
         }
-        
+        let dropIcon;
+        if(data.is_dropped)dropIcon = "droptriangleup";
+        else dropIcon = "droptriangledown";
         
         let mouseover_actions = [];
         if(!read_only && !renderer.is_strategy){
@@ -58,6 +61,12 @@ export class WeekViewUnconnected extends ComponentJSON{
                 <TitleText text={data.title} defaultText={default_text}/>
                 <div class="node-block" id={this.props.objectID+"-node-block"} ref={this.node_block}>
                     {nodes}
+                </div>
+                <div class = "week-drop-row hover-shade" onClick={this.toggleDrop.bind(this)}>
+                    <div class = "node-drop-side node-drop-left"></div>
+                    <div class = "node-drop-middle"><img src={iconpath+dropIcon+".svg"}/></div>
+                    <div class = "node-drop-side node-drop-right">
+                    </div>
                 </div>
                 {this.addEditable(data)}
                 {data.strategy_classification > 0 &&
@@ -80,6 +89,11 @@ export class WeekViewUnconnected extends ComponentJSON{
     
     postMountFunction(){
         this.makeDragAndDrop();
+    }
+
+
+    toggleDrop(){
+        updateValueInstant(this.props.objectID,this.objectType,{is_dropped:!this.props.data.is_dropped});
     }
 
     componentDidUpdate(){

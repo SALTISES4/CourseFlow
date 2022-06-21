@@ -215,9 +215,19 @@ def course_flow_patterns():
             views.add_terminology,
             name="add-terminology",
         ),
+        url(
+            r"^workflow/updateobjectset/$",
+            views.update_object_set,
+            name="update-object-set",
+        ),
         url(r"^comments/add/$", views.add_comment, name="add-comment",),
         url(
             r"^comments/remove/$", views.remove_comment, name="remove-comment",
+        ),
+        url(
+            r"^comments/removeall/$",
+            views.remove_all_comments,
+            name="remove-all-comments",
         ),
         url(
             r"^parentworkflows/get/$",
@@ -227,7 +237,7 @@ def course_flow_patterns():
         url(r"^exports/get/$", views.get_export, name="get-export",),
         url(r"^imports/import-data/$", views.import_data, name="import-data",),
         url(
-            r"^downloads/exports/get/(?P<pk>[0-9]+)/(?P<object_type>[a-z]+)/(?P<export_type>[a-z_]+)/$",
+            r"^downloads/exports/get/$",
             views.get_export_download,
             name="get-export-download",
         ),

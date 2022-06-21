@@ -12,6 +12,13 @@ export const createLockAction = (object_id,object_type,lock,user_id,user_colour)
     }
 }
 
+export const reloadCommentsAction = (id,objectType,comment_data) => {
+    return {
+        type: objectType+'/reloadComments',
+        payload:{id:id,objectType:objectType,comment_data,comment_data}
+    }
+}
+
 export const moveColumnWorkflow = (id,new_position,new_parent,child_id) => {
     return {
         type: 'columnworkflow/movedTo',
@@ -54,10 +61,24 @@ export const moveOutcomeOutcome = (id,new_position,new_parent,child_id) => {
     }
 }
 
+export const moveOutcomeWorkflow = (id,new_position,new_parent,child_id) => {
+    return {
+        type: 'outcomeworkflow/movedTo',
+        payload:{id:id,new_index:new_position,new_parent:new_parent,child_id:child_id}
+    }
+}
+
 export const gridMenuItemAdded = (response_data) => {
     return {
         type: "gridmenu/itemAdded",
         payload:response_data
+    }
+}
+
+export const toggleObjectSet = (id) => {
+    return {
+        type: "objectset/toggleObjectSet",
+        payload:{id:id}
     }
 }
 
@@ -95,6 +116,14 @@ export function workflowReducer(state={},action){
             if(old_index>=0){
                 new_state.weekworklow_set=new_state.weekworkflow_set.slice();
                 new_state.weekworkflow_set.splice(old_index,1,action.payload.new_id);
+            }
+            return new_state;
+        case 'outcomeworkflow/changeID':
+            var new_state={...state};
+            var old_index = state.outcomeworkflow_set.indexOf(action.payload.old_id);
+            if(old_index>=0){
+                new_state.outcomeworklow_set=new_state.outcomeworkflow_set.slice();
+                new_state.outcomeworkflow_set.splice(old_index,1,action.payload.new_id);
             }
             return new_state;
         case 'columnworkflow/changeID':
@@ -256,6 +285,23 @@ export function outcomeworkflowReducer(state=[],action){
                 
             }
             return new_state;
+        case 'outcomeworkflow/movedTo':
+            new_state = state.slice();
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    new_state[i]={...state[i],no_drag:true}
+                }
+            }
+            return new_state;
+        case 'outcomeworkflow/changeID':
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.old_id){
+                    var new_state=state.slice();
+                    new_state[i]={...new_state[i],id:action.payload.new_id,no_drag:false}
+                    return new_state;
+                }
+            }
+            return state;
         case 'outcome_base/deleteSelf':
             for(var i=0;i<state.length;i++){
                 if(state[i].outcome==action.payload.id){
@@ -435,6 +481,16 @@ export function columnReducer(state=[],action){
             new_state=state.slice();
             new_state.push(...action.payload.columns_added);
             return new_state;
+        case 'column/reloadComments':
+            var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                let obj = new_state[i];
+                if(obj.id==action.payload.id){
+                    new_state[i]={...obj,comments:action.payload.comment_data};
+                    return new_state;
+                }
+            }
+            return state;
         default:
             return state;
     }
@@ -685,6 +741,16 @@ export function weekReducer(state=[],action){
             new_state=state.slice();
             new_state.push(action.payload.strategy);
             return new_state;
+        case 'week/reloadComments':
+            var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                let obj = new_state[i];
+                if(obj.id==action.payload.id){
+                    new_state[i]={...obj,comments:action.payload.comment_data};
+                    return new_state;
+                }
+            }
+            return state;
         default:
             return state;
     }
@@ -962,6 +1028,16 @@ export function nodeReducer(state=[],action){
                 }
             }
             return new_state;
+        case 'node/reloadComments':
+            var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                let obj = new_state[i];
+                if(obj.id==action.payload.id){
+                    new_state[i]={...obj,comments:action.payload.comment_data};
+                    return new_state;
+                }
+            }
+            return state;
         default:
             return state;
     }
@@ -995,6 +1071,16 @@ export function nodelinkReducer(state=[],action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state[i]={...new_state[i],lock:action.payload.lock}
+                    return new_state;
+                }
+            }
+            return state;
+        case 'nodelink/changeField':
+            if(action.payload.changeFieldID==changeFieldID)return state;
+            for(var i=0;i<state.length;i++){
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i] = {...state[i],...action.payload.json};
                     return new_state;
                 }
             }
@@ -1227,6 +1313,16 @@ export function outcomeReducer(state=[],action){
                 }
             }
             return state;
+        case 'outcome/changeFieldMany':
+        case 'outcome_base/changeFieldMany':
+            if(action.payload.changeFieldID==changeFieldID)return state;
+            var new_state = state.slice();
+            for(var i=0;i<state.length;i++){
+                if(action.payload.ids.indexOf(state[i].id)>=0){
+                    new_state[i] = {...state[i],...action.payload.json};
+                }
+            }
+            return new_state;
         case 'outcomehorizontallink/updateDegree':
             //Returns -1 if the outcome had already been added to the node
             if(action.payload.outcomehorizontallink==-1)return state;
@@ -1241,7 +1337,7 @@ export function outcomeReducer(state=[],action){
             }
             return state;
         case 'outcome/updateHorizontalLinks':
-            new_state=state.slice();
+            var new_state=state.slice();
             for(var i=0;i<action.payload.data.length;i++){
                 let new_outcome_data = action.payload.data[i];
                 for(var j=0;j<new_state.length;j++){
@@ -1251,6 +1347,17 @@ export function outcomeReducer(state=[],action){
                 }
             }
             return new_state;
+        case 'outcome/reloadComments':
+        case 'outcome_base/reloadComments':
+            var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                let obj = new_state[i];
+                if(obj.id==action.payload.id){
+                    new_state[i]={...obj,comments:action.payload.comment_data};
+                    return new_state;
+                }
+            }
+            return state;
         default:
             return state;
     }
@@ -1607,6 +1714,20 @@ export function saltiseStrategyReducer(state=[],action){
             return state;
     }
 }
+export function objectSetReducer(state=[],action){
+    switch(action.type){
+        case 'objectset/toggleObjectSet':
+            for(var i=0;i<state.length;i++){ 
+                if(state[i].id==action.payload.id){
+                    var new_state = state.slice();
+                    new_state[i]={...new_state[i],hidden:(!new_state[i].hidden)};
+                    return new_state;
+                }
+            }
+        default:
+            return state;
+    }
+}
 
 export function gridMenuReducer(state={},action){
     switch(action.type){
@@ -1674,6 +1795,7 @@ export const rootWorkflowReducer = Redux.combineReducers({
     child_workflow:childWorkflowReducer,
     strategy:strategyReducer,
     saltise_strategy:saltiseStrategyReducer,
+    objectset:objectSetReducer,
 });
 
 export const rootOutcomeReducer = Redux.combineReducers({

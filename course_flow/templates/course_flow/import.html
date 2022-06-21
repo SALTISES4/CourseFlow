@@ -45,7 +45,6 @@
       reader.readAsText(fileLoader.files[0]);
       reader.onload = (evt)=>{
           let readData = evt.target.result;
-          console.log(readData);
           $.post("{% url 'course_flow:project-from-json' %}", {
               jsonData:readData
           }).done(function(data){

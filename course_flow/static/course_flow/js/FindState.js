@@ -1,3 +1,5 @@
+import * as Constants from "./Constants";
+
 
 export const getColumnByID = (state,id)=>{
     for(var i in state.column){
@@ -81,7 +83,9 @@ export const getParentWorkflowByID = (state,id)=>{
 export const getNodeByID = (state,id)=>{
     for(var i in state.node){
         var node = state.node[i];
-        if(node.id==id)return {data:node};
+        if(node.id==id){
+            return {data:node,object_sets:state.objectset};
+        }
     }
     console.log("failed to find node");
 }
@@ -168,7 +172,7 @@ export const getOutcomeByID = (state,id)=>{
             if(!top_rank)top_rank = findTopRank(state,root_outcome);
             titles.push(outcome.title);
             rank.unshift(top_rank);
-            return {data:outcome,outcomenodes:state.outcomenode,rank:rank,titles:titles};
+            return {data:outcome,outcomenodes:state.outcomenode,rank:rank,titles:titles,object_sets:state.objectset};
         }
     }
     console.log("failed to find outcome");
@@ -214,4 +218,62 @@ export const getStrategyByID = (state,id)=>{
         var strategy = state.strategy[i];
         if(strategy.id==id)return {data:strategy};
     }
+}
+//Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+export const getSortedOutcomesFromOutcomeWorkflowSet = (state,outcomeworkflow_set)=>{
+    let outcomeworkflows = Constants.filterThenSortByID(state.outcomeworkflow,outcomeworkflow_set);
+    let outcome_ids = outcomeworkflows.map(outcomeworkflow=>outcomeworkflow.outcome);
+    let outcomes = Constants.filterThenSortByID(state.outcome,outcome_ids);
+    for(var i=0;i<outcomes.length;i++){
+        outcomes[i].outcomeworkflow=outcomeworkflows[i].id;
+        outcomes[i].through_no_drag=outcomeworkflows[i].no_drag;
+    };
+    if(outcomes.length==0)return outcomes;
+    let base_title = Constants.capWords(gettext("outcomes"));
+    let object_sets = state.objectset.filter(objectset=>objectset.term==outcomes[0].type);
+    if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes}];
+    let uncategorized = outcomes.filter(outcome=>outcome.sets.length==0)
+    let categories=[];
+    if(uncategorized.length>0)categories=
+        [{
+            objectset:{title:gettext("Uncategorized")},
+            outcomes:uncategorized
+        }];
+    categories = [
+        ...categories,
+        ...object_sets.filter(objectset=>!objectset.hidden).map(
+            (objectset)=>({
+                objectset:objectset,
+                outcomes:outcomes.filter(outcome=>outcome.sets.indexOf(objectset.id)>=0)
+            })
+        )
+    ];
+    return categories;
+}
+export const getSortedOutcomeNodesFromNodes = (state,nodes)=>{
+    let outcomenode_ids = [];
+    for(let i=0;i<nodes.length;i++){
+        outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set);
+    }
+    let outcomenodes = Constants.filterThenSortByID(state.outcomenode,outcomenode_ids);
+    let outcomes = Constants.filterThenSortByID(state.outcome,outcomenodes.map(outcomenode=>outcomenode.outcome)).map(
+        (outcome,i)=>({...outcome,degree:outcomenodes[i].degree})
+    );
+    if(outcomes.length==0)return outcomes;
+    let base_title = Constants.capWords(gettext("outcomes"));
+    let object_sets = state.objectset.filter(objectset=>objectset.term==outcomes[0].type);
+    if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes}];
+    let categories = [
+        {
+            objectset:{title:gettext("Uncategorized")},
+            outcomes:outcomes.filter(outcome=>outcome.sets.length==0)
+        },
+        ...object_sets.filter(objectset=>!objectset.hidden).map(
+            (objectset)=>({
+                objectset:objectset,
+                outcomes:outcomes.filter(outcome=>outcome.sets.indexOf(objectset.id)>=0)
+            })
+        )
+    ];
+    return categories;
 }

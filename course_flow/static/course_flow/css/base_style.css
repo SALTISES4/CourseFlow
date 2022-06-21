@@ -503,6 +503,7 @@ button:hover{
     margin-top:20px;
 }
 
+
 .menu-create>*{
     vertical-align:middle;
     display:inline-block;
@@ -518,7 +519,7 @@ button:hover{
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
 }
 
-.project-menu .create-dropdown{
+.project-menu .create-dropdown, .home-tabs .create-dropdown{
     margin-top:-20px;
 }
 
@@ -675,11 +676,30 @@ button:hover{
     width:100%;
     background-color:white;
     padding:50px;
+    gap:30px;
+    box-sizing:border-box;
 }
 
-.explore-menu .explore-results, .explore-menu .explore-preview{
+.explore-menu .explore-menu .explore-preview{
     display:inline-block;
     vertical-align: top;
+}
+
+.explore-menu input[type="checkbox"]{
+    visibility:hidden;
+    position:absolute;
+}
+
+.explore-menu label.input{
+    background:#f4f4f4;
+    padding:5px 15px 5px 15px;
+    border-radius:15px;
+    border:1px solid transparent;
+}
+
+.explore-menu input:checked+label.input{
+    background:#e8f1f8;
+    border:1px solid #1976bc;
 }
 
 .explore-menu .explore-preview{
@@ -688,6 +708,11 @@ button:hover{
 
 .explore-menu .explore-main{
     white-space: nowrap;
+}
+
+.flex-wrap{
+    display:flex;
+    flex-wrap:wrap;
 }
 
 .search-checklist-block{
@@ -706,13 +731,24 @@ button:hover{
 #search-parameters > div{
     display:flex;
     flex-wrap:wrap;
+    gap:30px;
 }
+
+#search-type{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    margin:0;
+}
+
 #search-parameters > div >div+div{
-    margin-left:50px;
 }
 
 #search-discipline{
-    column-count:4;
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+    margin:0;
 }
 #search-parameters label div{
     width:200px;

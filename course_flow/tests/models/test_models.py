@@ -2074,7 +2074,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(Outcome.objects.all().count(), 3)
         self.assertEqual(OutcomeOutcome.objects.all().count(), 2)
         self.assertEqual(
-            Outcome.objects.filter(depth=1).last().title, "test_child"
+            Outcome.objects.filter(depth=1).last().title, "test_child(copy)"
         )
         response = self.client.post(
             reverse("course_flow:duplicate-self"),
@@ -2095,7 +2095,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(OutcomeOutcome.objects.all().count(), 4)
         self.assertEqual(OutcomeWorkflow.objects.all().count(), 2)
         self.assertEqual(
-            Outcome.objects.filter(depth=0).last().title, "test_title"
+            Outcome.objects.filter(depth=0).last().title, "test_title(copy)"
         )
 
     def test_publish_permissions_no_login_no_authorship(self):
@@ -2588,59 +2588,116 @@ class ModelViewTest(TestCase):
         user = login(self)
         project = Project.objects.create(author=user)
         # try adding a term
-        # Retrieve the comments
         response = self.client.post(
             reverse("course_flow:add-terminology"),
             {
                 "projectPk": project.id,
-                "term": JSONRenderer().render("outcome").decode("utf-8"),
-                "translation": JSONRenderer()
-                .render("competency")
+                "term": JSONRenderer()
+                .render("program outcome")
                 .decode("utf-8"),
+                "title": JSONRenderer().render("competency").decode("utf-8"),
                 "translation_plural": JSONRenderer()
                 .render("competencies")
                 .decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(project.terminology_dict.all().count(), 1)
+        self.assertEqual(project.object_sets.all().count(), 1)
 
-        # try adding a term that already exists (should replace)
+        # Add the set to a node
+
+        WorkflowProject.objects.create(
+            project=project, workflow=Course.objects.create(author=user)
+        )
+        node = (
+            project.workflows.first().weeks.first().nodes.create(author=user)
+        )
+        node_pk = node.pk
+
         response = self.client.post(
-            reverse("course_flow:add-terminology"),
+            reverse("course_flow:update-object-set"),
             {
-                "projectPk": project.id,
-                "term": JSONRenderer().render("outcome").decode("utf-8"),
-                "translation": JSONRenderer()
-                .render("program outcome")
-                .decode("utf-8"),
-                "translation_plural": JSONRenderer()
-                .render("program outcomes")
-                .decode("utf-8"),
+                "objectsetPk": project.object_sets.first().id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "objectID": node_pk,
+                "add": JSONRenderer().render(True).decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(project.terminology_dict.all().count(), 1)
-        self.assertEqual(
-            project.terminology_dict.first().translation, "program outcome"
+        self.assertEqual(Node.objects.get(pk=node_pk).sets.count(), 1)
+
+        # Add the set to a node
+
+        outcome = project.workflows.first().outcomes.create(author=user)
+        outcome_pk = outcome.pk
+        child_outcome = outcome.children.create(author=user)
+        child_pk = child_outcome.pk
+
+        response = self.client.post(
+            reverse("course_flow:update-object-set"),
+            {
+                "objectsetPk": project.object_sets.first().id,
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),
+                "objectID": outcome_pk,
+                "add": JSONRenderer().render(True).decode("utf-8"),
+            },
         )
-        self.assertEqual(
-            project.terminology_dict.first().translation_plural,
-            "program outcomes",
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Outcome.objects.get(pk=outcome_pk).sets.count(), 1)
+        self.assertEqual(Outcome.objects.get(pk=child_pk).sets.count(), 1)
+
+        # Remove the set
+
+        response = self.client.post(
+            reverse("course_flow:update-object-set"),
+            {
+                "objectsetPk": project.object_sets.first().id,
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),
+                "objectID": outcome_pk,
+                "add": JSONRenderer().render(False).decode("utf-8"),
+            },
         )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Outcome.objects.get(pk=outcome_pk).sets.count(), 0)
+        self.assertEqual(Outcome.objects.get(pk=child_pk).sets.count(), 0)
+
+        # try adding a term that already exists (should replace)
+        #        response = self.client.post(
+        #            reverse("course_flow:add-terminology"),
+        #            {
+        #                "projectPk": project.id,
+        #                "term": JSONRenderer().render("programoutcome").decode("utf-8"),
+        #                "title": JSONRenderer()
+        #                .render("program outcome")
+        #                .decode("utf-8"),
+        #                "translation_plural": JSONRenderer()
+        #                .render("program outcomes")
+        #                .decode("utf-8"),
+        #            },
+        #        )
+        #        self.assertEqual(response.status_code, 200)
+        #        self.assertEqual(project.object_sets.all().count(), 1)
+        #        self.assertEqual(
+        #            project.terminology_dict.first().translation, "program outcome"
+        #        )
+        #        self.assertEqual(
+        #            project.terminology_dict.first().translation_plural,
+        #            "program outcomes",
+        #        )
 
         # delete a term
         response = self.client.post(
             reverse("course_flow:delete-self"),
             {
-                "objectID": project.terminology_dict.first().id,
+                "objectID": project.object_sets.first().id,
                 "objectType": JSONRenderer()
-                .render("customterm")
+                .render("objectset")
                 .decode("utf-8"),
             },
         )
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(project.terminology_dict.all().count(), 0)
+        self.assertEqual(project.object_sets.all().count(), 0)
+        self.assertEqual(Node.objects.get(pk=node_pk).sets.count(), 0)
 
 
 class PermissionsTests(TestCase):
@@ -3004,7 +3061,9 @@ class ExportTest(TestCase):
                 author.email,
                 workflow.id,
                 "workflow",
-                "outcomes_csv",
+                "outcome",
+                "csv",
+                [],
                 "subject",
                 "text",
             )
@@ -3012,7 +3071,9 @@ class ExportTest(TestCase):
                 author.email,
                 workflow.id,
                 "workflow",
-                "outcomes_excel",
+                "outcome",
+                "excel",
+                [],
                 "subject",
                 "text",
             )
@@ -3021,7 +3082,9 @@ class ExportTest(TestCase):
             author.email,
             project.id,
             "project",
-            "outcomes_excel",
+            "outcome",
+            "excel",
+            [],
             "subject",
             "text",
         )
@@ -3029,7 +3092,9 @@ class ExportTest(TestCase):
             author.email,
             project.id,
             "project",
-            "outcomes_csv",
+            "outcome",
+            "csv",
+            [],
             "subject",
             "text",
         )
@@ -3046,7 +3111,11 @@ class ExportTest(TestCase):
             for workflow_type in ["course", "course", "course"]
         ]
         nodes = [
-            week.nodes.create(author=author, linked_workflow=workflow)
+            week.nodes.create(
+                author=author,
+                linked_workflow=workflow,
+                column=program.columns.first(),
+            )
             for workflow in workflows
         ]
         base_outcome = program.outcomes.create(author=author, title="outcome")
@@ -3101,7 +3170,9 @@ class ExportTest(TestCase):
                 author.email,
                 workflow.id,
                 "workflow",
-                "frameworks_excel",
+                "framework",
+                "excel",
+                [],
                 "subject",
                 "text",
             )
@@ -3110,15 +3181,9 @@ class ExportTest(TestCase):
             author.email,
             project.id,
             "project",
-            "frameworks_excel",
-            "subject",
-            "text",
-        )
-        tasks.async_send_export_email(
-            author.email,
-            program.id,
-            "workflow",
-            "matrix_excel",
+            "framework",
+            "csv",
+            [],
             "subject",
             "text",
         )
@@ -3126,7 +3191,9 @@ class ExportTest(TestCase):
             author.email,
             project.id,
             "project",
-            "matrix_excel",
+            "framework",
+            "excel",
+            [],
             "subject",
             "text",
         )
@@ -3134,7 +3201,9 @@ class ExportTest(TestCase):
             author.email,
             program.id,
             "workflow",
-            "matrix_csv",
+            "matrix",
+            "excel",
+            [],
             "subject",
             "text",
         )
@@ -3142,7 +3211,19 @@ class ExportTest(TestCase):
             author.email,
             project.id,
             "project",
-            "matrix_csv",
+            "matrix",
+            "excel",
+            [],
+            "subject",
+            "text",
+        )
+        tasks.async_send_export_email(
+            author.email,
+            program.id,
+            "workflow",
+            "matrix",
+            "csv",
+            [],
             "subject",
             "text",
         )
@@ -3166,7 +3247,9 @@ class ExportTest(TestCase):
                 author.email,
                 workflow.id,
                 "workflow",
-                "nodes_csv",
+                "node",
+                "csv",
+                [],
                 "subject",
                 "text",
             )
@@ -3174,7 +3257,9 @@ class ExportTest(TestCase):
                 author.email,
                 workflow.id,
                 "workflow",
-                "nodes_excel",
+                "node",
+                "excel",
+                [],
                 "subject",
                 "text",
             )
@@ -3183,12 +3268,21 @@ class ExportTest(TestCase):
             author.email,
             project.id,
             "project",
-            "nodes_excel",
+            "node",
+            "excel",
+            [],
             "subject",
             "text",
         )
         tasks.async_send_export_email(
-            author.email, project.id, "project", "nodes_csv", "subject", "text"
+            author.email,
+            project.id,
+            "project",
+            "node",
+            "csv",
+            [],
+            "subject",
+            "text",
         )
 
 

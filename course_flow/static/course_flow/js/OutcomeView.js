@@ -22,14 +22,14 @@ class OutcomeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        
+        if(Constants.checkSetHidden(data,this.props.object_sets))return null;
         var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} show_horizontal={this.props.show_horizontal} />
+            <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} show_horizontal={this.props.show_horizontal} parent_depth={this.props.data.depth}/>
         );
         
         
         let outcomehorizontallinks = data.outcome_horizontal_links_unique.map((horizontal_link)=>
-            <OutcomeHorizontalLinkView key={horizontal_link} parent_component={this} objectID={horizontal_link} renderer={this.props.renderer}/>
+            <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link} renderer={this.props.renderer}/>
         );
         let outcomeDiv;
         if(this.props.show_horizontal && outcomehorizontallinks.length>0){
@@ -89,7 +89,7 @@ class OutcomeView extends ComponentJSON{
                         </div>
                     </div>
                 }
-                <ol class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
+                <ol class={"children-block children-block-"+this.props.data.depth} id={this.props.objectID+"-children-block"} ref={this.children_block}>
                     {children}
                 </ol>
                 {(!read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>{gettext("+ Add New")}</div>
@@ -108,25 +108,25 @@ class OutcomeView extends ComponentJSON{
     
     postMountFunction(){
         if(this.props.show_horizontal)this.makeDragAndDrop();
-        if(this.props.show_horizontal)this.updateIndicator();
+//        if(this.props.show_horizontal)this.updateIndicator();
     }
 
     componentDidUpdate(){
         if(this.props.show_horizontal)this.makeDragAndDrop();
-        if(this.props.show_horizontal)this.updateIndicator();
+//        if(this.props.show_horizontal)this.updateIndicator();
     }
-
-    updateIndicator(){
-        let indicator = $(this.maindiv.current).children(".outcome-node-indicator");
-        let indicator_number = indicator.children(".outcome-node-indicator-number");
-        let number = indicator.children(".outcome-node-container").children().length;
-        indicator_number.text(number);
-        if(number>0)indicator.show();
-        else indicator.hide();
-    }
+//
+//    updateIndicator(){
+//        let indicator = $(this.maindiv.current).children(".outcome-node-indicator");
+//        let indicator_number = indicator.children(".outcome-node-indicator-number");
+//        let number = indicator.children(".outcome-node-container").children().length;
+//        indicator_number.text(number);
+//        if(number>0)indicator.show();
+//        else indicator.hide();
+//    }
 
     makeDragAndDrop(){
-        this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome",false,false,".children-block",".outcome");
+        this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome-"+this.props.data.depth,false,false,".children-block-"+this.props.data.depth,".outcome");
         if(this.props.data.depth==0)this.makeDroppable();
     }
 
@@ -212,7 +212,7 @@ export class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        
+        if(Constants.checkSetHidden(data,this.props.object_sets))return null;
         var children = data.child_outcome_links.map((outcomeoutcome)=>
             <OutcomeBarOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer}/>
         );
@@ -340,6 +340,7 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        if(Constants.checkSetHidden(data,this.props.object_sets))return null;
         var children = data.child_outcome_links.map((outcomeoutcome)=>
             this.getChildType(outcomeoutcome)
         );
@@ -409,6 +410,16 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         );
     }
 
+    postMountFunction(){
+        if(this.props.checkHidden)this.props.checkHidden();
+    }
+
+    componentDidUpdate(){
+        if(this.props.checkHidden)this.props.checkHidden();
+    }
+
+
+
 }
 export const SimpleOutcomeView = connect(
     mapOutcomeStateToProps,
@@ -453,11 +464,11 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         return(
             <div
             class={
-                "outcome"+((data.is_dropped && " dropped")||"")
+                "outcome depth-"+data.depth+((data.is_dropped && " dropped")||"")
             }
             ref={this.maindiv}>
                 <div class = "outcome-row">
-                    <div class="outcome-head" style={{width:400-data.depth*44}}>
+                    <div class="outcome-head" style={{paddingLeft:data.depth*12}}>
                         <div class="outcome-title">
                             <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
                         </div>
@@ -543,7 +554,7 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
                     {this.addDeleteSelf(data,"close.svg")}
                 </div>
                 }
-                <SimpleOutcomeView objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
+                <SimpleOutcomeView checkHidden={this.checkHidden.bind(this)} objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             </div>
         );
     }
@@ -560,14 +571,28 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
         }
     }
 
+    checkHidden(){
+        if($(this.maindiv.current).children(".outcome").length==0)$(this.maindiv.current).css("display","none");
+        else $(this.maindiv.current).css("display","");
+        let indicator = $(this.maindiv.current).closest(".outcome-node-indicator")
+        if(indicator.length>=0){
+            let num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
+            indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
+            if(num_outcomenodes==0)indicator.css("display","none");
+            else indicator.css("display","");
+        }
+    }
+
     postMountFunction(){
-        if(this.props.parent_component)this.props.parent_component.updateIndicator();
+        this.checkHidden();
     }
+
     componentDidUpdate(){
-        if(this.props.parent_component)this.props.parent_component.updateIndicator();
+        this.checkHidden();
     }
+
     componentWillUnmount(){
-        if(this.props.parent_component)this.props.parent_component.updateIndicator();
+        this.checkHidden();
     }
 }
 const mapOutcomeHorizontalLinkStateToProps = (state,own_props)=>(

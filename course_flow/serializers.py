@@ -3,6 +3,7 @@ import re
 import bleach
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.utils.translation import gettext as _
 from html2text import html2text
 from rest_framework import serializers
 
@@ -17,6 +18,7 @@ from .models import (
     Node,
     NodeLink,
     NodeWeek,
+    ObjectSet,
     Outcome,
     OutcomeHorizontalLink,
     OutcomeNode,
@@ -35,9 +37,10 @@ from .utils import (
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
     linkIDMap,
+    multiple_replace,
 )
 
-bleach_allowed_tags = [
+bleach_allowed_tags_description = [
     "b",
     "u",
     "em",
@@ -53,6 +56,13 @@ bleach_allowed_tags = [
     "sup",
 ]
 
+bleach_allowed_tags_title = [
+    "b",
+    "u",
+    "em",
+    "i",
+]
+
 
 def bleach_sanitizer(value, **kwargs):
     if value is not None:
@@ -65,22 +75,24 @@ class DescriptionSerializerMixin:
     description = serializers.SerializerMethodField()
 
     def get_description(self, instance):
-        return bleach_sanitizer(instance.description, tags=bleach_allowed_tags)
+        return bleach_sanitizer(
+            instance.description, tags=bleach_allowed_tags_description
+        )
 
     def validate_description(self, value):
         if value is None:
             return None
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)
+        return bleach_sanitizer(value, tags=bleach_allowed_tags_description)
 
 
 class TitleSerializerMixin:
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
-        return bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
+        return bleach_sanitizer(instance.title, tags=bleach_allowed_tags_title)
 
     def validate_title(self, value):
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)[
+        return bleach_sanitizer(value, tags=bleach_allowed_tags_title)[
             :title_max_length
         ]
 
@@ -92,33 +104,54 @@ class DescriptionSerializerTextMixin(serializers.Serializer):
         if instance.description is None:
             return None
         returnval = html2text(
-            bleach_sanitizer(instance.description, tags=bleach_allowed_tags)
+            bleach_sanitizer(
+                instance.description, tags=bleach_allowed_tags_description
+            )
         )
-        return returnval
+        return re.sub("\n\n$", "", returnval)
 
 
 class TitleSerializerTextMixin(serializers.Serializer):
     title = serializers.SerializerMethodField()
 
     def get_title(self, instance):
-        if instance.title is None:
-            return None
+        title = instance.title
+
+        if self.get_type(instance) == "node":
+            if (
+                instance.linked_workflow is not None
+                and instance.represents_workflow
+            ):
+                title = instance.linked_workflow.title
+
+        if title is None or title == "":
+            if self.get_type(instance) == "week":
+                return (
+                    _("Term")
+                    + " "
+                    + str(
+                        WeekWorkflow.objects.filter(week=instance)
+                        .first()
+                        .get_display_rank()
+                        + 1
+                    )
+                )
+            else:
+                return _("Untitled")
         returnval = html2text(
-            bleach_sanitizer(instance.title, tags=bleach_allowed_tags)
+            bleach_sanitizer(title, tags=bleach_allowed_tags_title)
         )
-        return returnval
+        return re.sub("\n\n$", "", returnval)
 
 
 class TimeRequiredSerializerMixin:
     time_required = serializers.SerializerMethodField()
 
     def get_time_required(self, instance):
-        return bleach_sanitizer(
-            instance.time_required, tags=bleach_allowed_tags
-        )
+        return bleach_sanitizer(instance.time_required, tags=[])
 
     def validate_time_required(self, value):
-        return bleach_sanitizer(value, tags=bleach_allowed_tags)
+        return bleach_sanitizer(value, tags=[])
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -152,6 +185,8 @@ class NodeLinkSerializerShallow(
             "target_node",
             "source_port",
             "target_port",
+            "dashed",
+            "text_position",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -164,6 +199,10 @@ class NodeLinkSerializerShallow(
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
+        instance.dashed = validated_data.get("dashed", instance.dashed)
+        instance.text_position = validated_data.get(
+            "text_position", instance.text_position
+        )
         instance.save()
         return instance
 
@@ -204,11 +243,17 @@ class NodeSerializerShallow(
             "has_autolink",
             "time_units",
             "time_required",
+            "ponderation_theory",
+            "ponderation_practical",
+            "ponderation_individual",
+            "time_general_hours",
+            "time_specific_hours",
             "represents_workflow",
             "linked_workflow",
             "linked_workflow_data",
             "is_dropped",
             "comments",
+            "sets",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -312,6 +357,21 @@ class NodeSerializerShallow(
         instance.time_units = validated_data.get(
             "time_units", instance.time_units
         )
+        instance.ponderation_theory = validated_data.get(
+            "ponderation_theory", instance.ponderation_theory
+        )
+        instance.ponderation_practical = validated_data.get(
+            "ponderation_practical", instance.ponderation_practical
+        )
+        instance.ponderation_individual = validated_data.get(
+            "ponderation_individual", instance.ponderation_individual
+        )
+        instance.time_general_hours = validated_data.get(
+            "time_general_hours", instance.time_general_hours
+        )
+        instance.time_specific_hours = validated_data.get(
+            "time_specific_hours", instance.time_specific_hours
+        )
         instance.is_dropped = validated_data.get(
             "is_dropped", instance.is_dropped
         )
@@ -413,6 +473,7 @@ class WeekSerializerShallow(
             "is_strategy",
             "strategy_classification",
             "comments",
+            "is_dropped",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -436,6 +497,9 @@ class WeekSerializerShallow(
         )
         instance.strategy_classification = validated_data.get(
             "strategy_classification", instance.strategy_classification
+        )
+        instance.is_dropped = validated_data.get(
+            "is_dropped", instance.is_dropped
         )
         instance.save()
         return instance
@@ -510,14 +574,14 @@ class ProjectSerializerShallow(
             "workflowproject_set",
             "disciplines",
             "type",
-            "terminology_dict",
+            "object_sets",
             "favourite",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     workflowproject_set = serializers.SerializerMethodField()
-    terminology_dict = serializers.SerializerMethodField()
+    object_sets = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
@@ -536,15 +600,15 @@ class ProjectSerializerShallow(
         else:
             return False
 
-    def get_terminology_dict(self, instance):
+    def get_object_sets(self, instance):
         return [
             {
-                "id": term.id,
-                "term": term.term,
-                "translation": term.translation,
-                "translation_plural": term.translation_plural,
+                "id": object_set.id,
+                "term": object_set.term,
+                "title": object_set.title,
+                "translation_plural": object_set.translation_plural,
             }
-            for term in instance.terminology_dict.all()
+            for object_set in instance.object_sets.all()
         ]
 
     def get_workflowproject_set(self, instance):
@@ -589,6 +653,7 @@ class OutcomeSerializerShallow(
             "depth",
             "type",
             "comments",
+            "sets",
         ]
 
         read_only_fields = [
@@ -599,12 +664,20 @@ class OutcomeSerializerShallow(
             "depth",
             "type",
             "comments",
+            "sets",
         ]
 
     child_outcome_links = serializers.SerializerMethodField()
     outcome_horizontal_links = serializers.SerializerMethodField()
     outcome_horizontal_links_unique = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+
+    def get_type(self, instance):
+        my_type = self.context.get("type", None)
+        if my_type is None:
+            my_type = instance.get_workflow().type + " outcome"
+        return my_type
 
     def get_outcome_horizontal_links(self, instance):
         if len(instance.outcome_horizontal_links.all()) == 0:
@@ -1009,6 +1082,22 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
         return activity
 
 
+class ObjectSetSerializerShallow(
+    serializers.ModelSerializer, TitleSerializerMixin,
+):
+    class Meta:
+        model = ObjectSet
+        fields = ["id", "title", "translation_plural", "term"]
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.translation_plural = validated_data.get(
+            "translation_plural", instance.translation_plural
+        )
+        instance.save()
+        return instance
+
+
 class InfoBoxSerializer(
     serializers.Serializer, TitleSerializerMixin, DescriptionSerializerMixin
 ):
@@ -1168,7 +1257,7 @@ class RefreshSerializerNode(serializers.ModelSerializer):
             Q(outcome__deleted=True)
             | Q(outcome__parent_outcomes__deleted=True)
             | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
-        ).order_by("rank")
+        )
         return list(map(linkIDMap, links))
 
     def get_outcomenode_unique_set(self, instance):
@@ -1216,6 +1305,9 @@ class OutcomeExportSerializer(
                     self.get_code(outcomeoutcome.parent) + "." + instance.code
                 )
 
+    def get_type(self, instance):
+        return "outcome"
+
 
 class WeekExportSerializer(
     serializers.ModelSerializer,
@@ -1230,6 +1322,8 @@ class WeekExportSerializer(
             "description",
             "type",
         ]
+
+    objectType = "week"
 
     type = serializers.SerializerMethodField()
 
@@ -1262,6 +1356,26 @@ class NodeExportSerializer(
         return "node"
 
 
+class WorkflowExportSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerTextMixin,
+    DescriptionSerializerTextMixin,
+):
+    class Meta:
+        model = Workflow
+        fields = [
+            "id",
+            "title",
+            "description",
+            "type",
+        ]
+
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, instance):
+        return "workflow"
+
+
 #
 # serializer_lookups = {
 #    "node": NodeSerializer,
@@ -1274,6 +1388,7 @@ class NodeExportSerializer(
 
 
 serializer_lookups_shallow = {
+    "nodelink": NodeLinkSerializerShallow,
     "node": NodeSerializerShallow,
     "nodeweek": NodeWeekSerializerShallow,
     "week": WeekSerializerShallow,
@@ -1288,4 +1403,5 @@ serializer_lookups_shallow = {
     "outcome": OutcomeSerializerShallow,
     "outcomeoutcome": OutcomeOutcomeSerializerShallow,
     "outcomeworkflow": OutcomeWorkflowSerializerShallow,
+    "objectset": ObjectSetSerializerShallow,
 }

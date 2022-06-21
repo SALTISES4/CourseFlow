@@ -17,7 +17,7 @@ class OutcomeOutcomeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        let my_class = "outcome-outcome";
+        let my_class = "outcome-outcome outcome-outcome-"+this.props.parent_depth;
         if(data.no_drag)my_class+=" no-drag";
         
         return (

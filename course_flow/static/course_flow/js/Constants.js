@@ -1,4 +1,5 @@
 import * as React from "react";
+import {getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
 
 export const lock_times = {
     move:5000,
@@ -128,26 +129,37 @@ export const permission_keys = {
     "comment":3,
 }
 //get all the possible custom names. This is super clunky, should probably be switched to ngettext
-export function custom_text_base(){
+//export function custom_text_base(){
+//    return {
+//        "program outcome":{
+//            "singular_key":"program outcome",
+//            "singular":gettext("program outcome"),
+//            "plural_key":"program outcomes",
+//            "plural":gettext("program outcomes"),
+//        },
+//        "course outcome":{
+//            "singular_key":"course outcome",
+//            "singular":gettext("course outcome"),
+//            "plural_key":"course outcomes",
+//            "plural":gettext("course outcomes"),
+//        },
+//        "activity outcome":{
+//            "singular_key":"activity outcome",
+//            "singular":gettext("activity outcome"),
+//            "plural_key":"activity outcomes",
+//            "plural":gettext("activity outcomes"),
+//        },
+//    }
+//}
+//get all possible object sets
+export function object_sets_types(){
     return {
-        "program outcome":{
-            "singular_key":"program outcome",
-            "singular":gettext("program outcome"),
-            "plural_key":"program outcomes",
-            "plural":gettext("program outcomes"),
-        },
-        "course outcome":{
-            "singular_key":"course outcome",
-            "singular":gettext("course outcome"),
-            "plural_key":"course outcomes",
-            "plural":gettext("course outcomes"),
-        },
-        "activity outcome":{
-            "singular_key":"activity outcome",
-            "singular":gettext("activity outcome"),
-            "plural_key":"activity outcomes",
-            "plural":gettext("activity outcomes"),
-        },
+        "program outcome":gettext("program outcome"),
+        "course outcome":gettext("course outcome"),
+        "activity outcome":gettext("activity outcome"),
+        "program node":gettext("program node"),
+        "course node":gettext("course node"),
+        "activity node":gettext("activity node"),
     }
 }
 export const parent_workflow_type = {
@@ -242,9 +254,12 @@ export function createOutcomeBranch(state,outcome_id){
 
 export function createOutcomeTree(state){
     let outcomes_tree = [];
-    let outcomeworkflows = filterThenSortByID(state.outcomeworkflow,state.workflow.outcomeworkflow_set);
-    for(let i=0;i<outcomeworkflows.length;i++){
-        outcomes_tree.push(createOutcomeBranch(state,outcomeworkflows[i].outcome));
+    let sorted_outcomes = getSortedOutcomesFromOutcomeWorkflowSet(state,state.workflow.outcomeworkflow_set);
+    for(let i=0;i<sorted_outcomes.length;i++){
+        let outcomes_tree_category=[];
+        for(let j=0;j<sorted_outcomes[i].outcomes.length;j++)
+            outcomes_tree_category.push(createOutcomeBranch(state,sorted_outcomes[i].outcomes[j].id));
+        outcomes_tree.push({title:sorted_outcomes[i].objectset.title,outcomes:outcomes_tree_category});
     }
     return outcomes_tree;
 }
@@ -296,6 +311,21 @@ export class Loader{
     }
 }
 
+//Check if an object (such as a node or an outcome) should be hidden based on its sets and the currently active object sets
+export function checkSetHidden(data,objectsets){
+    let hidden=false;
+    if(data.sets.length>0 && objectsets){
+        hidden=true;
+        for(var i=0;i<objectsets.length;i++){
+            if(!objectsets[i].hidden && data.sets.indexOf(objectsets[i].id)>=0){
+                hidden=false;
+                break;
+            }
+        }
+    }
+    return hidden;
+}
+
 export function csv_safe(unescaped){
     return unescaped.replace(/"/g,'\"\"')
 }
@@ -314,4 +344,9 @@ export function download(filename, text) {
         pom.click();
     }
 }
+
+export function unescapeCharacters(string){
+    return string.replace(/\&amp;/g,"&").replace(/\&gt;/g,">").replace(/\&lt;/g,"<")
+}
+
 

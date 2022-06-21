@@ -8,7 +8,7 @@ import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";
 import {NodeBarWeekWorkflow} from "./WeekWorkflowView";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
 import * as Constants from "./Constants";
-import {moveColumnWorkflow, moveWeekWorkflow} from "./Reducers";
+import {moveColumnWorkflow, moveWeekWorkflow, toggleObjectSet} from "./Reducers";
 import {OutcomeBar} from "./OutcomeEditView";
 import StrategyView from "./Strategy";
 import WorkflowOutcomeView from "./WorkflowOutcomeView";
@@ -94,12 +94,12 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         
         let view_buttons = [
             {type:"workflowview",name:gettext("Workflow View"),disabled:[]},
-            {type:"outcomeedit",name:Constants.capWords(gettext("Edit")+" "+gettext(data.type+" outcomes")),disabled:[]},
+            {type:"outcomeedit",name:Constants.capWords(gettext("View")+" "+gettext(data.type+" outcomes")),disabled:[]},
             {type:"outcometable",name:Constants.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
             {type:"alignmentanalysis",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
             {type:"competencymatrix",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
             {type:"grid",name:gettext("Grid View"),disabled:["activity", "course"]},
-            {type:"horizontaloutcometable",name:gettext("Alignment Table"),disabled:["activity"]}
+            //{type:"horizontaloutcometable",name:gettext("Alignment Table"),disabled:["activity"]}
         ].filter(item=>item.disabled.indexOf(data.type)==-1).map(
             (item)=>{
                 let view_class = "hover-shade";
@@ -174,6 +174,9 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     {!read_only && 
                         <RestoreBar renderer={this.props.renderer}/>
                     }
+                    {!data.is_strategy &&
+                        <ViewBar renderer={this.props.renderer}/>
+                    }
                 </div>
             </div>
         
@@ -215,47 +218,61 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     openEdit(evt){
         this.props.renderer.selection_manager.changeSelection(evt,this);
     }
-                     
+       
     getExportButton(){
-        let exports=[];
-        this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
-        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to .csv"));
-        if(this.props.data.type=="course")this.pushExport(exports,"frameworks_excel",gettext("Framework to .xls"));
-        if(this.props.data.type=="program")this.pushExport(exports,"matrix_excel",gettext("Matrix to .xls"));
-        if(this.props.data.type=="program")this.pushExport(exports,"matrix_csv",gettext("Matrix to .csv"));
-        this.pushExport(exports,"nodes_csv",gettext("Nodes to .csv"));
-        this.pushExport(exports,"nodes_excel",gettext("Nodes to .xls"));
-        
-        
         let export_button = (
-            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("active")}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
-                <div class="create-dropdown" ref={this.exportDropDown}>
-                    {exports}
-                </div>
+            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>renderMessageBox({...this.props.data,object_sets:this.props.object_sets},"export",closeMessageBox)}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
             </div>
             
-        )
-        
+        );
         return (
             reactDom.createPortal(
                 export_button,
                 $("#floatbar")[0]
             )
-        )
+        );
     }
                      
-    pushExport(exports,export_type,text){
-        exports.push(
-            <a class="hover-shade" onClick={this.clickExport.bind(this,export_type)}>
-                {text}
-            </a>
-        )
-    }
-                     
-    clickExport(export_type,evt){
-        evt.preventDefault();
-        getExport(this.props.data.id,"workflow",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
-    }
+//    getExportButton(){
+//        let exports=[];
+//        this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
+//        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to .csv"));
+//        if(this.props.data.type=="course")this.pushExport(exports,"frameworks_excel",gettext("Framework to .xls"));
+//        if(this.props.data.type=="program")this.pushExport(exports,"matrix_excel",gettext("Matrix to .xls"));
+//        if(this.props.data.type=="program")this.pushExport(exports,"matrix_csv",gettext("Matrix to .csv"));
+//        this.pushExport(exports,"nodes_csv",gettext("Nodes to .csv"));
+//        this.pushExport(exports,"nodes_excel",gettext("Nodes to .xls"));
+//        
+//        
+//        let export_button = (
+//            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("active")}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
+//                <div class="create-dropdown" ref={this.exportDropDown}>
+//                    {exports}
+//                </div>
+//            </div>
+//            
+//        )
+//        
+//        return (
+//            reactDom.createPortal(
+//                export_button,
+//                $("#floatbar")[0]
+//            )
+//        )
+//    }
+//                     
+//    pushExport(exports,export_type,text){
+//        exports.push(
+//            <a class="hover-shade" onClick={this.clickExport.bind(this,export_type)}>
+//                {text}
+//            </a>
+//        )
+//    }
+//                     
+//    clickExport(export_type,evt){
+//        evt.preventDefault();
+//        getExport(this.props.data.id,"workflow",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
+//    }
                      
     getImportButton(){
         let disabled;
@@ -300,7 +317,8 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     
 }
 const mapWorkflowStateToProps = state=>({
-    data:state.workflow
+    data:state.workflow,
+    object_sets:state.objectset,
 })
 const mapWorkflowDispatchToProps = {};
 export const WorkflowBaseView = connect(
@@ -426,6 +444,40 @@ export const WorkflowView =  connect(
     null
 )(WorkflowViewUnconnected)
 
+
+class ViewBarUnconnected extends ComponentJSON{
+     
+    render(){
+        let sets=(
+            <div class="node-bar-sort-block">
+                {this.props.object_sets.sort((a,b)=>{
+                    let x = a.term;
+                    let y = b.term;
+                    if(x<y)return -1;
+                    if(x>y)return 1;
+                    return 0;
+                }).map((set)=>
+                    <div><input type="checkbox" id={"set"+set.id} value={set.id} checked={(!set.hidden)} onChange={this.toggleHidden.bind(this,set.id)}/><label for={"set"+set.id}>{set.title}</label></div>
+
+                )}
+            </div>
+        );
+        return reactDom.createPortal(
+            <div id="node-bar-workflow" class="right-panel-inner">
+                <h4>{gettext("Object Sets")+":"}</h4>
+                {sets}
+            </div>
+        ,$("#view-bar")[0]);
+    }
+    
+    toggleHidden(id){
+        this.props.dispatch(toggleObjectSet(id));
+    }
+}
+export const ViewBar =  connect(
+    (state)=>({object_sets:state.objectset}),
+    null
+)(ViewBarUnconnected)
 
 
 class NodeBarUnconnected extends ComponentJSON{

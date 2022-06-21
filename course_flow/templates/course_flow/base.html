@@ -173,7 +173,7 @@
           </div>
           <div class="topdropwrapper">
             <button class="topdropbutton">
-              <a id="explore-icon-link" href="{% url 'course_flow:explore' %}"
+              <a id="explore-icon-link" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project"
                 ><img
                   id="explore-icon"
                   src="{% static 'course_flow/img/images_svg/explore.svg' %}"
@@ -286,14 +286,17 @@
       set_permission: "{% url 'course_flow:set-permission' %}",
       get_comments_for_object: "{% url 'course_flow:get-comments-for-object' %}",
       add_terminology: "{% url 'course_flow:add-terminology' %}",
+      update_object_set: "{% url 'course_flow:update-object-set' %}",
       add_comment: "{% url 'course_flow:add-comment' %}",
       remove_comment: "{% url 'course_flow:remove-comment' %}",
+      remove_all_comments: "{% url 'course_flow:remove-all-comments' %}",
       get_parent_workflow_info: "{% url 'course_flow:get-parent-workflow-info' %}",
       get_export: "{% url 'course_flow:get-export' %}",
+      get_export_download: "{% url 'course_flow:get-export-download' %}",
+      import_data: "{% url 'course_flow:import-data' %}",
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
-      get_download_export: "{% url 'course_flow:get-export-download' pk='0' object_type='objecttype' export_type='exporttype' %}",
       import: "{% url 'course_flow:import' %}",
     };
 
@@ -317,6 +320,33 @@
     ) {
       location.reload();
     }
+      
+    //Fix Quilljs's link sanitization
+    const Link = Quill.import('formats/link')
+    // Override the existing property on the Quill global object and add custom protocols
+    Link.PROTOCOL_WHITELIST = ['http', 'https'];
+
+    class CustomLinkSanitizer extends Link {
+      static sanitize(url) {
+        // Run default sanitize method from Quill
+        const sanitizedUrl = super.sanitize(url);
+
+        // Not whitelisted URL based on protocol so, let's return `blank`
+        if (!sanitizedUrl || sanitizedUrl === 'about:blank') return sanitizedUrl;
+
+        // Verify if the URL already have a whitelisted protocol
+        const hasWhitelistedProtocol = this.PROTOCOL_WHITELIST.some(function(protocol) {
+          return sanitizedUrl.startsWith(protocol);
+        })
+
+        if (hasWhitelistedProtocol) return sanitizedUrl;
+
+        // if not, then append only 'http' to not to be a relative URL
+        return `http://${sanitizedUrl}`;
+      }
+    }
+
+    Quill.register(CustomLinkSanitizer, true)
 
 //    // Broadcast that you're opening a page.
 //    localStorage.openpages = "";
@@ -364,7 +394,7 @@
           ],
           menuFeedbackText: "{% trans 'Give Feedback' %}",
           menuHelpText: "{% trans 'Help' %}",
-          menuHelpUrl: "#",
+          menuHelpUrl: "https://drive.google.com/file/d/1htY0ZvuJeG4AfnNHzUV_2jAEihsscz6B/view?usp=sharing",
           placeholder: "{% trans 'Let us know what is on your mind...' %}",
           snackbarError:
             "{% trans 'An error occurred.  Please try again later.' %}",

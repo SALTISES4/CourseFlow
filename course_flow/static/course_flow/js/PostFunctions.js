@@ -12,10 +12,16 @@ export function getAddedWorkflowMenu(projectPk,type_filter,get_strategies,update
     },(data)=>openAddedWorkflowMenu(data,updateFunction));
 }
 
-export function getLinkedWorkflowMenu(nodeData,updateFunction){
-    $.post(post_paths.get_possible_linked_workflows,{
+export function getLinkedWorkflowMenu(nodeData,updateFunction,callBackFunction=()=>console.log("success")){
+    $.post(post_paths.get_possible_linked_workflows,
+    {
         nodePk:JSON.stringify(nodeData.id),
-    },(data)=>openLinkedWorkflowMenu(data,updateFunction));
+    },
+    (data)=>{
+        callBackFunction();
+        openLinkedWorkflowMenu(data,updateFunction);
+    }
+    );
 }
 
 export function getTargetProjectMenu(workflowPk,updateFunction){
@@ -220,6 +226,21 @@ export function removeComment(objectID,objectType,commentPk,callBackFunction=()=
         $.post(post_paths.remove_comment, {
             objectID:JSON.stringify(objectID),
             commentPk:JSON.stringify(commentPk),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Removes all comments from the object
+export function removeAllComments(objectID,objectType,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.remove_all_comments, {
+            objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
@@ -556,13 +577,29 @@ export function addComment(objectID,objectType,text,callBackFunction=()=>console
 }
 
 //add a comment to an object
-export function addTerminology(projectPk,term,translation,translation_plural,callBackFunction=()=>console.log("success")){
+export function addTerminology(projectPk,term,title,translation_plural,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.add_terminology,{
             projectPk:JSON.stringify(projectPk),
             term:JSON.stringify(term),
-            translation:JSON.stringify(translation),
+            title:JSON.stringify(title),
             translation_plural:JSON.stringify(translation_plural),
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//add a comment to an object
+export function updateObjectSet(objectID,objectType,objectsetPk,add,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.update_object_set,{
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            objectsetPk:JSON.stringify(objectsetPk),
+            add:JSON.stringify(add),
         }).done(function(data){
             callBackFunction(data);
         });

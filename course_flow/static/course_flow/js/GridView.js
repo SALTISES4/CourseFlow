@@ -71,37 +71,39 @@ class GridWeekViewUnconnected extends ComponentJSON{
 const mapWeekStateToProps = (state,own_props)=>{
     let data = own_props.data;
     let node_weeks = Constants.filterThenSortByID(state.nodeweek,data.nodeweek_set);
-    let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node));
+    let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Constants.checkSetHidden(node,state.objectset));
     
-    
-    let linked_wf_data = nodes_data.map(node=>node.linked_workflow_data);
-    let general_education = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let override_data = nodes_data.map(node=>{
+        if(node.represents_workflow)return {...node,...node.linked_workflow_data};
+        else return node;
+    })
+    let general_education = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.time_general_hours)return previousValue+currentValue.time_general_hours;
         return previousValue;
     },0);
-    let specific_education = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let specific_education = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.time_specific_hours)return previousValue+currentValue.time_specific_hours;
         return previousValue;
     },0);
-    let total_theory = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let total_theory = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.ponderation_theory)return previousValue+currentValue.ponderation_theory;
         return previousValue;
     },0);
-    let total_practical = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let total_practical = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.ponderation_practical)return previousValue+currentValue.ponderation_practical;
         return previousValue;
     },0);
-    let total_individual = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let total_individual = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.ponderation_individual)return previousValue+currentValue.ponderation_individual;
         return previousValue;
     },0);
     let total_time = total_theory+total_practical+total_individual;
-    let total_required = linked_wf_data.reduce((previousValue,currentValue)=>{
+    let total_required = override_data.reduce((previousValue,currentValue)=>{
         if(currentValue && currentValue.time_required)return previousValue+parseInt(currentValue.time_required);
         return previousValue;
     },0);
     
-    return {nodes:nodes_data,general_education:general_education,specific_education:specific_education,total_theory:total_theory,total_practical:total_practical,total_individual:total_individual,total_time:total_time,total_required:total_required};
+    return {nodes:override_data,general_education:general_education,specific_education:specific_education,total_theory:total_theory,total_practical:total_practical,total_individual:total_individual,total_time:total_time,total_required:total_required};
 }
 export const GridWeekView = connect(
     mapWeekStateToProps,
@@ -115,24 +117,37 @@ class GridNodeViewUnconnected extends ComponentJSON{
     }
     
     render(){
+        let renderer = this.props.renderer;
+        let selection_manager=renderer.selection_manager;
         let data = this.props.data;
+        let data_override;
+        if(data.represents_workflow)data_override = {...data,...data.linked_workflow_data}
+        else data_override = data;
         let ponderation;
-        if(data.linked_workflow){
-            ponderation = (
-                <div class="grid-ponderation">{data.linked_workflow_data.ponderation_theory+"/"+data.linked_workflow_data.ponderation_practical+"/"+data.linked_workflow_data.ponderation_individual}</div>
-            )
+        ponderation = (
+            <div class="grid-ponderation">{data_override.ponderation_theory+"/"+data_override.ponderation_practical+"/"+data_override.ponderation_individual}</div>
+        )
+        
+        let style = {backgroundColor:this.props.renderer.column_colours[data.column]}
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
         }
+        let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
+        if(data.is_dropped)css_class+=" dropped";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        
         return (
-            <div class={
-                    "node column-"+data.column+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
-                }
-                style={
-                    {backgroundColor:this.props.renderer.column_colours[data.column]}
-                }>
+            <div style={style}
+                id={data.id} 
+                ref={this.maindiv} 
+                onClick={(evt)=>selection_manager.changeSelection(evt,this)}
+                class={css_class}
+                style={style}>
                 <div class = "node-top-row">
                     <NodeTitle data={data}/>
                     {ponderation}
                 </div>
+                {this.addEditable(data_override)}
             </div>
         )
     }

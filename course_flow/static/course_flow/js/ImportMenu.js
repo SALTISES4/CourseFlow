@@ -10,7 +10,6 @@ export class ImportMenu extends React.Component{
     }
     
     render(){
-        console.log(root);
         
         return(
             <div class="message-wrap">
@@ -18,8 +17,8 @@ export class ImportMenu extends React.Component{
                 <p>{gettext("Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format.")}</p>
                 <form  enctype="multipart/form-data" action={post_paths.import_data} method="POST" id="upload-form" target="redirect-iframe" onSubmit={this.submit.bind(this)}>
                     <input type="hidden" name="csrfmiddlewaretoken" value={root.getCsrfToken()}/>
-                    <input type="hidden" id="objectID" name="objectID" value={this.props.data.object_id}/>
-                    <input type="hidden" id="objectType" name="objectType" value={this.props.data.object_type}/>
+                    <input type="hidden" id="objectID" name="objectID" value={JSON.stringify(this.props.data.object_id)}/>
+                    <input type="hidden" id="objectType" name="objectType" value={JSON.stringify(this.props.data.object_type)}/>
                     <input type="hidden" id="importType" name="importType" value={this.props.data.import_type}/>
                     <input type="file" id="myFile" name="myFile" accept=".xls, .xlsx, .csv" required/>
                     <input id="submit-button" type="submit"/>

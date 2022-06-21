@@ -39,6 +39,11 @@
       /></a>
     </li>
     <li class="hover-shade">
+      <a href="#view-bar"
+        ><img title='{% trans "View Options" %}' src="{% static 'course_flow/img/images_svg/view.svg' %}"
+      /></a>
+    </li>
+    <li class="hover-shade">
       <a href="#restore-bar"
         ><img title='{% trans "Restore Deleted" %}' src="{% static 'course_flow/img/images_svg/restore_blue.svg' %}"
       /></a>
@@ -49,6 +54,7 @@
     <div id="node-bar" class="right-panel-container"></div>
     {% if is_strategy == "false" %}
         <div id="outcome-bar" class="right-panel-container"></div>
+        <div id="view-bar" class="right-panel-container"></div>
         <div id="strategy-bar" class="right-panel-container"></div>
     {% endif %}
     <div id="restore-bar" class="right-panel-container"></div>
@@ -111,7 +117,9 @@
 //  {% endif %}
 
   const user_id = {{ user.id }};
-  const workflow_model_id = {{ object.id }}
+  const workflow_model_id = {{ object.id }};
+  const workflow_type = "{{ object.type }}";
+  console.log(workflow_type);
   const user_name = "{{ user.username }}";
   const create_path=null;
 
@@ -128,10 +136,19 @@
 
     function connect(){
         workflow_renderer.messages_queued=true;
+        
+        let websocket_prefix;
+        if (window.location.protocol == "https:") {
+           websocket_prefix = "wss";
+        }else{
+           websocket_prefix = "ws";
+        }
 
         const updateSocket = new WebSocket(
-        'ws://'+window.location.host+'/ws/update/'+workflow_model_id+'/'
+            websocket_prefix+'://'+window.location.host+'/ws/update/'+workflow_model_id+'/'
         );
+        console.log(window.location.protocol);
+        console.log(websocket_prefix);
 
         workflow_renderer.updateSocket = updateSocket;
         

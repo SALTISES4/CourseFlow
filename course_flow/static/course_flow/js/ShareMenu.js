@@ -30,6 +30,13 @@ export class ShareMenu extends React.Component{
         if(text==null || text==""){
             text=gettext("Untitled");
         }
+
+        let share_info;
+        if(data.type=="project"){
+            share_info=gettext("Note: You are sharing a project. Any added users will be granted the same permission for all workflows within the project.");
+        }else{
+            share_info=gettext("Note: You are sharing a workflow. Any added users will be granted view permissions for the whole project.");
+        }
         
         return(
             <div class="message-wrap user-text">
@@ -50,6 +57,7 @@ export class ShareMenu extends React.Component{
                     </ul>
                 </div>
                 <UserAdd permissionChange={this.setUserPermission.bind(this)}/>
+                {share_info}
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
                     <img src = {iconpath+"close.svg"}/>
                 </div>
@@ -130,8 +138,6 @@ class UserLabel extends React.Component{
     }
     
     onChange(evt){
-        console.log(evt.target.value);
-        console.log(this.props.user);
         switch(evt.target.value){
             case "none":
                 if(window.confirm("Are you sure you want to remove this user?")){
@@ -190,8 +196,6 @@ class UserAdd extends React.Component{
                 component.setState({selected:null});
             },
             select:(evt,ui)=>{
-                console.log("selecting");
-                console.log(ui);
                 this.setState({selected:ui.item.user})
             },
             minLength:1,
@@ -201,8 +205,6 @@ class UserAdd extends React.Component{
 
     addClick(value){
         if(this.state.selected){
-            console.log("PERMISSION TYPE:");
-            console.log(Constants.permission_keys[value]);
             this.props.permissionChange(Constants.permission_keys[value],this.state.selected);
             $(this.input.current).val(null);
                 this.setState({selected:null})

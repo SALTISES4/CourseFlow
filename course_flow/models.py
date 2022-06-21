@@ -1,3 +1,4 @@
+import time
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -16,7 +17,11 @@ from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 from model_utils.managers import InheritanceManager
 
-from course_flow.utils import get_descendant_outcomes
+from course_flow.utils import (
+    benchmark,
+    get_all_outcomes_for_outcome,
+    get_descendant_outcomes,
+)
 
 User = get_user_model()
 
@@ -51,7 +56,7 @@ class Project(models.Model):
         "ObjectPermission", related_query_name="project"
     )
 
-    terminology_dict = models.ManyToManyField("CustomTerm", blank=True)
+    object_sets = models.ManyToManyField("ObjectSet", blank=True)
 
     @property
     def type(self):
@@ -71,15 +76,15 @@ class Project(models.Model):
         verbose_name_plural = "Projects"
 
 
-class CustomTerm(models.Model):
+class ObjectSet(models.Model):
     term = models.CharField(max_length=title_max_length)
-    translation = models.CharField(max_length=title_max_length)
+    title = models.CharField(max_length=title_max_length)
     translation_plural = models.CharField(
         max_length=title_max_length, null=True
     )
 
     def get_permission_objects(self):
-        return [Project.objects.filter(terminology_dict=self).first()]
+        return [Project.objects.filter(object_sets=self).first()]
 
 
 class WorkflowProject(models.Model):
@@ -223,6 +228,7 @@ class NodeLink(models.Model):
     target_port = models.PositiveIntegerField(choices=TARGET_PORTS, default=0)
 
     dashed = models.BooleanField(default=False)
+    text_position = models.PositiveSmallIntegerField(default=20)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
 
@@ -258,6 +264,8 @@ class Outcome(models.Model):
     is_dropped = models.BooleanField(default=True)
     depth = models.PositiveIntegerField(default=0)
 
+    sets = models.ManyToManyField("ObjectSet", blank=True)
+
     children = models.ManyToManyField(
         "Outcome",
         through="OutcomeOutcome",
@@ -275,10 +283,6 @@ class Outcome(models.Model):
     comments = models.ManyToManyField(
         "Comment", blank=True, related_name="outcome"
     )
-
-    @property
-    def type(self):
-        return "outcome"
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -453,6 +457,8 @@ class Node(models.Model):
         "Comment", blank=True, related_name="node"
     )
 
+    sets = models.ManyToManyField("ObjectSet", blank=True)
+
     NONE = 0
     INDIVIDUAL = 1
     GROUPS = 2
@@ -569,6 +575,13 @@ class Node(models.Model):
     time_required = models.CharField(max_length=30, null=True, blank=True)
     time_units = models.PositiveIntegerField(default=0, choices=UNIT_CHOICES)
 
+    ponderation_theory = models.PositiveIntegerField(default=0, null=True)
+    ponderation_practical = models.PositiveIntegerField(default=0, null=True)
+    ponderation_individual = models.PositiveIntegerField(default=0, null=True)
+
+    time_general_hours = models.PositiveIntegerField(default=0, null=True)
+    time_specific_hours = models.PositiveIntegerField(default=0, null=True)
+
     represents_workflow = models.BooleanField(default=False)
     linked_workflow = models.ForeignKey(
         "Workflow",
@@ -680,8 +693,11 @@ class OutcomeNode(models.Model):
         degree = self.degree
         # Get the descendants (all descendant outcomes that don't already have an outcomenode of this degree and node)
         descendants = get_descendant_outcomes(outcome).exclude(
-            outcomenode__node=node, outcomenode__degree=degree
+            outcomenode__in=OutcomeNode.objects.filter(
+                node=node, degree=degree
+            )
         )
+
         # Delete the outcomenodes of any descendants that still have an outcomenode to this node (i.e. clear those of other degrees, we are using bulk create so they won't get automatically deleted)
         to_delete = OutcomeNode.objects.filter(
             outcome__in=descendants.values_list("pk", flat=True), node=node
@@ -718,6 +734,8 @@ class Week(models.Model):
     original_strategy = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
     )
+
+    is_dropped = models.BooleanField(default=True)
 
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
@@ -1510,22 +1528,23 @@ def reorder_for_deleted_outcome_outcome(sender, instance, **kwargs):
         out_of_order_link.save()
 
 
-@receiver(pre_delete, sender=OutcomeNode)
-def reorder_for_deleted_outcome_node(sender, instance, **kwargs):
-    for out_of_order_link in OutcomeNode.objects.filter(
-        node=instance.node, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
+#
+# @receiver(pre_delete, sender=OutcomeNode)
+# def reorder_for_deleted_outcome_node(sender, instance, **kwargs):
+#    for out_of_order_link in OutcomeNode.objects.filter(
+#        node=instance.node, rank__gt=instance.rank
+#    ):
+#        out_of_order_link.rank -= 1
+#        out_of_order_link.save()
 
-
-@receiver(pre_delete, sender=OutcomeHorizontalLink)
-def reorder_for_deleted_outcome_horizontal_link(sender, instance, **kwargs):
-    for out_of_order_link in OutcomeNode.objects.filter(
-        outcome=instance.outcome, rank__gt=instance.rank
-    ):
-        out_of_order_link.rank -= 1
-        out_of_order_link.save()
+#
+# @receiver(pre_delete, sender=OutcomeHorizontalLink)
+# def reorder_for_deleted_outcome_horizontal_link(sender, instance, **kwargs):
+#    for out_of_order_link in OutcomeNode.objects.filter(
+#        outcome=instance.outcome, rank__gt=instance.rank
+#    ):
+#        out_of_order_link.rank -= 1
+#        out_of_order_link.save()
 
 
 @receiver(pre_save, sender=NodeWeek)
@@ -1659,14 +1678,16 @@ def delete_existing_outcome_node(sender, instance, **kwargs):
             instance.rank = new_parent_count
 
 
-@receiver(post_save, sender=OutcomeNode)
-def reorder_for_created_outcome_node(sender, instance, created, **kwargs):
-    if created:
-        for out_of_order_link in OutcomeNode.objects.filter(
-            node=instance.node, rank__gte=instance.rank
-        ).exclude(outcome=instance.outcome):
-            out_of_order_link.rank += 1
-            out_of_order_link.save()
+#
+#
+# @receiver(post_save, sender=OutcomeNode)
+# def reorder_for_created_outcome_node(sender, instance, created, **kwargs):
+#    if created:
+#        for out_of_order_link in OutcomeNode.objects.filter(
+#            node=instance.node, rank__gte=instance.rank
+#        ).exclude(outcome=instance.outcome):
+#            out_of_order_link.rank += 1
+#            out_of_order_link.save()
 
 
 @receiver(pre_save, sender=OutcomeHorizontalLink)
@@ -1684,16 +1705,16 @@ def delete_existing_horizontal_link(sender, instance, **kwargs):
             instance.rank = new_parent_count
 
 
-@receiver(post_save, sender=OutcomeHorizontalLink)
-def reorder_for_created_horizontal_outcome_link(
-    sender, instance, created, **kwargs
-):
-    if created:
-        for out_of_order_link in OutcomeHorizontalLink.objects.filter(
-            outcome=instance.outcome, rank__gte=instance.rank
-        ).exclude(parent_outcome=instance.parent_outcome):
-            out_of_order_link.rank += 1
-            out_of_order_link.save()
+# @receiver(post_save, sender=OutcomeHorizontalLink)
+# def reorder_for_created_horizontal_outcome_link(
+#    sender, instance, created, **kwargs
+# ):
+#    if created:
+#        for out_of_order_link in OutcomeHorizontalLink.objects.filter(
+#            outcome=instance.outcome, rank__gte=instance.rank
+#        ).exclude(parent_outcome=instance.parent_outcome):
+#            out_of_order_link.rank += 1
+#            out_of_order_link.save()
 
 
 """
@@ -1794,12 +1815,20 @@ def set_week_type_default(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=OutcomeOutcome)
 def set_outcome_depth_default(sender, instance, created, **kwargs):
-    child = instance.child
     try:
-        child.depth = instance.parent.depth + 1
-        child.save()
+        set_list = list(instance.parent.sets.all())
+        outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
+            instance.child
+        )
+        for outcomeoutcome in [instance] + list(outcomeoutcomes):
+            child = outcomeoutcome.child
+            parent = outcomeoutcome.parent
+            child.depth = parent.depth + 1
+            child.sets.clear()
+            child.sets.add(*set_list)
+            child.save()
     except ValidationError:
-        print("couldn't set default outcome depth")
+        print("couldn't set default outcome depth or copy sets")
 
 
 @receiver(post_save, sender=Node)
@@ -1808,6 +1837,9 @@ def create_default_node_content(sender, instance, created, **kwargs):
         # If this is an activity-level node, set the autolinks to true
         if instance.node_type == instance.ACTIVITY_NODE:
             instance.has_autolink = True
+            instance.save()
+        elif instance.node_type == instance.PROGRAM_NODE:
+            instance.time_units = instance.CREDITS
             instance.save()
 
 
@@ -1848,6 +1880,7 @@ def create_default_course_content(sender, instance, created, **kwargs):
             author=instance.author,
             is_strategy=instance.is_strategy,
         )
+        instance.time_units = instance.CREDITS
         instance.save()
 
 

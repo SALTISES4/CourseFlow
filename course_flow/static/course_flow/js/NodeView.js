@@ -22,6 +22,9 @@ class NodeView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        let data_override;
+        if(data.represents_workflow) data_override = {...data,...data.linked_workflow_data};
+        else data_override={...data};
         let renderer = this.props.renderer;
         let selection_manager=renderer.selection_manager;
         var nodePorts;
@@ -86,20 +89,16 @@ class NodeView extends ComponentJSON{
             </div>
         );
         let dropText = "";
-        if(data.description&&data.description.replace(/(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,'')!='')dropText="...";
+        if(data_override.description&&data_override.description.replace(/(<p\>|<\/p>|<br>|\n| |[^a-zA-Z0-9])/g,'')!='')dropText="...";
         let titleText = (
             <NodeTitle data={data}/>
         );
-        let descriptionText;
-        if(data.represents_workflow){
-            if(data.linked_workflow_data)descriptionText = data.linked_workflow_data.description;
-        }
-        else descriptionText = data.description;
         
         let style = {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:this.props.renderer.column_colours[data.column]};
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
+        if(Constants.checkSetHidden(data,this.props.object_sets))style.display="none";
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
@@ -131,19 +130,19 @@ class NodeView extends ComponentJSON{
                 </div>
                 {linkIcon}
                 <div class = "node-details">
-                    <TitleText text={descriptionText} defaultText="Click to edit"/>
+                    <TitleText text={data_override.description} defaultText="Click to edit"/>
                 </div>
                 <div class = "node-drop-row hover-shade" onClick={this.toggleDrop.bind(this)}>
                     <div class = "node-drop-side node-drop-left">{dropText}</div>
                     <div class = "node-drop-middle"><img src={iconpath+dropIcon+".svg"}/></div>
                     <div class = "node-drop-side node-drop-right">
-                        <div class="node-drop-time">{data.time_required && (data.time_required+" "+this.props.renderer.time_choices[data.time_units].name)}</div>
+                        <div class="node-drop-time">{data_override.time_required && (data_override.time_required+" "+this.props.renderer.time_choices[data_override.time_units].name)}</div>
                     </div>
                 </div> 
                 <div class="mouseover-actions">
                     {mouseover_actions}
                 </div>
-                {this.addEditable(data)}
+                {this.addEditable(data_override)}
                 {nodePorts}
                 {node_links}
                 {auto_link}
@@ -154,18 +153,29 @@ class NodeView extends ComponentJSON{
 
     }
     
+    //Checks to see if we should mark this as empty. We don't want to do this if it's the only node in the week.
+    updateHidden(){
+        if($(this.maindiv.current).css("display")=="none"){
+            let week = $(this.maindiv.current).parent(".node-week").parent();
+            if(week.children(".node-week:not(.empty)").length>1)$(this.maindiv.current).parent(".node-week").addClass("empty");
+        }
+        else $(this.maindiv.current).parent(".nodeweek").removeClass("empty");
+    }
+    
     postMountFunction(){
         $(this.maindiv.current).on("mouseenter",this.mouseIn.bind(this));
         $(document).on("render-ports render-links",()=>{this.setState({})});
         if(this.state.initial_render)this.setState({initial_render:false,port_render:true});
         this.makeDroppable();
         $(this.maindiv.current).on("dblclick",this.doubleClick.bind(this));
+        this.updateHidden();
     }
 
-    componentDidUpdate(prevProps){
+    componentDidUpdate(prevProps, prevState){
         if(this.props.data.is_dropped==prevProps.data.is_dropped)this.updatePorts();
         else Constants.triggerHandlerEach($(".node"),"component-updated");
         if(this.state.port_render)this.setState({initial_render:false,port_render:false});
+        this.updateHidden();
     }
 
     
@@ -180,7 +190,7 @@ class NodeView extends ComponentJSON{
     doubleClick(evt){
         evt.stopPropagation();
         if(this.props.data.linked_workflow){
-            window.location=update_path["workflow"].replace("0",this.props.data.linked_workflow);
+            window.open(update_path["workflow"].replace("0",this.props.data.linked_workflow));
         }
     }
 
@@ -268,22 +278,25 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
     
     render(){
         let data = this.props.data;
+        let data_override;
+        if(data.represents_workflow)data_override = {...data,...data.linked_workflow_data}
+        else data_override = data;
         let selection_manager = this.props.renderer.selection_manager;
-        let descriptionText;
-        if(data.represents_workflow){
-            if(data.linked_workflow_data)descriptionText = data.linked_workflow_data.description;
+        
+        let style = {backgroundColor:this.props.renderer.column_colours[data.column]}
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
         }
-        else descriptionText = data.description;
+        let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
+        if(data.is_dropped)css_class+=" dropped";
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+        
         
         return (
             <div 
                 
-                class={
-                    "node column-"+data.column+((data.is_dropped && " dropped")||"")+" "+Constants.node_keys[data.node_type]
-                }
-                style={
-                    {backgroundColor:this.props.renderer.column_colours[data.column]}
-                }
+                class={css_class}
+                style={style}
                 id={data.id} 
                 ref={this.maindiv} 
                 onClick={(evt)=>selection_manager.changeSelection(evt,this)}

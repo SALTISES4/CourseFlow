@@ -46,13 +46,13 @@ from .models import (  # OutcomeProject,
     Column,
     ColumnWorkflow,
     Course,
-    CustomTerm,
     Discipline,
     Favourite,
     Node,
     NodeLink,
     NodeWeek,
     ObjectPermission,
+    ObjectSet,
     Outcome,
     OutcomeHorizontalLink,
     OutcomeNode,
@@ -78,6 +78,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
+    ObjectSetSerializerShallow,
     OutcomeHorizontalLinkSerializerShallow,
     OutcomeNodeSerializerShallow,
     OutcomeOutcomeSerializerShallow,
@@ -90,7 +91,8 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
     WorkflowSerializerShallow,
-    bleach_allowed_tags,
+    bleach_allowed_tags_description,
+    bleach_allowed_tags_title,
     bleach_sanitizer,
     serializer_lookups_shallow,
 )
@@ -191,20 +193,23 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
     def get_context_data(self):
         types = self.request.GET.getlist("types[]", None)
-        author = self.request.GET.get("auth", None)
+
+        keywords = self.request.GET.get("keyword", "").split(" ")
+        q_objects = Q()
+        for keyword in keywords:
+            q_objects &= (
+                Q(author__first_name__icontains=keyword)
+                | Q(author__username__icontains=keyword)
+                | Q(author__last_name__icontains=keyword)
+                | Q(title__icontains=keyword)
+                | Q(description__icontains=keyword)
+            )
+
         disciplines = self.request.GET.getlist("disc[]", None)
-        title = self.request.GET.get("title", None)
-        description = self.request.GET.get("des", None)
         sort = self.request.GET.get("sort", None)  # noqa F841
         page = self.request.GET.get("page", 1)
         results = self.request.GET.get("results", 20)
         filter_kwargs = {}
-        if title:
-            filter_kwargs["title__icontains"] = title
-        if description:
-            filter_kwargs["description__icontains"] = description
-        if author:
-            filter_kwargs["author__username__icontains"] = author
         if page:
             page = int(page)
         else:
@@ -223,14 +228,14 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                     get_model_from_str(model_type)
                     .objects.filter(published=True)
                     .filter(**filter_kwargs)
-                    .exclude(author=self.request.user)
+                    .filter(q_objects)
                     .exclude(deleted=True)
                     .distinct()
                     if model_type == "project"
                     else get_model_from_str(model_type)
                     .objects.filter(published=True)
                     .filter(**filter_kwargs)
-                    .exclude(author=self.request.user)
+                    .filter(q_objects)
                     .exclude(Q(deleted=True) | Q(project__deleted=True))
                     .distinct()
                     for model_type in types
@@ -1256,7 +1261,10 @@ def get_parent_outcome_data(workflow, user):
     outcomehorizontallinks = OutcomeHorizontalLink.objects.filter(
         outcome__in=outcomes, parent_outcome__in=parent_outcomes
     )
-
+    if len(parent_workflows) > 0:
+        outcome_type = parent_workflows[0].type + " outcome"
+    else:
+        outcome_type = workflow.type + " outcome"
     return {
         "parent_workflow": WorkflowSerializerShallow(
             parent_workflows, many=True
@@ -1268,7 +1276,9 @@ def get_parent_outcome_data(workflow, user):
         "outcomenode": OutcomeNodeSerializerShallow(
             parent_outcomenodes, many=True
         ).data,
-        "outcome": OutcomeSerializerShallow(parent_outcomes, many=True).data,
+        "outcome": OutcomeSerializerShallow(
+            parent_outcomes, many=True, context={"type": outcome_type}
+        ).data,
         "outcomeoutcome": OutcomeOutcomeSerializerShallow(
             parent_outcomeoutcomes, many=True
         ).data,
@@ -1305,6 +1315,11 @@ def get_child_outcome_data(workflow, user):
     for child_outcome in child_workflow_outcomes:
         outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
 
+    if len(linked_workflows) > 0:
+        outcome_type = linked_workflows[0].type + " outcome"
+    else:
+        outcome_type = workflow.type + " outcome"
+
     return {
         "node": NodeSerializerShallow(nodes, many=True).data,
         "child_workflow": WorkflowSerializerShallow(
@@ -1314,7 +1329,7 @@ def get_child_outcome_data(workflow, user):
             child_workflow_outcomeworkflows, many=True
         ).data,
         "outcome": OutcomeSerializerShallow(
-            child_workflow_outcomes, many=True
+            child_workflow_outcomes, many=True, context={"type": outcome_type},
         ).data,
         "outcomeoutcome": OutcomeOutcomeSerializerShallow(
             child_workflow_outcomeoutcomes, many=True
@@ -1342,6 +1357,7 @@ def get_workflow_data_flat(workflow, user):
         outcomenodes = OutcomeNode.objects.filter(
             node__week__workflow=workflow
         )
+        objectsets = ObjectSet.objects.filter(project__workflows=workflow)
 
     data_flat = {
         "workflow": SerializerClass(workflow, context={"user": user}).data,
@@ -1363,13 +1379,16 @@ def get_workflow_data_flat(workflow, user):
             outcomeworkflows, many=True
         ).data
         data_flat["outcome"] = OutcomeSerializerShallow(
-            outcomes, many=True
+            outcomes, many=True, context={"type": workflow.type + " outcome"}
         ).data
         data_flat["outcomeoutcome"] = OutcomeOutcomeSerializerShallow(
             outcomeoutcomes, many=True
         ).data
         data_flat["outcomenode"] = OutcomeNodeSerializerShallow(
             outcomenodes, many=True
+        ).data
+        data_flat["objectset"] = ObjectSetSerializerShallow(
+            objectsets, many=True
         ).data
         if workflow.type == "course":
             data_flat["strategy"] = WorkflowSerializerShallow(
@@ -1771,9 +1790,9 @@ Import/Export  methods
 
 
 @user_can_edit(False)
-def import_data(request: HttpRequest) -> HttpResponse:
-    object_id = request.POST.get("objectID")
-    object_type = request.POST.get("objectType")
+def import_data(request: HttpRequest) -> JsonResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
     task_type = request.POST.get("importType")
     file = request.FILES.get("myFile")
     try:
@@ -1807,52 +1826,66 @@ def import_data(request: HttpRequest) -> HttpResponse:
 def get_export(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-    task_type = json.loads(request.POST.get("exportType"))
-    subject = _("Your Outcomes Export")
-    text = _("Hi there! Here are the results of your recent export.")
-    tasks.async_send_export_email(
-        request.user.email, object_id, object_type, task_type, subject, text,
-    )
+    export_type = request.POST.get("export_type")
+    export_format = request.POST.get("export_format")
+    allowed_sets = request.POST.getlist("object_sets[]", [])
+    try:
+        subject = _("Your CourseFlow Export")
+        text = _("Hi there! Here are the results of your recent export.")
+        task = tasks.async_send_export_email(
+            request.user.email,
+            object_id,
+            object_type,
+            export_type,
+            export_format,
+            allowed_sets,
+            subject,
+            text,
+        )
+
+    except:
+        return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
 
 
 # enable for testing/download
 @user_can_view(False)
-def get_export_download(
-    request: HttpRequest, pk, object_type, export_type
-) -> HttpResponse:
-    object_id = pk
-    task_type = export_type
-    if not settings.DEBUG:
-        return HttpResponse()
+def get_export_download(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+    export_type = request.POST.get("export_type")
+    export_format = request.POST.get("export_format")
+    allowed_sets = request.POST.getlist("object_sets[]", "[]")
     model_object = get_model_from_str(object_type).objects.get(pk=object_id)
-    if task_type == "outcomes_excel":
-        file = export_functions.get_outcomes_excel(model_object, object_type)
-        file_type = "xlsx"
-    elif task_type == "outcomes_csv":
-        file = export_functions.get_outcomes_csv(model_object, object_type)
-        file_type = "csv"
-    elif task_type == "frameworks_excel":
-        file = export_functions.get_course_frameworks_excel(
-            model_object, object_type
+
+    if object_type == "project":
+        project_sets = ObjectSet.objects.filter(project=model_object)
+    else:
+        project_sets = ObjectSet.objects.filter(
+            project=model_object.get_project()
         )
-        file_type = "xlsx"
-    elif task_type == "matrix_excel":
-        file = export_functions.get_program_matrix_excel(
-            model_object, object_type
+    allowed_sets = project_sets.filter(id__in=allowed_sets)
+    if export_type == "outcome":
+        file = export_functions.get_outcomes_export(
+            model_object, object_type, export_format, allowed_sets
         )
-        file_type = "xlsx"
-    elif task_type == "matrix_csv":
-        file = export_functions.get_program_matrix_csv(
-            model_object, object_type
+    elif export_type == "framework":
+        file = export_functions.get_course_frameworks_export(
+            model_object, object_type, export_format, allowed_sets
         )
-        file_type = "csv"
-    elif task_type == "nodes_excel":
-        file = export_functions.get_nodes_excel(model_object, object_type)
-        file_type = "xlsx"
-    elif task_type == "nodes_csv":
-        file = export_functions.get_nodes_csv(model_object, object_type)
-        file_type = "csv"
+    elif export_type == "matrix":
+        file = export_functions.get_program_matrix_export(
+            model_object, object_type, export_format, allowed_sets
+        )
+    elif export_type == "node":
+        file = export_functions.get_nodes_export(
+            model_object, object_type, export_format, allowed_sets
+        )
+    if export_format == "excel":
+        file_ext = "xlsx"
+    elif export_format == "csv":
+        file_ext = "csv"
+
     filename = (
         object_type
         + "_"
@@ -1860,11 +1893,12 @@ def get_export_download(
         + "_"
         + timezone.now().strftime(dateTimeFormatNoSpace())
         + "."
-        + file_type
+        + file_ext
     )
-    if file_type == "csv":
+
+    if export_format == "csv":
         file_data = "text/csv"
-    elif file_type == "xlsx":
+    elif export_format == "excel":
         file_data = (
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
@@ -2098,6 +2132,10 @@ def duplicate_node(
         linked_workflow=node.linked_workflow,
         deleted=node.deleted,
     )
+
+    for object_set in node.sets.all():
+        if new_workflow is None:
+            new_node.sets.add(object_set)
 
     for outcome in node.outcomes.all():
         if new_workflow is not None:
@@ -2396,6 +2434,15 @@ def fast_duplicate_week(week: Week, author: User) -> Week:
                 for outcomenode in outcomenodes
             ]
         )
+
+        # Add the sets
+
+        for node in nodes:
+            if node.sets.all().count() > 0:
+                for set in node.sets.all():
+                    id_dict["node"][node.id].sets.add(set)
+                node.save()
+
     except IndexError:
         return None
 
@@ -2450,6 +2497,15 @@ def fast_duplicate_outcome(outcome: Outcome, author: User) -> Outcome:
                 for outcomeoutcome in outcomeoutcomes
             ]
         )
+
+        # Add the sets
+
+        for outcome_inst in [outcome] + list(outcomes):
+            if outcome_inst.sets.all().count() > 0:
+                for set in outcome_inst.sets.all():
+                    id_dict["outcome"][outcome_inst.id].sets.add(set)
+                outcome_inst.save()
+
     except IndexError:
         return None
 
@@ -2571,7 +2627,9 @@ def fast_create_strategy(
     return new_strategy
 
 
-def fast_duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
+def fast_duplicate_workflow(
+    workflow: Workflow, author: User, project
+) -> Workflow:
 
     model = get_model_from_str(workflow.type)
 
@@ -2751,6 +2809,26 @@ def fast_duplicate_workflow(workflow: Workflow, author: User) -> Workflow:
                 for outcomeoutcome in outcomeoutcomes
             ]
         )
+
+        # Add the sets
+        old_project = workflow.get_project()
+        if (
+            old_project is not None
+            and project is not None
+            and old_project.id == project.id
+        ):
+            for node in nodes:
+                if node.sets.all().count() > 0:
+                    for set in node.sets.all():
+                        id_dict["node"][node.id].sets.add(set)
+                    node.save()
+
+            for outcome in outcomes:
+                if outcome.sets.all().count() > 0:
+                    for set in outcome.sets.all():
+                        id_dict["outcome"][outcome.id].sets.add(set)
+                    outcome.save()
+
     except IndexError:
         return None
 
@@ -2826,6 +2904,8 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
             source_node__week__workflow__project=project
         ).select_related("source_node", "target_node")
 
+        object_sets = project.object_sets.all()
+
         # Create the new content, and keep track of old_id:new_instance pairs in a dict
         id_dict = {"workflow": {}}
         now = timezone.now()
@@ -2881,6 +2961,20 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
         id_dict["outcome"] = {
             outcomes[i].id: new_outcome
             for i, new_outcome in enumerate(new_outcomes)
+        }
+
+        new_object_sets = []
+        for object_set in object_sets:
+            new_object_set = ObjectSet.objects.create(
+                term=object_set.term,
+                title=object_set.title,
+                translation_plural=object_set.translation_plural,
+            )
+            new_object_sets += [new_object_set]
+            new_project.object_sets.add(new_object_set)
+        id_dict["objectset"] = {
+            object_sets[i].id: object_set
+            for i, object_set in enumerate(new_object_sets)
         }
 
         # Link everything up
@@ -2987,6 +3081,24 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
                 for outcomehorizontallink in outcomehorizontallinks
             ]
         )
+
+        # Add the sets
+        for node in nodes:
+            if node.sets.all().count() > 0:
+                for set in node.sets.all():
+                    id_dict["node"][node.id].sets.add(
+                        id_dict["objectset"][set.id]
+                    )
+                node.save()
+
+        for outcome in list(outcomes):
+            if outcome.sets.all().count() > 0:
+                for set in outcome.sets.all():
+                    id_dict["outcome"][outcome.id].sets.add(
+                        id_dict["objectset"][set.id]
+                    )
+                outcome.save()
+
     except IndexError:
         return None
 
@@ -3071,7 +3183,12 @@ def duplicate_workflow_ajax(request: HttpRequest) -> HttpResponse:
 
     try:
         with transaction.atomic():
-            clone = fast_duplicate_workflow(workflow, request.user)
+            clone = fast_duplicate_workflow(workflow, request.user, project)
+            try:
+                clone.title = clone.title + _("(copy)")
+                clone.save()
+            except (ValidationError, TypeError):
+                pass
 
             WorkflowProject.objects.create(project=project, workflow=clone)
 
@@ -3103,7 +3220,12 @@ def duplicate_strategy_ajax(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
         with transaction.atomic():
-            clone = fast_duplicate_workflow(workflow, request.user)
+            clone = fast_duplicate_workflow(workflow, request.user, None)
+            try:
+                clone.title = clone.title + _("(copy)")
+                clone.save()
+            except (ValidationError, TypeError):
+                pass
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -3206,6 +3328,11 @@ def duplicate_project_ajax(request: HttpRequest) -> HttpResponse:
     try:
         with transaction.atomic():
             clone = fast_duplicate_project(project, request.user)
+            try:
+                clone.title = clone.title + _("(copy)")
+                clone.save()
+            except (ValidationError, TypeError):
+                pass
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -3243,23 +3370,18 @@ Creation methods
 def add_terminology(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     term = json.loads(request.POST.get("term"))
-    translation = json.loads(request.POST.get("translation"))
+    title = json.loads(request.POST.get("title"))
     translation_plural = json.loads(request.POST.get("translation_plural"))
     try:
-        CustomTerm.objects.filter(term=term, project=project,).delete()
-        project.terminology_dict.create(
-            term=term,
-            translation=translation,
-            translation_plural=translation_plural,
+        project.object_sets.create(
+            term=term, title=title, translation_plural=translation_plural,
         )
     except ValidationError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {
             "action": "posted",
-            "new_dict": ProjectSerializerShallow(project).data[
-                "terminology_dict"
-            ],
+            "new_dict": ProjectSerializerShallow(project).data["object_sets"],
         }
     )
 
@@ -3488,10 +3610,11 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
 def new_node_link(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     target_id = json.loads(request.POST.get("objectID"))
+    target_type = json.loads(request.POST.get("objectType"))
     source_port = json.loads(request.POST.get("sourcePort"))
     target_port = json.loads(request.POST.get("targetPort"))
     node = Node.objects.get(pk=node_id)
-    target = Node.objects.get(pk=target_id)
+    target = get_model_from_str(target_type).objects.get(pk=target_id)
     try:
         node_link = NodeLink.objects.create(
             author=node.author,
@@ -3635,13 +3758,22 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     try:
         with transaction.atomic():
             if object_type == "week":
-                model = Week.objects.get(id=object_id)
-                parent = Workflow.objects.get(id=parent_id)
+                model = get_model_from_str(object_type).objects.get(
+                    id=object_id
+                )
+                parent = get_model_from_str(parent_type).objects.get(
+                    id=parent_id
+                )
                 through = WeekWorkflow.objects.get(week=model, workflow=parent)
                 newmodel = fast_duplicate_week(model, request.user)
                 newthroughmodel = WeekWorkflow.objects.create(
                     workflow=parent, week=newmodel, rank=through.rank + 1
                 )
+                try:
+                    newmodel.title = newmodel.title + _("(copy)")
+                    newmodel.save()
+                except (ValidationError, TypeError):
+                    pass
                 new_model_serialized = WeekSerializerShallow(newmodel).data
                 new_through_serialized = WeekWorkflowSerializerShallow(
                     newthroughmodel
@@ -3663,13 +3795,22 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                     ).data,
                 }
             elif object_type == "node":
-                model = Node.objects.get(id=object_id)
-                parent = Week.objects.get(id=parent_id)
+                model = get_model_from_str(object_type).objects.get(
+                    id=object_id
+                )
+                parent = get_model_from_str(parent_type).objects.get(
+                    id=parent_id
+                )
                 through = NodeWeek.objects.get(node=model, week=parent)
                 newmodel = duplicate_node(model, request.user, None, None)
                 newthroughmodel = NodeWeek.objects.create(
                     week=parent, node=newmodel, rank=through.rank + 1
                 )
+                try:
+                    newmodel.title = newmodel.title + _("(copy)")
+                    newmodel.save()
+                except (ValidationError, TypeError):
+                    pass
                 new_model_serialized = NodeSerializerShallow(newmodel).data
                 new_through_serialized = NodeWeekSerializerShallow(
                     newthroughmodel
@@ -3680,8 +3821,12 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                     ).data,
                 }
             elif object_type == "column":
-                model = Column.objects.get(id=object_id)
-                parent = Workflow.objects.get(id=parent_id)
+                model = get_model_from_str(object_type).objects.get(
+                    id=object_id
+                )
+                parent = get_model_from_str(parent_type).objects.get(
+                    id=parent_id
+                )
                 through = ColumnWorkflow.objects.get(
                     column=model, workflow=parent
                 )
@@ -3689,16 +3834,30 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 newthroughmodel = ColumnWorkflow.objects.create(
                     workflow=parent, column=newmodel, rank=through.rank + 1
                 )
+                try:
+                    newmodel.title = newmodel.title + _("(copy)")
+                    newmodel.save()
+                except (ValidationError, TypeError):
+                    pass
                 new_model_serialized = ColumnSerializerShallow(newmodel).data
                 new_through_serialized = ColumnWorkflowSerializerShallow(
                     newthroughmodel
                 ).data
                 new_children_serialized = None
             elif object_type == "outcome":
-                model = Outcome.objects.get(id=object_id)
+                model = get_model_from_str(object_type).objects.get(
+                    id=object_id
+                )
                 newmodel = fast_duplicate_outcome(model, request.user)
+                try:
+                    newmodel.title = newmodel.title + _("(copy)")
+                    newmodel.save()
+                except (ValidationError, TypeError):
+                    pass
                 if parent_type == "outcome":
-                    parent = Outcome.objects.get(id=parent_id)
+                    parent = get_model_from_str(parent_type).objects.get(
+                        id=parent_id
+                    )
                     through = OutcomeOutcome.objects.get(
                         child=model, parent=parent
                     )
@@ -3709,7 +3868,9 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                         newthroughmodel
                     ).data
                 elif parent_type == "workflow":
-                    parent = Workflow.objects.get(id=parent_id)
+                    parent = get_model_from_str(parent_type).objects.get(
+                        id=parent_id
+                    )
                     through = OutcomeWorkflow.objects.get(
                         outcome=model, workflow=parent
                     )
@@ -3848,9 +4009,6 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     except ValidationError:
         return JsonResponse({"action": "error"})
 
-    print(get_model_from_str(object_type))
-    print(get_model_from_str(object_type).objects.get(id=object_id))
-    print(get_model_from_str(object_type).objects.get(id=object_id).author)
     return JsonResponse(
         {
             "action": "posted",
@@ -3893,15 +4051,6 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
             user_list = list(user_list)
             q_objects = Q(username__icontains=name_filter)
             for q_filter in filters:
-                print(q_filter)
-                print(
-                    User.objects.filter(
-                        Q(
-                            first_name__icontains=q_filter[0],
-                            last_name__icontains=q_filter[1],
-                        )
-                    )
-                )
                 q_objects |= Q(
                     first_name__icontains=q_filter[0],
                     last_name__icontains=q_filter[1],
@@ -4091,8 +4240,7 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
             + model.check_child_outcomes(),
             many=True,
         ).data
-        if degree == 0:
-            OutcomeNode.objects.filter(node=model.node, degree=0).delete()
+        OutcomeNode.objects.filter(node=model.node, degree=0).delete()
         new_node_data = NodeSerializerShallow(model.node).data
         new_outcomenode_set = new_node_data["outcomenode_set"]
         new_outcomenode_unique_set = new_node_data["outcomenode_unique_set"]
@@ -4121,11 +4269,14 @@ def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
 def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
 
     outcome_id = json.loads(request.POST.get("outcomePk"))
+    object_type = json.loads(request.POST.get("objectType"))
     parent_id = json.loads(request.POST.get("objectID"))
     degree = json.loads(request.POST.get("degree"))
     try:
         outcome = Outcome.objects.get(id=outcome_id)
-        parent_outcome = Outcome.objects.get(id=parent_id)
+        parent_outcome = get_model_from_str(object_type).objects.get(
+            id=parent_id
+        )
         if (
             OutcomeHorizontalLink.objects.filter(
                 parent_outcome=parent_outcome, outcome=outcome, degree=degree
@@ -4144,10 +4295,9 @@ def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
             + model.check_child_outcomes(),
             many=True,
         ).data
-        if degree == 0:
-            OutcomeHorizontalLink.objects.filter(
-                outcome=outcome, degree=0
-            ).delete()
+        OutcomeHorizontalLink.objects.filter(
+            outcome=outcome, degree=0
+        ).delete()
         new_outcome_data = OutcomeSerializerShallow(model.outcome).data
         new_outcome_horizontal_links = new_outcome_data[
             "outcome_horizontal_links"
@@ -4183,7 +4333,9 @@ def set_linked_workflow(node: Node, workflow):
         node.save()
     else:
         try:
-            new_workflow = fast_duplicate_workflow(workflow, node.author)
+            new_workflow = fast_duplicate_workflow(
+                workflow, node.author, project
+            )
             WorkflowProject.objects.create(
                 workflow=new_workflow, project=project
             )
@@ -4284,6 +4436,68 @@ def week_toggle_strategy(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
+@user_can_edit(False)
+@user_can_view("objectsetPk")
+def update_object_set(request: HttpRequest) -> HttpResponse:
+    try:
+        object_id = json.loads(request.POST.get("objectID"))
+        object_type = json.loads(request.POST.get("objectType"))
+        objectset_id = json.loads(request.POST.get("objectsetPk"))
+        add = json.loads(request.POST.get("add"))
+        objects = get_model_from_str(object_type).objects
+        if hasattr(objects, "get_subclass"):
+            objects_to_update = [objects.get_subclass(pk=object_id)]
+        else:
+            objects_to_update = [objects.get(pk=object_id)]
+            if object_type == "outcome":
+                objects_to_update += list(
+                    get_descendant_outcomes(objects_to_update[0])
+                )
+        objectset = ObjectSet.objects.get(id=objectset_id)
+        if add:
+            for object_to_update in objects_to_update:
+                object_to_update.sets.add(objectset)
+                object_to_update.save()
+        else:
+            for object_to_update in objects_to_update:
+                object_to_update.sets.remove(objectset)
+                object_to_update.save()
+
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+    try:
+        workflow = objects_to_update[0].get_workflow()
+        if len(objects_to_update) == 1:
+            action = actions.changeField(
+                object_id,
+                object_type,
+                {
+                    "sets": [
+                        object_set.id
+                        for object_set in object_to_update.sets.all()
+                    ]
+                },
+            )
+        else:
+            action = actions.changeFieldMany(
+                [obj.id for obj in objects_to_update],
+                object_type,
+                {
+                    "sets": [
+                        object_set.id
+                        for object_set in object_to_update.sets.all()
+                    ]
+                },
+            )
+        actions.dispatch_wf(workflow, action)
+        if object_type == "outcome":
+            actions.dispatch_to_parent_wf(workflow, action)
+    except AttributeError:
+        pass
+
+    return JsonResponse({"action": "posted"})
+
+
 """
 Delete methods
 """
@@ -4299,6 +4513,21 @@ def remove_comment(request: HttpRequest) -> HttpResponse:
         model = get_model_from_str(object_type).objects.get(id=object_id)
         comment = model.comments.get(id=comment_id)
         comment.delete()
+
+    except (ProtectedError, ObjectDoesNotExist):
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse({"action": "posted"})
+
+
+@user_can_edit(False)
+def remove_all_comments(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("objectID"))
+    object_type = json.loads(request.POST.get("objectType"))
+
+    try:
+        model = get_model_from_str(object_type).objects.get(id=object_id)
+        model.comments.all().delete()
 
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
@@ -4783,7 +5012,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_project = Project.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    project["title"], tags=bleach_allowed_tags
+                    project["title"], tags=bleach_allowed_tags_title
                 ),
             )
             id_dict["project"][project["id"]] = new_project
@@ -4791,7 +5020,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
         #            new_outcome = Outcome.objects.create(
         #                author=request.user,
         #                title=bleach_sanitizer(
-        #                    outcome["title"], tags=bleach_allowed_tags
+        #                    outcome["title"], tags=bleach_allowed_tags_title
         #                ),
         #            )
         #            id_dict["outcome"][outcome["id"]] = new_outcome
@@ -4799,10 +5028,11 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_activity = Activity.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    activity["title"], tags=bleach_allowed_tags
+                    activity["title"], tags=bleach_allowed_tags_title
                 ),
                 description=bleach_sanitizer(
-                    activity["description"], tags=bleach_allowed_tags
+                    activity["description"],
+                    tags=bleach_allowed_tags_description,
                 ),
                 outcomes_type=activity["outcomes_type"],
             )
@@ -4814,10 +5044,10 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_course = Course.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    course["title"], tags=bleach_allowed_tags
+                    course["title"], tags=bleach_allowed_tags_title
                 ),
                 description=bleach_sanitizer(
-                    course["description"], tags=bleach_allowed_tags
+                    course["description"], tags=bleach_allowed_tags_description
                 ),
                 outcomes_type=course["outcomes_type"],
             )
@@ -4829,10 +5059,11 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_program = Program.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    program["title"], tags=bleach_allowed_tags
+                    program["title"], tags=bleach_allowed_tags_title
                 ),
                 description=bleach_sanitizer(
-                    program["description"], tags=bleach_allowed_tags
+                    program["description"],
+                    tags=bleach_allowed_tags_description,
                 ),
                 outcomes_type=program["outcomes_type"],
             )
@@ -4859,7 +5090,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_week = Week.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    week["title"], tags=bleach_allowed_tags
+                    week["title"], tags=bleach_allowed_tags_title
                 ),
             )
             id_dict["week"][week["id"]] = new_week
@@ -4867,10 +5098,10 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             new_node = Node.objects.create(
                 author=request.user,
                 title=bleach_sanitizer(
-                    node["title"], tags=bleach_allowed_tags
+                    node["title"], tags=bleach_allowed_tags_title
                 ),
                 description=bleach_sanitizer(
-                    node["description"], tags=bleach_allowed_tags
+                    node["description"], tags=bleach_allowed_tags_description
                 ),
                 task_classification=task_dict.get(node["task_classification"])
                 or 0,
@@ -4879,9 +5110,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 )
                 or 0,
                 time_units=time_unit_dict.get(node["time_units"]) or 0,
-                time_required=bleach_sanitizer(
-                    node["time_required"], tags=bleach_allowed_tags
-                ),
+                time_required=bleach_sanitizer(node["time_required"], tags=[]),
             )
             id_dict["node"][node["id"]] = new_node
 
@@ -4966,7 +5195,7 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 source_node=id_dict["node"][nodelink["source"]],
                 target_node=id_dict["node"][nodelink["target"]],
                 title=bleach_sanitizer(
-                    nodelink["title"], tags=bleach_allowed_tags
+                    nodelink["title"], tags=bleach_allowed_tags_title
                 ),
                 dashed=nodelink["style"] or False,
             )

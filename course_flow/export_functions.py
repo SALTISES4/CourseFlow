@@ -2,6 +2,7 @@ from io import BytesIO
 
 import pandas as pd
 from django.conf import settings
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -21,23 +22,27 @@ from .serializers import (
     NodeExportSerializer,
     OutcomeExportSerializer,
     WeekExportSerializer,
+    WorkflowExportSerializer,
 )
 from .utils import (
     dateTimeFormatNoSpace,
     get_all_outcomes_ordered,
+    get_all_outcomes_ordered_filtered,
     get_all_outcomes_ordered_for_outcome,
+    get_alphanum,
     get_model_from_str,
+    get_outcomenodes,
     get_parent_nodes_for_workflow,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
 )
 
-
-def get_displayed_title(node):
-    if node.linked_workflow is not None and node.represents_workflow:
-        return node.linked_workflow.title
-    else:
-        return _("Untitled Node") if node.title is None else node.title
+#
+# def get_displayed_title(node):
+#    if node.linked_workflow is not None and node.represents_workflow:
+#        return node.linked_workflow.title
+#    else:
+#        return _("Untitled Node") if node.title is None else node.title
 
 
 def get_str(obj, key):
@@ -52,7 +57,24 @@ def stringify(value):
         return str(value)
 
 
-def get_framework_line_for_outcome(outcome, columns):
+def allowed_sets_Q(allowed_sets):
+    return Q(sets__in=allowed_sets) | Q(sets=None)
+
+
+def check_allowed_sets(obj, allowed_sets):
+    if obj.sets.all().count() == 0:
+        return True
+    if (
+        obj.sets.filter(
+            id__in=allowed_sets.values_list("id", flat=True)
+        ).count()
+        > 0
+    ):
+        return True
+    return False
+
+
+def get_framework_line_for_outcome(outcome, columns, allowed_sets):
     outcome_serialized = OutcomeExportSerializer(outcome).data
     sub_outcomes = get_all_outcomes_ordered_for_outcome(outcome)
     sub_outcomes_serialized = OutcomeExportSerializer(
@@ -69,7 +91,11 @@ def get_framework_line_for_outcome(outcome, columns):
         for och in get_unique_outcomehorizontallinks(outcome)
     ]
     outcomes_horizontal_serialized = OutcomeExportSerializer(
-        outcomes_horizontal, many=True
+        filter(
+            lambda och: check_allowed_sets(och, allowed_sets),
+            outcomes_horizontal,
+        ),
+        many=True,
     ).data
     outcomes_horizontal_entry = "\n".join(
         [get_str(och, "code") for och in outcomes_horizontal_serialized]
@@ -82,25 +108,31 @@ def get_framework_line_for_outcome(outcome, columns):
         "2": outcomes_horizontal_entry,
     }
     for i, column in enumerate(columns):
-        nodes = Node.objects.filter(
-            outcomenode__outcome__in=sub_outcomes,
-            column=column,
-            deleted=False,
-        ).distinct()
+        nodes = (
+            Node.objects.filter(
+                outcomenode__outcome__in=sub_outcomes,
+                column=column,
+                deleted=False,
+            )
+            .filter(allowed_sets_Q(allowed_sets))
+            .distinct()
+        )
+        nodes_serialized = NodeExportSerializer(nodes, many=True).data
         dict_data[str(3 + i)] = "\n".join(
-            [get_displayed_title(node) for node in nodes]
+            [node["title"] for node in nodes_serialized]
         )
     return dict_data
 
 
-def get_course_framework(workflow):
+def get_course_framework(workflow, allowed_sets):
+    workflow_serialized = WorkflowExportSerializer(workflow).data
     num_columns = workflow.columns.all().count()
     df_columns = max(6, 3 + num_columns)
     df = pd.DataFrame(columns=[str(i) for i in range(num_columns)])
     df = df.append(
         {
             "0": _("Course Title"),
-            "1": workflow.title,
+            "1": workflow_serialized["title"],
             "2": _("Ponderation Theory/Practical/Individual"),
             "3": str(workflow.ponderation_theory)
             + "/"
@@ -127,12 +159,19 @@ def get_course_framework(workflow):
     )
     df = df.append({"0": _("Ministerial Competencies")}, ignore_index=True)
     df = df.append({"0": _("Competency"), "1": _("Title")}, ignore_index=True)
-    nodes = get_parent_nodes_for_workflow(workflow)
+    nodes = get_parent_nodes_for_workflow(workflow).filter(
+        allowed_sets_Q(allowed_sets)
+    )
     parent_outcomes = []
     for node in nodes:
-        outcomenodes = get_unique_outcomenodes(node)
+        outcomenodes = get_outcomenodes(node)
+        outcomes_unfiltered = [ocn.outcome for ocn in outcomenodes]
+        outcomes_filtered = filter(
+            lambda oc: check_allowed_sets(oc, allowed_sets),
+            outcomes_unfiltered,
+        )
         parent_outcomes += OutcomeExportSerializer(
-            [ocn.outcome for ocn in outcomenodes], many=True
+            outcomes_filtered, many=True
         ).data
     a = [get_str(outcome, "code") for outcome in parent_outcomes]
     b = [get_str(outcome, "title") for outcome in parent_outcomes]
@@ -148,18 +187,31 @@ def get_course_framework(workflow):
             },
             ignore_index=True,
         )
-        prereqs = Node.objects.filter(
-            outgoing_links__target_node__in=nodes, deleted=False,
-        ).distinct()
-        postreqs = Node.objects.filter(
-            incoming_links__source_node__in=nodes, deleted=False,
-        ).distinct()
+        prereqs = (
+            Node.objects.filter(
+                outgoing_links__target_node__in=nodes, deleted=False,
+            )
+            .filter(allowed_sets_Q(allowed_sets))
+            .distinct()
+        )
+        postreqs = (
+            Node.objects.filter(
+                incoming_links__source_node__in=nodes, deleted=False,
+            )
+            .filter(allowed_sets_Q(allowed_sets))
+            .distinct()
+        )
         if len(prereqs) > 0:
             df = df.append(
                 {
                     "0": _("Prerequisites"),
                     "1": ", ".join(
-                        [get_displayed_title(req) for req in prereqs]
+                        [
+                            req["title"]
+                            for req in NodeExportSerializer(
+                                prereqs, many=True
+                            ).data
+                        ]
                     ),
                 },
                 ignore_index=True,
@@ -169,7 +221,12 @@ def get_course_framework(workflow):
                 {
                     "0": _("Required For"),
                     "1": ", ".join(
-                        [get_displayed_title(req) for req in postreqs]
+                        [
+                            req["title"]
+                            for req in NodeExportSerializer(
+                                postreqs, many=True
+                            ).data
+                        ]
                     ),
                 },
                 ignore_index=True,
@@ -183,15 +240,20 @@ def get_course_framework(workflow):
     for i, column in enumerate(columns):
         headers[str(3 + i)] = column.get_display_title()
     df = df.append(headers, ignore_index=True,)
-    for outcome in workflow.outcomes.filter(deleted=False):
+    for outcome in workflow.outcomes.filter(deleted=False).filter(
+        allowed_sets_Q(allowed_sets)
+    ):
         df = df.append(
-            get_framework_line_for_outcome(outcome, columns), ignore_index=True
+            get_framework_line_for_outcome(outcome, columns, allowed_sets),
+            ignore_index=True,
         )
     return df
 
 
-def get_workflow_outcomes_table(workflow):
-    outcomes = get_all_outcomes_ordered(workflow)
+def get_workflow_outcomes_table(workflow, allowed_sets):
+    outcomes = get_all_outcomes_ordered_filtered(
+        workflow, allowed_sets_Q(allowed_sets)
+    )
     data = OutcomeExportSerializer(outcomes, many=True).data
     df = pd.DataFrame(
         data, columns=["code", "title", "description", "id", "depth"]
@@ -200,83 +262,307 @@ def get_workflow_outcomes_table(workflow):
     return df
 
 
-def get_outcomes_excel(model_object, object_type):
-    with BytesIO() as b:
-        writer = pd.ExcelWriter(b, engine="openpyxl")
-        if object_type == "workflow":
-            workflows = [model_object]
-        elif object_type == "project":
-            workflows = list(model_object.workflows.filter(deleted=False))
-        for workflow in workflows:
-            df = get_workflow_outcomes_table(workflow)
-            df.to_excel(
-                writer,
-                sheet_name=workflow.title + "_" + str(workflow.pk),
-                index=False,
-            )
-            writer.save()
-
-        return b.getvalue()
-
-
-def get_outcomes_csv(model_object, object_type):
-    if object_type == "workflow":
-        workflows = [model_object]
-    elif object_type == "project":
+def get_outcomes_export(
+    model_object, object_type, export_format, allowed_sets
+):
+    if object_type == "project":
         workflows = list(model_object.workflows.filter(deleted=False))
-    df = pd.DataFrame(
-        {}, columns=["code", "title", "description", "id", "depth"]
-    )
-    for workflow in workflows:
-        df = df.append({"title": workflow.title}, ignore_index=True)
-        df = pd.concat([df, get_workflow_outcomes_table(workflow)])
-        df = df.append({"title": ""}, ignore_index=True)
-
+    else:
+        workflows = [model_object]
     with BytesIO() as b:
-        df.to_csv(path_or_buf=b, sep=",", index=False)
+        if export_format == "excel":
+            writer = pd.ExcelWriter(b, engine="openpyxl")
+            for workflow in workflows:
+                df = get_workflow_outcomes_table(workflow, allowed_sets)
+                df.to_excel(
+                    writer,
+                    sheet_name=get_alphanum(workflow.title)
+                    + "_"
+                    + str(workflow.pk),
+                    index=False,
+                )
+                writer.save()
+        elif export_format == "csv":
+            df = pd.DataFrame(
+                {}, columns=["code", "title", "description", "id", "depth"]
+            )
+            workflows_serialized = WorkflowExportSerializer(
+                workflows, many=True
+            ).data
+            for i, workflow in enumerate(workflows):
+                df = df.append(
+                    {"title": workflows_serialized[i]["title"]},
+                    ignore_index=True,
+                )
+                df = pd.concat(
+                    [df, get_workflow_outcomes_table(workflow, allowed_sets)]
+                )
+                df = df.append({"title": ""}, ignore_index=True)
+            df.to_csv(path_or_buf=b, sep=",", index=False)
         return b.getvalue()
 
 
-def get_course_frameworks_excel(model_object, object_type):
+def get_course_frameworks_export(
+    model_object, object_type, export_format, allowed_sets
+):
+    if object_type == "project":
+        workflows = list(
+            Course.objects.filter(project=model_object, deleted=False)
+        )
+    else:
+        workflows = [model_object]
     with BytesIO() as b:
-        writer = pd.ExcelWriter(b, engine="openpyxl")
-        if object_type == "workflow":
-            workflows = [model_object]
-        elif object_type == "project":
-            workflows = list(
-                Course.objects.filter(project=model_object, deleted=False)
-            )
-        for workflow in workflows:
-            df = get_course_framework(workflow)
-            df.to_excel(
-                writer,
-                sheet_name=workflow.title + "_" + str(workflow.pk),
-                index=False,
-                header=False,
-            )
-            writer.save()
+        if export_format == "excel":
+            writer = pd.ExcelWriter(b, engine="openpyxl")
+            for workflow in workflows:
+                df = get_course_framework(workflow, allowed_sets)
+                df.to_excel(
+                    writer,
+                    sheet_name=get_alphanum(workflow.title)
+                    + "_"
+                    + str(workflow.pk),
+                    index=False,
+                )
+                writer.save()
+        elif export_format == "csv":
+            df = pd.DataFrame({})
+            workflows_serialized = WorkflowExportSerializer(
+                workflows, many=True
+            ).data
+            for i, workflow in enumerate(workflows):
+                df = df.append(
+                    {"0": workflows_serialized[i]["title"]}, ignore_index=True
+                )
+                df = pd.concat(
+                    [df, get_course_framework(workflow, allowed_sets)]
+                )
+                df = df.append({"0": ""}, ignore_index=True)
+            df.to_csv(path_or_buf=b, sep=",", index=False)
         return b.getvalue()
+
+
+def get_program_matrix_export(
+    model_object, object_type, export_format, allowed_sets
+):
+    if object_type == "project":
+        workflows = list(
+            Program.objects.filter(project=model_object, deleted=False)
+        )
+    else:
+        workflows = [model_object]
+    with BytesIO() as b:
+        if export_format == "excel":
+            writer = pd.ExcelWriter(b, engine="openpyxl")
+            for workflow in workflows:
+                df = get_program_matrix(workflow, True, allowed_sets)
+                df.to_excel(
+                    writer,
+                    sheet_name=get_alphanum(workflow.title)
+                    + "_"
+                    + str(workflow.pk),
+                    index=False,
+                )
+                writer.save()
+        elif export_format == "csv":
+            df = pd.DataFrame({})
+            workflows_serialized = WorkflowExportSerializer(
+                workflows, many=True
+            ).data
+            for i, workflow in enumerate(workflows):
+                df = df.append(
+                    {"0": workflows_serialized[i]["title"]}, ignore_index=True
+                )
+                df = pd.concat(
+                    [df, get_program_matrix(workflow, True, allowed_sets)]
+                )
+                df = df.append({"0": ""}, ignore_index=True)
+            df.to_csv(path_or_buf=b, sep=",", index=False)
+        return b.getvalue()
+
+
+def get_nodes_export(model_object, object_type, export_format, allowed_sets):
+    if object_type == "project":
+        workflows = list(model_object.workflows.filter(deleted=False))
+    else:
+        workflows = [model_object]
+    with BytesIO() as b:
+        if export_format == "excel":
+            writer = pd.ExcelWriter(b, engine="openpyxl")
+            for workflow in workflows:
+                df = get_workflow_nodes_table(workflow, allowed_sets)
+                df.to_excel(
+                    writer,
+                    sheet_name=get_alphanum(workflow.title)
+                    + "_"
+                    + str(workflow.pk),
+                    index=False,
+                )
+                writer.save()
+        elif export_format == "csv":
+            df = pd.DataFrame(
+                {},
+                columns=["type", "title", "description", "column_order", "id"],
+            )
+            workflows_serialized = WorkflowExportSerializer(
+                workflows, many=True
+            ).data
+            for i, workflow in enumerate(workflows):
+                df = df.append(
+                    {"title": workflows_serialized[i]["title"]},
+                    ignore_index=True,
+                )
+                df = pd.concat(
+                    [df, get_workflow_nodes_table(workflow, allowed_sets)]
+                )
+                df = df.append({"title": ""}, ignore_index=True)
+            df.to_csv(path_or_buf=b, sep=",", index=False)
+        return b.getvalue()
+
+
+#
+#
+# def get_nodes_excel(model_object, object_type):
+#    with BytesIO() as b:
+#        writer = pd.ExcelWriter(b, engine="openpyxl")
+#        if object_type == "workflow":
+#            workflows = [model_object]
+#        elif object_type == "project":
+#            workflows = list(model_object.workflows.filter(deleted=False))
+#        for workflow in workflows:
+#            df = get_workflow_nodes_table(workflow)
+#            df.to_excel(
+#                writer,
+#                sheet_name=get_alphanum(workflow.title) + "_" + str(workflow.pk),
+#                index=False,
+#            )
+#            writer.save()
+#
+#        return b.getvalue()
+#
+#
+# def get_nodes_csv(model_object, object_type):
+#    if object_type == "workflow":
+#        workflows = [model_object]
+#    elif object_type == "project":
+#        workflows = list(model_object.workflows.filter(deleted=False))
+#    df = pd.DataFrame(
+#        {}, columns=["type", "title", "description", "column_order", "id"]
+#    )
+#    for workflow in workflows:
+#        df = df.append({"title": workflow.title}, ignore_index=True)
+#        df = pd.concat([df, get_workflow_nodes_table(workflow)])
+#        df = df.append({"title": ""}, ignore_index=True)
+#
+#    with BytesIO() as b:
+#        df.to_csv(path_or_buf=b, sep=",", index=False)
+#        return b.getvalue()
+#
+
+#
+# def get_program_matrix_excel(model_object, object_type):
+#    with BytesIO() as b:
+#        writer = pd.ExcelWriter(b, engine="openpyxl")
+#        if object_type == "workflow":
+#            workflows = [model_object]
+#        elif object_type == "project":
+#            workflows = list(
+#                Program.objects.filter(project=model_object, deleted=False)
+#            )
+#        for workflow in workflows:
+#            df = get_program_matrix(workflow, True)
+#            df.to_excel(
+#                writer,
+#                sheet_name=get_alphanum(workflow.title) + "_" + str(workflow.pk),
+#                index=False,
+#                header=False,
+#            )
+#            writer.save()
+#
+#        return b.getvalue()
+#
+#
+# def get_program_matrix_csv(model_object, object_type):
+#    if object_type == "workflow":
+#        workflows = [model_object]
+#    elif object_type == "project":
+#        workflows = list(
+#            Program.objects.filter(project=model_object, deleted=False)
+#        )
+#    df = pd.DataFrame({})
+#    for workflow in workflows:
+#        df = df.append({"0": workflow.title}, ignore_index=True)
+#        df = pd.concat([df, get_program_matrix(workflow, True)])
+#        df = df.append({"0": ""}, ignore_index=True)
+#
+#    with BytesIO() as b:
+#        df.to_csv(path_or_buf=b, sep=",", index=False, header=False)
+#        return b.getvalue()
+
+
+# def get_course_frameworks_excel(model_object, object_type):
+#    with BytesIO() as b:
+#        writer = pd.ExcelWriter(b, engine="openpyxl")
+#        if object_type == "workflow":
+#            workflows = [model_object]
+#        elif object_type == "project":
+#            workflows = list(
+#                Course.objects.filter(project=model_object, deleted=False)
+#            )
+#        for workflow in workflows:
+#            df = get_course_framework(workflow)
+#            df.to_excel(
+#                writer,
+#                sheet_name=get_alphanum(workflow.title) + "_" + str(workflow.pk),
+#                index=False,
+#                header=False,
+#            )
+#            writer.save()
+#        return b.getvalue()
+
+# def get_outcomes_excel(model_object, object_type):
+#    with BytesIO() as b:
+#        writer = pd.ExcelWriter(b, engine="openpyxl")
+#        if object_type == "workflow":
+#            workflows = [model_object]
+#        elif object_type == "project":
+#            workflows = list(model_object.workflows.filter(deleted=False))
+#        for workflow in workflows:
+#            df = get_workflow_outcomes_table(workflow)
+#            df.to_excel(
+#                writer,
+#                sheet_name=get_alphanum(workflow.title) + "_" + str(workflow.pk),
+#                index=False,
+#            )
+#            writer.save()
+#
+#        return b.getvalue()
+#
+#
+# def get_outcomes_csv(model_object, object_type):
+#    if object_type == "workflow":
+#        workflows = [model_object]
+#    elif object_type == "project":
+#        workflows = list(model_object.workflows.filter(deleted=False))
+#    df = pd.DataFrame(
+#        {}, columns=["code", "title", "description", "id", "depth"]
+#    )
+#    for workflow in workflows:
+#        df = df.append({"title": workflow.title}, ignore_index=True)
+#        df = pd.concat([df, get_workflow_outcomes_table(workflow)])
+#        df = df.append({"title": ""}, ignore_index=True)
+#
+#    with BytesIO() as b:
+#        df.to_csv(path_or_buf=b, sep=",", index=False)
+#        return b.getvalue()
 
 
 def get_matrix_row_header(row):
     if row["type"] == "node":
         node = row["object"]
-        return get_displayed_title(node)
+        return NodeExportSerializer(node).data["title"]
     else:
         week = row["object"]
-        if week.title is not None and week.title != "":
-            return week.title
-        else:
-            return (
-                _("Term")
-                + " "
-                + str(
-                    WeekWorkflow.objects.filter(week=week)
-                    .first()
-                    .get_display_rank()
-                    + 1
-                )
-            )
+        return WeekExportSerializer(week).data["title"]
 
 
 def evaluate_outcome(node, outcomes):
@@ -326,16 +612,21 @@ def get_matrix_sum_line(rows, fn):
     return list(reversed(values))
 
 
-def get_program_matrix(workflow, simple):
+def get_program_matrix(workflow, simple, allowed_sets):
     if simple:
-        outcomes = [
-            outcomeworkflow.outcome
-            for outcomeworkflow in OutcomeWorkflow.objects.filter(
-                workflow=workflow, outcome__deleted=False
-            )
-        ]
+        outcomes = filter(
+            lambda oc: check_allowed_sets(oc, allowed_sets),
+            [
+                outcomeworkflow.outcome
+                for outcomeworkflow in OutcomeWorkflow.objects.filter(
+                    workflow=workflow, outcome__deleted=False
+                )
+            ],
+        )
     else:
-        outcomes = get_all_outcomes_ordered(workflow)
+        outcomes = get_all_outcomes_ordered_filtered(
+            workflow, allowed_sets_Q(allowed_sets)
+        )
 
     rows = []
     for weekworkflow in WeekWorkflow.objects.filter(
@@ -344,10 +635,12 @@ def get_program_matrix(workflow, simple):
         week = weekworkflow.week
         # Add a line for the term
         rows += [{"type": "week", "object": week}]
-        for nodeweek in NodeWeek.objects.filter(
-            week=week, node__deleted=False
-        ).order_by("rank"):
-            rows += [{"type": "node", "object": nodeweek.node}]
+        for node in (
+            Node.objects.filter(allowed_sets_Q(allowed_sets))
+            .filter(week=week, deleted=False)
+            .order_by("nodeweek__rank")
+        ):
+            rows += [{"type": "node", "object": node}]
 
     # headers
     col = 0
@@ -369,16 +662,16 @@ def get_program_matrix(workflow, simple):
     data[str(col)] = ["", _("Specific Education")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.time_specific_hours
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.time_specific_hours,
     )
     col += 1
 
     data[str(col)] = ["", _("General Education")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.time_general_hours
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.time_general_hours,
     )
     col += 1
 
@@ -386,8 +679,8 @@ def get_program_matrix(workflow, simple):
         rows,
         lambda x: x.linked_workflow.time_general_hours
         + x.linked_workflow.time_specific_hours
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.time_general_hours + x.time_specific_hours,
     )
     col += 1
 
@@ -397,24 +690,24 @@ def get_program_matrix(workflow, simple):
     data[str(col)] = ["", _("Theory")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.ponderation_theory
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.ponderation_theory,
     )
     col += 1
 
     data[str(col)] = ["", _("Practical")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.ponderation_practical
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.ponderation_practical,
     )
     col += 1
 
     data[str(col)] = ["", _("Practical")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.ponderation_individual
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.ponderation_individual,
     )
     col += 1
 
@@ -423,8 +716,10 @@ def get_program_matrix(workflow, simple):
         lambda x: x.linked_workflow.ponderation_individual
         + x.linked_workflow.ponderation_theory
         + x.linked_workflow.ponderation_practical
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.ponderation_individual
+        + x.ponderation_theory
+        + x.ponderation_practical,
     )
     col += 1
 
@@ -434,8 +729,8 @@ def get_program_matrix(workflow, simple):
     data[str(col)] = ["", _("Credits")] + get_matrix_sum_line(
         rows,
         lambda x: x.linked_workflow.time_required
-        if x.linked_workflow is not None
-        else "",
+        if (x.linked_workflow is not None and x.represents_workflow)
+        else x.time_required,
     )
     col += 1
 
@@ -443,93 +738,16 @@ def get_program_matrix(workflow, simple):
     return df
 
 
-def get_program_matrix_excel(model_object, object_type):
-    with BytesIO() as b:
-        writer = pd.ExcelWriter(b, engine="openpyxl")
-        if object_type == "workflow":
-            workflows = [model_object]
-        elif object_type == "project":
-            workflows = list(
-                Program.objects.filter(project=model_object, deleted=False)
-            )
-        for workflow in workflows:
-            df = get_program_matrix(workflow, True)
-            df.to_excel(
-                writer,
-                sheet_name=workflow.title + "_" + str(workflow.pk),
-                index=False,
-                header=False,
-            )
-            writer.save()
-
-        return b.getvalue()
-
-
-def get_program_matrix_csv(model_object, object_type):
-    if object_type == "workflow":
-        workflows = [model_object]
-    elif object_type == "project":
-        workflows = list(
-            Program.objects.filter(project=model_object, deleted=False)
-        )
-    df = pd.DataFrame({})
-    for workflow in workflows:
-        df = df.append({"0": workflow.title}, ignore_index=True)
-        df = pd.concat([df, get_program_matrix(workflow, True)])
-        df = df.append({"0": ""}, ignore_index=True)
-
-    with BytesIO() as b:
-        df.to_csv(path_or_buf=b, sep=",", index=False, header=False)
-        return b.getvalue()
-
-
-def get_nodes_excel(model_object, object_type):
-    with BytesIO() as b:
-        writer = pd.ExcelWriter(b, engine="openpyxl")
-        if object_type == "workflow":
-            workflows = [model_object]
-        elif object_type == "project":
-            workflows = list(model_object.workflows.filter(deleted=False))
-        for workflow in workflows:
-            df = get_workflow_nodes_table(workflow)
-            df.to_excel(
-                writer,
-                sheet_name=workflow.title + "_" + str(workflow.pk),
-                index=False,
-            )
-            writer.save()
-
-        return b.getvalue()
-
-
-def get_nodes_csv(model_object, object_type):
-    if object_type == "workflow":
-        workflows = [model_object]
-    elif object_type == "project":
-        workflows = list(model_object.workflows.filter(deleted=False))
-    df = pd.DataFrame(
-        {}, columns=["type", "title", "description", "column_order", "id"]
-    )
-    for workflow in workflows:
-        df = df.append({"title": workflow.title}, ignore_index=True)
-        df = pd.concat([df, get_workflow_nodes_table(workflow)])
-        df = df.append({"title": ""}, ignore_index=True)
-
-    with BytesIO() as b:
-        df.to_csv(path_or_buf=b, sep=",", index=False)
-        return b.getvalue()
-
-
-def get_workflow_nodes_table(workflow):
+def get_workflow_nodes_table(workflow, allowed_sets):
     entries = []
     for week in Week.objects.filter(workflow=workflow, deleted=False).order_by(
         "weekworkflow__rank"
     ):
         entries += [WeekExportSerializer(week).data]
         entries += NodeExportSerializer(
-            Node.objects.filter(week=week, deleted=False).order_by(
-                "nodeweek__rank"
-            ),
+            Node.objects.filter(week=week, deleted=False)
+            .filter(allowed_sets_Q(allowed_sets))
+            .order_by("nodeweek__rank"),
             many=True,
         ).data
     df = pd.DataFrame(

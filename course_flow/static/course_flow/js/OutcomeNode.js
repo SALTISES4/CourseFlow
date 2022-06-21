@@ -27,7 +27,7 @@ class OutcomeNodeView extends ComponentJSON{
                 </div>
                 }
                 {Constants.getCompletionImg(data.degree,this.props.outcomes_type)}
-                <SimpleOutcomeView comments={true} edit={true}  objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
+                <SimpleOutcomeView checkHidden={this.checkHidden.bind(this)} comments={true} edit={true}  objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
             </div>
         );
     }
@@ -42,6 +42,30 @@ class OutcomeNodeView extends ComponentJSON{
                 props.renderer.tiny_loader.endLoad();
             });
         }
+    }
+
+    checkHidden(){
+        if($(this.maindiv.current).children(".outcome").length==0)$(this.maindiv.current).css("display","none");
+        else $(this.maindiv.current).css("display","");
+        let indicator = $(this.maindiv.current).closest(".outcome-node-indicator")
+        if(indicator.length>=0){
+            let num_outcomenodes = indicator.children(".outcome-node-container").children('.outcome-node:not([style*="display: none"])').length;
+            indicator.children(".outcome-node-indicator-number").html(num_outcomenodes);
+            if(num_outcomenodes==0)indicator.css("display","none");
+            else indicator.css("display","");
+        }
+    }
+
+    postMountFunction(){
+        this.checkHidden();
+    }
+
+    componentDidUpdate(){
+        this.checkHidden();
+    }
+
+    componentWillUnmount(){
+        this.checkHidden();
     }
     
 }
@@ -248,6 +272,12 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
         }else if(prevProps.data&&!this.props.data){
             this.props.updateParentCompletion(this.props.nodeID,this.props.outcomeID,0);
         }
+    }
+
+
+    componentWillUnmount(prevProps){
+        if(!this.props.updateParentCompletion)return;
+        this.props.updateParentCompletion(this.props.nodeID,this.props.outcomeID,0);
     }
 
     postMountFunction(){

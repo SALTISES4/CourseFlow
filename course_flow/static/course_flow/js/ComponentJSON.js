@@ -1,9 +1,10 @@
 import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
-import * as Constants from "./Constants.js";
+import * as Constants from "./Constants";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment} from "./PostFunctions.js"
+import {reloadCommentsAction} from "./Reducers";
+import {newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -104,7 +105,7 @@ export class ComponentJSON extends React.Component{
                         this.lockChild(child_id,true,draggable_type);
                     }
                 }else{
-                    console.log(drag_item);
+//                    console.log(drag_item);
                 }
             },
             out:(e,ui)=>{
@@ -148,6 +149,7 @@ export class ComponentJSON extends React.Component{
         if(through_type=="weekworkflow")object_type="week";
         if(through_type=="columnworkflow")object_type="column";
         if(through_type=="outcomeoutcome")object_type="outcome";
+        if(through_type=="outcomeworkflow")object_type="outcome";
         this.props.renderer.lock_update(
             {object_id:id,object_type:object_type},Constants.lock_times.move,lock
         );
@@ -306,7 +308,7 @@ export class ComponentJSON extends React.Component{
         return(
             [
                 <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext={gettext("Comments")} handleClick={this.commentClick.bind(this)}/>,
-                <CommentBox show={this.state.show_comments} comments={this.state.comment_data} parent={this}/>
+                <CommentBox show={this.state.show_comments} comments={this.props.data.comments} parent={this}/>
             ]
         );
     }
@@ -314,17 +316,21 @@ export class ComponentJSON extends React.Component{
     commentClick(evt){
         evt.stopPropagation();
         if(!this.state.show_comments){
-            this.reloadComments();
+            this.reloadComments(true);
         }else(this.setState({show_comments:false}));
     }
 
-    reloadComments(){
+    reloadComments(show_comments){
         let props = this.props;
         let data = props.data;
         props.renderer.tiny_loader.startLoad();
         getCommentsForObject(data.id,Constants.object_dictionary[this.objectType],
             (response_data)=>{
-                this.setState({show_comments:true,comment_data:response_data.data_package});
+                this.props.dispatch(reloadCommentsAction(this.props.data.id,Constants.object_dictionary[this.objectType],response_data.data_package));
+                if(show_comments){
+                    this.setState({show_comments:true});
+                }
+                //this.setState({show_comments:true,comment_data:response_data.data_package});
                 props.renderer.tiny_loader.endLoad();
             }
         );
@@ -338,25 +344,52 @@ export class ComponentJSON extends React.Component{
             let title_length="50";
             if(type=="outcome")title_length="500";
             var props = this.props;
+            let override = false;
+            let title=Constants.unescapeCharacters(data.title || "");
+            let description=data.description || "";
+            if(data.represents_workflow)override=true;
+            
+            let sets;
+            if(this.props.object_sets && ["node","outcome"].indexOf(type)>=0){
+                let term_type=data.type;
+                if(type=="node")term_type=data.node_type_display.toLowerCase();
+                
+                let allowed_sets = this.props.object_sets.filter(set=>set.term==term_type);
+                if(allowed_sets.length>=0){
+                    let disable_sets=false;
+                    if(data.depth)disable_sets=true;
+                    let set_options = allowed_sets.map(set=>
+                        <div>
+                            <input disabled={disable_sets} type="checkbox" name={set.id} checked={data.sets.indexOf(set.id)>=0} onChange={this.setChanged.bind(this,set.id)}/>
+                            <label for={set.id}>{set.title}</label>   
+                        </div>
+                    );
+                    sets = (
+                        [<h4>{gettext("Sets")}:</h4>,
+                        set_options]
+                    );
+                }
+            }
+            
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
                     <h3>{gettext("Edit ")+type+":"}</h3>
+                    {["node","week","column","workflow","outcome","nodelink"].indexOf(type)>=0 &&
+                        <div>
+                            <h4>{gettext("Title")}:</h4>
+                            <textarea disabled={override} autocomplete="off" id="title-editor" type="text" value={title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
+                        </div>
+                    }
+                    {["node","workflow","outcome"].indexOf(type)>=0 &&
+                        <div>
+                            <h4>{gettext("Description")}:</h4>
+                            <QuillDiv  disabled={override} text={description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
+                        </div>
+                    }
                     {((type=="outcome" && data.depth==0)||(type=="workflow" && data.type=="course")) &&
                         <div>
                             <h4>{gettext("Code (Optional)")}:</h4>
                             <input autocomplete="off" id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
-                        </div>
-                    }
-                    {["node","week","column","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
-                        <div>
-                            <h4>{gettext("Title")}:</h4>
-                            <input autocomplete="off" id="title-editor" type="text" value={data.title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
-                        </div>
-                    }
-                    {["node","workflow","outcome"].indexOf(type)>=0 && !data.represents_workflow &&
-                        <div>
-                            <h4>{gettext("Description")}:</h4>
-                            <QuillDiv text={data.description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
@@ -383,8 +416,8 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>{gettext("Time")}:</h4>
                             <div>
-                                <input autocomplete="off" id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
-                                <select id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
+                                <input disabled={override} autocomplete="off" id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
+                                <select disabled={override} id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
                                     {this.props.renderer.time_choices.map((choice)=>
                                         <option value={choice.type}>{choice.name}</option>
                                     )}
@@ -400,18 +433,18 @@ export class ComponentJSON extends React.Component{
                             </div>
                         </div>
                     }
-                    {(type=="workflow" && data.type=="course") &&
+                    {((type=="workflow" && data.type=="course")||(type=="node" && data.node_type==2)) &&
                         <div>
                             <h4>{gettext("Ponderation")}:</h4>
-                            <input autocomplete="off" class="half-width" id="ponderation-theory" type="number" value={data.ponderation_theory} onChange={this.inputChanged.bind(this,"ponderation_theory")}/>
+                            <input disabled={override} autocomplete="off" class="half-width" id="ponderation-theory" type="number" value={data.ponderation_theory} onChange={this.inputChanged.bind(this,"ponderation_theory")}/>
                             <div class="half-width">{gettext("hrs. Theory")}</div>
-                            <input autocomplete="off" class="half-width" id="ponderation-practical" type="number" value={data.ponderation_practical} onChange={this.inputChanged.bind(this,"ponderation_practical")}/>
+                            <input disabled={override} autocomplete="off" class="half-width" id="ponderation-practical" type="number" value={data.ponderation_practical} onChange={this.inputChanged.bind(this,"ponderation_practical")}/>
                             <div class="half-width">{gettext("hrs. Practical")}</div>
-                            <input class="half-width" autocomplete="off" class="half-width" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
+                            <input disabled={override} class="half-width" autocomplete="off" class="half-width" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
                             <div class="half-width">{gettext("hrs. Individual")}</div>
-                            <input class="half-width" autocomplete="off" class="half-width" id="time-general-hours" type="number" value={data.time_general_hours} onChange={this.inputChanged.bind(this,"time_general_hours")}/>
+                            <input disabled={override} class="half-width" autocomplete="off" class="half-width" id="time-general-hours" type="number" value={data.time_general_hours} onChange={this.inputChanged.bind(this,"time_general_hours")}/>
                             <div class="half-width">{gettext("hrs. General Education")}</div>
-                            <input class="half-width" autocomplete="off" class="half-width" id="time-specific-hours" type="number" value={data.time_specific_hours} onChange={this.inputChanged.bind(this,"time_specific_hours")}/>
+                            <input disabled={override} class="half-width" autocomplete="off" class="half-width" id="time-specific-hours" type="number" value={data.time_specific_hours} onChange={this.inputChanged.bind(this,"time_specific_hours")}/>
                             <div class="half-width">{gettext("hrs. Specific Education")}</div>
                         </div>
                     }
@@ -420,9 +453,16 @@ export class ComponentJSON extends React.Component{
                             <h4>{gettext("Linked Workflow")}:</h4>
                             <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
                             <button  id="linked-workflow-editor" onClick={()=>{
-                                getLinkedWorkflowMenu(data,(response_data)=>{
-                                    console.log("linked a workflow");
-                                });
+                                props.renderer.tiny_loader.startLoad();
+                                getLinkedWorkflowMenu(
+                                    data,
+                                    (response_data)=>{
+                                        console.log("linked a workflow");
+                                    },
+                                    ()=>{
+                                        props.renderer.tiny_loader.endLoad();
+                                    }
+                                );
                             }}>
                                 {gettext("Change")}
                             </button>
@@ -435,6 +475,21 @@ export class ComponentJSON extends React.Component{
                             <h4>{gettext("Other")}:</h4>
                             <input type="checkbox" name="has_autolink" checked={data.has_autolink} onChange={this.checkboxChanged.bind(this,"has_autolink")}/>
                             <label for="has_autolink">{gettext("Draw arrow to next node")}</label>
+                        </div>
+                    }
+                    {type=="nodelink" &&
+                        <div>
+                            <h4>{gettext("Style")}:</h4>
+                            <div>
+                                <input type="checkbox" name="dashed" checked={data.dashed} onChange={this.checkboxChanged.bind(this,"dashed")}/>
+                                <label for="dashed">{gettext("Dashed Line")}</label>
+                            </div>
+                            <div>
+                                <label for="text-position-range">{gettext("Text Position")}</label>
+                                <div class="slidecontainer">
+                                      <input type="range" min="1" max="100" value={data.text_position} class="range-slider" id="text-position-range" onChange={this.inputChanged.bind(this,"text_position")}/>               
+                                </div>
+                            </div>
                         </div>
                     }
                     {type=="workflow" &&
@@ -480,7 +535,7 @@ export class ComponentJSON extends React.Component{
                             </button>
                         </div>
                     }
-
+                    {sets}
                     {(!no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && 
                         [<h4>{gettext("Delete")}:</h4>,
                         this.addDeleteSelf(data)]
@@ -492,10 +547,24 @@ export class ComponentJSON extends React.Component{
     
     inputChanged(field,evt){
         let value=evt.target.value;
-        if(!value)value="";
+        if(evt.target.type=="number")value=parseInt(value)||0;
+        else if(!value)value="";
         if(field=="colour")value=parseInt(value.replace("#",""),16);
         if(evt.target.type=="number"&&value=="")value=0;
         this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,value);
+    }
+
+    setChanged(set_id,evt){
+        this.props.renderer.tiny_loader.startLoad();
+        updateObjectSet(
+            this.props.data.id,
+            Constants.object_dictionary[this.objectType],
+            set_id,
+            evt.target.checked,
+            ()=>{
+                this.props.renderer.tiny_loader.endLoad();
+            }
+        )
     }
 
     checkboxChanged(field,evt){
@@ -514,30 +583,49 @@ export class NodeLinkSVG extends React.Component{
         
         try{
             const source_transform=Constants.getSVGTranslation(this.props.source_port_handle.select(function(){
-                return this.parentNode}).attr("transform"));
+                return this.parentNode
+            }).attr("transform"));
             const target_transform=Constants.getSVGTranslation(this.props.target_port_handle.select(function(){
-                return this.parentNode}).attr("transform"));
+                return this.parentNode
+            }).attr("transform"));
             const source_point=[parseInt(this.props.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.props.source_port_handle.attr("cy"))+parseInt(source_transform[1])];
             const target_point=[parseInt(this.props.target_port_handle.attr("cx"))+parseInt(target_transform[0]),parseInt(this.props.target_port_handle.attr("cy"))+parseInt(target_transform[1])];
 
             var path_array = this.getPathArray(source_point,this.props.source_port,target_point,this.props.target_port);
-            var path=(this.getPath(path_array));
+            
+            
+            var path=(this.getPath(path_array.findPath()));
+            
             let stroke="black";
             if(this.props.style && this.props.style.stroke)stroke=this.props.style.stroke;
+            
+            let title;
+            if(this.props.title && this.props.title!=""){
+                let text_position=path_array.getFractionalPoint(this.props.text_position/100.0);
+                title = (
+                    <foreignObject width="100" height="100" x={text_position[0]-50} y={text_position[1]-50}>
+                    <div class="nodelinkwrapper">
+                        <div class="nodelinktext" onClick={this.props.clickFunction}>{this.props.title}</div>
+                    </div>
+                    </foreignObject>
+                )
+            }
+            
             return (
                 <g fill="none" stroke={stroke}>
                     <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"}/>
                     <path style={this.props.style} opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
+                    {title}
                 </g>
             );
-        }catch(err){return null;}
+        }catch(err){console.log("could not draw a node link");return null;}
     }
     
     getPathArray(source_point,source_port,target_point,target_port){
         var source_dims = [this.props.source_dimensions.width,this.props.source_dimensions.height];
         var target_dims = [this.props.target_dimensions.width,this.props.target_dimensions.height];
         var path_generator = new PathGenerator(source_point,source_port,target_point,target_port,source_dims,target_dims);
-        return path_generator.findPath();
+        return path_generator;
     }
 
     getPath(path_array){
@@ -657,11 +745,13 @@ export class NodePorts extends React.Component{
                 cy={Constants.node_ports[port_type][port][1]*node_dimensions.height}/>
             )
         }
+        var style={};
+        if($(this.props.node_div.current).css("display")=="none")style["display"]="none";
         var transform;
         if(this.state.node_offset)transform = "translate("+this.state.node_offset.left+","+this.state.node_offset.top+")"
         else transform = "translate(0,0)";
         return(
-            <g class={'node-ports port-'+this.props.nodeID} stroke="black" stroke-width="2" fill="white" transform={transform}>
+            <g style={style} class={'node-ports port-'+this.props.nodeID} stroke="black" stroke-width="2" fill="white" transform={transform}>
                 {ports}
             </g>
         )
@@ -694,6 +784,7 @@ export class NodePorts extends React.Component{
     }
     
     updatePorts(){
+        
         if(!this.props.node_div.current)return;
         var node = $(this.props.node_div.current);
         var node_offset = Constants.getCanvasOffset(node);
@@ -777,6 +868,12 @@ export class CommentBox extends React.Component{
                         <button class="menu-create" onClick={this.appendComment.bind(this)}>{gettext("Submit")}</button>
                     ]
                 }
+                {(!read_only && comments.length>1) && 
+                    [
+                        <hr/>,
+                        <button class="menu-create small" onClick={this.removeAllComments.bind(this)}>{gettext("Clear All Comments")}</button>
+                    ]
+                }
             </div>,
             comment_indicator
             ],
@@ -789,6 +886,16 @@ export class CommentBox extends React.Component{
         let props = parent.props;
         if(window.confirm(gettext("Are you sure you want to permanently clear this comment?"))){
             removeComment(props.objectID,Constants.object_dictionary[parent.objectType],id,
+                parent.reloadComments.bind(parent)
+            );
+        }
+    }
+
+    removeAllComments(){
+        let parent = this.props.parent;
+        let props = parent.props;
+        if(window.confirm(gettext("Are you sure you want to permanently clear all comments from this object?"))){
+            removeAllComments(props.objectID,Constants.object_dictionary[parent.objectType],
                 parent.reloadComments.bind(parent)
             );
         }
@@ -944,6 +1051,7 @@ export class QuillDiv extends React.Component{
             },
             placeholder:this.props.placeholder
         });
+        this.quill=quill;
         if(this.props.text)quill.clipboard.dangerouslyPasteHTML(this.props.text);
         quill.on('text-change',()=>{
             let text = quill_container.childNodes[0].innerHTML.replace(/\<p\>\<br\>\<\/p\>\<ul\>/g,"\<ul\>");
@@ -960,9 +1068,16 @@ export class QuillDiv extends React.Component{
             }
             this.defaultLinkFunction(value);
         });
+        this.quill.enable(!this.props.disabled);
         
     }
-    
+        
+    componentDidUpdate(prevProps, prevState){
+        if(prevProps.disabled!=this.props.disabled){
+            if(prevProps.text!=this.props.text)this.quill.clipboard.dangerouslyPasteHTML(this.props.text,"silent");
+            this.quill.enable(!this.props.disabled);
+        }
+    }
     
 }
 
@@ -997,6 +1112,7 @@ export class PathGenerator{
         this.hasTicked = {source:false,target:false};
         this.node_dims = {source:source_dims,target:target_dims};
         this.findcounter=0;
+        this.full_array=[];
     }
     
     //finds and returns the path
@@ -1004,7 +1120,38 @@ export class PathGenerator{
         try{
             this.findNextPoint();
         }catch(err){console.log("error calculating path")};
-        return this.joinArrays();
+        this.full_array=this.joinArrays();
+        return this.full_array;
+    }
+    
+    //gets the total length of our path
+    getPathLength(){
+        let length=0;
+        for(var i=1;i<this.full_array.length;i++){
+            let seg_len = mathnorm(mathsubtract(this.full_array[i],this.full_array[i-1]));
+            length+=seg_len;
+        }
+        return length;
+    }
+    
+    //gets the point at the given fraction of our path length
+    getFractionalPoint(position){
+        let length = this.getPathLength();
+        if(length==0)return [0,0];
+        let point = this.full_array[1];
+        let run_length=0;
+        let target_length=length*position;
+        for(var i=1;i<this.full_array.length;i++){
+            let seg = mathsubtract(this.full_array[i],this.full_array[i-1]);
+            let seg_len = mathnorm(seg);
+            if(run_length+seg_len<target_length)run_length+=seg_len;
+            else{
+                let remaining_len=target_length-run_length;
+                return mathadd(this.full_array[i-1],mathmultiply(seg,remaining_len/seg_len));
+            }
+        }
+        return point;
+        
     }
     
     //Recursively checks to see whether we need to move around a node, if not, we just need to join the arrays
