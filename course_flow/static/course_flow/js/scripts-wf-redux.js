@@ -167,9 +167,16 @@ export class WorkflowRenderer{
     
     connect(){
         this.messages_queued=true;
+        
+        let websocket_prefix;
+        if (window.location.protocol == "https:") {
+           websocket_prefix = "wss";
+        }else{
+           websocket_prefix = "ws";
+        }
 
-        let updateSocket = new WebSocket(
-        'ws://'+window.location.host+'/ws/update/'+this.workflowID+'/'
+        const updateSocket = new WebSocket(
+            websocket_prefix+'://'+window.location.host+'/ws/update/'+this.workflowID+'/'
         );
 
         this.updateSocket = updateSocket;

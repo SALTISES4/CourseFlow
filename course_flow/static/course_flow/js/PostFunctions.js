@@ -1,7 +1,7 @@
 import {renderMessageBox} from "./MenuComponents";
 
-export function fail_function(){
-    alert("Something went wrong. Please reload the page.")
+export function fail_function(string=""){
+    alert(string+" Something went wrong. Please reload the page.")
 }
 
 export function getAddedWorkflowMenu(projectPk,type_filter,get_strategies,self_only,updateFunction){
@@ -362,7 +362,7 @@ export function columnChanged(renderer,objectID,columnID){
     }
     $(document).off("nodeweek-dropped");
     $(document).on("nodeweek-dropped",()=>{
-        dragAction(renderer.dragAction["nodeweek"]);
+        dragAction(renderer,renderer.dragAction["nodeweek"]);
         renderer.dragAction["nodeweek"]=null;
         $(document).off("nodeweek-dropped");
     });
@@ -384,7 +384,7 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
     }
     $(document).off(throughType+"-dropped");
     $(document).on(throughType+"-dropped",()=>{
-        dragAction(renderer.dragAction[throughType]);
+        dragAction(renderer,renderer.dragAction[throughType]);
         renderer.dragAction[throughType]=null;
         $(document).off(throughType+"-dropped");
     });
@@ -392,9 +392,9 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
 
 
 
-export function dragAction(action_data,callBackFunction=()=>console.log("success")){
+export function dragAction(renderer,action_data,callBackFunction=()=>console.log("success")){
     try{
-        workflow_renderer.tiny_loader.startLoad();
+        renderer.tiny_loader.startLoad();
         $(".ui-draggable").draggable("disable");
         $.post(post_paths.inserted_at, 
             action_data
@@ -402,10 +402,11 @@ export function dragAction(action_data,callBackFunction=()=>console.log("success
             if(data.action == "posted") callBackFunction(data);
             else fail_function();
             $(".ui-draggable").draggable("enable");
-            workflow_renderer.tiny_loader.endLoad();
+            renderer.tiny_loader.endLoad();
         });
     }catch(err){
-        fail_function();
+        fail_function("The item failed to be inserted.");
+        console.log(err);
     }
 }
 
