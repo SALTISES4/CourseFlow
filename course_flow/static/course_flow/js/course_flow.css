@@ -569,6 +569,8 @@ button:hover{
     color:#444444;
     margin-bottom:2px;
     white-space:normal;
+    max-height: 140px;
+    overflow-y: auto;
 }
 
 .menu-grid .workflow-description{
@@ -3128,6 +3130,11 @@ circle.mouseover{
     padding:50px;
 }
 
+.comparison-view .workflow-array{
+    display:flex;
+    gap:20px;
+}
+
 .comparison-view .node-week{
     padding-top:5px;
     max-width:204px;
@@ -3171,7 +3178,7 @@ circle.mouseover{
 
 .comparison-view .workflow-wrapper{
     margin:0px;
-    max-width:300px;
+    width:260px;
 }
 
 .comparison-view .workflow-for-menu{
@@ -3179,7 +3186,22 @@ circle.mouseover{
     width:100%;
 }
 
+.comparison-view .outcome{
+    margin-left: 0;
+    min-width: unset;
+    max-width: 210px;
+    font-size: 12px;
+}
 
+.workflow-wrapper .window-close-button {
+    right: -8px;
+    top: -8px;
+    background: white;
+    height: 16px;
+    width: 16px;
+    border-radius: 8px;
+    z-index: 2;
+}
 
 hr{
     margin:4px;

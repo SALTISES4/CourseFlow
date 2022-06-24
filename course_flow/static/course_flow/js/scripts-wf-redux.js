@@ -167,6 +167,7 @@ export class WorkflowRenderer{
     
     connect(){
         this.messages_queued=true;
+        let renderer=this;
         
         let websocket_prefix;
         if (window.location.protocol == "https:") {
@@ -196,7 +197,7 @@ export class WorkflowRenderer{
         updateSocket.onclose = function(e){
            setTimeout(
                 ()=>{
-                    connect();
+                    renderer.connect();
                 },
                10000
            )
@@ -415,6 +416,7 @@ export class ComparisonRenderer{
     }
     
     render(container,view_type="workflowview"){
+        this.container=container;
         this.view_type=view_type;
         reactDom.render(<WorkflowLoader/>,container[0]);
         var renderer = this;
@@ -422,8 +424,7 @@ export class ComparisonRenderer{
         this.selection_manager = new SelectionManager(); 
         this.tiny_loader = new TinyLoader($("body")[0]);
         
-        if(view_type=="workflowview"){
-            //get additional data about parent workflow prior to render
+        if(view_type=="workflowview" || view_type=="outcomeedit"){
             reactDom.render(
                 <ComparisonView view_type={view_type} renderer={this} data={this.project_data} selection_manager={this.selection_manager} tiny_loader={this.tiny_loader}/>,
                 container[0]
@@ -442,11 +443,13 @@ export class ComparisonRenderer{
 }
 
 export class WorkflowComparisonRenderer extends WorkflowRenderer{
-    constructor(workflowID,data_package,container,selection_manager,tiny_loader){
+    constructor(workflowID,data_package,container,selection_manager,tiny_loader,view_type,initial_object_sets){
         super(workflowID,data_package);
         this.selection_manager = selection_manager;
         this.tiny_loader = tiny_loader;
         this.container=container;
+        this.view_type=view_type;
+        this.initial_object_sets=initial_object_sets;
     }
     
     render(view_type="workflowview"){
@@ -460,8 +463,19 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
         console.log("the container to be rendered into");
         console.log(this.container);
         
-        if(view_type=="workflowview"){
+        if(view_type=="outcomeedit"){
             //get additional data about parent workflow prior to render
+            getWorkflowParentData(this.workflowID,(response)=>{
+                store.dispatch(Reducers.refreshStoreData(response.data_package));
+                reactDom.render(
+                    <Provider store = {store}>
+                        <WorkflowComparisonBaseView view_type={view_type} renderer={this}/>
+                    </Provider>,
+                    this.container[0]
+                );
+            });
+            
+        }else if(view_type=="workflowview"){
             reactDom.render(
                 <Provider store = {this.store}>
                     <WorkflowComparisonBaseView view_type={view_type} renderer={this}/>
@@ -475,13 +489,16 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
     
     
     connection_opened(){
+        let loader = new Constants.Loader(this.container[0]);
         getWorkflowData(this.workflowID,(response)=>{
             let data_flat = response.data_package;
             console.log(data_flat);
+            if(this.initial_object_sets)data_flat={...data_flat,objectset:this.initial_object_sets};
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
-            this.render();
+            this.render(this.view_type);
             this.create_connection_bar();
             this.clear_queue(data_flat.workflow.edit_count);
+            loader.endLoad();
         });
     }
     

@@ -1184,6 +1184,9 @@ class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         )
         context["read_only"] = JSONRenderer().render(True).decode("utf-8")
         context["comment"] = JSONRenderer().render(False).decode("utf-8")
+        context["is_strategy"] = (
+            JSONRenderer().render(False).decode("utf-8")
+        )
         editor = (
             project.author == self.request.user
             or ObjectPermission.objects.filter(

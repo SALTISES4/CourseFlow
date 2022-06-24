@@ -6,6 +6,9 @@ import * as Constants from "./Constants";
 import {renderMessageBox,closeMessageBox, WorkflowForMenu} from "./MenuComponents";
 import {getWorkflowSelectMenu,getWorkflowContext} from "./PostFunctions";
 import {WeekWorkflowComparisonView} from "./WeekWorkflowView";
+import {getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
+import {OutcomeEditViewUnconnected} from "./OutcomeEditView";
+import {toggleObjectSet} from "./Reducers";
 
 
 
@@ -15,8 +18,8 @@ export class ComparisonView extends React.Component{
     constructor(props){
         super(props);
         this.objectType="workflow";
-        this.allowed_tabs=[0,1,2,3];
-        this.state = {workflows:[]};
+        this.allowed_tabs=[0,4];
+        this.state = {workflows:[],object_sets:props.data.object_sets};
     }
     
     render(){
@@ -34,16 +37,15 @@ export class ComparisonView extends React.Component{
         let share;
         if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
         if(renderer.view_type=="outcomeedit"){
-            if(data.type=="program")this.allowed_tabs=[];
-            else this.allowed_tabs=[2,4];
+            this.allowed_tabs=[];
         }else{
-            this.allowed_tabs=[1,2,3,4];
+            this.allowed_tabs=[4];
         }
         
         
         let view_buttons = [
             {type:"workflowview",name:gettext("Workflow View"),disabled:[]},
-            {type:"outcomeedit",name:Constants.capWords(gettext("View")+" "+gettext(data.type+" outcomes")),disabled:[]},
+            {type:"outcomeedit",name:Constants.capWords(gettext("View")+" outcomes"),disabled:[]},
         ].filter(item=>item.disabled.indexOf(data.type)==-1).map(
             (item)=>{
                 let view_class = "hover-shade";
@@ -56,11 +58,16 @@ export class ComparisonView extends React.Component{
         let view_buttons_sorted = view_buttons;
 
         let workflow_content=this.state.workflows.map(workflowID=>
-            <WorkflowComparisonRendererComponent workflowID={workflowID} key={workflowID} tiny_loader={this.props.tiny_loader} selection_manager={this.props.selection_manager}/>
+            <WorkflowComparisonRendererComponent removeFunction={this.removeWorkflow.bind(this,workflowID)} view_type={renderer.view_type} workflowID={workflowID} key={workflowID} tiny_loader={this.props.tiny_loader} selection_manager={this.props.selection_manager} object_sets={this.state.object_sets}/>
         );
-        workflow_content.push(
+        let add_button = (
             <div>
-                <button onClick={this.loadWorkflow.bind(this)}>{gettext("Load new workflow")}</button>
+                <button class="splash-image-wrapper" onClick={this.loadWorkflow.bind(this)}>
+                <img id="load-workflow" src={iconpath+"add_new_blue.svg"}/>
+                <div>
+                    {gettext("Load new workflow")}
+                </div>
+                </button>
             </div>
         );
         console.log("rendering");
@@ -96,18 +103,30 @@ export class ComparisonView extends React.Component{
                         </div>,
                         $("#floatbar")[0]
                     )}
+                    <div class="workflow-array">
+                        {workflow_content}
+                    </div>
+                    {add_button}
                     
-                    {workflow_content}
                     
-                    
-                    <ViewBar renderer={this.props.renderer}/>
+                    <ViewBar toggleObjectSet={this.toggleObjectSet.bind(this)} object_sets={this.state.object_sets} renderer={this.props.renderer}/>
                 </div>
             </div>
         
         );
     }
+
+    makeSortable(){
+        $(".workflow-array").sortable({
+            axis:"x",
+            stop:function(evt,ui){
+
+            }
+        });
+    }
                      
     componentDidMount(){
+        this.makeSortable();
         this.updateTabs();    
         window.addEventListener("click",(evt)=>{
             if($(evt.target).closest(".other-views").length==0){
@@ -117,6 +136,7 @@ export class ComparisonView extends React.Component{
     }
                      
     componentDidUpdate(prev_props){
+        this.makeSortable();
         if(prev_props.view_type!=this.props.view_type)this.updateTabs();
     }
                     
@@ -154,6 +174,26 @@ export class ComparisonView extends React.Component{
             }
         })
     }
+    removeWorkflow(workflow_id){
+        let workflows = this.state.workflows.slice();
+        workflows.splice(workflows.indexOf(workflow_id),1);
+        this.setState({workflows:workflows});
+
+    }
+
+    toggleObjectSet(id){
+        let object_sets = this.state.object_sets.slice();
+        let hidden;
+        for(let i=0;i<object_sets.length;i++){
+            if(object_sets[i].id==id){
+                hidden=!(object_sets[i].hidden);
+                object_sets[i].hidden=hidden;
+                break;
+            }
+        }
+        this.setState({object_sets:object_sets});
+        $(document).triggerHandler("object_set_toggled",{id:id,hidden:hidden});
+    }
 }
 
 class WorkflowComparisonRendererComponent extends React.Component{
@@ -166,7 +206,13 @@ class WorkflowComparisonRendererComponent extends React.Component{
     render(){
         console.log("renderer");
         return (
-            <div class="workflow-wrapper" id={"workflow-"+this.props.workflowID} ref={this.maindiv}></div>
+            <div class="workflow-wrapper" id={"workflow-"+this.props.workflowID}>
+                <div class="workflow-inner-wrapper" ref={this.maindiv}>
+                </div>
+                <div class="window-close-button" onClick={this.props.removeFunction}>
+                    <img src={iconpath+"close.svg"}/>
+                </div>
+            </div>
         )
     }
     
@@ -184,11 +230,20 @@ class WorkflowComparisonRendererComponent extends React.Component{
                     $(this.maindiv.current),
                     this.props.selection_manager,
                     this.props.tiny_loader,
+                    this.props.view_type,
+                    this.props.object_sets,
                 );
                 this.renderer.connect();
                 loader.endLoad();
             }
         );
+    }
+
+    componentDidUpdate(prev_props){
+        console.log("Component Changed");
+        console.log(prev_props.view_type);
+        console.log(this.props.view_type);
+        if(prev_props.view_type!=this.props.view_type)this.renderer.render(this.props.view_type);
     }
 }
 
@@ -248,10 +303,21 @@ class WorkflowComparisonBaseViewUnconnected extends ComponentJSON{
     
     postMountFunction(){
         this.alignAllHeaders();
+        this.addObjectSetTrigger();
     }
     
     componentDidUpdate(){
         this.alignAllHeaders();
+    }
+
+    addObjectSetTrigger(){
+        let props=this.props;
+        $(document).off("object_set_toggled."+this.props.data.id);
+        $(document).on("object_set_toggled."+this.props.data.id,(evt,data)=>{
+            console.log("got an event trigger from object set toggle");
+            console.log(data);
+            props.dispatch(toggleObjectSet(data.id,data.hidden));
+        });
     }
     
     alignAllHeaders(){
@@ -341,13 +407,30 @@ export const WorkflowComparisonView =  connect(
     null
 )(WorkflowComparisonViewUnconnected)
 
+//Outcome view body for comparison
+class OutcomeComparisonViewUnconnected extends OutcomeEditViewUnconnected{
+    getParentOutcomeBar(){
+        return null;
+    }
+}
+const mapOutcomeComparisonStateToProps = state=>({
+    data:getSortedOutcomesFromOutcomeWorkflowSet(state,state.workflow.outcomeworkflow_set),
+    workflow:state.workflow
+})
+export const OutcomeComparisonView =  connect(
+    mapOutcomeComparisonStateToProps,
+    null
+)(OutcomeComparisonViewUnconnected)
 
 
 
-class ViewBar extends ComponentJSON{
+
+
+
+
+class ViewBar extends React.Component{
      
     render(){
-        return ("VIEWBAR TO BE COMPLETED");
         
         let sets=(
             <div class="node-bar-sort-block">
@@ -359,7 +442,6 @@ class ViewBar extends ComponentJSON{
                     return 0;
                 }).map((set)=>
                     <div><input type="checkbox" id={"set"+set.id} value={set.id} checked={(!set.hidden)} onChange={this.toggleHidden.bind(this,set.id)}/><label for={"set"+set.id}>{set.title}</label></div>
-
                 )}
             </div>
         );
@@ -372,7 +454,7 @@ class ViewBar extends ComponentJSON{
     }
     
     toggleHidden(id){
-        this.props.dispatch(toggleObjectSet(id));
+        this.props.toggleObjectSet(id);
     }
 }
 

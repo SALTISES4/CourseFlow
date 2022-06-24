@@ -12,7 +12,7 @@ import {newOutcome, insertedAt} from "./PostFunctions";
 import * as Constants from "./Constants";
 
 //Basic component representing the outcome view
-class OutcomeEditView extends ComponentJSON{
+export class OutcomeEditViewUnconnected extends ComponentJSON{
     
     constructor(props){
         super(props);
@@ -48,12 +48,15 @@ class OutcomeEditView extends ComponentJSON{
                         <img class="create-button" src={iconpath+"add_new_white.svg"}/>
                         <div>{gettext("Add new")}</div>
                     </div>
-                    <ParentOutcomeBar/>
+                    {this.getParentOutcomeBar()}
                 </div>
             </div>
         );
     }
 
+    getParentOutcomeBar(){
+        return <ParentOutcomeBar/>
+    }
 
     postMountFunction(){
         this.makeDragAndDrop();
@@ -86,7 +89,7 @@ const mapEditViewStateToProps = state=>({
 export default connect(
     mapEditViewStateToProps,
     null
-)(OutcomeEditView)
+)(OutcomeEditViewUnconnected)
 
 
 class ParentOutcomeNodeViewUnconnected extends ComponentJSON{
