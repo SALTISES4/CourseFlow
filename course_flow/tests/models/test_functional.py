@@ -3060,6 +3060,36 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             len(selenium.find_elements_by_css_selector(".node")), 0
         )
 
+class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
+        else:
+            self.selenium = webdriver.Chrome()
+
+        super(ChannelsStaticLiveServerTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        selenium.get(self.live_server_url + "/home/")
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(ChannelsStaticLiveServerTestCase, self).tearDown()
+
+    def test_comparison_views(self):
+        pass
+
+
+
+
 
 async def connect_ws(ws):
     return await ws.connect()
@@ -3109,6 +3139,7 @@ def async_to_sync_receive_nothing(ws):
     loop = asyncio.get_event_loop()
     coroutine = receive_nothing_ws(ws)
     return loop.run_until_complete(coroutine)
+
 
 
 class WebsocketTestCase(ChannelsStaticLiveServerTestCase):

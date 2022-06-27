@@ -659,6 +659,7 @@ button:hover{
     padding:20px;
     border-radius:10px;
     background:white;
+    width: fit-content;
 }
 
 .project-import{

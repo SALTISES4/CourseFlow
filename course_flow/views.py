@@ -31,6 +31,7 @@ from . import redux_actions as actions
 from .decorators import (
     ajax_login_required,
     check_object_permission,
+    from_same_workflow,
     user_can_comment,
     user_can_delete,
     user_can_edit,
@@ -4177,6 +4178,8 @@ Reorder methods
 @user_can_edit(False)
 @user_can_edit_or_none(False, get_parent=True)
 @user_can_edit_or_none("columnPk")
+@from_same_workflow(False,False,get_parent=True)
+@from_same_workflow(False,"columnPk")
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -4310,6 +4313,7 @@ def update_value(request: HttpRequest) -> HttpResponse:
 
 @user_can_edit("nodePk")
 @user_can_view("outcomePk")
+@from_same_workflow("nodePk","outcomePk")
 def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     outcome_id = json.loads(request.POST.get("outcomePk"))

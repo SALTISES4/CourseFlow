@@ -665,6 +665,9 @@ button:hover{
     padding:20px;
     border-radius:10px;
     background:white;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
 }
 
 .project-import{

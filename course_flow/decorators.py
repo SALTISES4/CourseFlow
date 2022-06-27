@@ -402,27 +402,41 @@ def user_can_delete(model, **outer_kwargs):
     return wrapped_view
 
 #check to see if the two models are from the same workflow. The second object may be parent if kwargs are used
-# def from_same_workflow(model1,model2, **outer_kwargs):
-#     def wrapped_view(fct):
-#         @wraps(fct)
-#         def _wrapped_view(
-#             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
-#         ):
-#             try:
-#                 model_data = get_model_from_request(
-#                     model1, request,
-#                 )
-#                 other_model_data = get_model_from_request(
-#                     model1, request, **outer_kwargs
-#                 )
-#             except Exception as e:
-#                 response = JsonResponse({"error": str(e)})
-#                 response.status_code = 403
-#                 return response
+#The second argument can be optional; if no model info is found the decorator passes
+def from_same_workflow(model1,model2, **outer_kwargs):
+    def wrapped_view(fct):
+        @wraps(fct)
+        def _wrapped_view(
+            request, model1=model1, model2=model2, outer_kwargs=outer_kwargs, *args, **kwargs
+        ):
+            try:
+                model_data1 = get_model_from_request(
+                    model1, request,
+                )
+                model_data2 = get_model_from_request(
+                    model2, request, **outer_kwargs
+                )
+                if model_data2["id"] is None or model_data2["id"] == -1:
+                    return fct(request, *args, **kwargs)
+                instance1 = get_model_from_str(model_data1["model"]).objects.get(
+                    id=model_data1["id"]
+                )
+                instance2 = get_model_from_str(model_data2["model"]).objects.get(
+                    id=model_data2["id"]
+                )
+                if(instance1.get_workflow().id==instance2.get_workflow().id):
+                    return fct(request, *args, **kwargs)
+                response = JsonResponse({"error": "workflow mismatch"})
+                response.status_code = 403
+                return response
+            except Exception as e:
+                response = JsonResponse({"error": str(e)})
+                response.status_code = 403
+                return response
 
-#         return _wrapped_view
+        return _wrapped_view
 
-#     return wrapped_view
+    return wrapped_view
 
 def user_is_teacher():
     def wrapped_view(fct):

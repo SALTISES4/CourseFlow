@@ -528,7 +528,9 @@ class ProjectMenuUnconnected extends React.Component{
                             (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||gettext("None"))
                         }
                     </p>
-                    
+                    <a class="menu-create hover-shade" href="comparison">
+                        {gettext("Comparison View")}
+                    </a>
                     {reactDom.createPortal(
                         share,
                         $("#floatbar")[0]
