@@ -115,7 +115,7 @@ export class WeekViewUnconnected extends ComponentJSON{
           ".node-week",
           false,
           [200,1],
-          ".node-block",
+          null,
           ".node",
           ".week-block",
         );
@@ -228,9 +228,15 @@ export class WeekComparisonViewUnconnected extends WeekViewUnconnected{
     }
     
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
-        
         this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
         insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
+    }
+
+
+    sortableMovedOutFunction(id,new_position,type,new_parent,child_id){
+        console.log("you've moved a "+type+" out to another workflow, ignoring");
+        // this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
+        // insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
     }
 
     makeDroppable(){
@@ -263,6 +269,21 @@ export class WeekComparisonViewUnconnected extends WeekViewUnconnected{
         this.alignAllWeeks();
     }
     
+    makeDragAndDrop(){
+        //Makes the nodeweeks in the node block draggable
+        this.makeSortableNode($(this.node_block.current).children(".node-week").not(".ui-draggable"),
+          this.props.objectID,
+          "nodeweek",
+          ".node-week",
+          false,
+          [200,1],
+          "#workflow-"+this.props.workflow_id,
+          ".node",
+          ".workflow-array",
+        );
+        this.makeDroppable()
+    }
+
     componentDidUpdate(){
         this.makeDragAndDrop();
         Constants.triggerHandlerEach($(this.maindiv.current).find(".node"),"component-updated");

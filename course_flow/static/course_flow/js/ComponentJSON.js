@@ -22,7 +22,17 @@ export class ComponentJSON extends React.Component{
     
     postMountFunction(){};
     
-    makeSortableNode(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false,containment=".workflow-container"){
+    makeSortableNode(
+        sortable_block,
+        parent_id,
+        draggable_type,
+        draggable_selector,
+        axis=false,
+        grid=false,
+        restrictTo=null,
+        handle=false,
+        containment=".workflow-container"
+    ){
         let cursorAt={};
         if(draggable_type=="weekworkflow")cursorAt={top:20};
         if(draggable_type=="nodeweek")cursorAt={top:20,left:50};
@@ -39,7 +49,7 @@ export class ComponentJSON extends React.Component{
             helper:(e,item)=>{
                 var helper = $(document.createElement('div'));
                 helper.addClass(draggable_type+"-ghost");
-                helper.appendTo(".workflow-container");
+                helper.appendTo(".workflow-wrapper > .workflow-container");
                 helper.width($(e.target).width());
                 return helper;
             },
@@ -51,6 +61,7 @@ export class ComponentJSON extends React.Component{
                 $(draggable_selector).addClass("dragging");
                 var old_parent_id = parent_id;
                 drag_item.attr("data-old-parent-id",parent_id);
+                drag_item.attr("data-restrict-to",restrictTo);
                 var old_index = drag_item.prevAll().length;
                 drag_item.attr("data-old-index",old_index);
                 props.renderer.selection_manager.changeSelection(null,null);
@@ -95,13 +106,25 @@ export class ComponentJSON extends React.Component{
                     var old_parent_id = parseInt(drag_item.attr("data-old-parent-id"));
                     var old_index = parseInt(drag_item.attr("data-old-index"));
                     if(old_parent_id!=new_parent_id || old_index!=new_index){
-                        drag_item.attr("data-old-parent-id",new_parent_id)
-                        drag_item.attr("data-old-index",new_index);
                         let child_id = parseInt(drag_item.attr("data-child-id"));
-                        this.sortableMovedFunction(
-                            parseInt(drag_item.attr("id")),
-                            new_index,draggable_type,new_parent_id,child_id
-                        );
+                        console.log("checking restrictTo:");
+                        console.log(restrictTo);
+                        console.log("checking the data on draggable");
+                        console.log(drag_item.attr("data-restrict-to"));
+
+                        if(restrictTo && drag_item.attr("data-restrict-to")!=restrictTo){
+                            this.sortableMovedOutFunction(
+                                parseInt(drag_item.attr("id")),
+                                new_index,draggable_type,new_parent_id,child_id
+                            );
+                        }else{
+                            drag_item.attr("data-old-parent-id",new_parent_id)
+                            drag_item.attr("data-old-index",new_index);
+                            this.sortableMovedFunction(
+                                parseInt(drag_item.attr("id")),
+                                new_index,draggable_type,new_parent_id,child_id
+                            );
+                        }
                         this.lockChild(child_id,true,draggable_type);
                     }
                 }else{
@@ -132,6 +155,10 @@ export class ComponentJSON extends React.Component{
             }
         });
         
+    }
+
+    sortableMovedOutFunction(){
+        console.log("A sortable was moved out, but no specific function was given to the component.");
     }
     
     stopSortFunction(){

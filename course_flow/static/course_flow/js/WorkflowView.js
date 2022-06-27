@@ -398,7 +398,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
             ".column-workflow",
             "x",
             false,
-            ".column-row",
+            null,
             ".column",
             ".column-row"
         );
@@ -409,7 +409,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
             ".week-workflow",
             "y",
             false,
-            ".week-block",
+            null,
             ".week",
             ".week-block"
         );

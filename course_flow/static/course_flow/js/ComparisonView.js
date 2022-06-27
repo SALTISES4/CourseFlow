@@ -4,11 +4,11 @@ import {Provider, connect} from "react-redux";
 import {ComponentJSON} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {renderMessageBox,closeMessageBox, WorkflowForMenu} from "./MenuComponents";
-import {getWorkflowSelectMenu,getWorkflowContext} from "./PostFunctions";
+import {getWorkflowSelectMenu,getWorkflowContext,insertedAt} from "./PostFunctions";
 import {WeekWorkflowComparisonView} from "./WeekWorkflowView";
 import {getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
 import {OutcomeEditViewUnconnected} from "./OutcomeEditView";
-import {toggleObjectSet} from "./Reducers";
+import {toggleObjectSet,moveWeekWorkflow} from "./Reducers";
 
 
 
@@ -383,9 +383,9 @@ class WorkflowComparisonViewUnconnected extends ComponentJSON{
             this.props.objectID,
             "weekworkflow",
             ".week-workflow",
-            "y",
             false,
-            ".week-block",
+            false,
+            "#workflow-"+this.props.data.id,
             ".week",
             ".week-block"
         );
@@ -401,6 +401,14 @@ class WorkflowComparisonViewUnconnected extends ComponentJSON{
             insertedAt(this.props.renderer,child_id,"week",new_parent,"workflow",new_position,"weekworkflow");
         }
     }
+
+
+    sortableMovedOutFunction(id,new_position,type,new_parent,child_id){
+        console.log("you've moved a "+type+" out to another workflow, ignoring");
+        // this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
+        // insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
+    }
+
 }
 export const WorkflowComparisonView =  connect(
     mapWorkflowStateToProps,
@@ -412,6 +420,20 @@ class OutcomeComparisonViewUnconnected extends OutcomeEditViewUnconnected{
     getParentOutcomeBar(){
         return null;
     }
+
+    makeDragAndDrop(){
+        this.makeSortableNode(
+            $(this.maindiv.current).find(".outcome-workflow").not("ui-draggable"),
+            this.props.objectID,
+            "outcomeworkflow",
+            ".outcome-workflow",
+            false,
+            false,
+            "#workflow-"+this.props.workflow.id,
+        );
+        if(this.props.data.depth==0)this.makeDroppable();
+    }
+    
 }
 const mapOutcomeComparisonStateToProps = state=>({
     data:getSortedOutcomesFromOutcomeWorkflowSet(state,state.workflow.outcomeworkflow_set),

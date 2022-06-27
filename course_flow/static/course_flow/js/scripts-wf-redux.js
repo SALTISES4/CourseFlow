@@ -334,6 +334,10 @@ export class WorkflowRenderer{
             this.child_workflow_updated(data.edit_count);
         }
     }
+
+    connection_update_received(){
+        console.log("A connection update was received, but not handled");
+    }
     
     parent_workflow_updated(edit_count){
         this.messages_queued=true;
