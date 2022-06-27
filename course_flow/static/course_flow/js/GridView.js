@@ -153,9 +153,9 @@ class GridNodeViewUnconnected extends ComponentJSON{
     }
     
 }
-/****returns nothing for now, but might eventually *****/
+
 const mapNodeStateToProps = (state,own_props)=>({
-    
+    column:state.column.find(column=>column.id==own_props.data.column),
 })
 export const GridNodeView = connect(
     mapNodeStateToProps,

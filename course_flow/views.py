@@ -1150,14 +1150,9 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             context["read_only"] = JSONRenderer().render(False).decode("utf-8")
         elif (
             ObjectPermission.objects.filter(
-                user=user,
+                user=self.request.user,
                 permission_type=ObjectPermission.PERMISSION_COMMENT,
-                object_id=workflow.id,
-            )
-            .filter(
-                Q(content_type=ContentType.objects.get_for_model(Activity))
-                | Q(content_type=ContentType.objects.get_for_model(Course))
-                | Q(content_type=ContentType.objects.get_for_model(Program))
+                project=project,
             )
             .count()
             > 0
@@ -1201,7 +1196,7 @@ class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             context["read_only"] = JSONRenderer().render(False).decode("utf-8")
         elif (
             ObjectPermission.objects.filter(
-                user=user,
+                user=self.request.user,
                 permission_type=ObjectPermission.PERMISSION_COMMENT,
                 object_id=workflow.id,
             )
