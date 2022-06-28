@@ -4656,6 +4656,7 @@ def delete_self(request: HttpRequest) -> HttpResponse:
                 Workflow.objects.filter(linked_nodes__week=model)
             )
         elif object_type in ["workflow", "activity", "course", "program"]:
+            workflow = None
             linked_workflows = list(
                 Workflow.objects.filter(
                     linked_nodes__week__workflow__id=model.id
@@ -4778,6 +4779,7 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                 Workflow.objects.filter(linked_nodes__week=model)
             )
         elif object_type in ["workflow", "activity", "course", "program"]:
+            workflow = None
             linked_workflows = list(
                 Workflow.objects.filter(
                     linked_nodes__week__workflow__id=model.id
@@ -4930,6 +4932,7 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                 Workflow.objects.filter(linked_nodes__week=model)
             )
         elif object_type in ["workflow", "activity", "course", "program"]:
+            workflow = None
             linked_workflows = list(
                 Workflow.objects.filter(
                     linked_nodes__week__workflow__id=model.id

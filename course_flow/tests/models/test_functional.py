@@ -3102,10 +3102,10 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:project-update", args=[workflow.pk])
         )
-        time.sleep(2)
+        time.sleep(3)
 
         selenium.find_element_by_id("comparison-view").click();
-        time.sleep(2);
+        time.sleep(3);
         selenium.find_element_by_id("load-workflow").click();
         time.sleep(2);
         selenium.find_elements_by_css_selector(".message-wrap .workflow-created")[0].click();
