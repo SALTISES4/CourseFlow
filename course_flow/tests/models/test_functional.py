@@ -3085,7 +3085,44 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         super(ChannelsStaticLiveServerTestCase, self).tearDown()
 
     def test_comparison_views(self):
-        pass
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+
+        project = Project.objects.create(author=self.user)
+        workflow = Course.objects.create(author=self.user)
+        workflow2 = Course.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=workflow, project=project)
+        WorkflowProject.objects.create(workflow=workflow2, project=project)
+        node1 = workflow.weeks.first().nodes.create(author=self.user,column=workflow.columns.first())
+        node2 = workflow2.weeks.first().nodes.create(author=self.user,column=workflow2.columns.first())
+        outcome1 = workflow.outcomes.create(author=self.user)
+        outcome2 = workflow2.outcomes.create(author=self.user)
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:project-update", args=[workflow.pk])
+        )
+        time.sleep(2)
+
+        selenium.find_element_by_id("comparison-view").click();
+        time.sleep(2);
+        selenium.find_element_by_id("load-workflow").click();
+        time.sleep(2);
+        selenium.find_elements_by_css_selector(".message-wrap .workflow-created")[0].click();
+        selenium.find_element_by_id("set-linked-workflow").click()
+        time.sleep(5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".node")),1)
+        selenium.find_element_by_id("load-workflow").click();
+        time.sleep(2);
+        selenium.find_elements_by_css_selector(".message-wrap .workflow-created")[1].click();
+        selenium.find_element_by_id("set-linked-workflow").click()
+        time.sleep(5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".node")),2)
+        selenium.find_element_by_id("button_outcomeedit").click()
+        time.sleep(5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".outcome")),2)
+
+
 
 
 
