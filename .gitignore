@@ -5,6 +5,7 @@
 *.mypy_cache/
 *.py[cdo]
 *.pyc
+*.rdb
 .*requirements-timestamp
 .coverage
 .data/
@@ -35,6 +36,8 @@ tags
 
 # Django stuff:
 *.log
+*.sqlite3
+*.sqlite3-journal
 db.sqlite3
 db.sqlite3-journal
 local_settings.py
