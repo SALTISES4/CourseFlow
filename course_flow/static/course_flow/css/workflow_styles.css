@@ -1973,6 +1973,87 @@ circle.mouseover{
     width:16px;
 }
 
+/*ComparisonView stuff*/
+
+.comparison-view{
+    display:flex;
+    gap:20px;
+    padding:50px;
+}
+
+.comparison-view .workflow-array{
+    display:flex;
+    gap:20px;
+}
+
+.comparison-view .node-week{
+    padding-top:5px;
+    max-width:204px;
+    white-space:normal;
+}
+
+.comparison-view .node-top-row{
+    border-radius:0 0 5px 5px;
+}
+
+.comparison-view .week{
+    min-height:60px;
+    box-sizing:content-box;
+}
+
+.comparison-view .node-block{
+    min-height:30px;
+}
+
+.comparison-view .workflow-container{
+    padding:0;
+    box-shadow:none;
+    margin:0;
+}
+
+.comparison-view .workflow-details{
+    padding:0;
+}
+
+.comparison-view .workflow-header{
+    margin:0px;
+    position:sticky;
+    z-index:1;
+    top:46px;
+    border:1px solid black;
+}
+
+.comparison-view .workflow-details{
+    padding:5px;
+}
+
+.comparison-view .workflow-wrapper{
+    margin:0px;
+    width:260px;
+}
+
+.comparison-view .workflow-for-menu{
+    margin:0px;
+    width:100%;
+}
+
+.comparison-view .outcome{
+    margin-left: 0;
+    min-width: unset;
+    max-width: 210px;
+    font-size: 12px;
+}
+
+.workflow-wrapper .window-close-button {
+    right: -8px;
+    top: -8px;
+    background: white;
+    height: 16px;
+    width: 16px;
+    border-radius: 8px;
+    z-index: 2;
+}
+
 hr{
     margin:4px;
     margin-left:20%;

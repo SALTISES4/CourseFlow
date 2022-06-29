@@ -85,7 +85,7 @@ class TermView extends WeekViewUnconnected{
           ".node-week",
           false,
           [200,1],
-          ".node-block",
+          null,
           ".node");
     }
 }

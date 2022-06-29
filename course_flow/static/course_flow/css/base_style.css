@@ -565,6 +565,8 @@ button:hover{
     color:#444444;
     margin-bottom:2px;
     white-space:normal;
+    max-height: 140px;
+    overflow-y: auto;
 }
 
 .menu-grid .workflow-description{
@@ -657,6 +659,7 @@ button:hover{
     padding:20px;
     border-radius:10px;
     background:white;
+    width: fit-content;
 }
 
 .project-import{

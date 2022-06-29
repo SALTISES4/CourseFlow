@@ -5,6 +5,7 @@ import WeekView from "./WeekView.js";
 import TermView from "./TermView.js";
 import {getWeekWorkflowByID} from "./FindState.js";
 import {} from "./Reducers.js";
+import {WeekComparisonView} from "./WeekView";
 
 //Basic weekworkflow component
 class WeekWorkflowView extends ComponentJSON{
@@ -35,11 +36,33 @@ class WeekWorkflowView extends ComponentJSON{
 const mapWeekWorkflowStateToProps = (state,own_props)=>(
     getWeekWorkflowByID(state,own_props.objectID)
 )
-const mapWeekWorkflowDispatchToProps = {};
 export default connect(
     mapWeekWorkflowStateToProps,
     null
 )(WeekWorkflowView)
+
+//Basic weekworkflow component
+class WeekWorkflowComparisonViewUnconnected extends WeekWorkflowView{
+    
+    render(){
+        let data = this.props.data;
+        let my_class = "week-workflow";
+        if(data.no_drag)my_class+=" no-drag";
+        var week = (
+            <WeekComparisonView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
+        );
+        
+        return (
+            <div class={my_class} id={data.id} ref={this.maindiv} data-child-id={data.week}>
+                {week}
+            </div>
+        );
+    }
+}
+export const WeekWorkflowComparisonView = connect(
+    mapWeekWorkflowStateToProps,
+    null
+)(WeekWorkflowComparisonViewUnconnected)
 
 
 class NodeBarWeekWorkflowUnconnected extends ComponentJSON{

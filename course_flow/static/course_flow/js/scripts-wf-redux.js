@@ -5,9 +5,10 @@ import * as React from "react";
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
 import {ComponentJSON} from "./ComponentJSON";
-import {WorkflowBaseView} from"./WorkflowView";
-import {ProjectMenu, WorkflowGridMenu, ExploreMenu, renderMessageBox} from"./MenuComponents";
+import {WorkflowBaseView} from "./WorkflowView";
+import {ProjectMenu, WorkflowGridMenu, ExploreMenu, renderMessageBox} from "./MenuComponents";
 import {WorkflowView_Outcome} from"./WorkflowView";
+import {ComparisonView, WorkflowComparisonBaseView} from "./ComparisonView";
 import * as Constants from "./Constants";
 import * as Reducers from "./Reducers";
 import OutcomeTopView from './OutcomeTopView';
@@ -143,7 +144,8 @@ export class ProjectRenderer{
 
 
 export class WorkflowRenderer{
-    constructor(data_package){
+    constructor(workflowID,data_package){
+        this.workflowID=workflowID;
         this.message_queue=[];
         this.messages_queued=true;
         this.column_choices = data_package.column_choices;
@@ -162,6 +164,48 @@ export class WorkflowRenderer{
             
         }
     }
+    
+    connect(){
+        this.messages_queued=true;
+        let renderer=this;
+        
+        let websocket_prefix;
+        if (window.location.protocol == "https:") {
+           websocket_prefix = "wss";
+        }else{
+           websocket_prefix = "ws";
+        }
+
+        const updateSocket = new WebSocket(
+            websocket_prefix+'://'+window.location.host+'/ws/update/'+this.workflowID+'/'
+        );
+
+        this.updateSocket = updateSocket;
+        
+        
+        updateSocket.onmessage = function(e){
+            this.message_received(e);
+        }.bind(this)
+        
+        let openfunction = function(){
+            this.connection_opened();
+        };
+        
+        updateSocket.onopen = openfunction.bind(this)
+        if(updateSocket.readyState==1)openfunction.bind(this)();
+        
+        updateSocket.onclose = function(e){
+           setTimeout(
+                ()=>{
+                    renderer.connect();
+                },
+               10000
+           )
+           console.log(e);
+           console.log("Lost connection to server");
+        }
+    }
+    
     
     render(container,view_type="workflowview"){
         console.log(this.store.getState());
@@ -213,7 +257,7 @@ export class WorkflowRenderer{
         this.tiny_loader = new TinyLoader($("body")[0]);
         if(view_type=="outcomeedit"){
             //get additional data about parent workflow prior to render
-            getWorkflowParentData(workflow_model_id,(response)=>{
+            getWorkflowParentData(this.workflowID,(response)=>{
                 store.dispatch(Reducers.refreshStoreData(response.data_package));
                 reactDom.render(
                     <Provider store = {store}>
@@ -225,7 +269,7 @@ export class WorkflowRenderer{
             
         }else if(view_type=="horizontaloutcometable" || view_type=="alignmentanalysis"){
             //get additional data about child workflows prior to render
-            getWorkflowChildData(workflow_model_id,(response)=>{
+            getWorkflowChildData(this.workflowID,(response)=>{
                 store.dispatch(Reducers.refreshStoreData(response.data_package));
                 reactDom.render(
                     <Provider store = {store}>
@@ -255,7 +299,7 @@ export class WorkflowRenderer{
     }
     
     connection_opened(){
-        getWorkflowData(workflow_model_id,(response)=>{
+        getWorkflowData(this.workflowID,(response)=>{
             let data_flat = response.data_package;
             console.log(data_flat);
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
@@ -290,11 +334,15 @@ export class WorkflowRenderer{
             this.child_workflow_updated(data.edit_count);
         }
     }
+
+    connection_update_received(){
+        console.log("A connection update was received, but not handled");
+    }
     
     parent_workflow_updated(edit_count){
         this.messages_queued=true;
         let renderer = this;
-        getWorkflowParentData(workflow_model_id,(response)=>{
+        getWorkflowParentData(this.workflowID,(response)=>{
             console.log("Got parent data");
             //remove all the parent node and parent workflow data
             renderer.store.dispatch(Reducers.replaceStoreData({parent_node:[],parent_workflow:[]}));
@@ -306,7 +354,7 @@ export class WorkflowRenderer{
     child_workflow_updated(edit_count){
         this.messages_queued=true;
         let renderer = this;
-        getWorkflowChildData(workflow_model_id,(response)=>{
+        getWorkflowChildData(this.workflowID,(response)=>{
             console.log("Got child data");
             //remove all the child workflow data
             renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
@@ -366,29 +414,128 @@ export class WorkflowRenderer{
     
 }
 
-
-
-
-export class OutcomeRenderer{
-    constructor(data_package){
-        this.initial_data = data_package;
-        this.store = createStore(Reducers.rootOutcomeReducer,data_package);
+export class ComparisonRenderer{
+    constructor(project_data){
+        this.project_data=project_data;
     }
     
-    
-    render(container){
+    render(container,view_type="workflowview"){
         this.container=container;
+        this.view_type=view_type;
+        reactDom.render(<WorkflowLoader/>,container[0]);
+        var renderer = this;
+        this.locks={}
         this.selection_manager = new SelectionManager(); 
         this.tiny_loader = new TinyLoader($("body")[0]);
+        
+        if(view_type=="workflowview" || view_type=="outcomeedit"){
+            reactDom.render(
+                <ComparisonView view_type={view_type} renderer={this} data={this.project_data} selection_manager={this.selection_manager} tiny_loader={this.tiny_loader}/>,
+                container[0]
+            );
+            
+        }
+        
+    }
+    
+    create_connection_bar(){
         reactDom.render(
-            <Provider store = {this.store}>
-                <OutcomeTopView objectID={this.initial_data.outcome[0].id} renderer={this}/>
-            </Provider>,
-            container[0]
+            <ConnectionBar renderer={this}/>,
+            $("#userbar")[0]
         );
     }
 }
 
+export class WorkflowComparisonRenderer extends WorkflowRenderer{
+    constructor(workflowID,data_package,container,selection_manager,tiny_loader,view_type,initial_object_sets){
+        super(workflowID,data_package);
+        this.selection_manager = selection_manager;
+        this.tiny_loader = tiny_loader;
+        this.container=container;
+        this.view_type=view_type;
+        this.initial_object_sets=initial_object_sets;
+    }
+    
+    render(view_type="workflowview"){
+        console.log(this.store.getState());
+        this.view_type=view_type;
+        reactDom.render(<WorkflowLoader/>,this.container[0]);
+        let store = this.store;
+        let initial_workflow_data = store.getState();
+        var renderer = this;
+        this.locks={}
+        console.log("the container to be rendered into");
+        console.log(this.container);
+        
+        if(view_type=="outcomeedit"){
+            //get additional data about parent workflow prior to render
+            getWorkflowParentData(this.workflowID,(response)=>{
+                store.dispatch(Reducers.refreshStoreData(response.data_package));
+                reactDom.render(
+                    <Provider store = {store}>
+                        <WorkflowComparisonBaseView view_type={view_type} renderer={this}/>
+                    </Provider>,
+                    this.container[0]
+                );
+            });
+            
+        }else if(view_type=="workflowview"){
+            reactDom.render(
+                <Provider store = {this.store}>
+                    <WorkflowComparisonBaseView view_type={view_type} renderer={this}/>
+                </Provider>,
+                this.container[0]
+            );
+            
+        }
+        
+    }
+    
+    
+    connection_opened(){
+        let loader = new Constants.Loader(this.container[0]);
+        getWorkflowData(this.workflowID,(response)=>{
+            let data_flat = response.data_package;
+            console.log(data_flat);
+            if(this.initial_object_sets)data_flat={...data_flat,objectset:this.initial_object_sets};
+            this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
+            this.render(this.view_type);
+            this.create_connection_bar();
+            this.clear_queue(data_flat.workflow.edit_count);
+            loader.endLoad();
+        });
+    }
+    
+    
+    create_connection_bar(){
+        return null;
+    }
+    
+}
+
+//
+//
+//
+//export class OutcomeRenderer{
+//    constructor(data_package){
+//        this.initial_data = data_package;
+//        this.store = createStore(Reducers.rootOutcomeReducer,data_package);
+//    }
+//    
+//    
+//    render(container){
+//        this.container=container;
+//        this.selection_manager = new SelectionManager(); 
+//        this.tiny_loader = new TinyLoader($("body")[0]);
+//        reactDom.render(
+//            <Provider store = {this.store}>
+//                <OutcomeTopView objectID={this.initial_data.outcome[0].id} renderer={this}/>
+//            </Provider>,
+//            container[0]
+//        );
+//    }
+//}
+//
 class WorkflowLoader extends React.Component{
     
     render(){

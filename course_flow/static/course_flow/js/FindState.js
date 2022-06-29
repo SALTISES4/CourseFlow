@@ -29,7 +29,8 @@ export const getWeekByID = (state,id)=>{
                 getColumnWorkflowByID(state, columnworkflow_id).data.column
             ),
             sibling_count:state.workflow.weekworkflow_set.length,
-            nodeweeks:state.nodeweek
+            nodeweeks:state.nodeweek,
+            workflow_id:state.workflow.id,
         };
     }
 }
@@ -84,7 +85,7 @@ export const getNodeByID = (state,id)=>{
     for(var i in state.node){
         var node = state.node[i];
         if(node.id==id){
-            return {data:node,object_sets:state.objectset};
+            return {data:node,column:state.column.find(column=>column.id==node.column),object_sets:state.objectset};
         }
     }
     console.log("failed to find node");
@@ -172,7 +173,7 @@ export const getOutcomeByID = (state,id)=>{
             if(!top_rank)top_rank = findTopRank(state,root_outcome);
             titles.push(outcome.title);
             rank.unshift(top_rank);
-            return {data:outcome,outcomenodes:state.outcomenode,rank:rank,titles:titles,object_sets:state.objectset};
+            return {data:outcome,outcomenodes:state.outcomenode,rank:rank,titles:titles,object_sets:state.objectset,workflow_id:state.workflow.id};
         }
     }
     console.log("failed to find outcome");

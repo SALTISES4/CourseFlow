@@ -126,7 +126,7 @@ class OutcomeView extends ComponentJSON{
 //    }
 
     makeDragAndDrop(){
-        this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome-"+this.props.data.depth,false,false,".children-block-"+this.props.data.depth,".outcome");
+        this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome-"+this.props.data.depth,false,false,"#workflow-"+this.props.workflow_id,".outcome");
         if(this.props.data.depth==0)this.makeDroppable();
     }
 
@@ -142,6 +142,12 @@ class OutcomeView extends ComponentJSON{
 
     stopSortFunction(){
         
+    }
+
+    sortableMovedOutFunction(id,new_position,type,new_parent,child_id){
+        console.log("you've moved a "+type+" out to another workflow, ignoring");
+        // this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
+        // insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
     }
 
     makeDroppable(){

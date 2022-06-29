@@ -26,6 +26,11 @@ def course_flow_patterns():
             name="project-update",
         ),
         url(
+            r"^project/(?P<pk>[0-9]+)/comparison$",
+            views.ProjectComparisonView.as_view(),
+            name="project-comparison",
+        ),
+        url(
             r"^workflow/(?P<pk>[0-9]+)/$",
             views.WorkflowDetailView.as_view(),
             name="workflow-update",
@@ -134,6 +139,11 @@ def course_flow_patterns():
             r"^workflow/get-possible-added-workflows/",
             views.get_possible_added_workflows,
             name="get-possible-added-workflows",
+        ),
+        url(
+            r"^workflow/get-workflow-context/",
+            views.get_workflow_context,
+            name="get-workflow-context",
         ),
         url(
             r"^workflow/get-target-projects/",

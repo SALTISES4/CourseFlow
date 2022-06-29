@@ -931,6 +931,9 @@ class Workflow(models.Model):
     def get_project(self):
         return self.project_set.first()
 
+    def get_workflow(self):
+        return self
+
     def get_permission_objects(self):
         return [self.get_subclass()]
 

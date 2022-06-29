@@ -95,8 +95,6 @@
     
   const read_only = {{read_only|safe}};
   const allow_comments = {{comment|safe}};
-  console.log("override comments");
-  console.log(allow_comments);
   if(read_only)$("#sidebar").hide();
   else{
       $("#side-bar-close-button").on("click",()=>{
@@ -107,42 +105,28 @@
 
 
 
-//  {% if is_strategy == "false" %}
-//      $("#viewbar").append("<div id='outcomeviewbar'><div class='outcomeviewtext'>Outcome View:</div><label class='switch'><input type='checkbox'><span class ='slider round'></span></label></div>");
-//
-//      $("#outcomeviewbar input").on("change",(evt)=>{
-//          if(evt.target.checked)workflow_renderer.render($("#container"),"outcometable");
-//          else workflow_renderer.render($("#container"));
-//      });
-//  {% endif %}
-
   const user_id = {{ user.id }};
-  const workflow_model_id = {{ object.id }};
-  const workflow_type = "{{ object.type }}";
-  console.log(workflow_type);
   const user_name = "{{ user.username }}";
   const create_path=null;
 
-  workflow_data_package = {{data_package|safe}}
-  var workflow_renderer;
+  const project_data= {{project_data|safe}};
+  var comparison_renderer;
 
-    
 
    const myColour = 'hsl('+(((user_id*5)%360)+1)+',50%,50%)';
 
    const changeFieldID = Math.floor(Math.random()*10000);
+
    
    
-  window.addEventListener("load", function(){
-      workflow_renderer = new renderers.WorkflowRenderer(workflow_model_id,workflow_data_package);
-      workflow_renderer.connect();
-      
-      
-      
-//      console.log(workflow_data_package);
-      $(document).ajaxError(renderers.fail_function);
-//      workflow_renderer.render($("#container"));
-  });
+    window.addEventListener("load", function(){
+        comparison_renderer = new renderers.ComparisonRenderer(project_data);
+
+
+
+        $(document).ajaxError(renderers.fail_function);
+        comparison_renderer.render($("#container"));
+    });
 </script>
 
 {% endblock %}

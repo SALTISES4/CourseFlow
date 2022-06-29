@@ -32,6 +32,7 @@ from . import redux_actions as actions
 from .decorators import (
     ajax_login_required,
     check_object_permission,
+    from_same_workflow,
     user_can_comment,
     user_can_delete,
     user_can_edit,
@@ -1130,7 +1131,8 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             .decode("utf-8")
         )
         context["read_only"] = JSONRenderer().render(True).decode("utf-8")
-        if (
+        context["comment"] = JSONRenderer().render(False).decode("utf-8")
+        editor = (
             project.author == self.request.user
             or ObjectPermission.objects.filter(
                 user=self.request.user,
@@ -1138,8 +1140,70 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
                 permission_type=ObjectPermission.PERMISSION_EDIT,
             ).count()
             > 0
-        ):
+        )
+        if editor:
             context["read_only"] = JSONRenderer().render(False).decode("utf-8")
+        elif (
+            ObjectPermission.objects.filter(
+                user=self.request.user,
+                permission_type=ObjectPermission.PERMISSION_COMMENT,
+                project=project,
+            )
+            .count()
+            > 0
+        ):
+            context["comment"] = JSONRenderer().render(True).decode("utf-8")
+
+        return context
+    
+class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
+    model = Project
+    fields = ["title", "description", "published"]
+    template_name = "course_flow/comparison.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        project = self.object
+        context["project_data"] = (
+            JSONRenderer()
+            .render(
+                ProjectSerializerShallow(
+                    project, context={"user": self.request.user}
+                ).data
+            )
+            .decode("utf-8")
+        )
+        context["read_only"] = JSONRenderer().render(True).decode("utf-8")
+        context["comment"] = JSONRenderer().render(False).decode("utf-8")
+        context["is_strategy"] = (
+            JSONRenderer().render(False).decode("utf-8")
+        )
+        editor = (
+            project.author == self.request.user
+            or ObjectPermission.objects.filter(
+                user=self.request.user,
+                project=project,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+            ).count()
+            > 0
+        )
+        if editor:
+            context["read_only"] = JSONRenderer().render(False).decode("utf-8")
+        elif (
+            ObjectPermission.objects.filter(
+                user=self.request.user,
+                permission_type=ObjectPermission.PERMISSION_COMMENT,
+                object_id=workflow.id,
+            )
+            .filter(
+                Q(content_type=ContentType.objects.get_for_model(Activity))
+                | Q(content_type=ContentType.objects.get_for_model(Course))
+                | Q(content_type=ContentType.objects.get_for_model(Program))
+            )
+            .count()
+            > 0
+        ):
+            context["comment"] = JSONRenderer().render(True).decode("utf-8")
 
         return context
 
@@ -2035,11 +2099,13 @@ def get_target_projects(request: HttpRequest) -> HttpResponse:
     )
 
 
-@user_can_edit_or_none("projectPk")
+@user_can_view_or_none("projectPk")
 def get_possible_added_workflows(request: HttpRequest) -> HttpResponse:
     type_filter = json.loads(request.POST.get("type_filter"))
     get_strategies = json.loads(request.POST.get("get_strategies", "false"))
     projectPk = request.POST.get("projectPk", False)
+    self_only = json.loads(request.POST.get("self_only","false"))
+    print(self_only)
     if projectPk:
         project = Project.objects.get(pk=request.POST.get("projectPk"))
     else:
@@ -2050,6 +2116,7 @@ def get_possible_added_workflows(request: HttpRequest) -> HttpResponse:
             project,
             type_filter=type_filter,
             get_strategies=get_strategies,
+            self_only=self_only,
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -2058,6 +2125,26 @@ def get_possible_added_workflows(request: HttpRequest) -> HttpResponse:
             "action": "posted",
             "data_package": data_package,
             "project_id": projectPk,
+        }
+    )
+
+@user_can_view("workflowPk")
+def get_workflow_context(request: HttpRequest) -> HttpResponse:
+    workflowPk = request.POST.get("workflowPk", False)
+    try:
+        workflow = Workflow.objects.get(pk=workflowPk)
+        data_package = get_workflow_context_data(
+            workflow,
+            {},
+            request.user,
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+            "workflow_id": workflowPk,
         }
     )
 
@@ -4081,6 +4168,8 @@ Reorder methods
 @user_can_edit(False)
 @user_can_edit_or_none(False, get_parent=True)
 @user_can_edit_or_none("columnPk")
+@from_same_workflow(False,False,get_parent=True)
+@from_same_workflow(False,"columnPk")
 def inserted_at(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -4214,6 +4303,7 @@ def update_value(request: HttpRequest) -> HttpResponse:
 
 @user_can_edit("nodePk")
 @user_can_view("outcomePk")
+@from_same_workflow("nodePk","outcomePk")
 def update_outcomenode_degree(request: HttpRequest) -> HttpResponse:
     node_id = json.loads(request.POST.get("nodePk"))
     outcome_id = json.loads(request.POST.get("outcomePk"))
@@ -4561,6 +4651,7 @@ def delete_self(request: HttpRequest) -> HttpResponse:
                 Workflow.objects.filter(linked_nodes__week=model)
             )
         elif object_type in ["workflow", "activity", "course", "program"]:
+            workflow = None
             linked_workflows = list(
                 Workflow.objects.filter(
                     linked_nodes__week__workflow__id=model.id
@@ -4683,6 +4774,7 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                 Workflow.objects.filter(linked_nodes__week=model)
             )
         elif object_type in ["workflow", "activity", "course", "program"]:
+            workflow = None
             linked_workflows = list(
                 Workflow.objects.filter(
                     linked_nodes__week__workflow__id=model.id
@@ -4835,6 +4927,7 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                 Workflow.objects.filter(linked_nodes__week=model)
             )
         elif object_type in ["workflow", "activity", "course", "program"]:
+            workflow = None
             linked_workflows = list(
                 Workflow.objects.filter(
                     linked_nodes__week__workflow__id=model.id

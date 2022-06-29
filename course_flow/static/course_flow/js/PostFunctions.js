@@ -1,15 +1,39 @@
 import {renderMessageBox} from "./MenuComponents";
 
-export function fail_function(){
-    alert("Something went wrong. Please reload the page.")
+export function fail_function(string=""){
+    alert(string+" Something went wrong. Please reload the page.")
 }
 
-export function getAddedWorkflowMenu(projectPk,type_filter,get_strategies,updateFunction){
+export function getAddedWorkflowMenu(projectPk,type_filter,get_strategies,self_only,updateFunction){
     $.post(post_paths.get_possible_added_workflows,{
         projectPk:JSON.stringify(projectPk),
         type_filter:JSON.stringify(type_filter),
         get_strategies:JSON.stringify(get_strategies),
+        self_only:JSON.stringify(self_only),
     },(data)=>openAddedWorkflowMenu(data,updateFunction));
+}
+
+//get the workflow's context data
+export function getWorkflowContext(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_workflow_context, {
+            workflowPk:JSON.stringify(workflowPk),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function();
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+export function getWorkflowSelectMenu(projectPk,type_filter,get_strategies,self_only,updateFunction){
+    $.post(post_paths.get_possible_added_workflows,{
+        projectPk:JSON.stringify(projectPk),
+        type_filter:JSON.stringify(type_filter),
+        get_strategies:JSON.stringify(get_strategies),
+        self_only:JSON.stringify(self_only),
+    },(data)=>openWorkflowSelectMenu(data,updateFunction));
 }
 
 export function getLinkedWorkflowMenu(nodeData,updateFunction,callBackFunction=()=>console.log("success")){
@@ -39,6 +63,12 @@ export function openLinkedWorkflowMenu(response,updateFunction){
 export function openAddedWorkflowMenu(response,updateFunction){
     if(response.action=="posted"){
         renderMessageBox(response,"added_workflow_menu",updateFunction);
+    }else alert("Failed to find your workflows.");
+}
+
+export function openWorkflowSelectMenu(response,updateFunction){
+    if(response.action=="posted"){
+        renderMessageBox(response,"workflow_select_menu",updateFunction);
     }else alert("Failed to find your workflows.");
 }
 
@@ -332,7 +362,7 @@ export function columnChanged(renderer,objectID,columnID){
     }
     $(document).off("nodeweek-dropped");
     $(document).on("nodeweek-dropped",()=>{
-        dragAction(renderer.dragAction["nodeweek"]);
+        dragAction(renderer,renderer.dragAction["nodeweek"]);
         renderer.dragAction["nodeweek"]=null;
         $(document).off("nodeweek-dropped");
     });
@@ -354,7 +384,7 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
     }
     $(document).off(throughType+"-dropped");
     $(document).on(throughType+"-dropped",()=>{
-        dragAction(renderer.dragAction[throughType]);
+        dragAction(renderer,renderer.dragAction[throughType]);
         renderer.dragAction[throughType]=null;
         $(document).off(throughType+"-dropped");
     });
@@ -362,9 +392,9 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
 
 
 
-export function dragAction(action_data,callBackFunction=()=>console.log("success")){
+export function dragAction(renderer,action_data,callBackFunction=()=>console.log("success")){
     try{
-        workflow_renderer.tiny_loader.startLoad();
+        renderer.tiny_loader.startLoad();
         $(".ui-draggable").draggable("disable");
         $.post(post_paths.inserted_at, 
             action_data
@@ -372,10 +402,11 @@ export function dragAction(action_data,callBackFunction=()=>console.log("success
             if(data.action == "posted") callBackFunction(data);
             else fail_function();
             $(".ui-draggable").draggable("enable");
-            workflow_renderer.tiny_loader.endLoad();
+            renderer.tiny_loader.endLoad();
         });
     }catch(err){
-        fail_function();
+        fail_function("The item failed to be inserted.");
+        console.log(err);
     }
 }
 
