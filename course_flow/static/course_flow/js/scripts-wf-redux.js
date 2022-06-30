@@ -166,43 +166,51 @@ export class WorkflowRenderer{
     }
     
     connect(){
-        this.messages_queued=true;
-        let renderer=this;
-        
-        let websocket_prefix;
-        if (window.location.protocol == "https:") {
-           websocket_prefix = "wss";
-        }else{
-           websocket_prefix = "ws";
-        }
+        if(!this.is_static){
+            this.messages_queued=true;
+            let renderer=this;
+            
+            let websocket_prefix;
+            if (window.location.protocol == "https:") {
+               websocket_prefix = "wss";
+            }else{
+               websocket_prefix = "ws";
+            }
 
-        const updateSocket = new WebSocket(
-            websocket_prefix+'://'+window.location.host+'/ws/update/'+this.workflowID+'/'
-        );
+            const updateSocket = new WebSocket(
+                websocket_prefix+'://'+window.location.host+'/ws/update/'+this.workflowID+'/'
+            );
+            this.updateSocket = updateSocket;
+            
+            
+            updateSocket.onmessage = function(e){
+                this.message_received(e);
+            }.bind(this)
+            
+            let openfunction = function(){
+                this.is_static=false;
+                this.has_rendered=true;
+                this.connection_opened();
+            };
+            
+            updateSocket.onopen = openfunction.bind(this)
+            if(updateSocket.readyState==1)openfunction.bind(this)();
+            
+            updateSocket.onclose = function(e){
+                renderer.has_disconnected=true;
+                setTimeout(
+                    ()=>{
+                        renderer.connect();
+                    },
+                   30000
+                )
+                if(!renderer.has_rendered)renderer.connection_opened();
+                renderer.has_rendered=true;
+                console.log(e);
+                console.log("Lost connection to server");
+                if(!renderer.has_disconnected)alert(gettext("Unable to establish connection to the server, or connection has been lost."));
 
-        this.updateSocket = updateSocket;
-        
-        
-        updateSocket.onmessage = function(e){
-            this.message_received(e);
-        }.bind(this)
-        
-        let openfunction = function(){
-            this.connection_opened();
-        };
-        
-        updateSocket.onopen = openfunction.bind(this)
-        if(updateSocket.readyState==1)openfunction.bind(this)();
-        
-        updateSocket.onclose = function(e){
-           setTimeout(
-                ()=>{
-                    renderer.connect();
-                },
-               10000
-           )
-           console.log(e);
-           console.log("Lost connection to server");
+            }
         }
     }
     
@@ -299,6 +307,7 @@ export class WorkflowRenderer{
     }
     
     connection_opened(){
+        console.log("Getting workflow data");
         getWorkflowData(this.workflowID,(response)=>{
             let data_flat = response.data_package;
             console.log(data_flat);
