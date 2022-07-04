@@ -51,7 +51,7 @@ export class ConnectionBar extends React.Component{
     }
     
     connection_update(connected=true){
-        this.props.updateSocket.send(JSON.stringify({type:"connection_update",user_data:{user_id:user_id,user_name:user_name,user_colour:myColour,connected:connected}}))
+        if(this.props.updateSocket.readyState==1)this.props.updateSocket.send(JSON.stringify({type:"connection_update",user_data:{user_id:user_id,user_name:user_name,user_colour:myColour,connected:connected}}))
         setTimeout(this.connection_update.bind(this),30000);
     }
     

@@ -2925,6 +2925,10 @@ circle.mouseover{
     white-space:nowrap;
 }
 
+.alignment-block .week .node-block{
+    display: block;
+}
+
 .alignment-block .node-title{
     width:200px;
     vertical-align: middle;

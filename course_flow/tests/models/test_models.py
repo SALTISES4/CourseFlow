@@ -2746,6 +2746,15 @@ class PermissionsTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
 
+    def test_ratelimit_get(self):
+        self.assertTrue(False)
+
+    def test_get_workflow_parent_child_data_public(self):
+        self.assertTrue(False)
+
+    def test_workflow_public_view(self):
+        self.assertTrue(False)
+
     def test_permissions_delete_self_workflows(self):
         author = get_author()
         user = login(self)

@@ -125,12 +125,17 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         }    
     
         let workflow = this;
+
+        let parent_workflow_indicator;
+        if(!renderer.public_view)parent_workflow_indicator = (
+            <ParentWorkflowIndicator workflow_id={data.id}/>
+        )
             
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class="workflow-header" style={style}>
                     <WorkflowForMenu workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
-                    <ParentWorkflowIndicator workflow_id={data.id}/>
+                    {parent_workflow_indicator}
                 </div>
                 <div class="workflow-view-select hide-print">
                     {view_buttons_sorted}

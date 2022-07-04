@@ -109,7 +109,7 @@ class NodeView extends ComponentJSON{
             mouseover_actions.push(this.addDuplicateSelf(data));
             mouseover_actions.push(this.addDeleteSelf(data));
         }
-        mouseover_actions.push(this.addCommenting(data));
+        if(!renderer.public_view)mouseover_actions.push(this.addCommenting(data));
 
         return (
             <div 
@@ -378,7 +378,7 @@ class NodeComparisonViewUnconnected extends ComponentJSON{
             mouseover_actions.push(this.addDuplicateSelf(data));
             mouseover_actions.push(this.addDeleteSelf(data));
         }
-        mouseover_actions.push(this.addCommenting(data));
+        if(!renderer.public_view)mouseover_actions.push(this.addCommenting(data));
 
         return (
             <div 

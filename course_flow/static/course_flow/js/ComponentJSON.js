@@ -522,20 +522,28 @@ export class ComponentJSON extends React.Component{
                     {type=="workflow" &&
                         <div>
                             <h4>{gettext("Settings")}:</h4>
-                            <label for="outcomes_type">{gettext("Outcomes Style")}</label>
-                            <select name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
-                                {this.props.renderer.outcome_type_choices.map((choice)=>
-                                    <option value={choice.type}>{choice.name}</option>
-                                )}
-                            </select>
-                            <label for="condensed">{gettext("Condensed View")}</label>
-                            <input type="checkbox" name="condensed" checked={data.condensed} onChange={this.checkboxChanged.bind(this,"condensed")}/>
+                            <div>
+                                <label for="outcomes_type">{gettext("Outcomes Style")}</label>
+                                <select name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
+                                    {this.props.renderer.outcome_type_choices.map((choice)=>
+                                        <option value={choice.type}>{choice.name}</option>
+                                    )}
+                                </select>
+                            </div>
+                            <div>
+                                <label for="condensed">{gettext("Condensed View")}</label>
+                                <input type="checkbox" name="condensed" checked={data.condensed} onChange={this.checkboxChanged.bind(this,"condensed")}/>                            
+                            </div>
                             {data.is_strategy && 
-                                [
-                                <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>,
+                            <div>
                                 <label for="is_published">{gettext("Published")}</label>
-                                ]
+                                <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
+                            </div>
                             }
+                            <div>
+                                <label for="public_view">{gettext("Create Public Page")}</label>
+                                <input type="checkbox" name="public_view" checked={data.public_view} onChange={this.publicViewCheckboxChanged.bind(this,"public_view")}/>
+                            </div>
                         </div>
                     }
                     {type=="week" && data.week_type <2 &&
@@ -596,6 +604,16 @@ export class ComponentJSON extends React.Component{
 
     checkboxChanged(field,evt){
          this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
+    }
+
+    publicViewCheckboxChanged(field,evt){
+        if(!this.props.data.public_view){
+            if(window.confirm(gettext("Please note: this will make a publically accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."))){
+                this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
+            }
+        }else{
+            this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
+        }
     }
 
     valueChanged(field,new_value){

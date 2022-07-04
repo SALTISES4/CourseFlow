@@ -36,6 +36,11 @@ def course_flow_patterns():
             name="workflow-update",
         ),
         url(
+            r"^workflow/public/(?P<pk>[0-9]+)/$",
+            views.WorkflowPublicDetailView.as_view(),
+            name="workflow-public",
+        ),
+        url(
             r"^workflow/updatevalue/$", views.update_value, name="update-value"
         ),
         url(r"^workflow/delete-self/$", views.delete_self, name="delete-self"),
@@ -164,6 +169,21 @@ def course_flow_patterns():
             r"^workflow/get-workflow-child-data/",
             views.get_workflow_child_data,
             name="get-workflow-child-data",
+        ),
+        url(
+            r"^workflow/(?P<pk>[0-9]+)/get-public-workflow-data/",
+            views.get_public_workflow_data,
+            name="get-public-workflow-data",
+        ),
+        url(
+            r"^workflow/(?P<pk>[0-9]+)/get-public-workflow-parent-data/",
+            views.get_public_workflow_parent_data,
+            name="get-public-workflow-parent-data",
+        ),
+        url(
+            r"^workflow/(?P<pk>[0-9]+)/get-public-workflow-child-data/",
+            views.get_public_workflow_child_data,
+            name="get-public-workflow-child-data",
         ),
         url(
             r"^project/get-project-data/",

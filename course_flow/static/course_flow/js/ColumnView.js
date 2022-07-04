@@ -31,7 +31,7 @@ class ColumnView extends ComponentJSON{
             mouseover_actions.push(this.addDuplicateSelf(data));
             mouseover_actions.push(this.addDeleteSelf(data));
         }
-        mouseover_actions.push(this.addCommenting(data));
+        if(!this.props.renderer.public_view)mouseover_actions.push(this.addCommenting(data));
         
         return (
             <div ref={this.maindiv} style={style} class={css_class} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>

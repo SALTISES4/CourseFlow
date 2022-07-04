@@ -526,6 +526,45 @@ export function getWorkflowChildData(workflowPk,callBackFunction=()=>console.log
     }
 }
 
+//Get the public data from the workflow
+export function getPublicWorkflowData(workflowPk,callBackFunction=()=>console.log("success")){
+    //try{
+        $.get(
+                get_paths.get_public_workflow_data.replace("0",workflowPk)
+            ).done(function(data){
+            callBackFunction(data);
+        });
+    // }catch(err){
+    //     fail_function();
+    // }
+}
+
+//Get the public data from all parent workflows
+export function getPublicWorkflowParentData(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.get(
+                get_paths.get_public_workflow_parent_data.replace("0",workflowPk)
+            ).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the public data from all child workflows
+export function getPublicWorkflowChildData(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.get(
+                get_paths.get_public_workflow_child_data.replace("0",workflowPk)
+            ).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 //Get the list of possible disciplines
 export function getDisciplines(callBackFunction=()=>console.log("success")){
     try{

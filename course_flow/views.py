@@ -33,6 +33,7 @@ from .decorators import (
     ajax_login_required,
     check_object_permission,
     from_same_workflow,
+    public_model_access,
     user_can_comment,
     user_can_delete,
     user_can_edit,
@@ -108,6 +109,10 @@ from .utils import (  # benchmark,; dateTimeFormat,; get_parent_model,; get_pare
     save_serializer,
 )
 
+
+class ContentPublicViewMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.get_object().public_view
 
 class UserCanViewMixin(UserPassesTestMixin):
     def test_func(self):
@@ -1547,38 +1552,39 @@ def get_workflow_context_data(workflow, context, user):
     )
     context["read_only"] = JSONRenderer().render(True).decode("utf-8")
     context["comment"] = JSONRenderer().render(False).decode("utf-8")
-    editor = (
-        workflow.author == user
-        or ObjectPermission.objects.filter(
-            user=user,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
-            object_id=workflow.id,
+    if user is not None:
+        editor = (
+            workflow.author == user
+            or ObjectPermission.objects.filter(
+                user=user,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+                object_id=workflow.id,
+            )
+            .filter(
+                Q(content_type=ContentType.objects.get_for_model(Activity))
+                | Q(content_type=ContentType.objects.get_for_model(Course))
+                | Q(content_type=ContentType.objects.get_for_model(Program))
+            )
+            .count()
+            > 0
         )
-        .filter(
-            Q(content_type=ContentType.objects.get_for_model(Activity))
-            | Q(content_type=ContentType.objects.get_for_model(Course))
-            | Q(content_type=ContentType.objects.get_for_model(Program))
-        )
-        .count()
-        > 0
-    )
-    if editor:
-        context["read_only"] = JSONRenderer().render(False).decode("utf-8")
-    elif (
-        ObjectPermission.objects.filter(
-            user=user,
-            permission_type=ObjectPermission.PERMISSION_COMMENT,
-            object_id=workflow.id,
-        )
-        .filter(
-            Q(content_type=ContentType.objects.get_for_model(Activity))
-            | Q(content_type=ContentType.objects.get_for_model(Course))
-            | Q(content_type=ContentType.objects.get_for_model(Program))
-        )
-        .count()
-        > 0
-    ):
-        context["comment"] = JSONRenderer().render(True).decode("utf-8")
+        if editor:
+            context["read_only"] = JSONRenderer().render(False).decode("utf-8")
+        elif (
+            ObjectPermission.objects.filter(
+                user=user,
+                permission_type=ObjectPermission.PERMISSION_COMMENT,
+                object_id=workflow.id,
+            )
+            .filter(
+                Q(content_type=ContentType.objects.get_for_model(Activity))
+                | Q(content_type=ContentType.objects.get_for_model(Course))
+                | Q(content_type=ContentType.objects.get_for_model(Program))
+            )
+            .count()
+            > 0
+        ):
+            context["comment"] = JSONRenderer().render(True).decode("utf-8")
 
     return context
 
@@ -1607,6 +1613,35 @@ class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         context = get_workflow_context_data(
             workflow, context, self.request.user
         )
+        context["public_view"]=JSONRenderer().render(False).decode("utf-8")
+
+        return context
+
+class WorkflowPublicDetailView(ContentPublicViewMixin, DetailView):
+    model = Workflow
+    fields = ["id", "title", "description"]
+    template_name = "course_flow/workflow_update.html"
+
+    def get_queryset(self):
+        return self.model.objects.select_subclasses()
+
+    def get_object(self):
+        workflow = super().get_object()
+        return Workflow.objects.get_subclass(pk=workflow.pk)
+
+    def get_success_url(self):
+        return reverse(
+            "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        workflow = self.get_object()
+
+        context = get_workflow_context_data(
+            workflow, context, None
+        )
+        context["public_view"]=JSONRenderer().render(True).decode("utf-8")
 
         return context
 
@@ -2039,12 +2074,45 @@ def get_workflow_child_data(request: HttpRequest) -> HttpResponse:
 @user_can_view("workflowPk")
 def get_workflow_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
-    # try:
-    data_package = get_workflow_data_flat(
-        workflow.get_subclass(), request.user
-    )
-    #    except AttributeError:
-    #        return JsonResponse({"action": "error"})
+    try:
+        data_package = get_workflow_data_flat(
+            workflow.get_subclass(), request.user
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "data_package": data_package})
+
+@public_model_access("workflow")
+def get_public_workflow_data(request: HttpRequest,pk) -> HttpResponse:
+    workflow = Workflow.objects.get(pk=pk)
+    try:
+        data_package = get_workflow_data_flat(
+            workflow.get_subclass(), None
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "data_package": data_package})
+
+@public_model_access("workflow")
+def get_public_workflow_child_data(request: HttpRequest,pk) -> HttpResponse:
+    workflow = Workflow.objects.get(pk=pk)
+    try:
+        data_package = get_child_outcome_data(
+            workflow.get_subclass(), request.user
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "data_package": data_package})
+
+@public_model_access("workflow")
+def get_public_workflow_parent_data(request: HttpRequest,pk) -> HttpResponse:
+    workflow = Workflow.objects.get(pk=pk)
+    try:
+        data_package = get_parent_outcome_data(
+            workflow.get_subclass(), request.user
+        )
+    except AttributeError:
+        return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 

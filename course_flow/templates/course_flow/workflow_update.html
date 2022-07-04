@@ -94,6 +94,7 @@
 
     
   const read_only = {{read_only|safe}};
+  const public_view = {{public_view|safe}};
   const allow_comments = {{comment|safe}};
   console.log("override comments");
   console.log(allow_comments);
@@ -116,11 +117,11 @@
 //      });
 //  {% endif %}
 
-  const user_id = {{ user.id }};
+  const user_id = {{ user.id |default:1}};
   const workflow_model_id = {{ object.id }};
   const workflow_type = "{{ object.type }}";
   console.log(workflow_type);
-  const user_name = "{{ user.username }}";
+  const user_name = "{{ user.username |default:""}}";
   const create_path=null;
 
   workflow_data_package = {{data_package|safe}}

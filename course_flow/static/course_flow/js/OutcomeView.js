@@ -48,7 +48,7 @@ class OutcomeView extends ComponentJSON{
             mouseover_actions.push(this.addDeleteSelf(data));
             if(data.depth<2)mouseover_actions.push(this.addInsertChild(data));
         }
-        mouseover_actions.push(this.addCommenting(data));
+        if(!this.props.renderer.public_view)mouseover_actions.push(this.addCommenting(data));
         
         let dropIcon;
         if(data.is_dropped)dropIcon = "droptriangleup";

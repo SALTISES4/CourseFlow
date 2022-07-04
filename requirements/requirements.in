@@ -1,6 +1,7 @@
 
 black
 django-debug-toolbar
+django-ratelimit
 isort
 pre-commit
 pytest-cov

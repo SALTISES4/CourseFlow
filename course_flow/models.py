@@ -835,6 +835,8 @@ class Workflow(models.Model):
 
     published = models.BooleanField(default=False)
 
+    public_view = models.BooleanField(default=False)
+
     is_strategy = models.BooleanField(default=False)
 
     from_saltise = models.BooleanField(default=False)

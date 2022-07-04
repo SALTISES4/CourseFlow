@@ -11,7 +11,8 @@ from django.http import (
     HttpResponseNotFound,
     JsonResponse,
 )
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
+from ratelimit.decorators import ratelimit
 
 from course_flow.models import ObjectPermission, OutcomeWorkflow, User
 
@@ -113,6 +114,9 @@ def check_objects_permission(instances, user, permission):
         check_object_permission(x, user, permission) for x in instances
     ]
     return reduce(lambda a, b: a | b, object_permissions)
+
+def check_objects_public(instances):
+    return reduce(lambda a, b: a.public_view | b.public_view, instances)
 
 
 def check_special_case_delete_permission(model_data, user):
@@ -454,6 +458,34 @@ def user_is_teacher():
                 response.status_code = 403
                 return response
             except:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 403
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view
+
+def public_model_access(model, **outer_kwargs):
+    def wrapped_view(fct):
+        @ratelimit(key="ip",rate="5/m")
+        @require_GET
+        @wraps(fct)
+        def _wrapped_view(
+            request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
+        ):
+            try:
+                model_type=get_model_from_str(model)
+                permission_objects = model_type.objects.get(pk=kwargs.get("pk")).get_permission_objects()
+            except:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 403
+                return response
+            if check_objects_public(
+                permission_objects
+            ):
+                return fct(request, *args, **kwargs)
+            else:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 403
                 return response

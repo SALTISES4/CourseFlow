@@ -12,7 +12,7 @@ import {ComparisonView, WorkflowComparisonBaseView} from "./ComparisonView";
 import * as Constants from "./Constants";
 import * as Reducers from "./Reducers";
 import OutcomeTopView from './OutcomeTopView';
-import {getWorkflowData, getWorkflowParentData, getWorkflowChildData, updateValue} from './PostFunctions';
+import {getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from './PostFunctions';
 import {ConnectionBar} from './ConnectedUsers'
 import '../css/base_style.css';
 import '../css/workflow_styles.css';
@@ -158,6 +158,20 @@ export class WorkflowRenderer{
         this.is_strategy = data_package.is_strategy;
         this.column_colours = {}
         this.read_only = data_package.read_only;
+        this.public_view=public_view;
+        if(this.public_view){
+            this.getWorkflowData=getPublicWorkflowData;
+            this.getWorkflowParentData=getPublicWorkflowParentData;
+            this.getWorkflowChildData=getPublicWorkflowChildData;
+        }else{
+            this.getWorkflowData=getWorkflowData;
+            this.getWorkflowParentData=getWorkflowParentData;
+            this.getWorkflowChildData=getWorkflowChildData;
+        }
+        this.always_static=this.public_view;
+        console.log("static view");
+        console.log(this.public_view);
+        this.is_static=this.always_static;
         if(data_package.project){
             $("#floatbar").append("<a id='project-return' href='"+update_path["project"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Project")+"</div></div>");
             
@@ -166,7 +180,7 @@ export class WorkflowRenderer{
     }
     
     connect(){
-        if(!this.is_static){
+        if(!this.always_static){
             this.messages_queued=true;
             let renderer=this;
             
@@ -197,20 +211,19 @@ export class WorkflowRenderer{
             if(updateSocket.readyState==1)openfunction.bind(this)();
             
             updateSocket.onclose = function(e){
-                renderer.has_disconnected=true;
-                setTimeout(
-                    ()=>{
-                        renderer.connect();
-                    },
-                   30000
-                )
-                if(!renderer.has_rendered)renderer.connection_opened();
+                if(!renderer.has_rendered)renderer.connection_opened(true);
+                else{
+                    renderer.attempt_reconnect();
+                }
+                renderer.is_static=true;
                 renderer.has_rendered=true;
                 console.log(e);
                 console.log("Lost connection to server");
                 if(!renderer.has_disconnected)alert(gettext("Unable to establish connection to the server, or connection has been lost."));
-
+                renderer.has_disconnected=true;
             }
+        }else{
+            this.connection_opened();
         }
     }
     
@@ -265,7 +278,7 @@ export class WorkflowRenderer{
         this.tiny_loader = new TinyLoader($("body")[0]);
         if(view_type=="outcomeedit"){
             //get additional data about parent workflow prior to render
-            getWorkflowParentData(this.workflowID,(response)=>{
+            this.getWorkflowParentData(this.workflowID,(response)=>{
                 store.dispatch(Reducers.refreshStoreData(response.data_package));
                 reactDom.render(
                     <Provider store = {store}>
@@ -277,7 +290,7 @@ export class WorkflowRenderer{
             
         }else if(view_type=="horizontaloutcometable" || view_type=="alignmentanalysis"){
             //get additional data about child workflows prior to render
-            getWorkflowChildData(this.workflowID,(response)=>{
+            this.getWorkflowChildData(this.workflowID,(response)=>{
                 store.dispatch(Reducers.refreshStoreData(response.data_package));
                 reactDom.render(
                     <Provider store = {store}>
@@ -306,16 +319,27 @@ export class WorkflowRenderer{
         
     }
     
-    connection_opened(){
+    connection_opened(reconnect=false){
         console.log("Getting workflow data");
-        getWorkflowData(this.workflowID,(response)=>{
+        this.getWorkflowData(this.workflowID,(response)=>{
             let data_flat = response.data_package;
             console.log(data_flat);
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
             this.render($("#container"));
-            this.create_connection_bar();
+            if(reconnect)this.create_connection_bar();
             this.clear_queue(data_flat.workflow.edit_count);
+            if(reconnect)this.attempt_reconnect();
         });
+    }
+
+    attempt_reconnect(){
+        let renderer=this;
+        setTimeout(
+            ()=>{
+                renderer.connect();
+            },
+           30000
+        );
     }
     
     clear_queue(edit_count){
@@ -351,7 +375,7 @@ export class WorkflowRenderer{
     parent_workflow_updated(edit_count){
         this.messages_queued=true;
         let renderer = this;
-        getWorkflowParentData(this.workflowID,(response)=>{
+        this.getWorkflowParentData(this.workflowID,(response)=>{
             console.log("Got parent data");
             //remove all the parent node and parent workflow data
             renderer.store.dispatch(Reducers.replaceStoreData({parent_node:[],parent_workflow:[]}));
@@ -363,7 +387,7 @@ export class WorkflowRenderer{
     child_workflow_updated(edit_count){
         this.messages_queued=true;
         let renderer = this;
-        getWorkflowChildData(this.workflowID,(response)=>{
+        this.getWorkflowChildData(this.workflowID,(response)=>{
             console.log("Got child data");
             //remove all the child workflow data
             renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
@@ -478,7 +502,7 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
         
         if(view_type=="outcomeedit"){
             //get additional data about parent workflow prior to render
-            getWorkflowParentData(this.workflowID,(response)=>{
+            this.getWorkflowParentData(this.workflowID,(response)=>{
                 store.dispatch(Reducers.refreshStoreData(response.data_package));
                 reactDom.render(
                     <Provider store = {store}>
@@ -501,9 +525,9 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
     }
     
     
-    connection_opened(){
+    connection_opened(reconnect=false){
         let loader = new Constants.Loader(this.container[0]);
-        getWorkflowData(this.workflowID,(response)=>{
+        this.getWorkflowData(this.workflowID,(response)=>{
             let data_flat = response.data_package;
             console.log(data_flat);
             if(this.initial_object_sets)data_flat={...data_flat,objectset:this.initial_object_sets};
@@ -512,6 +536,7 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
             this.create_connection_bar();
             this.clear_queue(data_flat.workflow.edit_count);
             loader.endLoad();
+            if(reconnect)this.attempt_reconnect();
         });
     }
     
