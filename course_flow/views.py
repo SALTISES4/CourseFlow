@@ -5112,8 +5112,11 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 time_units=time_unit_dict.get(node["time_units"]) or 0,
                 time_required=bleach_sanitizer(node["time_required"], tags=[]),
             )
-            new_node.has_autolink=node["has_autolink"]
-            new_node.save()
+            try:
+                new_node.has_autolink=node["has_autolink"]
+                new_node.save()
+            except KeyError:
+                pass
             id_dict["node"][node["id"]] = new_node
 
         for project in json_data["project"]:
