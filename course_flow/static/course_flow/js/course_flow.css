@@ -433,6 +433,7 @@ button:hover{
 .home-item-icon-container{
     border-radius:10px;
     background:#1976bc;
+    width:-webkit-fit-content;
     width:-moz-fit-content;
     width:fit-content;
     margin-left:126px;
@@ -499,6 +500,7 @@ button:hover{
     color:white;
     display:block;
     border-radius:5px;
+    width:-webkit-fit-content;
     width:-moz-fit-content;
     width:fit-content;
     margin-bottom:20px;
@@ -603,6 +605,7 @@ button:hover{
     padding-left:12px;
     padding-right:12px;
     margin-left:8px;
+    height:-webkit-fit-content;
     height:-moz-fit-content;
     height:fit-content;
 }
@@ -1215,6 +1218,7 @@ button, input[type="submit"]{
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
     padding:0px;
     -webkit-user-select:none;
+        -ms-user-select:none;
             user-select:none;
 }
 
@@ -2569,6 +2573,7 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 
 .nomenclature-row{
     position:relative;
+    width:-webkit-fit-content;
     width:-moz-fit-content;
     width:fit-content;
     padding:8px;
@@ -2607,6 +2612,7 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     border: 1px solid black;
     font-size: 10px;
     text-align: center;
+    width:-webkit-fit-content;
     width:-moz-fit-content;
     width:fit-content;
     pointer-events:all;
@@ -2905,6 +2911,10 @@ circle.mouseover{
 .alignment-block .node{
     width:100%;
     white-space:nowrap;
+}
+
+.alignment-block .week .node-block{
+    display: block;
 }
 
 .alignment-block .node-title{
