@@ -116,7 +116,10 @@ def check_objects_permission(instances, user, permission):
     return reduce(lambda a, b: a | b, object_permissions)
 
 def check_objects_public(instances):
-    return reduce(lambda a, b: a.public_view | b.public_view, instances)
+    object_public = [
+        x.public_view for x in instances
+    ]
+    return reduce(lambda a, b: a & b, object_public)
 
 
 def check_special_case_delete_permission(model_data, user):
@@ -468,12 +471,17 @@ def user_is_teacher():
 
 def public_model_access(model, **outer_kwargs):
     def wrapped_view(fct):
-        @ratelimit(key="ip",rate="5/m")
         @require_GET
+        @ratelimit(key="ip",rate="5/m",method=['GET'])
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
+            ratelimited = getattr(request,"limited",False)
+            if ratelimited:
+                response = JsonResponse({"action": "ratelimited"})
+                response.status_code = 429
+                return response
             try:
                 model_type=get_model_from_str(model)
                 permission_objects = model_type.objects.get(pk=kwargs.get("pk")).get_permission_objects()

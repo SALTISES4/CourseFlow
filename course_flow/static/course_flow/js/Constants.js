@@ -303,7 +303,7 @@ export function getCompletionImg(completion_status,outcomes_type){
 
 export function getColumnColour(data){
     if(data.colour==null)return default_column_settings[data.column_type].colour;
-    else return  "#"+data.colour?.toString(16);
+    else return  "#"+("000000"+data.colour?.toString(16)).slice(-6);
 }
 
 export class Loader{

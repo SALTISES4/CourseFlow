@@ -312,6 +312,12 @@
         program:"{% url 'course_flow:workflow-update' pk='0'%}",
         workflow:"{% url 'course_flow:workflow-update' pk='0'%}"
     };
+    const public_update_path = {
+        activity:"{% url 'course_flow:workflow-public' pk='0'%}",
+        course:"{% url 'course_flow:workflow-public' pk='0'%}",
+        program:"{% url 'course_flow:workflow-public' pk='0'%}",
+        workflow:"{% url 'course_flow:workflow-public' pk='0'%}"
+    };
 
     $("#logout").on("click",()=>{
         window.location.replace("{% url 'course_flow:logout' %}");

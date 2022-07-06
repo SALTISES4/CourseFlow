@@ -23,6 +23,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
 from django.views.generic.edit import CreateView
+from ratelimit.decorators import ratelimit
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
@@ -1336,7 +1337,7 @@ def get_parent_outcome_data(workflow, user):
         outcome_type = workflow.type + " outcome"
     return {
         "parent_workflow": WorkflowSerializerShallow(
-            parent_workflows, many=True
+            parent_workflows, many=True, context={"user": user}
         ).data,
         "outcomeworkflow": OutcomeWorkflowSerializerShallow(
             parent_outcomeworkflows, many=True
@@ -1392,7 +1393,7 @@ def get_child_outcome_data(workflow, user):
     return {
         "node": NodeSerializerShallow(nodes, many=True).data,
         "child_workflow": WorkflowSerializerShallow(
-            linked_workflows, many=True
+            linked_workflows, many=True, context={"user": user}
         ).data,
         "outcomeworkflow": OutcomeWorkflowSerializerShallow(
             child_workflow_outcomeworkflows, many=True
@@ -1464,7 +1465,8 @@ def get_workflow_data_flat(workflow, user):
                 Course.objects.filter(
                     author=user, is_strategy=True, deleted=False
                 ),
-                many=True,
+                many=True, context={"user": user},
+
             ).data
             data_flat["saltise_strategy"] = WorkflowSerializerShallow(
                 Course.objects.filter(
@@ -1473,14 +1475,14 @@ def get_workflow_data_flat(workflow, user):
                     published=True,
                     deleted=False,
                 ),
-                many=True,
+                many=True, context={"user": user},
             ).data
         elif workflow.type == "activity":
             data_flat["strategy"] = WorkflowSerializerShallow(
                 Activity.objects.filter(
                     author=user, is_strategy=True, deleted=False
                 ),
-                many=True,
+                many=True, context={"user": user},
             ).data
             data_flat["saltise_strategy"] = WorkflowSerializerShallow(
                 Activity.objects.filter(
@@ -1489,7 +1491,7 @@ def get_workflow_data_flat(workflow, user):
                     published=True,
                     deleted=False,
                 ),
-                many=True,
+                many=True, context={"user": user},
             ).data
 
     return data_flat
@@ -1529,7 +1531,7 @@ def get_workflow_context_data(workflow, context, user):
         for choice in Week._meta.get_field("strategy_classification").choices
     ]
     if not workflow.is_strategy:
-        parent_project = ProjectSerializerShallow(project).data
+        parent_project = ProjectSerializerShallow(project, context={"user": user}).data
 
     data_package["is_strategy"] = workflow.is_strategy
     data_package["column_choices"] = column_choices
@@ -2125,7 +2127,7 @@ def get_project_data(request: HttpRequest) -> HttpResponse:
         )
         project_data = (
             JSONRenderer()
-            .render(ProjectSerializerShallow(project).data)
+            .render(ProjectSerializerShallow(project, context={"user": self.request.user}).data)
             .decode("utf-8")
         )
     except AttributeError:
@@ -3536,7 +3538,7 @@ def add_terminology(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "new_dict": ProjectSerializerShallow(project).data["object_sets"],
+            "new_dict": ProjectSerializerShallow(project, context={"user": self.request.user}).data["object_sets"],
         }
     )
 

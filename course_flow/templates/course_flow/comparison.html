@@ -95,13 +95,13 @@
     
   const read_only = {{read_only|safe}};
   const allow_comments = {{comment|safe}};
-  if(read_only)$("#sidebar").hide();
-  else{
-      $("#side-bar-close-button").on("click",()=>{
-          $("#sidebar").addClass("collapsed");
-          $("#sidebar").tabs("option","active",false);
-      });
-  }
+  // if(read_only)$("#sidebar").hide();
+  // else{
+  $("#side-bar-close-button").on("click",()=>{
+      $("#sidebar").addClass("collapsed");
+      $("#sidebar").tabs("option","active",false);
+  });
+  // }
 
 
 

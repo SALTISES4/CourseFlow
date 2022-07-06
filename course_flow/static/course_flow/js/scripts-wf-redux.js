@@ -42,12 +42,11 @@ export class SelectionManager{
     }
     
     changeSelection(evt,newSelection){
-        if(read_only)return;
         if(evt)evt.stopPropagation();
-        if(newSelection && newSelection.props.data && newSelection.props.data.lock)return;
+        if(!read_only && newSelection && newSelection.props.data && newSelection.props.data.lock)return;
         if(this.currentSelection){
             this.currentSelection.setState({selected:false});
-            this.currentSelection.props.renderer.lock_update(
+            if(!read_only)this.currentSelection.props.renderer.lock_update(
                 {object_id:this.currentSelection.props.data.id,
                     object_type:Constants.object_dictionary[this.currentSelection.objectType]
                 },60*1000,false
@@ -55,7 +54,7 @@ export class SelectionManager{
         }
         this.currentSelection=newSelection;
         if(this.currentSelection){
-            this.currentSelection.props.renderer.lock_update(
+            if(!read_only)this.currentSelection.props.renderer.lock_update(
                 {object_id:this.currentSelection.props.data.id,
                     object_type:Constants.object_dictionary[this.currentSelection.objectType]
                 },60*1000,true

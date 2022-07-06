@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from django.views.i18n import JavaScriptCatalog
+from ratelimit.decorators import ratelimit
 from rest_framework import routers
 
 from . import views
@@ -37,7 +38,7 @@ def course_flow_patterns():
         ),
         url(
             r"^workflow/public/(?P<pk>[0-9]+)/$",
-            views.WorkflowPublicDetailView.as_view(),
+            ratelimit(key="ip",method=["GET"],rate="5/m",block=True)(views.WorkflowPublicDetailView.as_view()),
             name="workflow-public",
         ),
         url(

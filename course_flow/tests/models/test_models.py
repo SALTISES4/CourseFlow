@@ -2747,13 +2747,45 @@ class PermissionsTests(TestCase):
         self.factory = RequestFactory()
 
     def test_ratelimit_get(self):
-        self.assertTrue(False)
+        author = get_author()
+        project = Project.objects.create(author=author)
+        workflow = Course.objects.create(author=author)
+        WorkflowProject.objects.create(project=project,workflow=workflow)
 
-    def test_get_workflow_parent_child_data_public(self):
-        self.assertTrue(False)
+        response = self.client.get(reverse("course_flow:workflow-public",args=[workflow.pk]))
+        self.assertEqual(response.status_code, 302)
+        response = self.client.get(reverse("course_flow:get-public-workflow-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+        self.assertEqual(response.status_code, 403)
+        response = self.client.get(reverse("course_flow:get-public-workflow-child-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+        self.assertEqual(response.status_code, 403)
+        response = self.client.get(reverse("course_flow:get-public-workflow-parent-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+        self.assertEqual(response.status_code, 403)
 
-    def test_workflow_public_view(self):
-        self.assertTrue(False)
+        workflow.public_view=True 
+        workflow.save()
+        #Try five (equal to max, since we did one above) times in one minute
+        for i in range(6):
+            response = self.client.get(reverse("course_flow:workflow-public",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+            if i<4: self.assertEqual(response.status_code, 200)
+            else: self.assertEqual(response.status_code, 403)
+        
+        for i in range(6):
+            response = self.client.get(reverse("course_flow:get-public-workflow-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+            if i<4: self.assertEqual(response.status_code, 200)
+            else: 
+                self.assertEqual(response.status_code, 429)
+        
+        for i in range(6):
+            response = self.client.get(reverse("course_flow:get-public-workflow-child-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+            if i<4: self.assertEqual(response.status_code, 200)
+            else: 
+                self.assertEqual(response.status_code, 429)
+        
+        for i in range(6):
+            response = self.client.get(reverse("course_flow:get-public-workflow-parent-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+            if i<4: self.assertEqual(response.status_code, 200)
+            else: 
+                self.assertEqual(response.status_code, 429)
 
     def test_permissions_delete_self_workflows(self):
         author = get_author()

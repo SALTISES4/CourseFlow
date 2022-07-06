@@ -98,13 +98,13 @@
   const allow_comments = {{comment|safe}};
   console.log("override comments");
   console.log(allow_comments);
-  if(read_only)$("#sidebar").hide();
-  else{
-      $("#side-bar-close-button").on("click",()=>{
-          $("#sidebar").addClass("collapsed");
-          $("#sidebar").tabs("option","active",false);
-      });
-  }
+  // if(read_only)$("#sidebar").hide();
+  // else{
+  $("#side-bar-close-button").on("click",()=>{
+      $("#sidebar").addClass("collapsed");
+      $("#sidebar").tabs("option","active",false);
+  });
+  // }
 
 
 
