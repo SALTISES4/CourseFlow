@@ -11,7 +11,7 @@ from django.utils.translation import gettext as _
 from course_flow import export_functions, import_functions
 from course_flow import redux_actions as actions
 
-from .celery import try_async
+from .celery import try_async, logger
 from .models import ObjectSet, User
 from .utils import dateTimeFormatNoSpace, get_model_from_str
 
@@ -83,6 +83,7 @@ def async_send_export_email(
     )
     try:
         email.send()
+        logger.info(f"Email -{email_subject}- sent to {user_email}")
     except SMTPException:
         print("Email could not be sent")
 
