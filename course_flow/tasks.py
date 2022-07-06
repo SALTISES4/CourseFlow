@@ -83,7 +83,7 @@ def async_send_export_email(
     )
     try:
         email.send()
-        logger.info(f"Email -{email_subject}- sent to {user_email}")
+        logger.info(f"Email - {email_subject} - {filename} - sent to {user_email}")
     except SMTPException:
         print("Email could not be sent")
 
