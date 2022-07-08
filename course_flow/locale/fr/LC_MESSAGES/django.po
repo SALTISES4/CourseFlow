@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-02-11 11:28-0800\n"
+"POT-Creation-Date: 2022-07-08 11:51-0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,373 +18,382 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: export_functions.py:40
-msgid "Untitled Node"
-msgstr "Noeud sans-titre"
-
-#: export_functions.py:102
+#: export_functions.py:134
 msgid "Course Title"
 msgstr "Titre du cours"
 
-#: export_functions.py:104
+#: export_functions.py:136
 msgid "Ponderation Theory/Practical/Individual"
 msgstr "Pondération Théorie/Pratique/Individuel"
 
-#: export_functions.py:115
+#: export_functions.py:147
 msgid "Course Code"
 msgstr "Code de cours"
 
-#: export_functions.py:117
+#: export_functions.py:149
 msgid "Hours"
 msgstr "Heurs"
 
-#: export_functions.py:121 models.py:867
+#: export_functions.py:153 models.py:879
 msgid "Time"
 msgstr "Temps"
 
-#: export_functions.py:128
+#: export_functions.py:160
 msgid "Ministerial Competencies"
 msgstr "Compétences ministérielles"
 
-#: export_functions.py:129
+#: export_functions.py:161
 msgid "Competency"
 msgstr "Compétence"
 
-#: export_functions.py:129
+#: export_functions.py:161
 msgid "Title"
 msgstr "Titre"
 
-#: export_functions.py:143 export_functions.py:271 models.py:769
+#: export_functions.py:182 models.py:781 serializers.py:142
 msgid "Term"
 msgstr "Session"
 
-#: export_functions.py:160
+#: export_functions.py:207
 msgid "Prerequisites"
 msgstr "Rrérequis"
 
-#: export_functions.py:170
+#: export_functions.py:222
 msgid "Required For"
 msgstr "Requis par"
 
-#: export_functions.py:178
+#: export_functions.py:235
 msgid "Course Outcome"
 msgstr "Acquis de cours"
 
-#: export_functions.py:179
+#: export_functions.py:236
 msgid "Sub-Outcomes"
 msgstr "Sous-acquis"
 
-#: export_functions.py:180
+#: export_functions.py:237
 msgid "Competencies"
 msgstr "Compétences"
 
-#: export_functions.py:369
+#: export_functions.py:662
 msgid "Specific Education"
 msgstr "Éducation specifique"
 
-#: export_functions.py:377
+#: export_functions.py:670
 msgid "General Education"
 msgstr "Éducation generale"
 
-#: export_functions.py:385
+#: export_functions.py:678
 msgid "Total Hours"
 msgstr "Heurs totale"
 
-#: export_functions.py:397
+#: export_functions.py:690
 msgid "Theory"
 msgstr "Théorie"
 
-#: export_functions.py:405 export_functions.py:413
+#: export_functions.py:698 export_functions.py:706
 msgid "Practical"
 msgstr "Pratique"
 
-#: export_functions.py:421
+#: export_functions.py:714
 msgid "Total"
 msgstr "Totale"
 
-#: export_functions.py:434
+#: export_functions.py:729
 msgid "Credits"
 msgstr "Crédits"
 
-#: models.py:161
+#: models.py:165
 msgid "Custom Activity Column"
 msgstr "Colonne d'activité personnalisée"
 
-#: models.py:162
+#: models.py:166
 msgid "Out of Class (Instructor)"
 msgstr "Hors classe (instructeur)"
 
-#: models.py:163
+#: models.py:167
 msgid "Out of Class (Students)"
 msgstr "Hors classe (étudiants)"
 
-#: models.py:164
+#: models.py:168
 msgid "In Class (Instructor)"
 msgstr "En classe (Instructeur)"
 
-#: models.py:165
+#: models.py:169
 msgid "In Class (Students)"
 msgstr "En classe (Étudiants)"
 
-#: models.py:166
+#: models.py:170
 msgid "Custom Course Column"
 msgstr "Colonne de cours personnalisée"
 
-#: models.py:167
+#: models.py:171
 msgid "Preparation"
 msgstr "Préparation"
 
-#: models.py:168
+#: models.py:172
 msgid "Lesson"
 msgstr "Leçons"
 
-#: models.py:169
+#: models.py:173
 msgid "Artifact"
 msgstr "Artefacts"
 
-#: models.py:170
+#: models.py:174
 msgid "Assessment"
 msgstr "Évaluations"
 
-#: models.py:171
+#: models.py:175
 msgid "Custom Program Category"
 msgstr "Catégorie de cours"
 
-#: models.py:468 models.py:508 models.py:749 models.py:1147
+#: models.py:470 models.py:510 models.py:761 models.py:1164
 msgid "None"
 msgstr "Vide"
 
-#: models.py:469
+#: models.py:471
 msgid "Individual Work"
 msgstr "Travail individuel"
 
-#: models.py:470
+#: models.py:472
 msgid "Work in Groups"
 msgstr "Travail en groupe"
 
-#: models.py:471
+#: models.py:473
 msgid "Whole Class"
 msgstr "Classe"
 
-#: models.py:472
+#: models.py:474
 msgid "Formative"
 msgstr "Formatif"
 
-#: models.py:473
+#: models.py:475
 msgid "Summative"
 msgstr "Sommatif"
 
-#: models.py:474
+#: models.py:476
 msgid "Comprehensive"
 msgstr "Exhaustif"
 
-#: models.py:509
+#: models.py:511
 msgid "Gather Information"
 msgstr "Collecter des informations"
 
-#: models.py:510
+#: models.py:512
 msgid "Discuss"
 msgstr "Discuter"
 
-#: models.py:511
+#: models.py:513
 msgid "Problem Solve"
 msgstr "Résolution de problèmes"
 
-#: models.py:512
+#: models.py:514
 msgid "Analyze"
 msgstr "Analyser"
 
-#: models.py:513
+#: models.py:515
 msgid "Assess/Review Peers"
 msgstr "Assess/Review Peers"
 
-#: models.py:514
+#: models.py:516
 msgid "Debate"
 msgstr "Débat"
 
-#: models.py:515
+#: models.py:517
 msgid "Game/Roleplay"
 msgstr "Jeu/Jeu de rôle"
 
-#: models.py:516
+#: models.py:518
 msgid "Create/Design"
 msgstr "Créer/Concevoir"
 
-#: models.py:517
+#: models.py:519
 msgid "Revise/Improve"
 msgstr "Réviser/Améliorer"
 
-#: models.py:518
+#: models.py:520
 msgid "Read"
 msgstr "Lire"
 
-#: models.py:519
+#: models.py:521
 msgid "Write"
 msgstr "Écrire"
 
-#: models.py:520
+#: models.py:522
 msgid "Present"
 msgstr "Présentation"
 
-#: models.py:521
+#: models.py:523
 msgid "Experiment/Inquiry"
 msgstr "Expérience/Enquête"
 
-#: models.py:522
+#: models.py:524
 msgid "Quiz/Test"
 msgstr "Quiz/Test"
 
-#: models.py:523
+#: models.py:525
 msgid "Instructor Resource Curation"
 msgstr "Préparation des ressources (instructeur)"
 
-#: models.py:524
+#: models.py:526
 msgid "Instructor Orchestration"
 msgstr "Orchestration (instructeur)"
 
-#: models.py:525
+#: models.py:527
 msgid "Instructor Evaluation"
 msgstr "Évaluation (instructeur)"
 
-#: models.py:526 models.py:760
+#: models.py:528 models.py:772
 msgid "Other"
 msgstr "Autre"
 
-#: models.py:527 models.py:750
+#: models.py:529 models.py:762
 msgid "Jigsaw"
 msgstr "Stratégie croisée"
 
-#: models.py:528 models.py:751
+#: models.py:530 models.py:763
 msgid "Peer Instruction"
 msgstr "Enseignement par les pairs"
 
-#: models.py:529 models.py:752
+#: models.py:531 models.py:764
 msgid "Case Studies"
 msgstr "Étude de cas"
 
-#: models.py:530 models.py:753
+#: models.py:532 models.py:765
 msgid "Gallery Walk"
 msgstr "Atelier-carrousel"
 
-#: models.py:531 models.py:754
+#: models.py:533 models.py:766
 msgid "Reflective Writing"
 msgstr "Écriture réflexive"
 
-#: models.py:532 models.py:755
+#: models.py:534 models.py:767
 msgid "Two-Stage Exam"
 msgstr "Test en deux phases"
 
-#: models.py:533 models.py:756
+#: models.py:535 models.py:768
 msgid "Toolkit"
 msgstr "Boite à outils"
 
-#: models.py:534 models.py:757
+#: models.py:536 models.py:769
 msgid "One Minute Paper"
 msgstr "Papier-minute"
 
-#: models.py:535 models.py:758
+#: models.py:537 models.py:770
 msgid "Distributed Problem Solving"
 msgstr "Résolution distribué de problèmes"
 
-#: models.py:536 models.py:759
+#: models.py:538 models.py:771
 msgid "Peer Assessment"
 msgstr "Évaluation par les pairs"
 
-#: models.py:545
+#: models.py:547
 msgid "Activity Node"
 msgstr "Noeud d'activité"
 
-#: models.py:546
+#: models.py:548
 msgid "Course Node"
 msgstr "Noeud de cours"
 
-#: models.py:547
+#: models.py:549
 msgid "Program Node"
 msgstr "Noeud de programme"
 
-#: models.py:562 models.py:887
+#: models.py:564 models.py:899
 msgid "seconds"
 msgstr "secondes"
 
-#: models.py:563 models.py:888
+#: models.py:565 models.py:900
 msgid "minutes"
 msgstr "minutes"
 
-#: models.py:564 models.py:889
+#: models.py:566 models.py:901
 msgid "hours"
 msgstr "heurs"
 
-#: models.py:565 models.py:890
+#: models.py:567 models.py:902
 msgid "days"
 msgstr "jours"
 
-#: models.py:566 models.py:891
+#: models.py:568 models.py:903
 msgid "weeks"
 msgstr "semaines"
 
-#: models.py:567 models.py:892
+#: models.py:569 models.py:904
 msgid "months"
 msgstr "mois"
 
-#: models.py:568 models.py:893
+#: models.py:570 models.py:905
 msgid "yrs"
 msgstr "années"
 
-#: models.py:569 models.py:894
+#: models.py:571 models.py:906
 msgid "credits"
 msgstr "crédits"
 
-#: models.py:769
+#: models.py:781
 msgid "Part"
 msgstr "Partie"
 
-#: models.py:769
+#: models.py:781
 msgid "Week"
 msgstr "Semaine"
 
-#: models.py:855
+#: models.py:867
 msgid "Normal"
 msgstr "Normal"
 
-#: models.py:856
+#: models.py:868
 msgid "Advanced"
 msgstr "Avancés"
 
-#: models.py:868
+#: models.py:880
 msgid "Category"
 msgstr "Catégorie"
 
-#: models.py:869
+#: models.py:881
 msgid "Task"
 msgstr "Tâche"
 
-#: models.py:870
+#: models.py:882
 msgid "Context"
 msgstr "Contexte"
 
-#: models.py:1100
+#: models.py:1116
 msgid "Discipline name"
 msgstr "Nom de la discipline"
 
-#: models.py:1103
+#: models.py:1119
 msgid "Enter the name of a new discipline."
 msgstr "Saisissez le nom d'une nouvelle discipline."
 
-#: models.py:1110
+#: models.py:1126
 msgid "discipline"
 msgstr "discipline"
 
-#: models.py:1111
+#: models.py:1127
 msgid "disciplines"
 msgstr "disciplines"
 
-#: models.py:1148
+#: models.py:1165
 msgid "View"
 msgstr "Vue"
 
-#: models.py:1149 templates/course_flow/workflow_update.html:21
+#: models.py:1166 templates/course_flow/comparison.html:21
+#: templates/course_flow/workflow_update.html:21
 msgid "Edit"
 msgstr "Modifier"
+
+#: models.py:1167
+msgid "Comment"
+msgstr "Commentaire"
+
+#: serializers.py:83
+msgid "a CourseFlow user"
+msgstr "un utilisateur"
+
+#: serializers.py:152
+msgid "Untitled"
+msgstr "Sans-titre"
 
 #: templates/course_flow/activity_create.html:15
 msgid "Create an activity:"
@@ -399,7 +408,7 @@ msgid "Home"
 msgstr "Accueil"
 
 #: templates/course_flow/base.html:207 templates/course_flow/home.html:20
-#: views.py:285
+#: views.py:293
 msgid "My Projects"
 msgstr "Mes projets"
 
@@ -407,12 +416,12 @@ msgstr "Mes projets"
 msgid "My Templates"
 msgstr "Mes modèles"
 
-#: templates/course_flow/base.html:215 views.py:304 views.py:525
+#: templates/course_flow/base.html:215 views.py:312 views.py:533
 msgid "Shared With Me"
 msgstr "Partagé avec moi"
 
 #: templates/course_flow/base.html:225 templates/course_flow/home.html:32
-#: views.py:610
+#: views.py:618
 msgid "My Favourites"
 msgstr "Mes favoris"
 
@@ -420,45 +429,75 @@ msgstr "Mes favoris"
 msgid "see all"
 msgstr "voir tout"
 
-#: templates/course_flow/base.html:345
+#: templates/course_flow/base.html:241
+msgid "Import from old CourseFlow"
+msgstr "Importer de l'ancien CourseFlow"
+
+#: templates/course_flow/base.html:397
 msgid "Send"
 msgstr "Envoyer"
 
-#: templates/course_flow/base.html:346
+#: templates/course_flow/base.html:398
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/course_flow/base.html:347
+#: templates/course_flow/base.html:399
 msgid "characters remaining"
 msgstr "caractères restants"
 
-#: templates/course_flow/base.html:348
+#: templates/course_flow/base.html:400
 msgid "Leave feedback or get help"
 msgstr "Laissez des commentaires ou obtenez de l'aide"
 
-#: templates/course_flow/base.html:354
+#: templates/course_flow/base.html:406
 msgid "Give Feedback"
 msgstr "Donnez votre avis"
 
-#: templates/course_flow/base.html:355
+#: templates/course_flow/base.html:407
 msgid "Help"
 msgstr "Aide"
 
-#: templates/course_flow/base.html:357
+#: templates/course_flow/base.html:409
 msgid "Let us know what is on your mind..."
 msgstr "Dites-nous ce que vous pensez..."
 
-#: templates/course_flow/base.html:359
+#: templates/course_flow/base.html:411
 msgid "An error occurred.  Please try again later."
 msgstr "Une erreur s'est produite. Veuillez réessayer plus tard."
 
-#: templates/course_flow/base.html:360 templates/course_flow/explore.html:30
+#: templates/course_flow/base.html:412 templates/course_flow/explore.html:30
 msgid "Thanks for your feedback!"
 msgstr "Merci pour vos commentaires!"
 
-#: templates/course_flow/base.html:362
+#: templates/course_flow/base.html:414
 msgid "How can we improve your experience?"
 msgstr "Comment pouvons-nous améliorer votre expérience?"
+
+#: templates/course_flow/comparison.html:27
+#: templates/course_flow/workflow_update.html:27
+msgid "Nodes"
+msgstr "Noeuds"
+
+#: templates/course_flow/comparison.html:33
+#: templates/course_flow/workflow_update.html:33
+msgid "Outcomes"
+msgstr "Acquis"
+
+#: templates/course_flow/comparison.html:38
+#: templates/course_flow/workflow_update.html:38
+msgid "Strategies"
+msgstr "Stratégies"
+
+#: templates/course_flow/comparison.html:43
+#: templates/course_flow/workflow_update.html:43
+msgid "View Options"
+msgstr "Options de vue"
+
+#: templates/course_flow/comparison.html:48
+#: templates/course_flow/workflow_update.html:48 views.py:567 views.py:820
+#: views.py:823
+msgid "Restore Deleted"
+msgstr "Restaurer supprimée"
 
 #: templates/course_flow/course_create.html:15
 msgid "Create a course:"
@@ -516,29 +555,12 @@ msgstr "Créer un programme:"
 msgid "Create a project."
 msgstr "Créer un projet."
 
-#: templates/course_flow/workflow_update.html:27
-msgid "Nodes"
-msgstr "Noeuds"
-
-#: templates/course_flow/workflow_update.html:33
-msgid "Outcomes"
-msgstr "Acquis"
-
-#: templates/course_flow/workflow_update.html:38
-msgid "Strategies"
-msgstr "Stratégies"
-
-#: templates/course_flow/workflow_update.html:43 views.py:559 views.py:812
-#: views.py:815
-msgid "Restore Deleted"
-msgstr "Restaurer supprimée"
-
-#: views.py:288 views.py:484 views.py:506 views.py:725 views.py:756
-#: views.py:777 views.py:796
+#: views.py:296 views.py:492 views.py:514 views.py:733 views.py:764
+#: views.py:785 views.py:804
 msgid "Add new"
 msgstr "Ajouter"
 
-#: views.py:300
+#: views.py:308
 msgid ""
 "Projects are used to organize your Programs, Courses, and Activities. "
 "Projects you create will be shown here. Click the button above to create a "
@@ -548,11 +570,11 @@ msgstr ""
 "Les projets que vous créez seront affichés ici. Cliquez sur le bouton ci-"
 "dessus pour en créer un ou importez un projet pour commencer."
 
-#: views.py:307
+#: views.py:315
 msgid "Projects I've Been Added To"
 msgstr "Projets auxquels j'ai été ajouté"
 
-#: views.py:327 views.py:387
+#: views.py:335 views.py:395
 msgid ""
 "Projects shared with you by others (for which you have either view or edit "
 "permissions) will appear here."
@@ -560,24 +582,24 @@ msgstr ""
 "Les projets partagés avec vous par d'autres (pour lesquels vous disposez "
 "d'autorisations d'affichage ou de modification) apparaîtront ici."
 
-#: views.py:331 views.py:334
+#: views.py:339 views.py:342
 msgid "Restore Projects"
 msgstr "Restaurer projets"
 
-#: views.py:354
+#: views.py:362
 msgid "Projects you have deleted can be restored from here."
 msgstr ""
 "Les projets que vous avez supprimés peuvent être restaurés à partir d'ici."
 
-#: views.py:364 views.py:367
+#: views.py:372 views.py:375
 msgid "Shared Projects"
 msgstr "Projets partagé"
 
-#: views.py:391 views.py:394
+#: views.py:399 views.py:402
 msgid "Shared Programs"
 msgstr "Programmes partagé"
 
-#: views.py:415
+#: views.py:423
 msgid ""
 "Programs shared with you by others (for which you have either view or edit "
 "permissions) will appear here."
@@ -585,11 +607,11 @@ msgstr ""
 "Les programmes partagés avec vous par d'autres (pour lesquels vous disposez "
 "d'autorisations d'affichage ou de modification) apparaîtront ici."
 
-#: views.py:419 views.py:422
+#: views.py:427 views.py:430
 msgid "Shared Courses"
 msgstr "Cours partagé"
 
-#: views.py:443
+#: views.py:451
 msgid ""
 "Courses shared with you by others (for which you have either view or edit "
 "permissions) will appear here."
@@ -597,11 +619,11 @@ msgstr ""
 "Les cours partagés avec vous par d'autres (pour lesquels vous disposez "
 "d'autorisations d'affichage ou de modification) apparaîtront ici."
 
-#: views.py:447 views.py:450
+#: views.py:455 views.py:458
 msgid "Shared Activities"
 msgstr "Activités partagé"
 
-#: views.py:471
+#: views.py:479
 msgid ""
 "Activities shared with you by others (for which you have either view or edit "
 "permissions) will appear here."
@@ -609,11 +631,11 @@ msgstr ""
 "Les activités partagés avec vous par d'autres (pour lesquels vous disposez "
 "d'autorisations d'affichage ou de modification) apparaîtront ici."
 
-#: views.py:481
+#: views.py:489
 msgid "My Activity Templates"
 msgstr "Mes modèles d'activité"
 
-#: views.py:499
+#: views.py:507
 msgid ""
 "Activity templates, also known as Strategies, are reusable sections of "
 "activities you can drag and drop into your workflows. Click Add New above to "
@@ -623,11 +645,11 @@ msgstr ""
 "d'activités réutilisables que vous pouvez faire glisser et déposer dans vos "
 "plan de travail. Cliquez sur Ajouter un nouveau ci-dessus pour commencer."
 
-#: views.py:503
+#: views.py:511
 msgid "My Course Templates"
 msgstr "Mes modèles de cours"
 
-#: views.py:521
+#: views.py:529
 msgid ""
 "Course templates are reusable sections of courses you can drag and drop into "
 "your workflows. Click Add New above to get started."
@@ -636,11 +658,11 @@ msgstr ""
 "pouvez faire glisser et déposer dans vos plan de travail. Cliquez sur "
 "Ajouter un nouveau ci-dessus pour commencer."
 
-#: views.py:528
+#: views.py:536
 msgid "Templates I've Been Added To"
 msgstr "Modèles auxquels j'ai été ajouté"
 
-#: views.py:555 views.py:595
+#: views.py:563 views.py:603
 msgid ""
 "Templates shared with you by others (for which you have either view or edit "
 "permissions) will appear here."
@@ -648,11 +670,11 @@ msgstr ""
 "Les modèles partagés avec vous par d'autres (pour lesquels vous disposez "
 "d'autorisations d'affichage ou de modification) apparaîtront ici."
 
-#: views.py:562
+#: views.py:570
 msgid "Restore deleted"
 msgstr "Restaurer supprimée"
 
-#: views.py:624
+#: views.py:632
 msgid ""
 "Your favourite projects, workflows, or templates by other users will appear "
 "here. You can find published content from other users using the Explore "
@@ -663,11 +685,11 @@ msgstr ""
 "utilisateurs à l'aide de la fonction Explorer dans la barre d'outils "
 "supérieure."
 
-#: views.py:628
+#: views.py:636
 msgid "Projects"
 msgstr "Projets"
 
-#: views.py:646 views.py:668
+#: views.py:654 views.py:676
 msgid ""
 "Your favourite activities by other users will appear here. You can find "
 "published content from other users using the Explore feature in the top "
@@ -677,15 +699,15 @@ msgstr ""
 "trouver du contenu publié par d'autres utilisateurs à l'aide de la fonction "
 "Explorer dans la barre d'outils supérieure."
 
-#: views.py:650 views.py:753
+#: views.py:658 views.py:761
 msgid "Activities"
 msgstr "Activités"
 
-#: views.py:672 views.py:774
+#: views.py:680 views.py:782
 msgid "Courses"
 msgstr "Cours"
 
-#: views.py:690
+#: views.py:698
 msgid ""
 "Your favourite courses by other users will appear here. You can find "
 "published content from other users using the Explore feature in the top "
@@ -695,11 +717,11 @@ msgstr ""
 "trouver du contenu publié par d'autres utilisateurs à l'aide de la fonction "
 "Explorer dans la barre d'outils supérieure."
 
-#: views.py:694
+#: views.py:702
 msgid "Program"
 msgstr "Programme"
 
-#: views.py:712
+#: views.py:720
 msgid ""
 "Your favourite programs by other users will appear here. You can find "
 "published content from other users using the Explore feature in the top "
@@ -709,11 +731,11 @@ msgstr ""
 "trouver du contenu publié par d'autres utilisateurs à l'aide de la fonction "
 "Explorer dans la barre d'outils supérieure."
 
-#: views.py:722
+#: views.py:730
 msgid "All Workflows"
 msgstr "Tous plan de travail"
 
-#: views.py:749
+#: views.py:757
 msgid ""
 "Workflows are the basic content object of CourseFlow, representing either a "
 "Program, Course, or Activity. Workflows you add to this project will be "
@@ -725,7 +747,7 @@ msgstr ""
 "travail que vous ajoutez à ce projet seront affichés ici. Cliquez sur le "
 "bouton ci-dessus pour créer ou importer un plan de travail pour commencer."
 
-#: views.py:770
+#: views.py:778
 msgid ""
 "Activities can be used to plan a single lesson/assessment, or multiple "
 "linked lessons/assessments. Click the button above to create or import an "
@@ -735,7 +757,7 @@ msgstr ""
 "évaluation ou plusieurs leçons/évaluations liées. Cliquez sur le bouton ci-"
 "dessus pour créer ou importer une activité."
 
-#: views.py:789
+#: views.py:797
 msgid ""
 "Courses can be used to plan a course and its related learning outcomes. "
 "Click the button above to create or import a course."
@@ -744,11 +766,11 @@ msgstr ""
 "d'apprentissage associés. Cliquez sur le bouton ci-dessus pour créer ou "
 "importer un cours."
 
-#: views.py:793
+#: views.py:801
 msgid "Programs"
 msgstr "Programmes"
 
-#: views.py:808
+#: views.py:816
 msgid ""
 "Programs can be used to plan a curriculum and its related learning outcomes. "
 "Click the button above to create or import a program."
@@ -757,39 +779,39 @@ msgstr ""
 "les acquis d'apprentissage qui s'y rapportent. Cliquez sur le bouton ci-"
 "dessus pour créer ou importer un programme."
 
-#: views.py:834
+#: views.py:842
 msgid "Deleted workflows can be restored here"
 msgstr "Les plan de travail supprimée peuve etre restaurer ici."
 
-#: views.py:1001
+#: views.py:1009
 msgid "This Project"
 msgstr "Ce Projet"
 
-#: views.py:1002
+#: views.py:1010
 msgid "There are no applicable workflows in this project."
 msgstr "Il n'y a pas de plans de travails applicables dans ce projet."
 
-#: views.py:1004
+#: views.py:1012
 msgid "Owned By You"
 msgstr "T'appartenant"
 
-#: views.py:1005
+#: views.py:1013
 msgid "You do not own any projects. Create a project first."
 msgstr "Vous ne possédez aucun projet. Créez d'abord un projet."
 
-#: views.py:1018
+#: views.py:1026
 msgid "From Your Other Projects"
 msgstr "De vos autres projets"
 
-#: views.py:1022
+#: views.py:1030
 msgid "There are no applicable workflows outside this project."
 msgstr "Il n'y a pas de plans de travails applicables en dehors de ce projet."
 
-#: views.py:1026
+#: views.py:1034
 msgid "Your Favourites"
 msgstr "Vos favoris"
 
-#: views.py:1029
+#: views.py:1037
 msgid ""
 "You have no relevant favourites. Use the Explore menu to find and favourite "
 "content by other users."
@@ -797,10 +819,15 @@ msgstr ""
 "Vous n'avez pas de favoris pertinents. Utilisez le menu Explorer pour "
 "rechercher et mettre en favori le contenu d'autres utilisateurs."
 
-#: views.py:1802
-msgid "Your Outcomes Export"
+#: views.py:1934
+msgid "Your CourseFlow Export"
 msgstr "Votre export"
 
-#: views.py:1803
+#: views.py:1935
 msgid "Hi there! Here are the results of your recent export."
 msgstr "Bonjour! Voici les résultats de votre récente exportation."
+
+#: views.py:3344 views.py:3381 views.py:3488 views.py:3929 views.py:3966
+#: views.py:3994 views.py:4009
+msgid "(copy)"
+msgstr " (copie)"

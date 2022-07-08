@@ -608,7 +608,7 @@ export class ComponentJSON extends React.Component{
 
     publicViewCheckboxChanged(field,evt){
         if(!this.props.data.public_view){
-            if(window.confirm(gettext("Please note: this will make a publically accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."))){
+            if(window.confirm(gettext("Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."))){
                 this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
             }
         }else{

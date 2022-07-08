@@ -2175,7 +2175,6 @@ def get_possible_added_workflows(request: HttpRequest) -> HttpResponse:
     get_strategies = json.loads(request.POST.get("get_strategies", "false"))
     projectPk = request.POST.get("projectPk", False)
     self_only = json.loads(request.POST.get("self_only","false"))
-    print(self_only)
     if projectPk:
         project = Project.objects.get(pk=request.POST.get("projectPk"))
     else:
@@ -3538,7 +3537,7 @@ def add_terminology(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "new_dict": ProjectSerializerShallow(project, context={"user": self.request.user}).data["object_sets"],
+            "new_dict": ProjectSerializerShallow(project).data["object_sets"],
         }
     )
 

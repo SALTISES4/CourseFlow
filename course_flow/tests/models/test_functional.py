@@ -597,10 +597,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
-                        "#edit-menu .right-panel-inner"
+                        "#edit-menu .right-panel-inner #title-editor:disabled"
                     )
                 ),
-                0,
+                1,
             )
 
     def test_workflow_editing(self):

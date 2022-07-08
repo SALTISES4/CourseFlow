@@ -3,7 +3,7 @@ import {renderMessageBox} from "./MenuComponents";
 export function fail_function(a,b,c,d){
     if(typeof a ==="string"){
         alert(a+" - "+gettext("Something went wrong. Please reload the page."));
-    }else if(a.type=="ajaxError"){
+    }else if(a && a.type=="ajaxError"){
         if(b.status==429){
             alert(gettext("Too many requests from your IP address. Please wait and try again later."));
         }else if(b.status==403 || b.status == 401 || b.satus == 500){
@@ -589,8 +589,7 @@ export function getPublicWorkflowChildData(workflowPk,callBackFunction=()=>conso
 export function getDisciplines(callBackFunction=()=>console.log("success")){
     try{
         $.get(get_paths.get_disciplines).done(function(data){
-            if(data.action=="posted")callBackFunction(data);
-            else fail_function(data.action)
+            callBackFunction(data);
         });
     }catch(err){
         fail_function();

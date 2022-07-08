@@ -598,8 +598,6 @@ class ProjectSerializerShallow(
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
     author=serializers.SerializerMethodField()
-    title=serializers.SerializerMethodField()
-    description=serializers.SerializerMethodField()
 
 
     def get_favourite(self, instance):
@@ -839,8 +837,6 @@ class WorkflowSerializerShallow(
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
     author=serializers.SerializerMethodField()
-    title=serializers.SerializerMethodField()
-    description=serializers.SerializerMethodField()
 
     strategy_icon = serializers.SerializerMethodField()
 
