@@ -5112,6 +5112,11 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 time_units=time_unit_dict.get(node["time_units"]) or 0,
                 time_required=bleach_sanitizer(node["time_required"], tags=[]),
             )
+            try:
+                new_node.has_autolink=node["has_autolink"]
+                new_node.save()
+            except KeyError:
+                pass
             id_dict["node"][node["id"]] = new_node
 
         for project in json_data["project"]:
@@ -5180,7 +5185,6 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
                 node_model.linked_workflow = id_dict["workflow"][
                     node["linked_workflow"]
                 ]
-            node_model.has_autolink = node_model.node_type == 0
             node_model.save()
 
         #        for outcomenode in json_data["outcomenode"]:
@@ -5191,16 +5195,43 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
         #            )
 
         for nodelink in json_data["nodelink"]:
-            NodeLink.objects.create(
+            nl = NodeLink.objects.create(
                 source_node=id_dict["node"][nodelink["source"]],
                 target_node=id_dict["node"][nodelink["target"]],
                 title=bleach_sanitizer(
                     nodelink["title"], tags=bleach_allowed_tags_title
                 ),
-                dashed=nodelink["style"] or False,
             )
+            if nodelink["style"]=="dashed":
+                nl.dashed=True 
+                nl.save()
+            if nodelink["ports"] is not None:
+                try:
+                    port_data = nodelink["ports"].split(";")
+                    if port_data[0].find("sourcePort="):
+                        source_port = port_data[0][-1]
+                        target_port = port_data[1][-1]
+                    else:
+                        source_port = port_data[0][-1]
+                        target_port = port_data[1][-1]
+                    if source_port == "e":
+                        nl.source_port = nl.EAST
+                    elif source_port == "w":
+                        nl.source_port = nl.WEST
+                    elif source_port == "s":
+                        nl.source_port = nl.SOUTH
+                    if target_port == "e":
+                        nl.target_port = nl.EAST
+                    elif target_port == "w":
+                        nl.target_port = nl.WEST
+                    elif target_port == "n":
+                        nl.target_port = nl.NORTH
+                    nl.save()
+                except Exception:
+                    pass
 
-    except Exception:
+
+    except AttributeError:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
