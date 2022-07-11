@@ -3100,7 +3100,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
 
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:project-update", args=[workflow.pk])
+            + reverse("course_flow:project-update", args=[project.pk])
         )
         time.sleep(3)
 
