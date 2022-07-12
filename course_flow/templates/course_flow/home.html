@@ -19,7 +19,7 @@
             <div class="home-item">
                 <a class="hover-shade" href='{% url "course_flow:my-projects" %}'><h4>{% trans "My Projects" %}</h4>
                 <p>{% trans "Explore and create your projects" %}</p></a>
-                {% for project in user.project_set.all|not_deleted|slice:":7" %}
+                {% for project in user.authored_projects.all|not_deleted|slice:":7" %}
                   <a class="hover-shade"
                         href="{% url 'course_flow:project-update' pk=project.pk %}"
                      >
@@ -64,34 +64,4 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
-{% block scripts %} {{ block.super }}
-<script nonce="{{request.csp_nonce}}">
 
-  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-  const create_path = {
-      project:"{% url 'course_flow:project-create' %}",
-      activity:"{% url 'course_flow:activity-strategy-create' %}",
-      course:"{% url 'course_flow:course-strategy-create' %}"
-  };
-  const user_id = {{ user.id }};
-  const read_only=false;
-
-  
-
-
-
-function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>console.log("success")){
-    let path;
-    if(soft)path=post_paths.delete_self_soft;
-    else path=post_pathsdelete_self;
-    try{
-        $.post(path, {
-          objectID:JSON.stringify(objectID),
-          objectType:JSON.stringify(objectType)
-      }).done(function(data){
-          if(data.action == "posted") callBackFunction(data);
-          else console.log("Failed");
-      });
-  }
-</script>
-{% endblock %}

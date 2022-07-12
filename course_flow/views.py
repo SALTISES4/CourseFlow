@@ -1095,9 +1095,6 @@ class SALTISEAnalyticsView(
             in self.request.user.groups.all()
         )
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super(ProjectCreateView, self).form_valid(form)
 
 class ProjectCreateView(
     LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete

@@ -14,45 +14,12 @@
         <h1>CourseFlow Analytics</h1>
         <hr>
         <p>{% trans "Analytics on CourseFlow usage" %}</p>
-        <h3>{% trans "Quick Links:" %}</h3>
-        <div class="home-menu-grid">
-            <div class="home-item">
-                <a class="hover-shade" href='{% url "course_flow:my-projects" %}'><h4>{% trans "My Projects" %}</h4>
-                <p>{% trans "Explore and create your projects" %}</p></a>
-                {% for project in user.project_set.all|not_deleted|slice:":7" %}
-                  <a class="hover-shade"
-                        href="{% url 'course_flow:project-update' pk=project.pk %}"
-                     >
-                    {{ project.title }}
-                  </a>
-                {% endfor %}
-                <a class="hover-shade" href="{% url 'course_flow:project-create' %}">{% trans "+Create new project" %}</a>
-            </div>
-            <div class="home-item">
-                <a class="hover-shade" href='{% url "course_flow:my-favourites" %}'><h4>{% trans "My Favourites" %}</h4>
-                <p>{% trans "Your favourited items" %}</p></a>
-                {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
-                  <a class="hover-shade"
-                     {% if favourite.content_object.type == "project" %}
-                        href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
-                     {% else %}
-                        href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
-                     {% endif %}
-                     >
-                    {{ favourite.content_object }}
-                  </a>
-                {% endfor %}
-            </div>
-            <div class="home-item">
-                <a class="hover-shade" href='{% url "course_flow:explore" %}?types[]=activity&types[]=course&types[]=program&types[]=project'><h4>{% trans "Explore" %}</h4>
-                <p>{% trans "Explore published material by other users" %}</p>
-                <div class="home-item-icon-container">
-                <img src = "{% static 'course_flow/img/images_svg/explore.svg' %}"/>
-                    </div>
-                </a>
-                
-            </div>
-        </div>
+        <h3>{% trans "Workflow Information:" %}</h3>
+        <p>{% trans "Total workflows, projects, and nodes created by month. Bracketed numbers show content-rich objects (three or more nodes)." %}</p>
+        {% get_saltise_admin_workflows %}
+        <h3>{% trans "User Information:" %}</h3>
+        <p>{% trans "Number of users who have created at least one of each the given objects (workflows, projects, or nodes) within the given month." %}</p>
+        {% get_saltise_admin_users %}
     </div>
 
 
@@ -64,34 +31,3 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
-{% block scripts %} {{ block.super }}
-<script nonce="{{request.csp_nonce}}">
-
-  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-  const create_path = {
-      project:"{% url 'course_flow:project-create' %}",
-      activity:"{% url 'course_flow:activity-strategy-create' %}",
-      course:"{% url 'course_flow:course-strategy-create' %}"
-  };
-  const user_id = {{ user.id }};
-  const read_only=false;
-
-  
-
-
-
-function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>console.log("success")){
-    let path;
-    if(soft)path=post_paths.delete_self_soft;
-    else path=post_pathsdelete_self;
-    try{
-        $.post(path, {
-          objectID:JSON.stringify(objectID),
-          objectType:JSON.stringify(objectType)
-      }).done(function(data){
-          if(data.action == "posted") callBackFunction(data);
-          else console.log("Failed");
-      });
-  }
-</script>
-{% endblock %}
