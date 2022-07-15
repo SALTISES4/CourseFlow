@@ -31,8 +31,6 @@ def course_flow_return_title():
 
 @register.filter
 def not_deleted(query):
-    print("trying to query")
-    print(query)
     return query.filter(deleted=False)
 
 
