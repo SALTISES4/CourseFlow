@@ -8,9 +8,10 @@ body, html{
     margin:0px;
     height:100%;
     font-family:'Open Sans',sans-serif;
+    font-size: 14px;
 }
 
-a{
+.left-panel a, .workflow-title-bar a, .home-tabs .ui-tabs-tab a, .titlebar a, .home-item a{
     color:#444444;
     text-decoration: none;
 }
@@ -369,6 +370,7 @@ button:hover{
     padding-top:8px;
     padding-bottom:8px;
     display:block;
+    font-size: 14px;
 }
 
 .panel-item > img{
@@ -386,7 +388,7 @@ button:hover{
 
 .panel-favourite{
     padding:2px;
-    font-size:14px;
+    font-size:13px;
     display:block;
     margin-left:22px;
     margin-right:20px;
@@ -633,6 +635,7 @@ button:hover{
     flex-grow:1;
     color:#1976bc;
     white-space:normal;
+    text-decoration: none;
 }
 
 .workflow-buttons{
