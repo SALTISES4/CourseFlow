@@ -251,7 +251,7 @@ class NodeSerializerShallow(
             "represents_workflow",
             "linked_workflow",
             "linked_workflow_data",
-            "is_dropped",
+            # "is_dropped",
             "comments",
             "sets",
         ]
@@ -372,9 +372,9 @@ class NodeSerializerShallow(
         instance.time_specific_hours = validated_data.get(
             "time_specific_hours", instance.time_specific_hours
         )
-        instance.is_dropped = validated_data.get(
-            "is_dropped", instance.is_dropped
-        )
+        # instance.is_dropped = validated_data.get(
+        #     "is_dropped", instance.is_dropped
+        # )
         instance.save()
         return instance
 
@@ -473,7 +473,7 @@ class WeekSerializerShallow(
             "is_strategy",
             "strategy_classification",
             "comments",
-            "is_dropped",
+            # "is_dropped",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -498,9 +498,9 @@ class WeekSerializerShallow(
         instance.strategy_classification = validated_data.get(
             "strategy_classification", instance.strategy_classification
         )
-        instance.is_dropped = validated_data.get(
-            "is_dropped", instance.is_dropped
-        )
+        # instance.is_dropped = validated_data.get(
+        #     "is_dropped", instance.is_dropped
+        # )
         instance.save()
         return instance
 
@@ -649,7 +649,7 @@ class OutcomeSerializerShallow(
             "child_outcome_links",
             "outcome_horizontal_links",
             "outcome_horizontal_links_unique",
-            "is_dropped",
+            # "is_dropped",
             "depth",
             "type",
             "comments",
@@ -715,9 +715,9 @@ class OutcomeSerializerShallow(
         instance.description = validated_data.get(
             "description", instance.description
         )
-        instance.is_dropped = validated_data.get(
-            "is_dropped", instance.is_dropped
-        )
+        # instance.is_dropped = validated_data.get(
+        #     "is_dropped", instance.is_dropped
+        # )
         instance.save()
         return instance
 
