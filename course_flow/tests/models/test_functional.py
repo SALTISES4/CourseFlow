@@ -933,6 +933,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             OutcomeOutcome.objects.filter(parent=base_outcome).count(), 2
         )
+        time.sleep(1)
+        selenium.find_element_by_css_selector(".outcome:not(.dropped) > .outcome-drop").click()
         selenium.find_element_by_css_selector(
             ".children-block:not(:empty)+.outcome-create-child"
         ).click()
