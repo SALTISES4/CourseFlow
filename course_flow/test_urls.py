@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
-from . import lti, settings, urls, views
+from . import settings, urls, views
 
 app_name = "course_flow"
 
@@ -24,20 +24,12 @@ def auth_patterns():
     ]
 
 
-def lti_patterns():
-    return [
-        path("lti/", include("django_lti_tool_provider.urls")),
-        path("course-list/", lti.get_course_list, name="course-list"),
-    ]
-
-
 def app_patterns():
     patterns = [
         path(
             "",
             include(
-                (urls.urlpatterns + lti_patterns(), urls.app_name),
-                namespace="course_flow",
+                (urls.urlpatterns, urls.app_name), namespace="course_flow",
             ),
         ),
         path(
@@ -51,4 +43,4 @@ def app_patterns():
     return patterns
 
 
-urlpatterns = sum([auth_patterns(), app_patterns(),], [],)
+urlpatterns = sum([auth_patterns(), app_patterns()], [],)
