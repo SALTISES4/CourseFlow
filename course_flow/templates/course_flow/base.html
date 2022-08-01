@@ -123,17 +123,12 @@
       href="{% static 'course_flow/js/course_flow.css' %}"
     />
     {% endcompress %}
-    <!--  -->
-    {% compress css %}
-    <link
-      rel="stylesheet"
-      href="{% static 'user_feedback/css/styles.min.css' %}"
-    />
-    {% endcompress %}
     <style nonce="{{ request.csp_nonce }}">
-      #user-feedback-button {
-        color: #1976bc;
-        font-size: 32px !important;
+      #user-feedback-component > button .MuiSvgIcon-root:first-child {
+        color: white;
+        height: 28px;
+        margin: 2px;
+        width: 28px;
       }
       #home-icon,
       #explore-icon {
@@ -385,7 +380,7 @@
         return user_feedback.h(user_feedback.App, {
           acceptText: "{% trans 'Send' %}",
           cancelText: "{% trans 'Cancel' %}",
-          charCountText: "{% trans 'characters remaining' %}",
+          charCountText: " "+"{% trans 'characters remaining' %}",
           description: "{% trans 'Leave feedback or get help' %}",
           feedbackTypes: [
             { value: 1, text: "Bug report" },
@@ -401,7 +396,8 @@
           snackbarSuccess: "{% trans 'Thanks for your feedback!' %}",
           text: "",
           title: "{% trans 'How can we improve your experience?' %}",
-          url: "{% url 'user_feedback:post' %}"
+          url: "{% url 'user_feedback:post' %}",
+          nonce: "{{ request.csp_nonce }}"
         });
       };
       user_feedback.render(
