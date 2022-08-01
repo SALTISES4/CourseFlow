@@ -13,5 +13,3 @@ tox
 twine
 
 -e file:./#egg=saltise_course_flow
-
--e git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
