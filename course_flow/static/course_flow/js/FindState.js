@@ -38,9 +38,9 @@ export const getTermByID = (state,id)=>{
         var week = state.week[i];
         if(week.id==id){
             var nodeweeks = week.nodeweek_set;
-            var column_order = state.columnworkflow.sort(
-                (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
-            ).map(columnworkflow=>columnworkflow.column);
+            let column_order = Constants.filterThenSortByID(
+                state.columnworkflow,state.workflow.columnworkflow_set
+                ).map(columnworkflow=>columnworkflow.column);
             var nodes_by_column = {};
             for(var j=0;j<column_order.length;j++){
                 nodes_by_column[column_order[j]]=[];
