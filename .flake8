@@ -8,7 +8,8 @@ ignore = E203 \  # whitespace before ':'
          D102 \  # missing docstring in method
          D103    # missing docstring in function
 per-file-ignores =
+  create_saltise_strategies.py: E722
+  models.py: E501
   test_functional.py: F841
   test_models.py: F841
-  models.py: E501
 max-line-length = 88

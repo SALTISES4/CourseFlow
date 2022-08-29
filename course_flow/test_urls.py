@@ -1,9 +1,8 @@
-from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
-from . import lti, settings, urls, views
+from . import settings, urls, views
 
 app_name = "course_flow"
 
@@ -13,22 +12,15 @@ if settings.DEBUG:
 
 def auth_patterns():
     return [
-        url(r"^register/$", views.registration_view, name="registration"),
-        url(
-            r"^login/$",
+        path("register/", views.registration_view, name="registration"),
+        path(
+            "login/",
             auth_views.LoginView.as_view(
                 template_name="course_flow/registration/login.html"
             ),
             name="login",
         ),
-        url(r"^logout/$", auth_views.LogoutView.as_view(), name="logout"),
-    ]
-
-
-def lti_patterns():
-    return [
-        path("lti/", include("django_lti_tool_provider.urls")),
-        path("course-list/", lti.get_course_list, name="course-list"),
+        path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     ]
 
 
@@ -37,8 +29,7 @@ def app_patterns():
         path(
             "",
             include(
-                (urls.urlpatterns + lti_patterns(), urls.app_name),
-                namespace="course_flow",
+                (urls.urlpatterns, urls.app_name), namespace="course_flow",
             ),
         ),
         path(
@@ -52,4 +43,4 @@ def app_patterns():
     return patterns
 
 
-urlpatterns = sum([auth_patterns(), app_patterns(),], [],)
+urlpatterns = sum([auth_patterns(), app_patterns()], [],)
