@@ -50,7 +50,7 @@ class ColumnView extends ComponentJSON{
     
     getColour(){
         if(this.props.data.colour===null)return Constants.default_column_settings[this.props.data.column_type].colour;
-        else return "#"+this.props.data.colour?.toString(16);
+        else return "#"+("000000"+this.props.data.colour?.toString(16)).slice(-6);
     }
 
     getIcon(){

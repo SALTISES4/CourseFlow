@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [tool.tox]
 legacy_tox_ini = """
 [tox]
-envlist = py{37,38}-django2_2
+envlist = py38-django{3,3_1,3_2}
 
 [testenv]
 setenv =
@@ -14,7 +14,6 @@ deps =
   pytest-django
   redislite
   selenium
-  git+https://github.com/SALTISES4/django-lti-tool-provider@dev#egg=django_lti_tool_provider
 allowlist_externals = sh
 commands_pre = sh -c 'redis-server &'
 commands = python -X dev -m pytest {posargs} --ignore-glob=*functional*

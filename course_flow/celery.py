@@ -2,6 +2,9 @@ import os
 from functools import wraps
 
 import celery
+from celery.utils.log import get_logger
+
+logger = get_logger("peerinst-scheduled")
 
 # Set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "course_flow.settings")
@@ -20,6 +23,7 @@ app.autodiscover_tasks()
 
 @app.task
 def heartbeat():
+    logger.info("Heartbeat check")
     pass
 
 
@@ -35,16 +39,28 @@ def try_async(func):
         try:
             heartbeat.delay()
 
-        except heartbeat.OperationalError:
-            print("Celery unavailable.  Executing synchronously.")
+        except heartbeat.OperationalError as e:
+            info = "Celery unavailable ({}).  Executing {} synchronously.".format(  # noqa
+                e, func.__name__
+            )
+            logger.info(info)
             return func(*args, **kwargs)
 
         else:
+            logger.info("Checking for available workers...")
             available_workers = celery.current_app.control.inspect().active()
 
             if available_workers:
+                info = "Celery workers available ({}).  Executing {} asynchronously.".format(  # noqa
+                    list(available_workers.keys()), func.__name__
+                )
+                logger.info(info)                
                 return func.delay(*args, **kwargs)
             else:
+                info = "No celery workers available.  Executing {} synchronously.".format(  # noqa
+                    func.__name__
+                )
+                logger.info(info)                
                 return func(*args, **kwargs)
 
     return wrapper
