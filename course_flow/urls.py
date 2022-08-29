@@ -27,22 +27,22 @@ def course_flow_patterns():
             name="project-update",
         ),
         path(
-            "project/<int:pk>/comparison$",
+            "project/<int:pk>/comparison",
             views.ProjectComparisonView.as_view(),
             name="project-comparison",
         ),
         path(
-            "workflow/<int:pk>/$",
+            "workflow/<int:pk>/",
             views.WorkflowDetailView.as_view(),
             name="workflow-update",
         ),
         path(
-            "workflow/public/<int:pk>/$",
+            "workflow/public/<int:pk>/",
             ratelimit(key="ip",method=["GET"],rate="5/m",block=True)(views.WorkflowPublicDetailView.as_view()),
             name="workflow-public",
         ),
         path(
-            "workflow/updatevalue/$", views.update_value, name="update-value"
+            "workflow/updatevalue/", views.update_value, name="update-value"
         ),
         path("workflow/delete-self/", views.delete_self, name="delete-self"),
         path(
