@@ -5,7 +5,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    atomic = False
+    atomic=False
 
     dependencies = [
         ('course_flow', '0080_auto_20220308_1956'),
