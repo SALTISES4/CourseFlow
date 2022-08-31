@@ -5397,3 +5397,22 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
     return JsonResponse({"action": "posted"})
+
+
+"""
+Live Views
+"""
+
+@login_required
+def myliveprojects_view(request):
+    context = {
+        "project_data_package": JSONRenderer()
+        .render(get_my_projects(request.user, True))
+        .decode("utf-8")
+    }
+    return render(request, "course_flow/myprojects.html", context)
+
+@require_POST
+@ajax_login_required
+def create_live_project(request: HttpRequest) -> HttpResponse:
+

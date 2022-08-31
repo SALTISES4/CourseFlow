@@ -1170,22 +1170,47 @@ class ObjectPermission(models.Model):
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
 
+"""
+Live Project Models
+"""
 
-# class WorkflowAction(models.Model):
-#    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-#    created_on = models.DateTimeField(default=timezone.now)
-#    action_type = models.PositiveIntegerField(choices=ACTION_CHOICES)
-#    action_arguments = models.CharField(blank=False)
-#    undo_type = models.PositiveIntegerField(choices=ACTION_CHOICES)
-#    undo_arguments = models.CharField(blank=False)
-#
-#    NEW_NODE = 0
-#    DELETE_SELF = 1
-#
-#    ACTION_CHOICES = (
-#        (NEW_NODE, _("New Node")),
-#        (DELETE_SELF, _("Delete")),
-#    )
+def default_due_date():
+    return timezone.now()+timezone.timedelta(weeks=1)
+
+class LiveProject(models.Model):
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
+    users = models.ManyToManyField(User, through=LiveUser, blank=True)
+    default_self_reporting = models.BooleanField(default=False)
+    visible_workflows = ManyToManyField(Workflow, blank=True)
+
+class LiveAssignment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    live_project = models.ForeignKey(LiveProject, ondelete=models.cascade)
+    linked_workflows = ManyToManyField(Workflow, blank=True)
+    self_reporting = models.BooleanField(default=False)
+    tasks = models.ManyToManyField(Node, blank=True)
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date = models.DateTimeField(default=default_due_date)
+
+class LiveUser(models.Model):
+    live_project = models.ForeignKey(LiveProject, ondelete=models.cascade)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    USER_STUDENT = 0
+    USER_TEACHER = 1
+    USER_TYPE_CHOICES = (
+        (USER_STUDENT, _("Student")),
+        (USER_TEACHER, _("Teacher")),
+    )
+    user_type = models.PositiveIntegerField(
+        choices=USER_TYPE_CHOICES, default=USER_STUDENT
+    )
+
+class UserAssignment(models.Model):
+    live_user = models.ForeignKey(LiveUser, ondelete=models.cascade)
+    assignment = models.ForeignKey(LiveAssignment, ondelete=models.cascade)
+    completed = models.BooleanField(default=False)
+
 
 """
 Other receivers
