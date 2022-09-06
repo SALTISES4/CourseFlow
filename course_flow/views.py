@@ -68,6 +68,7 @@ from .models import (  # OutcomeProject,
     WeekWorkflow,
     Workflow,
     WorkflowProject,
+    LiveProject,
 )
 from .serializers import (  # OutcomeProjectSerializerShallow,
     ActivitySerializerShallow,
@@ -94,6 +95,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
     WorkflowSerializerShallow,
+    LiveProjectSerializer,
     bleach_allowed_tags_description,
     bleach_allowed_tags_title,
     bleach_sanitizer,
@@ -5403,11 +5405,55 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
 Live Views
 """
 
+def get_my_live_projects(user, add):
+    data_package = {
+        "owned_projects": {
+            "title": _("My Live Projects"),
+            "sections": [
+                {
+                    "title": _("Add new"),
+                    "object_type": "liveproject",
+                    "objects": LiveProjectSerializer(
+                        LiveProject.objects.filter(author=user, deleted=False),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "add": add,
+#            "duplicate": "copy",
+            "emptytext": _(
+                "Live Projects are used to run a class or course using the content of the given project. Click the button above to create a live project from a project you own."
+            ),
+        },
+        "archived_projects": {
+            "title": _("Archived Live Projects"),
+            "sections": [
+                {
+                    "title": _("Restore Projects"),
+                    "object_type": "liveproject",
+                    "objects": LiveProjectSerializer(
+                        LiveProject.objects.filter(author=user, deleted=True),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "emptytext": _(
+                "Projects you have archived can be viewed or restored from here."
+            ),
+        },
+    }
+    return data_package
+
+
+
+
 @login_required
-def myliveprojects_view(request):
+def my_live_projects_view(request):
     context = {
         "project_data_package": JSONRenderer()
-        .render(get_my_projects(request.user, True))
+        .render(get_my_live_projects(request.user, True))
         .decode("utf-8")
     }
     return render(request, "course_flow/myprojects.html", context)
@@ -5415,4 +5461,18 @@ def myliveprojects_view(request):
 @require_POST
 @ajax_login_required
 def create_live_project(request: HttpRequest) -> HttpResponse:
+    pass
 
+
+
+class LiveProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
+    model = Project
+    fields = ["title", "description", "published"]
+    template_name = "course_flow/project_update.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        project = self.object
+        
+        return context
+    

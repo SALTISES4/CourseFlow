@@ -30,6 +30,7 @@ from .models import (
     Week,
     WeekWorkflow,
     Workflow,
+    LiveProject,
     title_max_length,
 )
 from .utils import (
@@ -1420,3 +1421,58 @@ serializer_lookups_shallow = {
     "outcomeworkflow": OutcomeWorkflowSerializerShallow,
     "objectset": ObjectSetSerializerShallow,
 }
+
+
+"""
+Live Project Serializers
+"""
+
+
+class LiveProjectSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerMixin,
+    DescriptionSerializerMixin,
+    AuthorSerializerMixin,
+):
+    class Meta:
+        model = LiveProject
+        fields = [
+            "id",
+            "project_id",
+            "title",
+            "description",
+            "author",
+            "author_id",
+            "type",
+            "created_on",
+            "deleted",
+            "deleted_on",
+            "default_self_reporting",
+            "default_assign_to_all",
+            "default_single_completion",
+        ]
+
+    created_on = serializers.DateTimeField(format=dateTimeFormat())
+    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    author=serializers.SerializerMethodField()
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get("title", instance.title)
+        instance.description = validated_data.get(
+            "description", instance.description
+        )
+        instance.deleted = validated_data.get(
+            "deleted", instance.deleted
+        )
+        instance.default_self_reporting = validated_data.get(
+            "default_self_reporting", instance.default_self_reporting
+        )
+        instance.default_assign_to_all = validated_data.get(
+            "default_assign_to_all", instance.default_assign_to_all
+        )
+        instance.default_single_completion = validated_data.get(
+            "default_single_completion", instance.default_single_completion
+        )
+
+        instance.save()
+        return instance

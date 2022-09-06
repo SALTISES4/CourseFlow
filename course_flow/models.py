@@ -1179,22 +1179,45 @@ def default_due_date():
 
 class LiveProject(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    
+    title = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
+    description = models.TextField(null=True, blank=True)
+    created_on = models.DateTimeField(default=timezone.now)
+
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
-    users = models.ManyToManyField(User, through=LiveUser, blank=True)
-    default_self_reporting = models.BooleanField(default=False)
-    visible_workflows = ManyToManyField(Workflow, blank=True)
+    deleted_on = models.DateTimeField(default=timezone.now)
+    deleted = models.BooleanField(default=False)
+    users = models.ManyToManyField(User, through="LiveUser", blank=True, related_name="live_projects_added")
+    #Whether students are able to check tasks as complete themselves or
+    # must have the instructor mark them as complete
+    default_self_reporting = models.BooleanField(default=True)
+    #Whether newly created assignments are assigned to all by default
+    default_assign_to_all = models.BooleanField(default=True)
+    #Whether it is enough for a single assigned user to complete the task,
+    # or (when True) when any user completes the task it becomes complete for all users
+    default_single_completion = models.BooleanField(default=False)
+    visible_workflows = models.ManyToManyField(Workflow, blank=True)
+
+    @property
+    def type(self):
+        return "liveproject"
+
 
 class LiveAssignment(models.Model):
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    live_project = models.ForeignKey(LiveProject, ondelete=models.cascade)
-    linked_workflows = ManyToManyField(Workflow, blank=True)
-    self_reporting = models.BooleanField(default=False)
+    live_project = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
+    linked_workflows = models.ManyToManyField(Workflow, blank=True)
+    self_reporting = models.BooleanField(default=True)
+    single_completion = models.BooleanField(default=False)
     tasks = models.ManyToManyField(Node, blank=True)
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(default=default_due_date)
+    created_on = models.DateTimeField(default=timezone.now)
 
 class LiveUser(models.Model):
-    live_project = models.ForeignKey(LiveProject, ondelete=models.cascade)
+    live_project = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     USER_STUDENT = 0
     USER_TEACHER = 1
@@ -1207,8 +1230,8 @@ class LiveUser(models.Model):
     )
 
 class UserAssignment(models.Model):
-    live_user = models.ForeignKey(LiveUser, ondelete=models.cascade)
-    assignment = models.ForeignKey(LiveAssignment, ondelete=models.cascade)
+    live_user = models.ForeignKey(LiveUser, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(LiveAssignment, on_delete=models.CASCADE)
     completed = models.BooleanField(default=False)
 
 

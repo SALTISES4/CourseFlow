@@ -16,6 +16,7 @@ def course_flow_patterns():
         path("home/", views.home_view, name="home"),
         path("logout/", views.logout_view, name="logout"),
         path("myprojects/", views.myprojects_view, name="my-projects"),
+        path("myliveprojects/", views.my_live_projects_view, name="my-live-projects"),
         path("mytemplates/", views.mytemplates_view, name="my-templates"),
         path("myshared/", views.myshared_view, name="my-shared"),
         path("myfavourites/", views.myfavourites_view, name="my-favourites"),
@@ -25,6 +26,11 @@ def course_flow_patterns():
             "project/<int:pk>/",
             views.ProjectDetailView.as_view(),
             name="project-update",
+        ),
+        path(
+            "liveproject/<int:pk>/",
+            views.LiveProjectDetailView.as_view(),
+            name="liveproject-update",
         ),
         path(
             "project/<int:pk>/comparison",

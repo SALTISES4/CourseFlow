@@ -990,7 +990,6 @@ export class WorkflowTitle extends React.Component{
             text=gettext("Untitled");
         }
         
-        
         return (
             <a href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
         )
