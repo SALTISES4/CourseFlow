@@ -40,6 +40,9 @@ from .utils import (
     multiple_replace,
 )
 
+bleach_allowed_attributes_description = {
+    'a': ['href', 'title', 'target'], 'abbr': ['title'], 'acronym': ['title']
+}
 bleach_allowed_tags_description = [
     "b",
     "u",
@@ -76,13 +79,19 @@ class DescriptionSerializerMixin:
 
     def get_description(self, instance):
         return bleach_sanitizer(
-            instance.description, tags=bleach_allowed_tags_description
+            instance.description, 
+            tags=bleach_allowed_tags_description,
+            attributes=bleach_allowed_attributes_description,
         )
 
     def validate_description(self, value):
         if value is None:
             return None
-        return bleach_sanitizer(value, tags=bleach_allowed_tags_description)
+        return bleach_sanitizer(
+            value, 
+            tags=bleach_allowed_tags_description,
+            attributes=bleach_allowed_attributes_description,
+        )
 
 
 class TitleSerializerMixin:

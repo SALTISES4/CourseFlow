@@ -947,7 +947,7 @@ export class WorkflowTitle extends React.Component{
         
         
         return (
-            <a href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
+            <a target="_blank"  onClick={(evt)=>evt.stopPropagation()} href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
         )
     }
 }
@@ -1077,6 +1077,9 @@ export class QuillDiv extends React.Component{
             if(prevProps.text!=this.props.text)this.quill.clipboard.dangerouslyPasteHTML(this.props.text,"silent");
             this.quill.enable(!this.props.disabled);
         }
+        $(this.maindiv.current).find("a").click(()=>{
+            $(this).attr('target','_blank');
+        });
     }
     
 }
