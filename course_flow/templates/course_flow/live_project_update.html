@@ -1,0 +1,53 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %}
+<!-- -->
+{% block header %}{% endblock %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<div id="content-container" class="body-wrapper"></div>
+<div id="popup-container"></div>
+<!-- -->
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+{% block read_only_scripts %}
+
+{% endblock %}
+<!-- -->
+{% block scripts %} {{ block.super }}
+<script nonce="{{request.csp_nonce}}">
+
+  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+  const create_path = {
+      activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
+      course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
+      program:"{% url 'course_flow:program-create' projectPk=object.pk %}"
+  }
+  
+  
+  const project_data= {{project_data|safe}};
+  const live_project_data= {{project_data|safe}};
+  const read_only = {{read_only|safe}};
+  var live_project_renderer;
+
+  console.log(data_package);
+
+
+
+  const user_id = {{ user.id }};
+
+  window.addEventListener("load",function(){
+      project_renderer = new renderers.ProjectRenderer(data_package,project_data);
+      $(document).ajaxError(renderers.fail_function);
+      project_renderer.render($("#content-container"));
+  });
+</script>
+{% endblock %}

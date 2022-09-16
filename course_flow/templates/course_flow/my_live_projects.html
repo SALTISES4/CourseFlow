@@ -23,7 +23,7 @@
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
   const create_path = {
-      project:"{% url 'course_flow:project-create' %}",
+      liveproject:"{% url 'course_flow:live-project-create' projectPk='0'%}",
   };
   const data_package = {{project_data_package|safe}}
   var home_renderer;

@@ -98,6 +98,14 @@
     <!-- -->
     {% compress js %}
     <script
+      src="{% static 'course_flow/js/scripts-live.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script
       src="{% static 'user_feedback/js/app.min.js' %}"
       defer="true"
       charset="utf-8"
@@ -201,6 +209,10 @@
         <img src="{% static 'course_flow/img/images_svg/layoutnav.svg' %}"/>
         <div>{% trans 'My Projects' %}</div>
       </a>
+      <a class="panel-item hover-shade" href="{% url 'course_flow:my-live-projects' %}">
+        <img src="{% static 'course_flow/img/images_svg/layoutnav_2.svg' %}"/>
+        <div>{% trans 'My Live Projects' %}</div>
+      </a>
       <a class="panel-item hover-shade" href="{% url 'course_flow:my-templates' %}">
         <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
         <div>{% trans 'My Templates' %}</div>
@@ -223,6 +235,8 @@
               <a class="panel-favourite hover-shade"
                  {% if favourite.content_object.type == "project" %}
                     href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
+                 {% elif favourite.content_object.type == "liveproject" %}
+                    href="{% url 'course_flow:live-project-update' pk=favourite.content_object.pk %}"
                  {% else %}
                     href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
                  {% endif %}
@@ -306,7 +320,7 @@
         course:"{% url 'course_flow:workflow-update' pk='0'%}",
         program:"{% url 'course_flow:workflow-update' pk='0'%}",
         workflow:"{% url 'course_flow:workflow-update' pk='0'%}",
-        liveproject:"{% url 'course_flow:liveproject-update' pk='0'%}"
+        liveproject:"{% url 'course_flow:live-project-update' pk='0'%}"
     };
     const public_update_path = {
         activity:"{% url 'course_flow:workflow-public' pk='0'%}",

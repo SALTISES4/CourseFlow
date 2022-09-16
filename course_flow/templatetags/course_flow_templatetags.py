@@ -34,11 +34,12 @@ def not_deleted(query):
 def not_deleted_favourites(query):
     if query is None:
         return None
-    return query.exclude(
-        Q(
-            object_id__in=models.Workflow.objects.filter(
-                Q(deleted=True) | Q(project__deleted=True)
-            )
-        )
-        | Q(object_id__in=models.Project.objects.filter(deleted=True))
+    print("IN THE FILTER")
+    print(query)
+    return query.filter(
+        Q(program__deleted=False,program__project__deleted=False)
+        | Q(course__deleted=False,course__project__deleted=False)
+        | Q(activity__deleted=False,activity__project__deleted=False)
+        | Q(project__deleted=False)
+        | Q(liveproject__deleted=False)
     )

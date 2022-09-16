@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology, getExport} from "./PostFunctions";
+import {createLiveProject, updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology, getExport} from "./PostFunctions";
 import {gridMenuItemAdded} from "./Reducers";
 import {object_sets_types,Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
@@ -109,7 +109,7 @@ export class WorkflowsMenu extends React.Component{
         }else if(this.props.type=="added_workflow_menu" || this.props.type=="workflow_select_menu"){
             var text;
             if(this.props.type=="added_workflow_menu"){
-                text=gettext("duplicate");
+                text=gettext("select");
                 if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text=gettext("copy to current project");
             }else{
                 text=gettext("select");
@@ -226,6 +226,7 @@ export class WorkflowForMenu extends React.Component{
                 <img src={iconpath+favourite_img} title={gettext("Favourite")}/>
             </div>
         );
+        console.log(this.props.type);
         if(this.props.type=="projectmenu"||this.props.type=="gridmenu"||this.props.type=="exploremenu"){
             if(this.props.workflow_data.is_owned){
                 if(!this.props.workflow_data.deleted){
@@ -354,39 +355,52 @@ export class MenuSection extends React.Component{
         );
         if(this.props.replacement_text)objects=this.props.replacement_text;
         
-        //if(objects.length==0)objects="This category is currently empty."
 
         let add_button;
         if(create_path && this.props.add){
             let types;
             if(section_type=="workflow")types=["program","course","activity"];
             else types=[section_type];
-            let adds=types.map((this_type)=>
-                <a class="hover-shade" href={create_path[this_type]}>
-                    {gettext("Create new ")+gettext(this_type)}
-                </a>
-            );
-            let import_text = gettext("Import ")+gettext(section_type);
-            if(is_strategy)import_text+=gettext(" strategy")
-            adds.push(
-                <a class="hover-shade" onClick={()=>{
-                    getAddedWorkflowMenu(parentID,section_type,is_strategy,false,(response_data)=>{
-                        if(response_data.workflowID!=null){
-                            let loader = new Loader('body');
-                            duplicateBaseItem(
-                                response_data.workflowID,section_type,
-                                parentID,(duplication_response_data)=>{
-//                                   try{
-//                                       this.props.dispatch(gridMenuItemAdded(duplication_response_data));
-//                                    } catch(err){console.log("Couldn't (or didn't need to) update grid");}
-                                    loader.endLoad();
-                                    location.reload();
-                                }
-                            );
-                        }
-                    });          
-                }}>{import_text}</a>
-            );
+            let adds;
+            if(section_type=="liveproject"){
+                adds = [
+                    <a class="hover-shade" onClick={()=>{
+                        getAddedWorkflowMenu(parentID,"project",is_strategy,false,(response_data)=>{
+                            if(response_data.workflowID!=null){
+                                console.log(create_path);
+                                window.location = create_path.liveproject.replace("0",response_data.workflowID);
+                            }
+                        });          
+                    }}>{gettext("Make Live Project")}</a>
+                ]
+            }else{
+                adds=types.map((this_type)=>
+                    <a class="hover-shade" href={create_path[this_type]}>
+                        {gettext("Create new ")+gettext(this_type)}
+                    </a>
+                );
+                let import_text = gettext("Import ")+gettext(section_type);
+                if(is_strategy)import_text+=gettext(" strategy")
+                adds.push(
+                    <a class="hover-shade" onClick={()=>{
+                        getAddedWorkflowMenu(parentID,section_type,is_strategy,false,(response_data)=>{
+                            if(response_data.workflowID!=null){
+                                let loader = new Loader('body');
+                                duplicateBaseItem(
+                                    response_data.workflowID,section_type,
+                                    parentID,(duplication_response_data)=>{
+    //                                   try{
+    //                                       this.props.dispatch(gridMenuItemAdded(duplication_response_data));
+    //                                    } catch(err){console.log("Couldn't (or didn't need to) update grid");}
+                                        loader.endLoad();
+                                        location.reload();
+                                    }
+                                );
+                            }
+                        });          
+                    }}>{import_text}</a>
+                );
+            }
             add_button=(
                 [
                     <div class="menu-create hover-shade" onClick={this.clickAdd.bind(this)}>

@@ -1129,7 +1129,7 @@ class Discipline(models.Model):
 
 class Favourite(models.Model):
     content_choices = {
-        "model__in": ["project", "activity", "course", "program"]
+        "model__in": ["project", "activity", "course", "program", "liveproject"]
     }
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content_type = models.ForeignKey(
@@ -1200,6 +1200,17 @@ class LiveProject(models.Model):
     default_single_completion = models.BooleanField(default=False)
     visible_workflows = models.ManyToManyField(Workflow, blank=True)
 
+    favourited_by = GenericRelation("Favourite", related_query_name="liveproject")
+
+    def get_permission_objects(self):
+        return [self]
+
+    def __str__(self):
+        if self.title is not None and self.title != "":
+            return self.title
+        else:
+            return "Project"
+            
     @property
     def type(self):
         return "liveproject"

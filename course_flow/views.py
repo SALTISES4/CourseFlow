@@ -5456,23 +5456,41 @@ def my_live_projects_view(request):
         .render(get_my_live_projects(request.user, True))
         .decode("utf-8")
     }
-    return render(request, "course_flow/myprojects.html", context)
-
-@require_POST
-@ajax_login_required
-def create_live_project(request: HttpRequest) -> HttpResponse:
-    pass
+    return render(request, "course_flow/my_live_projects.html", context)
 
 
 
 class LiveProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model = Project
-    fields = ["title", "description", "published"]
-    template_name = "course_flow/project_update.html"
+    model = LiveProject
+    fields = ["title", "description"]
+    template_name = "course_flow/live_project_update.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        project = self.object
-        
+        liveproject = self.object
+        project = liveproject.project
+        context["live_project_data"]=LiveProjectSerializer(liveproject);
+        context["project_data"]=ProjectSerializerShallow(project);
+        context["read_only"]=False
         return context
     
+
+
+class LiveProjectCreateView(
+    LoginRequiredMixin, UserCanEditProjectMixin, CreateView_No_Autocomplete
+):
+    model = LiveProject
+    fields = ["title", "description"]
+    template_name = "course_flow/live_project_create.html"
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        project = Project.objects.get(pk=self.kwargs["projectPk"])
+        response = super(CreateView, self).form_valid(form)
+        form.instance.project=project
+        return super(LiveProjectCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "course_flow:live-project-update", kwargs={"pk": self.object.pk}
+        )

@@ -30,7 +30,7 @@ def course_flow_patterns():
         path(
             "liveproject/<int:pk>/",
             views.LiveProjectDetailView.as_view(),
-            name="liveproject-update",
+            name="live-project-update",
         ),
         path(
             "project/<int:pk>/comparison",
@@ -211,6 +211,11 @@ def course_flow_patterns():
             "users/get-user-list/",
             views.get_user_list,
             name="get-user-list",
+        ),
+        path(
+            "liveproject/<int:projectPk>/create/",
+            views.LiveProjectCreateView.as_view(),
+            name="live-project-create",
         ),
         path(
             "project/create/",
