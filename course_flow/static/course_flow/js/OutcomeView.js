@@ -130,11 +130,6 @@ class OutcomeView extends ComponentJSON{
         if(this.props.data.depth==0)this.makeDroppable();
     }
 
-
-    toggleDrop(){
-        updateValueInstant(this.props.objectID,Constants.object_dictionary[this.objectType],{is_dropped:!this.props.data.is_dropped});
-    }
-
     sortableMovedFunction(id,new_position,type,new_parent,child_id){
         this.props.renderer.micro_update(moveOutcomeOutcome(id,new_position,new_parent,child_id));
         insertedAt(this.props.renderer,child_id,"outcome",new_parent,"outcome",new_position,"outcomeoutcome");
@@ -503,10 +498,6 @@ class TableOutcomeViewUnconnected extends ComponentJSON{
         );
     }
     
-    
-    toggleDrop(){
-        updateValueInstant(this.props.objectID,Constants.object_dictionary[this.objectType],{is_dropped:!this.props.data.is_dropped});
-    }
 
     childUpdatedFunction(node_id,outcome_id,value){
         

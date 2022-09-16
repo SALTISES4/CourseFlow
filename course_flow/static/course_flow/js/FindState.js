@@ -1,6 +1,17 @@
 import * as Constants from "./Constants";
 
 
+export const getDropped = (objectID,objectType,depth=1)=>{
+    let default_drop = Constants.get_default_drop_state(objectID,objectType,depth);
+    try{
+        let stored_drop = JSON.parse(window.localStorage.getItem(objectType+objectID));
+        if(stored_drop===null)return default_drop;
+        return stored_drop;
+    }catch(err){
+        return default_drop;
+    }
+}
+
 export const getColumnByID = (state,id)=>{
     for(var i in state.column){
         var column = state.column[i];
@@ -23,25 +34,33 @@ export const getColumnWorkflowByID = (state,id)=>{
 export const getWeekByID = (state,id)=>{
     for(var i in state.week){
         var week = state.week[i];
-        if(week.id==id)return {
-            data:week,
-            column_order:state.workflow.columnworkflow_set.map((columnworkflow_id)=>
-                getColumnWorkflowByID(state, columnworkflow_id).data.column
-            ),
-            sibling_count:state.workflow.weekworkflow_set.length,
-            nodeweeks:state.nodeweek,
-            workflow_id:state.workflow.id,
-        };
+        if(week.id==id){
+            if(week.is_dropped===undefined){
+                week.is_dropped = getDropped(id,"week");
+            }
+            return {
+                data:week,
+                column_order:state.workflow.columnworkflow_set.map((columnworkflow_id)=>
+                    getColumnWorkflowByID(state, columnworkflow_id).data.column
+                ),
+                sibling_count:state.workflow.weekworkflow_set.length,
+                nodeweeks:state.nodeweek,
+                workflow_id:state.workflow.id,
+            };
+        }
     }
 }
 export const getTermByID = (state,id)=>{
     for(var i in state.week){
         var week = state.week[i];
         if(week.id==id){
+            if(week.is_dropped===undefined){
+                week.is_dropped = getDropped(id,"week");
+            }
             var nodeweeks = week.nodeweek_set;
-            var column_order = state.columnworkflow.sort(
-                (a,b)=>state.workflow.columnworkflow_set.indexOf(a.id) - state.workflow.columnworkflow_set.indexOf(b.id)
-            ).map(columnworkflow=>columnworkflow.column);
+            let column_order = Constants.filterThenSortByID(
+                state.columnworkflow,state.workflow.columnworkflow_set
+                ).map(columnworkflow=>columnworkflow.column);
             var nodes_by_column = {};
             for(var j=0;j<column_order.length;j++){
                 nodes_by_column[column_order[j]]=[];
@@ -85,6 +104,9 @@ export const getNodeByID = (state,id)=>{
     for(var i in state.node){
         var node = state.node[i];
         if(node.id==id){
+            if(node.is_dropped===undefined){
+                node.is_dropped = getDropped(id,"node");
+            }
             return {data:node,column:state.column.find(column=>column.id==node.column),object_sets:state.objectset};
         }
     }
@@ -143,6 +165,9 @@ export const getOutcomeByID = (state,id)=>{
         var outcome = state_section[i];
         
         if(outcome.id==id){
+            if(outcome.is_dropped===undefined){
+                outcome.is_dropped = getDropped(id,"outcome",outcome.depth);
+            }
             let root_outcome;
             let rank=[];
             let titles=[];

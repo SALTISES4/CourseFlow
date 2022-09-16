@@ -4,7 +4,7 @@ import * as reactDom from "react-dom";
 import * as Constants from "./Constants";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 import {reloadCommentsAction} from "./Reducers";
-import {newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
+import {toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -22,6 +22,10 @@ export class ComponentJSON extends React.Component{
     
     postMountFunction(){};
     
+    toggleDrop(){
+        toggleDrop(this.props.objectID,Constants.object_dictionary[this.objectType],!this.props.data.is_dropped,this.props.dispatch,this.props.data.depth);
+    }
+
     makeSortableNode(
         sortable_block,
         parent_id,
@@ -992,7 +996,7 @@ export class WorkflowTitle extends React.Component{
         
         
         return (
-            <a href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
+            <a target="_blank"  onClick={(evt)=>evt.stopPropagation()} href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
         )
     }
 }
@@ -1122,6 +1126,9 @@ export class QuillDiv extends React.Component{
             if(prevProps.text!=this.props.text)this.quill.clipboard.dangerouslyPasteHTML(this.props.text,"silent");
             this.quill.enable(!this.props.disabled);
         }
+        $(this.maindiv.current).find("a").click(()=>{
+            $(this).attr('target','_blank');
+        });
     }
     
 }

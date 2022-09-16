@@ -71,7 +71,8 @@ class GridWeekViewUnconnected extends ComponentJSON{
 const mapWeekStateToProps = (state,own_props)=>{
     let data = own_props.data;
     let node_weeks = Constants.filterThenSortByID(state.nodeweek,data.nodeweek_set);
-    let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Constants.checkSetHidden(node,state.objectset));
+    let nodes_data = node_weeks.map(nodeweek=>getNodeByID(state,nodeweek.node).data).filter(node=>!Constants.checkSetHidden(node,state.objectset));
+    // let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Constants.checkSetHidden(node,state.objectset));
     
     let override_data = nodes_data.map(node=>{
         if(node.represents_workflow)return {...node,...node.linked_workflow_data};

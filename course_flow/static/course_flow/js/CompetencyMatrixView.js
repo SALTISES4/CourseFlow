@@ -401,7 +401,7 @@ const mapWeekStateToProps = (state,own_props)=>{
     },0);
     let total_time = total_theory+total_practical+total_individual;
     let total_required = linked_wf_data.reduce((previousValue,currentValue)=>{
-        if(currentValue && currentValue.time_required)return previousValue+parseInt(currentValue.time_required);
+        if(currentValue && currentValue.time_required)return previousValue+parseFloat(currentValue.time_required);
         return previousValue;
     },0);
     
