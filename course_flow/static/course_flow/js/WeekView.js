@@ -91,11 +91,6 @@ export class WeekViewUnconnected extends ComponentJSON{
         this.makeDragAndDrop();
     }
 
-
-    toggleDrop(){
-        updateValueInstant(this.props.objectID,this.objectType,{is_dropped:!this.props.data.is_dropped});
-    }
-
     componentDidUpdate(){
         this.makeDragAndDrop();
         Constants.triggerHandlerEach($(this.maindiv.current).find(".node"),"component-updated");

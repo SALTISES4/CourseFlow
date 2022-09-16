@@ -6,7 +6,7 @@ import NodeLinkView from "./NodeLinkView.js";
 import OutcomeNodeView from "./OutcomeNode.js";
 import {getNodeByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
-import {updateOutcomenodeDegree, updateValueInstant} from "./PostFunctions.js"
+import {updateOutcomenodeDegree, updateValueInstant, toggleDrop} from "./PostFunctions.js"
 
 
 //Basic component to represent a Node
@@ -181,10 +181,6 @@ class NodeView extends ComponentJSON{
     
     updatePorts(){
         $(this.maindiv.current).triggerHandler("component-updated");
-    }
-    
-    toggleDrop(){
-        updateValueInstant(this.props.objectID,this.objectType,{is_dropped:!this.props.data.is_dropped});
     }
 
     doubleClick(evt){

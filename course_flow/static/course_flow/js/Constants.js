@@ -128,6 +128,19 @@ export const permission_keys = {
     "edit":2,
     "comment":3,
 }
+export const default_drop_state = {
+    node:false,
+    week:true,
+    outcome:[true,false,false,false,false],
+}
+export const get_default_drop_state = (objectID,objectType,depth=1)=>{
+    let default_drop = default_drop_state[objectType];
+    if(objectType=="outcome"){
+        if(depth<default_drop.length)default_drop=default_drop[depth];
+        else default_drop=false;
+    }
+    return default_drop;
+}
 //get all the possible custom names. This is super clunky, should probably be switched to ngettext
 //export function custom_text_base(){
 //    return {
