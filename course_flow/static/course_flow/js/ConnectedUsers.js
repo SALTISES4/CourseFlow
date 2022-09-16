@@ -11,29 +11,39 @@ export class ConnectionBar extends React.Component{
         props.renderer.connection_update_received = (user_data)=>{
             connection_bar.connection_update_received(user_data);
         }
+        console.log("created connection bar");
+        console.log(this.props.updateSocket.readyState);
     }
     
     
     render(){
-        let users = this.state.connected_users.map(user=>
-            <ConnectedUser user_data={user}/>
-        );
-        
-        return (
-            <div class="users-box">
-                <div class="users-small-wrapper">
-                    <div class="users-small">
-                        {users.slice(0,2)}
+        if(this.props.updateSocket.readyState==1){
+            let users = this.state.connected_users.map(user=>
+                <ConnectedUser user_data={user}/>
+            );
+            
+            return (
+                <div class="users-box">
+                    <div class="users-small-wrapper">
+                        <div class="users-small">
+                            {users.slice(0,2)}
+                        </div>
+                    </div>
+                    <div class="users-more">
+                        ...
+                    </div>
+                    <div class="users-hidden">
+                        {users}
                     </div>
                 </div>
-                <div class="users-more">
-                    ...
+            )
+        }else if(this.props.updateSocket.readyState==3){
+            return (
+                <div class="users-box connection-failed">
+                    {gettext("Not Connected")}
                 </div>
-                <div class="users-hidden">
-                    {users}
-                </div>
-            </div>
-        )
+            )
+        }
     }
     
     componentDidMount(){
@@ -41,7 +51,7 @@ export class ConnectionBar extends React.Component{
     }
     
     connection_update(connected=true){
-        this.props.updateSocket.send(JSON.stringify({type:"connection_update",user_data:{user_id:user_id,user_name:user_name,user_colour:myColour,connected:connected}}))
+        if(this.props.updateSocket.readyState==1)this.props.updateSocket.send(JSON.stringify({type:"connection_update",user_data:{user_id:user_id,user_name:user_name,user_colour:myColour,connected:connected}}))
         setTimeout(this.connection_update.bind(this),30000);
     }
     

@@ -50,8 +50,8 @@ class NodeView extends ComponentJSON{
         if(outcomenodes.length>0){
             outcomeDiv = (
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:this.props.renderer.column_colours[data.column]}}>{outcomenodes.length}</div>
-                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:this.props.renderer.column_colours[data.column]}}>{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes.length}</div>
+                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes}</div>
                 </div>
             );
         }
@@ -94,7 +94,7 @@ class NodeView extends ComponentJSON{
             <NodeTitle data={data}/>
         );
         
-        let style = {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:this.props.renderer.column_colours[data.column]};
+        let style = {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:Constants.getColumnColour(this.props.column)};
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
@@ -109,7 +109,7 @@ class NodeView extends ComponentJSON{
             mouseover_actions.push(this.addDuplicateSelf(data));
             mouseover_actions.push(this.addDeleteSelf(data));
         }
-        mouseover_actions.push(this.addCommenting(data));
+        if(!renderer.public_view)mouseover_actions.push(this.addCommenting(data));
 
         return (
             <div 
@@ -184,9 +184,11 @@ class NodeView extends ComponentJSON{
     }
 
     doubleClick(evt){
+        let path=update_path["workflow"];
+        if(this.props.renderer.public_view)path = public_update_path["workflow"];
         evt.stopPropagation();
         if(this.props.data.linked_workflow){
-            window.open(update_path["workflow"].replace("0",this.props.data.linked_workflow));
+            window.open(path.replace("0",this.props.data.linked_workflow));
         }
     }
 
@@ -253,12 +255,10 @@ class NodeView extends ComponentJSON{
 const mapNodeStateToProps = (state,own_props)=>(
     getNodeByID(state,own_props.objectID)
 )
-const mapNodeDispatchToProps = {};
 export default connect(
     mapNodeStateToProps,
     null
 )(NodeView)
-
 
 
 //Basic component to represent a node in the outcomes table
@@ -279,7 +279,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         else data_override = data;
         let selection_manager = this.props.renderer.selection_manager;
         
-        let style = {backgroundColor:this.props.renderer.column_colours[data.column]}
+        let style = {backgroundColor:Constants.getColumnColour(this.props.column)}
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
@@ -312,3 +312,104 @@ export const NodeOutcomeView = connect(
     mapNodeStateToProps,
     null
 )(NodeOutcomeViewUnconnected)
+
+//Basic component to represent a Node
+class NodeComparisonViewUnconnected extends ComponentJSON{
+    constructor(props){
+        super(props);
+        this.objectType="node";
+        this.objectClass=".node";
+    }
+    
+    render(){
+        let data = this.props.data;
+        let data_override;
+        if(data.represents_workflow) data_override = {...data,...data.linked_workflow_data};
+        else data_override={...data};
+        let renderer = this.props.renderer;
+        let selection_manager=renderer.selection_manager;
+        
+        let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
+            <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
+        );
+        let outcomeDiv;
+        if(outcomenodes.length>0){
+            outcomeDiv = (
+                <div class="outcome-node-indicator">
+                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes.length}</div>
+                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes}</div>
+                </div>
+            );
+        }
+        let lefticon;
+        let righticon;
+        if(data.context_classification>0)lefticon=(
+            <img title={
+                renderer.context_choices.find(
+                    (obj)=>obj.type==data.context_classification
+                ).name
+            } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+        )
+        if(data.task_classification>0)righticon=(
+            <img title={
+                renderer.task_choices.find(
+                    (obj)=>obj.type==data.task_classification
+                ).name
+            }src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+        )
+        let titleText = (
+            <NodeTitle data={data}/>
+        );
+        
+
+        let style = {backgroundColor:Constants.getColumnColour(this.props.column)};
+        if(data.lock){
+            style.outline="2px solid "+data.lock.user_colour;
+        }
+        if(Constants.checkSetHidden(data,this.props.object_sets))style.display="none";
+        let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
+        if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
+
+        let mouseover_actions = [];
+        if(!read_only){
+            mouseover_actions.push(this.addInsertSibling(data));
+            mouseover_actions.push(this.addDuplicateSelf(data));
+            mouseover_actions.push(this.addDeleteSelf(data));
+        }
+        if(!renderer.public_view)mouseover_actions.push(this.addCommenting(data));
+
+        return (
+            <div 
+                style={style} 
+                class={css_class}
+                id={data.id} 
+                ref={this.maindiv} 
+                onClick={(evt)=>selection_manager.changeSelection(evt,this)}
+            >
+                <div class = "node-top-row">
+                    <div class = "node-icon">
+                        {lefticon}
+                    </div>
+                    {titleText}
+                    <div class = "node-icon">
+                        {righticon}
+                    </div>
+                </div>
+                <div class = "node-details">
+                    <TitleText text={data_override.description} defaultText="Click to edit"/>
+                </div> 
+                <div class="mouseover-actions">
+                    {mouseover_actions}
+                </div>
+                {this.addEditable(data_override)}
+                {outcomeDiv}
+            </div>
+        );
+
+
+    }
+}
+export const NodeComparisonView = connect(
+    mapNodeStateToProps,
+    null
+)(NodeComparisonViewUnconnected)

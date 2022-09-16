@@ -1272,12 +1272,45 @@ class ModelViewTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 403)
-        # Finally, check to make sure these work when you own both
+        # Make sure this fails if the objects (even if you own them) are in different workflows
         week2b = make_object("week", user)
+        workflow2b = make_object("activity",user)
+        weekworkflow2b = WeekWorkflow.objects.create(
+            week=week2b, workflow=workflow2b
+        )
+        column2b = make_object("column", user)
+        columnworkflow2b = ColumnWorkflow.objects.create(
+            column=column2b, workflow=workflow2b
+        )
+        response = self.client.post(
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID": to_move.node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "columnChange": "true",
+                "columnPk": str(column2b.id),
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client.post(
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID": to_move.node.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "parentID": week2b.id,
+                "newPosition": 0,
+                "inserted": "true",
+                "throughType": JSONRenderer()
+                .render("nodeweek")
+                .decode("utf-8"),
+                "parentType": JSONRenderer().render("week").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        # Finally, check to make sure these work when you own both and they are in the same workflow
         weekworkflow2b = WeekWorkflow.objects.create(
             week=week2b, workflow=workflow2
         )
-        column2b = make_object("column", user)
         columnworkflow2b = ColumnWorkflow.objects.create(
             column=column2b, workflow=workflow2
         )
@@ -1308,6 +1341,7 @@ class ModelViewTest(TestCase):
                 "parentType": JSONRenderer().render("week").decode("utf-8"),
             },
         )
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(
             NodeWeek.objects.get(node=to_move.node).week.id, week2b.id
         )
@@ -1547,6 +1581,9 @@ class ModelViewTest(TestCase):
         OutcomeWorkflow.objects.create(outcome=myoutcome, workflow=myactivity)
         NodeWeek.objects.create(node=mynode, week=myweek)
         WeekWorkflow.objects.create(week=myweek, workflow=myactivity)
+        myoutcome2 = make_object("outcome", myself)
+        myactivity2 = make_object("activity", myself)
+        OutcomeWorkflow.objects.create(outcome=myoutcome2, workflow=myactivity2)
         response = self.client.post(
             reverse("course_flow:update-outcomenode-degree"),
             {"nodePk": mynode.id, "outcomePk": outcome.id, "degree": 1},
@@ -1555,6 +1592,11 @@ class ModelViewTest(TestCase):
         response = self.client.post(
             reverse("course_flow:update-outcomenode-degree"),
             {"nodePk": node.id, "outcomePk": myoutcome.id, "degree": 1},
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client.post(
+            reverse("course_flow:update-outcomenode-degree"),
+            {"nodePk": mynode.id, "outcomePk": myoutcome2.id, "degree": 1},
         )
         self.assertEqual(response.status_code, 403)
         response = self.client.post(
@@ -2703,6 +2745,47 @@ class ModelViewTest(TestCase):
 class PermissionsTests(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+
+    def test_ratelimit_get(self):
+        author = get_author()
+        project = Project.objects.create(author=author)
+        workflow = Course.objects.create(author=author)
+        WorkflowProject.objects.create(project=project,workflow=workflow)
+
+        response = self.client.get(reverse("course_flow:workflow-public",args=[workflow.pk]))
+        self.assertEqual(response.status_code, 302)
+        response = self.client.get(reverse("course_flow:get-public-workflow-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+        self.assertEqual(response.status_code, 403)
+        response = self.client.get(reverse("course_flow:get-public-workflow-child-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+        self.assertEqual(response.status_code, 403)
+        response = self.client.get(reverse("course_flow:get-public-workflow-parent-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+        self.assertEqual(response.status_code, 403)
+
+        workflow.public_view=True 
+        workflow.save()
+        #Try five (equal to max, since we did one above) times in one minute
+        for i in range(6):
+            response = self.client.get(reverse("course_flow:workflow-public",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+            if i<4: self.assertEqual(response.status_code, 200)
+            else: self.assertEqual(response.status_code, 403)
+        
+        for i in range(6):
+            response = self.client.get(reverse("course_flow:get-public-workflow-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+            if i<4: self.assertEqual(response.status_code, 200)
+            else: 
+                self.assertEqual(response.status_code, 429)
+        
+        for i in range(6):
+            response = self.client.get(reverse("course_flow:get-public-workflow-child-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+            if i<4: self.assertEqual(response.status_code, 200)
+            else: 
+                self.assertEqual(response.status_code, 429)
+        
+        for i in range(6):
+            response = self.client.get(reverse("course_flow:get-public-workflow-parent-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+            if i<4: self.assertEqual(response.status_code, 200)
+            else: 
+                self.assertEqual(response.status_code, 429)
 
     def test_permissions_delete_self_workflows(self):
         author = get_author()

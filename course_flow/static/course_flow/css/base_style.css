@@ -144,6 +144,13 @@ button:hover{
     height:100%;
 }
 
+.users-box.connection-failed{
+    color: red;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
 .users-small .user-indicator{
     margin-top: 10px;
 }
@@ -567,6 +574,8 @@ button:hover{
     color:#444444;
     margin-bottom:2px;
     white-space:normal;
+    max-height: 140px;
+    overflow-y: auto;
 }
 
 .menu-grid .workflow-description{
@@ -660,6 +669,7 @@ button:hover{
     padding:20px;
     border-radius:10px;
     background:white;
+    width: fit-content;
 }
 
 .project-import{

@@ -74,6 +74,18 @@ def bleach_sanitizer(value, **kwargs):
         return None
 
 
+class AuthorSerializerMixin:
+    author = serializers.SerializerMethodField()
+
+    def get_author(self, instance):
+        user = self.context.get("user",None)
+        if user is not None:
+            if instance.author is None: return ""
+            return str(instance.author.username)
+        else:
+            return _("a CourseFlow user")
+
+
 class DescriptionSerializerMixin:
     description = serializers.SerializerMethodField()
 
@@ -566,6 +578,7 @@ class ProjectSerializerShallow(
     serializers.ModelSerializer,
     TitleSerializerMixin,
     DescriptionSerializerMixin,
+    AuthorSerializerMixin,
 ):
     class Meta:
         model = Project
@@ -593,10 +606,8 @@ class ProjectSerializerShallow(
     object_sets = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    author=serializers.SerializerMethodField()
 
-    author = serializers.SlugRelatedField(
-        read_only=True, slug_field="username"
-    )
 
     def get_favourite(self, instance):
         user = self.context.get("user")
@@ -785,6 +796,7 @@ class WorkflowSerializerShallow(
     serializers.ModelSerializer,
     TitleSerializerMixin,
     DescriptionSerializerMixin,
+    AuthorSerializerMixin,
 ):
 
     author_id = serializers.SerializerMethodField()
@@ -823,6 +835,7 @@ class WorkflowSerializerShallow(
             "favourite",
             "condensed",
             "importing",
+            "public_view",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -832,12 +845,9 @@ class WorkflowSerializerShallow(
     outcomeworkflow_set = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    author=serializers.SerializerMethodField()
 
     strategy_icon = serializers.SerializerMethodField()
-
-    author = serializers.SlugRelatedField(
-        read_only=True, slug_field="username"
-    )
 
     def get_author_id(self, instance):
         if instance.author is not None:
@@ -922,6 +932,9 @@ class WorkflowSerializerShallow(
         instance.condensed = validated_data.get(
             "condensed", instance.condensed
         )
+        instance.public_view = validated_data.get(
+            "public_view", instance.public_view
+        )
         instance.save()
         return instance
 
@@ -966,6 +979,7 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "favourite",
             "condensed",
             "importing",
+            "public_view",
         ]
 
     def get_author_id(self, instance):
@@ -1020,6 +1034,7 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "favourite",
             "condensed",
             "importing",
+            "public_view",
         ]
 
     def get_author_id(self, instance):
@@ -1074,6 +1089,7 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "favourite",
             "condensed",
             "importing",
+            "public_view",
         ]
 
     def get_author_id(self, instance):
@@ -1108,12 +1124,11 @@ class ObjectSetSerializerShallow(
 
 
 class InfoBoxSerializer(
-    serializers.Serializer, TitleSerializerMixin, DescriptionSerializerMixin
+    serializers.Serializer, TitleSerializerMixin, DescriptionSerializerMixin, AuthorSerializerMixin,
 ):
 
     deleted = serializers.ReadOnlyField()
     id = serializers.ReadOnlyField()
-    author = serializers.SerializerMethodField()
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     title = serializers.SerializerMethodField()
@@ -1124,6 +1139,9 @@ class InfoBoxSerializer(
     is_owned = serializers.SerializerMethodField()
     is_strategy = serializers.SerializerMethodField()
     published = serializers.ReadOnlyField()
+    author=serializers.SerializerMethodField()
+    title=serializers.SerializerMethodField()
+    description=serializers.SerializerMethodField()
 
     def get_is_owned(self, instance):
         user = self.context.get("user")
@@ -1157,9 +1175,6 @@ class InfoBoxSerializer(
             return instance.is_strategy
         else:
             return False
-
-    def get_author(self, instance):
-        return str(instance.author)
 
 
 # class RefreshSerializerWeek(serializers.Serializer):

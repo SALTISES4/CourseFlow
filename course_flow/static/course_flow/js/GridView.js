@@ -129,7 +129,7 @@ class GridNodeViewUnconnected extends ComponentJSON{
             <div class="grid-ponderation">{data_override.ponderation_theory+"/"+data_override.ponderation_practical+"/"+data_override.ponderation_individual}</div>
         )
         
-        let style = {backgroundColor:this.props.renderer.column_colours[data.column]}
+        let style = {backgroundColor:Constants.getColumnColour(this.props.column)}
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
@@ -154,9 +154,9 @@ class GridNodeViewUnconnected extends ComponentJSON{
     }
     
 }
-/****returns nothing for now, but might eventually *****/
+
 const mapNodeStateToProps = (state,own_props)=>({
-    
+    column:state.column.find(column=>column.id==own_props.data.column),
 })
 export const GridNodeView = connect(
     mapNodeStateToProps,

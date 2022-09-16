@@ -12,7 +12,7 @@ import {newOutcome, insertedAt} from "./PostFunctions";
 import * as Constants from "./Constants";
 
 //Basic component representing the outcome view
-class OutcomeEditView extends ComponentJSON{
+export class OutcomeEditViewUnconnected extends ComponentJSON{
     
     constructor(props){
         super(props);
@@ -23,9 +23,9 @@ class OutcomeEditView extends ComponentJSON{
         let data = this.props.data;
         var selector = this;
         let outcomes = data.map(category=>
-            <div>
+            <div class="outcome-category">
                 <h4>{category.objectset.title+":"}</h4>
-                <div ref={this.maindiv}>
+                <div class="outcome-category-block">
                     {category.outcomes.map(outcome=>{
                         let my_class = "outcome-workflow";
                         if(outcome.through_no_drag)my_class+=" no-drag";
@@ -41,19 +41,22 @@ class OutcomeEditView extends ComponentJSON{
         )
         
         return(
-            <div class="workflow-details">
-                <div class="outcome-edit">
+            <div id={"#workflow-"+this.props.workflow.id} class="workflow-details">
+                <div class="outcome-edit" ref={this.maindiv}>
                     {outcomes}
                     <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNew.bind(this)}>
                         <img class="create-button" src={iconpath+"add_new_white.svg"}/>
                         <div>{gettext("Add new")}</div>
                     </div>
-                    <ParentOutcomeBar/>
+                    {this.getParentOutcomeBar()}
                 </div>
             </div>
         );
     }
 
+    getParentOutcomeBar(){
+        return <ParentOutcomeBar/>
+    }
 
     postMountFunction(){
         this.makeDragAndDrop();
@@ -65,7 +68,7 @@ class OutcomeEditView extends ComponentJSON{
         
     }
     makeDragAndDrop(){
-        this.makeSortableNode($(this.maindiv.current).children(".outcome-workflow").not("ui-draggable"),this.props.objectID,"outcomeworkflow",".outcome-workflow");
+        this.makeSortableNode($(this.maindiv.current).find(".outcome-workflow").not("ui-draggable"),this.props.objectID,"outcomeworkflow",".outcome-workflow");
         if(this.props.data.depth==0)this.makeDroppable();
     }
     
@@ -86,7 +89,7 @@ const mapEditViewStateToProps = state=>({
 export default connect(
     mapEditViewStateToProps,
     null
-)(OutcomeEditView)
+)(OutcomeEditViewUnconnected)
 
 
 class ParentOutcomeNodeViewUnconnected extends ComponentJSON{

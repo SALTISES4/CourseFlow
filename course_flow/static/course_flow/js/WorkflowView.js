@@ -125,12 +125,17 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         }    
     
         let workflow = this;
+
+        let parent_workflow_indicator;
+        if(!renderer.public_view)parent_workflow_indicator = (
+            <ParentWorkflowIndicator workflow_id={data.id}/>
+        )
             
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class="workflow-header" style={style}>
                     <WorkflowForMenu workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
-                    <ParentWorkflowIndicator workflow_id={data.id}/>
+                    {parent_workflow_indicator}
                 </div>
                 <div class="workflow-view-select hide-print">
                     {view_buttons_sorted}
@@ -398,7 +403,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
             ".column-workflow",
             "x",
             false,
-            ".column-row",
+            null,
             ".column",
             ".column-row"
         );
@@ -409,7 +414,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
             ".week-workflow",
             "y",
             false,
-            ".week-block",
+            null,
             ".week",
             ".week-block"
         );
@@ -430,7 +435,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
             insertedAt(this.props.renderer,child_id,"week",new_parent,"workflow",new_position,"weekworkflow");
         }
     }
-                     
+    
     toggleLegend(){
         if(this.state.show_legend){
             this.setState({show_legend:false});
@@ -457,7 +462,7 @@ class ViewBarUnconnected extends ComponentJSON{
                     if(x>y)return 1;
                     return 0;
                 }).map((set)=>
-                    <div><input type="checkbox" id={"set"+set.id} value={set.id} checked={(!set.hidden)} onChange={this.toggleHidden.bind(this,set.id)}/><label for={"set"+set.id}>{set.title}</label></div>
+                    <div><input type="checkbox" id={"set"+set.id} value={set.id} checked={(!set.hidden)} onChange={this.toggleHidden.bind(this,set.id,(!set.hidden))}/><label for={"set"+set.id}>{set.title}</label></div>
 
                 )}
             </div>
@@ -470,8 +475,8 @@ class ViewBarUnconnected extends ComponentJSON{
         ,$("#view-bar")[0]);
     }
     
-    toggleHidden(id){
-        this.props.dispatch(toggleObjectSet(id));
+    toggleHidden(id,hidden){
+        this.props.dispatch(toggleObjectSet(id,hidden));
     }
 }
 export const ViewBar =  connect(

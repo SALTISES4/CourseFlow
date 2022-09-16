@@ -251,6 +251,8 @@
         "{% url 'course_flow:get-possible-linked-workflows' %}",
       get_possible_added_workflows:
         "{% url 'course_flow:get-possible-added-workflows' %}",
+      get_workflow_context:
+        "{% url 'course_flow:get-workflow-context' %}",
       get_target_projects:
         "{% url 'course_flow:get-target-projects' %}",
       set_linked_workflow: "{% url 'course_flow:set-linked-workflow' %}",
@@ -295,6 +297,9 @@
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
       import: "{% url 'course_flow:import' %}",
+      get_public_workflow_data: "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
+      get_public_workflow_parent_data: "{% url 'course_flow:get-public-workflow-parent-data' pk='0' %}",
+      get_public_workflow_child_data: "{% url 'course_flow:get-public-workflow-child-data' pk='0' %}",
     };
 
     const update_path = {
@@ -303,6 +308,12 @@
         course:"{% url 'course_flow:workflow-update' pk='0'%}",
         program:"{% url 'course_flow:workflow-update' pk='0'%}",
         workflow:"{% url 'course_flow:workflow-update' pk='0'%}"
+    };
+    const public_update_path = {
+        activity:"{% url 'course_flow:workflow-public' pk='0'%}",
+        course:"{% url 'course_flow:workflow-public' pk='0'%}",
+        program:"{% url 'course_flow:workflow-public' pk='0'%}",
+        workflow:"{% url 'course_flow:workflow-public' pk='0'%}"
     };
 
     $("#logout").on("click",()=>{

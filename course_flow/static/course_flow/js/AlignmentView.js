@@ -333,9 +333,7 @@ class AlignmentHorizontalReverseWeekUnconnected extends React.Component{
             
             if(this.props.restriction_set && this.props.restriction_set.nodes && this.props.restriction_set.nodes.indexOf(nodeweek.node)==-1)return null;
             return(
-                <div class="node-week">
                     <AlignmentHorizontalReverseNode objectID={nodeweek.node} renderer={this.props.renderer} restriction_set={this.props.restriction_set}/>
-                </div>
             );
         });
         
@@ -436,7 +434,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
             );
         }
 
-        let style={backgroundColor:this.props.renderer.column_colours[data.column]};
+        let style={backgroundColor:Constants.getColumnColour(this.props.column)};
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
@@ -469,17 +467,18 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
     for(var i=0;i<state.node.length;i++){
         if(state.node[i].id==own_props.objectID){
             let node=state.node[i];
+            let column = state.column.find(column=>column.id==node.column);
             let outcomenodes = Constants.filterThenSortByID(state.outcomenode,node.outcomenode_unique_set);
             if(own_props.restriction_set && own_props.restriction_set.parent_outcomes){
                 outcomenodes = outcomenodes.filter(ocn=>own_props.restriction_set.parent_outcomes.indexOf(ocn.outcome)>=0);
             }
             let node_outcomes = Constants.filterThenSortByID(state.outcomenode,node.outcomenode_set).map(ocn=>ocn.outcome);
             if(!node.linked_workflow || node.linked_workflow_data.deleted){
-                return {data:node,child_outcomes:[],outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
+                return {data:node,column:column,child_outcomes:[],outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
             }
             let child_workflow = getChildWorkflowByID(state,node.linked_workflow);
             let child_outcomes = Constants.filterThenSortByID(state.outcomeworkflow,child_workflow.data.outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
-            return {data:node,child_outcomes:child_outcomes,outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
+            return {data:node,column:column,child_outcomes:child_outcomes,outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
             
         }
     }

@@ -144,6 +144,13 @@ button:hover{
     height:100%;
 }
 
+.users-box.connection-failed{
+    color: red;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
 .users-small .user-indicator{
     margin-top: 10px;
 }
@@ -435,7 +442,6 @@ button:hover{
 .home-item-icon-container{
     border-radius:10px;
     background:#1976bc;
-    width:-webkit-fit-content;
     width:-moz-fit-content;
     width:fit-content;
     margin-left:126px;
@@ -502,7 +508,6 @@ button:hover{
     color:white;
     display:block;
     border-radius:5px;
-    width:-webkit-fit-content;
     width:-moz-fit-content;
     width:fit-content;
     margin-bottom:20px;
@@ -571,6 +576,8 @@ button:hover{
     color:#444444;
     margin-bottom:2px;
     white-space:normal;
+    max-height: 140px;
+    overflow-y: auto;
 }
 
 .menu-grid .workflow-description{
@@ -607,7 +614,6 @@ button:hover{
     padding-left:12px;
     padding-right:12px;
     margin-left:8px;
-    height:-webkit-fit-content;
     height:-moz-fit-content;
     height:fit-content;
 }
@@ -666,6 +672,8 @@ button:hover{
     padding:20px;
     border-radius:10px;
     background:white;
+    width: -moz-fit-content;
+    width: fit-content;
 }
 
 .project-import{
@@ -1221,7 +1229,6 @@ button, input[type="submit"]{
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
     padding:0px;
     -webkit-user-select:none;
-        -ms-user-select:none;
             user-select:none;
 }
 
@@ -2576,7 +2583,6 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 
 .nomenclature-row{
     position:relative;
-    width:-webkit-fit-content;
     width:-moz-fit-content;
     width:fit-content;
     padding:8px;
@@ -2615,7 +2621,6 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     border: 1px solid black;
     font-size: 10px;
     text-align: center;
-    width:-webkit-fit-content;
     width:-moz-fit-content;
     width:fit-content;
     pointer-events:all;
@@ -3125,6 +3130,87 @@ circle.mouseover{
 
 .window-close-button img{
     width:16px;
+}
+
+/*ComparisonView stuff*/
+
+.comparison-view{
+    display:flex;
+    gap:20px;
+    padding:50px;
+}
+
+.comparison-view .workflow-array{
+    display:flex;
+    gap:20px;
+}
+
+.comparison-view .node-week{
+    padding-top:5px;
+    max-width:204px;
+    white-space:normal;
+}
+
+.comparison-view .node-top-row{
+    border-radius:0 0 5px 5px;
+}
+
+.comparison-view .week{
+    min-height:60px;
+    box-sizing:content-box;
+}
+
+.comparison-view .node-block{
+    min-height:30px;
+}
+
+.comparison-view .workflow-container{
+    padding:0;
+    box-shadow:none;
+    margin:0;
+}
+
+.comparison-view .workflow-details{
+    padding:0;
+}
+
+.comparison-view .workflow-header{
+    margin:0px;
+    position:sticky;
+    z-index:1;
+    top:46px;
+    border:1px solid black;
+}
+
+.comparison-view .workflow-details{
+    padding:5px;
+}
+
+.comparison-view .workflow-wrapper{
+    margin:0px;
+    width:260px;
+}
+
+.comparison-view .workflow-for-menu{
+    margin:0px;
+    width:100%;
+}
+
+.comparison-view .outcome{
+    margin-left: 0;
+    min-width: unset;
+    max-width: 210px;
+    font-size: 12px;
+}
+
+.workflow-wrapper .window-close-button {
+    right: -8px;
+    top: -8px;
+    background: white;
+    height: 16px;
+    width: 16px;
+    border-radius: 8px;
+    z-index: 2;
 }
 
 hr{

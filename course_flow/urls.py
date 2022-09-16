@@ -1,5 +1,6 @@
 from django.urls import path
 from django.views.i18n import JavaScriptCatalog
+from ratelimit.decorators import ratelimit
 from rest_framework import routers
 
 from . import views
@@ -26,9 +27,19 @@ def course_flow_patterns():
             name="project-update",
         ),
         path(
+            "project/<int:pk>/comparison",
+            views.ProjectComparisonView.as_view(),
+            name="project-comparison",
+        ),
+        path(
             "workflow/<int:pk>/",
             views.WorkflowDetailView.as_view(),
             name="workflow-update",
+        ),
+        path(
+            "workflow/public/<int:pk>/",
+            ratelimit(key="ip",method=["GET"],rate="5/m",block=True)(views.WorkflowPublicDetailView.as_view()),
+            name="workflow-public",
         ),
         path(
             "workflow/updatevalue/", views.update_value, name="update-value"
@@ -136,6 +147,11 @@ def course_flow_patterns():
             name="get-possible-added-workflows",
         ),
         path(
+            "workflow/get-workflow-context/",
+            views.get_workflow_context,
+            name="get-workflow-context",
+        ),
+        path(
             "workflow/get-target-projects/",
             views.get_target_projects,
             name="get-target-projects",
@@ -154,6 +170,21 @@ def course_flow_patterns():
             "workflow/get-workflow-child-data/",
             views.get_workflow_child_data,
             name="get-workflow-child-data",
+        ),
+        path(
+            "workflow/<int:pk>/get-public-workflow-data/",
+            views.get_public_workflow_data,
+            name="get-public-workflow-data",
+        ),
+        path(
+            "workflow/<int:pk>/get-public-workflow-parent-data/",
+            views.get_public_workflow_parent_data,
+            name="get-public-workflow-parent-data",
+        ),
+        path(
+            "workflow/<int:pk>/get-public-workflow-child-data/",
+            views.get_public_workflow_child_data,
+            name="get-public-workflow-child-data",
         ),
         path(
             "project/get-project-data/",

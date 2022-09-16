@@ -15,7 +15,6 @@ class ColumnView extends ComponentJSON{
     
     render(){
         let data = this.props.data;
-        this.props.renderer.column_colours[this.props.objectID] = this.getColour();
         var title = data.title;
         if(!title)title=data.column_type_display;
         
@@ -32,7 +31,7 @@ class ColumnView extends ComponentJSON{
             mouseover_actions.push(this.addDuplicateSelf(data));
             mouseover_actions.push(this.addDeleteSelf(data));
         }
-        mouseover_actions.push(this.addCommenting(data));
+        if(!this.props.renderer.public_view)mouseover_actions.push(this.addCommenting(data));
         
         return (
             <div ref={this.maindiv} style={style} class={css_class} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
@@ -46,11 +45,6 @@ class ColumnView extends ComponentJSON{
                 </div>
             </div>
         );
-    }
-    
-    getColour(){
-        if(this.props.data.colour===null)return Constants.default_column_settings[this.props.data.column_type].colour;
-        else return "#"+("000000"+this.props.data.colour?.toString(16)).slice(-6);
     }
 
     getIcon(){
@@ -75,7 +69,7 @@ class NodeBarColumnUnconnected extends ComponentJSON{
         if(data)title = data.title;
         if(!title)title=data.column_type_display;
         return(
-            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:this.props.renderer.column_colours[this.props.objectID]}}>
+            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:Constants.getColumnColour(data)}}>
                 {title}
             </div>
         );

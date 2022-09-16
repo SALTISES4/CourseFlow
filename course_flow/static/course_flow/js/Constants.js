@@ -314,6 +314,11 @@ export function getCompletionImg(completion_status,outcomes_type){
 
 }
 
+export function getColumnColour(data){
+    if(data.colour==null)return default_column_settings[data.column_type].colour;
+    else return  "#"+("000000"+data.colour?.toString(16)).slice(-6);
+}
+
 export class Loader{
     constructor(identifier){
         this.load_screen = $('<div></div>').appendTo(identifier).addClass('load-screen').on('click',(evt)=>{evt.preventDefault();});

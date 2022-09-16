@@ -26,7 +26,17 @@ export class ComponentJSON extends React.Component{
         toggleDrop(this.props.objectID,Constants.object_dictionary[this.objectType],!this.props.data.is_dropped,this.props.dispatch,this.props.data.depth);
     }
 
-    makeSortableNode(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith="",handle=false,containment=".workflow-container"){
+    makeSortableNode(
+        sortable_block,
+        parent_id,
+        draggable_type,
+        draggable_selector,
+        axis=false,
+        grid=false,
+        restrictTo=null,
+        handle=false,
+        containment=".workflow-container"
+    ){
         let cursorAt={};
         if(draggable_type=="weekworkflow")cursorAt={top:20};
         if(draggable_type=="nodeweek")cursorAt={top:20,left:50};
@@ -43,7 +53,7 @@ export class ComponentJSON extends React.Component{
             helper:(e,item)=>{
                 var helper = $(document.createElement('div'));
                 helper.addClass(draggable_type+"-ghost");
-                helper.appendTo(".workflow-container");
+                helper.appendTo(".workflow-wrapper > .workflow-container");
                 helper.width($(e.target).width());
                 return helper;
             },
@@ -55,6 +65,7 @@ export class ComponentJSON extends React.Component{
                 $(draggable_selector).addClass("dragging");
                 var old_parent_id = parent_id;
                 drag_item.attr("data-old-parent-id",parent_id);
+                drag_item.attr("data-restrict-to",restrictTo);
                 var old_index = drag_item.prevAll().length;
                 drag_item.attr("data-old-index",old_index);
                 props.renderer.selection_manager.changeSelection(null,null);
@@ -99,13 +110,25 @@ export class ComponentJSON extends React.Component{
                     var old_parent_id = parseInt(drag_item.attr("data-old-parent-id"));
                     var old_index = parseInt(drag_item.attr("data-old-index"));
                     if(old_parent_id!=new_parent_id || old_index!=new_index){
-                        drag_item.attr("data-old-parent-id",new_parent_id)
-                        drag_item.attr("data-old-index",new_index);
                         let child_id = parseInt(drag_item.attr("data-child-id"));
-                        this.sortableMovedFunction(
-                            parseInt(drag_item.attr("id")),
-                            new_index,draggable_type,new_parent_id,child_id
-                        );
+                        console.log("checking restrictTo:");
+                        console.log(restrictTo);
+                        console.log("checking the data on draggable");
+                        console.log(drag_item.attr("data-restrict-to"));
+
+                        if(restrictTo && drag_item.attr("data-restrict-to")!=restrictTo){
+                            this.sortableMovedOutFunction(
+                                parseInt(drag_item.attr("id")),
+                                new_index,draggable_type,new_parent_id,child_id
+                            );
+                        }else{
+                            drag_item.attr("data-old-parent-id",new_parent_id)
+                            drag_item.attr("data-old-index",new_index);
+                            this.sortableMovedFunction(
+                                parseInt(drag_item.attr("id")),
+                                new_index,draggable_type,new_parent_id,child_id
+                            );
+                        }
                         this.lockChild(child_id,true,draggable_type);
                     }
                 }else{
@@ -136,6 +159,10 @@ export class ComponentJSON extends React.Component{
             }
         });
         
+    }
+
+    sortableMovedOutFunction(){
+        console.log("A sortable was moved out, but no specific function was given to the component.");
     }
     
     stopSortFunction(){
@@ -342,7 +369,7 @@ export class ComponentJSON extends React.Component{
     
     //Makes the item selectable
     addEditable(data,no_delete=false){
-        if(read_only)return null;
+        //if(read_only)return null;
         if(this.state.selected){
             var type=Constants.object_dictionary[this.objectType];
             let title_length="50";
@@ -361,7 +388,7 @@ export class ComponentJSON extends React.Component{
                 let allowed_sets = this.props.object_sets.filter(set=>set.term==term_type);
                 if(allowed_sets.length>=0){
                     let disable_sets=false;
-                    if(data.depth)disable_sets=true;
+                    if(data.depth || read_only)disable_sets=true;
                     let set_options = allowed_sets.map(set=>
                         <div>
                             <input disabled={disable_sets} type="checkbox" name={set.id} checked={data.sets.indexOf(set.id)>=0} onChange={this.setChanged.bind(this,set.id)}/>
@@ -381,25 +408,25 @@ export class ComponentJSON extends React.Component{
                     {["node","week","column","workflow","outcome","nodelink"].indexOf(type)>=0 &&
                         <div>
                             <h4>{gettext("Title")}:</h4>
-                            <textarea disabled={override} autocomplete="off" id="title-editor" type="text" value={title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
+                            <textarea disabled={override || read_only} autocomplete="off" id="title-editor" type="text" value={title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow","outcome"].indexOf(type)>=0 &&
                         <div>
                             <h4>{gettext("Description")}:</h4>
-                            <QuillDiv  disabled={override} text={description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
+                            <QuillDiv  disabled={override || read_only} text={description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
                         </div>
                     }
                     {((type=="outcome" && data.depth==0)||(type=="workflow" && data.type=="course")) &&
                         <div>
                             <h4>{gettext("Code (Optional)")}:</h4>
-                            <input autocomplete="off" id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
+                            <input autocomplete="off" disabled={read_only} id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
                         <div>
                             <h4>{gettext("Context")}:</h4>
-                            <select  id="context-editor" value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
+                            <select  id="context-editor" disabled={read_only} value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
                                 {this.props.renderer.context_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
@@ -409,7 +436,7 @@ export class ComponentJSON extends React.Component{
                     {type=="node" && data.node_type<2 &&
                         <div>
                             <h4>{gettext("Task")}:</h4>
-                            <select id="task-editor" value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
+                            <select id="task-editor" disabled={read_only} value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
                                 {this.props.renderer.task_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
@@ -420,8 +447,8 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>{gettext("Time")}:</h4>
                             <div>
-                                <input disabled={override} autocomplete="off" id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
-                                <select disabled={override} id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
+                                <input disabled={override || read_only} autocomplete="off" id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
+                                <select disabled={override || read_only} id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
                                     {this.props.renderer.time_choices.map((choice)=>
                                         <option value={choice.type}>{choice.name}</option>
                                     )}
@@ -433,22 +460,22 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>{gettext("Colour")}:</h4>
                             <div>
-                                <input autocomplete="off" id="colour-editor" class="half-width" type="color" value={"#"+data.colour?.toString(16)} maxlength="30" onChange={this.inputChanged.bind(this,"colour")}/>
+                                <input disabled={read_only} autocomplete="off" id="colour-editor" class="half-width" type="color" value={"#"+data.colour?.toString(16)} maxlength="30" onChange={this.inputChanged.bind(this,"colour")}/>
                             </div>
                         </div>
                     }
                     {((type=="workflow" && data.type=="course")||(type=="node" && data.node_type==2)) &&
                         <div>
                             <h4>{gettext("Ponderation")}:</h4>
-                            <input disabled={override} autocomplete="off" class="half-width" id="ponderation-theory" type="number" value={data.ponderation_theory} onChange={this.inputChanged.bind(this,"ponderation_theory")}/>
+                            <input disabled={override || read_only} autocomplete="off" class="half-width" id="ponderation-theory" type="number" value={data.ponderation_theory} onChange={this.inputChanged.bind(this,"ponderation_theory")}/>
                             <div class="half-width">{gettext("hrs. Theory")}</div>
-                            <input disabled={override} autocomplete="off" class="half-width" id="ponderation-practical" type="number" value={data.ponderation_practical} onChange={this.inputChanged.bind(this,"ponderation_practical")}/>
+                            <input disabled={override || read_only} autocomplete="off" class="half-width" id="ponderation-practical" type="number" value={data.ponderation_practical} onChange={this.inputChanged.bind(this,"ponderation_practical")}/>
                             <div class="half-width">{gettext("hrs. Practical")}</div>
-                            <input disabled={override} class="half-width" autocomplete="off" class="half-width" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
+                            <input disabled={override || read_only} class="half-width" autocomplete="off" class="half-width" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
                             <div class="half-width">{gettext("hrs. Individual")}</div>
-                            <input disabled={override} class="half-width" autocomplete="off" class="half-width" id="time-general-hours" type="number" value={data.time_general_hours} onChange={this.inputChanged.bind(this,"time_general_hours")}/>
+                            <input disabled={override || read_only} class="half-width" autocomplete="off" class="half-width" id="time-general-hours" type="number" value={data.time_general_hours} onChange={this.inputChanged.bind(this,"time_general_hours")}/>
                             <div class="half-width">{gettext("hrs. General Education")}</div>
-                            <input disabled={override} class="half-width" autocomplete="off" class="half-width" id="time-specific-hours" type="number" value={data.time_specific_hours} onChange={this.inputChanged.bind(this,"time_specific_hours")}/>
+                            <input disabled={override || read_only} class="half-width" autocomplete="off" class="half-width" id="time-specific-hours" type="number" value={data.time_specific_hours} onChange={this.inputChanged.bind(this,"time_specific_hours")}/>
                             <div class="half-width">{gettext("hrs. Specific Education")}</div>
                         </div>
                     }
@@ -456,7 +483,7 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>{gettext("Linked Workflow")}:</h4>
                             <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
-                            <button  id="linked-workflow-editor" onClick={()=>{
+                            <button  disabled={read_only} id="linked-workflow-editor" onClick={()=>{
                                 props.renderer.tiny_loader.startLoad();
                                 getLinkedWorkflowMenu(
                                     data,
@@ -470,14 +497,14 @@ export class ComponentJSON extends React.Component{
                             }}>
                                 {gettext("Change")}
                             </button>
-                            <input type="checkbox" name="respresents_workflow" checked={data.represents_workflow} onChange={this.checkboxChanged.bind(this,"represents_workflow")}/>
+                            <input disabled={read_only} type="checkbox" name="respresents_workflow" checked={data.represents_workflow} onChange={this.checkboxChanged.bind(this,"represents_workflow")}/>
                             <label for="repesents_workflow">{gettext("Display linked workflow data")}</label>
                         </div>
                     }
                     {type=="node" && data.node_type!=2 &&
                         <div>
                             <h4>{gettext("Other")}:</h4>
-                            <input type="checkbox" name="has_autolink" checked={data.has_autolink} onChange={this.checkboxChanged.bind(this,"has_autolink")}/>
+                            <input disabled={read_only} type="checkbox" name="has_autolink" checked={data.has_autolink} onChange={this.checkboxChanged.bind(this,"has_autolink")}/>
                             <label for="has_autolink">{gettext("Draw arrow to next node")}</label>
                         </div>
                     }
@@ -485,13 +512,13 @@ export class ComponentJSON extends React.Component{
                         <div>
                             <h4>{gettext("Style")}:</h4>
                             <div>
-                                <input type="checkbox" name="dashed" checked={data.dashed} onChange={this.checkboxChanged.bind(this,"dashed")}/>
+                                <input disabled={read_only} type="checkbox" name="dashed" checked={data.dashed} onChange={this.checkboxChanged.bind(this,"dashed")}/>
                                 <label for="dashed">{gettext("Dashed Line")}</label>
                             </div>
                             <div>
                                 <label for="text-position-range">{gettext("Text Position")}</label>
                                 <div class="slidecontainer">
-                                      <input type="range" min="1" max="100" value={data.text_position} class="range-slider" id="text-position-range" onChange={this.inputChanged.bind(this,"text_position")}/>               
+                                      <input disabled={read_only} type="range" min="1" max="100" value={data.text_position} class="range-slider" id="text-position-range" onChange={this.inputChanged.bind(this,"text_position")}/>               
                                 </div>
                             </div>
                         </div>
@@ -499,31 +526,39 @@ export class ComponentJSON extends React.Component{
                     {type=="workflow" &&
                         <div>
                             <h4>{gettext("Settings")}:</h4>
-                            <label for="outcomes_type">{gettext("Outcomes Style")}</label>
-                            <select name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
-                                {this.props.renderer.outcome_type_choices.map((choice)=>
-                                    <option value={choice.type}>{choice.name}</option>
-                                )}
-                            </select>
-                            <label for="condensed">{gettext("Condensed View")}</label>
-                            <input type="checkbox" name="condensed" checked={data.condensed} onChange={this.checkboxChanged.bind(this,"condensed")}/>
+                            <div>
+                                <label for="outcomes_type">{gettext("Outcomes Style")}</label>
+                                <select disabled={read_only} name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
+                                    {this.props.renderer.outcome_type_choices.map((choice)=>
+                                        <option value={choice.type}>{choice.name}</option>
+                                    )}
+                                </select>
+                            </div>
+                            <div>
+                                <label for="condensed">{gettext("Condensed View")}</label>
+                                <input disabled={read_only} type="checkbox" name="condensed" checked={data.condensed} onChange={this.checkboxChanged.bind(this,"condensed")}/>                            
+                            </div>
                             {data.is_strategy && 
-                                [
-                                <input type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>,
+                            <div>
                                 <label for="is_published">{gettext("Published")}</label>
-                                ]
+                                <input disabled={read_only} type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
+                            </div>
                             }
+                            <div>
+                                <label for="public_view">{gettext("Create Public Page")}</label>
+                                <input disabled={read_only} type="checkbox" name="public_view" checked={data.public_view} onChange={this.publicViewCheckboxChanged.bind(this,"public_view")}/>
+                            </div>
                         </div>
                     }
                     {type=="week" && data.week_type <2 &&
                         <div>
                             <h4>{gettext("Strategy")}:</h4>
-                            <select value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
+                            <select disabled={read_only} value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
                                 {this.props.renderer.strategy_classification_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
                                 )}
                             </select>
-                            <button id="toggle-strategy-editor" onClick = {()=>{
+                            <button disabled={read_only} id="toggle-strategy-editor" onClick = {()=>{
                                 let loader = new Constants.Loader('body');
                                 toggleStrategy(data.id,data.is_strategy,
                                 (response_data)=>{
@@ -540,7 +575,7 @@ export class ComponentJSON extends React.Component{
                         </div>
                     }
                     {sets}
-                    {(!no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && 
+                    {(!read_only && !no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && 
                         [<h4>{gettext("Delete")}:</h4>,
                         this.addDeleteSelf(data)]
                     }
@@ -573,6 +608,16 @@ export class ComponentJSON extends React.Component{
 
     checkboxChanged(field,evt){
          this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
+    }
+
+    publicViewCheckboxChanged(field,evt){
+        if(!this.props.data.public_view){
+            if(window.confirm(gettext("Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."))){
+                this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
+            }
+        }else{
+            this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
+        }
     }
 
     valueChanged(field,new_value){

@@ -75,10 +75,10 @@ export const gridMenuItemAdded = (response_data) => {
     }
 }
 
-export const toggleObjectSet = (id) => {
+export const toggleObjectSet = (id,hidden) => {
     return {
         type: "objectset/toggleObjectSet",
-        payload:{id:id}
+        payload:{id:id,hidden:hidden}
     }
 }
 
@@ -1717,13 +1717,17 @@ export function saltiseStrategyReducer(state=[],action){
 export function objectSetReducer(state=[],action){
     switch(action.type){
         case 'objectset/toggleObjectSet':
+            console.log("toggling object set in reducer");
             for(var i=0;i<state.length;i++){ 
                 if(state[i].id==action.payload.id){
+                    console.log("found payload");
                     var new_state = state.slice();
-                    new_state[i]={...new_state[i],hidden:(!new_state[i].hidden)};
+                    console.log(action.payload.hidden);
+                    new_state[i]={...new_state[i],hidden:action.payload.hidden};
                     return new_state;
                 }
             }
+            return state;
         default:
             return state;
     }

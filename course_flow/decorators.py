@@ -11,7 +11,8 @@ from django.http import (
     HttpResponseNotFound,
     JsonResponse,
 )
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_GET, require_POST
+from ratelimit.decorators import ratelimit
 
 from course_flow.models import ObjectPermission, OutcomeWorkflow, User
 
@@ -113,6 +114,12 @@ def check_objects_permission(instances, user, permission):
         check_object_permission(x, user, permission) for x in instances
     ]
     return reduce(lambda a, b: a | b, object_permissions)
+
+def check_objects_public(instances):
+    object_public = [
+        x.public_view for x in instances
+    ]
+    return reduce(lambda a, b: a & b, object_public)
 
 
 def check_special_case_delete_permission(model_data, user):
@@ -401,6 +408,42 @@ def user_can_delete(model, **outer_kwargs):
 
     return wrapped_view
 
+#check to see if the two models are from the same workflow. The second object may be parent if kwargs are used
+#The second argument can be optional; if no model info is found the decorator passes
+def from_same_workflow(model1,model2, **outer_kwargs):
+    def wrapped_view(fct):
+        @wraps(fct)
+        def _wrapped_view(
+            request, model1=model1, model2=model2, outer_kwargs=outer_kwargs, *args, **kwargs
+        ):
+            try:
+                model_data1 = get_model_from_request(
+                    model1, request,
+                )
+                model_data2 = get_model_from_request(
+                    model2, request, **outer_kwargs
+                )
+                if model_data2["id"] is None or model_data2["id"] == -1:
+                    return fct(request, *args, **kwargs)
+                instance1 = get_model_from_str(model_data1["model"]).objects.get(
+                    id=model_data1["id"]
+                )
+                instance2 = get_model_from_str(model_data2["model"]).objects.get(
+                    id=model_data2["id"]
+                )
+                if(instance1.get_workflow().id==instance2.get_workflow().id):
+                    return fct(request, *args, **kwargs)
+                response = JsonResponse({"error": "workflow mismatch"})
+                response.status_code = 403
+                return response
+            except Exception as e:
+                response = JsonResponse({"error": str(e)})
+                response.status_code = 403
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view
 
 def user_is_teacher():
     def wrapped_view(fct):
@@ -418,6 +461,39 @@ def user_is_teacher():
                 response.status_code = 403
                 return response
             except:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 403
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view
+
+def public_model_access(model, **outer_kwargs):
+    def wrapped_view(fct):
+        @require_GET
+        @ratelimit(key="ip",rate="5/m",method=['GET'])
+        @wraps(fct)
+        def _wrapped_view(
+            request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
+        ):
+            ratelimited = getattr(request,"limited",False)
+            if ratelimited:
+                response = JsonResponse({"action": "ratelimited"})
+                response.status_code = 429
+                return response
+            try:
+                model_type=get_model_from_str(model)
+                permission_objects = model_type.objects.get(pk=kwargs.get("pk")).get_permission_objects()
+            except:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 403
+                return response
+            if check_objects_public(
+                permission_objects
+            ):
+                return fct(request, *args, **kwargs)
+            else:
                 response = JsonResponse({"login_url": settings.LOGIN_URL})
                 response.status_code = 403
                 return response

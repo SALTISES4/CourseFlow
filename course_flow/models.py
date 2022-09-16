@@ -835,6 +835,8 @@ class Workflow(models.Model):
 
     published = models.BooleanField(default=False)
 
+    public_view = models.BooleanField(default=False)
+
     is_strategy = models.BooleanField(default=False)
 
     from_saltise = models.BooleanField(default=False)
@@ -930,6 +932,9 @@ class Workflow(models.Model):
 
     def get_project(self):
         return self.project_set.first()
+
+    def get_workflow(self):
+        return self
 
     def get_permission_objects(self):
         return [self.get_subclass()]

@@ -2,16 +2,50 @@ import {renderMessageBox} from "./MenuComponents";
 import {changeField} from "./Reducers";
 import * as Constants from "./Constants"
 
-export function fail_function(){
-    alert("Something went wrong. Please reload the page.")
+export function fail_function(a,b,c,d){
+    if(typeof a ==="string"){
+        alert(a+" - "+gettext("Something went wrong. Please reload the page."));
+    }else if(a && a.type=="ajaxError"){
+        if(b.status==429){
+            alert(gettext("Too many requests from your IP address. Please wait and try again later."));
+        }else if(b.status==403 || b.status == 401 || b.satus == 500){
+            alert(b.status+" "+gettext("error at ")+" "+c.url);
+        }else alert(gettext("Something went wrong. Please reload the page."));
+    }else{
+         alert(gettext("Something went wrong. Please reload the page."));
+    }
 }
 
-export function getAddedWorkflowMenu(projectPk,type_filter,get_strategies,updateFunction){
+export function getAddedWorkflowMenu(projectPk,type_filter,get_strategies,self_only,updateFunction){
     $.post(post_paths.get_possible_added_workflows,{
         projectPk:JSON.stringify(projectPk),
         type_filter:JSON.stringify(type_filter),
         get_strategies:JSON.stringify(get_strategies),
+        self_only:JSON.stringify(self_only),
     },(data)=>openAddedWorkflowMenu(data,updateFunction));
+}
+
+//get the workflow's context data
+export function getWorkflowContext(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_workflow_context, {
+            workflowPk:JSON.stringify(workflowPk),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+export function getWorkflowSelectMenu(projectPk,type_filter,get_strategies,self_only,updateFunction){
+    $.post(post_paths.get_possible_added_workflows,{
+        projectPk:JSON.stringify(projectPk),
+        type_filter:JSON.stringify(type_filter),
+        get_strategies:JSON.stringify(get_strategies),
+        self_only:JSON.stringify(self_only),
+    },(data)=>openWorkflowSelectMenu(data,updateFunction));
 }
 
 export function getLinkedWorkflowMenu(nodeData,updateFunction,callBackFunction=()=>console.log("success")){
@@ -44,6 +78,12 @@ export function openAddedWorkflowMenu(response,updateFunction){
     }else alert("Failed to find your workflows.");
 }
 
+export function openWorkflowSelectMenu(response,updateFunction){
+    if(response.action=="posted"){
+        renderMessageBox(response,"workflow_select_menu",updateFunction);
+    }else alert("Failed to find your workflows.");
+}
+
 export function openTargetProjectMenu(response,updateFunction){
     if(response.action=="posted"){
         renderMessageBox(response,"target_project_menu",updateFunction);
@@ -56,7 +96,7 @@ export function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>cons
         workflowPk:workflow_id,
     }).done(function(data){
         if(data.action == "posted") callBackFunction(data);
-        else fail_function();
+        else fail_function(data.action);
     });
 }
 
@@ -82,7 +122,7 @@ export function updateValue(objectID,objectType,json,changeField=false,callBackF
         try{
             $.post(post_paths.update_value, post_object).done(function(data){
                 if(data.action == "posted") callBackFunction(data);
-                else fail_function();
+                else fail_function(data.action);
             });
         }catch(err){
             fail_function();
@@ -99,7 +139,7 @@ export function updateValueInstant(objectID,objectType,json,callBackFunction=()=
             data:JSON.stringify(json)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -133,7 +173,7 @@ export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunc
             columnType:JSON.stringify(column_type),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -148,7 +188,7 @@ export function newOutcome(workflowPk,callBackFunction=()=>console.log("success"
             workflowPk:JSON.stringify(workflowPk),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -167,7 +207,7 @@ export function newNodeLink(source_node,target_node,source_port,target_port,call
 
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -184,7 +224,7 @@ export function addStrategy(workflowPk,position=-1,strategyPk=-1,callBackFunctio
             objectType:JSON.stringify("workflow"),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -198,7 +238,7 @@ export function toggleStrategy(weekPk,is_strategy,callBackFunction=()=>console.l
             is_strategy:JSON.stringify(is_strategy),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -216,7 +256,7 @@ export function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>c
             objectType:JSON.stringify(objectType)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -232,7 +272,7 @@ export function restoreSelf(objectID,objectType,callBackFunction=()=>console.log
             objectType:JSON.stringify(objectType)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -248,7 +288,7 @@ export function removeComment(objectID,objectType,commentPk,callBackFunction=()=
             objectType:JSON.stringify(objectType)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -263,7 +303,7 @@ export function removeAllComments(objectID,objectType,callBackFunction=()=>conso
             objectType:JSON.stringify(objectType)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -280,7 +320,7 @@ export function updateOutcomenodeDegree(nodeID,outcomeID,value,callBackFunction=
             degree:JSON.stringify(value)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -298,7 +338,7 @@ export function duplicateSelf(objectID,objectType,parentID,parentType,throughTyp
             throughType:JSON.stringify(throughType)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -315,7 +355,7 @@ export function insertSibling(objectID,objectType,parentID,parentType,throughTyp
             throughType:JSON.stringify(throughType)
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -330,7 +370,7 @@ export function insertChild(objectID,objectType,callBackFunction=()=>console.log
             objectType:JSON.stringify(objectType),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -351,7 +391,7 @@ export function columnChanged(renderer,objectID,columnID){
     }
     $(document).off("nodeweek-dropped");
     $(document).on("nodeweek-dropped",()=>{
-        dragAction(renderer.dragAction["nodeweek"]);
+        dragAction(renderer,renderer.dragAction["nodeweek"]);
         renderer.dragAction["nodeweek"]=null;
         $(document).off("nodeweek-dropped");
     });
@@ -373,7 +413,7 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
     }
     $(document).off(throughType+"-dropped");
     $(document).on(throughType+"-dropped",()=>{
-        dragAction(renderer.dragAction[throughType]);
+        dragAction(renderer,renderer.dragAction[throughType]);
         renderer.dragAction[throughType]=null;
         $(document).off(throughType+"-dropped");
     });
@@ -381,20 +421,21 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
 
 
 
-export function dragAction(action_data,callBackFunction=()=>console.log("success")){
+export function dragAction(renderer,action_data,callBackFunction=()=>console.log("success")){
     try{
-        workflow_renderer.tiny_loader.startLoad();
+        renderer.tiny_loader.startLoad();
         $(".ui-draggable").draggable("disable");
         $.post(post_paths.inserted_at, 
             action_data
         ).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
             $(".ui-draggable").draggable("enable");
-            workflow_renderer.tiny_loader.endLoad();
+            renderer.tiny_loader.endLoad();
         });
     }catch(err){
-        fail_function();
+        fail_function("The item failed to be inserted.");
+        console.log(err);
     }
 }
 
@@ -409,7 +450,7 @@ export function updateOutcomehorizontallinkDegree(outcomePk,outcome2Pk,degree,ca
             degree:JSON.stringify(degree),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -425,7 +466,7 @@ export function toggleFavourite(objectID,objectType,favourite,callBackFunction=(
             favourite:JSON.stringify(favourite),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
-            else fail_function();
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();
@@ -441,7 +482,7 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
                 projectPk:JSON.stringify(itemPk),
             }).done(function(data){
                 if(data.action == "posted") callBackFunction(data);
-                else fail_function();
+                else fail_function(data.action);
             });
         }else if(objectType=="outcome"){
             $.post(post_paths.duplicate_outcome_ajax, {
@@ -449,14 +490,14 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
                 projectPk:JSON.stringify(projectID),
             }).done(function(data){
                 if(data.action == "posted") callBackFunction(data);
-                else fail_function();
+                else fail_function(data.action);
             });
         }else if(!projectID && projectID!==0){
             $.post(post_paths.duplicate_strategy_ajax, {
                 workflowPk:JSON.stringify(itemPk),
             }).done(function(data){
                 if(data.action == "posted") callBackFunction(data);
-                else fail_function();
+                else fail_function(data.action);
             });
         }else{
             $.post(post_paths.duplicate_workflow_ajax, {
@@ -464,7 +505,7 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
                 projectPk:JSON.stringify(projectID),
             }).done(function(data){
                 if(data.action == "posted") callBackFunction(data);
-                else fail_function();
+                else fail_function(data.action);
             });
         }
     }catch(err){
@@ -481,7 +522,8 @@ export function getWorkflowData(workflowPk,callBackFunction=()=>console.log("suc
         $.post(post_paths.get_workflow_data,{
             workflowPk:JSON.stringify(workflowPk)
         }).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -494,7 +536,8 @@ export function getWorkflowParentData(workflowPk,callBackFunction=()=>console.lo
         $.post(post_paths.get_workflow_parent_data,{
             workflowPk:JSON.stringify(workflowPk)
         }).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -507,7 +550,54 @@ export function getWorkflowChildData(workflowPk,callBackFunction=()=>console.log
         $.post(post_paths.get_workflow_child_data,{
             workflowPk:JSON.stringify(workflowPk)
         }).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the public data from the workflow
+export function getPublicWorkflowData(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.get(
+                get_paths.get_public_workflow_data.replace("0",workflowPk)
+        ).done(function(data){
+            console.log("done");
+            console.log(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
+        });
+    }catch(err){
+        console.log("got an error");
+        console.log(err);
+        fail_function();
+    }
+}
+
+//Get the public data from all parent workflows
+export function getPublicWorkflowParentData(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.get(
+                get_paths.get_public_workflow_parent_data.replace("0",workflowPk)
+        ).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the public data from all child workflows
+export function getPublicWorkflowChildData(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.get(
+                get_paths.get_public_workflow_child_data.replace("0",workflowPk)
+        ).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -534,7 +624,8 @@ export function setUserPermission(user_id,objectID,objectType,permission_type,ca
             permission_user:JSON.stringify(user_id),
             permission_type:JSON.stringify(permission_type)
         }).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -548,7 +639,8 @@ export function getUsersForObject(objectID,objectType,callBackFunction=()=>conso
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType)
         }).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -559,7 +651,8 @@ export function getUsersForObject(objectID,objectType,callBackFunction=()=>conso
 export function getUserList(filter,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_user_list,{filter:JSON.stringify(filter)}).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -573,7 +666,8 @@ export function getCommentsForObject(objectID,objectType,callBackFunction=()=>co
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType),
         }).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -588,7 +682,8 @@ export function addComment(objectID,objectType,text,callBackFunction=()=>console
             objectType:JSON.stringify(objectType),
             text:JSON.stringify(text),
         }).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -604,7 +699,8 @@ export function addTerminology(projectPk,term,title,translation_plural,callBackF
             title:JSON.stringify(title),
             translation_plural:JSON.stringify(translation_plural),
         }).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -620,7 +716,8 @@ export function updateObjectSet(objectID,objectType,objectsetPk,add,callBackFunc
             objectsetPk:JSON.stringify(objectsetPk),
             add:JSON.stringify(add),
         }).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -634,7 +731,8 @@ export function getParentWorkflowInfo(workflowPk,callBackFunction=()=>console.lo
         $.post(post_paths.get_parent_workflow_info,{
             workflowPk:JSON.stringify(workflowPk),
         }).done(function(data){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();
@@ -649,7 +747,8 @@ export function getExport(objectID,objectType,exportType,callBackFunction=()=>co
             objectType:JSON.stringify(objectType),
             exportType:JSON.stringify(exportType),
         }).done(function(data, status, xhr){
-            callBackFunction(data);
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
         });
     }catch(err){
         fail_function();

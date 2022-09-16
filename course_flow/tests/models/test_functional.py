@@ -604,10 +604,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
-                        "#edit-menu .right-panel-inner"
+                        "#edit-menu .right-panel-inner #title-editor:disabled"
                     )
                 ),
-                0,
+                1,
             )
 
     def test_workflow_editing(self):
@@ -3075,6 +3075,73 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             len(selenium.find_elements_by_css_selector(".node")), 0
         )
 
+class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
+        else:
+            self.selenium = webdriver.Chrome()
+
+        super(ChannelsStaticLiveServerTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        selenium.get(self.live_server_url + "/home/")
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(ChannelsStaticLiveServerTestCase, self).tearDown()
+
+    def test_comparison_views(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+
+        project = Project.objects.create(author=self.user)
+        workflow = Course.objects.create(author=self.user)
+        workflow2 = Course.objects.create(author=self.user)
+        WorkflowProject.objects.create(workflow=workflow, project=project)
+        WorkflowProject.objects.create(workflow=workflow2, project=project)
+        node1 = workflow.weeks.first().nodes.create(author=self.user,column=workflow.columns.first())
+        node2 = workflow2.weeks.first().nodes.create(author=self.user,column=workflow2.columns.first())
+        outcome1 = workflow.outcomes.create(author=self.user)
+        outcome2 = workflow2.outcomes.create(author=self.user)
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:project-update", args=[project.pk])
+        )
+        time.sleep(3)
+
+        selenium.find_element_by_id("comparison-view").click();
+        time.sleep(3);
+        selenium.find_element_by_id("load-workflow").click();
+        time.sleep(2);
+        selenium.find_elements_by_css_selector(".message-wrap .workflow-created")[0].click();
+        selenium.find_element_by_id("set-linked-workflow").click()
+        time.sleep(5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".node")),1)
+        selenium.find_element_by_id("load-workflow").click();
+        time.sleep(2);
+        selenium.find_elements_by_css_selector(".message-wrap .workflow-created")[1].click();
+        selenium.find_element_by_id("set-linked-workflow").click()
+        time.sleep(5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".node")),2)
+        selenium.find_element_by_id("button_outcomeedit").click()
+        time.sleep(5)
+        self.assertEqual(len(selenium.find_elements_by_css_selector(".outcome")),2)
+
+
+
+
+
+
 
 async def connect_ws(ws):
     return await ws.connect()
@@ -3124,6 +3191,7 @@ def async_to_sync_receive_nothing(ws):
     loop = asyncio.get_event_loop()
     coroutine = receive_nothing_ws(ws)
     return loop.run_until_complete(coroutine)
+
 
 
 class WebsocketTestCase(ChannelsStaticLiveServerTestCase):

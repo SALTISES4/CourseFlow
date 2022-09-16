@@ -48,7 +48,7 @@ class OutcomeView extends ComponentJSON{
             mouseover_actions.push(this.addDeleteSelf(data));
             if(data.depth<2)mouseover_actions.push(this.addInsertChild(data));
         }
-        mouseover_actions.push(this.addCommenting(data));
+        if(!this.props.renderer.public_view)mouseover_actions.push(this.addCommenting(data));
         
         let dropIcon;
         if(data.is_dropped)dropIcon = "droptriangleup";
@@ -126,7 +126,7 @@ class OutcomeView extends ComponentJSON{
 //    }
 
     makeDragAndDrop(){
-        this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome-"+this.props.data.depth,false,false,".children-block-"+this.props.data.depth,".outcome");
+        this.makeSortableNode($(this.children_block.current).children(".outcome-outcome").not("ui-draggable"),this.props.objectID,"outcomeoutcome",".outcome-outcome-"+this.props.data.depth,false,false,"#workflow-"+this.props.workflow_id,".outcome");
         if(this.props.data.depth==0)this.makeDroppable();
     }
 
@@ -137,6 +137,12 @@ class OutcomeView extends ComponentJSON{
 
     stopSortFunction(){
         
+    }
+
+    sortableMovedOutFunction(id,new_position,type,new_parent,child_id){
+        console.log("you've moved a "+type+" out to another workflow, ignoring");
+        // this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
+        // insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
     }
 
     makeDroppable(){
