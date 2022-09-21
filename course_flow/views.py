@@ -5369,9 +5369,10 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
             if nodelink["style"]=="dashed":
                 nl.dashed=True 
                 nl.save()
-            if nodelink["ports"] is not None:
+            ports = nodelink.get("ports",None)
+            if ports is not None:
                 try:
-                    port_data = nodelink["ports"].split(";")
+                    port_data = ports.split(";")
                     if port_data[0].find("sourcePort="):
                         source_port = port_data[0][-1]
                         target_port = port_data[1][-1]

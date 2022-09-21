@@ -41,6 +41,9 @@ from .utils import (
     multiple_replace,
 )
 
+bleach_allowed_attributes_description = {
+    'a': ['href', 'title', 'target'], 'abbr': ['title'], 'acronym': ['title']
+}
 bleach_allowed_tags_description = [
     "b",
     "u",
@@ -89,13 +92,19 @@ class DescriptionSerializerMixin:
 
     def get_description(self, instance):
         return bleach_sanitizer(
-            instance.description, tags=bleach_allowed_tags_description
+            instance.description, 
+            tags=bleach_allowed_tags_description,
+            attributes=bleach_allowed_attributes_description,
         )
 
     def validate_description(self, value):
         if value is None:
             return None
-        return bleach_sanitizer(value, tags=bleach_allowed_tags_description)
+        return bleach_sanitizer(
+            value, 
+            tags=bleach_allowed_tags_description,
+            attributes=bleach_allowed_attributes_description,
+        )
 
 
 class TitleSerializerMixin:
@@ -264,7 +273,7 @@ class NodeSerializerShallow(
             "represents_workflow",
             "linked_workflow",
             "linked_workflow_data",
-            "is_dropped",
+            # "is_dropped",
             "comments",
             "sets",
         ]
@@ -385,9 +394,9 @@ class NodeSerializerShallow(
         instance.time_specific_hours = validated_data.get(
             "time_specific_hours", instance.time_specific_hours
         )
-        instance.is_dropped = validated_data.get(
-            "is_dropped", instance.is_dropped
-        )
+        # instance.is_dropped = validated_data.get(
+        #     "is_dropped", instance.is_dropped
+        # )
         instance.save()
         return instance
 
@@ -486,7 +495,7 @@ class WeekSerializerShallow(
             "is_strategy",
             "strategy_classification",
             "comments",
-            "is_dropped",
+            # "is_dropped",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -511,9 +520,9 @@ class WeekSerializerShallow(
         instance.strategy_classification = validated_data.get(
             "strategy_classification", instance.strategy_classification
         )
-        instance.is_dropped = validated_data.get(
-            "is_dropped", instance.is_dropped
-        )
+        # instance.is_dropped = validated_data.get(
+        #     "is_dropped", instance.is_dropped
+        # )
         instance.save()
         return instance
 
@@ -661,7 +670,7 @@ class OutcomeSerializerShallow(
             "child_outcome_links",
             "outcome_horizontal_links",
             "outcome_horizontal_links_unique",
-            "is_dropped",
+            # "is_dropped",
             "depth",
             "type",
             "comments",
@@ -727,9 +736,9 @@ class OutcomeSerializerShallow(
         instance.description = validated_data.get(
             "description", instance.description
         )
-        instance.is_dropped = validated_data.get(
-            "is_dropped", instance.is_dropped
-        )
+        # instance.is_dropped = validated_data.get(
+        #     "is_dropped", instance.is_dropped
+        # )
         instance.save()
         return instance
 

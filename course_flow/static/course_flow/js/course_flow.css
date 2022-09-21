@@ -8,9 +8,10 @@ body, html{
     margin:0px;
     height:100%;
     font-family:'Open Sans',sans-serif;
+    font-size: 14px;
 }
 
-a{
+.left-panel a, .workflow-title-bar a, .home-tabs .ui-tabs-tab a, .titlebar a, .home-item a{
     color:#444444;
     text-decoration: none;
 }
@@ -376,6 +377,7 @@ button:hover{
     padding-top:8px;
     padding-bottom:8px;
     display:block;
+    font-size: 14px;
 }
 
 .panel-item > img{
@@ -393,7 +395,7 @@ button:hover{
 
 .panel-favourite{
     padding:2px;
-    font-size:14px;
+    font-size:13px;
     display:block;
     margin-left:22px;
     margin-right:20px;
@@ -645,6 +647,7 @@ button:hover{
     flex-grow:1;
     color:#1976bc;
     white-space:normal;
+    text-decoration: none;
 }
 
 .workflow-buttons{
@@ -1212,11 +1215,11 @@ button, input[type="submit"]{
 }
 
 #content-container{
-    font-family:sans-serif;
+    font-family:'Open Sans';
 }
 
 .workflow-container{
-    font-family:sans-serif;
+    font-family:'Open Sans';
     position:relative;
     background:white;
     display:inline-block;
@@ -1680,14 +1683,13 @@ button, input[type="submit"]{
     vertical-align: middle;
     height:100%;
     width:40%;
-    padding:3px;
     box-sizing:border-box;
 }
 
 .node-drop-left{
-    font-size:30px;
+    font-size:14px;
     font-weight:600;
-    margin-top:-28px;
+    padding-left: 3px;
 }
 
 .node-drop-right{
@@ -2364,12 +2366,13 @@ ol.children-block{
 .outcome-table .node-title{
     width:100%;
     min-height:0px;
-    max-height:14px;
+    max-height:18px;
 }
 
 .outcome-table .node-top-row{
     padding:1px;
     border-radius:0px 0px 5px 5px;
+    height: calc(100% - 5px);
 }
 
 .outcome-table .table-cell .total-header, .outcome-table .table-cell .node-category-header{

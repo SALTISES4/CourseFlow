@@ -604,7 +604,11 @@ def get_matrix_sum_line(rows, fn):
             values += [value]
             if value is None or value == "":
                 value = 0
-            total += int(value)
+            try:
+                this_value = float(value)
+            except:
+                this_value = 0
+            total += this_value
         else:
             values += [total]
             total = 0

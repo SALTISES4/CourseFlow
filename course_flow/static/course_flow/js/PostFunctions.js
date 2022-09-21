@@ -1,4 +1,6 @@
 import {renderMessageBox} from "./MenuComponents";
+import {changeField} from "./Reducers";
+import * as Constants from "./Constants"
 
 export function fail_function(a,b,c,d){
     if(typeof a ==="string"){
@@ -143,6 +145,23 @@ export function updateValueInstant(objectID,objectType,json,callBackFunction=()=
         fail_function();
     }
 }
+
+//Toggles whether or not an object is dropped. No longer sent to database.
+export function toggleDrop(objectID,objectType,is_dropped,dispatch,depth=1){
+    try{
+        let default_drop = Constants.get_default_drop_state(objectID,objectType,depth);
+        if(is_dropped!=default_drop)window.localStorage.setItem(objectType+objectID,is_dropped);
+        else window.localStorage.removeItem(objectType+objectID);
+    }catch(err){
+        console.log("couldn't set local storage");
+        console.log(err);
+        if(err.name=="QuotaExceededError"||err.name=="NS_ERROR_DOM_QUOTA_REACHED"){
+            window.localStorage.clear();
+        }
+    }
+    dispatch(changeField(objectID,objectType,{is_dropped:is_dropped}));
+}
+
 
 //Add a new node to a week
 export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunction=()=>console.log("success")){

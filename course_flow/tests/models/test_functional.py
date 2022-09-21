@@ -228,7 +228,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             selenium.find_element_by_css_selector(
                 ".workflow-for-menu." + workflow_type + " .workflow-title"
             ).click()
-            time.sleep(2)
+
+            time.sleep(5)
+
+            windows = selenium.window_handles
+            selenium.switch_to_window(windows[0])
+            selenium.close()
+            selenium.switch_to_window(windows[1])
+
             assert (
                 project_title
                 in selenium.find_element_by_id("workflowtitle").text
@@ -933,6 +940,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             OutcomeOutcome.objects.filter(parent=base_outcome).count(), 2
         )
+        time.sleep(1)
+        selenium.find_element_by_css_selector(".outcome:not(.dropped) > .outcome-drop").click()
         selenium.find_element_by_css_selector(
             ".children-block:not(:empty)+.outcome-create-child"
         ).click()
@@ -1145,7 +1154,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
-            time.sleep(2)
+            time.sleep(5)
             selenium.find_element_by_css_selector(
                 ".workflow-details .week"
             ).click()
@@ -1173,6 +1182,12 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             ).click()
             selenium.find_element_by_css_selector(".workflow-title").click()
             time.sleep(2)
+
+            windows = selenium.window_handles
+            selenium.switch_to_window(windows[0])
+            selenium.close()
+            selenium.switch_to_window(windows[1])
+
             assert (
                 "new strategy"
                 in selenium.find_element_by_css_selector(
