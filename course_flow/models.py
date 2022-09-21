@@ -1129,7 +1129,7 @@ class Discipline(models.Model):
 
 class Favourite(models.Model):
     content_choices = {
-        "model__in": ["project", "activity", "course", "program", "liveproject"]
+        "model__in": ["project", "activity", "course", "program"]
     }
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content_type = models.ForeignKey(
@@ -1178,18 +1178,11 @@ def default_due_date():
     return timezone.now()+timezone.timedelta(weeks=1)
 
 class LiveProject(models.Model):
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     
-    title = models.CharField(
-        max_length=title_max_length, null=True, blank=True
-    )
-    description = models.TextField(null=True, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
 
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True)
-    deleted_on = models.DateTimeField(default=timezone.now)
-    deleted = models.BooleanField(default=False)
-    users = models.ManyToManyField(User, through="LiveUser", blank=True, related_name="live_projects_added")
+    project = models.OneToOneField(Project, on_delete=models.CASCADE, primary_key=True)
+
     #Whether students are able to check tasks as complete themselves or
     # must have the instructor mark them as complete
     default_self_reporting = models.BooleanField(default=True)
@@ -1198,52 +1191,44 @@ class LiveProject(models.Model):
     #Whether it is enough for a single assigned user to complete the task,
     # or (when True) when any user completes the task it becomes complete for all users
     default_single_completion = models.BooleanField(default=False)
-    visible_workflows = models.ManyToManyField(Workflow, blank=True)
 
-    favourited_by = GenericRelation("Favourite", related_query_name="liveproject")
 
     def get_permission_objects(self):
-        return [self]
-
-    def __str__(self):
-        if self.title is not None and self.title != "":
-            return self.title
-        else:
-            return "Project"
+        return [self.project]
             
     @property
     def type(self):
         return "liveproject"
 
 
-class LiveAssignment(models.Model):
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    live_project = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
-    linked_workflows = models.ManyToManyField(Workflow, blank=True)
-    self_reporting = models.BooleanField(default=True)
-    single_completion = models.BooleanField(default=False)
-    tasks = models.ManyToManyField(Node, blank=True)
-    start_date = models.DateTimeField(default=timezone.now)
-    end_date = models.DateTimeField(default=default_due_date)
-    created_on = models.DateTimeField(default=timezone.now)
+# class LiveAssignment(models.Model):
+#     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+#     live_project = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
+#     linked_workflows = models.ManyToManyField(Workflow, blank=True)
+#     self_reporting = models.BooleanField(default=True)
+#     single_completion = models.BooleanField(default=False)
+#     tasks = models.ManyToManyField(Node, blank=True)
+#     start_date = models.DateTimeField(default=timezone.now)
+#     end_date = models.DateTimeField(default=default_due_date)
+#     created_on = models.DateTimeField(default=timezone.now)
 
-class LiveUser(models.Model):
-    live_project = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    USER_STUDENT = 0
-    USER_TEACHER = 1
-    USER_TYPE_CHOICES = (
-        (USER_STUDENT, _("Student")),
-        (USER_TEACHER, _("Teacher")),
-    )
-    user_type = models.PositiveIntegerField(
-        choices=USER_TYPE_CHOICES, default=USER_STUDENT
-    )
+# class LiveUser(models.Model):
+#     live_project = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
+#     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+#     USER_STUDENT = 0
+#     USER_TEACHER = 1
+#     USER_TYPE_CHOICES = (
+#         (USER_STUDENT, _("Student")),
+#         (USER_TEACHER, _("Teacher")),
+#     )
+#     user_type = models.PositiveIntegerField(
+#         choices=USER_TYPE_CHOICES, default=USER_STUDENT
+#     )
 
-class UserAssignment(models.Model):
-    live_user = models.ForeignKey(LiveUser, on_delete=models.CASCADE)
-    assignment = models.ForeignKey(LiveAssignment, on_delete=models.CASCADE)
-    completed = models.BooleanField(default=False)
+# class UserAssignment(models.Model):
+#     live_user = models.ForeignKey(LiveUser, on_delete=models.CASCADE)
+#     assignment = models.ForeignKey(LiveAssignment, on_delete=models.CASCADE)
+#     completed = models.BooleanField(default=False)
 
 
 """

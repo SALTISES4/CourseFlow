@@ -41,5 +41,4 @@ def not_deleted_favourites(query):
         | Q(course__deleted=False,course__project__deleted=False)
         | Q(activity__deleted=False,activity__project__deleted=False)
         | Q(project__deleted=False)
-        | Q(liveproject__deleted=False)
     )

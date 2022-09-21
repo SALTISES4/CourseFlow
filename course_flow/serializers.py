@@ -599,6 +599,7 @@ class ProjectSerializerShallow(
             "type",
             "object_sets",
             "favourite",
+            "liveproject",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -608,7 +609,7 @@ class ProjectSerializerShallow(
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
     author=serializers.SerializerMethodField()
-
+    
 
     def get_favourite(self, instance):
         user = self.context.get("user")
@@ -1439,63 +1440,22 @@ Live Project Serializers
 
 class LiveProjectSerializer(
     serializers.ModelSerializer,
-    TitleSerializerMixin,
-    DescriptionSerializerMixin,
-    AuthorSerializerMixin,
 ):
     class Meta:
         model = LiveProject
         fields = [
             "id",
-            "project_id",
-            "title",
-            "description",
-            "author",
-            "author_id",
             "type",
             "created_on",
-            "deleted",
-            "deleted_on",
             "default_self_reporting",
             "default_assign_to_all",
             "default_single_completion",
-            "is_owned",
-            "favourite",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
-    author=serializers.SerializerMethodField()
-
-    is_owned=serializers.SerializerMethodField()
-    favourite=serializers.SerializerMethodField()
-
-    def get_favourite(self, instance):
-        user = self.context.get("user")
-        if Favourite.objects.filter(
-            user=user,
-            content_type=ContentType.objects.get_for_model(instance),
-            object_id=instance.id,
-        ):
-            return True
-        else:
-            return False
-
-    def get_is_owned(self, instance):
-        user = self.context.get("user")
-        if user == instance.author:
-            return True
-        else:
-            return False
 
     def update(self, instance, validated_data):
-        instance.title = validated_data.get("title", instance.title)
-        instance.description = validated_data.get(
-            "description", instance.description
-        )
-        instance.deleted = validated_data.get(
-            "deleted", instance.deleted
-        )
         instance.default_self_reporting = validated_data.get(
             "default_self_reporting", instance.default_self_reporting
         )

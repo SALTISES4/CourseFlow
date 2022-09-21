@@ -5406,46 +5406,46 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
 Live Views
 """
 
-def get_my_live_projects(user, add):
-    data_package = {
-        "owned_projects": {
-            "title": _("My Live Projects"),
-            "sections": [
-                {
-                    "title": _("Add new"),
-                    "object_type": "liveproject",
-                    "objects": LiveProjectSerializer(
-                        LiveProject.objects.filter(author=user, deleted=False),
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            ],
-            "add": add,
-#            "duplicate": "copy",
-            "emptytext": _(
-                "Live Projects are used to run a class or course using the content of the given project. Click the button above to create a live project from a project you own."
-            ),
-        },
-        "archived_projects": {
-            "title": _("Archived Live Projects"),
-            "sections": [
-                {
-                    "title": _("Restore Projects"),
-                    "object_type": "liveproject",
-                    "objects": LiveProjectSerializer(
-                        LiveProject.objects.filter(author=user, deleted=True),
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            ],
-            "emptytext": _(
-                "Projects you have archived can be viewed or restored from here."
-            ),
-        },
-    }
-    return data_package
+# def get_my_live_projects(user, add):
+#     data_package = {
+#         "owned_projects": {
+#             "title": _("My Live Projects"),
+#             "sections": [
+#                 {
+#                     "title": _("Add new"),
+#                     "object_type": "liveproject",
+#                     "objects": LiveProjectSerializer(
+#                         LiveProject.objects.filter(author=user, deleted=False),
+#                         many=True,
+#                         context={"user": user},
+#                     ).data,
+#                 }
+#             ],
+#             "add": add,
+# #            "duplicate": "copy",
+#             "emptytext": _(
+#                 "Live Projects are used to run a class or course using the content of the given project. Click the button above to create a live project from a project you own."
+#             ),
+#         },
+#         "archived_projects": {
+#             "title": _("Archived Live Projects"),
+#             "sections": [
+#                 {
+#                     "title": _("Restore Projects"),
+#                     "object_type": "liveproject",
+#                     "objects": LiveProjectSerializer(
+#                         LiveProject.objects.filter(author=user, deleted=True),
+#                         many=True,
+#                         context={"user": user},
+#                     ).data,
+#                 }
+#             ],
+#             "emptytext": _(
+#                 "Projects you have archived can be viewed or restored from here."
+#             ),
+#         },
+#     }
+#     return data_package
 
 
 
@@ -5460,6 +5460,22 @@ def my_live_projects_view(request):
     return render(request, "course_flow/my_live_projects.html", context)
 
 
+
+@user_can_edit("projectPk")
+def make_project_live(request: HttpRequest) -> HttpResponse:
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    try:
+        liveproject = LiveProject.objects.create(project=project)
+        print(project.id)
+        print(liveproject.id)
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "live_project_id": liveproject.id,
+        }
+    )
 
 class LiveProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     model = LiveProject
@@ -5477,21 +5493,21 @@ class LiveProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     
 
 
-class LiveProjectCreateView(
-    LoginRequiredMixin, UserCanEditProjectMixin, CreateView_No_Autocomplete
-):
-    model = LiveProject
-    fields = ["title", "description"]
-    template_name = "course_flow/live_project_create.html"
+# class LiveProjectCreateView(
+#     LoginRequiredMixin, UserCanEditProjectMixin, CreateView_No_Autocomplete
+# ):
+#     model = LiveProject
+#     fields = ["title", "description"]
+#     template_name = "course_flow/live_project_create.html"
 
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        project = Project.objects.get(pk=self.kwargs["projectPk"])
-        response = super(CreateView, self).form_valid(form)
-        form.instance.project=project
-        return super(LiveProjectCreateView, self).form_valid(form)
+#     def form_valid(self, form):
+#         form.instance.author = self.request.user
+#         project = Project.objects.get(pk=self.kwargs["projectPk"])
+#         response = super(CreateView, self).form_valid(form)
+#         form.instance.project=project
+#         return super(LiveProjectCreateView, self).form_valid(form)
 
-    def get_success_url(self):
-        return reverse(
-            "course_flow:live-project-update", kwargs={"pk": self.object.pk}
-        )
+#     def get_success_url(self):
+#         return reverse(
+#             "course_flow:live-project-update", kwargs={"pk": self.object.pk}
+#         )

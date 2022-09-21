@@ -237,8 +237,6 @@
               <a class="panel-favourite hover-shade"
                  {% if favourite.content_object.type == "project" %}
                     href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
-                 {% elif favourite.content_object.type == "liveproject" %}
-                    href="{% url 'course_flow:live-project-update' pk=favourite.content_object.pk %}"
                  {% else %}
                     href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
                  {% endif %}
@@ -307,6 +305,7 @@
       get_export: "{% url 'course_flow:get-export' %}",
       get_export_download: "{% url 'course_flow:get-export-download' %}",
       import_data: "{% url 'course_flow:import-data' %}",
+      make_project_live: "{% url 'course_flow:make-project-live' %}",
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",

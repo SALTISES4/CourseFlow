@@ -213,11 +213,6 @@ def course_flow_patterns():
             name="get-user-list",
         ),
         path(
-            "liveproject/<int:projectPk>/create/",
-            views.LiveProjectCreateView.as_view(),
-            name="live-project-create",
-        ),
-        path(
             "project/create/",
             views.ProjectCreateView.as_view(),
             name="project-create",
@@ -282,6 +277,11 @@ def course_flow_patterns():
             "downloads/exports/get/",
             views.get_export_download,
             name="get-export-download",
+        ),
+        path(
+            "project/makelive",
+            views.make_project_live,
+            name="make-project-live"
         ),
         path(
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"

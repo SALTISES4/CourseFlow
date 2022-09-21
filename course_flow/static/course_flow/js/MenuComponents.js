@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {createLiveProject, updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology, getExport} from "./PostFunctions";
+import {makeProjectLive, updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology, getExport} from "./PostFunctions";
 import {gridMenuItemAdded} from "./Reducers";
 import {object_sets_types,Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
@@ -362,18 +362,7 @@ export class MenuSection extends React.Component{
             if(section_type=="workflow")types=["program","course","activity"];
             else types=[section_type];
             let adds;
-            if(section_type=="liveproject"){
-                adds = [
-                    <a class="hover-shade" onClick={()=>{
-                        getAddedWorkflowMenu(parentID,"project",is_strategy,false,(response_data)=>{
-                            if(response_data.workflowID!=null){
-                                console.log(create_path);
-                                window.location = create_path.liveproject.replace("0",response_data.workflowID);
-                            }
-                        });          
-                    }}>{gettext("Make Live Project")}</a>
-                ]
-            }else{
+            {
                 adds=types.map((this_type)=>
                     <a class="hover-shade" href={create_path[this_type]}>
                         {gettext("Create new ")+gettext(this_type)}
@@ -528,6 +517,17 @@ class ProjectMenuUnconnected extends React.Component{
             publish_icon = iconpath+'published.svg';
             publish_text = gettext("PUBLISHED");
         }
+
+        let liveproject;
+        if(state.liveproject){
+            liveproject=(
+                <button >{gettext("View Classroom")}</button>
+            );
+        }else{
+            liveproject=(
+                <button onClick={this.makeLive.bind(this)}>{gettext("Create Classroom")}</button>
+            );
+        }
         
         return(
             <div class="project-menu">
@@ -565,6 +565,7 @@ class ProjectMenuUnconnected extends React.Component{
                             $("#viewbar")[0]
                         )
                     }
+
                     
                 </div>
                 <div class="home-tabs" id="home-tabs">
@@ -581,6 +582,13 @@ class ProjectMenuUnconnected extends React.Component{
         renderMessageBox({...this.state,id:this.props.project.id},"project_edit_menu",this.updateFunction.bind(this));
     }
     
+    makeLive(){
+        makeProjectLive(this.props.data.id,(data)=>{
+            this.setState({liveproject:data.live_project_id});
+        });
+    }
+
+
     componentDidMount(){
         $("#home-tabs").tabs({
             activate:(evt,ui)=>{

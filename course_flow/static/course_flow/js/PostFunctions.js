@@ -769,12 +769,10 @@ export function getExport(objectID,objectType,exportType,callBackFunction=()=>co
 
 
 //create live project
-export function createLiveProject(projectPk,callBackFunction=()=>console.log("success")){
+export function makeProjectLive(projectPk,callBackFunction=()=>console.log("success")){
     try{
-        $.get(post_paths.get_export,{
-            objectID:JSON.stringify(objectID),
-            objectType:JSON.stringify(objectType),
-            exportType:JSON.stringify(exportType),
+        $.get(post_paths.make_project_live,{
+            projectPk:JSON.stringify(projectPk),
         }).done(function(data, status, xhr){
             if(data.action=="posted")callBackFunction(data);
             else fail_function(data.action)
