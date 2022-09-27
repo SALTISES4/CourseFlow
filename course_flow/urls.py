@@ -284,6 +284,11 @@ def course_flow_patterns():
             name="make-project-live"
         ),
         path(
+            "project/getliveprojectdata",
+            views.get_live_project_data,
+            name="get-live-project-data"
+        ),
+        path(
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
     ] + router.urls

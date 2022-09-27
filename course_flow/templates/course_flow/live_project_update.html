@@ -38,16 +38,12 @@
   const read_only = {{read_only|safe}};
   var live_project_renderer;
 
-  console.log(data_package);
-
-
-
   const user_id = {{ user.id }};
 
   window.addEventListener("load",function(){
-      project_renderer = new renderers.ProjectRenderer(data_package,project_data);
+      live_project_renderer = new live_renderers.LiveProjectRenderer(live_project_data,project_data);
       $(document).ajaxError(renderers.fail_function);
-      project_renderer.render($("#content-container"));
+      live_project_renderer.render($("#content-container"));
   });
 </script>
 {% endblock %}

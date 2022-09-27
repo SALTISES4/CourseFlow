@@ -569,7 +569,7 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
 //    }
 //}
 //
-class WorkflowLoader extends React.Component{
+export class WorkflowLoader extends React.Component{
     
     render(){
         return (

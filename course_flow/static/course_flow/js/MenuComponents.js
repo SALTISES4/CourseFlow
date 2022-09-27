@@ -519,13 +519,13 @@ class ProjectMenuUnconnected extends React.Component{
         }
 
         let liveproject;
-        if(state.liveproject){
+        if(this.state.liveproject){
             liveproject=(
-                <button >{gettext("View Classroom")}</button>
+                <a class="menu-create hover-shade" href={update_path.liveproject.replace("0",this.state.id)}>{gettext("View Classroom")}</a>
             );
         }else{
             liveproject=(
-                <button onClick={this.makeLive.bind(this)}>{gettext("Create Classroom")}</button>
+                <a class="menu-create hover-shade" onClick={this.makeLive.bind(this)}>{gettext("Create Classroom")}</a>
             );
         }
         
@@ -545,6 +545,7 @@ class ProjectMenuUnconnected extends React.Component{
                     <a id="comparison-view" class="menu-create hover-shade" href="comparison">
                         {gettext("Comparison View")}
                     </a>
+                    {liveproject}
                     {reactDom.createPortal(
                         share,
                         $("#floatbar")[0]
@@ -583,9 +584,12 @@ class ProjectMenuUnconnected extends React.Component{
     }
     
     makeLive(){
-        makeProjectLive(this.props.data.id,(data)=>{
-            this.setState({liveproject:data.live_project_id});
-        });
+        let component = this;
+        if(window.confirm(gettext("Are you sure you want to create a live classroom for this project?"))){
+            makeProjectLive(this.state.id,(data)=>{
+                window.location = update_path.liveproject.replace("0",component.state.id);
+            });
+        }
     }
 
 

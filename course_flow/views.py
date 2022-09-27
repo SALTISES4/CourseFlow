@@ -5467,30 +5467,62 @@ def make_project_live(request: HttpRequest) -> HttpResponse:
     try:
         liveproject = LiveProject.objects.create(project=project)
         print(project.id)
-        print(liveproject.id)
+        print(liveproject.pk)
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {
             "action": "posted",
-            "live_project_id": liveproject.id,
         }
     )
 
 class LiveProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-    model = LiveProject
+    model = Project
     fields = ["title", "description"]
     template_name = "course_flow/live_project_update.html"
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        liveproject = self.object
-        project = liveproject.project
-        context["live_project_data"]=LiveProjectSerializer(liveproject);
-        context["project_data"]=ProjectSerializerShallow(project);
-        context["read_only"]=False
+        project = self.object
+        liveproject = project.liveproject
+        context["live_project_data"]=JSONRenderer().render(LiveProjectSerializer(liveproject).data).decode("utf-8");
+        context["project_data"]=JSONRenderer().render(ProjectSerializerShallow(project).data).decode("utf-8");
+        context["read_only"]=JSONRenderer().render(False).decode("utf-8")
         return context
     
+@user_can_view("projectPk")
+def get_live_project_data(request: HttpRequest) -> HttpResponse:
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    data_type = json.loads(request.POST.get("data_type"))
+    print(data_type)
+    try:
+        if(data_type=="overview"):
+            data_package = {
+                "data":"Hello world!"
+            }
+        elif(data_type=="students"):
+            data_package = {
+                "data":"Hello world!"
+            }
+        elif(data_type=="assignments"):
+            data_package = {
+                "data":"Hello world!"
+            }
+        elif(data_type=="settings"):
+            data_package = {
+                "data":"Hello world!"
+            }
+        else: raise AttributeError
+
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package":data_package,
+        }
+    )
+
 
 
 # class LiveProjectCreateView(

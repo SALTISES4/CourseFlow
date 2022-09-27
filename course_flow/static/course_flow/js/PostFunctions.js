@@ -771,11 +771,26 @@ export function getExport(objectID,objectType,exportType,callBackFunction=()=>co
 //create live project
 export function makeProjectLive(projectPk,callBackFunction=()=>console.log("success")){
     try{
-        $.get(post_paths.make_project_live,{
+        $.post(post_paths.make_project_live,{
             projectPk:JSON.stringify(projectPk),
-        }).done(function(data, status, xhr){
+        }).done(function(data){
             if(data.action=="posted")callBackFunction(data);
-            else fail_function(data.action)
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//get live project data
+export function getLiveProjectData(projectPk,data_type,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_live_project_data,{
+            projectPk:JSON.stringify(projectPk),
+            data_type:JSON.stringify(data_type),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
         });
     }catch(err){
         fail_function();

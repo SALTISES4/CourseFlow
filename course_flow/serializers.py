@@ -1444,7 +1444,7 @@ class LiveProjectSerializer(
     class Meta:
         model = LiveProject
         fields = [
-            "id",
+            "pk",
             "type",
             "created_on",
             "default_self_reporting",
@@ -1453,7 +1453,6 @@ class LiveProjectSerializer(
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
-    deleted_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def update(self, instance, validated_data):
         instance.default_self_reporting = validated_data.get(

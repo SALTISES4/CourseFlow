@@ -213,7 +213,7 @@
       </a>
       <a class="panel-item hover-shade" href="{% url 'course_flow:my-live-projects' %}">
         <img src="{% static 'course_flow/img/images_svg/layoutnav_2.svg' %}"/>
-        <div>{% trans 'My Live Projects' %}</div>
+        <div>{% trans 'My Classrooms' %}</div>
       </a>
       <a class="panel-item hover-shade" href="{% url 'course_flow:my-templates' %}">
         <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
@@ -306,6 +306,7 @@
       get_export_download: "{% url 'course_flow:get-export-download' %}",
       import_data: "{% url 'course_flow:import-data' %}",
       make_project_live: "{% url 'course_flow:make-project-live' %}",
+      get_live_project_data: "{% url 'course_flow:get-live-project-data' %}",
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",

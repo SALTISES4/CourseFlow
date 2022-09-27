@@ -1,11 +1,12 @@
 import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as React from "react";
+import {LiveProjectMenu} from "./LiveProjectView";
 
 
 
 export class LiveProjectRenderer{
-    constructor(live_projecT_data,project_data){
+    constructor(live_project_data,project_data){
         this.live_project_data = live_project_data;
         this.project_data = project_data;
     }
@@ -14,27 +15,13 @@ export class LiveProjectRenderer{
         this.container=container;
         
         reactDom.render(
-            <Provider store = {this.store}>
-                <ProjectMenu project={this.project_data}/>
-            </Provider>,
+            <LiveProjectMenu project={this.project_data}/>,
             container[0]
         );
         
     }
 }
 
-
-class DivLoader extends React.Component{
-    
-    render(){
-        return (
-            <div class="load-screen">
-                
-            </div>
-        
-        )
-    }
-}
 
 
 
