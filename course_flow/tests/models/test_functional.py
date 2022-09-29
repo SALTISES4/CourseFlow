@@ -325,6 +325,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 ".project-header .workflow-description"
             ).text
         )
+        time.sleep(2)
         project = Project.objects.first()
         self.assertEqual(project.title, "new title")
         self.assertEqual(project.description, "new description")
