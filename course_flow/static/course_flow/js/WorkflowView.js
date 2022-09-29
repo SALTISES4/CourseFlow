@@ -46,6 +46,16 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         }
         let share;
         if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
+        
+        let public_view;
+        if(data.public_view && !renderer.public_view){
+            public_view=(
+                <a id="public-view" class="menu-create hover-shade hide-print" href={public_update_path.workflow.replace("0",data.id)}>
+                    {gettext("Public Page")}
+                </a>
+            );
+        }
+
         let workflow_content;
         if(renderer.view_type=="outcometable"){
             workflow_content=(
@@ -136,6 +146,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                 <div class="workflow-header" style={style}>
                     <WorkflowForMenu workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
                     {parent_workflow_indicator}
+                    {public_view}
                 </div>
                 <div class="workflow-view-select hide-print">
                     {view_buttons_sorted}

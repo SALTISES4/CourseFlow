@@ -160,6 +160,8 @@ class CreateView_No_Autocomplete(CreateView):
         form.fields["description"].widget.attrs.update({"autocomplete": "off"})
         return form
 
+def ratelimited_view(request,exception):
+    return HttpResponse("Error: too many requests to public page. Please wait at least one minute then try again.", status=429)
 
 def registration_view(request):
 

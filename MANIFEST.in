@@ -6,6 +6,7 @@ exclude course_flow/local_settings.py
 
 recursive-include course_flow/management/commands *
 recursive-include course_flow/templates *
+recursive-include course_flow/locale *
 recursive-exclude course_flow/templates/course_flow/registration *
 
 graft course_flow/tests

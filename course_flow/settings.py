@@ -73,6 +73,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "csp.middleware.CSPMiddleware",
+    "ratelimit.middleware.RatelimitMiddleware",
 ]
 
 # ASGI
@@ -213,6 +214,7 @@ COURSE_FLOW_RETURN_URL = {"name": "course_flow:home", "title": "myDalite"}
 
 COURSE_FLOW_LTI_ACCESS = True
 
+RATELIMIT_VIEW = "course_flow.views.ratelimited_view"
 
 """
 LOGGING = {
