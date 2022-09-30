@@ -1240,7 +1240,6 @@ button, input[type="submit"]{
     margin:20px;
     margin-top:50px;
     border-radius:10px;
-    display:flex;
 }
 
 .workflow-header > div{
@@ -3180,6 +3179,7 @@ circle.mouseover{
     z-index:1;
     top:46px;
     border:1px solid black;
+    display:flex;
 }
 
 .comparison-view .workflow-details{

@@ -2767,7 +2767,7 @@ class PermissionsTests(TestCase):
         for i in range(6):
             response = self.client.get(reverse("course_flow:workflow-public",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
             if i<4: self.assertEqual(response.status_code, 200)
-            else: self.assertEqual(response.status_code, 403)
+            else: self.assertEqual(response.status_code, 429)
         
         for i in range(6):
             response = self.client.get(reverse("course_flow:get-public-workflow-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
