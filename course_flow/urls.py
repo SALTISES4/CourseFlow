@@ -289,6 +289,11 @@ def course_flow_patterns():
             name="get-live-project-data"
         ),
         path(
+            "project/register/student/<project_hash>/",
+            views.register_as_student,
+            name="register-as-student",
+        ),
+        path(
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
     ] + router.urls

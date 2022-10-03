@@ -127,6 +127,7 @@ export const permission_keys = {
     "view":1,
     "edit":2,
     "comment":3,
+    "student":4,
 }
 export const default_drop_state = {
     node:false,

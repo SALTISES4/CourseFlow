@@ -625,7 +625,7 @@ export function setUserPermission(user_id,objectID,objectType,permission_type,ca
             permission_type:JSON.stringify(permission_type)
         }).done(function(data){
             if(data.action=="posted")callBackFunction(data);
-            else fail_function(data.action)
+            else fail_function(data.error)
         });
     }catch(err){
         fail_function();

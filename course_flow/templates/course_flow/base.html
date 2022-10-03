@@ -167,6 +167,7 @@
             </button>
           </div>
           {% endif %}
+          {% if user.is_authenticated %}
           <div class="topdropwrapper">
             <button class="topdropbutton">
               <a id="home-icon-link" href="{% url 'course_flow:home' %}"
@@ -176,6 +177,8 @@
               /></a>
             </button>
           </div>
+          {% endif %}
+          {% if user|has_group:"Teacher" %}
           <div class="topdropwrapper">
             <button class="topdropbutton">
               <a id="explore-icon-link" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project"
@@ -188,6 +191,7 @@
           <div class="topdropwrapper">
             <div id="user-feedback-app"></div>
           </div>
+          {% endif %}
         </div>
       </div>
         <div class="menubar">
@@ -207,14 +211,17 @@
         <img src="{% static 'course_flow/img/images_svg/home_black.svg' %}"/>
         <div>{% trans 'Home' %}</div>
       </a>
+      {% if user|has_group:"Teacher" %}
       <a class="panel-item hover-shade" href="{% url 'course_flow:my-projects' %}">
         <img src="{% static 'course_flow/img/images_svg/layoutnav.svg' %}"/>
         <div>{% trans 'My Projects' %}</div>
       </a>
+      {% endif %}
       <a class="panel-item hover-shade" href="{% url 'course_flow:my-live-projects' %}">
         <img src="{% static 'course_flow/img/images_svg/layoutnav_2.svg' %}"/>
         <div>{% trans 'My Classrooms' %}</div>
       </a>
+      {% if user|has_group:"Teacher" %}
       <a class="panel-item hover-shade" href="{% url 'course_flow:my-templates' %}">
         <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
         <div>{% trans 'My Templates' %}</div>
@@ -223,10 +230,12 @@
         <img src="{% static 'course_flow/img/images_svg/add_person_black.svg' %}"/>
         <div>{% trans 'Shared With Me' %}</div>
       </a>
+      {% endif %}
       <a class="panel-item hover-shade" href={% course_flow_return_url %}>
         <img src="{% static 'course_flow/img/images_svg/return_to_project.svg' %}"/>
         <div>{% course_flow_return_title %}</div>
       </a>
+      {% if user|has_group:"Teacher" %}
 
       <hr>
       <div class="left-panel-extra">
@@ -248,6 +257,7 @@
         </div>
         <hr>
         <a class="panel-item hover-shade" href="{% url 'course_flow:import' %}">{% trans "Import from old CourseFlow" %}</a>
+      {% endif %}
     </div>
 
     {% block body %}{% endblock %}
@@ -330,6 +340,7 @@
         program:"{% url 'course_flow:workflow-public' pk='0'%}",
         workflow:"{% url 'course_flow:workflow-public' pk='0'%}"
     };
+    const registration_path = "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}";
 
     $("#logout").on("click",()=>{
         window.location.replace("{% url 'course_flow:logout' %}");

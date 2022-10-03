@@ -16,6 +16,7 @@
         <p>{% trans "Welcome to CourseFlow, a course, curriculum, and activity planning tool by SALTISE." %}</p>
         <h3>{% trans "Quick Links:" %}</h3>
         <div class="home-menu-grid">
+            {% if user|has_group:"Teacher" %}
             <div class="home-item">
                 <a class="hover-shade" href='{% url "course_flow:my-projects" %}'><h4>{% trans "My Projects" %}</h4>
                 <p>{% trans "Explore and create your projects" %}</p></a>
@@ -52,6 +53,20 @@
                 </a>
                 
             </div>
+            {% endif %}
+            {% if user|get_classrooms|not_deleted|length > 0 %}
+            <div class="home-item">
+                <a class="hover-shade" href='{% url "course_flow:my-projects" %}'><h4>{% trans "My Classrooms" %}</h4>
+                <p>{% trans "Your classrooms" %}</p></a>
+                {% for project in user|get_classrooms|not_deleted|slice:":7" %}
+                  <a class="hover-shade"
+                        href="{% url 'course_flow:live-project-update' pk=project.pk %}"
+                     >
+                    {{ project.title }}
+                  </a>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
     </div>
 

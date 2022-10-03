@@ -18,6 +18,7 @@ from .models import (
     Node,
     NodeLink,
     NodeWeek,
+    ObjectPermission,
     ObjectSet,
     Outcome,
     OutcomeHorizontalLink,
@@ -39,6 +40,9 @@ from .utils import (
     get_unique_outcomenodes,
     linkIDMap,
     multiple_replace,
+)
+from .decorators import (
+    check_object_permission
 )
 
 bleach_allowed_attributes_description = {
@@ -600,6 +604,7 @@ class ProjectSerializerShallow(
             "object_sets",
             "favourite",
             "liveproject",
+            "registration_hash",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -609,7 +614,19 @@ class ProjectSerializerShallow(
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
     author=serializers.SerializerMethodField()
+    registration_hash=serializers.SerializerMethodField()
     
+    def get_registration_hash(self,instance):
+        user = self.context.get("user",None)
+        if user is None:
+            return None
+        if check_object_permission(
+            instance,
+            user,
+            ObjectPermission.PERMISSION_EDIT,
+        ):
+            return instance.registration_hash()
+        return None
 
     def get_favourite(self, instance):
         user = self.context.get("user")
@@ -1440,10 +1457,15 @@ Live Project Serializers
 
 class LiveProjectSerializer(
     serializers.ModelSerializer,
+    TitleSerializerMixin,
+    DescriptionSerializerMixin,
 ):
     class Meta:
         model = LiveProject
         fields = [
+            "title",
+            "description",
+            "id",
             "pk",
             "type",
             "created_on",
@@ -1452,7 +1474,20 @@ class LiveProjectSerializer(
             "default_single_completion",
         ]
 
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+    id = serializers.SerializerMethodField()
+
     created_on = serializers.DateTimeField(format=dateTimeFormat())
+
+    def get_title(self, instance):
+        return super().get_title(instance.project)
+
+    def get_description(self, instance):
+        return super().get_description(instance.project)
+
+    def get_id(self,instance):
+        return instance.pk
 
     def update(self, instance, validated_data):
         instance.default_self_reporting = validated_data.get(

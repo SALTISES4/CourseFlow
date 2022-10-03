@@ -15,7 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.db.models import ProtectedError, Q
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -105,6 +105,7 @@ from .utils import (  # benchmark,; dateTimeFormat,; get_parent_model,; get_pare
     dateTimeFormatNoSpace,
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,
+    get_classrooms_for_student,
     get_descendant_outcomes,
     get_model_from_str,
     get_nondeleted_favourites,
@@ -4118,9 +4119,29 @@ def set_permission(request: HttpRequest) -> HttpResponse:
     response = {}
     try:
         user = User.objects.get(id=user_id)
+        if permission_type in [
+            ObjectPermission.PERMISSION_EDIT,
+            ObjectPermission.PERMISSION_VIEW,
+            ObjectPermission.PERMISSION_COMMENT,
+        ] and Group.objects.get(
+            name=settings.TEACHER_GROUP
+        ) not in user.groups.all():
+            return JsonResponse({"action":"error","error":_("User is not a teacher.")})
         item = get_model_from_str(objectType).objects.get(id=object_id)
         if hasattr(item, "get_subclass"):
             item = item.get_subclass()
+
+        if permission_type == ObjectPermission.PERMISSION_STUDENT:
+            if objectType=="project":
+                if item.liveproject == None:
+                    return JsonResponse({"action":"error","error":_("Cannot add a student to a non-live project.")})
+            else:
+                project = item.get_project()
+                if project is None:
+                    return JsonResponse({"action":"error","error":_("Cannot add a student to this workflow type.")})
+                elif project.liveproject is None:
+                    return JsonResponse({"action":"error","error":_("Cannot add a student to a non-live project.")})
+
         ObjectPermission.objects.filter(
             user=user,
             content_type=ContentType.objects.get_for_model(item),
@@ -4164,6 +4185,13 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
             permission_type=ObjectPermission.PERMISSION_COMMENT,
         ).select_related("user"):
             commentors.add(object_permission.user)
+        students = set()
+        for object_permission in ObjectPermission.objects.filter(
+            content_type=content_type,
+            object_id=object_id,
+            permission_type=ObjectPermission.PERMISSION_STUDENT,
+        ).select_related("user"):
+            students.add(object_permission.user)
     except ValidationError:
         return JsonResponse({"action": "error"})
 
@@ -4178,6 +4206,7 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
             "viewers": UserSerializer(viewers, many=True).data,
             "commentors": UserSerializer(commentors, many=True).data,
             "editors": UserSerializer(editors, many=True).data,
+            "students": UserSerializer(students, many=True).data,
         }
     )
 
@@ -5406,46 +5435,57 @@ def project_from_json(request: HttpRequest) -> HttpResponse:
 Live Views
 """
 
-# def get_my_live_projects(user, add):
-#     data_package = {
-#         "owned_projects": {
-#             "title": _("My Live Projects"),
-#             "sections": [
-#                 {
-#                     "title": _("Add new"),
-#                     "object_type": "liveproject",
-#                     "objects": LiveProjectSerializer(
-#                         LiveProject.objects.filter(author=user, deleted=False),
-#                         many=True,
-#                         context={"user": user},
-#                     ).data,
-#                 }
-#             ],
-#             "add": add,
-# #            "duplicate": "copy",
-#             "emptytext": _(
-#                 "Live Projects are used to run a class or course using the content of the given project. Click the button above to create a live project from a project you own."
-#             ),
-#         },
-#         "archived_projects": {
-#             "title": _("Archived Live Projects"),
-#             "sections": [
-#                 {
-#                     "title": _("Restore Projects"),
-#                     "object_type": "liveproject",
-#                     "objects": LiveProjectSerializer(
-#                         LiveProject.objects.filter(author=user, deleted=True),
-#                         many=True,
-#                         context={"user": user},
-#                     ).data,
-#                 }
-#             ],
-#             "emptytext": _(
-#                 "Projects you have archived can be viewed or restored from here."
-#             ),
-#         },
-#     }
-#     return data_package
+def get_my_live_projects(user):
+    data_package={}
+    if Group.objects.get(
+        name=settings.TEACHER_GROUP
+    ) in user.groups.all():
+        data_package["owned_liveprojects"] = {
+            "title": _("My Owned Classrooms"),
+            "sections": [
+                {
+                    "title": _("My Classrooms"),
+                    "object_type": "project",
+                    "objects": LiveProjectSerializer(
+                        LiveProject.objects.filter(project__author=user,project__deleted=False),
+                        many=True,
+                        context={"user": user},
+                    ).data,
+                }
+            ],
+            "emptytext": _(
+                "You haven't created any classrooms yet. Create a project, then choose 'Create Classroom' to create a live classroom."
+            ),
+        }
+    data_package["shared_liveprojects"] = {
+        "title": _("My Classrooms"),
+        "sections": [
+            {
+                "title": _("My Classrooms"),
+                "object_type": "liveproject",
+                "objects": LiveProjectSerializer(
+                    [
+                        user_permission.content_object.liveproject
+                        for user_permission in ObjectPermission.objects.filter(
+                            user=user,
+                            content_type=ContentType.objects.get_for_model(
+                                Project
+                            ),
+                            project__deleted=False,
+                            project__liveproject__in=LiveProject.objects.all()
+                        )
+                    ],
+                    many=True,
+                    context={"user": user},
+                ).data,
+            }
+        ],
+        "emptytext": _(
+            "You aren't registered for any classrooms right now."
+        ),
+    }
+    print(data_package)
+    return data_package
 
 
 
@@ -5454,7 +5494,7 @@ Live Views
 def my_live_projects_view(request):
     context = {
         "project_data_package": JSONRenderer()
-        .render(get_my_live_projects(request.user, True))
+        .render(get_my_live_projects(request.user))
         .decode("utf-8")
     }
     return render(request, "course_flow/my_live_projects.html", context)
@@ -5523,6 +5563,22 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
         }
     )
 
+@ajax_login_required
+def register_as_student(request: HttpRequest,project_hash) -> HttpResponse:
+    project = Project.get_from_hash(project_hash)
+    if project is None:
+        return HttpResponseForbidden("Couldn't find a classroom associated with that link")
+    if project.liveproject is not None and not project.deleted:
+        user = request.user 
+        if ObjectPermission.objects.filter(project=project,user=user).count()==0 and project.author!=user:
+            ObjectPermission.objects.create(user=user,content_object=project,permission_type=ObjectPermission.PERMISSION_STUDENT)
+            print("creating a permission")
+        print("redirecting")
+        return redirect(reverse(
+            "course_flow:live-project-update", kwargs={"pk": project.pk}
+        ))
+    else:
+        return HttpResponseForbidden("The selected classroom has been deleted or does not exist")
 
 
 # class LiveProjectCreateView(

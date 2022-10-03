@@ -8,7 +8,7 @@ export class ShareMenu extends React.Component{
     constructor(props){
         super(props);
         this.tiny_loader = new renderers.TinyLoader($("body"));
-        this.state={owner:props.data.author,edit:[],view:[],comment:[],userlist:[]}
+        this.state={owner:props.data.author,edit:[],view:[],comment:[],student:[],userlist:[]}
     }
     
     render(){
@@ -25,6 +25,9 @@ export class ShareMenu extends React.Component{
         let commentors = this.state.comment.map((user)=>
             <UserLabel user={user} type={"comment"} permissionChange={this.setUserPermission.bind(this)}/>
         );
+        let students = this.state.student.map((user)=>
+            <UserLabel user={user} type={"student"} permissionChange={this.setUserPermission.bind(this)}/>
+        );
 
         let text = data.title;
         if(text==null || text==""){
@@ -38,6 +41,20 @@ export class ShareMenu extends React.Component{
             share_info=gettext("Note: You are sharing a workflow. Any added users will be granted view permissions for the whole project.");
         }
         
+        let register_link;
+        if(data.liveproject && data.registration_hash){
+            let register_url = registration_path.replace("project_hash",data.registration_hash);
+            register_link = (
+                <div class="user-panel">
+                    <h4>Student Registration:</h4>
+                    {gettext("Student Registration Link: ")}
+                    <a href={register_url}>
+                        {register_url}
+                    </a>
+                </div>
+            );
+        }
+
         return(
             <div class="message-wrap user-text">
                 <h3>{gettext("Sharing")+":"}</h3>
@@ -54,10 +71,12 @@ export class ShareMenu extends React.Component{
                         {editors}
                         {commentors}
                         {viewers}
+                        {students}
                     </ul>
                 </div>
                 <UserAdd permissionChange={this.setUserPermission.bind(this)}/>
                 {share_info}
+                {register_link}
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
                     <img src = {iconpath+"close.svg"}/>
                 </div>
@@ -70,7 +89,7 @@ export class ShareMenu extends React.Component{
         this.tiny_loader.startLoad();
         setUserPermission(user.id,this.props.data.id,this.props.data.type,permission_type,()=>{
             getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
-                this.setState({view:response.viewers,comment:response.commentors,edit:response.editors});
+                this.setState({view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students});
                 this.tiny_loader.endLoad();
             });
         });
@@ -78,7 +97,7 @@ export class ShareMenu extends React.Component{
     
     componentDidMount(){
         getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
-            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors});
+            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students});
         });
     }
     
@@ -102,6 +121,7 @@ class UserLabel extends React.Component{
                             <option value="edit">{gettext("Can edit")}</option>
                             <option value="comment">{gettext("Can comment")}</option>
                             <option value="view">{gettext("Can view")}</option>
+                            <option value="student">{gettext("Student")}</option>
                         </select>
                         <button onClick={()=>this.props.addFunction($(this.select.current).val())}>{gettext("Share")}</button>
                     </div>
@@ -113,6 +133,7 @@ class UserLabel extends React.Component{
                             <option value="edit">{gettext("Can edit")}</option>
                             <option value="comment">{gettext("Can comment")}</option>
                             <option value="view">{gettext("Can view")}</option>
+                            <option value="student">{gettext("Student")}</option>
                             <option value="none">{gettext("Remove user")}</option>
                         </select>
                     </div>

@@ -212,6 +212,13 @@ def get_nondeleted_favourites(user):
         | Q(object_id__in=models.Project.objects.filter(deleted=True))
     )
 
+def get_classrooms_for_student(user):
+    return models.Project.objects.filter(
+        user_permissions__user=user,
+        user_permissions__permission_type=models.ObjectPermission.PERMISSION_STUDENT,
+    )
+
+
 
 def save_serializer(serializer) -> HttpResponse:
     if serializer:

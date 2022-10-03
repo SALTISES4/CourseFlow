@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.urls import reverse
 
 from course_flow import models
-from course_flow.utils import get_nondeleted_favourites
+from course_flow.utils import get_nondeleted_favourites, get_classrooms_for_student
 
 register = template.Library()
 
@@ -42,3 +42,12 @@ def not_deleted_favourites(query):
         | Q(activity__deleted=False,activity__project__deleted=False)
         | Q(project__deleted=False)
     )
+
+@register.filter
+def has_group(user, group_name):
+    return user.groups.filter(name=group_name).exists() 
+
+
+@register.filter
+def get_classrooms(user):
+    return get_classrooms_for_student(user)

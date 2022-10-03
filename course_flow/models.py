@@ -1,5 +1,6 @@
 import time
 import uuid
+import base64
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import (
@@ -57,6 +58,28 @@ class Project(models.Model):
     )
 
     object_sets = models.ManyToManyField("ObjectSet", blank=True)
+
+    hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+
+    @staticmethod
+    def get_from_hash(hash_):
+        try:
+            hash_ = base64.urlsafe_b64decode(hash_.encode()).decode()
+        except UnicodeDecodeError:
+            hash_ = None
+        if hash_:
+            try:
+                project = Project.objects.get(hash=hash_)
+            except (Project.DoesNotExist, ValidationError):
+                project = None
+        else:
+            project = None
+
+        return project
+
+    def registration_hash(self):
+        return base64.urlsafe_b64encode(str(self.hash).encode()).decode()
+
 
     @property
     def type(self):
@@ -1160,11 +1183,13 @@ class ObjectPermission(models.Model):
     PERMISSION_VIEW = 1
     PERMISSION_EDIT = 2
     PERMISSION_COMMENT = 3
+    PERMISSION_STUDENT = 4
     PERMISSION_CHOICES = (
         (PERMISSION_NONE, _("None")),
         (PERMISSION_VIEW, _("View")),
         (PERMISSION_EDIT, _("Edit")),
         (PERMISSION_COMMENT, _("Comment")),
+        (PERMISSION_STUDENT, _("Student")),
     )
     permission_type = models.PositiveIntegerField(
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
@@ -1191,7 +1216,10 @@ class LiveProject(models.Model):
     #Whether it is enough for a single assigned user to complete the task,
     # or (when True) when any user completes the task it becomes complete for all users
     default_single_completion = models.BooleanField(default=False)
-
+    #whether workflows are always all visible
+    default_all_workflows_visible = models.BooleanField(default=False)
+    #These workflows are always visible to all students
+    visible_workflows = models.ManyToManyField(Workflow, blank=True)
 
     def get_permission_objects(self):
         return [self.project]
@@ -1775,8 +1803,17 @@ Default content creation receivers
 def set_permissions_to_project_objects(sender, instance, created, **kwargs):
     if created:
         if instance.content_type == ContentType.objects.get_for_model(Project):
-            for workflow in instance.content_object.workflows.all():
-                # If user already has edit permissions and we are adding view, do not override
+            if instance.permission_type == ObjectPermission.PERMISSION_STUDENT:
+                liveproject = instance.content_object.liveproject 
+                if liveproject is not None:
+                    if liveproject.default_all_workflows_visible:
+                        workflows = instance.content_object.workflows.all()
+                    else:
+                        workflows = liveproject.visible_workflows.all()
+            else:
+                workflows = instance.content_object.workflows.all()
+            for workflow in workflows:
+                # If user already has edit or comment permissions and we are adding view, do not override
                 if (
                     instance.permission_type
                     == ObjectPermission.PERMISSION_VIEW
@@ -1786,7 +1823,21 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                             workflow.get_subclass()
                         ),
                         object_id=workflow.id,
-                        permission_type=ObjectPermission.PERMISSION_EDIT,
+                        permission_type__in=[ObjectPermission.PERMISSION_EDIT, ObjectPermission.PERMISSION_COMMENT],
+                    ).count()
+                    > 0
+                ):
+                    pass
+                elif (
+                    instance.permission_type 
+                    == ObjectPermission.PERMISSION_COMMENT
+                    and ObjectPermission.objects.filter(
+                        user=instance.user,
+                        content_type=ContentType.objects.get_for_model(
+                            workflow.get_subclass()
+                        ),
+                        object_id=workflow.id,
+                        permission_type__in=[ObjectPermission.PERMISSION_EDIT],
                     ).count()
                     > 0
                 ):
