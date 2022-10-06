@@ -4,7 +4,10 @@ from django.db.models import Q
 from django.urls import reverse
 
 from course_flow import models
-from course_flow.utils import get_nondeleted_favourites, get_classrooms_for_student
+from course_flow.utils import (
+    get_classrooms_for_student,
+    get_nondeleted_favourites,
+)
 
 register = template.Library()
 
@@ -34,8 +37,6 @@ def not_deleted(query):
 def not_deleted_favourites(query):
     if query is None:
         return None
-    print("IN THE FILTER")
-    print(query)
     return query.filter(
         Q(program__deleted=False,program__project__deleted=False)
         | Q(course__deleted=False,course__project__deleted=False)

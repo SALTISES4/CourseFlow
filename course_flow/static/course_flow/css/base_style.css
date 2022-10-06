@@ -631,6 +631,10 @@ button:hover{
     background-color:#d6bb30;
 }
 
+.workflow-type-indicator.liveproject{
+    background-color:#8a38d1;
+}
+
 .workflow-top-row{
     display:flex;
     align-items:flex-start;

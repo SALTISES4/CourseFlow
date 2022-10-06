@@ -1,6 +1,6 @@
+import base64
 import time
 import uuid
-import base64
 
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.fields import (
@@ -1221,13 +1221,28 @@ class LiveProject(models.Model):
     #These workflows are always visible to all students
     visible_workflows = models.ManyToManyField(Workflow, blank=True)
 
+
     def get_permission_objects(self):
-        return [self.project]
+        return [self]
             
     @property
     def type(self):
         return "liveproject"
 
+class LiveProjectUser(models.Model):
+    liveproject = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ROLE_NONE = 0
+    ROLE_STUDENT = 1
+    ROLE_TEACHER = 2
+    ROLE_CHOICES = (
+        (ROLE_NONE, _("None")),
+        (ROLE_STUDENT, _("Student")),
+        (ROLE_TEACHER, _("Instructor")),
+    )
+    role_type = models.PositiveIntegerField(
+        choices=ROLE_CHOICES, default=ROLE_NONE
+    )
 
 # class LiveAssignment(models.Model):
 #     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
@@ -1865,6 +1880,17 @@ def delete_existing_permission(sender, instance, **kwargs):
         object_id=instance.object_id,
     ).delete()
 
+@receiver(pre_save, sender=LiveProjectUser)
+def delete_existing_role(sender, instance, **kwargs):
+    LiveProjectUser.objects.filter(
+        user=instance.user,
+        liveproject=instance.liveproject,
+    ).delete()
+
+@receiver(post_save, sender=LiveProjectUser)
+def delete_role_none(sender, instance, **kwargs):
+    if instance.role_type==instance.ROLE_NONE:
+        instance.delete()
 
 @receiver(pre_delete, sender=ObjectPermission)
 def remove_permissions_to_project_objects(sender, instance, **kwargs):

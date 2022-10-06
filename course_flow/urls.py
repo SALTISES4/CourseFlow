@@ -132,6 +132,7 @@ def course_flow_patterns():
             name="toggle-favourite",
         ),
         path("permissions/set", views.set_permission, name="set-permission"),
+        path("liveprojectroles/set", views.set_liveproject_role, name="set-liveproject-role"),
         path(
             "workflow/node/set-linked-workflow/",
             views.set_linked_workflow_ajax,
@@ -206,6 +207,11 @@ def course_flow_patterns():
             "project/get-users-for-object/",
             views.get_users_for_object,
             name="get-users-for-object",
+        ),
+        path(
+            "project/get-users-for-liveproject/",
+            views.get_users_for_liveproject,
+            name="get-users-for-liveproject",
         ),
         path(
             "users/get-user-list/",
@@ -287,6 +293,11 @@ def course_flow_patterns():
             "project/getliveprojectdata",
             views.get_live_project_data,
             name="get-live-project-data"
+        ),
+        path(
+            "project/getliveprojectdatastudent",
+            views.get_live_project_data_student,
+            name="get-live-project-data-student"
         ),
         path(
             "project/register/student/<project_hash>/",

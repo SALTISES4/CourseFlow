@@ -15,7 +15,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
 from django.db.models import ProtectedError, Q
-from django.http import HttpRequest, HttpResponse, JsonResponse, HttpResponseForbidden
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+    HttpResponseForbidden,
+    JsonResponse,
+)
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils import timezone
@@ -41,6 +46,9 @@ from .decorators import (
     user_can_edit_or_none,
     user_can_view,
     user_can_view_or_none,
+    user_enrolled_as_student,
+    user_enrolled_as_teacher,
+    user_is_author,
     user_is_teacher,
 )
 from .forms import RegistrationForm
@@ -51,6 +59,8 @@ from .models import (  # OutcomeProject,
     Course,
     Discipline,
     Favourite,
+    LiveProject,
+    LiveProjectUser,
     Node,
     NodeLink,
     NodeWeek,
@@ -68,7 +78,6 @@ from .models import (  # OutcomeProject,
     WeekWorkflow,
     Workflow,
     WorkflowProject,
-    LiveProject,
 )
 from .serializers import (  # OutcomeProjectSerializerShallow,
     ActivitySerializerShallow,
@@ -79,6 +88,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     DisciplineSerializer,
     InfoBoxSerializer,
     LinkedWorkflowSerializerShallow,
+    LiveProjectSerializer,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
@@ -95,7 +105,6 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     WeekSerializerShallow,
     WeekWorkflowSerializerShallow,
     WorkflowSerializerShallow,
-    LiveProjectSerializer,
     bleach_allowed_tags_description,
     bleach_allowed_tags_title,
     bleach_sanitizer,
@@ -130,6 +139,20 @@ class UserCanViewMixin(UserPassesTestMixin):
             )
         )
 
+class UserEnrolledMixin(UserPassesTestMixin):
+    def test_func(self):
+        project=self.get_object()
+        try:
+            liveproject=project.liveproject
+        except:
+            return False
+        if liveproject is None:
+            return False
+        if LiveProjectUser.objects.filter(user=self.request.user,liveproject=liveproject).count()>0:
+            return True 
+        elif project.author==self.request.user:
+            LiveProjectUser.objects.create(user=self.request.user,liveproject=liveproject,role_type=LiveProjectUser.ROLE_TEACHER)
+            return True
 
 class UserCanEditMixin(UserPassesTestMixin):
     def test_func(self):
@@ -5464,17 +5487,10 @@ def get_my_live_projects(user):
                 "title": _("My Classrooms"),
                 "object_type": "liveproject",
                 "objects": LiveProjectSerializer(
-                    [
-                        user_permission.content_object.liveproject
-                        for user_permission in ObjectPermission.objects.filter(
-                            user=user,
-                            content_type=ContentType.objects.get_for_model(
-                                Project
-                            ),
-                            project__deleted=False,
-                            project__liveproject__in=LiveProject.objects.all()
-                        )
-                    ],
+                    LiveProject.objects.filter(
+                        project__deleted=False,
+                        liveprojectuser__user=user,
+                    ),
                     many=True,
                     context={"user": user},
                 ).data,
@@ -5501,8 +5517,9 @@ def my_live_projects_view(request):
 
 
 
-@user_can_edit("projectPk")
+@user_is_author("projectPk")
 def make_project_live(request: HttpRequest) -> HttpResponse:
+    print("in view")
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
         liveproject = LiveProject.objects.create(project=project)
@@ -5516,7 +5533,7 @@ def make_project_live(request: HttpRequest) -> HttpResponse:
         }
     )
 
-class LiveProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
+class LiveProjectDetailView(LoginRequiredMixin, UserEnrolledMixin, DetailView):
     model = Project
     fields = ["title", "description"]
     template_name = "course_flow/live_project_update.html"
@@ -5525,16 +5542,52 @@ class LiveProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         context = super(DetailView, self).get_context_data(**kwargs)
         project = self.object
         liveproject = project.liveproject
-        context["live_project_data"]=JSONRenderer().render(LiveProjectSerializer(liveproject).data).decode("utf-8");
-        context["project_data"]=JSONRenderer().render(ProjectSerializerShallow(project).data).decode("utf-8");
-        context["read_only"]=JSONRenderer().render(False).decode("utf-8")
+        context["live_project_data"]=JSONRenderer().render(LiveProjectSerializer(liveproject, context={'user':self.request.user}).data).decode("utf-8");
+        context["project_data"]=JSONRenderer().render(ProjectSerializerShallow(project, context={'user':self.request.user}).data).decode("utf-8");
+        context["user_role"]=JSONRenderer().render(
+            LiveProjectUser.objects.get(
+                user=self.request.user,liveproject=liveproject
+            ).role_type
+        ).decode("utf-8")
         return context
     
-@user_can_view("projectPk")
-def get_live_project_data(request: HttpRequest) -> HttpResponse:
-    project = Project.objects.get(pk=request.POST.get("projectPk"))
+
+@user_enrolled_as_student("liveprojectPk")
+def get_live_project_data_student(request: HttpRequest) -> HttpResponse:
+    liveproject = LiveProject.objects.get(pk=request.POST.get("liveprojectPk"))
     data_type = json.loads(request.POST.get("data_type"))
-    print(data_type)
+    try:
+        if(data_type=="overview"):
+            data_package = {
+                "data":"Hello world!"
+            }
+        elif(data_type=="students"):
+            data_package = {
+                "data":"Hello world!"
+            }
+        elif(data_type=="assignments"):
+            data_package = {
+                "data":"Hello world!"
+            }
+        elif(data_type=="settings"):
+            data_package = {
+                "data":"Hello world!"
+            }
+        else: raise AttributeError
+
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package":data_package,
+        }
+    )
+
+@user_enrolled_as_teacher("liveprojectPk")
+def get_live_project_data(request: HttpRequest) -> HttpResponse:
+    liveproject = LiveProject.objects.get(pk=request.POST.get("liveprojectPk"))
+    data_type = json.loads(request.POST.get("data_type"))
     try:
         if(data_type=="overview"):
             data_package = {
@@ -5569,16 +5622,77 @@ def register_as_student(request: HttpRequest,project_hash) -> HttpResponse:
     if project is None:
         return HttpResponseForbidden("Couldn't find a classroom associated with that link")
     if project.liveproject is not None and not project.deleted:
-        user = request.user 
-        if ObjectPermission.objects.filter(project=project,user=user).count()==0 and project.author!=user:
-            ObjectPermission.objects.create(user=user,content_object=project,permission_type=ObjectPermission.PERMISSION_STUDENT)
-            print("creating a permission")
-        print("redirecting")
+        user = request.user
+        if LiveProjectUser.objects.filter(liveproject=project.liveproject,user=user).count()==0:
+            if project.author == user:
+                LiveProjectUser.objects.create(user=user,liveproject=project.liveproject,role_type=LiveProjectUser.ROLE_TEACHER)
+            else:
+                LiveProjectUser.objects.create(user=user,liveproject=project.liveproject,role_type=LiveProjectUser.ROLE_STUDENT)
         return redirect(reverse(
             "course_flow:live-project-update", kwargs={"pk": project.pk}
         ))
     else:
         return HttpResponseForbidden("The selected classroom has been deleted or does not exist")
+
+
+# change role on a liveproject for a user
+@user_enrolled_as_teacher("liveprojectPk")
+def set_liveproject_role(request: HttpRequest) -> HttpResponse:
+    user_id = json.loads(request.POST.get("permission_user"))
+    liveprojectPk = json.loads(request.POST.get("liveprojectPk"))
+    role_type = json.loads(request.POST.get("role_type"))
+    response = {}
+    try:
+        user = User.objects.get(id=user_id)
+        liveproject = LiveProject.objects.get(pk=liveprojectPk)
+        if liveproject.project.author == user:
+            response = JsonResponse({"action":"error","error":_("This user's role cannot be changed.")})
+            response.status_code = 403
+            return response
+        if role_type==LiveProjectUser.ROLE_TEACHER and Group.objects.get(
+            name=settings.TEACHER_GROUP
+        ) not in user.groups.all():
+            response = JsonResponse({"action":"error","error":_("This user has a student account, and cannot be made a teacher.")})
+            response.status_code = 403
+            return response
+
+        LiveProjectUser.objects.create(liveproject=liveproject,user=user,role_type=role_type)
+        response["action"] = "posted"
+    except ValidationError:
+        response["action"] = "error"
+        response.status_code = 401
+
+    return JsonResponse(response)
+
+#get the list of enrolled users for a project
+@user_enrolled_as_teacher("liveprojectPk")
+def get_users_for_liveproject(request: HttpRequest) -> HttpResponse:
+    object_id = json.loads(request.POST.get("liveprojectPk"))
+    try:
+        liveproject = LiveProject.objects.get(pk=object_id)
+        teachers = User.objects.filter(
+            liveprojectuser__liveproject=liveproject,
+            liveprojectuser__role_type=LiveProjectUser.ROLE_TEACHER
+        )
+        students = User.objects.filter(
+            liveprojectuser__liveproject=liveproject,
+            liveprojectuser__role_type=LiveProjectUser.ROLE_STUDENT
+        )
+
+    except ValidationError:
+        return JsonResponse({"action": "error"})
+
+    return JsonResponse(
+        {
+            "action": "posted",
+            "author": UserSerializer(
+                liveproject.project.author
+            ).data,
+            "teachers": UserSerializer(teachers, many=True).data,
+            "students": UserSerializer(students, many=True).data,
+        }
+    )
+
 
 
 # class LiveProjectCreateView(

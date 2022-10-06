@@ -2,7 +2,8 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {WorkflowTitle} from "./ComponentJSON";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
-import {getLiveProjectData} from "./PostFunctions";
+import {getLiveProjectData, getLiveProjectDataStudent} from "./PostFunctions";
+import {StudentManagement} from "./StudentManagement";
 
 export class LiveProjectMenu extends React.Component{
     constructor(props){
@@ -13,12 +14,7 @@ export class LiveProjectMenu extends React.Component{
     render(){
         let data = this.props.project;
 
-        let view_buttons = [
-            {type:"overview",name:gettext("Classroom Overview")},
-            {type:"students",name:gettext("Students")},
-            {type:"assignments",name:gettext("Assignments")},
-            {type:"settings",name:gettext("Classroom Settings")},
-        ].map(
+        let view_buttons = this.getViewButtons().map(
             (item)=>{
                 let view_class = "hover-shade";
                 if(item.type==this.state.view_type)view_class += " active";
@@ -26,22 +22,7 @@ export class LiveProjectMenu extends React.Component{
             }
         );
 
-        let content = this.getContent();
 
-        let share;
-        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
-        
-        let publish_icon = iconpath+'view_none.svg';
-        let publish_text = gettext("PRIVATE");
-        if(this.props.project.published){
-            publish_icon = iconpath+'published.svg';
-            publish_text = gettext("PUBLISHED");
-        }
-
-        let view_project=(
-            <a class="menu-create hover-shade" href={update_path.project.replace("0",this.state.id)}>{gettext("Design Mode")}</a>
-        );
-        
         return(
             <div class="project-menu">
                 <div class="project-header">
@@ -49,28 +30,8 @@ export class LiveProjectMenu extends React.Component{
                         <div>{this.state.title||gettext("Unnamed Project")}</div>,
                         $("#workflowtitle")[0]
                     )}
-                    <WorkflowForMenu workflow_data={this.state} selectAction={this.openEdit.bind(this)}/>
-                    {view_project}
-                    {reactDom.createPortal(
-                        share,
-                        $("#floatbar")[0]
-                    )}
-                    {reactDom.createPortal(
-                        <div class="workflow-publication">
-                            <img src={publish_icon}/><div>{publish_text}</div>
-                        </div>,
-                        $("#floatbar")[0]
-                    )}
-                    
-                    {this.props.project.author_id==user_id  &&
-                        reactDom.createPortal(
-                            <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-                                <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
-                            </div>,
-                            $("#viewbar")[0]
-                        )
-                    }
-
+                    <WorkflowForMenu workflow_data={this.props.liveproject} selectAction={this.openEdit.bind(this)}/>
+                    {this.getHeader()}
                     
                 </div>
 
@@ -78,14 +39,29 @@ export class LiveProjectMenu extends React.Component{
                     {view_buttons}
                 </div>
                 <div class = "workflow-container">
-                    {content}
+                    {this.getContent()}
                 </div>
             </div>
         );
     }
+
+    getViewButtons(){
+        return [
+            {type:"overview",name:gettext("Classroom Overview")},
+            {type:"students",name:gettext("Students")},
+            {type:"assignments",name:gettext("Assignments")},
+            {type:"workflows",name:gettext("Workflow Visibility")},
+            {type:"settings",name:gettext("Classroom Settings")},
+        ];
+    }
     
+    getRole(){
+        return "teacher";
+    }
+
     openEdit(){
-        renderMessageBox({...this.state,id:this.props.project.id},"project_edit_menu",this.updateFunction.bind(this));
+        return null;
+        // renderMessageBox({...this.state,id:this.props.project.id},"project_edit_menu",this.updateFunction.bind(this));
     }
 
     changeView(view_type){
@@ -100,17 +76,51 @@ export class LiveProjectMenu extends React.Component{
         });
     }
 
+    getHeader(){
+        // let publish_icon = iconpath+'view_none.svg';
+        // let publish_text = gettext("PRIVATE");
+        // if(this.props.project.published){
+        //     publish_icon = iconpath+'published.svg';
+        //     publish_text = gettext("PUBLISHED");
+        // }
+        // let share;
+        // if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
+        // let edit_project;
+        // if(this.props.project.author_id==user_id)edit_project=reactDom.createPortal(
+        //     <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
+        //         <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
+        //     </div>,
+        //     $("#viewbar")[0]
+        // );
+        // return [
+        //     reactDom.createPortal(
+        //         share,
+        //         $("#floatbar")[0]
+        //     ),
+        //     reactDom.createPortal(
+        //         <div class="workflow-publication">
+        //             <img src={publish_icon}/><div>{publish_text}</div>
+        //         </div>,
+        //         $("#floatbar")[0]
+        //     ),
+        //     // edit_project,
+        //     <a class="menu-create hover-shade" href={update_path.project.replace("0",this.state.id)}>{gettext("Design Mode")}</a>,
+        // ];
+    }
+
     getContent(){
         console.log(this.props)
         switch(this.state.view_type){
             case "overview":
-                return (<LiveProjectOverview objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectOverview role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "students":
-                return (<LiveProjectStudents objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectStudents role={this.getRole()} liveproject={this.props.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "assignments":
-                return (<LiveProjectAssignments objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectAssignments role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+            case "workflows":
+                return (<LiveProjectWorkflows role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "settings":
-                return (<LiveProjectSettings objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectSettings role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
         }
     }
 
@@ -120,6 +130,43 @@ export class LiveProjectMenu extends React.Component{
 
                      
 }
+export class StudentLiveProjectMenu extends LiveProjectMenu{
+
+    getViewButtons(){
+        return [
+            {type:"overview",name:gettext("Classroom Overview")},
+            {type:"assignments",name:gettext("My Assignments")},
+            {type:"workflows",name:gettext("My Workflows")},
+        ];
+    }
+
+    getHeader(){
+        return null;
+    }
+
+    getRole(){
+        return "student";
+    }
+    getContent(){
+        console.log(this.props)
+        switch(this.state.view_type){
+            case "overview":
+                return (<StudentLiveProjectOverview role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+            case "assignments":
+                return (<StudentLiveProjectAssignments role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+            case "workflows":
+                return (<StudentLiveProjectWorkflows role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+        }
+    }
+
+    updateFunction(new_state){
+        this.setState(new_state);
+    }
+
+                     
+}
+
+
 
 class LiveProjectSection extends React.Component{
     constructor(props){
@@ -133,15 +180,35 @@ class LiveProjectSection extends React.Component{
 
     componentDidMount(){
         let component = this;
-        getLiveProjectData(this.props.objectID,this.props.view_type,
-            (data_package)=>{
-                component.setState({data:data_package});
-            }
-        )
+        if(this.props.role=="teacher"){
+            getLiveProjectData(this.props.objectID,this.props.view_type,
+                (data_package)=>{
+                    component.setState({data:data_package});
+                }
+            )
+        }else if(this.props.role=="student"){
+            getLiveProjectDataStudent(this.props.objectID,this.props.view_type,
+                (data_package)=>{
+                    component.setState({data:data_package});
+                }
+            )
+        }
     }
 }
 
 class LiveProjectOverview extends LiveProjectSection{
+
+    render(){
+        if(!this.state.data)return this.defaultRender();
+        console.log(this.state);
+        return (
+            <div>Got data</div>
+        );
+    }
+
+}
+
+class StudentLiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
@@ -165,13 +232,84 @@ class LiveProjectAssignments extends LiveProjectSection{
 
 }
 
-class LiveProjectStudents extends LiveProjectSection{
+class StudentLiveProjectAssignments extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
         console.log(this.state);
         return (
             <div>Got data</div>
+        );
+    }
+
+}
+
+class LiveProjectWorkflows extends LiveProjectSection{
+
+    render(){
+        if(!this.state.data)return this.defaultRender();
+        console.log(this.state);
+        return (
+            <div>Got data</div>
+        );
+    }
+
+}
+
+class StudentLiveProjectWorkflows extends LiveProjectSection{
+
+    render(){
+        if(!this.state.data)return this.defaultRender();
+        console.log(this.state);
+        return (
+            <div>Got data</div>
+        );
+    }
+
+}
+
+class LiveProjectStudents extends React.Component{
+
+    render(){
+        let liveproject = this.props.liveproject;
+
+        let register_link;
+        console.log(liveproject);
+        if(liveproject && liveproject.registration_hash){
+            let register_url = registration_path.replace("project_hash",liveproject.registration_hash);
+            register_link = (
+                <div class="user-text">
+                    <div class="user-panel">
+                        <h4>Student Registration:</h4>
+                        <p>
+                            {gettext("Student Registration Link: ")}
+                        </p>
+                        <div>
+                            <img id="copy-text" class="hover-shade" onClick={
+                                ()=>{
+                                    navigator.clipboard.writeText(register_url);
+                                    $("#copy-text").attr("src",iconpath+"duplicate_checked.svg");
+                                    $("#url-text").text("Copied to Clipboard");
+                                    setTimeout(()=>{
+                                        $("#copy-text").attr("src",iconpath+"duplicate_clipboard.svg");
+                                        $("#url-text").text(register_url);
+                                    },1000)
+                                }
+                            } title={gettext("Copy to clipboard")} src={iconpath+"duplicate_clipboard.svg"}/>
+                            <a id="url-text" class="selectable" href={register_url}>
+                                {register_url}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div class="workflow-details">
+                <StudentManagement data={this.props.liveproject}/>
+                {register_link}
+            </div>
         );
     }
 
@@ -188,3 +326,5 @@ class LiveProjectSettings extends LiveProjectSection{
     }
 
 }
+
+

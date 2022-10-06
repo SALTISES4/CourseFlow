@@ -1,29 +1,24 @@
 import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {setUserPermission,getUsersForObject,getUserList} from "./PostFunctions";
+import {setLiveProjectRole,getUsersForLiveProject,getUserList} from "./PostFunctions";
 import * as Constants from "./Constants";
 
-export class ShareMenu extends React.Component{
+export class StudentManagement extends React.Component{
     constructor(props){
         super(props);
         this.tiny_loader = new renderers.TinyLoader($("body"));
-        this.state={owner:props.data.author,edit:[],view:[],comment:[],student:[],userlist:[]}
+        this.state={owner:null,teacher:[],student:[]}
     }
     
     render(){
         let data = this.props.data
+        if(this.state.owner==null)return null;
         let owner = (
             <UserLabel user={this.state.owner} type={"owner"}/>
         );
-        let editors = this.state.edit.map((user)=>
-            <UserLabel user={user} type={"edit"} permissionChange={this.setUserPermission.bind(this)}/>
-        );
-        let viewers = this.state.view.map((user)=>
-            <UserLabel user={user} type={"view"} permissionChange={this.setUserPermission.bind(this)}/>
-        );
-        let commentors = this.state.comment.map((user)=>
-            <UserLabel user={user} type={"comment"} permissionChange={this.setUserPermission.bind(this)}/>
+        let teachers = this.state.teacher.map((user)=>
+            <UserLabel user={user} type={"teacher"} permissionChange={this.setUserPermission.bind(this)}/>
         );
         let students = this.state.student.map((user)=>
             <UserLabel user={user} type={"student"} permissionChange={this.setUserPermission.bind(this)}/>
@@ -34,36 +29,27 @@ export class ShareMenu extends React.Component{
             text=gettext("Untitled");
         }
 
-        let share_info;
-        if(data.type=="project"){
-            share_info=gettext("Note: You are sharing a project. Any added users will be granted the same permission for all workflows within the project.");
-        }else{
-            share_info=gettext("Note: You are sharing a workflow. Any added users will be granted view permissions for the whole project.");
-        }
         
         
 
         return(
-            <div class="message-wrap user-text">
-                <h3>{gettext("Sharing")+":"}</h3>
-                <div class="workflow-title-bar">
-                    <div>
-                        {text}
-                    </div>
-                </div>
+            <div class="user-text">
+                <h3>{gettext("Student Management")+":"}</h3>
                 <h4>{gettext("Owned By")}:</h4>
                     <div>{owner}</div>
                 <div class="user-panel">
-                    <h4>{gettext("Shared With")}:</h4>
+                    <h4>{gettext("Teachers")}:</h4>
                     <ul class="user-list">
-                        {editors}
-                        {commentors}
-                        {viewers}
+                        {teachers}
+                    </ul>
+                </div>
+                <div class="user-panel">
+                    <h4>{gettext("Enrolled Users")}:</h4>
+                    <ul class="user-list">
                         {students}
                     </ul>
                 </div>
                 <UserAdd permissionChange={this.setUserPermission.bind(this)}/>
-                {share_info}
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
                     <img src = {iconpath+"close.svg"}/>
                 </div>
@@ -74,21 +60,19 @@ export class ShareMenu extends React.Component{
     
     setUserPermission(permission_type,user){
         this.tiny_loader.startLoad();
-        setUserPermission(user.id,this.props.data.id,this.props.data.type,permission_type,()=>{
-            getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
-                this.setState({view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students});
+        setLiveProjectRole(user.id,this.props.data.id,permission_type,()=>{
+            getUsersForLiveProject(this.props.data.id,(response)=>{
+                this.setState({owner:response.author,student:response.students,teacher:response.teachers});
                 this.tiny_loader.endLoad();
             });
         });
     }
     
     componentDidMount(){
-        getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
-            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students});
+        getUsersForLiveProject(this.props.data.id,(response)=>{
+                this.setState({owner:response.author,student:response.students,teacher:response.teachers});
         });
     }
-    
-    
     
 }
 
@@ -99,16 +83,15 @@ class UserLabel extends React.Component{
     }
     
     render(){
+        console.log(this.props);
         let permission_select;
         if(this.props.type!="owner"){
             if(this.props.type=="add"){
                 permission_select = (
                     <div class="permission-select">
                         <select ref={this.select}>
-                            <option value="edit">{gettext("Can edit")}</option>
-                            <option value="comment">{gettext("Can comment")}</option>
-                            <option value="view">{gettext("Can view")}</option>
                             <option value="student">{gettext("Student")}</option>
+                            <option value="teacher">{gettext("Teacher")}</option>
                         </select>
                         <button onClick={()=>this.props.addFunction($(this.select.current).val())}>{gettext("Share")}</button>
                     </div>
@@ -117,10 +100,8 @@ class UserLabel extends React.Component{
                 permission_select = (
                     <div class="permission-select">
                         <select value={this.props.type} onChange={this.onChange.bind(this)}>
-                            <option value="edit">{gettext("Can edit")}</option>
-                            <option value="comment">{gettext("Can comment")}</option>
-                            <option value="view">{gettext("Can view")}</option>
                             <option value="student">{gettext("Student")}</option>
+                            <option value="teacher">{gettext("Teacher")}</option>
                             <option value="none">{gettext("Remove user")}</option>
                         </select>
                     </div>
@@ -153,7 +134,7 @@ class UserLabel extends React.Component{
                 }
                 break;
             default:
-                this.props.permissionChange(Constants.permission_keys[evt.target.value],this.props.user);
+                this.props.permissionChange(Constants.role_keys[evt.target.value],this.props.user);
         }
     }
     
@@ -213,7 +194,7 @@ class UserAdd extends React.Component{
 
     addClick(value){
         if(this.state.selected){
-            this.props.permissionChange(Constants.permission_keys[value],this.state.selected);
+            this.props.permissionChange(Constants.role_keys[value],this.state.selected);
             $(this.input.current).val(null);
                 this.setState({selected:null})
         }

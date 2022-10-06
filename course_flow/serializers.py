@@ -7,6 +7,7 @@ from django.utils.translation import gettext as _
 from html2text import html2text
 from rest_framework import serializers
 
+from .decorators import check_object_permission
 from .models import (
     Activity,
     Column,
@@ -15,6 +16,7 @@ from .models import (
     Course,
     Discipline,
     Favourite,
+    LiveProject,
     Node,
     NodeLink,
     NodeWeek,
@@ -31,7 +33,6 @@ from .models import (
     Week,
     WeekWorkflow,
     Workflow,
-    LiveProject,
     title_max_length,
 )
 from .utils import (
@@ -40,9 +41,6 @@ from .utils import (
     get_unique_outcomenodes,
     linkIDMap,
     multiple_replace,
-)
-from .decorators import (
-    check_object_permission
 )
 
 bleach_allowed_attributes_description = {
@@ -604,7 +602,6 @@ class ProjectSerializerShallow(
             "object_sets",
             "favourite",
             "liveproject",
-            "registration_hash",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -614,19 +611,6 @@ class ProjectSerializerShallow(
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
     author=serializers.SerializerMethodField()
-    registration_hash=serializers.SerializerMethodField()
-    
-    def get_registration_hash(self,instance):
-        user = self.context.get("user",None)
-        if user is None:
-            return None
-        if check_object_permission(
-            instance,
-            user,
-            ObjectPermission.PERMISSION_EDIT,
-        ):
-            return instance.registration_hash()
-        return None
 
     def get_favourite(self, instance):
         user = self.context.get("user")
@@ -975,7 +959,6 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "author_id",
             "created_on",
             "last_modified",
-            "hash",
             "columnworkflow_set",
             "weekworkflow_set",
             "is_original",
@@ -1030,7 +1013,6 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "author_id",
             "created_on",
             "last_modified",
-            "hash",
             "weekworkflow_set",
             "columnworkflow_set",
             "is_original",
@@ -1085,7 +1067,6 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "author_id",
             "created_on",
             "last_modified",
-            "hash",
             "columnworkflow_set",
             "weekworkflow_set",
             "is_original",
@@ -1465,13 +1446,14 @@ class LiveProjectSerializer(
         fields = [
             "title",
             "description",
-            "id",
             "pk",
             "type",
             "created_on",
             "default_self_reporting",
             "default_assign_to_all",
             "default_single_completion",
+            "registration_hash",
+            "id",
         ]
 
     title = serializers.SerializerMethodField()
@@ -1479,6 +1461,16 @@ class LiveProjectSerializer(
     id = serializers.SerializerMethodField()
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
+
+    registration_hash=serializers.SerializerMethodField()
+    
+    def get_registration_hash(self,instance):
+        user = self.context.get("user",None)
+        if user is None:
+            return None
+        if instance.project.author==user:
+            return instance.project.registration_hash()
+        return None
 
     def get_title(self, instance):
         return super().get_title(instance.project)
@@ -1488,6 +1480,7 @@ class LiveProjectSerializer(
 
     def get_id(self,instance):
         return instance.pk
+
 
     def update(self, instance, validated_data):
         instance.default_self_reporting = validated_data.get(

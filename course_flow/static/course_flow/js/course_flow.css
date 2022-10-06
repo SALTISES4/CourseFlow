@@ -634,6 +634,10 @@ button:hover{
     background-color:#d6bb30;
 }
 
+.workflow-type-indicator.liveproject{
+    background-color:#8a38d1;
+}
+
 .workflow-top-row{
     display:flex;
     align-items:flex-start;
@@ -3253,6 +3257,11 @@ h4.drag-and-drop::after{
 
 .workflow-legend *:is(h4, h5), .right-panel-container *:is(h3, h4, h5){
     color:#1976bc;
+}
+
+.selectable{
+    -webkit-user-select: unset;
+            user-select: unset;
 }
 
 .load-screen{

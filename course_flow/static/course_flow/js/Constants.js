@@ -129,6 +129,11 @@ export const permission_keys = {
     "comment":3,
     "student":4,
 }
+export const role_keys = {
+    "none":0,
+    "student":1,
+    "teacher":2,
+}
 export const default_drop_state = {
     node:false,
     week:true,

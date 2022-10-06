@@ -214,8 +214,7 @@ def get_nondeleted_favourites(user):
 
 def get_classrooms_for_student(user):
     return models.Project.objects.filter(
-        user_permissions__user=user,
-        user_permissions__permission_type=models.ObjectPermission.PERMISSION_STUDENT,
+        liveproject__liveprojectuser__user=user,
     )
 
 

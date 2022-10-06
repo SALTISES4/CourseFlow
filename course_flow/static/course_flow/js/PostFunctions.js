@@ -632,12 +632,41 @@ export function setUserPermission(user_id,objectID,objectType,permission_type,ca
     }
 }
 
+//set the permission for a user
+export function setLiveProjectRole(user_id,liveprojectPk,permission_type,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.set_liveproject_role,{
+            liveprojectPk:JSON.stringify(liveprojectPk),
+            permission_user:JSON.stringify(user_id),
+            role_type:JSON.stringify(permission_type),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.error)
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 //Get the list of users for a project
 export function getUsersForObject(objectID,objectType,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_users_for_object,{
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+//Get the list of users for a liveproject
+export function getUsersForLiveProject(liveprojectPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_users_for_liveproject,{
+            liveprojectPk:JSON.stringify(liveprojectPk),
         }).done(function(data){
             if(data.action=="posted")callBackFunction(data);
             else fail_function(data.action)
@@ -786,7 +815,22 @@ export function makeProjectLive(projectPk,callBackFunction=()=>console.log("succ
 export function getLiveProjectData(projectPk,data_type,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_live_project_data,{
-            projectPk:JSON.stringify(projectPk),
+            liveprojectPk:JSON.stringify(projectPk),
+            data_type:JSON.stringify(data_type),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//get live project data
+export function getLiveProjectDataStudent(projectPk,data_type,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_live_project_data_student,{
+            liveprojectPk:JSON.stringify(projectPk),
             data_type:JSON.stringify(data_type),
         }).done(function(data){
             if(data.action=="posted")callBackFunction(data);
