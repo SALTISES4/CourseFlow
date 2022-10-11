@@ -182,14 +182,14 @@ class LiveProjectSection extends React.Component{
         let component = this;
         if(this.props.role=="teacher"){
             getLiveProjectData(this.props.objectID,this.props.view_type,
-                (data_package)=>{
-                    component.setState({data:data_package});
+                (data)=>{
+                    component.setState({data:data.data_package});
                 }
             )
         }else if(this.props.role=="student"){
             getLiveProjectDataStudent(this.props.objectID,this.props.view_type,
-                (data_package)=>{
-                    component.setState({data:data_package});
+                (data)=>{
+                    component.setState({data:data.data_package});
                 }
             )
         }
@@ -248,9 +248,18 @@ class LiveProjectWorkflows extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
+        console.log(this.state.data);
+        let workflows_added = this.state.data.workflows_added.map(workflow=>
+            <WorkflowForMenu workflow_data={workflow}/>
+        );
+        let workflows_not_added = this.state.data.workflows_not_added.map(workflow=>
+            <WorkflowForMenu workflow_data={workflow}/>
+        );
         return (
-            <div>Got data</div>
+            <div>
+                {workflows_added}
+                {workflows_not_added}
+            </div>
         );
     }
 
@@ -261,8 +270,13 @@ class StudentLiveProjectWorkflows extends LiveProjectSection{
     render(){
         if(!this.state.data)return this.defaultRender();
         console.log(this.state);
+        let workflows_added = this.state.data.workflows_added.map(workflow=>
+            <WorkflowForMenu workflow_data={workflow}/>
+        );
         return (
-            <div>Got data</div>
+            <div>
+                {workflows_added}
+            </div>
         );
     }
 
