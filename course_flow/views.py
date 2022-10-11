@@ -5601,6 +5601,19 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
             data_package = {
                 "data":"Hello world!"
             }
+        elif(data_type=="workflows"):
+            workflows_added = InfoBoxSerializer(liveproject.visible_workflows.filter(deleted=False),many=True).data
+            workflows_not_added = InfoBoxSerializer(
+                Workflow.objects.filter(
+                    project=liveproject.project,deleted=False
+                ).exclude(
+                    pk__in=[x.pk for x in liveproject.visible_workflows.all()]
+                ),many=True
+            ).data
+            data_package = {
+                "workflows_added":workflows_added,
+                "workflows_not_added":workflows_not_added,
+            }
         elif(data_type=="settings"):
             data_package = {
                 "data":"Hello world!"
