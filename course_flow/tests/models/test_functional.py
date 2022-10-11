@@ -1822,7 +1822,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
         response = self.client.post(
             reverse("course_flow:update-outcomenode-degree"),
-            {"nodePk": node.id, "outcomePk": base_outcome.id, "degree": 1},
+            {"nodePk": node.id, "outcomePk": poo1.child.pk, "degree": 1},
         )
 
         selenium.get(
@@ -1834,7 +1834,18 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element_by_css_selector(
             "#button_competencymatrix"
         ).click()
-        time.sleep(1)
+        time.sleep(2)
+        assert (
+            len(selenium.find_elements_by_css_selector(".outcome-head .node")) == 1
+        )
+        assert (
+            len(selenium.find_elements_by_css_selector(".table-cell input")) == 3
+        )
+        time.sleep(2)
+        assert (
+            len(selenium.find_elements_by_css_selector(".table-cell > img")) == 2
+        )
+
 
     def test_grid_view(self):
         selenium = self.selenium
