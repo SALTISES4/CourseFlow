@@ -166,8 +166,6 @@ export class ComparisonView extends React.Component{
     loadWorkflow(){
         getWorkflowSelectMenu(this.props.data.id,"workflow",false,true,(response_data)=>{
             if(response_data.workflowID!=null){
-                console.log("Loaded");
-                console.log(response_data);
                 let workflows = this.state.workflows.slice();
                 workflows.push(response_data.workflowID);
                 this.setState({workflows:workflows});
@@ -204,7 +202,6 @@ class WorkflowComparisonRendererComponent extends React.Component{
     
     
     render(){
-        console.log("renderer");
         return (
             <div class="workflow-wrapper" id={"workflow-"+this.props.workflowID}>
                 <div class="workflow-inner-wrapper" ref={this.maindiv}>
@@ -217,7 +214,6 @@ class WorkflowComparisonRendererComponent extends React.Component{
     }
     
     componentDidMount(){
-        console.log("mounted");
         let loader = new Constants.Loader('body');
         getWorkflowContext(
             this.props.workflowID,(context_response_data)=>{
@@ -240,9 +236,6 @@ class WorkflowComparisonRendererComponent extends React.Component{
     }
 
     componentDidUpdate(prev_props){
-        console.log("Component Changed");
-        console.log(prev_props.view_type);
-        console.log(this.props.view_type);
         if(prev_props.view_type!=this.props.view_type)this.renderer.render(this.props.view_type);
     }
 }
@@ -314,8 +307,6 @@ class WorkflowComparisonBaseViewUnconnected extends ComponentJSON{
         let props=this.props;
         $(document).off("object_set_toggled."+this.props.data.id);
         $(document).on("object_set_toggled."+this.props.data.id,(evt,data)=>{
-            console.log("got an event trigger from object set toggle");
-            console.log(data);
             props.dispatch(toggleObjectSet(data.id,data.hidden));
         });
     }

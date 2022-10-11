@@ -11,8 +11,7 @@ export class ConnectionBar extends React.Component{
         props.renderer.connection_update_received = (user_data)=>{
             connection_bar.connection_update_received(user_data);
         }
-        console.log("created connection bar");
-        console.log(this.props.updateSocket.readyState);
+
     }
     
     
@@ -45,12 +44,20 @@ export class ConnectionBar extends React.Component{
             )
         }
     }
+
+    componentDidUpdate(){
+        if($(".users-box").hasClass("connection-failed")){
+            this.connection_update();
+        }
+    }
     
     componentDidMount(){
+        console.log("Connected users mounted");
         this.connection_update();
     }
     
     connection_update(connected=true){
+        clearTimeout(this.connection_update.bind(this));
         if(this.props.updateSocket.readyState==1)this.props.updateSocket.send(JSON.stringify({type:"connection_update",user_data:{user_id:user_id,user_name:user_name,user_colour:myColour,connected:connected}}))
         setTimeout(this.connection_update.bind(this),30000);
     }

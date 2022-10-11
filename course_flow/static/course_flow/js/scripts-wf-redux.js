@@ -212,6 +212,7 @@ export class WorkflowRenderer{
             updateSocket.onclose = function(e){
                 if(!renderer.has_rendered)renderer.connection_opened(true);
                 else{
+                    renderer.create_connection_bar();
                     renderer.attempt_reconnect();
                 }
                 renderer.is_static=true;
@@ -325,7 +326,7 @@ export class WorkflowRenderer{
             console.log(data_flat);
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
             this.render($("#container"));
-            if(reconnect)this.create_connection_bar();
+            this.create_connection_bar();
             this.clear_queue(data_flat.workflow.edit_count);
             if(reconnect)this.attempt_reconnect();
         });
@@ -489,15 +490,12 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
     }
     
     render(view_type="workflowview"){
-        console.log(this.store.getState());
         this.view_type=view_type;
         reactDom.render(<WorkflowLoader/>,this.container[0]);
         let store = this.store;
         let initial_workflow_data = store.getState();
         var renderer = this;
         this.locks={}
-        console.log("the container to be rendered into");
-        console.log(this.container);
         
         if(view_type=="outcomeedit"){
             //get additional data about parent workflow prior to render
