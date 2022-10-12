@@ -9,7 +9,6 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id="content-container" class="body-wrapper"></div>
 <div id="popup-container"></div>
 <!-- -->
 {% endblock %}
@@ -33,7 +32,7 @@
   window.addEventListener("load",function(){
       home_renderer = new renderers.HomeRenderer(data_package);
       $(document).ajaxError(renderers.fail_function);
-      home_renderer.render($("#content-container"));
+      home_renderer.render($("#container"));
   });
 
 

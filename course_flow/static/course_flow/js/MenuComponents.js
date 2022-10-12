@@ -477,7 +477,7 @@ class WorkflowGridMenuUnconnected extends React.Component{
     componentDidMount(){
         $("#home-tabs").tabs({
             activate:(evt,ui)=>{
-                window.location.hash=ui.newPanel[0].id;
+                //window.location.hash=ui.newPanel[0].id;
             }
         });
     }
@@ -599,7 +599,7 @@ class ProjectMenuUnconnected extends React.Component{
     componentDidMount(){
         $("#home-tabs").tabs({
             activate:(evt,ui)=>{
-                window.location.hash=ui.newPanel[0].id;
+                //window.location.hash=ui.newPanel[0].id;
             }
         });
         getDisciplines((response)=>{

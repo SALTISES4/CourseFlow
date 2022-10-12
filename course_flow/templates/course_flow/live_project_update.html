@@ -9,7 +9,6 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id="content-container" class="body-wrapper"></div>
 <div id="popup-container"></div>
 <!-- -->
 {% endblock %}
@@ -43,7 +42,7 @@
   window.addEventListener("load",function(){
       live_project_renderer = new live_renderers.LiveProjectRenderer(live_project_data,project_data);
       $(document).ajaxError(renderers.fail_function);
-      live_project_renderer.render($("#content-container"));
+      live_project_renderer.render($("#container"));
   });
 </script>
 {% endblock %}

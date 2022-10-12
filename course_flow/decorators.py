@@ -104,7 +104,7 @@ def check_object_permission(instance, user, permission):
     if (
         ObjectPermission.objects.filter(
             user=user,
-            object_pk=instance.pk,
+            object_id=instance.pk,
             content_type=ContentType.objects.get_for_model(instance),
         )
         .filter(permission_check)

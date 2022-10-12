@@ -12,7 +12,6 @@
 <!-- -->
 {% block body %}
 
-<div id="container" class="body-wrapper"><div class="load-screen"></div></div>
 <div id="popup-container"></div>
 <div id="sidebar" class="side-bar hide-print">
   <ul>
@@ -79,6 +78,8 @@
       workflow:'{% url "course_flow:workflow-update" pk=object.pk %}',
   }
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+
+  $("#sidebar").detach().appendTo("#sidebar-container");
 
   $("#sidebar").tabs({
       active:1,

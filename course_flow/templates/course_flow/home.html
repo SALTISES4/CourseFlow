@@ -9,69 +9,66 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id="content-container" class="body-wrapper">
-    <div class="home-menu-container">
-        <h1>CourseFlow</h1>
-        <hr>
-        <p>{% trans "Welcome to CourseFlow, a course, curriculum, and activity planning tool by SALTISE." %}</p>
-        <h3>{% trans "Quick Links:" %}</h3>
-        <div class="home-menu-grid">
-            {% if user|has_group:"Teacher" %}
-            <div class="home-item" id="home-projects">
-                <a class="hover-shade" href='{% url "course_flow:my-projects" %}'><h4>{% trans "My Projects" %}</h4>
-                <p>{% trans "Explore and create your projects" %}</p></a>
-                {% for project in user.project_set.all|not_deleted|slice:":7" %}
-                  <a class="hover-shade"
-                        href="{% url 'course_flow:project-update' pk=project.pk %}"
-                     >
-                    {{ project.title }}
-                  </a>
-                {% endfor %}
-                <a class="hover-shade" href="{% url 'course_flow:project-create' %}">{% trans "+Create new project" %}</a>
-            </div>
-            <div class="home-item" id="home-favourites">
-                <a class="hover-shade" href='{% url "course_flow:my-favourites" %}'><h4>{% trans "My Favourites" %}</h4>
-                <p>{% trans "Your favourited items" %}</p></a>
-                {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
-                  <a class="hover-shade"
-                     {% if favourite.content_object.type == "project" %}
-                        href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
-                     {% else %}
-                        href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
-                     {% endif %}
-                     >
-                    {{ favourite.content_object }}
-                  </a>
-                {% endfor %}
-            </div>
-            <div class="home-item" id="home-explore">
-                <a class="hover-shade" href='{% url "course_flow:explore" %}?types[]=activity&types[]=course&types[]=program&types[]=project'><h4>{% trans "Explore" %}</h4>
-                <p>{% trans "Explore published material by other users" %}</p>
-                <div class="home-item-icon-container">
-                <img src = "{% static 'course_flow/img/images_svg/explore.svg' %}"/>
-                    </div>
-                </a>
-                
-            </div>
-            {% endif %}
-            {% if user|get_classrooms|not_deleted|length > 0 %}
-            <div class="home-item" id="home-liveprojects">
-                <a class="hover-shade" href='{% url "course_flow:my-live-projects" %}'><h4>{% trans "My Classrooms" %}</h4>
-                <p>{% trans "Your classrooms" %}</p></a>
-                {% for project in user|get_classrooms|not_deleted|slice:":7" %}
-                  <a class="hover-shade"
-                        href="{% url 'course_flow:live-project-update' pk=project.pk %}"
-                     >
-                    {{ project.title }}
-                  </a>
-                {% endfor %}
-            </div>
-            {% endif %}
+<div class="home-menu-container">
+    <h1>CourseFlow</h1>
+    <hr>
+    <p>{% trans "Welcome to CourseFlow, a course, curriculum, and activity planning tool by SALTISE." %}</p>
+    <h3>{% trans "Quick Links:" %}</h3>
+    <div class="home-menu-grid">
+        {% if user|has_group:"Teacher" %}
+        <div class="home-item" id="home-projects">
+            <a class="hover-shade" href='{% url "course_flow:my-projects" %}'><h4>{% trans "My Projects" %}</h4>
+            <p>{% trans "Explore and create your projects" %}</p></a>
+            {% for project in user.project_set.all|not_deleted|slice:":7" %}
+              <a class="hover-shade"
+                    href="{% url 'course_flow:project-update' pk=project.pk %}"
+                 >
+                {{ project.title }}
+              </a>
+            {% endfor %}
+            <a class="hover-shade" href="{% url 'course_flow:project-create' %}">{% trans "+Create new project" %}</a>
         </div>
+        <div class="home-item" id="home-favourites">
+            <a class="hover-shade" href='{% url "course_flow:my-favourites" %}'><h4>{% trans "My Favourites" %}</h4>
+            <p>{% trans "Your favourited items" %}</p></a>
+            {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
+              <a class="hover-shade"
+                 {% if favourite.content_object.type == "project" %}
+                    href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
+                 {% else %}
+                    href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
+                 {% endif %}
+                 >
+                {{ favourite.content_object }}
+              </a>
+            {% endfor %}
+        </div>
+        <div class="home-item" id="home-explore">
+            <a class="hover-shade" href='{% url "course_flow:explore" %}?types[]=activity&types[]=course&types[]=program&types[]=project'><h4>{% trans "Explore" %}</h4>
+            <p>{% trans "Explore published material by other users" %}</p>
+            <div class="home-item-icon-container">
+            <img src = "{% static 'course_flow/img/images_svg/explore.svg' %}"/>
+                </div>
+            </a>
+            
+        </div>
+        {% endif %}
+        {% if user|get_classrooms|not_deleted|length > 0 %}
+        <div class="home-item" id="home-liveprojects">
+            <a class="hover-shade" href='{% url "course_flow:my-live-projects" %}'><h4>{% trans "My Classrooms" %}</h4>
+            <p>{% trans "Your classrooms" %}</p></a>
+            {% for project in user|get_classrooms|not_deleted|slice:":7" %}
+              <a class="hover-shade"
+                    href="{% url 'course_flow:live-project-update' pk=project.pk %}"
+                 >
+                {{ project.title }}
+              </a>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
-
-
 </div>
+
 <!-- -->
 {% endblock %}
 <!-- -->
@@ -81,6 +78,9 @@
 <!-- -->
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
+
+  $("#container").children().detach();
+  $(".home-menu-container").detach().appendTo("#container");
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
   const create_path = {
@@ -107,6 +107,9 @@ function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>console.
           if(data.action == "posted") callBackFunction(data);
           else console.log("Failed");
       });
+  }catch(err){
+
   }
+}
 </script>
 {% endblock %}

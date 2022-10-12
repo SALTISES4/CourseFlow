@@ -256,9 +256,13 @@ class LiveProjectWorkflows extends LiveProjectSection{
             <WorkflowForMenu workflow_data={workflow}/>
         );
         return (
-            <div>
-                {workflows_added}
-                {workflows_not_added}
+            <div class="workflow-details">
+                <div class="menu-grid">
+                    {workflows_added}
+                </div>
+                <div class="menu-grid">
+                    {workflows_not_added}
+                </div>
             </div>
         );
     }

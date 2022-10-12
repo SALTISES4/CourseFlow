@@ -80,7 +80,7 @@ export class SelectionManager{
 export function renderExploreMenu(data_package,disciplines){
     reactDom.render(
         <ExploreMenu data_package={data_package} disciplines={disciplines} pages={pages}/>,
-        $("#content-container")[0]
+        $("#container")[0]
     );
 }
 

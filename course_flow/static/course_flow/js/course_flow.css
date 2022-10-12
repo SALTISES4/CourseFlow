@@ -38,14 +38,31 @@ button:hover{
     box-shadow:inset 0 0 0 99999px rgba(0,0,0,0.1);
 }
 
+.main-wrapper{
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.main-block{
+    flex-grow: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.right-panel-wrapper{
+    flex-grow: 1;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+}
+
 .topnav{
-    width:calc(100% - 240px);
-    position: fixed;
-    z-index: 6;
-    top: 0;
-    left: 240px;
+    width:100%;
     color: #1976bc;
     background: white;
+    position: relative;
 }
 
 
@@ -347,14 +364,13 @@ button:hover{
 .left-panel{
     background:white;
     width:240px;
+    min-width:240px;
     border-right:1px solid lightgray;
-    position:absolute;
     left:0px;
     top:0px;
     height:100%;
     box-sizing:border-box;
     color:#444444;
-    position:fixed;
     display:flex;
     flex-direction:column;
 }
@@ -971,12 +987,9 @@ text {
 
 
 .body-wrapper{
-    top:50px;
-    left:240px;
-    width:calc(100% - 240px);
-    height:calc(100% - 50px);
-    overflow:scroll;
-    position:absolute;
+    overflow:auto;
+    flex-grow: 1;
+    height: 100%;
 }
 
 .body-wrapper.printing{
@@ -1188,8 +1201,13 @@ button, input[type="submit"]{
     width:100%;
     height:100%;
     background:white;
-    padding-top:100px;
+    padding-top:50px;
     padding-left:40px;
+    box-sizing: border-box;
+}
+
+#create{
+    height: 100%;
 }
 
 .workflow-create-wrapper p label, .workflow-create-wrapper p input, .workflow-create-wrapper p textarea{
@@ -1205,12 +1223,8 @@ button, input[type="submit"]{
 }
 
 .workflow-wrapper{
-    margin-top:50px;
-    position:relative;
-    display:inline-block;
     white-space:nowrap;
     text-align:left;
-    top:0px;
 }
 
 .workflow-wrapper.printing{
@@ -1226,10 +1240,8 @@ button, input[type="submit"]{
     font-family:'Open Sans';
     position:relative;
     background:white;
-    display:inline-block;
     overflow:visible;
     margin:10px;
-    margin-right:280px;
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
     padding:0px;
     -webkit-user-select:none;
@@ -2656,13 +2668,10 @@ circle.mouseover{
 }
 
 .side-bar{
-    position:fixed;
-    overflow:visible;
     z-index:4;
-    right:16px;
-    top:96px;
-    bottom:0px;
+    height: 100%;
     max-width:260px;
+    position: relative;
 }
 
 
