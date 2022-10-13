@@ -5608,7 +5608,7 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
                     project=liveproject.project,deleted=False
                 ).exclude(
                     pk__in=[x.pk for x in liveproject.visible_workflows.all()]
-                ),many=True
+                ),many=True,context={"user":request.user}
             ).data
             data_package = {
                 "workflows_added":workflows_added,

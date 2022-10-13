@@ -257,9 +257,11 @@ class LiveProjectWorkflows extends LiveProjectSection{
         );
         return (
             <div class="workflow-details">
+                <h3>{gettext("Visible Workflows")}</h3>
                 <div class="menu-grid">
                     {workflows_added}
                 </div>
+                <h3>{gettext("Other Workflows")}</h3>
                 <div class="menu-grid">
                     {workflows_not_added}
                 </div>
@@ -346,3 +348,41 @@ class LiveProjectSettings extends LiveProjectSection{
 }
 
 
+
+export class WorkflowVisibility extends WorkflowForMenu{
+    
+    render(){
+        var data = this.props.workflow_data;
+        var css_class = "workflow-for-menu workflow-visibility hover-shade "+data.type;
+        if(this.props.selected)css_class+=" selected";
+        if(this.state.hide)return null;
+        let creation_text = gettext("Created");
+        if(data.author && data.author !="None")creation_text+=" "+gettext("by")+" "+data.author;
+        creation_text+=" "+data.created_on;
+        
+        return(
+            <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
+                <div class="workflow-top-row">
+                    <WorkflowTitle class_name="workflow-title" data={data}/>
+                    {this.getButtons()}
+                    {this.getTypeIndicator()}
+                </div>
+                <div class="workflow-created">
+                    { creation_text}
+                </div>
+                <div class="workflow-description" dangerouslySetInnerHTML={{ __html: data.description }}>
+                </div>
+            </div>
+        );
+    }
+    
+    
+    clickAction(){
+        return null;
+    }
+
+
+    getButtons(){
+        return [];
+    }
+}
