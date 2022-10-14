@@ -539,10 +539,8 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
     
 }
 const mapNodeStateToProps = (state,own_props)=>({
-    data:getNodeByID(state,own_props.objectID).data,
+    ...getNodeByID(state,own_props.objectID),
     outcomes_type:state.workflow.outcomes_type,
-    object_sets:state.objectset,
-    column:state.column.find(column=>column.id==node.column),
 })
 export const MatrixNodeView = connect(
     mapNodeStateToProps,

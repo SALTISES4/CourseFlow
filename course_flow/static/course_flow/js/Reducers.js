@@ -1717,12 +1717,9 @@ export function saltiseStrategyReducer(state=[],action){
 export function objectSetReducer(state=[],action){
     switch(action.type){
         case 'objectset/toggleObjectSet':
-            console.log("toggling object set in reducer");
             for(var i=0;i<state.length;i++){ 
                 if(state[i].id==action.payload.id){
-                    console.log("found payload");
                     var new_state = state.slice();
-                    console.log(action.payload.hidden);
                     new_state[i]={...new_state[i],hidden:action.payload.hidden};
                     return new_state;
                 }

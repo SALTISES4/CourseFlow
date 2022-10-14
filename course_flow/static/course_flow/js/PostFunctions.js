@@ -564,14 +564,10 @@ export function getPublicWorkflowData(workflowPk,callBackFunction=()=>console.lo
         $.get(
                 get_paths.get_public_workflow_data.replace("0",workflowPk)
         ).done(function(data){
-            console.log("done");
-            console.log(data);
             if(data.action=="posted")callBackFunction(data);
             else fail_function(data.action)
         });
     }catch(err){
-        console.log("got an error");
-        console.log(err);
         fail_function();
     }
 }

@@ -111,10 +111,6 @@ export class ComponentJSON extends React.Component{
                     var old_index = parseInt(drag_item.attr("data-old-index"));
                     if(old_parent_id!=new_parent_id || old_index!=new_index){
                         let child_id = parseInt(drag_item.attr("data-child-id"));
-                        console.log("checking restrictTo:");
-                        console.log(restrictTo);
-                        console.log("checking the data on draggable");
-                        console.log(drag_item.attr("data-restrict-to"));
 
                         if(restrictTo && drag_item.attr("data-restrict-to")!=restrictTo){
                             this.sortableMovedOutFunction(
