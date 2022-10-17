@@ -186,6 +186,8 @@ class CreateView_No_Autocomplete(CreateView):
         form.fields["description"].widget.attrs.update({"autocomplete": "off"})
         return form
 
+def ratelimited_view(request,exception):
+    return HttpResponse("Error: too many requests to public page. Please wait at least one minute then try again.", status=429)
 
 def registration_view(request):
 
@@ -2422,6 +2424,11 @@ def fast_node_copy(node, column, author, now, **kwargs):
         represents_workflow=node.represents_workflow,
         time_required=node.time_required,
         time_units=node.time_units,
+        time_general_hours=node.time_general_hours,
+        time_specific_hours=node.time_specific_hours,
+        ponderation_theory=node.ponderation_theory,
+        ponderation_individual=node.ponderation_individual,
+        ponderation_practical=node.ponderation_practical,
         is_original=False,
         parent_node=node,
         linked_workflow=linked_workflow,

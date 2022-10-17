@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-07-08 11:51-0700\n"
+"POT-Creation-Date: 2022-09-29 10:45-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,7 +50,7 @@ msgstr "Compétence"
 msgid "Title"
 msgstr "Titre"
 
-#: export_functions.py:182 models.py:781 serializers.py:142
+#: export_functions.py:182 models.py:781 serializers.py:151
 msgid "Term"
 msgstr "Session"
 
@@ -74,31 +74,31 @@ msgstr "Sous-acquis"
 msgid "Competencies"
 msgstr "Compétences"
 
-#: export_functions.py:662
+#: export_functions.py:666
 msgid "Specific Education"
 msgstr "Éducation specifique"
 
-#: export_functions.py:670
+#: export_functions.py:674
 msgid "General Education"
 msgstr "Éducation generale"
 
-#: export_functions.py:678
+#: export_functions.py:682
 msgid "Total Hours"
 msgstr "Heurs totale"
 
-#: export_functions.py:690
+#: export_functions.py:694
 msgid "Theory"
 msgstr "Théorie"
 
-#: export_functions.py:698 export_functions.py:706
+#: export_functions.py:702 export_functions.py:710
 msgid "Practical"
 msgstr "Pratique"
 
-#: export_functions.py:714
+#: export_functions.py:718
 msgid "Total"
 msgstr "Totale"
 
-#: export_functions.py:729
+#: export_functions.py:733
 msgid "Credits"
 msgstr "Crédits"
 
@@ -387,11 +387,11 @@ msgstr "Modifier"
 msgid "Comment"
 msgstr "Commentaire"
 
-#: serializers.py:83
+#: serializers.py:86
 msgid "a CourseFlow user"
 msgstr "un utilisateur"
 
-#: serializers.py:152
+#: serializers.py:161
 msgid "Untitled"
 msgstr "Sans-titre"
 
@@ -399,77 +399,77 @@ msgstr "Sans-titre"
 msgid "Create an activity:"
 msgstr "Créer une activité:"
 
-#: templates/course_flow/base.html:161
+#: templates/course_flow/base.html:158
 msgid "logout"
 msgstr "déconnecter"
 
-#: templates/course_flow/base.html:203
+#: templates/course_flow/base.html:200
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/course_flow/base.html:207 templates/course_flow/home.html:20
+#: templates/course_flow/base.html:204 templates/course_flow/home.html:20
 #: views.py:293
 msgid "My Projects"
 msgstr "Mes projets"
 
-#: templates/course_flow/base.html:211
+#: templates/course_flow/base.html:208
 msgid "My Templates"
 msgstr "Mes modèles"
 
-#: templates/course_flow/base.html:215 views.py:312 views.py:533
+#: templates/course_flow/base.html:212 views.py:312 views.py:533
 msgid "Shared With Me"
 msgstr "Partagé avec moi"
 
-#: templates/course_flow/base.html:225 templates/course_flow/home.html:32
+#: templates/course_flow/base.html:222 templates/course_flow/home.html:32
 #: views.py:618
 msgid "My Favourites"
 msgstr "Mes favoris"
 
-#: templates/course_flow/base.html:238
+#: templates/course_flow/base.html:235
 msgid "see all"
 msgstr "voir tout"
 
-#: templates/course_flow/base.html:241
+#: templates/course_flow/base.html:238
 msgid "Import from old CourseFlow"
 msgstr "Importer de l'ancien CourseFlow"
 
-#: templates/course_flow/base.html:397
+#: templates/course_flow/base.html:394
 msgid "Send"
 msgstr "Envoyer"
 
-#: templates/course_flow/base.html:398
+#: templates/course_flow/base.html:395
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/course_flow/base.html:399
+#: templates/course_flow/base.html:396
 msgid "characters remaining"
 msgstr "caractères restants"
 
-#: templates/course_flow/base.html:400
+#: templates/course_flow/base.html:397
 msgid "Leave feedback or get help"
 msgstr "Laissez des commentaires ou obtenez de l'aide"
 
-#: templates/course_flow/base.html:406
-msgid "Give Feedback"
+#: templates/course_flow/base.html:403
+msgid "Feedback"
 msgstr "Donnez votre avis"
 
-#: templates/course_flow/base.html:407
+#: templates/course_flow/base.html:404
 msgid "Help"
 msgstr "Aide"
 
-#: templates/course_flow/base.html:409
+#: templates/course_flow/base.html:406
 msgid "Let us know what is on your mind..."
 msgstr "Dites-nous ce que vous pensez..."
 
-#: templates/course_flow/base.html:411
+#: templates/course_flow/base.html:408
 msgid "An error occurred.  Please try again later."
 msgstr "Une erreur s'est produite. Veuillez réessayer plus tard."
 
-#: templates/course_flow/base.html:412 templates/course_flow/explore.html:30
+#: templates/course_flow/base.html:409
 msgid "Thanks for your feedback!"
 msgstr "Merci pour vos commentaires!"
 
-#: templates/course_flow/base.html:414
+#: templates/course_flow/base.html:411
 msgid "How can we improve your experience?"
 msgstr "Comment pouvons-nous améliorer votre expérience?"
 
@@ -502,14 +502,6 @@ msgstr "Restaurer supprimée"
 #: templates/course_flow/course_create.html:15
 msgid "Create a course:"
 msgstr "Créer un cours:"
-
-#: templates/course_flow/explore.html:28
-msgid "Let us know how we can improve your experience!"
-msgstr "Faites-nous savoir comment nous pouvons améliorer votre expérience!"
-
-#: templates/course_flow/explore.html:31
-msgid "Sorry, please try again later!"
-msgstr "Désolé, veuillez réessayer plus tard!"
 
 #: templates/course_flow/home.html:16
 msgid ""
@@ -831,3 +823,9 @@ msgstr "Bonjour! Voici les résultats de votre récente exportation."
 #: views.py:3994 views.py:4009
 msgid "(copy)"
 msgstr " (copie)"
+
+#~ msgid "Let us know how we can improve your experience!"
+#~ msgstr "Faites-nous savoir comment nous pouvons améliorer votre expérience!"
+
+#~ msgid "Sorry, please try again later!"
+#~ msgstr "Désolé, veuillez réessayer plus tard!"

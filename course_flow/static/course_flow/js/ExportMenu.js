@@ -11,7 +11,6 @@ export class ExportMenu extends React.Component{
     }
     
     render(){
-        console.log(this.props.data);
         let object_sets;
         if(this.props.data.object_sets.length>0){
             object_sets = (
