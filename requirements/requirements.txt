@@ -4,34 +4,30 @@
 #
 #    pip-compile requirements/requirements.in
 #
---index-url https://pypi.python.org/simple
-
 -e file:./#egg=saltise_course_flow
     # via -r requirements/requirements.in
-aioredis==1.3.1
-    # via channels-redis
 amqp==5.0.9
     # via kombu
 appdirs==1.4.4
     # via
     #   black
     #   virtualenv
-asgiref==3.4.1
+asgiref==3.5.2
     # via
     #   channels
     #   channels-redis
     #   daphne
     #   django
     #   saltise-course-flow
-async-timeout==4.0.1
-    # via aioredis
+async-timeout==4.0.2
+    # via redis
 attrs==20.2.0
     # via
     #   automat
     #   pytest
     #   service-identity
     #   twisted
-autobahn==21.11.1
+autobahn==22.7.1
     # via daphne
 automat==20.2.0
     # via twisted
@@ -52,12 +48,15 @@ cffi==1.15.0
     # via cryptography
 cfgv==3.2.0
     # via pre-commit
-channels==3.0.3
+channels==4.0.0
     # via
+    #   -r requirements/requirements.in
     #   channels-redis
     #   saltise-course-flow
-channels-redis==3.2.0
-    # via saltise-course-flow
+channels-redis==4.0.0
+    # via
+    #   -r requirements/requirements.in
+    #   saltise-course-flow
 charset-normalizer==2.0.12
     # via requests
 click==8.0.3
@@ -86,11 +85,13 @@ cryptography==36.0.0
     #   pyopenssl
     #   secretstorage
     #   service-identity
-daphne==3.0.2
-    # via channels
+daphne==4.0.0
+    # via -r requirements/requirements.in
+deprecated==1.2.13
+    # via redis
 distlib==0.3.1
     # via virtualenv
-django==3.2.14
+django==3.2.15
     # via
     #   channels
     #   django-appconf
@@ -112,7 +113,7 @@ django-debug-toolbar==3.2.2
 django-model-utils==4.0.0
     # via saltise-course-flow
 django-ratelimit==3.0.1
-    # via -r requirements/requirements.in
+    # via saltise-course-flow
 django-redis==5.2.0
     # via saltise-course-flow
 djangorestframework==3.12.4
@@ -121,7 +122,7 @@ djangorestframework==3.12.4
     #   saltise-user-feedback
 docutils==0.17.1
     # via readme-renderer
-dparse==0.5.1
+dparse==0.5.2
     # via safety
 et-xmlfile==1.1.0
     # via openpyxl
@@ -129,8 +130,6 @@ filelock==3.0.12
     # via
     #   tox
     #   virtualenv
-hiredis==2.0.0
-    # via aioredis
 html2text==2020.1.16
     # via saltise-course-flow
 hyperlink==21.0.0
@@ -154,6 +153,10 @@ iniconfig==1.1.1
     # via pytest
 isort==5.8.0
     # via -r requirements/requirements.in
+jeepney==0.8.0
+    # via
+    #   keyring
+    #   secretstorage
 keyring==23.0.1
     # via twine
 kombu==5.2.3
@@ -175,6 +178,7 @@ packaging==20.4
     #   bleach
     #   dparse
     #   pytest
+    #   redis
     #   safety
     #   tox
 pandas==1.3.5
@@ -237,9 +241,10 @@ rcssmin==1.0.6
     # via django-compressor
 readme-renderer==29.0
     # via twine
-redis==3.5.3
+redis==4.3.4
     # via
     #   celery
+    #   channels-redis
     #   django-redis
     #   redislite
 redislite==6.0.674960
@@ -305,7 +310,6 @@ typed-ast==1.4.3
     # via black
 typing-extensions==3.7.4.3
     # via
-    #   async-timeout
     #   black
     #   twisted
 urllib3==1.26.9
@@ -325,6 +329,8 @@ wcwidth==0.2.5
     # via prompt-toolkit
 webencodings==0.5.1
     # via bleach
+wrapt==1.14.1
+    # via deprecated
 xlrd==2.0.1
     # via saltise-course-flow
 zipp==0.6.0
