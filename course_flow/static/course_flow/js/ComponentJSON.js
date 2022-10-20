@@ -335,7 +335,7 @@ export class ComponentJSON extends React.Component{
         return(
             [
                 <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext={gettext("Comments")} handleClick={this.commentClick.bind(this)}/>,
-                <CommentBox show={this.state.show_comments} comments={this.props.data.comments} parent={this}/>
+                <CommentBox show={this.state.show_comments} comments={this.props.data.comments} parent={this} renderer={this.props.renderer}/>
             ]
         );
     }
