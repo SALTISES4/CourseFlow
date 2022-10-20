@@ -2,7 +2,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {WorkflowTitle} from "./ComponentJSON";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
-import {getLiveProjectData, getLiveProjectDataStudent} from "./PostFunctions";
+import {getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility} from "./PostFunctions";
 import {StudentManagement} from "./StudentManagement";
 
 export class LiveProjectMenu extends React.Component{
@@ -250,10 +250,10 @@ class LiveProjectWorkflows extends LiveProjectSection{
         if(!this.state.data)return this.defaultRender();
         console.log(this.state.data);
         let workflows_added = this.state.data.workflows_added.map(workflow=>
-            <WorkflowForMenu workflow_data={workflow}/>
+            <WorkflowVisibility workflow_data={workflow} visibility="visible" visibilityFunction={this.switchVisibility.bind(this)}/>
         );
         let workflows_not_added = this.state.data.workflows_not_added.map(workflow=>
-            <WorkflowForMenu workflow_data={workflow}/>
+            <WorkflowVisibility workflow_data={workflow} visibility="not_visible" visibilityFunction={this.switchVisibility.bind(this)}/>
         );
         return (
             <div class="workflow-details">
@@ -267,6 +267,36 @@ class LiveProjectWorkflows extends LiveProjectSection{
                 </div>
             </div>
         );
+    }
+
+    switchVisibility(pk,visibility){
+        let workflows_added=this.state.data.workflows_added.slice()
+        let workflows_not_added=this.state.data.workflows_not_added.slice()
+        console.log("switching visibility");
+        console.log(pk);
+        console.log(workflows_added);
+        console.log(workflows_not_added);
+        if(visibility=="visible"){
+            for(let i=0;i<workflows_not_added.length;i++){
+                if(workflows_not_added[i].id==pk){
+                    let removed = workflows_not_added.splice(i,1);
+                    setWorkflowVisibility(this.props.objectID,pk,true)
+                    workflows_added.push(removed[0]);
+                    console.log(removed);
+                }
+            }
+        }else{
+            for(let i=0;i<workflows_added.length;i++){
+                if(workflows_added[i].id==pk){
+                    let removed = workflows_added.splice(i,1);
+                    setWorkflowVisibility(this.props.objectID,pk,false)
+                    workflows_not_added.push(removed[0]);
+                    console.log(removed);
+                }
+            }
+        }
+        this.setState({data:{...this.state.data,workflows_added:workflows_added,workflows_not_added:workflows_not_added}});
+
     }
 
 }
@@ -361,7 +391,7 @@ export class WorkflowVisibility extends WorkflowForMenu{
         creation_text+=" "+data.created_on;
         
         return(
-            <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
+            <div ref={this.maindiv} class={css_class}>
                 <div class="workflow-top-row">
                     <WorkflowTitle class_name="workflow-title" data={data}/>
                     {this.getButtons()}
@@ -383,6 +413,13 @@ export class WorkflowVisibility extends WorkflowForMenu{
 
 
     getButtons(){
-        return [];
+        return (
+            <div class="permission-select">
+                <select value={this.props.visibility} onChange={(evt)=>this.props.visibilityFunction(this.props.workflow_data.id,evt.target.value)}>
+                    <option value="not_visible">{gettext("Not Visible")}</option>
+                    <option value="visible">{gettext("Visible")}</option>
+                </select>
+            </div>
+        );
     }
 }

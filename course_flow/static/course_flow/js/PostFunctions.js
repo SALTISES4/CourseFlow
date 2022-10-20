@@ -807,6 +807,22 @@ export function makeProjectLive(projectPk,callBackFunction=()=>console.log("succ
     }
 }
 
+//set visibility of workflow
+export function setWorkflowVisibility(liveprojectPk,workflowPk,visible,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.set_workflow_visibility,{
+            liveprojectPk:JSON.stringify(liveprojectPk),
+            workflowPk:JSON.stringify(workflowPk),
+            visible:JSON.stringify(visible),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 //get live project data
 export function getLiveProjectData(projectPk,data_type,callBackFunction=()=>console.log("success")){
     try{

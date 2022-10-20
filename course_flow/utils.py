@@ -212,11 +212,53 @@ def get_nondeleted_favourites(user):
         | Q(object_id__in=models.Project.objects.filter(deleted=True))
     )
 
+
 def get_classrooms_for_student(user):
     return models.Project.objects.filter(
         liveproject__liveprojectuser__user=user,
     )
 
+
+def get_user_permission(obj, user):
+    if user is None:
+        return models.ObjectPermission.PERMISSION_NONE
+    if obj.author == user:
+        return models.ObjectPermission.PERMISSION_EDIT
+    permissions = models.ObjectPermission.objects.filter(
+        user=user,
+        content_type=ContentType.objects.get_for_model(obj),
+        object_id=obj.id,
+    )
+    if permissions.count() == 0:
+        return models.ObjectPermission.PERMISSION_NONE
+    return permissions.first().permission_type
+
+
+def get_user_role(obj, user):
+    if user is None:
+        return models.LiveProjectUser.ROLE_NONE
+    if obj.type == "liveproject":
+        liveproject = obj
+        project = obj.project
+    elif obj.type == "project":
+        liveproject = obj.liveproject
+        project = obj
+    elif obj.is_strategy:
+        project = None
+        liveproject = None
+    else:
+        project = obj.get_project()
+        liveproject = project.liveproject
+    if liveproject is None:
+        return models.LiveProjectUser.ROLE_NONE
+    if obj.author == user:
+        return models.LiveProjectUser.ROLE_TEACHER
+    permissions = models.LiveProjectUser.objects.filter(
+        user=user, liveproject=liveproject
+    )
+    if permissions.count() == 0:
+        return models.LiveProjectUser.PERMISSION_NONE
+    return permissions.first().role_type
 
 
 def save_serializer(serializer) -> HttpResponse:

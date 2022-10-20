@@ -179,10 +179,12 @@
           <img src="{% static 'course_flow/img/images_svg/return_to_project.svg' %}"/>
           <div>{% course_flow_return_title %}</div>
         </a>
-        {% if user|has_group:"Teacher" %}
 
+        {% if user|has_group:"Teacher" %}
         <hr>
+        {% endif %}
         <div class="left-panel-extra">
+          {% if user|has_group:"Teacher" %}
             <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
               {% trans 'My Favourites' %}
             </a>
@@ -198,9 +200,11 @@
                 </a>
               {% endfor %}
             <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
-          </div>
-          <hr>
-          <a class="panel-item hover-shade" href="{% url 'course_flow:import' %}">{% trans "Import from old CourseFlow" %}</a>
+          {% endif %}
+        </div>
+        {% if user|has_group:"Teacher" %}
+        <hr>
+        <a class="panel-item hover-shade" href="{% url 'course_flow:import' %}">{% trans "Import from old CourseFlow" %}</a>
         {% endif %}
       </div>
       <div class="main-block">
@@ -325,6 +329,7 @@
       get_export_download: "{% url 'course_flow:get-export-download' %}",
       import_data: "{% url 'course_flow:import-data' %}",
       make_project_live: "{% url 'course_flow:make-project-live' %}",
+      set_workflow_visibility: "{% url 'course_flow:set-workflow-visibility' %}",
       get_live_project_data: "{% url 'course_flow:get-live-project-data' %}",
       get_live_project_data_student: "{% url 'course_flow:get-live-project-data-student' %}",
     };

@@ -71,6 +71,7 @@
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
     
+console.log("start of script");
   const workflow_paths = {
       activity:'{% url "course_flow:workflow-update" pk=object.pk %}',
       course:'{% url "course_flow:workflow-update" pk=object.pk %}',
@@ -93,19 +94,21 @@
 
   $("#sidebar").on("dblclick mousedown",(evt)=>{evt.stopPropagation();});
 
-    
-  const read_only = {{read_only|safe}};
+console.log("adding constants");
+  
   const public_view = {{public_view|safe}};
-  const allow_comments = {{comment|safe}};
-  console.log("override comments");
-  console.log(allow_comments);
-  // if(read_only)$("#sidebar").hide();
-  // else{
+  const user_permission = {{user_permission|safe}}
+  const user_role = {{user_role|safe}}
+  console.log("user_permission")
+  console.log(user_permission)
+  console.log("user_role")
+  console.log(user_role)
+
   $("#side-bar-close-button").on("click",()=>{
       $("#sidebar").addClass("collapsed");
       $("#sidebar").tabs("option","active",false);
   });
-  // }
+
 
 
 
@@ -126,6 +129,7 @@
   const create_path=null;
 
   workflow_data_package = {{data_package|safe}}
+  console.log(workflow_data_package);
   var workflow_renderer;
 
     

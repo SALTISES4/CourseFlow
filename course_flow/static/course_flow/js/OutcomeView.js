@@ -42,13 +42,13 @@ class OutcomeView extends ComponentJSON{
         }
         
         let mouseover_actions = [];
-        if(!read_only){
+        if(!this.props.renderer.read_only){
             mouseover_actions.push(this.addInsertSibling(data));
             mouseover_actions.push(this.addDuplicateSelf(data));
             mouseover_actions.push(this.addDeleteSelf(data));
             if(data.depth<2)mouseover_actions.push(this.addInsertChild(data));
         }
-        if(!this.props.renderer.public_view)mouseover_actions.push(this.addCommenting(data));
+        if(this.props.renderer.view_comments)mouseover_actions.push(this.addCommenting(data));
         
         let dropIcon;
         if(data.is_dropped)dropIcon = "droptriangleup";
@@ -58,7 +58,7 @@ class OutcomeView extends ComponentJSON{
         if(data.is_dropped)droptext=gettext("hide");
         else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
-        if(!read_only && data.depth<2 && children.length==0)children.push(
+        if(!this.props.renderer.read_only && data.depth<2 && children.length==0)children.push(
             <div class="outcome-outcome" style={{height:"5px"}}></div>
         );
         
@@ -92,7 +92,7 @@ class OutcomeView extends ComponentJSON{
                 <ol class={"children-block children-block-"+this.props.data.depth} id={this.props.objectID+"-children-block"} ref={this.children_block}>
                     {children}
                 </ol>
-                {(!read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>{gettext("+ Add New")}</div>
+                {(!this.props.renderer.read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>{gettext("+ Add New")}</div>
                 }
                 <div class="mouseover-actions">
                     {mouseover_actions}
@@ -262,6 +262,7 @@ export class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
 
 
     makeDraggable(){
+        if(this.props.renderer.read_only)return;
         let draggable_selector = "outcome";
         let draggable_type = "outcome";
         $(this.maindiv.current).draggable({
@@ -355,7 +356,8 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         if(this.state.is_dropped)droptext=gettext("hide");
         else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
         
-        let comments=this.addCommenting();
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
         
         let edit;
         let onClick;
@@ -547,11 +549,11 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
         if(!data)return null;
         return (
             <div class={"outcome-node outcome-"+data.id} id={data.id} ref={this.maindiv}>
-                {!read_only && <div>
+                {!this.props.renderer.read_only && <div>
                     {this.addDeleteSelf(data,"close.svg")}
                 </div>
                 }
-                <SimpleOutcomeView checkHidden={this.checkHidden.bind(this)} objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
+                <SimpleOutcomeView renderer={this.props.renderer} checkHidden={this.checkHidden.bind(this)} objectID={data.parent_outcome} parentID={this.props.parentID} throughParentID={data.id}/>
             </div>
         );
     }

@@ -104,12 +104,12 @@ class NodeView extends ComponentJSON{
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
 
         let mouseover_actions = [];
-        if(!read_only){
+        if(!this.props.renderer.read_only){
             mouseover_actions.push(this.addInsertSibling(data));
             mouseover_actions.push(this.addDuplicateSelf(data));
             mouseover_actions.push(this.addDeleteSelf(data));
         }
-        if(!renderer.public_view)mouseover_actions.push(this.addCommenting(data));
+        if(renderer.view_comments)mouseover_actions.push(this.addCommenting(data));
 
         return (
             <div 
@@ -239,7 +239,7 @@ class NodeView extends ComponentJSON{
 
     mouseIn(evt){
         if($(".workflow-canvas").hasClass("creating-node-link"))return;
-        if(!read_only)$("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
+        if(!this.props.renderer.read_only)$("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
         d3.selectAll(".node-ports").raise();
         var mycomponent = this;
         
@@ -371,12 +371,12 @@ class NodeComparisonViewUnconnected extends ComponentJSON{
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
 
         let mouseover_actions = [];
-        if(!read_only){
+        if(!this.props.renderer.read_only){
             mouseover_actions.push(this.addInsertSibling(data));
             mouseover_actions.push(this.addDuplicateSelf(data));
             mouseover_actions.push(this.addDeleteSelf(data));
         }
-        if(!renderer.public_view)mouseover_actions.push(this.addCommenting(data));
+        if(renderer.view_comments)mouseover_actions.push(this.addCommenting(data));
 
         return (
             <div 

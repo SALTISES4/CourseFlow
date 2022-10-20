@@ -38,16 +38,20 @@ export class OutcomeEditViewUnconnected extends ComponentJSON{
         );
         if(outcomes.length==0)outcomes=(
             <div class="emptytext">{gettext("Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.")}</div>
+        );
+        let add_new_outcome;
+        if(!this.props.renderer.read_only)add_new_outcome=(
+            <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNew.bind(this)}>
+                <img class="create-button" src={iconpath+"add_new_white.svg"}/>
+                <div>{gettext("Add new")}</div>
+            </div>
         )
         
         return(
             <div id={"#workflow-"+this.props.workflow.id} class="workflow-details">
                 <div class="outcome-edit" ref={this.maindiv}>
                     {outcomes}
-                    <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNew.bind(this)}>
-                        <img class="create-button" src={iconpath+"add_new_white.svg"}/>
-                        <div>{gettext("Add new")}</div>
-                    </div>
+                    {add_new_outcome}
                     {this.getParentOutcomeBar()}
                 </div>
             </div>
@@ -55,7 +59,7 @@ export class OutcomeEditViewUnconnected extends ComponentJSON{
     }
 
     getParentOutcomeBar(){
-        return <ParentOutcomeBar/>
+        return <ParentOutcomeBar renderer={this.props.renderer}/>
     }
 
     postMountFunction(){
@@ -203,7 +207,7 @@ class ParentOutcomeOutcomeViewUnconnected extends ComponentJSON{
         
         return (
             <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
-                <ParentOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
+                <ParentOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
             </div>
         );
     }
@@ -227,7 +231,7 @@ class OutcomeBarUnconnected extends ComponentJSON{
             <div>
                 <h4 class="drag-and-drop">{category.objectset.title+":"}</h4>
                 {category.outcomes.map(outcome=>
-                    <OutcomeBarOutcomeView key={outcome.id} objectID={outcome.id}/>
+                    <OutcomeBarOutcomeView key={outcome.id} objectID={outcome.id} renderer={this.props.renderer}/>
                 )}
             </div>
         );
@@ -241,7 +245,7 @@ class OutcomeBarUnconnected extends ComponentJSON{
                 <div class="outcome-bar-outcome-block">
                     {outcomebaroutcomes}
                 </div>
-                {!read_only &&
+                {!this.props.renderer.read_only &&
                     <button class="menu-create" id="edit-outcomes-button" onClick={this.editOutcomesClick.bind(this)}>{edittext}</button>
                 }
             </div>

@@ -1225,6 +1225,8 @@ button, input[type="submit"]{
 .workflow-wrapper{
     white-space:nowrap;
     text-align:left;
+    width: -moz-fit-content;
+    width: fit-content;
 }
 
 .workflow-wrapper.printing{
@@ -1485,7 +1487,7 @@ button, input[type="submit"]{
     padding-right:40px;
     background:white;
     position:sticky;
-    top:46px;
+    top:0px;
     z-index:2;
     font-size:16px;
     border:2px solid white;
@@ -2309,7 +2311,7 @@ ol.children-block{
 .outcome-row.node-row{
     padding-top:140px;
     position:sticky;
-    top:46px;
+    top:0px;
     z-index:2;
     background:white;
 }
@@ -3038,6 +3040,8 @@ circle.mouseover{
     height:100%;
     pointer-events:none;
     z-index:10;
+    top: 0;
+    left: 0;
 }
 
 .screen-barrier{
@@ -3190,7 +3194,7 @@ circle.mouseover{
     margin:0px;
     position:sticky;
     z-index:1;
-    top:46px;
+    top:0px;
     border:1px solid black;
     display:flex;
 }

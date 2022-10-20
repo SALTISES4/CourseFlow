@@ -394,15 +394,17 @@ class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
             <OutcomeNodeView key={outcomenode.id} objectID={outcomenode.id} renderer={this.props.renderer}/>
         );
         let outcome_restriction = this.props.restriction_set.parent_outcomes.filter(oc=>this.props.all_node_outcomes.indexOf(oc)==-1);
+        let outcomeadder;
+        if(!this.props.renderer.read_only)outcomeadder = <OutcomeAdder renderer={this.props.renderer} outcome_set={outcome_restriction} addFunction={updateOutcomenodeDegree.bind(this,this.props.objectID)}/>
         let outcomes_for_node = (
             <div>
                 <div>{gettext("Outcomes for node:")}</div>
                 {outcomenodes}
-                <OutcomeAdder renderer={this.props.renderer} outcome_set={outcome_restriction} addFunction={updateOutcomenodeDegree.bind(this,this.props.objectID)}/>
+                {outcomeadder}
             </div>
         );
         let add_new_outcome;
-        if(data.linked_workflow) add_new_outcome = (
+        if(!this.props.renderer.read_only && data.linked_workflow) add_new_outcome = (
             <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNewChildOutcome.bind(this)}>
                 <img class="create-button" src={iconpath+"add_new_white.svg"}/>
                 <div>{gettext("Add new")}</div>
