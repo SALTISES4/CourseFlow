@@ -71,7 +71,6 @@
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
     
-console.log("start of script");
   const workflow_paths = {
       activity:'{% url "course_flow:workflow-update" pk=object.pk %}',
       course:'{% url "course_flow:workflow-update" pk=object.pk %}',
@@ -94,15 +93,14 @@ console.log("start of script");
 
   $("#sidebar").on("dblclick mousedown",(evt)=>{evt.stopPropagation();});
 
-console.log("adding constants");
   
   const public_view = {{public_view|safe}};
   const user_permission = {{user_permission|safe}}
   const user_role = {{user_role|safe}}
-  console.log("user_permission")
-  console.log(user_permission)
-  console.log("user_role")
-  console.log(user_role)
+
+  jQuery('<div>',{
+    class:'load-screen'
+  }).appendTo("#container");
 
   $("#side-bar-close-button").on("click",()=>{
       $("#sidebar").addClass("collapsed");

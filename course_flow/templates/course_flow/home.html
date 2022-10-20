@@ -79,7 +79,6 @@
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
 
-  $("#container").children().detach();
   $(".home-menu-container").detach().appendTo("#container");
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";

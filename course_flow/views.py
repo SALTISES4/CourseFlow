@@ -5813,9 +5813,7 @@ def set_workflow_visibility(request: HttpRequest) -> HttpResponse:
     liveproject = LiveProject.objects.get(pk=request.POST.get("liveprojectPk"))
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     visible = json.loads(request.POST.get("visible"))
-    print(liveproject)
-    print(workflow)
-    print(visible)
+
     try:
         if workflow.get_project().liveproject != liveproject:
             raise AttributeError
@@ -5825,7 +5823,9 @@ def set_workflow_visibility(request: HttpRequest) -> HttpResponse:
         elif not visible and count > 0:
             liveproject.visible_workflows.remove(workflow)
     except AttributeError:
-        return JsonResponse({"action": "error"})
+        response = JsonResponse({"action": "error"})
+        response.status_code = 403
+        return response
     return JsonResponse(
         {
             "action": "posted",

@@ -28,7 +28,6 @@
 <!-- -->
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
-  $("#container").children().detach();
   $("#create").detach().appendTo("#container");
 </script>
 {% endblock %}

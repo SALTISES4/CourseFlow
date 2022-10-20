@@ -310,8 +310,11 @@ class StudentLiveProjectWorkflows extends LiveProjectSection{
             <WorkflowForMenu workflow_data={workflow}/>
         );
         return (
-            <div>
-                {workflows_added}
+            <div class="workflow-details">
+                <h3>{gettext("Workflows")}</h3>
+                <div class="menu-grid">
+                    {workflows_added}
+                </div>
             </div>
         );
     }

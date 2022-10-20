@@ -94,6 +94,10 @@
 
   $("#sidebar").on("dblclick mousedown",(evt)=>{evt.stopPropagation();});
 
+  jQuery('<div>',{
+    class:'load-screen'
+  }).appendTo("#container");
+
     
   const user_permission = {{user_permission|safe}}
 
