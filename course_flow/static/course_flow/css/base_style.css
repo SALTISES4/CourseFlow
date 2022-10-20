@@ -986,6 +986,7 @@ text {
     overflow:auto;
     flex-grow: 1;
     height: 100%;
+    position: relative;
 }
 
 .body-wrapper.printing{

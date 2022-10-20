@@ -1,9 +1,12 @@
 import re
 import time
 
+from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
+from django.urls import reverse
 
 from course_flow import models
 
@@ -247,8 +250,11 @@ def get_user_role(obj, user):
         project = None
         liveproject = None
     else:
-        project = obj.get_project()
-        liveproject = project.liveproject
+        try:
+            project = obj.get_project()
+            liveproject = project.liveproject
+        except AttributeError:
+            return models.LiveProjectUser.ROLE_NONE
     if liveproject is None:
         return models.LiveProjectUser.ROLE_NONE
     if obj.author == user:
@@ -259,6 +265,30 @@ def get_user_role(obj, user):
     if permissions.count() == 0:
         return models.LiveProjectUser.PERMISSION_NONE
     return permissions.first().role_type
+
+
+def user_workflow_url(workflow, user):
+    user_permission = get_user_permission(workflow, user)
+    user_role = get_user_role(workflow, user)
+    can_view = False
+    is_public = workflow.public_view
+    if user is not None and workflow.is_published:
+        if Group.objects.get(name=settings.TEACHER_GROUP) in user.groups.all():
+            can_view = True
+    if user_permission != models.ObjectPermission.PERMISSION_NONE:
+        can_view = True
+    if user_permission != models.LiveProjectUser.ROLE_NONE:
+        can_view = True
+    if can_view:
+        return reverse(
+            "course-flow:workflow-update", kwargs={"pk": workflow.pk}
+        )
+    if is_public:
+        return reverse(
+            "course-flow:workflow-public", kwargs={"pk": workflow.pk}
+        )
+
+    return False
 
 
 def save_serializer(serializer) -> HttpResponse:

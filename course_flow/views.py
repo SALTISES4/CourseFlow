@@ -2066,8 +2066,6 @@ def get_parent_workflow_info(request: HttpRequest) -> HttpResponse:
 def get_comments_for_object(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-    print(request.user)
-    print(ObjectPermission.objects.filter(user=request.user))
     try:
         comments = (
             get_model_from_str(object_type)

@@ -41,10 +41,13 @@ from .utils import (
     get_unique_outcomenodes,
     linkIDMap,
     multiple_replace,
+    user_workflow_url,
 )
 
 bleach_allowed_attributes_description = {
-    'a': ['href', 'title', 'target'], 'abbr': ['title'], 'acronym': ['title']
+    "a": ["href", "title", "target"],
+    "abbr": ["title"],
+    "acronym": ["title"],
 }
 bleach_allowed_tags_description = [
     "b",
@@ -81,9 +84,10 @@ class AuthorSerializerMixin:
     author = serializers.SerializerMethodField()
 
     def get_author(self, instance):
-        user = self.context.get("user",None)
+        user = self.context.get("user", None)
         if user is not None:
-            if instance.author is None: return ""
+            if instance.author is None:
+                return ""
             return str(instance.author.username)
         else:
             return _("a CourseFlow user")
@@ -94,7 +98,7 @@ class DescriptionSerializerMixin:
 
     def get_description(self, instance):
         return bleach_sanitizer(
-            instance.description, 
+            instance.description,
             tags=bleach_allowed_tags_description,
             attributes=bleach_allowed_attributes_description,
         )
@@ -103,7 +107,7 @@ class DescriptionSerializerMixin:
         if value is None:
             return None
         return bleach_sanitizer(
-            value, 
+            value,
             tags=bleach_allowed_tags_description,
             attributes=bleach_allowed_attributes_description,
         )
@@ -419,9 +423,14 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
+            "url",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+
+    def get_url(self, instance):
+        user = self.context.get("user", None)
+        return user_workflow_url(instance, user)
 
 
 class NodeWeekSerializerShallow(serializers.ModelSerializer):
@@ -610,7 +619,7 @@ class ProjectSerializerShallow(
     object_sets = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
-    author=serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
 
     def get_favourite(self, instance):
         user = self.context.get("user")
@@ -848,7 +857,7 @@ class WorkflowSerializerShallow(
     outcomeworkflow_set = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
-    author=serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
 
     strategy_icon = serializers.SerializerMethodField()
 
@@ -1108,7 +1117,8 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
 
 
 class ObjectSetSerializerShallow(
-    serializers.ModelSerializer, TitleSerializerMixin,
+    serializers.ModelSerializer,
+    TitleSerializerMixin,
 ):
     class Meta:
         model = ObjectSet
@@ -1124,7 +1134,10 @@ class ObjectSetSerializerShallow(
 
 
 class InfoBoxSerializer(
-    serializers.Serializer, TitleSerializerMixin, DescriptionSerializerMixin, AuthorSerializerMixin,
+    serializers.Serializer,
+    TitleSerializerMixin,
+    DescriptionSerializerMixin,
+    AuthorSerializerMixin,
 ):
 
     deleted = serializers.ReadOnlyField()
@@ -1139,9 +1152,9 @@ class InfoBoxSerializer(
     is_owned = serializers.SerializerMethodField()
     is_strategy = serializers.SerializerMethodField()
     published = serializers.ReadOnlyField()
-    author=serializers.SerializerMethodField()
-    title=serializers.SerializerMethodField()
-    description=serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
 
     def get_is_owned(self, instance):
         user = self.context.get("user")
@@ -1462,13 +1475,13 @@ class LiveProjectSerializer(
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
 
-    registration_hash=serializers.SerializerMethodField()
-    
-    def get_registration_hash(self,instance):
-        user = self.context.get("user",None)
+    registration_hash = serializers.SerializerMethodField()
+
+    def get_registration_hash(self, instance):
+        user = self.context.get("user", None)
         if user is None:
             return None
-        if instance.project.author==user:
+        if instance.project.author == user:
             return instance.project.registration_hash()
         return None
 
@@ -1478,9 +1491,8 @@ class LiveProjectSerializer(
     def get_description(self, instance):
         return super().get_description(instance.project)
 
-    def get_id(self,instance):
+    def get_id(self, instance):
         return instance.pk
-
 
     def update(self, instance, validated_data):
         instance.default_self_reporting = validated_data.get(

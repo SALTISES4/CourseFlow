@@ -576,7 +576,10 @@ def check_object_enrollment(instance, user, role):
     elif instance.type == "project":
         liveproject = instance.liveproject
     elif instance.type in ["activity", "course", "program"]:
-        liveproject = instance.get_project().liveproject
+        try:
+            liveproject = instance.get_project().liveproject
+        except AttributeError:
+            return False
         if user != liveproject.project.author:
             if (
                 liveproject.visible_workflows.filter(
@@ -585,6 +588,8 @@ def check_object_enrollment(instance, user, role):
                 == 0
             ):
                 return False
+    if liveproject is None:
+        return False
     if liveproject.project.author == user:
         return True
 
