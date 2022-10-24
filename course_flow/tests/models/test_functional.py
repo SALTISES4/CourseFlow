@@ -3210,9 +3210,35 @@ def async_to_sync_receive_nothing(ws):
 
 
 class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
+        else:
+            self.selenium = webdriver.Chrome()
+
+        super(ChannelsStaticLiveServerTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        selenium.get(self.live_server_url + "/home/")
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(ChannelsStaticLiveServerTestCase, self).tearDown()
+
     def test_connection_bar(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+
         author = get_author()
-        user = login(self)
+        user = self.user
         workflow_edit = Course.objects.create(author=author)
         workflow_published = Course.objects.create(author=author)
         project = Project.objects.create(author=author)
@@ -3221,7 +3247,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
             project=project, workflow=workflow_published
         )
         ObjectPermission.objects.create(
-            user=user, content_object=workflow_edit
+            user=user, content_object=workflow_edit, permission_type=ObjectPermission.PERMISSION_EDIT
         )
 
         selenium.get(
@@ -3232,14 +3258,14 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
-                    ".users-box .user-indicator"
+                    ".users-box .users-small .user-indicator"
                 )
             ),
             1,
         )
-        workflow_published.published = true
+        workflow_published.published = True
         workflow_published.save()
-        project.published = true
+        project.published = True
         project.save()
         selenium.get(
             self.live_server_url
@@ -3251,7 +3277,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
-                    ".users-box .user-indicator"
+                    ".users-box .users-small .user-indicator"
                 )
             ),
             0,
