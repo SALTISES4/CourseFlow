@@ -209,6 +209,7 @@ export function workflowReducer(state={},action){
             return new_state;
         case 'outcome_base/insertBelow':
         case 'outcome/newOutcome':
+            if(state.id!=action.payload.new_through.workflow)return state;
             new_state = {...state}
             var new_outcomeworkflow_set = state.outcomeworkflow_set.slice();
             new_outcomeworkflow_set.splice(action.payload.new_through.rank,0,action.payload.new_through.id);
