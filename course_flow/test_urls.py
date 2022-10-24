@@ -29,13 +29,14 @@ def app_patterns():
         path(
             "",
             include(
-                (urls.urlpatterns, urls.app_name), namespace="course_flow",
+                (urls.urlpatterns, urls.app_name),
+                namespace="course_flow",
             ),
         ),
-        path(
-            "feedback/",
-            include("user_feedback.urls", namespace="user_feedback"),
-        ),
+        # path(
+        #     "feedback/",
+        #     include("user_feedback.urls", namespace="user_feedback"),
+        # ),
         path("admin/", admin.site.urls),
     ]
     if settings.DEBUG:
@@ -43,4 +44,7 @@ def app_patterns():
     return patterns
 
 
-urlpatterns = sum([auth_patterns(), app_patterns()], [],)
+urlpatterns = sum(
+    [auth_patterns(), app_patterns()],
+    [],
+)

@@ -264,8 +264,6 @@ rjsmin==1.1.0
     # via django-compressor
 safety==1.9.0
     # via -r requirements/requirements.in
-saltise-user-feedback==1.1.2
-    # via saltise-course-flow
 secretstorage==3.3.2
     # via keyring
 selenium==3.141.0

@@ -50,7 +50,7 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
 INSTALLED_APPS = [
     "compressor",
-    "user_feedback.apps.UserFeedbackConfig",
+    # "user_feedback.apps.UserFeedbackConfig",
     "course_flow.apps.CourseFlowConfig",
     "rest_framework",
     "django.contrib.admin",
