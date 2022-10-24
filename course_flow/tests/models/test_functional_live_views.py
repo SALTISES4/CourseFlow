@@ -70,7 +70,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium.maximize_window()
 
         self.user = login(self)
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + reverse("course_flow:home"))
         username = selenium.find_element_by_id("id_username")
         password = selenium.find_element_by_id("id_password")
         username.send_keys("testuser1")

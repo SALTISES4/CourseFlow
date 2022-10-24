@@ -4534,6 +4534,10 @@ def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
         parent_outcome = get_model_from_str(object_type).objects.get(
             id=parent_id
         )
+        workflow = outcome.get_workflow()
+        parent_workflow = parent_outcome.get_workflow()
+        if not checkpossibleparent(workflow,parent_workflow,True):
+            raise ValidationError
         if (
             OutcomeHorizontalLink.objects.filter(
                 parent_outcome=parent_outcome, outcome=outcome, degree=degree
@@ -4570,7 +4574,6 @@ def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
         "new_outcome_horizontal_links": new_outcome_horizontal_links,
         "new_outcome_horizontal_links_unique": new_outcome_horizontal_links_unique,
     }
-    workflow = outcome.get_workflow()
     actions.dispatch_wf(
         workflow,
         actions.updateOutcomehorizontallinkDegreeAction(response_data),
@@ -4622,6 +4625,8 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             linked_workflow_data = None
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
+            if not checkpossibleparent(workflow,parent_workflow):
+                raise ValidationError
             set_linked_workflow(node, workflow)
             if node.linked_workflow is None:
                 raise ValidationError("Project could not be found")
