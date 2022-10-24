@@ -206,17 +206,6 @@
                 </button>
               </div>
               {% endif %}
-              {% if user.is_authenticated %}
-              <div class="topdropwrapper">
-                <button class="topdropbutton">
-                  <a id="home-icon-link"  title="{% trans 'Home' %}"href="{% url 'course_flow:home' %}"
-                    ><img
-                      id="home-icon"
-                      src="{% static 'course_flow/img/home-24px.svg' %}"
-                  /></a>
-                </button>
-              </div>
-              {% endif %}
               {% if user|has_group:"Teacher" %}
               <div class="topdropwrapper">
                 <button class="topdropbutton">
