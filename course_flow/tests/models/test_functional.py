@@ -3247,7 +3247,9 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
             project=project, workflow=workflow_published
         )
         ObjectPermission.objects.create(
-            user=user, content_object=workflow_edit, permission_type=ObjectPermission.PERMISSION_EDIT
+            user=user,
+            content_object=workflow_edit,
+            permission_type=ObjectPermission.PERMISSION_EDIT,
         )
 
         selenium.get(
@@ -3285,7 +3287,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
 
     def test_permissions_connect_to_workflow_update_consumer(self):
         author = get_author()
-        user = login(self)
+        user = self.user
         workflow_owned = Course.objects.create(author=user)
         workflow_view = Course.objects.create(author=author)
         workflow_edit = Course.objects.create(author=author)

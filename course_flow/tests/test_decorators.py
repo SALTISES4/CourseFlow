@@ -15,7 +15,7 @@ def default_view(request):
 
 def test_is_owner__known_model(node, settings, users):
     wrapped_view = decorators.is_owner("nodePk")(default_view)
-    Group.objects.get(name=settings.TEACHER_GROUP)
+    Group.objects.create(name=settings.TEACHER_GROUP)
 
     # Logged in and owner -> return view
     request = HttpRequest()
@@ -68,7 +68,7 @@ def test_is_owner__known_model(node, settings, users):
 
 def test_is_owner__unknown_model(node):
     wrapped_view = decorators.is_owner("unknownModelPk")(default_view)
-    Group.objects.get(name=settings.TEACHER_GROUP)
+    Group.objects.create(name=settings.TEACHER_GROUP)
 
     # Logged in -> return 404
     request = HttpRequest()
@@ -82,7 +82,7 @@ def test_is_owner__unknown_model(node):
 
 def test_is_owner__False(node):
     wrapped_view = decorators.is_owner(False)(default_view)
-    Group.objects.get(name=settings.TEACHER_GROUP)
+    Group.objects.create(name=settings.TEACHER_GROUP)
 
     # Logged in -> return view
     request = HttpRequest()
@@ -100,7 +100,7 @@ def test_is_owner__False(node):
 
 
 def test_get_possible_linked_workflows(client, node, settings):
-    Group.objects.get(name=settings.TEACHER_GROUP)
+    Group.objects.create(name=settings.TEACHER_GROUP)
     """ Check that ajax_login_required and requre_POST are applied. """
 
     # Not logged in -> 401

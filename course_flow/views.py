@@ -112,6 +112,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     serializer_lookups_shallow,
 )
 from .utils import (  # benchmark,; dateTimeFormat,; get_parent_model,; get_parent_model_str,; get_unique_outcomehorizontallinks,; get_unique_outcomenodes,
+    check_possible_parent,
     dateTimeFormatNoSpace,
     get_all_outcomes_for_outcome,
     get_all_outcomes_for_workflow,
@@ -4536,7 +4537,7 @@ def update_outcomehorizontallink_degree(request: HttpRequest) -> HttpResponse:
         )
         workflow = outcome.get_workflow()
         parent_workflow = parent_outcome.get_workflow()
-        if not checkpossibleparent(workflow,parent_workflow,True):
+        if not check_possible_parent(workflow, parent_workflow, True):
             raise ValidationError
         if (
             OutcomeHorizontalLink.objects.filter(
@@ -4625,7 +4626,7 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
             linked_workflow_data = None
         else:
             workflow = Workflow.objects.get_subclass(pk=workflow_id)
-            if not checkpossibleparent(workflow,parent_workflow):
+            if not check_possible_parent(workflow, parent_workflow, False):
                 raise ValidationError
             set_linked_workflow(node, workflow)
             if node.linked_workflow is None:

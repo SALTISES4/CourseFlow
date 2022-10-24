@@ -215,18 +215,20 @@ def get_nondeleted_favourites(user):
         | Q(object_id__in=models.Project.objects.filter(deleted=True))
     )
 
-def check_possible_parent(workflow,parent_worklow,same_project):
-    order = ["activity","course","program"]
+
+def check_possible_parent(workflow, parent_workflow, same_project):
+    order = ["activity", "course", "program"]
     try:
-        if order.index(workflow.type) == order.index(parent_workflow.type)-1:
+        if order.index(workflow.type) == order.index(parent_workflow.type) - 1:
             if same_project:
-                if workflow.get_project()==parent_worklow.get_project():
+                if workflow.get_project() == parent_workflow.get_project():
                     return True
             else:
-                return True 
+                return True
     except IndexError:
         pass
     return False
+
 
 def get_classrooms_for_student(user):
     return models.Project.objects.filter(
