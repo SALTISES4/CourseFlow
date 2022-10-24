@@ -581,24 +581,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             time.sleep(2)
 
-            if workflow_type == "program":
-                self.assertEqual(
-                    len(
-                        selenium.find_elements_by_css_selector(
-                            ".action-button"
-                        )
-                    ),
-                    5,
-                )
-            else:
-                self.assertEqual(
-                    len(
-                        selenium.find_elements_by_css_selector(
-                            ".action-button"
-                        )
-                    ),
-                    6,
-                )
+            self.assertEqual(
+                len(selenium.find_elements_by_css_selector(".action-button")),
+                0,
+            )
 
             selenium.find_elements_by_css_selector(".week")[0].click()
             time.sleep(0.3)
@@ -942,7 +928,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             OutcomeOutcome.objects.filter(parent=base_outcome).count(), 2
         )
         time.sleep(1)
-        selenium.find_element_by_css_selector(".outcome:not(.dropped) > .outcome-drop").click()
+        selenium.find_element_by_css_selector(
+            ".outcome:not(.dropped) > .outcome-drop"
+        ).click()
         selenium.find_element_by_css_selector(
             ".children-block:not(:empty)+.outcome-create-child"
         ).click()
@@ -1836,16 +1824,18 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         ).click()
         time.sleep(2)
         assert (
-            len(selenium.find_elements_by_css_selector(".outcome-head .node")) == 1
+            len(selenium.find_elements_by_css_selector(".outcome-head .node"))
+            == 1
         )
         assert (
-            len(selenium.find_elements_by_css_selector(".table-cell input")) == 3
+            len(selenium.find_elements_by_css_selector(".table-cell input"))
+            == 3
         )
         time.sleep(2)
         assert (
-            len(selenium.find_elements_by_css_selector(".table-cell > img")) == 2
+            len(selenium.find_elements_by_css_selector(".table-cell > img"))
+            == 2
         )
-
 
     def test_grid_view(self):
         selenium = self.selenium
@@ -1856,7 +1846,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         program = Program.objects.create(author=self.user)
         WorkflowProject.objects.create(workflow=program, project=project)
         node = program.weeks.first().nodes.create(
-            author=self.user, column=program.columns.first(),
+            author=self.user,
+            column=program.columns.first(),
         )
 
         selenium.get(
@@ -2718,7 +2709,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".panel-favourite")), 2,
+            len(selenium.find_elements_by_css_selector(".panel-favourite")),
+            2,
         )
 
         # delete a workflow
@@ -2733,7 +2725,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make sure it doesn't show up in favourites
 
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".panel-favourite")), 1,
+            len(selenium.find_elements_by_css_selector(".panel-favourite")),
+            1,
         )
         selenium.find_element_by_css_selector(
             "a[href='/myfavourites/']"
@@ -2780,7 +2773,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make sure shows up in favourites
 
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".panel-favourite")), 2,
+            len(selenium.find_elements_by_css_selector(".panel-favourite")),
+            2,
         )
         selenium.find_element_by_css_selector(
             "a[href='/myfavourites/']"
@@ -2948,7 +2942,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         WorkflowProject.objects.create(workflow=workflow, project=project)
 
         node = workflow.weeks.first().nodes.create(
-            author=self.user, column=workflow.columns.first(),node_type=2
+            author=self.user, column=workflow.columns.first(), node_type=2
         )
         outcome = workflow.outcomes.create(author=self.user)
 
@@ -2992,7 +2986,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         element = selenium.find_element_by_css_selector(
             "input[name='" + str(nodeset.id) + "']"
         )
-        selenium.execute_script("arguments[0].scrollIntoView();",element);
+        selenium.execute_script("arguments[0].scrollIntoView();", element)
         element.click()
         time.sleep(2)
         selenium.find_element_by_css_selector("[href='#view-bar']").click()
@@ -3087,6 +3081,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             len(selenium.find_elements_by_css_selector(".node")), 0
         )
 
+
 class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
@@ -3120,8 +3115,12 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         workflow2 = Course.objects.create(author=self.user)
         WorkflowProject.objects.create(workflow=workflow, project=project)
         WorkflowProject.objects.create(workflow=workflow2, project=project)
-        node1 = workflow.weeks.first().nodes.create(author=self.user,column=workflow.columns.first())
-        node2 = workflow2.weeks.first().nodes.create(author=self.user,column=workflow2.columns.first())
+        node1 = workflow.weeks.first().nodes.create(
+            author=self.user, column=workflow.columns.first()
+        )
+        node2 = workflow2.weeks.first().nodes.create(
+            author=self.user, column=workflow2.columns.first()
+        )
         outcome1 = workflow.outcomes.create(author=self.user)
         outcome2 = workflow2.outcomes.create(author=self.user)
 
@@ -3131,28 +3130,33 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(3)
 
-        selenium.find_element_by_id("comparison-view").click();
-        time.sleep(3);
-        selenium.find_element_by_id("load-workflow").click();
-        time.sleep(2);
-        selenium.find_elements_by_css_selector(".message-wrap .workflow-created")[0].click();
+        selenium.find_element_by_id("comparison-view").click()
+        time.sleep(3)
+        selenium.find_element_by_id("load-workflow").click()
+        time.sleep(2)
+        selenium.find_elements_by_css_selector(
+            ".message-wrap .workflow-created"
+        )[0].click()
         selenium.find_element_by_id("set-linked-workflow").click()
         time.sleep(5)
-        self.assertEqual(len(selenium.find_elements_by_css_selector(".node")),1)
-        selenium.find_element_by_id("load-workflow").click();
-        time.sleep(2);
-        selenium.find_elements_by_css_selector(".message-wrap .workflow-created")[1].click();
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".node")), 1
+        )
+        selenium.find_element_by_id("load-workflow").click()
+        time.sleep(2)
+        selenium.find_elements_by_css_selector(
+            ".message-wrap .workflow-created"
+        )[1].click()
         selenium.find_element_by_id("set-linked-workflow").click()
         time.sleep(5)
-        self.assertEqual(len(selenium.find_elements_by_css_selector(".node")),2)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".node")), 2
+        )
         selenium.find_element_by_id("button_outcomeedit").click()
         time.sleep(5)
-        self.assertEqual(len(selenium.find_elements_by_css_selector(".outcome")),2)
-
-
-
-
-
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".outcome")), 2
+        )
 
 
 async def connect_ws(ws):
@@ -3203,7 +3207,6 @@ def async_to_sync_receive_nothing(ws):
     loop = asyncio.get_event_loop()
     coroutine = receive_nothing_ws(ws)
     return loop.run_until_complete(coroutine)
-
 
 
 class WebsocketTestCase(ChannelsStaticLiveServerTestCase):

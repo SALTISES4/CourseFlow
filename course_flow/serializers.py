@@ -423,14 +423,15 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
-            "url",
+            # "url",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    # url = serializers.SerializerMethodField()
 
-    def get_url(self, instance):
-        user = self.context.get("user", None)
-        return user_workflow_url(instance, user)
+    # def get_url(self, instance):
+    #     user = self.context.get("user", None)
+    #     return user_workflow_url(instance, user)
 
 
 class NodeWeekSerializerShallow(serializers.ModelSerializer):

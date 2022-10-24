@@ -108,7 +108,7 @@ class UserLabel extends React.Component{
                             <option value="edit">{gettext("Can edit")}</option>
                             <option value="comment">{gettext("Can comment")}</option>
                             <option value="view">{gettext("Can view")}</option>
-                            <option value="student">{gettext("Student")}</option>
+                            {/*<option value="student">{gettext("Student")}</option>*/}
                         </select>
                         <button onClick={()=>this.props.addFunction($(this.select.current).val())}>{gettext("Share")}</button>
                     </div>
@@ -120,7 +120,7 @@ class UserLabel extends React.Component{
                             <option value="edit">{gettext("Can edit")}</option>
                             <option value="comment">{gettext("Can comment")}</option>
                             <option value="view">{gettext("Can view")}</option>
-                            <option value="student">{gettext("Student")}</option>
+                            {/*<option value="student">{gettext("Student")}</option>*/}
                             <option value="none">{gettext("Remove user")}</option>
                         </select>
                     </div>
