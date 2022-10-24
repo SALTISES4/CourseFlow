@@ -3210,6 +3210,53 @@ def async_to_sync_receive_nothing(ws):
 
 
 class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
+    def test_connection_bar(self):
+        author = get_author()
+        user = login(self)
+        workflow_edit = Course.objects.create(author=author)
+        workflow_published = Course.objects.create(author=author)
+        project = Project.objects.create(author=author)
+        WorkflowProject.objects.create(project=project, workflow=workflow_edit)
+        WorkflowProject.objects.create(
+            project=project, workflow=workflow_published
+        )
+        ObjectPermission.objects.create(
+            user=user, content_object=workflow_edit
+        )
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[workflow_edit.pk])
+        )
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".users-box .user-indicator"
+                )
+            ),
+            1,
+        )
+        workflow_published.published = true
+        workflow_published.save()
+        project.published = true
+        project.save()
+        selenium.get(
+            self.live_server_url
+            + reverse(
+                "course_flow:workflow-update", args=[workflow_published.pk]
+            )
+        )
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".users-box .user-indicator"
+                )
+            ),
+            0,
+        )
+
     def test_permissions_connect_to_workflow_update_consumer(self):
         author = get_author()
         user = login(self)
