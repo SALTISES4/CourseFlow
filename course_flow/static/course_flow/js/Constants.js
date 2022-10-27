@@ -97,6 +97,11 @@ export const default_column_settings = {
     14:{colour:"#f7ba2a",icon:"assessment"},
     20:{colour:"#369934",icon:"other"}
 }
+export const node_type_keys = {
+    0:"activity node",
+    1:"course node",
+    2:"program node",
+}
 export const object_dictionary = {
     nodelink:"nodelink",
     node:"node",
