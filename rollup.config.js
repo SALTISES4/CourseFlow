@@ -74,4 +74,14 @@ export default [
     },
     plugins: plugins
   },
+  {
+    input: "course_flow/static/course_flow/js/scripts-live.js",
+    output: {
+      file: "course_flow/static/course_flow/js/scripts-live.min.js",
+      name: "live_renderers",
+      format: "iife",
+      sourceMap: "inline"
+    },
+    plugins: plugins
+  },
 ];

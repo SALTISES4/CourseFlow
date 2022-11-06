@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology, getExport} from "./PostFunctions";
+import {makeProjectLive, updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology, getExport} from "./PostFunctions";
 import {gridMenuItemAdded} from "./Reducers";
 import {object_sets_types,Loader} from "./Constants";
 import {ShareMenu} from "./ShareMenu";
@@ -109,7 +109,7 @@ export class WorkflowsMenu extends React.Component{
         }else if(this.props.type=="added_workflow_menu" || this.props.type=="workflow_select_menu"){
             var text;
             if(this.props.type=="added_workflow_menu"){
-                text=gettext("duplicate");
+                text=gettext("select");
                 if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text=gettext("copy to current project");
             }else{
                 text=gettext("select");
@@ -226,6 +226,7 @@ export class WorkflowForMenu extends React.Component{
                 <img src={iconpath+favourite_img} title={gettext("Favourite")}/>
             </div>
         );
+        console.log(this.props.type);
         if(this.props.type=="projectmenu"||this.props.type=="gridmenu"||this.props.type=="exploremenu"){
             if(this.props.workflow_data.is_owned){
                 if(!this.props.workflow_data.deleted){
@@ -354,39 +355,41 @@ export class MenuSection extends React.Component{
         );
         if(this.props.replacement_text)objects=this.props.replacement_text;
         
-        //if(objects.length==0)objects="This category is currently empty."
 
         let add_button;
         if(create_path && this.props.add){
             let types;
             if(section_type=="workflow")types=["program","course","activity"];
             else types=[section_type];
-            let adds=types.map((this_type)=>
-                <a class="hover-shade" href={create_path[this_type]}>
-                    {gettext("Create new ")+gettext(this_type)}
-                </a>
-            );
-            let import_text = gettext("Import ")+gettext(section_type);
-            if(is_strategy)import_text+=gettext(" strategy")
-            adds.push(
-                <a class="hover-shade" onClick={()=>{
-                    getAddedWorkflowMenu(parentID,section_type,is_strategy,false,(response_data)=>{
-                        if(response_data.workflowID!=null){
-                            let loader = new Loader('body');
-                            duplicateBaseItem(
-                                response_data.workflowID,section_type,
-                                parentID,(duplication_response_data)=>{
-//                                   try{
-//                                       this.props.dispatch(gridMenuItemAdded(duplication_response_data));
-//                                    } catch(err){console.log("Couldn't (or didn't need to) update grid");}
-                                    loader.endLoad();
-                                    location.reload();
-                                }
-                            );
-                        }
-                    });          
-                }}>{import_text}</a>
-            );
+            let adds;
+            {
+                adds=types.map((this_type)=>
+                    <a class="hover-shade" href={create_path[this_type]}>
+                        {gettext("Create new ")+gettext(this_type)}
+                    </a>
+                );
+                let import_text = gettext("Import ")+gettext(section_type);
+                if(is_strategy)import_text+=gettext(" strategy")
+                adds.push(
+                    <a class="hover-shade" onClick={()=>{
+                        getAddedWorkflowMenu(parentID,section_type,is_strategy,false,(response_data)=>{
+                            if(response_data.workflowID!=null){
+                                let loader = new Loader('body');
+                                duplicateBaseItem(
+                                    response_data.workflowID,section_type,
+                                    parentID,(duplication_response_data)=>{
+    //                                   try{
+    //                                       this.props.dispatch(gridMenuItemAdded(duplication_response_data));
+    //                                    } catch(err){console.log("Couldn't (or didn't need to) update grid");}
+                                        loader.endLoad();
+                                        location.reload();
+                                    }
+                                );
+                            }
+                        });          
+                    }}>{import_text}</a>
+                );
+            }
             add_button=(
                 [
                     <div class="menu-create hover-shade" onClick={this.clickAdd.bind(this)}>
@@ -474,7 +477,7 @@ class WorkflowGridMenuUnconnected extends React.Component{
     componentDidMount(){
         $("#home-tabs").tabs({
             activate:(evt,ui)=>{
-                window.location.hash=ui.newPanel[0].id;
+                //window.location.hash=ui.newPanel[0].id;
             }
         });
     }
@@ -506,13 +509,27 @@ class ProjectMenuUnconnected extends React.Component{
             i++;
         }
         let share;
-        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
+        if(!this.props.renderer.read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
         
         let publish_icon = iconpath+'view_none.svg';
         let publish_text = gettext("PRIVATE");
         if(this.props.project.published){
             publish_icon = iconpath+'published.svg';
             publish_text = gettext("PUBLISHED");
+        }
+
+        let liveproject;
+        console.log(data);
+        if(data.author_id==user_id){
+            if(this.state.liveproject){
+                liveproject=(
+                    <a id="live-project" class="menu-create hover-shade" href={update_path.liveproject.replace("0",this.state.id)}>{gettext("View Classroom")}</a>
+                );
+            }else{
+                liveproject=(
+                    <a id="live-project" class="menu-create hover-shade" onClick={this.makeLive.bind(this)}>{gettext("Create Classroom")}</a>
+                );
+            }
         }
         
         return(
@@ -531,6 +548,7 @@ class ProjectMenuUnconnected extends React.Component{
                     <a id="comparison-view" class="menu-create hover-shade" href="comparison">
                         {gettext("Comparison View")}
                     </a>
+                    {liveproject}
                     {reactDom.createPortal(
                         share,
                         $("#floatbar")[0]
@@ -551,6 +569,7 @@ class ProjectMenuUnconnected extends React.Component{
                             $("#viewbar")[0]
                         )
                     }
+
                     
                 </div>
                 <div class="home-tabs" id="home-tabs">
@@ -567,10 +586,20 @@ class ProjectMenuUnconnected extends React.Component{
         renderMessageBox({...this.state,id:this.props.project.id},"project_edit_menu",this.updateFunction.bind(this));
     }
     
+    makeLive(){
+        let component = this;
+        if(window.confirm(gettext("Are you sure you want to create a live classroom for this project?"))){
+            makeProjectLive(this.state.id,(data)=>{
+                window.location = update_path.liveproject.replace("0",component.state.id);
+            });
+        }
+    }
+
+
     componentDidMount(){
         $("#home-tabs").tabs({
             activate:(evt,ui)=>{
-                window.location.hash=ui.newPanel[0].id;
+                //window.location.hash=ui.newPanel[0].id;
             }
         });
         getDisciplines((response)=>{

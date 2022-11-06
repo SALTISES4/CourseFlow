@@ -22,7 +22,7 @@ class OutcomeNodeView extends ComponentJSON{
         
         return (
             <div class={"outcome-node outcomenode-"+data.id} id={data.id} ref={this.maindiv}>
-                {!read_only && <div>
+                {!this.props.renderer.read_only && <div>
                     {this.addDeleteSelf(data,"close.svg")}
                 </div>
                 }
@@ -207,7 +207,7 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
         if(data)checked=true;
         
         let input;
-        if(!read_only){
+        if(!this.props.renderer.read_only){
                 if(this.props.outcomes_type==0)input=(
                 <input type="checkbox" onChange={this.toggleFunction.bind(this)} checked={checked}/>
             );

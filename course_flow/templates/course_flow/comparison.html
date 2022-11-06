@@ -12,7 +12,6 @@
 <!-- -->
 {% block body %}
 
-<div id="container" class="body-wrapper"><div class="load-screen"></div></div>
 <div id="popup-container"></div>
 <div id="sidebar" class="side-bar hide-print">
   <ul>
@@ -72,6 +71,7 @@
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
     
+
   const workflow_paths = {
       activity:'{% url "course_flow:workflow-update" pk=object.pk %}',
       course:'{% url "course_flow:workflow-update" pk=object.pk %}',
@@ -80,6 +80,8 @@
   }
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 
+  $("#sidebar").detach().appendTo("#sidebar-container");
+  
   $("#sidebar").tabs({
       active:1,
       disabled:[0],
@@ -92,16 +94,17 @@
 
   $("#sidebar").on("dblclick mousedown",(evt)=>{evt.stopPropagation();});
 
+  jQuery('<div>',{
+    class:'load-screen'
+  }).appendTo("#container");
+
     
-  const read_only = {{read_only|safe}};
-  const allow_comments = {{comment|safe}};
-  // if(read_only)$("#sidebar").hide();
-  // else{
+  const user_permission = {{user_permission|safe}}
+
   $("#side-bar-close-button").on("click",()=>{
       $("#sidebar").addClass("collapsed");
       $("#sidebar").tabs("option","active",false);
   });
-  // }
 
 
 

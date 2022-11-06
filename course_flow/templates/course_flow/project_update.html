@@ -9,7 +9,6 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id="content-container" class="body-wrapper"></div>
 <div id="popup-container"></div>
 <!-- -->
 {% endblock %}
@@ -39,13 +38,17 @@
   console.log(data_package);
 
 
+  jQuery('<div>',{
+    class:'load-screen'
+  }).appendTo("#container");
+
 
   const user_id = {{ user.id }};
 
   window.addEventListener("load",function(){
       project_renderer = new renderers.ProjectRenderer(data_package,project_data);
       $(document).ajaxError(renderers.fail_function);
-      project_renderer.render($("#content-container"));
+      project_renderer.render($("#container"));
   });
 </script>
 {% endblock %}

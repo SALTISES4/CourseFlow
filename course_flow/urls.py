@@ -16,6 +16,11 @@ def course_flow_patterns():
         path("home/", views.home_view, name="home"),
         path("logout/", views.logout_view, name="logout"),
         path("myprojects/", views.myprojects_view, name="my-projects"),
+        path(
+            "myliveprojects/",
+            views.my_live_projects_view,
+            name="my-live-projects",
+        ),
         path("mytemplates/", views.mytemplates_view, name="my-templates"),
         path("myshared/", views.myshared_view, name="my-shared"),
         path("myfavourites/", views.myfavourites_view, name="my-favourites"),
@@ -25,6 +30,11 @@ def course_flow_patterns():
             "project/<int:pk>/",
             views.ProjectDetailView.as_view(),
             name="project-update",
+        ),
+        path(
+            "liveproject/<int:pk>/",
+            views.LiveProjectDetailView.as_view(),
+            name="live-project-update",
         ),
         path(
             "project/<int:pk>/comparison",
@@ -38,12 +48,12 @@ def course_flow_patterns():
         ),
         path(
             "workflow/public/<int:pk>/",
-            ratelimit(key="ip",method=["GET"],rate="5/m",block=True)(views.WorkflowPublicDetailView.as_view()),
+            ratelimit(key="ip", method=["GET"], rate="5/m", block=True)(
+                views.WorkflowPublicDetailView.as_view()
+            ),
             name="workflow-public",
         ),
-        path(
-            "workflow/updatevalue/", views.update_value, name="update-value"
-        ),
+        path("workflow/updatevalue/", views.update_value, name="update-value"),
         path("workflow/delete-self/", views.delete_self, name="delete-self"),
         path(
             "workflow/restore-self/",
@@ -102,9 +112,7 @@ def course_flow_patterns():
             views.new_outcome_for_workflow,
             name="new-outcome-for-workflow",
         ),
-        path(
-            "workflow/strategy/add", views.add_strategy, name="add-strategy"
-        ),
+        path("workflow/strategy/add", views.add_strategy, name="add-strategy"),
         path(
             "workflow/strategy/toggle",
             views.week_toggle_strategy,
@@ -126,6 +134,11 @@ def course_flow_patterns():
             name="toggle-favourite",
         ),
         path("permissions/set", views.set_permission, name="set-permission"),
+        path(
+            "liveprojectroles/set",
+            views.set_liveproject_role,
+            name="set-liveproject-role",
+        ),
         path(
             "workflow/node/set-linked-workflow/",
             views.set_linked_workflow_ajax,
@@ -202,6 +215,11 @@ def course_flow_patterns():
             name="get-users-for-object",
         ),
         path(
+            "project/get-users-for-liveproject/",
+            views.get_users_for_liveproject,
+            name="get-users-for-liveproject",
+        ),
+        path(
             "users/get-user-list/",
             views.get_user_list,
             name="get-user-list",
@@ -251,9 +269,15 @@ def course_flow_patterns():
             views.update_object_set,
             name="update-object-set",
         ),
-        path("comments/add/", views.add_comment, name="add-comment",),
         path(
-            "comments/remove/", views.remove_comment, name="remove-comment",
+            "comments/add/",
+            views.add_comment,
+            name="add-comment",
+        ),
+        path(
+            "comments/remove/",
+            views.remove_comment,
+            name="remove-comment",
         ),
         path(
             "comments/removeall/",
@@ -265,12 +289,45 @@ def course_flow_patterns():
             views.get_parent_workflow_info,
             name="get-parent-workflow-info",
         ),
-        path("exports/get/", views.get_export, name="get-export",),
-        path("imports/import-data/", views.import_data, name="import-data",),
+        path(
+            "exports/get/",
+            views.get_export,
+            name="get-export",
+        ),
+        path(
+            "imports/import-data/",
+            views.import_data,
+            name="import-data",
+        ),
         path(
             "downloads/exports/get/",
             views.get_export_download,
             name="get-export-download",
+        ),
+        path(
+            "project/makelive",
+            views.make_project_live,
+            name="make-project-live",
+        ),
+        path(
+            "liveproject/workflowvisibility",
+            views.set_workflow_visibility,
+            name="set-workflow-visibility",
+        ),
+        path(
+            "project/getliveprojectdata",
+            views.get_live_project_data,
+            name="get-live-project-data",
+        ),
+        path(
+            "project/getliveprojectdatastudent",
+            views.get_live_project_data_student,
+            name="get-live-project-data-student",
+        ),
+        path(
+            "project/register/student/<project_hash>/",
+            views.register_as_student,
+            name="register-as-student",
         ),
         path(
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"

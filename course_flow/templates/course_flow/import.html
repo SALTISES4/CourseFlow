@@ -9,17 +9,15 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id="content-container" class="body-wrapper">
-  <div class="splash-page">
-    <div class="splash-wrapper">
-      <button class="splash-image-wrapper">
-        <img
-          id="import-json"
-          src="{% static 'course_flow/img/images_svg/open_basic.svg' %}"
-        />
-        <div>Import Project<br /><small>(May take some time)</small></div>
-      </button>
-    </div>
+<div class="splash-page">
+  <div class="splash-wrapper">
+    <button class="splash-image-wrapper">
+      <img
+        id="import-json"
+        src="{% static 'course_flow/img/images_svg/open_basic.svg' %}"
+      />
+      <div>Import Project<br /><small>(May take some time)</small></div>
+    </button>
   </div>
 </div>
 <!-- -->
@@ -31,6 +29,10 @@
 <!-- -->
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
+
+
+  $(".splash-page").detach().appendTo("#container");
+
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 
   const user_id = {{ user.id }};

@@ -22,9 +22,10 @@ export {fail_function} from './PostFunctions';
 
 //Manages the current selection, ensuring we only have one at a time
 export class SelectionManager{
-    constructor(){
+    constructor(read_only){
         this.currentSelection;
         this.mouse_isclick=false;
+        this.read_only=read_only;
         var selector = this;
         $(document).on("mousedown",()=>{
             selector.mouse_isclick=true;
@@ -43,10 +44,10 @@ export class SelectionManager{
     
     changeSelection(evt,newSelection){
         if(evt)evt.stopPropagation();
-        if(!read_only && newSelection && newSelection.props.data && newSelection.props.data.lock)return;
+        if(!this.read_only && newSelection && newSelection.props.data && newSelection.props.data.lock)return;
         if(this.currentSelection){
             this.currentSelection.setState({selected:false});
-            if(!read_only)this.currentSelection.props.renderer.lock_update(
+            if(!this.read_only)this.currentSelection.props.renderer.lock_update(
                 {object_id:this.currentSelection.props.data.id,
                     object_type:Constants.object_dictionary[this.currentSelection.objectType]
                 },60*1000,false
@@ -54,7 +55,7 @@ export class SelectionManager{
         }
         this.currentSelection=newSelection;
         if(this.currentSelection){
-            if(!read_only)this.currentSelection.props.renderer.lock_update(
+            if(!this.read_only)this.currentSelection.props.renderer.lock_update(
                 {object_id:this.currentSelection.props.data.id,
                     object_type:Constants.object_dictionary[this.currentSelection.objectType]
                 },60*1000,true
@@ -80,7 +81,7 @@ export class SelectionManager{
 export function renderExploreMenu(data_package,disciplines){
     reactDom.render(
         <ExploreMenu data_package={data_package} disciplines={disciplines} pages={pages}/>,
-        $("#content-container")[0]
+        $("#container")[0]
     );
 }
 
@@ -133,7 +134,7 @@ export class ProjectRenderer{
         
         reactDom.render(
         <Provider store = {this.store}>
-            <ProjectMenu project={this.project_data}/>
+            <ProjectMenu project={this.project_data} renderer={this}/>
         </Provider>,
         container[0]
     );
@@ -156,8 +157,36 @@ export class WorkflowRenderer{
         this.strategy_classification_choices = data_package.strategy_classification_choices;
         this.is_strategy = data_package.is_strategy;
         this.column_colours = {}
-        this.read_only = data_package.read_only;
+        this.user_permission=user_permission;
+        try{
+            this.user_role=user_role;
+        }catch(err){
+            this.user_role=Constants.role_keys["none"];
+        }
         this.public_view=public_view;
+        this.read_only=true;
+        if(this.public_view)this.always_static=true;
+        if(this.user_permission==Constants.permission_keys["none"]){
+            this.always_static=true;
+        }else if(this.user_permission==Constants.permission_keys["view"]){
+            this.can_view=true;
+        }else if(this.user_permission==Constants.permission_keys["comment"]){
+            this.view_comments=true;
+            this.add_comments=true;
+            this.can_view=true;
+        }else if(this.user_permission==Constants.permission_keys["edit"]){
+            this.read_only=false;
+            this.view_comments=true;
+            this.add_comments=true;
+            this.can_view=true;
+        }
+        if(this.user_role==Constants.role_keys["none"]){
+
+        }else if(this.user_role==Constants.role_keys["student"]){
+            this.is_student=true;
+        }else if(this.user_role==Constants.role_keys["teacher"]){
+            this.is_teacher=true;
+        }
         if(this.public_view){
             this.getWorkflowData=getPublicWorkflowData;
             this.getWorkflowParentData=getPublicWorkflowParentData;
@@ -167,14 +196,14 @@ export class WorkflowRenderer{
             this.getWorkflowParentData=getWorkflowParentData;
             this.getWorkflowChildData=getWorkflowChildData;
         }
-        this.always_static=this.public_view;
         console.log("static view");
         console.log(this.public_view);
         this.is_static=this.always_static;
-        if(data_package.project){
+        if(data_package.project && !this.is_student){
             $("#floatbar").append("<a id='project-return' href='"+update_path["project"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Project")+"</div></div>");
-            
-            
+        }
+        if(data_package.project && (this.is_teacher || this.is_student)){
+            $("#floatbar").append("<a id='live-project-return' href='"+update_path["liveproject"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Classroom")+"</div></div>");
         }
     }
     
@@ -273,7 +302,7 @@ export class WorkflowRenderer{
            evt.stopPropagation(); 
         });
     
-        this.selection_manager = new SelectionManager(); 
+        this.selection_manager = new SelectionManager(this.read_only); 
         this.selection_manager.renderer = renderer;
         this.tiny_loader = new TinyLoader($("body")[0]);
         if(view_type=="outcomeedit"){
@@ -326,7 +355,7 @@ export class WorkflowRenderer{
             console.log(data_flat);
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
             this.render($("#container"));
-            this.create_connection_bar();
+            if(!this.always_static)this.create_connection_bar();
             this.clear_queue(data_flat.workflow.edit_count);
             if(reconnect)this.attempt_reconnect();
         });
@@ -458,9 +487,24 @@ export class ComparisonRenderer{
         reactDom.render(<WorkflowLoader/>,container[0]);
         var renderer = this;
         this.locks={}
-        this.selection_manager = new SelectionManager(); 
         this.tiny_loader = new TinyLoader($("body")[0]);
         
+        if(user_permission==Constants.permission_keys["none"]){
+            this.read_only=true;
+            this.always_static=true;
+        }else if(user_permission==Constants.permission_keys["view"]){
+            this.read_only=true;
+        }else if(user_permission==Constants.permission_keys["comment"]){
+            this.read_only=true;
+            this.view_comments=true;
+            this.add_comments=true;
+        }else if(user_permission==Constants.permission_keys["edit"]){
+            this.read_only=false;
+            this.view_comments=true;
+            this.add_comments=true;
+        }
+        this.selection_manager = new SelectionManager(this.read_only); 
+
         if(view_type=="workflowview" || view_type=="outcomeedit"){
             reactDom.render(
                 <ComparisonView view_type={view_type} renderer={this} data={this.project_data} selection_manager={this.selection_manager} tiny_loader={this.tiny_loader}/>,
@@ -556,7 +600,7 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
 //    
 //    render(container){
 //        this.container=container;
-//        this.selection_manager = new SelectionManager(); 
+//        this.selection_manager = new SelectionManager(this.read_only); 
 //        this.tiny_loader = new TinyLoader($("body")[0]);
 //        reactDom.render(
 //            <Provider store = {this.store}>
@@ -567,7 +611,7 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
 //    }
 //}
 //
-class WorkflowLoader extends React.Component{
+export class WorkflowLoader extends React.Component{
     
     render(){
         return (

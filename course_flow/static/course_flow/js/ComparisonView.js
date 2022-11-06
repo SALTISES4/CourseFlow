@@ -35,7 +35,7 @@ export class ComparisonView extends React.Component{
             publish_text = gettext("PUBLISHED");
         }
         let share;
-        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
+        if(!this.props.renderer.read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
         if(renderer.view_type=="outcomeedit"){
             this.allowed_tabs=[];
         }else{

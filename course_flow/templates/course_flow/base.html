@@ -100,12 +100,11 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'user_feedback/js/app.min.js' %}"
+      src="{% static 'course_flow/js/scripts-live.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
     {% endcompress %}
-    <!-- -->
     <script nonce="{{ request.csp_nonce }}"
       src="{% url 'course_flow:javascript-catalog' %}"
       defer="true"
@@ -125,119 +124,127 @@
       href="{% static 'course_flow/js/course_flow.css' %}"
     />
     {% endcompress %}
-    <style nonce="{{ request.csp_nonce }}">
-      #user-feedback-component > button .MuiSvgIcon-root:first-child {
-        color: white;
-        height: 28px;
-        margin: 2px;
-        width: 28px;
-      }
-      #home-icon,
-      #explore-icon {
-        height: 32px;
-      }
-    </style>
     {% block header %}{% endblock %}
   </head>
   <body id="site">
-    <div class="topnav hide-print">
-      <div class="titlebar">
-        <div class="title">
-        </div>
-        <div class="floatbar">
-          <div id="username-container" class="topdropwrapper">
-            <button id="username" class="topdropbutton">
-              <a class="username-link" href="{% url 'course_flow:home' %}">
-                  {{ user.username }}
-              </a>
-            </button>
-          </div>
-          {% if user.username %}
-          <div id="logout-container" class="topdropwrapper">
-            <button id="logout" class="topdropbutton">
-              {% trans 'logout' %}
-            </button>
-          </div>
-          {% endif %}
-          <div class="topdropwrapper">
-            <button class="topdropbutton">
-              <a id="home-icon-link" href="{% url 'course_flow:home' %}"
-                ><img
-                  id="home-icon"
-                  src="{% static 'course_flow/img/home-24px.svg' %}"
-              /></a>
-            </button>
-          </div>
-          <div class="topdropwrapper">
-            <button class="topdropbutton">
-              <a id="explore-icon-link" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project"
-                ><img
-                  id="explore-icon"
-                  src="{% static 'course_flow/img/images_svg/explore.svg' %}"
-              /></a>
-            </button>
-          </div>
-          <div class="topdropwrapper">
-            <div id="user-feedback-app"></div>
-          </div>
-        </div>
-      </div>
-        <div class="menubar">
-            <div id="workflowtitle" class="workflow-title-bar">
-            </div>
-            <div id="floatbar" class="floatbar">
-            </div>
-            <div id="userbar" class="floatbar">
-            </div>
-            <div id="viewbar" class="viewbar">
-            </div>
-          </div>
-    </div>
-    <div class="left-panel hide-print">
-      <img class="title-image" src="{% static 'course_flow/img/images_svg/logo-courseflow-beta.svg' %}"/>
-      <a class="panel-item hover-shade" href="{% url 'course_flow:home' %}">
-        <img src="{% static 'course_flow/img/images_svg/home_black.svg' %}"/>
-        <div>{% trans 'Home' %}</div>
-      </a>
-      <a class="panel-item hover-shade" href="{% url 'course_flow:my-projects' %}">
-        <img src="{% static 'course_flow/img/images_svg/layoutnav.svg' %}"/>
-        <div>{% trans 'My Projects' %}</div>
-      </a>
-      <a class="panel-item hover-shade" href="{% url 'course_flow:my-templates' %}">
-        <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
-        <div>{% trans 'My Templates' %}</div>
-      </a>
-      <a class="panel-item hover-shade" href="{% url 'course_flow:my-shared' %}">
-        <img src="{% static 'course_flow/img/images_svg/add_person_black.svg' %}"/>
-        <div>{% trans 'Shared With Me' %}</div>
-      </a>
-      <a class="panel-item hover-shade" href={% course_flow_return_url %}>
-        <img src="{% static 'course_flow/img/images_svg/return_to_project.svg' %}"/>
-        <div>{% course_flow_return_title %}</div>
-      </a>
+    <div class="main-wrapper">
+      <div class="left-panel hide-print">
+        <img class="title-image" src="{% static 'course_flow/img/images_svg/logo-courseflow-beta.svg' %}"/>
+        <a class="panel-item hover-shade" href="{% url 'course_flow:home' %}">
+          <img src="{% static 'course_flow/img/images_svg/home_black.svg' %}"/>
+          <div>{% trans 'Home' %}</div>
+        </a>
+        {% if user|has_group:"Teacher" %}
+        <a id="panel-my-projects" class="panel-item hover-shade" href="{% url 'course_flow:my-projects' %}">
+          <img src="{% static 'course_flow/img/images_svg/layoutnav.svg' %}"/>
+          <div>{% trans 'My Projects' %}</div>
+        </a>
+        {% endif %}
+        <a id="panel-my-live-projects" class="panel-item hover-shade" href="{% url 'course_flow:my-live-projects' %}">
+          <img src="{% static 'course_flow/img/images_svg/layoutnav_2.svg' %}"/>
+          <div>{% trans 'My Classrooms' %}</div>
+        </a>
+        {% if user|has_group:"Teacher" %}
+        <a id="panel-my-templates" class="panel-item hover-shade" href="{% url 'course_flow:my-templates' %}">
+          <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
+          <div>{% trans 'My Templates' %}</div>
+        </a>
+        <a id="panel-my-shared" class="panel-item hover-shade" href="{% url 'course_flow:my-shared' %}">
+          <img src="{% static 'course_flow/img/images_svg/add_person_black.svg' %}"/>
+          <div>{% trans 'Shared With Me' %}</div>
+        </a>
+        {% endif %}
+        <a class="panel-item hover-shade" href={% course_flow_return_url %}>
+          <img src="{% static 'course_flow/img/images_svg/return_to_project.svg' %}"/>
+          <div>{% course_flow_return_title %}</div>
+        </a>
 
-      <hr>
-      <div class="left-panel-extra">
-          <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
-            {% trans 'My Favourites' %}
-          </a>
-            {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
-              <a class="panel-favourite hover-shade"
-                 {% if favourite.content_object.type == "project" %}
-                    href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
-                 {% else %}
-                    href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
-                 {% endif %}
-                 >
-                {{ favourite.content_object }}
-              </a>
-            {% endfor %}
-          <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
+        {% if user|has_group:"Teacher" %}
+        <hr>
+        {% endif %}
+        <div class="left-panel-extra">
+          {% if user|has_group:"Teacher" %}
+            <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
+              {% trans 'My Favourites' %}
+            </a>
+              {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
+                <a class="panel-favourite hover-shade"
+                   {% if favourite.content_object.type == "project" %}
+                      href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
+                   {% else %}
+                      href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
+                   {% endif %}
+                   >
+                  {{ favourite.content_object }}
+                </a>
+              {% endfor %}
+            <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
+          {% endif %}
         </div>
+        {% if user|has_group:"Teacher" %}
         <hr>
         <a class="panel-item hover-shade" href="{% url 'course_flow:import' %}">{% trans "Import from old CourseFlow" %}</a>
+        {% endif %}
+      </div>
+      <div class="main-block">
+        <div class="topnav hide-print">
+          <div class="titlebar">
+            <div class="title">
+            </div>
+            <div class="floatbar">
+              <div id="username-container" class="topdropwrapper">
+                <button id="username" class="topdropbutton">
+                  <a class="username-link" href="{% url 'course_flow:home' %}">
+                      {{ user.username }}
+                  </a>
+                </button>
+              </div>
+              {% if user.username %}
+              <div id="logout-container" class="topdropwrapper">
+                <button id="logout" class="topdropbutton">
+                  {% trans 'logout' %}
+                </button>
+              </div>
+              {% endif %}
+              {% if user|has_group:"Teacher" %}
+              <div class="topdropwrapper">
+                <button class="topdropbutton">
+                  <a id="explore-icon-link" title="{% trans 'Explore' %}" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project"
+                    ><img
+                      id="explore-icon"
+                      src="{% static 'course_flow/img/images_svg/explore.svg' %}"
+                  /></a>
+                </button>
+              </div>
+              <div class="topdropwrapper">
+                <button class="topdropbutton">
+                  <a id="user-feedback" title="{% trans 'Get Help' %}" target="_blank" href="https://courseflow.freshdesk.com/support/home"
+                    ><img
+                      id="help-icon"
+                      src="{% static 'course_flow/img/images_svg/help.svg' %}"
+                  /></a>
+                </button>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+            <div class="menubar">
+                <div id="workflowtitle" class="workflow-title-bar">
+                </div>
+                <div id="floatbar" class="floatbar">
+                </div>
+                <div id="userbar" class="floatbar">
+                </div>
+                <div id="viewbar" class="viewbar">
+                </div>
+              </div>
+        </div>
+        <div class="right-panel-wrapper">
+          <div id="container" class="body-wrapper"></div>
+          <div id="sidebar-container"></div>
+        </div>
+      </div>
     </div>
-
     {% block body %}{% endblock %}
     <footer>{% block foot %}{% endblock %}</footer>
     {% csrf_token %}
@@ -281,8 +288,10 @@
       get_workflow_child_data: "{% url 'course_flow:get-workflow-child-data' %}",
       get_project_data: "{% url 'course_flow:get-project-data' %}",
       get_users_for_object: "{% url 'course_flow:get-users-for-object' %}",
+      get_users_for_liveproject: "{% url 'course_flow:get-users-for-liveproject' %}",
       get_user_list: "{% url 'course_flow:get-user-list' %}",
       set_permission: "{% url 'course_flow:set-permission' %}",
+      set_liveproject_role: "{% url 'course_flow:set-liveproject-role' %}",
       get_comments_for_object: "{% url 'course_flow:get-comments-for-object' %}",
       add_terminology: "{% url 'course_flow:add-terminology' %}",
       update_object_set: "{% url 'course_flow:update-object-set' %}",
@@ -293,6 +302,10 @@
       get_export: "{% url 'course_flow:get-export' %}",
       get_export_download: "{% url 'course_flow:get-export-download' %}",
       import_data: "{% url 'course_flow:import-data' %}",
+      make_project_live: "{% url 'course_flow:make-project-live' %}",
+      set_workflow_visibility: "{% url 'course_flow:set-workflow-visibility' %}",
+      get_live_project_data: "{% url 'course_flow:get-live-project-data' %}",
+      get_live_project_data_student: "{% url 'course_flow:get-live-project-data-student' %}",
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
@@ -307,7 +320,8 @@
         activity:"{% url 'course_flow:workflow-update' pk='0'%}",
         course:"{% url 'course_flow:workflow-update' pk='0'%}",
         program:"{% url 'course_flow:workflow-update' pk='0'%}",
-        workflow:"{% url 'course_flow:workflow-update' pk='0'%}"
+        workflow:"{% url 'course_flow:workflow-update' pk='0'%}",
+        liveproject:"{% url 'course_flow:live-project-update' pk='0'%}"
     };
     const public_update_path = {
         activity:"{% url 'course_flow:workflow-public' pk='0'%}",
@@ -315,6 +329,7 @@
         program:"{% url 'course_flow:workflow-public' pk='0'%}",
         workflow:"{% url 'course_flow:workflow-public' pk='0'%}"
     };
+    const registration_path = "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}";
 
     $("#logout").on("click",()=>{
         window.location.replace("{% url 'course_flow:logout' %}");
@@ -356,23 +371,7 @@
 
     Quill.register(CustomLinkSanitizer, true)
 
-//    // Broadcast that you're opening a page.
-//    localStorage.openpages = "";
-//    localStorage.openpages = window.location;
-//    var onLocalStorageEvent = function(e) {
-//      //Listen for whether the same page opens anywhere else, sending own page location back if they match
-//      if (e.key == "openpages" && e.newValue == window.location) {
-//        localStorage.page_used = "";
-//        localStorage.page_used = window.location;
-//      }
-//      //Listen for ping back from other open pages, showing alert
-//      if (e.key == "page_used" && e.newValue == window.location) {
-//        alert(
-//          "Warning: this page is already open in another tab or window. Editing the same page in multiple tabs or windows can lead to data loss on your file."
-//        );
-//      }
-//    };
-//    window.addEventListener("storage", onLocalStorageEvent, false);
+
   </script>
   {% endblock %} {% block read_only_scripts %} {% endblock %}
   <!-- -->
@@ -388,36 +387,6 @@
     });
 
 
-    window.addEventListener("load", function() {
-      const feedback = () => {
-        return user_feedback.h(user_feedback.App, {
-          acceptText: "{% trans 'Send' %}",
-          cancelText: "{% trans 'Cancel' %}",
-          charCountText: " "+"{% trans 'characters remaining' %}",
-          description: "{% trans 'Leave feedback or get help' %}",
-          feedbackTypes: [
-            { value: 1, text: "Bug report" },
-            { value: 2, text: "Feature request" },
-            { value: 3, text: "General feedback" }
-          ],
-          menuFeedbackText: "{% trans 'Feedback' %}",
-          menuHelpText: "{% trans 'Help' %}",
-          menuHelpUrl: "https://drive.google.com/file/d/1htY0ZvuJeG4AfnNHzUV_2jAEihsscz6B/view?usp=sharing",
-          placeholder: "{% trans 'Let us know what is on your mind...' %}",
-          snackbarError:
-            "{% trans 'An error occurred.  Please try again later.' %}",
-          snackbarSuccess: "{% trans 'Thanks for your feedback!' %}",
-          text: "",
-          title: "{% trans 'How can we improve your experience?' %}",
-          url: "{% url 'user_feedback:post' %}",
-          nonce: "{{ request.csp_nonce }}"
-        });
-      };
-      user_feedback.render(
-        feedback(),
-        document.getElementById("user-feedback-app")
-      );
-    });
     </script>
     {% endblock %}
 </html>

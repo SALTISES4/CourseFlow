@@ -8,7 +8,7 @@ export class ShareMenu extends React.Component{
     constructor(props){
         super(props);
         this.tiny_loader = new renderers.TinyLoader($("body"));
-        this.state={owner:props.data.author,edit:[],view:[],comment:[],userlist:[]}
+        this.state={owner:props.data.author,edit:[],view:[],comment:[],student:[],userlist:[]}
     }
     
     render(){
@@ -25,6 +25,9 @@ export class ShareMenu extends React.Component{
         let commentors = this.state.comment.map((user)=>
             <UserLabel user={user} type={"comment"} permissionChange={this.setUserPermission.bind(this)}/>
         );
+        let students = this.state.student.map((user)=>
+            <UserLabel user={user} type={"student"} permissionChange={this.setUserPermission.bind(this)}/>
+        );
 
         let text = data.title;
         if(text==null || text==""){
@@ -38,6 +41,8 @@ export class ShareMenu extends React.Component{
             share_info=gettext("Note: You are sharing a workflow. Any added users will be granted view permissions for the whole project.");
         }
         
+        
+
         return(
             <div class="message-wrap user-text">
                 <h3>{gettext("Sharing")+":"}</h3>
@@ -46,14 +51,15 @@ export class ShareMenu extends React.Component{
                         {text}
                     </div>
                 </div>
-                <h4>Owned By:</h4>
+                <h4>{gettext("Owned By")}:</h4>
                     <div>{owner}</div>
                 <div class="user-panel">
-                    <h4>Shared With:</h4>
+                    <h4>{gettext("Shared With")}:</h4>
                     <ul class="user-list">
                         {editors}
                         {commentors}
                         {viewers}
+                        {students}
                     </ul>
                 </div>
                 <UserAdd permissionChange={this.setUserPermission.bind(this)}/>
@@ -70,7 +76,7 @@ export class ShareMenu extends React.Component{
         this.tiny_loader.startLoad();
         setUserPermission(user.id,this.props.data.id,this.props.data.type,permission_type,()=>{
             getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
-                this.setState({view:response.viewers,comment:response.commentors,edit:response.editors});
+                this.setState({view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students});
                 this.tiny_loader.endLoad();
             });
         });
@@ -78,7 +84,7 @@ export class ShareMenu extends React.Component{
     
     componentDidMount(){
         getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
-            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors});
+            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students});
         });
     }
     
@@ -102,6 +108,7 @@ class UserLabel extends React.Component{
                             <option value="edit">{gettext("Can edit")}</option>
                             <option value="comment">{gettext("Can comment")}</option>
                             <option value="view">{gettext("Can view")}</option>
+                            {/*<option value="student">{gettext("Student")}</option>*/}
                         </select>
                         <button onClick={()=>this.props.addFunction($(this.select.current).val())}>{gettext("Share")}</button>
                     </div>
@@ -113,6 +120,7 @@ class UserLabel extends React.Component{
                             <option value="edit">{gettext("Can edit")}</option>
                             <option value="comment">{gettext("Can comment")}</option>
                             <option value="view">{gettext("Can view")}</option>
+                            {/*<option value="student">{gettext("Student")}</option>*/}
                             <option value="none">{gettext("Remove user")}</option>
                         </select>
                     </div>

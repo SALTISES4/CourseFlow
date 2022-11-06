@@ -38,14 +38,31 @@ button:hover{
     box-shadow:inset 0 0 0 99999px rgba(0,0,0,0.1);
 }
 
+.main-wrapper{
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.main-block{
+    flex-grow: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.right-panel-wrapper{
+    flex-grow: 1;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+}
+
 .topnav{
-    width:calc(100% - 240px);
-    position: fixed;
-    z-index: 6;
-    top: 0;
-    left: 240px;
+    width:100%;
     color: #1976bc;
     background: white;
+    position: relative;
 }
 
 
@@ -347,14 +364,13 @@ button:hover{
 .left-panel{
     background:white;
     width:240px;
+    min-width:240px;
     border-right:1px solid lightgray;
-    position:absolute;
     left:0px;
     top:0px;
     height:100%;
     box-sizing:border-box;
     color:#444444;
-    position:fixed;
     display:flex;
     flex-direction:column;
 }
@@ -629,6 +645,10 @@ button:hover{
 
 .workflow-type-indicator.project{
     background-color:#d6bb30;
+}
+
+.workflow-type-indicator.liveproject{
+    background-color:#8a38d1;
 }
 
 .workflow-top-row{
@@ -963,12 +983,10 @@ text {
 
 
 .body-wrapper{
-    top:50px;
-    left:240px;
-    width:calc(100% - 240px);
-    height:calc(100% - 50px);
-    overflow:scroll;
-    position:absolute;
+    overflow:auto;
+    flex-grow: 1;
+    height: 100%;
+    position: relative;
 }
 
 .body-wrapper.printing{

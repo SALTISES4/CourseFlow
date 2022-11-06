@@ -19,7 +19,7 @@ class OutcomeTopView extends ComponentJSON{
         let data = this.props.data;
         var selector = this;
         let share;
-        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
+        if(!this.props.renderer.read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
         
         return(
             <div id="outcome-wrapper" class="workflow-wrapper">
@@ -52,7 +52,7 @@ class OutcomeBarUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
         var outcomebaroutcomes = data.map((outcome)=>
-            <OutcomeBarOutcomeView key={outcome.outcome} objectID={outcome.outcome}/>
+            <OutcomeBarOutcomeView key={outcome.outcome} objectID={outcome.outcome} renderer={this.props.renderer}/>
         );
         
         

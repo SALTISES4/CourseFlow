@@ -621,7 +621,23 @@ export function setUserPermission(user_id,objectID,objectType,permission_type,ca
             permission_type:JSON.stringify(permission_type)
         }).done(function(data){
             if(data.action=="posted")callBackFunction(data);
-            else fail_function(data.action)
+            else fail_function(data.error)
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//set the permission for a user
+export function setLiveProjectRole(user_id,liveprojectPk,permission_type,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.set_liveproject_role,{
+            liveprojectPk:JSON.stringify(liveprojectPk),
+            permission_user:JSON.stringify(user_id),
+            role_type:JSON.stringify(permission_type),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.error)
         });
     }catch(err){
         fail_function();
@@ -634,6 +650,19 @@ export function getUsersForObject(objectID,objectType,callBackFunction=()=>conso
         $.post(post_paths.get_users_for_object,{
             objectID:JSON.stringify(objectID),
             objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+//Get the list of users for a liveproject
+export function getUsersForLiveProject(liveprojectPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_users_for_liveproject,{
+            liveprojectPk:JSON.stringify(liveprojectPk),
         }).done(function(data){
             if(data.action=="posted")callBackFunction(data);
             else fail_function(data.action)
@@ -763,3 +792,63 @@ export function getExport(objectID,objectType,exportType,callBackFunction=()=>co
 //    }
 //}
 
+
+//create live project
+export function makeProjectLive(projectPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.make_project_live,{
+            projectPk:JSON.stringify(projectPk),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//set visibility of workflow
+export function setWorkflowVisibility(liveprojectPk,workflowPk,visible,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.set_workflow_visibility,{
+            liveprojectPk:JSON.stringify(liveprojectPk),
+            workflowPk:JSON.stringify(workflowPk),
+            visible:JSON.stringify(visible),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//get live project data
+export function getLiveProjectData(projectPk,data_type,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_live_project_data,{
+            liveprojectPk:JSON.stringify(projectPk),
+            data_type:JSON.stringify(data_type),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//get live project data
+export function getLiveProjectDataStudent(projectPk,data_type,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_live_project_data_student,{
+            liveprojectPk:JSON.stringify(projectPk),
+            data_type:JSON.stringify(data_type),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}

@@ -7,6 +7,7 @@ from django.utils.translation import gettext as _
 from html2text import html2text
 from rest_framework import serializers
 
+from .decorators import check_object_permission
 from .models import (
     Activity,
     Column,
@@ -15,9 +16,11 @@ from .models import (
     Course,
     Discipline,
     Favourite,
+    LiveProject,
     Node,
     NodeLink,
     NodeWeek,
+    ObjectPermission,
     ObjectSet,
     Outcome,
     OutcomeHorizontalLink,
@@ -38,10 +41,13 @@ from .utils import (
     get_unique_outcomenodes,
     linkIDMap,
     multiple_replace,
+    user_workflow_url,
 )
 
 bleach_allowed_attributes_description = {
-    'a': ['href', 'title', 'target'], 'abbr': ['title'], 'acronym': ['title']
+    "a": ["href", "title", "target"],
+    "abbr": ["title"],
+    "acronym": ["title"],
 }
 bleach_allowed_tags_description = [
     "b",
@@ -78,9 +84,10 @@ class AuthorSerializerMixin:
     author = serializers.SerializerMethodField()
 
     def get_author(self, instance):
-        user = self.context.get("user",None)
+        user = self.context.get("user", None)
         if user is not None:
-            if instance.author is None: return ""
+            if instance.author is None:
+                return ""
             return str(instance.author.username)
         else:
             return _("a CourseFlow user")
@@ -91,7 +98,7 @@ class DescriptionSerializerMixin:
 
     def get_description(self, instance):
         return bleach_sanitizer(
-            instance.description, 
+            instance.description,
             tags=bleach_allowed_tags_description,
             attributes=bleach_allowed_attributes_description,
         )
@@ -100,7 +107,7 @@ class DescriptionSerializerMixin:
         if value is None:
             return None
         return bleach_sanitizer(
-            value, 
+            value,
             tags=bleach_allowed_tags_description,
             attributes=bleach_allowed_attributes_description,
         )
@@ -416,9 +423,15 @@ class LinkedWorkflowSerializerShallow(serializers.ModelSerializer):
             "ponderation_individual",
             "time_general_hours",
             "time_specific_hours",
+            # "url",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
+    # url = serializers.SerializerMethodField()
+
+    # def get_url(self, instance):
+    #     user = self.context.get("user", None)
+    #     return user_workflow_url(instance, user)
 
 
 class NodeWeekSerializerShallow(serializers.ModelSerializer):
@@ -598,6 +611,7 @@ class ProjectSerializerShallow(
             "type",
             "object_sets",
             "favourite",
+            "liveproject",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -606,8 +620,7 @@ class ProjectSerializerShallow(
     object_sets = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
-    author=serializers.SerializerMethodField()
-
+    author = serializers.SerializerMethodField()
 
     def get_favourite(self, instance):
         user = self.context.get("user")
@@ -845,7 +858,7 @@ class WorkflowSerializerShallow(
     outcomeworkflow_set = serializers.SerializerMethodField()
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
-    author=serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
 
     strategy_icon = serializers.SerializerMethodField()
 
@@ -956,7 +969,6 @@ class ProgramSerializerShallow(WorkflowSerializerShallow):
             "author_id",
             "created_on",
             "last_modified",
-            "hash",
             "columnworkflow_set",
             "weekworkflow_set",
             "is_original",
@@ -1011,7 +1023,6 @@ class CourseSerializerShallow(WorkflowSerializerShallow):
             "author_id",
             "created_on",
             "last_modified",
-            "hash",
             "weekworkflow_set",
             "columnworkflow_set",
             "is_original",
@@ -1066,7 +1077,6 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
             "author_id",
             "created_on",
             "last_modified",
-            "hash",
             "columnworkflow_set",
             "weekworkflow_set",
             "is_original",
@@ -1108,7 +1118,8 @@ class ActivitySerializerShallow(WorkflowSerializerShallow):
 
 
 class ObjectSetSerializerShallow(
-    serializers.ModelSerializer, TitleSerializerMixin,
+    serializers.ModelSerializer,
+    TitleSerializerMixin,
 ):
     class Meta:
         model = ObjectSet
@@ -1124,7 +1135,10 @@ class ObjectSetSerializerShallow(
 
 
 class InfoBoxSerializer(
-    serializers.Serializer, TitleSerializerMixin, DescriptionSerializerMixin, AuthorSerializerMixin,
+    serializers.Serializer,
+    TitleSerializerMixin,
+    DescriptionSerializerMixin,
+    AuthorSerializerMixin,
 ):
 
     deleted = serializers.ReadOnlyField()
@@ -1139,9 +1153,9 @@ class InfoBoxSerializer(
     is_owned = serializers.SerializerMethodField()
     is_strategy = serializers.SerializerMethodField()
     published = serializers.ReadOnlyField()
-    author=serializers.SerializerMethodField()
-    title=serializers.SerializerMethodField()
-    description=serializers.SerializerMethodField()
+    author = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
 
     def get_is_owned(self, instance):
         user = self.context.get("user")
@@ -1429,3 +1443,68 @@ serializer_lookups_shallow = {
     "outcomeworkflow": OutcomeWorkflowSerializerShallow,
     "objectset": ObjectSetSerializerShallow,
 }
+
+
+"""
+Live Project Serializers
+"""
+
+
+class LiveProjectSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerMixin,
+    DescriptionSerializerMixin,
+):
+    class Meta:
+        model = LiveProject
+        fields = [
+            "title",
+            "description",
+            "pk",
+            "type",
+            "created_on",
+            "default_self_reporting",
+            "default_assign_to_all",
+            "default_single_completion",
+            "registration_hash",
+            "id",
+        ]
+
+    title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
+    id = serializers.SerializerMethodField()
+
+    created_on = serializers.DateTimeField(format=dateTimeFormat())
+
+    registration_hash = serializers.SerializerMethodField()
+
+    def get_registration_hash(self, instance):
+        user = self.context.get("user", None)
+        if user is None:
+            return None
+        if instance.project.author == user:
+            return instance.project.registration_hash()
+        return None
+
+    def get_title(self, instance):
+        return super().get_title(instance.project)
+
+    def get_description(self, instance):
+        return super().get_description(instance.project)
+
+    def get_id(self, instance):
+        return instance.pk
+
+    def update(self, instance, validated_data):
+        instance.default_self_reporting = validated_data.get(
+            "default_self_reporting", instance.default_self_reporting
+        )
+        instance.default_assign_to_all = validated_data.get(
+            "default_assign_to_all", instance.default_assign_to_all
+        )
+        instance.default_single_completion = validated_data.get(
+            "default_single_completion", instance.default_single_completion
+        )
+
+        instance.save()
+        return instance

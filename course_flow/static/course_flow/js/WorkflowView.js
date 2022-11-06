@@ -35,6 +35,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
         let renderer = this.props.renderer;
+        let read_only = renderer.read_only;
         let selection_manager = renderer.selection_manager;
         
         var selector = this;
@@ -48,12 +49,20 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
         
         let public_view;
-        if(data.public_view && !renderer.public_view){
-            public_view=(
-                <a id="public-view" class="menu-create hover-shade hide-print" href={public_update_path.workflow.replace("0",data.id)}>
-                    {gettext("Public Page")}
-                </a>
-            );
+        if(renderer.can_view && data.public_view){
+            if(renderer.public_view){
+                public_view=(
+                    <a id="public-view" class="menu-create hover-shade hide-print" href={update_path.workflow.replace("0",data.id)}>
+                        {gettext("Editable Page")}
+                    </a>
+                );
+            }else{
+                public_view=(
+                    <a id="public-view" class="menu-create hover-shade hide-print" href={public_update_path.workflow.replace("0",data.id)}>
+                        {gettext("Public Page")}
+                    </a>
+                );
+            }
         }
 
         let workflow_content;
@@ -163,13 +172,13 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     )}
                     {this.getExportButton()}
                     {this.getImportButton()}
-                    {reactDom.createPortal(
+                    {!read_only && reactDom.createPortal(
                         <div class="workflow-publication">
                             <img src={publish_icon}/><div>{publish_text}</div>
                         </div>,
                         $("#floatbar")[0]
                     )}
-                    {reactDom.createPortal(
+                    {!read_only && reactDom.createPortal(
                         <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
                             <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Workflow")}/>
                         </div>,
@@ -181,7 +190,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                     {!read_only &&
                         <NodeBar view_type={renderer.view_type} renderer={this.props.renderer}/>
                     }
-                    {!read_only && !data.is_strategy &&
+                    {!data.is_strategy &&
                         <OutcomeBar renderer={this.props.renderer}/>
                     }
                     {!read_only && !data.is_strategy && data.type != "program" &&
@@ -236,6 +245,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     }
        
     getExportButton(){
+        if(this.props.renderer.is_student && !this.props.renderer.can_view)return null;
         let export_button = (
             <div id="export-button" class="floatbardiv hover-shade" onClick={()=>renderMessageBox({...this.props.data,object_sets:this.props.object_sets},"export",closeMessageBox)}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
             </div>
@@ -291,6 +301,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
 //    }
                      
     getImportButton(){
+        if(this.props.renderer.read_only)return null;
         let disabled;
         if(this.props.data.importing)disabled=true;
         let imports=[];

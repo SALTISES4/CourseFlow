@@ -1,9 +1,12 @@
 import re
 import time
 
+from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
+from django.urls import reverse
 
 from course_flow import models
 
@@ -211,6 +214,98 @@ def get_nondeleted_favourites(user):
         )
         | Q(object_id__in=models.Project.objects.filter(deleted=True))
     )
+
+
+def check_possible_parent(workflow, parent_workflow, same_project):
+    order = ["activity", "course", "program"]
+    try:
+        if order.index(workflow.type) == order.index(parent_workflow.type) - 1:
+            if same_project:
+                if workflow.get_project() == parent_workflow.get_project():
+                    return True
+            else:
+                return True
+    except IndexError:
+        pass
+    return False
+
+
+def get_classrooms_for_student(user):
+    return models.Project.objects.filter(
+        liveproject__liveprojectuser__user=user,
+    )
+
+
+def get_user_permission(obj, user):
+    if user is None:
+        return models.ObjectPermission.PERMISSION_NONE
+    if obj.author == user:
+        return models.ObjectPermission.PERMISSION_EDIT
+    permissions = models.ObjectPermission.objects.filter(
+        user=user,
+        content_type=ContentType.objects.get_for_model(obj),
+        object_id=obj.id,
+    )
+    if permissions.count() == 0:
+        return models.ObjectPermission.PERMISSION_NONE
+    return permissions.first().permission_type
+
+
+def get_user_role(obj, user):
+    if user is None:
+        return models.LiveProjectUser.ROLE_NONE
+    if obj.type == "liveproject":
+        liveproject = obj
+        project = obj.project
+    elif obj.type == "project":
+        try:
+            liveproject = obj.liveproject
+            project = obj
+        except AttributeError:
+            return models.LiveProjectUser.ROLE_NONE
+    elif obj.is_strategy:
+        project = None
+        liveproject = None
+    else:
+        try:
+            project = obj.get_project()
+            liveproject = project.liveproject
+        except AttributeError:
+            return models.LiveProjectUser.ROLE_NONE
+    if liveproject is None:
+        return models.LiveProjectUser.ROLE_NONE
+    if obj.author == user:
+        return models.LiveProjectUser.ROLE_TEACHER
+    permissions = models.LiveProjectUser.objects.filter(
+        user=user, liveproject=liveproject
+    )
+    if permissions.count() == 0:
+        return models.LiveProjectUser.PERMISSION_NONE
+    return permissions.first().role_type
+
+
+def user_workflow_url(workflow, user):
+    user_permission = get_user_permission(workflow, user)
+    user_role = get_user_role(workflow, user)
+    can_view = False
+    is_public = workflow.public_view
+    if user is not None and workflow.is_published:
+        if Group.objects.get(name=settings.TEACHER_GROUP) in user.groups.all():
+            can_view = True
+    if user_permission != models.ObjectPermission.PERMISSION_NONE:
+        can_view = True
+    if user_permission != models.LiveProjectUser.ROLE_NONE:
+        can_view = True
+    if can_view:
+        return reverse(
+            "course-flow:workflow-update", kwargs={"pk": workflow.pk}
+        )
+    if is_public:
+        return reverse(
+            "course-flow:workflow-public", kwargs={"pk": workflow.pk}
+        )
+
+    return False
 
 
 def save_serializer(serializer) -> HttpResponse:

@@ -37,10 +37,10 @@ export class ComponentJSON extends React.Component{
         handle=false,
         containment=".workflow-container"
     ){
+        if(this.props.renderer.read_only)return;
         let cursorAt={};
         if(draggable_type=="weekworkflow")cursorAt={top:20};
         if(draggable_type=="nodeweek")cursorAt={top:20,left:50};
-        if(read_only)return;
         var props = this.props;
         sortable_block.draggable({
             containment:containment,
@@ -183,7 +183,7 @@ export class ComponentJSON extends React.Component{
     }
     
 //    makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith=false,handle=false){
-//        if(read_only)return;
+//        if(this.props.renderer.read_only)return;
 //        var props = this.props;
 //        sortable_block.sortable({
 //            containment:".workflow-container",
@@ -335,7 +335,7 @@ export class ComponentJSON extends React.Component{
         return(
             [
                 <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext={gettext("Comments")} handleClick={this.commentClick.bind(this)}/>,
-                <CommentBox show={this.state.show_comments} comments={this.props.data.comments} parent={this}/>
+                <CommentBox show={this.state.show_comments} comments={this.props.data.comments} parent={this} renderer={this.props.renderer}/>
             ]
         );
     }
@@ -365,7 +365,7 @@ export class ComponentJSON extends React.Component{
     
     //Makes the item selectable
     addEditable(data,no_delete=false){
-        //if(read_only)return null;
+        let read_only = this.props.renderer.read_only;
         if(this.state.selected){
             var type=Constants.object_dictionary[this.objectType];
             let title_length="50";
@@ -379,7 +379,7 @@ export class ComponentJSON extends React.Component{
             let sets;
             if(this.props.object_sets && ["node","outcome"].indexOf(type)>=0){
                 let term_type=data.type;
-                if(type=="node")term_type=data.node_type_display.toLowerCase();
+                if(type=="node")term_type=Constants.node_type_keys[data.node_type];
                 
                 let allowed_sets = this.props.object_sets.filter(set=>set.term==term_type);
                 if(allowed_sets.length>=0){
@@ -804,7 +804,7 @@ export class NodePorts extends React.Component{
     
     componentDidMount(){
         var thisComponent=this;
-        if(!read_only)d3.selectAll(
+        if(!this.props.renderer.read_only)d3.selectAll(
             'g.port-'+this.props.nodeID+" circle[data-port-type='source']"
         ).call(d3.drag().on("start",function(d){
             $(".workflow-canvas").addClass("creating-node-link");
@@ -889,7 +889,7 @@ export class CommentBox extends React.Component{
                 <div class="comment-by">
                     { "-"+comment.user+" ("+comment.created_on+")"}
                 </div>
-                {!read_only && <div class="mouseover-actions">
+                {!this.props.renderer.read_only && <div class="mouseover-actions">
                     <div class="window-close-button" onClick={this.removeComment.bind(this,comment.id)}>
                         <img src={iconpath+"close.svg"}/>
                     </div>
@@ -907,13 +907,13 @@ export class CommentBox extends React.Component{
                 <div class="comment-block">
                     {comments}
                 </div>
-                {(!read_only || allow_comments) && 
+                {(this.props.renderer.add_comments) && 
                     [
                         <textarea ref={this.input}/>,
                         <button class="menu-create" onClick={this.appendComment.bind(this)}>{gettext("Submit")}</button>
                     ]
                 }
-                {(!read_only && comments.length>1) && 
+                {(!this.props.renderer.read_only && comments.length>1) && 
                     [
                         <hr/>,
                         <button class="menu-create small" onClick={this.removeAllComments.bind(this)}>{gettext("Clear All Comments")}</button>
@@ -989,7 +989,6 @@ export class WorkflowTitle extends React.Component{
         if(text==null || text==""){
             text=gettext("Untitled");
         }
-        
         
         return (
             <a target="_blank"  onClick={(evt)=>evt.stopPropagation()} href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
@@ -1087,6 +1086,7 @@ export class QuillDiv extends React.Component{
     }
     
     componentDidMount(){
+        let renderer=this.props.renderer;
         let quill_container = this.maindiv.current;
         let toolbarOptions = [['bold','italic','underline'],[{'script':'sub'},{'script':'super'}],[{'list':'bullet'},{'list':'ordered'}],['link']/*,['formula']*/];
         let quill = new Quill(quill_container,{
@@ -1107,7 +1107,7 @@ export class QuillDiv extends React.Component{
         toolbar.defaultLinkFunction=toolbar.handlers['link'];
         toolbar.addHandler("link",function customLinkFunction(value){
             var select = quill.getSelection();
-            if(value&&select['length']==0&&!read_only){
+            if(value&&select['length']==0&&!renderer.read_only){
                 quill.insertText(select['index'],'link');
                 quill.setSelection(select['index'],4);
             }

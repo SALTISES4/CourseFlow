@@ -49,7 +49,7 @@ class OutcomeBarOutcomeOutcomeViewUnconnected extends ComponentJSON{
         
         return (
             <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
-                <OutcomeBarOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
+                <OutcomeBarOutcomeView objectID={data.child} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
             </div>
         );
     }

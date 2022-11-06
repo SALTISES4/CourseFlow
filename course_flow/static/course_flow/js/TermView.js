@@ -48,12 +48,12 @@ class TermView extends WeekViewUnconnected{
         else dropIcon = "droptriangledown";
         
         let mouseover_actions = [];
-        if(!read_only){
+        if(!this.props.renderer.read_only){
             mouseover_actions.push(this.addInsertSibling(data));
             mouseover_actions.push(this.addDuplicateSelf(data));
             mouseover_actions.push(this.addDeleteSelf(data));
         }
-        if(!this.props.renderer.public_view)mouseover_actions.push(this.addCommenting(data));
+        if(this.props.renderer.view_comments)mouseover_actions.push(this.addCommenting(data));
         
         return (
             <div style={style} class={css_class} ref={this.maindiv} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>

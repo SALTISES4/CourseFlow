@@ -24,6 +24,8 @@ from course_flow.models import (
     Course,
     Discipline,
     Favourite,
+    LiveProject,
+    LiveProjectUser,
     ObjectPermission,
     Outcome,
     OutcomeHorizontalLink,
@@ -95,6 +97,347 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
         selenium.find_element_by_id("register-button").click()
 
         self.assertEqual(self.live_server_url + "/home/", selenium.current_url)
+
+class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
+        else:
+            self.selenium = webdriver.Chrome()
+
+        super(SeleniumLiveProjectTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        selenium.get(self.live_server_url + reverse("course_flow:home"))
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(SeleniumLiveProjectTestCase, self).tearDown()
+
+    def test_create_liveproject(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user, title="new title")
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:project-update", args=[project.pk])
+        )
+        selenium.find_element_by_id("live-project").click()
+        alert = wait.until(expected_conditions.alert_is_present())
+        selenium.switch_to.alert.accept()
+        assert (
+            "new title"
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
+        )
+
+    def test_my_classrooms_teacher(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user, title="new title")
+        LiveProject.objects.create(project=project)
+        selenium.get(self.live_server_url + "/home/")
+        selenium.find_element_by_css_selector(
+            "#panel-my-live-projects"
+        ).click()
+        selenium.find_element_by_css_selector(".workflow-top-row a").click()
+        windows = selenium.window_handles
+        selenium.switch_to_window(windows[0])
+        selenium.close()
+        selenium.switch_to_window(windows[1])
+        assert (
+            "new title"
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
+        )
+        selenium.get(self.live_server_url + "/home/")
+        selenium.find_element_by_css_selector(
+            "#home-liveprojects a:first-child"
+        ).click()
+        selenium.find_element_by_css_selector(".workflow-top-row a").click()
+        windows = selenium.window_handles
+        selenium.switch_to_window(windows[0])
+        selenium.close()
+        selenium.switch_to_window(windows[1])
+        assert (
+            "new title"
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
+        )
+        selenium.get(self.live_server_url + "/home/")
+        selenium.find_element_by_css_selector("#home-liveprojects a+a").click()
+        assert (
+            "new title"
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
+        )
+
+    def test_my_classrooms_student(self):
+        self.user.groups.remove(self.user.groups.first())
+        author = get_author()
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=author, title="new title")
+        liveproject = LiveProject.objects.create(project=project)
+        LiveProjectUser.objects.create(
+            liveproject=liveproject,
+            user=self.user,
+            role_type=LiveProjectUser.ROLE_STUDENT,
+        )
+        selenium.get(self.live_server_url + "/home/")
+        # make sure only correct items are visible
+        assert (
+            len(selenium.find_elements_by_css_selector("#panel-my-projects"))
+            == 0
+        )
+        selenium.find_element_by_css_selector(
+            "#panel-my-live-projects"
+        ).click()
+        selenium.find_element_by_css_selector(".workflow-top-row a").click()
+        windows = selenium.window_handles
+        selenium.switch_to_window(windows[0])
+        selenium.close()
+        selenium.switch_to_window(windows[1])
+        assert (
+            "new title"
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
+        )
+        selenium.get(self.live_server_url + "/home/")
+        selenium.find_element_by_css_selector(
+            "#home-liveprojects a:first-child"
+        ).click()
+        selenium.find_element_by_css_selector(".workflow-top-row a").click()
+        windows = selenium.window_handles
+        selenium.switch_to_window(windows[0])
+        selenium.close()
+        selenium.switch_to_window(windows[1])
+        assert (
+            "new title"
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
+        )
+        selenium.get(self.live_server_url + "/home/")
+        selenium.find_element_by_css_selector("#home-liveprojects a+a").click()
+        assert (
+            "new title"
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
+        )
+
+    def test_add_roles(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user, title="new title")
+        user2 = get_author()
+        liveproject = LiveProject.objects.create(project=project)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:live-project-update", args=[project.id])
+        )
+        selenium.find_element_by_css_selector("#button_students").click()
+        time.sleep(1)
+        inputs = selenium.find_elements_by_css_selector(".user-add input")
+        inputs[0].send_keys("testuser2")
+        time.sleep(2)
+        selenium.find_elements_by_css_selector(".ui-autocomplete li")[
+            0
+        ].click()
+        time.sleep(0.5)
+        selenium.find_elements_by_css_selector(".user-add button")[0].click()
+        time.sleep(2)
+        self.assertEqual(
+            LiveProjectUser.objects.filter(
+                user=user2,
+                role_type=LiveProjectUser.ROLE_STUDENT,
+                liveproject=liveproject,
+            ).count(),
+            1,
+        )
+
+        selenium.find_elements_by_css_selector(".user-label select")[1].click()
+        selenium.find_elements_by_css_selector(".user-label select option")[
+            4
+        ].click()
+        time.sleep(2)
+        self.assertEqual(
+            LiveProjectUser.objects.filter(
+                user=user2,
+                role_type=LiveProjectUser.ROLE_STUDENT,
+                liveproject=liveproject,
+            ).count(),
+            0,
+        )
+        self.assertEqual(
+            LiveProjectUser.objects.filter(
+                user=user2,
+                role_type=LiveProjectUser.ROLE_TEACHER,
+                liveproject=liveproject,
+            ).count(),
+            1,
+        )
+        selenium.find_elements_by_css_selector(".user-label select")[1].click()
+        selenium.find_elements_by_css_selector(".user-label select option")[
+            5
+        ].click()
+        alert = wait.until(expected_conditions.alert_is_present())
+        selenium.switch_to.alert.accept()
+        time.sleep(2)
+        self.assertEqual(
+            LiveProjectUser.objects.filter(
+                user=user2,
+                liveproject=liveproject,
+            ).count(),
+            0,
+        )
+
+    def test_enroll_from_link(self):
+        self.user.groups.remove(self.user.groups.first())
+        author = get_author()
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=author, title="new title")
+        liveproject = LiveProject.objects.create(project=project)
+        selenium.get(
+            self.live_server_url
+            + reverse(
+                "course_flow:register-as-student",
+                args=[project.registration_hash()],
+            )
+        )
+        assert (
+            "new title"
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
+        )
+
+    def test_add_workflows(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user, title="new title")
+        workflow = Activity.objects.create(
+            author=self.user, title="new workflow"
+        )
+        WorkflowProject.objects.create(project=project, workflow=workflow)
+        liveproject = LiveProject.objects.create(project=project)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:live-project-update", args=[project.id])
+        )
+        selenium.find_element_by_css_selector("#button_workflows").click()
+        time.sleep(1)
+
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(".menu-grid")[
+                    0
+                ].find_elements_by_css_selector(".workflow-for-menu")
+            ),
+            0,
+        )
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(".menu-grid")[
+                    1
+                ].find_elements_by_css_selector(".workflow-for-menu")
+            ),
+            1,
+        )
+
+        selenium.find_element_by_css_selector(
+            ".permission-select select"
+        ).click()
+        selenium.find_elements_by_css_selector(
+            ".permission-select select option"
+        )[1].click()
+        time.sleep(2)
+        self.assertEqual(liveproject.visible_workflows.count(), 1)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(".menu-grid")[
+                    0
+                ].find_elements_by_css_selector(".workflow-for-menu")
+            ),
+            1,
+        )
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(".menu-grid")[
+                    1
+                ].find_elements_by_css_selector(".workflow-for-menu")
+            ),
+            0,
+        )
+
+        selenium.find_element_by_css_selector(
+            ".permission-select select"
+        ).click()
+        selenium.find_elements_by_css_selector(
+            ".permission-select select option"
+        )[0].click()
+        time.sleep(2)
+        self.assertEqual(liveproject.visible_workflows.count(), 0)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(".menu-grid")[
+                    1
+                ].find_elements_by_css_selector(".workflow-for-menu")
+            ),
+            1,
+        )
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(".menu-grid")[
+                    0
+                ].find_elements_by_css_selector(".workflow-for-menu")
+            ),
+            0,
+        )
+
+    def test_student_workflows(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        user2 = get_author()
+        project = Project.objects.create(author=user2, title="new title")
+        workflow = Activity.objects.create(author=user2, title="new workflow")
+        WorkflowProject.objects.create(project=project, workflow=workflow)
+        liveproject = LiveProject.objects.create(project=project)
+        LiveProjectUser.objects.create(
+            liveproject=liveproject,
+            user=self.user,
+            role_type=LiveProjectUser.ROLE_STUDENT,
+        )
+        liveproject.visible_workflows.add(workflow)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:live-project-update", args=[project.id])
+        )
+        selenium.find_element_by_css_selector("#button_workflows").click()
+        time.sleep(1)
+
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(".menu-grid")[
+                    0
+                ].find_elements_by_css_selector(".workflow-for-menu")
+            ),
+            1,
+        )
+
+        selenium.find_element_by_css_selector(
+            ".menu-grid .workflow-for-menu .workflow-title"
+        ).click()
+
+        windows = selenium.window_handles
+        selenium.switch_to_window(windows[0])
+        selenium.close()
+        selenium.switch_to_window(windows[1])
+
+        time.sleep(1)
+        assert (
+            "new workflow"
+            in selenium.find_element_by_css_selector("#workflowtitle a").text
+        )
 
 
 class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
@@ -581,24 +924,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             time.sleep(2)
 
-            if workflow_type == "program":
-                self.assertEqual(
-                    len(
-                        selenium.find_elements_by_css_selector(
-                            ".action-button"
-                        )
-                    ),
-                    5,
-                )
-            else:
-                self.assertEqual(
-                    len(
-                        selenium.find_elements_by_css_selector(
-                            ".action-button"
-                        )
-                    ),
-                    6,
-                )
+            self.assertEqual(
+                len(selenium.find_elements_by_css_selector(".action-button")),
+                0,
+            )
 
             selenium.find_elements_by_css_selector(".week")[0].click()
             time.sleep(0.3)
@@ -942,7 +1271,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             OutcomeOutcome.objects.filter(parent=base_outcome).count(), 2
         )
         time.sleep(1)
-        selenium.find_element_by_css_selector(".outcome:not(.dropped) > .outcome-drop").click()
+        selenium.find_element_by_css_selector(
+            ".outcome:not(.dropped) > .outcome-drop"
+        ).click()
         selenium.find_element_by_css_selector(
             ".children-block:not(:empty)+.outcome-create-child"
         ).click()
@@ -1836,16 +2167,18 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         ).click()
         time.sleep(2)
         assert (
-            len(selenium.find_elements_by_css_selector(".outcome-head .node")) == 1
+            len(selenium.find_elements_by_css_selector(".outcome-head .node"))
+            == 1
         )
         assert (
-            len(selenium.find_elements_by_css_selector(".table-cell input")) == 3
+            len(selenium.find_elements_by_css_selector(".table-cell input"))
+            == 3
         )
         time.sleep(2)
         assert (
-            len(selenium.find_elements_by_css_selector(".table-cell > img")) == 2
+            len(selenium.find_elements_by_css_selector(".table-cell > img"))
+            == 2
         )
-
 
     def test_grid_view(self):
         selenium = self.selenium
@@ -1856,7 +2189,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         program = Program.objects.create(author=self.user)
         WorkflowProject.objects.create(workflow=program, project=project)
         node = program.weeks.first().nodes.create(
-            author=self.user, column=program.columns.first(),
+            author=self.user,
+            column=program.columns.first(),
         )
 
         selenium.get(
@@ -2312,7 +2646,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         else:
             self.selenium = webdriver.Chrome()
 
-        super(ChannelsStaticLiveServerTestCase, self).setUp()
+        super(SeleniumDeleteRestoreTestCase, self).setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -2326,7 +2660,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(ChannelsStaticLiveServerTestCase, self).tearDown()
+        super(SeleniumDeleteRestoreTestCase, self).tearDown()
 
     def create_many_items(self, author, published, disciplines):
         for object_type in [
@@ -2718,7 +3052,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".panel-favourite")), 2,
+            len(selenium.find_elements_by_css_selector(".panel-favourite")),
+            2,
         )
 
         # delete a workflow
@@ -2733,7 +3068,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make sure it doesn't show up in favourites
 
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".panel-favourite")), 1,
+            len(selenium.find_elements_by_css_selector(".panel-favourite")),
+            1,
         )
         selenium.find_element_by_css_selector(
             "a[href='/myfavourites/']"
@@ -2780,7 +3116,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # make sure shows up in favourites
 
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".panel-favourite")), 2,
+            len(selenium.find_elements_by_css_selector(".panel-favourite")),
+            2,
         )
         selenium.find_element_by_css_selector(
             "a[href='/myfavourites/']"
@@ -2895,7 +3232,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         else:
             self.selenium = webdriver.Chrome()
 
-        super(ChannelsStaticLiveServerTestCase, self).setUp()
+        super(SeleniumObjectSetsTestCase, self).setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -2909,7 +3246,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(ChannelsStaticLiveServerTestCase, self).tearDown()
+        super(SeleniumObjectSetsTestCase, self).tearDown()
 
     def test_create_sets(self):
         selenium = self.selenium
@@ -2948,7 +3285,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         WorkflowProject.objects.create(workflow=workflow, project=project)
 
         node = workflow.weeks.first().nodes.create(
-            author=self.user, column=workflow.columns.first(),node_type=2
+            author=self.user, column=workflow.columns.first(), node_type=2
         )
         outcome = workflow.outcomes.create(author=self.user)
 
@@ -2992,7 +3329,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         element = selenium.find_element_by_css_selector(
             "input[name='" + str(nodeset.id) + "']"
         )
-        selenium.execute_script("arguments[0].scrollIntoView();",element);
+        selenium.execute_script("arguments[0].scrollIntoView();", element)
         element.click()
         time.sleep(2)
         selenium.find_element_by_css_selector("[href='#view-bar']").click()
@@ -3087,6 +3424,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             len(selenium.find_elements_by_css_selector(".node")), 0
         )
 
+
 class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
@@ -3095,7 +3433,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         else:
             self.selenium = webdriver.Chrome()
 
-        super(ChannelsStaticLiveServerTestCase, self).setUp()
+        super(ComparisonViewTestCase, self).setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -3109,7 +3447,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(ChannelsStaticLiveServerTestCase, self).tearDown()
+        super(ComparisonViewTestCase, self).tearDown()
 
     def test_comparison_views(self):
         selenium = self.selenium
@@ -3120,8 +3458,12 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         workflow2 = Course.objects.create(author=self.user)
         WorkflowProject.objects.create(workflow=workflow, project=project)
         WorkflowProject.objects.create(workflow=workflow2, project=project)
-        node1 = workflow.weeks.first().nodes.create(author=self.user,column=workflow.columns.first())
-        node2 = workflow2.weeks.first().nodes.create(author=self.user,column=workflow2.columns.first())
+        node1 = workflow.weeks.first().nodes.create(
+            author=self.user, column=workflow.columns.first()
+        )
+        node2 = workflow2.weeks.first().nodes.create(
+            author=self.user, column=workflow2.columns.first()
+        )
         outcome1 = workflow.outcomes.create(author=self.user)
         outcome2 = workflow2.outcomes.create(author=self.user)
 
@@ -3131,28 +3473,33 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(3)
 
-        selenium.find_element_by_id("comparison-view").click();
-        time.sleep(3);
-        selenium.find_element_by_id("load-workflow").click();
-        time.sleep(2);
-        selenium.find_elements_by_css_selector(".message-wrap .workflow-created")[0].click();
+        selenium.find_element_by_id("comparison-view").click()
+        time.sleep(3)
+        selenium.find_element_by_id("load-workflow").click()
+        time.sleep(2)
+        selenium.find_elements_by_css_selector(
+            ".message-wrap .workflow-created"
+        )[0].click()
         selenium.find_element_by_id("set-linked-workflow").click()
         time.sleep(5)
-        self.assertEqual(len(selenium.find_elements_by_css_selector(".node")),1)
-        selenium.find_element_by_id("load-workflow").click();
-        time.sleep(2);
-        selenium.find_elements_by_css_selector(".message-wrap .workflow-created")[1].click();
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".node")), 1
+        )
+        selenium.find_element_by_id("load-workflow").click()
+        time.sleep(2)
+        selenium.find_elements_by_css_selector(
+            ".message-wrap .workflow-created"
+        )[1].click()
         selenium.find_element_by_id("set-linked-workflow").click()
         time.sleep(5)
-        self.assertEqual(len(selenium.find_elements_by_css_selector(".node")),2)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".node")), 2
+        )
         selenium.find_element_by_id("button_outcomeedit").click()
         time.sleep(5)
-        self.assertEqual(len(selenium.find_elements_by_css_selector(".outcome")),2)
-
-
-
-
-
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".outcome")), 2
+        )
 
 
 async def connect_ws(ws):
@@ -3205,11 +3552,85 @@ def async_to_sync_receive_nothing(ws):
     return loop.run_until_complete(coroutine)
 
 
-
 class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
+        else:
+            self.selenium = webdriver.Chrome()
+
+        super(WebsocketTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        selenium.get(self.live_server_url + "/home/")
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(WebsocketTestCase, self).tearDown()
+
+    def test_connection_bar(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+
+        author = get_author()
+        user = self.user
+        workflow_edit = Course.objects.create(author=author)
+        workflow_published = Course.objects.create(author=author)
+        project = Project.objects.create(author=author)
+        WorkflowProject.objects.create(project=project, workflow=workflow_edit)
+        WorkflowProject.objects.create(
+            project=project, workflow=workflow_published
+        )
+        ObjectPermission.objects.create(
+            user=user,
+            content_object=workflow_edit,
+            permission_type=ObjectPermission.PERMISSION_EDIT,
+        )
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[workflow_edit.pk])
+        )
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".users-box .users-small .user-indicator"
+                )
+            ),
+            1,
+        )
+        workflow_published.published = True
+        workflow_published.save()
+        project.published = True
+        project.save()
+        selenium.get(
+            self.live_server_url
+            + reverse(
+                "course_flow:workflow-update", args=[workflow_published.pk]
+            )
+        )
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".users-box .users-small .user-indicator"
+                )
+            ),
+            0,
+        )
+
     def test_permissions_connect_to_workflow_update_consumer(self):
         author = get_author()
-        user = login(self)
+        user = self.user
         workflow_owned = Course.objects.create(author=user)
         workflow_view = Course.objects.create(author=author)
         workflow_edit = Course.objects.create(author=author)
@@ -3290,3 +3711,5 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         communicator.scope["user"] = user
         connected, subprotocol = async_to_sync_connect(communicator)
         assert not connected
+
+

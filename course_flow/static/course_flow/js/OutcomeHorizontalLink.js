@@ -19,7 +19,7 @@ export class TableHorizontalOutcomeLinkUnconnected extends ComponentJSON{
         if(data)checked=true;
         
         let input;
-        if(!read_only && outcomenode!==null){
+        if(!this.props.renderer.read_only && outcomenode!==null){
             input=(
                 <input type="checkbox" onChange={this.toggleFunction.bind(this)} checked={checked}/>
             );

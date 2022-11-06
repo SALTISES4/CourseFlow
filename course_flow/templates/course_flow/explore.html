@@ -10,9 +10,6 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div id="content-container" class="body-wrapper">
-    
-</div>
 <div id="popup-container"></div>
 <!-- -->
 {% endblock %}
@@ -35,6 +32,10 @@
     pages = {{pages|safe}}
     
     
+  jQuery('<div>',{
+    class:'load-screen'
+  }).appendTo("#container");
+
     
     const read_only=true;
     
