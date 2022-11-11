@@ -330,6 +330,16 @@ export function getColumnColour(data){
     else return  "#"+("000000"+data.colour?.toString(16)).slice(-6);
 }
 
+export function getUserDisplay(user){
+    let str = "";
+    if(user.first_name)str+=user.first_name+" ";
+    if(user.last_name)str+=user.last_name+" ";
+    if(str=="" && user.username)str+=user.username+" ";
+    if(str=="")str=user.email;
+    return str;
+
+}
+
 export class Loader{
     constructor(identifier){
         this.load_screen = $('<div></div>').appendTo(identifier).addClass('load-screen').on('click',(evt)=>{evt.preventDefault();});

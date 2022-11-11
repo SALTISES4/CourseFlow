@@ -263,6 +263,22 @@ export function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>c
     }
 }
 
+//Causes the specified object to delete itself
+export function deleteSelfLive(objectID,objectType,callBackFunction=()=>console.log("success")){
+    let path=post_paths.delete_self_live;
+    try{
+        $.post(path, {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 //Causes the specified object to undelete itself
 export function restoreSelf(objectID,objectType,callBackFunction=()=>console.log("success")){
     let path;
@@ -846,6 +862,111 @@ export function getLiveProjectDataStudent(projectPk,data_type,callBackFunction=(
             data_type:JSON.stringify(data_type),
         }).done(function(data){
             if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//get assignment data
+export function getAssignmentData(liveassignmentPk,data_type,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_assignment_data,{
+            liveassignmentPk:JSON.stringify(liveassignmentPk),
+            data_type:JSON.stringify(data_type),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//get assignment data
+export function getAssignmentDataStudent(liveassignmentPk,data_type,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_assignment_data_student,{
+            liveassignmentPk:JSON.stringify(liveassignmentPk),
+            data_type:JSON.stringify(data_type),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//get nodes for the workflow
+export function getWorkflowNodes(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_workflow_nodes,{
+            workflowPk:JSON.stringify(workflowPk),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//get nodes for the workflow
+export function createAssignment(nodePk,liveprojectPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.create_live_assignment,{
+            nodePk:JSON.stringify(nodePk),
+            liveprojectPk:JSON.stringify(liveprojectPk),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//add or remove users to/from assignment
+export function addUsersToAssignment(liveassignmentPk,user_list,add,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.add_users_to_assignment,{
+            liveassignmentPk:JSON.stringify(liveassignmentPk),
+            user_list:JSON.stringify(user_list),
+            add:JSON.stringify(add),
+        }).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+
+export function updateLiveProjectValue(objectID,objectType,json,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.update_liveproject_value, {
+            objectID:JSON.stringify(objectID),
+            objectType:JSON.stringify(objectType),
+            data:JSON.stringify(json)
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+export function setAssignmentCompletion(userassignmentPk,completed,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.set_assignment_completion, {
+            userassignmentPk:JSON.stringify(userassignmentPk),
+            completed:JSON.stringify(completed),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
             else fail_function(data.action);
         });
     }catch(err){

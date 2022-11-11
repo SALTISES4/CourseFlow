@@ -130,7 +130,7 @@ class NodeView extends ComponentJSON{
                 </div>
                 {linkIcon}
                 <div class = "node-details">
-                    <TitleText text={data_override.description} defaultText="Click to edit"/>
+                    <TitleText text={data_override.description} defaultText={gettext("Click to edit")}/>
                 </div>
                 <div class = "node-drop-row hover-shade" onClick={this.toggleDrop.bind(this)}>
                     <div class = "node-drop-side node-drop-left">{dropText}</div>

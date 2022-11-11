@@ -270,6 +270,7 @@
       toggle_strategy: "{% url 'course_flow:toggle-strategy' %}",
       new_node_link: "{% url 'course_flow:new-node-link' %}",
       delete_self: "{% url 'course_flow:delete-self' %}",
+      delete_self_live: "{% url 'course_flow:delete-self-live' %}",
       restore_self: "{% url 'course_flow:restore-self' %}",
       delete_self_soft: "{% url 'course_flow:delete-self-soft' %}",
       duplicate_self: "{% url 'course_flow:duplicate-self' %}",
@@ -306,6 +307,13 @@
       set_workflow_visibility: "{% url 'course_flow:set-workflow-visibility' %}",
       get_live_project_data: "{% url 'course_flow:get-live-project-data' %}",
       get_live_project_data_student: "{% url 'course_flow:get-live-project-data-student' %}",
+      get_assignment_data: "{% url 'course_flow:get-assignment-data' %}",
+      get_assignment_data_student: "{% url 'course_flow:get-assignment-data-student' %}",
+      get_workflow_nodes: "{% url 'course_flow:get-workflow-nodes' %}",
+      create_live_assignment: "{% url 'course_flow:create-live-assignment' %}",
+      add_users_to_assignment: "{% url 'course_flow:add-users-to-assignment' %}",
+      update_liveproject_value: "{% url 'course_flow:update-liveproject-value' %}",
+      set_assignment_completion: "{% url 'course_flow:set-assignment-completion' %}",
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
@@ -321,7 +329,8 @@
         course:"{% url 'course_flow:workflow-update' pk='0'%}",
         program:"{% url 'course_flow:workflow-update' pk='0'%}",
         workflow:"{% url 'course_flow:workflow-update' pk='0'%}",
-        liveproject:"{% url 'course_flow:live-project-update' pk='0'%}"
+        liveproject:"{% url 'course_flow:live-project-update' pk='0'%}",
+        liveassignment:"{% url 'course_flow:assignment-update' pk='0'%}"
     };
     const public_update_path = {
         activity:"{% url 'course_flow:workflow-public' pk='0'%}",

@@ -989,10 +989,16 @@ export class WorkflowTitle extends React.Component{
         if(text==null || text==""){
             text=gettext("Untitled");
         }
-        
-        return (
-            <a target="_blank"  onClick={(evt)=>evt.stopPropagation()} href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
-        )
+        let href;
+        if(this.props.no_hyperlink){
+            return (
+                <div target="_blank" class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
+            )
+        }else{
+            return (
+                <a target="_blank"  onClick={(evt)=>evt.stopPropagation()} href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
+            )
+        }
     }
 }
 
@@ -1027,6 +1033,33 @@ export class NodeTitle extends React.Component{
         return (
             <div class="node-title" title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
         )
+    }
+}
+
+//Title text for an assignment
+export class AssignmentTitle extends React.Component{
+    
+    render(){
+        let data = this.props.data;
+        let text;
+        if(data.task.represents_workflow && data.task.linked_workflow_data){
+            text = data.task.linked_workflow_data.title;
+            if(data.task.linked_workflow_data.code)text = data.task.linked_workflow_data.code+" - "+text;
+        }
+        else text = data.task.title;
+            
+        if(text==null || text==""){
+            text=gettext("Untitled");
+        }
+        if(this.props.user_role==Constants.role_keys.teacher){
+            return (
+                <a href={update_path.liveassignment.replace("0",data.id)} class="workflow-title" title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
+            )
+        }else{
+            return (
+                <span class="workflow-title" title={text} dangerouslySetInnerHTML={{ __html: text }}></span>
+            )  
+        }
     }
 }
 
@@ -1127,6 +1160,31 @@ export class QuillDiv extends React.Component{
         });
     }
     
+}
+
+export class DatePicker extends React.Component{
+    constructor(props){
+        super(props);
+        this.input = React.createRef();
+    }
+    render(){
+        let disabled=false;
+        if(this.props.disabled)disabled=true;
+        return (
+            <input disabled={disabled} ref={this.input} id={this.props.id} defaultValue={this.props.default_value}/>
+        );
+    }
+    componentDidMount(){
+        $(this.input.current).flatpickr({
+            enableTime:true,
+            dateFormat:'Z',
+            altInput:true,
+            altFormat:"D M J, Y - H:i",
+            onChange:(dates,datestring)=>{
+                this.props.onChange(datestring);
+            },
+        });
+    }    
 }
 
 

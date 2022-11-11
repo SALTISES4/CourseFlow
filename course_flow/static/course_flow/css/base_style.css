@@ -620,6 +620,11 @@ button:hover{
     color:gray;
 }
 
+.warning{
+    font-size: 12px;
+    color: red;
+}
+
 .workflow-type-indicator{
     font-size:12px;
     color:white;
@@ -923,6 +928,12 @@ button:hover{
 }
 #student-class-activity-section {
 
+}
+
+.node-block-grid{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
 }
 
 

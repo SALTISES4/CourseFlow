@@ -1,5 +1,4 @@
 import base64
-import time
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -80,10 +79,16 @@ class Project(models.Model):
     def registration_hash(self):
         return base64.urlsafe_b64encode(str(self.hash).encode()).decode()
 
-
     @property
     def type(self):
         return "project"
+
+    def get_live_project(self):
+        try:
+            liveproject = self.liveproject
+        except AttributeError:
+            liveproject = None
+        return liveproject
 
     def get_permission_objects(self):
         return [self]
@@ -403,10 +408,12 @@ class OutcomeHorizontalLink(models.Model):
                 ).count()
                 == parent_outcome.children.exclude(deleted=True).count()
             ):
-                new_outcomehorizontallink = OutcomeHorizontalLink.objects.create(
-                    outcome=self.outcome,
-                    degree=self.degree,
-                    parent_outcome=parent_outcome,
+                new_outcomehorizontallink = (
+                    OutcomeHorizontalLink.objects.create(
+                        outcome=self.outcome,
+                        degree=self.degree,
+                        parent_outcome=parent_outcome,
+                    )
                 )
                 return [
                     new_outcomehorizontallink
@@ -417,10 +424,12 @@ class OutcomeHorizontalLink(models.Model):
                 ).count()
                 > 0
             ):
-                new_outcomehorizontallink = OutcomeHorizontalLink.objects.create(
-                    outcome=self.outcome,
-                    degree=0,
-                    parent_outcome=parent_outcome,
+                new_outcomehorizontallink = (
+                    OutcomeHorizontalLink.objects.create(
+                        outcome=self.outcome,
+                        degree=0,
+                        parent_outcome=parent_outcome,
+                    )
                 )
                 return [
                     new_outcomehorizontallink
@@ -962,6 +971,13 @@ class Workflow(models.Model):
     def get_permission_objects(self):
         return [self.get_subclass()]
 
+    def get_live_project(self):
+        try:
+            liveproject = self.get_project().liveproject
+        except AttributeError:
+            liveproject = None
+        return liveproject
+
     def get_subclass(self):
         subclass = self
         try:
@@ -1164,7 +1180,9 @@ class Favourite(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    text = models.TextField(blank=False,)
+    text = models.TextField(
+        blank=False,
+    )
     created_on = models.DateTimeField(default=timezone.now)
 
 
@@ -1195,39 +1213,55 @@ class ObjectPermission(models.Model):
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
 
+
 """
 Live Project Models
 """
 
+
+def default_start_date():
+    return timezone.now().replace(
+        second=0, microsecond=0, minute=0, hour=0
+    ) + timezone.timedelta(weeks=1)
+
+
 def default_due_date():
-    return timezone.now()+timezone.timedelta(weeks=1)
+    return timezone.now().replace(
+        second=0, microsecond=0, minute=0, hour=0
+    ) + timezone.timedelta(weeks=2)
+
 
 class LiveProject(models.Model):
-    
+
     created_on = models.DateTimeField(default=timezone.now)
 
-    project = models.OneToOneField(Project, on_delete=models.CASCADE, primary_key=True)
+    project = models.OneToOneField(
+        Project, on_delete=models.CASCADE, primary_key=True
+    )
 
-    #Whether students are able to check tasks as complete themselves or
+    # Whether students are able to check tasks as complete themselves or
     # must have the instructor mark them as complete
     default_self_reporting = models.BooleanField(default=True)
-    #Whether newly created assignments are assigned to all by default
+    # Whether newly created assignments are assigned to all by default
     default_assign_to_all = models.BooleanField(default=True)
-    #Whether it is enough for a single assigned user to complete the task,
+    # Whether it is enough for a single assigned user to complete the task,
     # or (when True) when any user completes the task it becomes complete for all users
     default_single_completion = models.BooleanField(default=False)
-    #whether workflows are always all visible
+    # whether workflows are always all visible
     default_all_workflows_visible = models.BooleanField(default=False)
-    #These workflows are always visible to all students
+    # These workflows are always visible to all students
     visible_workflows = models.ManyToManyField(Workflow, blank=True)
-
 
     def get_permission_objects(self):
         return [self]
-            
+
+    def get_live_project(self):
+        return self
+
     @property
     def type(self):
         return "liveproject"
+
 
 class LiveProjectUser(models.Model):
     liveproject = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
@@ -1244,34 +1278,34 @@ class LiveProjectUser(models.Model):
         choices=ROLE_CHOICES, default=ROLE_NONE
     )
 
-# class LiveAssignment(models.Model):
-#     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-#     live_project = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
-#     linked_workflows = models.ManyToManyField(Workflow, blank=True)
-#     self_reporting = models.BooleanField(default=True)
-#     single_completion = models.BooleanField(default=False)
-#     tasks = models.ManyToManyField(Node, blank=True)
-#     start_date = models.DateTimeField(default=timezone.now)
-#     end_date = models.DateTimeField(default=default_due_date)
-#     created_on = models.DateTimeField(default=timezone.now)
 
-# class LiveUser(models.Model):
-#     live_project = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
-#     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-#     USER_STUDENT = 0
-#     USER_TEACHER = 1
-#     USER_TYPE_CHOICES = (
-#         (USER_STUDENT, _("Student")),
-#         (USER_TEACHER, _("Teacher")),
-#     )
-#     user_type = models.PositiveIntegerField(
-#         choices=USER_TYPE_CHOICES, default=USER_STUDENT
-#     )
+class LiveAssignment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    liveproject = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
+    self_reporting = models.BooleanField(default=True)
+    single_completion = models.BooleanField(default=False)
+    task = models.ForeignKey(Node, null=True, on_delete=models.SET_NULL)
+    start_date = models.DateTimeField(default=default_start_date)
+    end_date = models.DateTimeField(default=default_due_date)
+    created_on = models.DateTimeField(default=timezone.now)
 
-# class UserAssignment(models.Model):
-#     live_user = models.ForeignKey(LiveUser, on_delete=models.CASCADE)
-#     assignment = models.ForeignKey(LiveAssignment, on_delete=models.CASCADE)
-#     completed = models.BooleanField(default=False)
+    def get_live_project(self):
+        return self.liveproject
+
+    def get_permission_objects(self):
+        return [self.liveproject]
+
+
+class UserAssignment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(LiveAssignment, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
+
+    def get_live_project(self):
+        return self.assignment.liveproject
+
+    def get_permission_objects(self):
+        return [self.assignment.liveproject]
 
 
 """
@@ -1819,7 +1853,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
     if created:
         if instance.content_type == ContentType.objects.get_for_model(Project):
             if instance.permission_type == ObjectPermission.PERMISSION_STUDENT:
-                liveproject = instance.content_object.liveproject 
+                liveproject = instance.content_object.liveproject
                 if liveproject is not None:
                     if liveproject.default_all_workflows_visible:
                         workflows = instance.content_object.workflows.all()
@@ -1838,13 +1872,16 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                             workflow.get_subclass()
                         ),
                         object_id=workflow.id,
-                        permission_type__in=[ObjectPermission.PERMISSION_EDIT, ObjectPermission.PERMISSION_COMMENT],
+                        permission_type__in=[
+                            ObjectPermission.PERMISSION_EDIT,
+                            ObjectPermission.PERMISSION_COMMENT,
+                        ],
                     ).count()
                     > 0
                 ):
                     pass
                 elif (
-                    instance.permission_type 
+                    instance.permission_type
                     == ObjectPermission.PERMISSION_COMMENT
                     and ObjectPermission.objects.filter(
                         user=instance.user,
@@ -1880,6 +1917,7 @@ def delete_existing_permission(sender, instance, **kwargs):
         object_id=instance.object_id,
     ).delete()
 
+
 @receiver(pre_save, sender=LiveProjectUser)
 def delete_existing_role(sender, instance, **kwargs):
     LiveProjectUser.objects.filter(
@@ -1887,10 +1925,12 @@ def delete_existing_role(sender, instance, **kwargs):
         liveproject=instance.liveproject,
     ).delete()
 
+
 @receiver(post_save, sender=LiveProjectUser)
 def delete_role_none(sender, instance, **kwargs):
-    if instance.role_type==instance.ROLE_NONE:
+    if instance.role_type == instance.ROLE_NONE:
         instance.delete()
+
 
 @receiver(pre_delete, sender=ObjectPermission)
 def remove_permissions_to_project_objects(sender, instance, **kwargs):

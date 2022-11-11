@@ -456,6 +456,21 @@ button, input[type="submit"]{
     text-align: left;
 }
 
+.node .assignment-timing{
+    background: white;
+}
+
+.assignment-timing{
+    padding: 5px;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+}
+
+.assignment.node{
+    width: 600px
+}
+
 .linked-workflow{
     background:white;
     width:100%;
@@ -1491,10 +1506,10 @@ circle.mouseover{
 .workflow-canvas.dragging-weekworkflow{
     opacity:0;
 }
-
+/*
 .node input{
     width:100px;
-}
+}*/
 
 .side-bar{
     z-index:4;

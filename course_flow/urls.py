@@ -37,6 +37,11 @@ def course_flow_patterns():
             name="live-project-update",
         ),
         path(
+            "assignment/<int:pk>/",
+            views.AssignmentDetailView.as_view(),
+            name="assignment-update",
+        ),
+        path(
             "project/<int:pk>/comparison",
             views.ProjectComparisonView.as_view(),
             name="project-comparison",
@@ -55,6 +60,11 @@ def course_flow_patterns():
         ),
         path("workflow/updatevalue/", views.update_value, name="update-value"),
         path("workflow/delete-self/", views.delete_self, name="delete-self"),
+        path(
+            "workflow/delete-self-live/",
+            views.delete_self_live,
+            name="delete-self-live",
+        ),
         path(
             "workflow/restore-self/",
             views.restore_self,
@@ -315,17 +325,52 @@ def course_flow_patterns():
             name="set-workflow-visibility",
         ),
         path(
-            "project/getliveprojectdata",
+            "liveproject/getliveprojectdata",
             views.get_live_project_data,
             name="get-live-project-data",
         ),
         path(
-            "project/getliveprojectdatastudent",
+            "liveproject/getliveprojectdatastudent",
             views.get_live_project_data_student,
             name="get-live-project-data-student",
         ),
         path(
-            "project/register/student/<project_hash>/",
+            "liveproject/getassignmentdata",
+            views.get_assignment_data,
+            name="get-assignment-data",
+        ),
+        path(
+            "liveproject/getassignmentdatastudent",
+            views.get_assignment_data_student,
+            name="get-assignment-data-student",
+        ),
+        path(
+            "liveproject/getworkflownodes",
+            views.get_workflow_nodes,
+            name="get-workflow-nodes",
+        ),
+        path(
+            "liveproject/createliveassignment",
+            views.create_live_assignment,
+            name="create-live-assignment",
+        ),
+        path(
+            "liveproject/updatevalue/",
+            views.update_liveproject_value,
+            name="update-liveproject-value",
+        ),
+        path(
+            "assignment/addusers/",
+            views.add_users_to_assignment,
+            name="add-users-to-assignment",
+        ),
+        path(
+            "assignment/setcompletion/",
+            views.set_assignment_completion,
+            name="set-assignment-completion",
+        ),
+        path(
+            "liveproject/register/student/<project_hash>/",
             views.register_as_student,
             name="register-as-student",
         ),
