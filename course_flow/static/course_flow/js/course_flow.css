@@ -123,7 +123,6 @@ button:hover{
 .floatbar{
     flex-shrink:99;
     color:white;
-
 }
 
 .floatbardiv{
@@ -141,6 +140,10 @@ button:hover{
 
 .floatbardiv > *{
     display:inline-block;
+}
+
+.floatbardiv .create-dropdown{
+    color: #444444;
 }
 
 .floatbar img{

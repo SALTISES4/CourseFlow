@@ -226,7 +226,6 @@ export class WorkflowForMenu extends React.Component{
                 <img src={iconpath+favourite_img} title={gettext("Favourite")}/>
             </div>
         );
-        console.log(this.props.type);
         if(this.props.type=="projectmenu"||this.props.type=="gridmenu"||this.props.type=="exploremenu"){
             if(this.props.workflow_data.is_owned){
                 if(!this.props.workflow_data.deleted){

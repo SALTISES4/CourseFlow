@@ -70,8 +70,6 @@ export class ComparisonView extends React.Component{
                 </button>
             </div>
         );
-        console.log("rendering");
-        console.log(workflow_content);
         
         let style={};
         if(data.lock){

@@ -52,7 +52,6 @@ export class ConnectionBar extends React.Component{
     }
     
     componentDidMount(){
-        console.log("Connected users mounted");
         this.connection_update();
     }
     

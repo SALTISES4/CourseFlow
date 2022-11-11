@@ -5603,7 +5603,6 @@ def get_my_live_projects(user):
         ],
         "emptytext": _("You aren't registered for any classrooms right now."),
     }
-    print(data_package)
     return data_package
 
 
@@ -5834,7 +5833,6 @@ def create_live_assignment(request: HttpRequest) -> HttpResponse:
 
     except AttributeError:
         return JsonResponse({"action": "error"})
-    print("redirecting")
     return JsonResponse({"action": "posted", "assignmentPk": assignment.pk})
 
 
@@ -6026,7 +6024,6 @@ def add_users_to_assignment(request: HttpRequest) -> HttpResponse:
         users = User.objects.filter(id__in=user_list)
         assignment = LiveAssignment.objects.get(pk=liveassignmentPk)
         liveproject = assignment.liveproject
-        print(users)
         for user in users:
             if (
                 LiveProjectUser.objects.filter(
@@ -6093,7 +6090,6 @@ def set_workflow_visibility(request: HttpRequest) -> HttpResponse:
     liveproject = LiveProject.objects.get(pk=request.POST.get("liveprojectPk"))
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     visible = json.loads(request.POST.get("visible"))
-    print(visible)
     try:
         if workflow.get_project().liveproject != liveproject:
             raise AttributeError

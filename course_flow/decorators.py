@@ -632,7 +632,6 @@ def user_enrolled_as_teacher(model, **outer_kwargs):
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
-            print("checking enrollment")
             try:
                 permission_objects = get_permission_objects(
                     model, request, **outer_kwargs

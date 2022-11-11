@@ -196,8 +196,6 @@ export class WorkflowRenderer{
             this.getWorkflowParentData=getWorkflowParentData;
             this.getWorkflowChildData=getWorkflowChildData;
         }
-        console.log("static view");
-        console.log(this.public_view);
         this.is_static=this.always_static;
         if(data_package.project && !this.is_student){
             $("#floatbar").append("<a id='project-return' href='"+update_path["project"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Project")+"</div></div>");
@@ -246,8 +244,6 @@ export class WorkflowRenderer{
                 }
                 renderer.is_static=true;
                 renderer.has_rendered=true;
-                console.log(e);
-                console.log("Lost connection to server");
                 if(!renderer.has_disconnected)alert(gettext("Unable to establish connection to the server, or connection has been lost."));
                 renderer.has_disconnected=true;
             }

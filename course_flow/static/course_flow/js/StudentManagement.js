@@ -83,7 +83,6 @@ class UserLabel extends React.Component{
     }
     
     render(){
-        console.log(this.props);
         let permission_select;
         if(this.props.type!="owner"){
             if(this.props.type=="add"){

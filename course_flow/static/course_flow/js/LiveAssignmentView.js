@@ -17,7 +17,6 @@ export class LiveAssignmentMenu extends React.Component{
     render(){
         let data = this.state.assignment_data;
         let liveproject = this.props.live_project_data;
-        console.log(data);
 
         let view_buttons = this.getViewButtons().map(
             (item)=>{
@@ -100,7 +99,6 @@ class LiveAssignmentEdit extends React.Component{
 
     render(){
         let data=this.state;
-        console.log(this.state);
         let changeField = this.changeField.bind(this);
         let assigned_users=this.state.user_data.assigned_users.map(user=>
             <option value={user.user.id}>{Constants.getUserDisplay(user.user)+" ("+user.role_type_display+")"}</option>
@@ -111,8 +109,6 @@ class LiveAssignmentEdit extends React.Component{
 
         let linked_workflow;
         if(this.state.task.linked_workflow){
-            console.log("linked wf");
-            console.log(this.state);
             let visibility = "not_visible";
             if(this.state.linked_workflow_access)visibility="visible";
             let warning;
@@ -184,7 +180,6 @@ class LiveAssignmentEdit extends React.Component{
     }
 
     switchVisibility(pk,visibility){
-        console.log("switching visibility");
         let parameter="workflow_access";
         if(this.state.task.linked_workflow==pk)parameter="linked_"+parameter;
         if(visibility=="visible"){
@@ -214,7 +209,6 @@ class LiveAssignmentEdit extends React.Component{
     }
 
     changeField(type,new_value){
-        console.log(new_value);
         let new_state={has_changed:true};
         new_state[type]=new_value;
         this.changed_values[type]=new_value;
@@ -223,14 +217,11 @@ class LiveAssignmentEdit extends React.Component{
 
 
     saveChanges(){
-        console.log(this.changed_values);
         updateLiveProjectValue(
             this.state.id,
             "liveassignment",
             this.changed_values,
         );
-        console.log("updating");
-        console.log(this.changed_values);
         this.props.updateAssignment(this.changed_values);
         this.changed_values={};
         this.setState({has_changed:false});
@@ -243,7 +234,6 @@ class LiveAssignmentEdit extends React.Component{
     addUser(evt){
         let selected = parseInt($("#users_all").val());
         if(!selected)return;
-        console.log(selected);
         let user_data = {...this.state.user_data};
         user_data.assigned_users = user_data.assigned_users.slice();
         user_data.other_users = user_data.other_users.slice();
@@ -260,7 +250,6 @@ class LiveAssignmentEdit extends React.Component{
     removeUser(evt){
         let selected = parseInt($("#users_chosen").val());
         if(!selected)return;
-        console.log(selected);
         let user_data = {...this.state.user_data};
         user_data.assigned_users = user_data.assigned_users.slice();
         user_data.other_users = user_data.other_users.slice();
@@ -276,9 +265,7 @@ class LiveAssignmentEdit extends React.Component{
 
     componentDidMount(){
         let component=this;
-        console.log(component.props);
         getAssignmentData(component.props.data.id,component.props.view_type,(data)=>{
-            console.log("got assignment data")
             component.setState({user_data:data.data_package});
         });
     }
@@ -352,7 +339,6 @@ export class AssignmentView extends React.Component{
         let completion_data;
         if(data.user_assignment){
             let disabled = true;
-            console.log(this.props.renderer.user_role);
             if(this.props.renderer.user_role==Constants.role_keys.teacher || data.self_reporting)disabled=false;
             completion_data=(
                 <div>
@@ -360,8 +346,6 @@ export class AssignmentView extends React.Component{
                 </div>
             )
         }
-        console.log("making an assignmnet");
-        console.log(this.props.renderer);
 
         return (
             <div style={style} class={css_class}>
@@ -436,7 +420,6 @@ class LiveAssignmentReport extends React.Component{
     }
 
     render(){
-        console.log(this.state);
         if(!this.state.userassignments){
             return this.defaultRender();
         }
@@ -467,9 +450,7 @@ class LiveAssignmentReport extends React.Component{
 
     componentDidMount(){
         let component=this;
-        console.log(component.props);
         getAssignmentData(component.props.data.id,component.props.view_type,(data)=>{
-            console.log("got assignment data")
             component.setState({...data.data_package});
         });
     }

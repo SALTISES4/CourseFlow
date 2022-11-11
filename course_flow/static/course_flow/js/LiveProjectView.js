@@ -77,7 +77,6 @@ export class LiveProjectMenu extends React.Component{
     }
 
     getContent(){
-        console.log(this.props)
         switch(this.state.view_type){
             case "overview":
                 return (<LiveProjectOverview renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
@@ -112,7 +111,6 @@ export class StudentLiveProjectMenu extends LiveProjectMenu{
         return "student";
     }
     getContent(){
-        console.log(this.props)
         switch(this.state.view_type){
             case "overview":
                 return (<StudentLiveProjectOverview renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
@@ -164,7 +162,6 @@ class LiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
         return (
             <div>Not yet implemented</div>
         );
@@ -176,7 +173,6 @@ class StudentLiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
         return (
             <div>Not yet implemented</div>
         );
@@ -188,7 +184,6 @@ class LiveProjectAssignments extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
         let assignments = this.state.data.assignments.map(assignment=>
             <AssignmentView renderer={this.props.renderer} data={assignment}/>
         );
@@ -233,7 +228,6 @@ class AssignmentWorkflowNodesDisplay extends React.Component{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state.data);
         let weeks = this.state.data.weeks.map((week,i)=>{
             let nodes = week.nodes.map(node=>
                 <AssignmentNode renderer={this.props.renderer} data={node}/>
@@ -332,8 +326,6 @@ class AssignmentNode extends React.Component{
 
     createAssignment(data){
         let props = this.props;
-        console.log("creating assignment");
-        console.log(data);
         props.renderer.tiny_loader.startLoad();
         createAssignment(
             data.id,
@@ -351,7 +343,6 @@ class StudentLiveProjectAssignments extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
         let assignments_past = this.state.data.assignments_past.map(assignment=>
             <AssignmentView renderer={this.props.renderer} data={assignment}/>
         );
@@ -380,7 +371,6 @@ class LiveProjectWorkflows extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state.data);
         let workflows_added = this.state.data.workflows_added.map(workflow=>
             <WorkflowVisibility workflow_data={workflow} visibility="visible" visibilityFunction={this.switchVisibility.bind(this)}/>
         );
@@ -404,17 +394,12 @@ class LiveProjectWorkflows extends LiveProjectSection{
     switchVisibility(pk,visibility){
         let workflows_added=this.state.data.workflows_added.slice()
         let workflows_not_added=this.state.data.workflows_not_added.slice()
-        console.log("switching visibility");
-        console.log(pk);
-        console.log(workflows_added);
-        console.log(workflows_not_added);
         if(visibility=="visible"){
             for(let i=0;i<workflows_not_added.length;i++){
                 if(workflows_not_added[i].id==pk){
                     let removed = workflows_not_added.splice(i,1);
                     setWorkflowVisibility(this.props.objectID,pk,true)
                     workflows_added.push(removed[0]);
-                    console.log(removed);
                 }
             }
         }else{
@@ -423,7 +408,6 @@ class LiveProjectWorkflows extends LiveProjectSection{
                     let removed = workflows_added.splice(i,1);
                     setWorkflowVisibility(this.props.objectID,pk,false)
                     workflows_not_added.push(removed[0]);
-                    console.log(removed);
                 }
             }
         }
@@ -437,7 +421,6 @@ class StudentLiveProjectWorkflows extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
         let workflows_added = this.state.data.workflows_added.map(workflow=>
             <WorkflowForMenu workflow_data={workflow}/>
         );
@@ -459,7 +442,6 @@ class LiveProjectStudents extends React.Component{
         let liveproject = this.props.liveproject;
 
         let register_link;
-        console.log(liveproject);
         if(liveproject && liveproject.registration_hash){
             let register_url = registration_path.replace("project_hash",liveproject.registration_hash);
             register_link = (
@@ -504,7 +486,6 @@ class LiveProjectSettings extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
         return (
             <div>Not yet implemented</div>
         );

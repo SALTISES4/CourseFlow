@@ -1552,7 +1552,6 @@ class LiveAssignmentSerializer(
                 ).first()
             ).data
         except AttributeError:
-            print("failed")
             return None
         return None
 
