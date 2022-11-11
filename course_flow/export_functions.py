@@ -144,6 +144,13 @@ def get_course_framework(workflow, allowed_sets):
     )
     df = df.append(
         {
+            "0": _("Course Description"),
+            "1": workflow_serialized["description"],
+        },
+        ignore_index=True,
+    )
+    df = df.append(
+        {
             "0": _("Course Code"),
             "1": workflow.code,
             "2": _("Hours"),
