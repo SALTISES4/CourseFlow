@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 from html2text import html2text
 from rest_framework import serializers
 
-#from .decorators import check_object_permission
+# from .decorators import check_object_permission
 from .models import (
     Activity,
     Column,
@@ -1417,6 +1417,18 @@ class WorkflowExportSerializer(
 
     def get_type(self, instance):
         return "workflow"
+
+
+class UpdateNotificationSerializer(
+    serializers.ModelSerializer,
+    TitleSerializerMixin,
+):
+    class Meta:
+        model = Workflow
+        fields = [
+            "id",
+            "title",
+        ]
 
 
 """

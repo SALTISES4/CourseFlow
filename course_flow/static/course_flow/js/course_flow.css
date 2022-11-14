@@ -97,6 +97,16 @@ button:hover{
     font-family:initial;
 }
 
+#update-notifications{
+    position: relative;
+}
+
+#notification-inner{
+    height: 32px;
+    box-sizing: border-box;
+    padding: 5px;
+}
+
 .menubar{
     display:flex;
     justify-content: space-between;

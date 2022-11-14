@@ -181,7 +181,7 @@ class UserAdd extends React.Component{
         return (
             <div class="user-add">
                 <h4>{gettext("Add A User")}:</h4>
-                <div>{gettext("Begin typing to search users. Select the desired user then click Share'.")}</div>
+                <div>{gettext("Begin typing to search users. Select the desired user then click Share.")}</div>
                 <input ref={this.input}/>
                 {user}
             </div>

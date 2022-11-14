@@ -13,6 +13,7 @@ from .models import (
     OutcomeOutcome,
     Program,
     Project,
+    UpdateNotification,
     Week,
     WeekWorkflow,
     Workflow,
@@ -35,3 +36,4 @@ admin.site.register(WorkflowProject)
 admin.site.register(Outcome)
 admin.site.register(OutcomeNode)
 admin.site.register(OutcomeOutcome)
+admin.site.register(UpdateNotification)

@@ -229,6 +229,8 @@
               {% endif %}
             </div>
           </div>
+            <div id="update-notifications">
+            </div>
             <div class="menubar">
                 <div id="workflowtitle" class="workflow-title-bar">
                 </div>
@@ -396,6 +398,23 @@
         $(".workflow-wrapper, #container").removeClass("printing");
     });
 
+
+
+    update_notifications =  {{ update_notifications |safe }}
+    if(update_notifications.title && update_notifications.id != localStorage.getItem("last_hidden_notification")){
+      $("#update-notifications").html(
+        "<div id='notification-inner'>"+
+          update_notifications.title+
+        "</div>"+
+        "<div id='close-notification' class='window-close-button'>"+
+          "<img src='{% static 'course_flow/img/images_svg/close.svg' %}'/>"+
+        "</div>"
+      );
+    }
+    $("#close-notification").on("click", ()=>{
+      localStorage.setItem("last_hidden_notification",update_notifications.id);
+      $("#update-notifications").css({display:"none"})
+    });
 
     </script>
     {% endblock %}
