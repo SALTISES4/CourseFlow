@@ -1430,7 +1430,9 @@ def get_parent_outcome_data(workflow, user):
         "outcomeworkflow": OutcomeWorkflowSerializerShallow(
             parent_outcomeworkflows, many=True
         ).data,
-        "parent_node": NodeSerializerShallow(parent_nodes, many=True).data,
+        "parent_node": NodeSerializerShallow(
+            parent_nodes, many=True, context={"user": user}
+        ).data,
         "outcomenode": OutcomeNodeSerializerShallow(
             parent_outcomenodes, many=True
         ).data,
@@ -1479,7 +1481,9 @@ def get_child_outcome_data(workflow, user):
         outcome_type = workflow.type + " outcome"
 
     return {
-        "node": NodeSerializerShallow(nodes, many=True).data,
+        "node": NodeSerializerShallow(
+            nodes, many=True, context={"user": user}
+        ).data,
         "child_workflow": WorkflowSerializerShallow(
             linked_workflows, many=True, context={"user": user}
         ).data,
@@ -1530,7 +1534,9 @@ def get_workflow_data_flat(workflow, user):
         ).data,
         "week": WeekSerializerShallow(weeks, many=True).data,
         "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
-        "node": NodeSerializerShallow(nodes, many=True).data,
+        "node": NodeSerializerShallow(
+            nodes, many=True, context={"user": user}
+        ).data,
         "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
     }
 
@@ -1709,7 +1715,9 @@ class WorkflowPublicDetailView(ContentPublicViewMixin, DetailView):
         context = super(DetailView, self).get_context_data(**kwargs)
         workflow = self.get_object()
 
-        context = get_workflow_context_data(workflow, context, None)
+        context = get_workflow_context_data(
+            workflow, context, self.request.user
+        )
         context["public_view"] = JSONRenderer().render(True).decode("utf-8")
 
         return context
@@ -2088,7 +2096,9 @@ def get_parent_workflow_info(request: HttpRequest) -> HttpResponse:
             node.get_workflow()
             for node in Node.objects.filter(linked_workflow__id=workflow_id)
         ]
-        data_package = InfoBoxSerializer(parent_workflows, many=True).data
+        data_package = InfoBoxSerializer(
+            parent_workflows, many=True, context={"user": request.user}
+        ).data
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted", "parent_workflows": data_package})
@@ -2156,7 +2166,9 @@ def get_workflow_data(request: HttpRequest) -> HttpResponse:
 def get_public_workflow_data(request: HttpRequest, pk) -> HttpResponse:
     workflow = Workflow.objects.get(pk=pk)
     try:
-        data_package = get_workflow_data_flat(workflow.get_subclass(), None)
+        data_package = get_workflow_data_flat(
+            workflow.get_subclass(), request.user
+        )
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted", "data_package": data_package})
@@ -6049,7 +6061,7 @@ def add_users_to_assignment(request: HttpRequest) -> HttpResponse:
                     ).delete()
 
     except ValidationError:
-        response = JsonResponse({"action":"error"})
+        response = JsonResponse({"action": "error"})
         response.status_code = 401
         return response
 

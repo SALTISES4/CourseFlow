@@ -196,8 +196,8 @@ export class WorkflowForMenu extends React.Component{
     getTypeIndicator(){
         let data = this.props.workflow_data;
         let type=data.type
-        if(type=="liveproject")type_text=gettext("classroom");
         let type_text = gettext(type);
+        if(type=="liveproject")type_text=gettext("classroom");
         if(data.is_strategy)type_text+=gettext(" strategy");
         return (
             <div class={"workflow-type-indicator "+type}>{type_text}</div>

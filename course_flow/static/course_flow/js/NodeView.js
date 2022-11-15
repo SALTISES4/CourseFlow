@@ -77,13 +77,26 @@ class NodeView extends ComponentJSON{
         let linkIcon;
         let linktext = gettext("Visit workflow");
         let clickfunc = this.doubleClick.bind(this);
+        let link_class = "linked-workflow";
         if(data.linked_workflow_data){
-            if(data.linked_workflow_data.deleted)linktext=gettext("<Deleted Workflow>")
-            if(data.linked_workflow_data.deleted)clickfunc=null;
+            console.log("linked workflow");
+            console.log(data.linked_workflow_data.url);
+            if(data.linked_workflow_data.url=="noaccess" || data.linked_workflow_data.url=="nouser"){
+                linktext=gettext("<Inaccessible>");
+                clickfunc=null;
+                link_class+=" link-noaccess";
+            }
+            else if(data.linked_workflow_data.deleted){
+                linktext=gettext("<Deleted>")
+                clickfunc=null;
+                link_class+=" link-noaccess";
+            }else{
+                link_class+=" hover-shade"
+            }
         }
         
         if(data.linked_workflow)linkIcon=(
-            <div class="hover-shade linked-workflow" onClick={clickfunc}>
+            <div class={link_class} onClick={clickfunc}>
                 <img src={iconpath+"wflink.svg"}/>
                 <div>{linktext}</div>
             </div>
@@ -184,11 +197,9 @@ class NodeView extends ComponentJSON{
     }
 
     doubleClick(evt){
-        let path=update_path["workflow"];
-        if(this.props.renderer.public_view)path = public_update_path["workflow"];
         evt.stopPropagation();
         if(this.props.data.linked_workflow){
-            window.open(path.replace("0",this.props.data.linked_workflow));
+            window.open(this.props.data.linked_workflow.url);
         }
     }
 

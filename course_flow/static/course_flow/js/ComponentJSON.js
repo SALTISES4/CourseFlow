@@ -988,14 +988,22 @@ export class WorkflowTitle extends React.Component{
         if(text==null || text==""){
             text=gettext("Untitled");
         }
-        let href;
-        if(this.props.no_hyperlink){
+        if(data.url=="noaccess" || data.url =="nouser"){
+            text+=gettext(" (no access)");
+        }
+        if(data.deleted){
+            text+=" (deleted)";
+        }
+        let href = data.url;
+        if(!data.url)href=update_path[data.type].replace("0",data.id);
+
+        if(this.props.no_hyperlink || data.url == "noaccess" || data.url == "nouser"){
             return (
-                <div target="_blank" class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
+                <div class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
             )
         }else{
             return (
-                <a target="_blank"  onClick={(evt)=>evt.stopPropagation()} href={update_path[this.props.data.type].replace("0",this.props.data.id)} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
+                <a onClick={(evt)=>evt.stopPropagation()} href={href} class={this.props.class_name} title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
             )
         }
     }

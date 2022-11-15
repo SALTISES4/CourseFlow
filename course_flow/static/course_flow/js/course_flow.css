@@ -1669,6 +1669,10 @@ button, input[type="submit"]{
     width: 600px
 }
 
+.linked-workflow.link-noaccess{
+    color: "#444444";
+}
+
 .linked-workflow{
     background:white;
     width:100%;
@@ -1676,10 +1680,13 @@ button, input[type="submit"]{
     box-sizing:border-box;
 }
 
+.linked-workflow.hover-shade{
+    color:#1976bc;
+}
+
 .linked-workflow > *{
     display:inline-block;
     vertical-align:middle;
-    color:#1976bc;
 }
 
 .linked-workflow > img{

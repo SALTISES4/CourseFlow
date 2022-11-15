@@ -146,7 +146,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         let workflow = this;
 
         let parent_workflow_indicator;
-        if(!renderer.public_view)parent_workflow_indicator = (
+        parent_workflow_indicator = (
             <ParentWorkflowIndicator workflow_id={data.id}/>
         )
             
@@ -805,15 +805,14 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
     
     render(){
         if(this.state.has_loaded){
+            console.log("parent workflow indicator");
+            console.log(this.state);
+            console.log(this.props);
             let parent_workflows = this.state.parent_workflows.map(parent_workflow=>
-                <a href={update_path["workflow"].replace("0",parent_workflow.id)} class="panel-favourite">
-                    {parent_workflow.title || gettext("Unnamed workflow")}
-                </a>
+                <WorkflowTitle data={parent_workflow} class_name={"panel-favourite"}/>
             );
             let child_workflows = this.props.child_workflows.map(child_workflow=>
-                <a href={update_path["workflow"].replace("0",child_workflow.id)} class="panel-favourite">
-                    {child_workflow.title || gettext("Unnamed workflow")}
-                </a>
+                <WorkflowTitle data={child_workflow} class_name={"panel-favourite"}/>
             );
             let return_val=[
                 <hr/>,
@@ -858,7 +857,9 @@ const mapParentWorkflowIndicatorStateToProps = state => ({
     child_workflows:state.node.filter(node=>node.linked_workflow_data).map(node => ({
         id:node.linked_workflow,
         title:node.linked_workflow_data.title,
-        description:node.linked_workflow_data.description
+        description:node.linked_workflow_data.description,
+        url:node.linked_workflow_data.url,
+        deleted:node.linked_workflow_data.deleted,
     }))
 });
 export const ParentWorkflowIndicator = connect(
