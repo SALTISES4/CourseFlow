@@ -153,7 +153,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class="workflow-header" style={style}>
-                    <WorkflowForMenu workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
+                    <WorkflowForMenu no_hyperlink={true} workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
                     {parent_workflow_indicator}
                     {public_view}
                 </div>

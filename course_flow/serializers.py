@@ -632,6 +632,8 @@ class ProjectSerializerShallow(
 
     def get_favourite(self, instance):
         user = self.context.get("user")
+        if user is None or not user.is_authenticated:
+            return False
         if Favourite.objects.filter(
             user=user,
             content_type=ContentType.objects.get_for_model(instance),
@@ -884,6 +886,8 @@ class WorkflowSerializerShallow(
 
     def get_favourite(self, instance):
         user = self.context.get("user", None)
+        if user is None or not user.is_authenticated:
+            return False
         if user is None:
             return False
         if Favourite.objects.filter(
@@ -1177,6 +1181,8 @@ class InfoBoxSerializer(
     url = serializers.SerializerMethodField()
 
     def get_url(self, instance):
+        if instance.type in ["project", "liveproject"]:
+            return None
         user = self.context.get("user", None)
         return user_workflow_url(instance, user)
 
@@ -1189,6 +1195,8 @@ class InfoBoxSerializer(
 
     def get_favourite(self, instance):
         user = self.context.get("user")
+        if user is None or not user.is_authenticated:
+            return False
         if Favourite.objects.filter(
             user=user,
             content_type=ContentType.objects.get_for_model(instance),

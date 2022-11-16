@@ -98,6 +98,7 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
 
         self.assertEqual(self.live_server_url + "/home/", selenium.current_url)
 
+
 class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
@@ -148,10 +149,10 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "#panel-my-live-projects"
         ).click()
         selenium.find_element_by_css_selector(".workflow-top-row a").click()
-        windows = selenium.window_handles
-        selenium.switch_to_window(windows[0])
-        selenium.close()
-        selenium.switch_to_window(windows[1])
+        # windows = selenium.window_handles
+        # selenium.switch_to_window(windows[0])
+        # selenium.close()
+        # selenium.switch_to_window(windows[1])
         assert (
             "new title"
             in selenium.find_element_by_css_selector("#workflowtitle div").text
@@ -161,10 +162,10 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "#home-liveprojects a:first-child"
         ).click()
         selenium.find_element_by_css_selector(".workflow-top-row a").click()
-        windows = selenium.window_handles
-        selenium.switch_to_window(windows[0])
-        selenium.close()
-        selenium.switch_to_window(windows[1])
+        # windows = selenium.window_handles
+        # selenium.switch_to_window(windows[0])
+        # selenium.close()
+        # selenium.switch_to_window(windows[1])
         assert (
             "new title"
             in selenium.find_element_by_css_selector("#workflowtitle div").text
@@ -198,10 +199,10 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "#panel-my-live-projects"
         ).click()
         selenium.find_element_by_css_selector(".workflow-top-row a").click()
-        windows = selenium.window_handles
-        selenium.switch_to_window(windows[0])
-        selenium.close()
-        selenium.switch_to_window(windows[1])
+        # windows = selenium.window_handles
+        # selenium.switch_to_window(windows[0])
+        # selenium.close()
+        # selenium.switch_to_window(windows[1])
         assert (
             "new title"
             in selenium.find_element_by_css_selector("#workflowtitle div").text
@@ -211,10 +212,10 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "#home-liveprojects a:first-child"
         ).click()
         selenium.find_element_by_css_selector(".workflow-top-row a").click()
-        windows = selenium.window_handles
-        selenium.switch_to_window(windows[0])
-        selenium.close()
-        selenium.switch_to_window(windows[1])
+        # windows = selenium.window_handles
+        # selenium.switch_to_window(windows[0])
+        # selenium.close()
+        # selenium.switch_to_window(windows[1])
         assert (
             "new title"
             in selenium.find_element_by_css_selector("#workflowtitle div").text
@@ -428,15 +429,15 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             ".menu-grid .workflow-for-menu .workflow-title"
         ).click()
 
-        windows = selenium.window_handles
-        selenium.switch_to_window(windows[0])
-        selenium.close()
-        selenium.switch_to_window(windows[1])
+        # windows = selenium.window_handles
+        # selenium.switch_to_window(windows[0])
+        # selenium.close()
+        # selenium.switch_to_window(windows[1])
 
         time.sleep(1)
         assert (
             "new workflow"
-            in selenium.find_element_by_css_selector("#workflowtitle a").text
+            in selenium.find_element_by_css_selector("#workflowtitle div").text
         )
 
 
@@ -574,10 +575,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             time.sleep(5)
 
-            windows = selenium.window_handles
-            selenium.switch_to_window(windows[0])
-            selenium.close()
-            selenium.switch_to_window(windows[1])
+            # windows = selenium.window_handles
+            # selenium.switch_to_window(windows[0])
+            # selenium.close()
+            # selenium.switch_to_window(windows[1])
 
             assert (
                 project_title
@@ -1515,10 +1516,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             selenium.find_element_by_css_selector(".workflow-title").click()
             time.sleep(2)
 
-            windows = selenium.window_handles
-            selenium.switch_to_window(windows[0])
-            selenium.close()
-            selenium.switch_to_window(windows[1])
+            # windows = selenium.window_handles
+            # selenium.switch_to_window(windows[0])
+            # selenium.close()
+            # selenium.switch_to_window(windows[1])
 
             assert (
                 "new strategy"
@@ -3711,5 +3712,3 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         communicator.scope["user"] = user
         connected, subprotocol = async_to_sync_connect(communicator)
         assert not connected
-
-

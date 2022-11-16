@@ -47,7 +47,8 @@ export class WorkflowsMenu extends React.Component{
     
     render(){
         var data_package = this.props.data.data_package;
-        
+        let no_hyperlink = false;
+        if(this.props.type=="linked_workflow_menu" || this.props.type=="added_workflow_menu" || this.props.type=="target_project_menu")no_hyperlink=true;
         var tabs = [];
         var tab_li = [];
         var i = 0;
@@ -56,7 +57,7 @@ export class WorkflowsMenu extends React.Component{
                 <li class="tab-header"><a href={"#tabs-"+i}>{data_package[prop].title}</a></li>
             )
             tabs.push(
-                <MenuTab data={data_package[prop]} type={this.props.type} identifier={i} selected_id={this.state.selected} selectAction={this.workflowSelected.bind(this)}/>
+                <MenuTab no_hyperlink={no_hyperlink} data={data_package[prop]} type={this.props.type} identifier={i} selected_id={this.state.selected} selectAction={this.workflowSelected.bind(this)}/>
             )
             i++;
         }
@@ -177,7 +178,7 @@ export class WorkflowForMenu extends React.Component{
         return(
             <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
                 <div class="workflow-top-row">
-                    <WorkflowTitle class_name="workflow-title" data={data}/>
+                    <WorkflowTitle no_hyperlink={this.props.no_hyperlink} class_name="workflow-title" data={data}/>
                     {this.getButtons()}
                     {this.getTypeIndicator()}
                 </div>
@@ -349,9 +350,8 @@ export class MenuSection extends React.Component{
         let section_type = this.props.section_data.object_type;
         let is_strategy = this.props.section_data.is_strategy;
         let parentID = this.props.parentID;
-        
         var objects = this.props.section_data.objects.map((object)=>
-            <WorkflowForMenu key={object.id} type={this.props.type} workflow_data={object} objectType={section_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
+            <WorkflowForMenu no_hyperlink={this.props.no_hyperlink} key={object.id} type={this.props.type} workflow_data={object} objectType={section_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
         );
         if(this.props.replacement_text)objects=this.props.replacement_text;
         
@@ -439,7 +439,7 @@ export class MenuTab extends React.Component{
         let replacement_text;
         if(is_empty)replacement_text=this.props.data.emptytext;
         var sections = this.props.data.sections.map((section,i)=>
-            <MenuSection type={this.props.type} replacement_text={i==0?replacement_text:null} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.data.duplicate}/>
+            <MenuSection no_hyperlink={this.props.no_hyperlink} type={this.props.type} replacement_text={i==0?replacement_text:null} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.data.duplicate}/>
         );
         return (
             <div id={"tabs-"+this.props.identifier}>
@@ -519,7 +519,6 @@ class ProjectMenuUnconnected extends React.Component{
         }
 
         let liveproject;
-        console.log(data);
         if(data.author_id==user_id){
             if(this.state.liveproject){
                 liveproject=(
@@ -539,7 +538,7 @@ class ProjectMenuUnconnected extends React.Component{
                         <div>{this.state.title||gettext("Unnamed Project")}</div>,
                         $("#workflowtitle")[0]
                     )}
-                    <WorkflowForMenu workflow_data={this.state} selectAction={this.openEdit.bind(this)}/>
+                    <WorkflowForMenu no_hyperlink={true} workflow_data={this.state} selectAction={this.openEdit.bind(this)}/>
                     <p>
                         Disciplines: {
                             (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||gettext("None"))

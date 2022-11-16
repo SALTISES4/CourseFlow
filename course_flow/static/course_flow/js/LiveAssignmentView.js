@@ -322,7 +322,7 @@ export class AssignmentView extends React.Component{
         );
         let parentLinkIcon;
         let parentlinktext = gettext("Visit containing workflow");
-        let parentclickfunc = this.visitWorkflow.bind(this,node_data.parent_workflow_id);
+        let parentclickfunc = this.visitWorkflow.bind(this,data.parent_workflow_id);
         if(data.workflow_access && data.parent_workflow_id)parentLinkIcon=(
             <div class="hover-shade linked-workflow" onClick={parentclickfunc}>
                 <img src={iconpath+"wflink.svg"}/>
@@ -390,12 +390,10 @@ export class AssignmentView extends React.Component{
         );
     }
 
-    visitWorkflow(evt){
+    visitWorkflow(id,evt){
         let path=update_path["workflow"];
         evt.stopPropagation();
-        if(this.props.data.task.linked_workflow){
-            window.open(path.replace("0",this.props.data.task.linked_workflow));
-        }
+        window.open(path.replace("0",id));
     }
 
     toggleDrop(){

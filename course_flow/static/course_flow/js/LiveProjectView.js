@@ -32,7 +32,7 @@ export class LiveProjectMenu extends React.Component{
                         <div>{this.state.title||gettext("Unnamed Project")}</div>,
                         $("#workflowtitle")[0]
                     )}
-                    <WorkflowForMenu workflow_data={this.props.liveproject} selectAction={this.openEdit.bind(this)}/>
+                    <WorkflowForMenu no_hyperlink={true} workflow_data={this.props.liveproject} selectAction={this.openEdit.bind(this)}/>
                     {this.getHeader()}
                     
                 </div>

@@ -179,7 +179,8 @@ class UserCanViewOrEnrolledMixin(UserPassesTestMixin):
 class UserEnrolledMixin(UserPassesTestMixin):
     def test_func(self):
         liveproject = self.get_object().get_live_project()
-
+        if liveproject is None:
+            return False
         project = liveproject.project
         if liveproject is None:
             return False
@@ -1556,7 +1557,11 @@ def get_workflow_data_flat(workflow, user):
         data_flat["objectset"] = ObjectSetSerializerShallow(
             objectsets, many=True
         ).data
-        if workflow.type == "course":
+        if (
+            workflow.type == "course"
+            and user is not None
+            and user.is_authenticated
+        ):
             data_flat["strategy"] = WorkflowSerializerShallow(
                 Course.objects.filter(
                     author=user, is_strategy=True, deleted=False
@@ -1574,7 +1579,11 @@ def get_workflow_data_flat(workflow, user):
                 many=True,
                 context={"user": user},
             ).data
-        elif workflow.type == "activity":
+        elif (
+            workflow.type == "activity"
+            and user is not None
+            and user.is_authenticated
+        ):
             data_flat["strategy"] = WorkflowSerializerShallow(
                 Activity.objects.filter(
                     author=user, is_strategy=True, deleted=False
@@ -4019,7 +4028,9 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 ).data
                 new_children_serialized = {
                     "node": NodeSerializerShallow(
-                        newmodel.nodes, many=True
+                        newmodel.nodes,
+                        many=True,
+                        context={"user": request.user},
                     ).data,
                     "nodeweek": NodeWeekSerializerShallow(
                         newmodel.nodeweek_set, many=True
@@ -4050,7 +4061,9 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                     newmodel.save()
                 except (ValidationError, TypeError):
                     pass
-                new_model_serialized = NodeSerializerShallow(newmodel).data
+                new_model_serialized = NodeSerializerShallow(
+                    newmodel, context={"user": request.user}
+                ).data
                 new_through_serialized = NodeWeekSerializerShallow(
                     newthroughmodel
                 ).data
@@ -4676,7 +4689,8 @@ def set_linked_workflow_ajax(request: HttpRequest) -> HttpResponse:
                 raise ValidationError("Project could not be found")
             linked_workflow = node.linked_workflow.id
             linked_workflow_data = LinkedWorkflowSerializerShallow(
-                node.linked_workflow
+                node.linked_workflow,
+                context={"user": request.user},
             ).data
 
     except ValidationError:
@@ -5753,7 +5767,9 @@ def get_live_project_data_student(request: HttpRequest) -> HttpResponse:
             }
         elif data_type == "workflows":
             workflows_added = InfoBoxSerializer(
-                liveproject.visible_workflows.filter(deleted=False), many=True
+                liveproject.visible_workflows.filter(deleted=False),
+                many=True,
+                context={"user": request.user},
             ).data
             data_package = {
                 "workflows_added": workflows_added,
@@ -5785,6 +5801,7 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
                 "workflows": InfoBoxSerializer(
                     liveproject.visible_workflows.filter(deleted=False),
                     many=True,
+                    context={"user": request.user},
                 ).data,
                 "assignments": LiveAssignmentSerializer(
                     liveproject.liveassignment_set.all(),

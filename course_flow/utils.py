@@ -239,7 +239,7 @@ def get_classrooms_for_student(user):
 def get_user_permission(obj, user):
     if hasattr(obj, "get_subclass"):
         obj = obj.get_subclass()
-    if user is None:
+    if user is None or not user.is_authenticated:
         return models.ObjectPermission.PERMISSION_NONE
     if obj.author == user:
         return models.ObjectPermission.PERMISSION_EDIT
@@ -256,7 +256,7 @@ def get_user_permission(obj, user):
 def get_user_role(obj, user):
     if hasattr(obj, "get_subclass"):
         obj = obj.get_subclass()
-    if user is None:
+    if user is None or not user.is_authenticated:
         return models.LiveProjectUser.ROLE_NONE
     if obj.type == "liveproject":
         liveproject = obj
@@ -293,7 +293,7 @@ def user_workflow_url(workflow, user):
     user_role = get_user_role(workflow, user)
     can_view = False
     is_public = workflow.public_view
-    if user is not None and workflow.published:
+    if user is not None and user.is_authenticated and workflow.published:
         if Group.objects.get(name=settings.TEACHER_GROUP) in user.groups.all():
             can_view = True
     if user_permission != models.ObjectPermission.PERMISSION_NONE:
@@ -308,7 +308,7 @@ def user_workflow_url(workflow, user):
         return reverse(
             "course_flow:workflow-public", kwargs={"pk": workflow.pk}
         )
-    if user == None:
+    if user is None or not user.is_authenticated:
         return "nouser"
     return "noaccess"
 

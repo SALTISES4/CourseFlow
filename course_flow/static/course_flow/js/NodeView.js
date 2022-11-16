@@ -199,7 +199,7 @@ class NodeView extends ComponentJSON{
     doubleClick(evt){
         evt.stopPropagation();
         if(this.props.data.linked_workflow){
-            window.open(this.props.data.linked_workflow.url);
+            window.open(this.props.data.linked_workflow_data.url);
         }
     }
 
