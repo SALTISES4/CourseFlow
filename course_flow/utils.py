@@ -298,7 +298,7 @@ def user_workflow_url(workflow, user):
             can_view = True
     if user_permission != models.ObjectPermission.PERMISSION_NONE:
         can_view = True
-    if user_permission != models.LiveProjectUser.ROLE_NONE:
+    if user_role != models.LiveProjectUser.ROLE_NONE:
         can_view = True
     if can_view:
         return reverse(

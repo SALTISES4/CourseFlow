@@ -46,6 +46,7 @@ from .decorators import (
     user_can_edit_or_none,
     user_can_view,
     user_can_view_or_enrolled_as_student,
+    user_can_view_or_enrolled_as_teacher,
     user_can_view_or_none,
     user_enrolled_as_student,
     user_enrolled_as_teacher,
@@ -5844,13 +5845,12 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
 
 
 @user_enrolled_as_teacher("liveprojectPk")
-@user_can_view("nodePk")
+@user_can_view_or_enrolled_as_teacher("nodePk")
 def create_live_assignment(request: HttpRequest) -> HttpResponse:
     liveproject = LiveProject.objects.get(pk=request.POST.get("liveprojectPk"))
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     if node.get_workflow().get_project() != liveproject.project:
         return JsonResponse({"action": "error"})
-
     try:
         assignment = LiveAssignment.objects.create(
             liveproject=liveproject,
@@ -6185,11 +6185,15 @@ def set_assignment_completion(request: HttpRequest) -> HttpResponse:
                 ).count()
                 == 0
             ):
-                return JsonResponse({"action": "posted"})
+                raise ValidationError(
+                    "This action can only be taken by a Teacher"
+                )
         userassignment.completed = completed
         userassignment.save()
     except ValidationError:
-        return JsonResponse({"action": "error"})
+        response = JsonResponse({"action": "error"})
+        response.status_code = 403
+        return response
     except AttributeError:
         pass
 

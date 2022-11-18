@@ -324,7 +324,7 @@ export class AssignmentView extends React.Component{
         let parentlinktext = gettext("Visit containing workflow");
         let parentclickfunc = this.visitWorkflow.bind(this,data.parent_workflow_id);
         if(data.workflow_access && data.parent_workflow_id)parentLinkIcon=(
-            <div class="hover-shade linked-workflow" onClick={parentclickfunc}>
+            <div class="hover-shade linked-workflow containing-workflow" onClick={parentclickfunc}>
                 <img src={iconpath+"wflink.svg"}/>
                 <div>{parentlinktext}</div>
             </div>
@@ -460,8 +460,9 @@ class LiveAssignmentReport extends React.Component{
     updateCompletion(id,completed){
         let userassignments = this.state.userassignments.slice();
         let index = userassignments.findIndex((userassignment)=>userassignment.id==id);
-        userassignmnets[index]={...userassignments[index],completed:completed};
+        userassignments[index]={...userassignments[index],completed:completed};
         setAssignmentCompletion(id,completed);
+        this.setState({userassignments:userassignments});
     }
 
     
@@ -471,7 +472,7 @@ class ReportRow extends React.Component{
     render(){
         let user = this.props.userassignment.liveprojectuser;
         let userassignment=this.props.userassignment;
-        let updateFuntion=this.props.updateFunction;
+        let updateFunction=this.props.updateFunction;
         return (
             <tr>
                 <td>{Constants.getUserDisplay(user.user)+" ("+user.role_type_display+")"}</td>

@@ -722,3 +722,39 @@ def user_can_view_or_enrolled_as_student(model, **outer_kwargs):
         return _wrapped_view
 
     return wrapped_view
+
+
+def user_can_view_or_enrolled_as_teacher(model, **outer_kwargs):
+    def wrapped_view(fct):
+        @require_POST
+        @ajax_login_required
+        @wraps(fct)
+        def _wrapped_view(
+            request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
+        ):
+            try:
+                permission_objects = get_permission_objects(
+                    model, request, **outer_kwargs
+                )
+            except AttributeError:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 403
+                return response
+            if check_objects_enrollment(
+                permission_objects,
+                User.objects.get(pk=request.user.pk),
+                LiveProjectUser.ROLE_TEACHER,
+            ) or check_objects_permission(
+                permission_objects,
+                User.objects.get(pk=request.user.pk),
+                ObjectPermission.PERMISSION_VIEW,
+            ):
+                return fct(request, *args, **kwargs)
+            else:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 403
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view

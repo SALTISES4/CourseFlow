@@ -632,13 +632,6 @@ class Node(models.Model):
         Outcome, through="OutcomeNode", blank=True
     )
 
-    students = models.ManyToManyField(
-        User,
-        related_name="assigned_nodes",
-        through="NodeCompletionStatus",
-        blank=True,
-    )
-
     def get_permission_objects(self):
         return [self.get_workflow().get_subclass()]
 
@@ -650,16 +643,6 @@ class Node(models.Model):
             return self.title
         else:
             return self.get_node_type_display()
-
-
-class NodeCompletionStatus(models.Model):
-    student = models.ForeignKey(User, on_delete=models.CASCADE)
-    node = models.ForeignKey(Node, on_delete=models.CASCADE)
-    is_completed = models.BooleanField(default=False)
-
-    class Meta:
-        verbose_name = "Node Completion Status"
-        verbose_name_plural = "Node Completion Statuses"
 
 
 class OutcomeNode(models.Model):
