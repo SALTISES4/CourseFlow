@@ -133,9 +133,11 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
         )
+        time.sleep(1)
         selenium.find_element_by_id("live-project").click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
+        time.sleep(1)
         assert (
             "new title"
             in selenium.find_element_by_css_selector("#workflowtitle div").text
@@ -460,7 +462,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:live-project-update", args=[project.id])
         )
         selenium.find_element_by_css_selector("#button_assignments").click()
-        time.sleep(1)
+        time.sleep(3)
 
         selenium.find_element_by_id("button_1").click()
 
