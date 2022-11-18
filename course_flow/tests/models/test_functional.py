@@ -439,7 +439,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(1)
         assert (
             "new workflow"
-            in selenium.find_element_by_css_selector("#workflowtitle div").text
+            in selenium.find_element_by_css_selector("#workflowtitle").text
         )
 
     def test_create_assignment(self):
