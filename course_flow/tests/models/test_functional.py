@@ -461,12 +461,13 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:live-project-update", args=[project.id])
         )
+        time.sleep(1)
         selenium.find_element_by_css_selector("#button_assignments").click()
         time.sleep(3)
 
         selenium.find_element_by_id("button_1").click()
 
-        time.sleep(1)
+        time.sleep(3)
 
         hover_item = selenium.find_element_by_css_selector(".node")
         click_item = selenium.find_element_by_css_selector(
@@ -474,12 +475,12 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         action_hover_click(selenium, hover_item, click_item).perform()
 
-        time.sleep(2)
+        time.sleep(3)
 
         selenium.find_elements_by_css_selector("#users_all option")[0].click()
         selenium.find_element_by_id("add-user").click()
 
-        time.sleep(1)
+        time.sleep(2)
 
         self.assertEqual(
             len(
@@ -499,7 +500,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         selenium.find_element_by_id("button_report").click()
-        time.sleep(1)
+        time.sleep(2)
         selenium.find_element_by_css_selector("td > input").click()
         time.sleep(1)
         self.assertEqual(UserAssignment.objects.first().completed, True)
