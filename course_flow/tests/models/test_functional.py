@@ -465,7 +465,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element_by_css_selector("#button_assignments").click()
         time.sleep(3)
 
-        selenium.find_element_by_id("button_1").click()
+        selenium.find_element_by_css_selector("#select-workflow > div").click()
 
         time.sleep(3)
 

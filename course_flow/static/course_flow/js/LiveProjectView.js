@@ -206,7 +206,7 @@ class LiveProjectAssignments extends LiveProjectSection{
                     {assignments}
                 </div>
                 <h3>{gettext("All Tasks")}</h3>
-                <div class="workflow-view-select">
+                <div id="select-workflow" class="workflow-view-select">
                     {workflow_options}
                 </div>
                 {workflow_nodes}
