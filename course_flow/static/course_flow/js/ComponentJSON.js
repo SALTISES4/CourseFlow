@@ -374,7 +374,7 @@ export class ComponentJSON extends React.Component{
             let title=Constants.unescapeCharacters(data.title || "");
             let description=data.description || "";
             if(data.represents_workflow)override=true;
-            
+
             let sets;
             if(this.props.object_sets && ["node","outcome"].indexOf(type)>=0){
                 let term_type=data.type;

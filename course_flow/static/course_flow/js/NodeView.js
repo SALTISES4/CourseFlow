@@ -311,7 +311,7 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
                 <div class = "node-top-row">
                     <NodeTitle data={data}/>
                 </div>
-                {this.addEditable(data,true)}
+                {this.addEditable(data_override,true)}
             </div>
         );
 
