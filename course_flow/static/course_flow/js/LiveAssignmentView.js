@@ -337,12 +337,23 @@ export class AssignmentView extends React.Component{
         else dropIcon = "droptriangledown";
 
         let completion_data;
+        console.log("here is the user assignment data");
+        console.log(data);
         if(data.user_assignment){
             let disabled = true;
-            if(this.props.renderer.user_role==Constants.role_keys.teacher || data.self_reporting)disabled=false;
+            if(this.props.renderer.user_role==Constants.role_keys.teacher || (
+                data.self_reporting && data.user_assignment.liveprojectuser.user.id == user_id
+            ))disabled=false;
+            let extra_data;
+            if(data.single_completion && data.user_assignment.completed){
+                extra_data=[
+                    <div>{gettext("Completed by ")+Constants.getUserDisplay(data.user_assignment.liveprojectuser.user)+gettext(" on ")}<DatePicker default_value={data.user_assignment.completed_on} disabled={true}/></div>
+                ]
+            }
             completion_data=(
                 <div>
                     <label>{gettext("Completion")}: </label><input type="checkbox" disabled={disabled} checked={this.state.completed} onChange={this.changeCompletion.bind(this)}/>
+                    {extra_data}
                 </div>
             )
         }

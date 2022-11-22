@@ -1583,12 +1583,18 @@ class LiveAssignmentSerializer(
         return False
 
     def get_user_assignment(self, instance):
+        if instance.single_completion:
+            if instance.userassignment_set.filter(completed=True).count()>0:
+                userassignment = instance.userassignment_set.filter(completed=True).order_by("completed_on").first()
+                return UserAssignmentSerializerWithUser(userassignment).data
         try:
-            return UserAssignmentSerializer(
-                UserAssignment.objects.filter(
-                    user=self.context["user"], assignment=instance
-                ).first()
-            ).data
+            userassignment = UserAssignment.objects.filter(
+                user=self.context["user"], assignment=instance
+            ).first()
+            if userassignment is not None:
+                return UserAssignmentSerializerWithUser(
+                    userassignment
+                ).data
         except AttributeError:
             return None
         return None
@@ -1606,7 +1612,6 @@ class LiveAssignmentSerializer(
         instance.end_date = validated_data.get("end_date", instance.end_date)
         instance.save()
         return instance
-
 
 class UserAssignmentSerializer(
     serializers.ModelSerializer,
@@ -1631,6 +1636,7 @@ class UserAssignmentSerializerWithUser(
             "liveprojectuser",
             "assignment",
             "completed",
+            "completed_on",
         ]
 
     liveprojectuser = serializers.SerializerMethodField()

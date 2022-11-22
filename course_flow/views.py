@@ -6185,10 +6185,11 @@ def set_assignment_completion(request: HttpRequest) -> HttpResponse:
                 ).count()
                 == 0
             ):
-                raise ValidationError(
-                    "This action can only be taken by a Teacher"
-                )
+                response = JsonResponse({"action": "error"})
+                response.status_code = 403
+                return response
         userassignment.completed = completed
+        userassignment.completed_on = timezone.now()
         userassignment.save()
     except ValidationError:
         response = JsonResponse({"action": "error"})
