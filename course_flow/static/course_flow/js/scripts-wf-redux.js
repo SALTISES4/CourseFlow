@@ -156,6 +156,7 @@ export class WorkflowRenderer{
         this.outcome_sort_choices = data_package.outcome_sort_choices;
         this.strategy_classification_choices = data_package.strategy_classification_choices;
         this.is_strategy = data_package.is_strategy;
+        this.project = data_package.project;
         this.column_colours = {}
         this.user_permission=user_permission;
         try{
@@ -197,12 +198,6 @@ export class WorkflowRenderer{
             this.getWorkflowChildData=getWorkflowChildData;
         }
         this.is_static=this.always_static;
-        if(data_package.project && !this.is_student){
-            $("#floatbar").append("<a id='project-return' href='"+update_path["project"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Project")+"</div></div>");
-        }
-        if(data_package.project && (this.is_teacher || this.is_student)){
-            $("#floatbar").append("<a id='live-project-return' href='"+update_path["liveproject"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Classroom")+"</div></div>");
-        }
     }
     
     connect(){

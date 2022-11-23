@@ -54,7 +54,7 @@ export class WorkflowsMenu extends React.Component{
         var i = 0;
         for(var prop in data_package){
             tab_li.push(
-                <li class="tab-header"><a href={"#tabs-"+i}>{data_package[prop].title}</a></li>
+                <li class="tab-header"><a class="hover-shade" href={"#tabs-"+i}>{data_package[prop].title}</a></li>
             )
             tabs.push(
                 <MenuTab no_hyperlink={no_hyperlink} data={data_package[prop]} type={this.props.type} identifier={i} selected_id={this.state.selected} selectAction={this.workflowSelected.bind(this)}/>
@@ -456,7 +456,7 @@ class WorkflowGridMenuUnconnected extends React.Component{
         var i = 0;
         for(var prop in this.props.data_package){
             tab_li.push(
-                <li><a href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
+                <li><a class="hover-shade" href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
             )
             tabs.push(
                 <MenuTab data={this.props.data_package[prop]} dispatch={this.props.dispatch} type="gridmenu" identifier={i}/>
@@ -501,7 +501,7 @@ class ProjectMenuUnconnected extends React.Component{
         var i = 0;
         for(var prop in this.props.data_package){
             tab_li.push(
-                <li><a href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
+                <li><a class="hover-shade" href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
             )
             tabs.push(
                 <MenuTab data={this.props.data_package[prop]} dispatch={this.props.dispatch} type="projectmenu" identifier={i} parentID={this.props.project.id}/>
@@ -509,7 +509,7 @@ class ProjectMenuUnconnected extends React.Component{
             i++;
         }
         let share;
-        if(!this.props.renderer.read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
+        if(!read_only)share = <div class="hover-shade" id="share-button" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person_grey.svg"}/></div>
         
         let publish_icon = iconpath+'view_none.svg';
         let publish_text = gettext("PRIVATE");
@@ -522,42 +522,39 @@ class ProjectMenuUnconnected extends React.Component{
         if(data.author_id==user_id){
             if(this.state.liveproject){
                 liveproject=(
-                    <a id="live-project" class="menu-create hover-shade" href={update_path.liveproject.replace("0",this.state.id)}>{gettext("View Classroom")}</a>
+                    <a id="live-project" class="hover-shade" href={update_path.liveproject.replace("0",this.state.id)}>{gettext("View Classroom")}</a>
                 );
             }else{
                 liveproject=(
-                    <a id="live-project" class="menu-create hover-shade" onClick={this.makeLive.bind(this)}>{gettext("Create Classroom")}</a>
+                    <a id="live-project" class="hover-shade" onClick={this.makeLive.bind(this)}>{gettext("Create Classroom")}</a>
                 );
             }
         }
+
+        let overflow_links = [];
+        overflow_links.push(liveproject);
+        overflow_links.push(<hr/>);
+        overflow_links.push(this.getExportButton());
+        overflow_links.push(<hr/>);
+        overflow_links.push(
+            <a id="comparison-view" class="hover-shade" href="comparison">
+                {gettext("Workflow Comparison Tool")}
+            </a>
+        );
         
         return(
             <div class="project-menu">
                 <div class="project-header">
-                    {reactDom.createPortal(
-                        <div>{this.state.title||gettext("Unnamed Project")}</div>,
-                        $("#workflowtitle")[0]
-                    )}
                     <WorkflowForMenu no_hyperlink={true} workflow_data={this.state} selectAction={this.openEdit.bind(this)}/>
                     <p>
                         Disciplines: {
                             (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||gettext("None"))
                         }
                     </p>
-                    <a id="comparison-view" class="menu-create hover-shade" href="comparison">
-                        {gettext("Comparison View")}
-                    </a>
-                    {liveproject}
+                    
                     {reactDom.createPortal(
                         share,
-                        $("#floatbar")[0]
-                    )}
-                    {this.getExportButton()}
-                    {reactDom.createPortal(
-                        <div class="workflow-publication">
-                            <img src={publish_icon}/><div>{publish_text}</div>
-                        </div>,
-                        $("#floatbar")[0]
+                        $("#visible-icons")[0]
                     )}
                     
                     {this.props.project.author_id==user_id  &&
@@ -565,9 +562,13 @@ class ProjectMenuUnconnected extends React.Component{
                             <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
                                 <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
                             </div>,
-                            $("#viewbar")[0]
+                            $("#visible-icons")[0]
                         )
                     }
+                    {reactDom.createPortal(
+                        overflow_links,
+                        $("#overflow-links")[0]
+                    )}
 
                     
                 </div>
@@ -615,16 +616,12 @@ class ProjectMenuUnconnected extends React.Component{
 
     getExportButton(){
         let export_button = (
-            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>renderMessageBox(this.state,"export",closeMessageBox)}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
+            <div id="export-button" class="hover-shade" onClick={()=>renderMessageBox(this.state,"export",closeMessageBox)}>
+                <div>{gettext("Export")}</div>
             </div>
             
         );
-        return (
-            reactDom.createPortal(
-                export_button,
-                $("#floatbar")[0]
-            )
-        );
+        return export_button;
     }
                      
 //    getExportButton(){

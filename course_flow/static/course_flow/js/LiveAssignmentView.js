@@ -22,7 +22,7 @@ export class LiveAssignmentMenu extends React.Component{
             (item)=>{
                 let view_class = "hover-shade";
                 if(item.type==this.state.view_type)view_class += " active";
-                return <div id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</div>;
+                return <a id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</a>;
             }
         );
 
@@ -30,15 +30,11 @@ export class LiveAssignmentMenu extends React.Component{
             <div class="project-menu">
                 <div class="project-header">
                     {reactDom.createPortal(
-                        <AssignmentTitle data={data}/>,
-                        $("#workflowtitle")[0]
-                    )}
-                    {reactDom.createPortal(
                         <a id='live-project-return' href={update_path["liveproject"].replace(0,liveproject.pk)} class='floatbardiv'>
                             <img src={iconpath+"goback.svg"}/>
-                            <div>{gettext("Classroom")}</div>
+                            <div>{gettext("Return to Classroom")}</div>
                         </a>,
-                        $("#floatbar")[0]
+                        $(".titlebar .title")[0]
                     )}
                     <AssignmentView renderer={this.props.renderer} data={data}/>
                     

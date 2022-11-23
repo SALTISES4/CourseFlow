@@ -40,30 +40,11 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         
         var selector = this;
         let publish_icon = iconpath+'view_none.svg';
-        let publish_text = gettext("PRIVATE");
-        if(data.published){
-            publish_icon = iconpath+'published.svg';
-            publish_text = gettext("PUBLISHED");
-        }
-        let share;
-        if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
-        
-        let public_view;
-        if(renderer.can_view && data.public_view){
-            if(renderer.public_view){
-                public_view=(
-                    <a id="public-view" class="menu-create hover-shade hide-print" href={update_path.workflow.replace("0",data.id)}>
-                        {gettext("Editable Page")}
-                    </a>
-                );
-            }else{
-                public_view=(
-                    <a id="public-view" class="menu-create hover-shade hide-print" href={public_update_path.workflow.replace("0",data.id)}>
-                        {gettext("Public Page")}
-                    </a>
-                );
-            }
-        }
+        // let publish_text = gettext("PRIVATE");
+        // if(data.published){
+        //     publish_icon = iconpath+'published.svg';
+        //     publish_text = gettext("PUBLISHED");
+        // }
 
         let workflow_content;
         if(renderer.view_type=="outcometable"){
@@ -124,7 +105,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                 let view_class = "hover-shade";
                 if(item.type==renderer.view_type)view_class += " active";
                 //if(item.disabled.indexOf(data.type)>=0)view_class+=" disabled";
-                return <div id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</div>;
+                return <a id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</a>;
             }
         );
         
@@ -149,40 +130,80 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         parent_workflow_indicator = (
             <ParentWorkflowIndicator workflow_id={data.id}/>
         )
+
+        let share;
+        if(!read_only)share = <div class="hover-shade" id="share-button" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person_grey.svg"}/></div>
+        
+        let public_view;
+        if(renderer.can_view && data.public_view){
+            if(renderer.public_view){
+                public_view=[
+                    <hr/>,
+                    <a id="public-view" class="hover-shade" href={update_path.workflow.replace("0",data.id)}>
+                        {gettext("Editable Page")}
+                    </a>
+                ];
+            }else{
+                public_view=[
+                    <hr/>,
+                    <a id="public-view" class="hover-shade" href={public_update_path.workflow.replace("0",data.id)}>
+                        {gettext("Public Page")}
+                    </a>
+                ];
+            }
+        }
+        let return_links = [];
+        if(renderer.project && !renderer.is_student){
+            return_links.push(
+                <a class="hover-shade" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+                    <img src={iconpath+"goback.svg"}/>
+                    <div>{gettext("Return to project (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
+                </a>
+            );
+        }
+        if(renderer.project && (renderer.is_teacher || renderer.is_student)){
+            return_links.push(
+                <a class="hover-shade" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
+                    <img src={iconpath+"goback.svg"}/>
+                    <div>{gettext("Return to classroom (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
+                </a>
+            );
+        }
+
+
+        let overflow_links = [];
+        overflow_links.push(this.getExportButton());
+        overflow_links.push(this.getImportButton());
+        overflow_links.push(public_view);
             
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
                 <div class="workflow-header" style={style}>
                     <WorkflowForMenu no_hyperlink={true} workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
                     {parent_workflow_indicator}
-                    {public_view}
                 </div>
                 <div class="workflow-view-select hide-print">
                     {view_buttons_sorted}
                 </div>
                 <div class = "workflow-container">
-                    {reactDom.createPortal(
-                        <WorkflowTitle class_name="title-text" data={data}/>,
-                        $("#workflowtitle")[0]
-                    )}
                     {this.addEditable(data)}
-                    {reactDom.createPortal(
-                        share,
-                        $("#floatbar")[0]
-                    )}
-                    {this.getExportButton()}
-                    {this.getImportButton()}
-                    {!read_only && reactDom.createPortal(
-                        <div class="workflow-publication">
-                            <img src={publish_icon}/><div>{publish_text}</div>
-                        </div>,
-                        $("#floatbar")[0]
-                    )}
                     {!read_only && reactDom.createPortal(
                         <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
                             <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Workflow")}/>
                         </div>,
-                        $("#viewbar")[0]
+                        $("#visible-icons")[0]
+                    )}
+                    {reactDom.createPortal(
+                        share,
+                        $("#visible-icons")[0]
+                    )}
+                    {reactDom.createPortal(
+                        return_links,
+                        $(".titlebar .title")[0]
+                    )}
+                    {reactDom.createPortal(
+                        overflow_links,
+                        $("#overflow-links")[0]
                     )}
                     
                     {workflow_content}
@@ -239,7 +260,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         this.props.renderer.selection_manager.changeSelection(null,null);
         this.props.renderer.render(this.props.renderer.container,type);
     }
-                     
+    
     openEdit(evt){
         this.props.renderer.selection_manager.changeSelection(evt,this);
     }
@@ -247,59 +268,13 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     getExportButton(){
         if(this.props.renderer.is_student && !this.props.renderer.can_view)return null;
         let export_button = (
-            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>renderMessageBox({...this.props.data,object_sets:this.props.object_sets},"export",closeMessageBox)}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
-            </div>
-            
+            <a id="export-button" class="hover-shade" onClick={()=>renderMessageBox({...this.props.data,object_sets:this.props.object_sets},"export",closeMessageBox)}>
+                {gettext("Export")}
+            </a>
         );
-        return (
-            reactDom.createPortal(
-                export_button,
-                $("#floatbar")[0]
-            )
-        );
+        return export_button;
     }
-                     
-//    getExportButton(){
-//        let exports=[];
-//        this.pushExport(exports,"outcomes_excel",gettext("Outcomes to .xls"));
-//        this.pushExport(exports,"outcomes_csv",gettext("Outcomes to .csv"));
-//        if(this.props.data.type=="course")this.pushExport(exports,"frameworks_excel",gettext("Framework to .xls"));
-//        if(this.props.data.type=="program")this.pushExport(exports,"matrix_excel",gettext("Matrix to .xls"));
-//        if(this.props.data.type=="program")this.pushExport(exports,"matrix_csv",gettext("Matrix to .csv"));
-//        this.pushExport(exports,"nodes_csv",gettext("Nodes to .csv"));
-//        this.pushExport(exports,"nodes_excel",gettext("Nodes to .xls"));
-//        
-//        
-//        let export_button = (
-//            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>$(this.exportDropDown.current).toggleClass("active")}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
-//                <div class="create-dropdown" ref={this.exportDropDown}>
-//                    {exports}
-//                </div>
-//            </div>
-//            
-//        )
-//        
-//        return (
-//            reactDom.createPortal(
-//                export_button,
-//                $("#floatbar")[0]
-//            )
-//        )
-//    }
-//                     
-//    pushExport(exports,export_type,text){
-//        exports.push(
-//            <a class="hover-shade" onClick={this.clickExport.bind(this,export_type)}>
-//                {text}
-//            </a>
-//        )
-//    }
-//                     
-//    clickExport(export_type,evt){
-//        evt.preventDefault();
-//        getExport(this.props.data.id,"workflow",export_type,()=>alert(gettext("Your file is being generated and will be emailed to you shortly.")))
-//    }
-                     
+
     getImportButton(){
         if(this.props.renderer.read_only)return null;
         let disabled;
@@ -308,23 +283,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         this.pushImport(imports,"outcomes",gettext("Import Outcomes"),disabled);
         this.pushImport(imports,"nodes",gettext("Import Nodes"),disabled);
         
-        let button_class = "floatbardiv hover-shade";
-        if(disabled)button_class+=" disabled";
-        let import_button = (
-            <div id="import-button" class={button_class} onClick={()=>$(this.importDropDown.current).toggleClass("active")}><img src={iconpath+"upload.svg"}/><div>{gettext("Import")}</div>
-                <div class="create-dropdown" ref={this.importDropDown}>
-                    {imports}
-                </div>
-            </div>
-            
-        )
-        
-        return (
-            reactDom.createPortal(
-                import_button,
-                $("#floatbar")[0]
-            )
-        )
+        return imports;
     }
                      
     pushImport(imports,import_type,text,disabled){
@@ -378,10 +337,13 @@ class WorkflowViewUnconnected extends ComponentJSON{
         return(
             <div class="workflow-details">
                 {reactDom.createPortal(
-                <div class="topdropwrapper hover-shade" title={gettext("Show/Hide Legend")}>
-                    <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
-                </div>,
-                $("#viewbar")[0]
+                    [
+                        <hr/>,
+                        <a class="hover-shade" title={gettext("Show/Hide Legend")} onClick={this.toggleLegend.bind(this)}>
+                            {gettext("Show/Hide Legend")}
+                        </a>,
+                    ],
+                $("#overflow-links")[0]
                 )}
                 {this.state.show_legend && 
                     <WorkflowLegend renderer={renderer} toggle={this.toggleLegend.bind(this)}/>
@@ -764,10 +726,13 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
         return(
             <div class="workflow-details">
                 {reactDom.createPortal(
-                    <div class="topdropwrapper hover-shade" title={gettext("Show/Hide Legend")}>
-                        <img src={iconpath+"show_legend.svg"} onClick={this.toggleLegend.bind(this)}/>
-                    </div>,
-                    $("#viewbar")[0]
+                    [
+                        <hr/>,
+                        <a class="hover-shade" title={gettext("Show/Hide Legend")} onClick={this.toggleLegend.bind(this)}>
+                            {gettext("Show/Hide Legend")}
+                        </a>,
+                    ],
+                $("#overflow-links")[0]
                 )}
                 {this.state.show_legend && 
                     <WorkflowOutcomeLegend renderer={renderer} toggle={this.toggleLegend.bind(this)}/>

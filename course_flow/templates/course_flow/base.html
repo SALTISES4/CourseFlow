@@ -165,7 +165,7 @@
         {% endif %}
         <div class="left-panel-extra">
           {% if user|has_group:"Teacher" %}
-            <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
+            <a class="panel-item hover-shade" href="{% url 'course_flow:my-favourites' %}">
               {% trans 'My Favourites' %}
             </a>
               {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
@@ -194,17 +194,15 @@
             </div>
             <div class="floatbar">
               <div id="username-container" class="topdropwrapper">
-                <button id="username" class="topdropbutton">
-                  <a class="username-link" href="{% url 'course_flow:home' %}">
-                      {{ user.username }}
-                  </a>
-                </button>
+                <a class="topdropbutton hover-shade" href="{% url 'course_flow:home' %}">
+                    {{ user.username }}
+                </a>
               </div>
               {% if user.username %}
               <div id="logout-container" class="topdropwrapper">
-                <button id="logout" class="topdropbutton">
+                <a id="logout" class="topdropbutton hover-shade">
                   {% trans 'logout' %}
-                </button>
+                </a>
               </div>
               {% endif %}
               {% if user|has_group:"Teacher" %}
@@ -231,14 +229,19 @@
           </div>
             <div id="update-notifications">
             </div>
-            <div class="menubar">
-                <div id="workflowtitle" class="workflow-title-bar">
-                </div>
+            <div class="menubar hidden">
                 <div id="floatbar" class="floatbar">
+                  <div id="visible-icons"></div>
+                  <div id="overflow-options">
+                    <img id="overflow-options-icon" class="hover-shade"
+                      src="{% static 'course_flow/img/images_svg/more_options.svg' %}"
+                    />
+                    <div id="overflow-links" class="create-dropdown">
+                      
+                    </div>
+                  </div>
                 </div>
                 <div id="userbar" class="floatbar">
-                </div>
-                <div id="viewbar" class="viewbar">
                 </div>
               </div>
         </div>
@@ -345,6 +348,14 @@
 
     $("#logout").on("click",()=>{
         window.location.replace("{% url 'course_flow:logout' %}");
+    });
+
+    $("#overflow-options").on("click",(evt)=>{
+      evt.stopPropagation();
+      $("#overflow-links").toggleClass("active");
+    });
+    document.addEventListener("click",()=>{
+      $("#overflow-links").removeClass("active");
     });
 
     //reload if we got here using forward or back button

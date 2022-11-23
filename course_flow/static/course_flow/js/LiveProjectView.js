@@ -20,7 +20,7 @@ export class LiveProjectMenu extends React.Component{
             (item)=>{
                 let view_class = "hover-shade";
                 if(item.type==this.state.view_type)view_class += " active";
-                return <div id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</div>;
+                return <a id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</a>;
             }
         );
 
@@ -28,10 +28,6 @@ export class LiveProjectMenu extends React.Component{
         return(
             <div class="project-menu">
                 <div class="project-header">
-                    {reactDom.createPortal(
-                        <div>{this.state.title||gettext("Unnamed Project")}</div>,
-                        $("#workflowtitle")[0]
-                    )}
                     <WorkflowForMenu no_hyperlink={true} workflow_data={this.props.liveproject} selectAction={this.openEdit.bind(this)}/>
                     {this.getHeader()}
                     
