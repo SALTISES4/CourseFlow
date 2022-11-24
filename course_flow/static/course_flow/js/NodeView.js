@@ -79,8 +79,6 @@ class NodeView extends ComponentJSON{
         let clickfunc = this.doubleClick.bind(this);
         let link_class = "linked-workflow";
         if(data.linked_workflow_data){
-            console.log("linked workflow");
-            console.log(data.linked_workflow_data.url);
             if(data.linked_workflow_data.url=="noaccess" || data.linked_workflow_data.url=="nouser"){
                 linktext=gettext("<Inaccessible>");
                 clickfunc=null;

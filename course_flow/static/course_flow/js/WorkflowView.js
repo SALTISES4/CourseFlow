@@ -770,9 +770,6 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
     
     render(){
         if(this.state.has_loaded){
-            console.log("parent workflow indicator");
-            console.log(this.state);
-            console.log(this.props);
             let parent_workflows = this.state.parent_workflows.map(parent_workflow=>
                 <WorkflowTitle data={parent_workflow} class_name={"panel-favourite"}/>
             );

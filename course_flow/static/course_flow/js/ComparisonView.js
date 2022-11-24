@@ -91,7 +91,6 @@ export class ComparisonView extends React.Component{
                     </div>
                     {add_button}
                     
-                    
                     <ViewBar toggleObjectSet={this.toggleObjectSet.bind(this)} object_sets={this.state.object_sets} renderer={this.props.renderer}/>
                 </div>
             </div>

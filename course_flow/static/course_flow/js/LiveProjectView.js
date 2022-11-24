@@ -314,7 +314,6 @@ class AssignmentNode extends React.Component{
     }
 
     addCreateAssignment(data){
-        console.log("addcreateassignment");
         return (
             <ActionButton button_icon="assignment.svg" button_class="duplicate-self-button" titletext={gettext("Create Assignment")} handleClick={this.createAssignment.bind(this,data)}/>
         );

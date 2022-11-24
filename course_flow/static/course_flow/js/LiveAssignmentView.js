@@ -333,8 +333,7 @@ export class AssignmentView extends React.Component{
         else dropIcon = "droptriangledown";
 
         let completion_data;
-        console.log("here is the user assignment data");
-        console.log(data);
+        
         if(data.user_assignment){
             let disabled = true;
             if(this.props.renderer.user_role==Constants.role_keys.teacher || (
