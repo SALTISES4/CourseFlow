@@ -511,12 +511,6 @@ class ProjectMenuUnconnected extends React.Component{
         let share;
         if(!read_only)share = <div class="hover-shade" id="share-button" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person_grey.svg"}/></div>
         
-        let publish_icon = iconpath+'view_none.svg';
-        let publish_text = gettext("PRIVATE");
-        if(this.props.project.published){
-            publish_icon = iconpath+'published.svg';
-            publish_text = gettext("PUBLISHED");
-        }
 
         let liveproject;
         if(data.author_id==user_id){
