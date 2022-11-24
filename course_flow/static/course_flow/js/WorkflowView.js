@@ -336,18 +336,7 @@ class WorkflowViewUnconnected extends ComponentJSON{
         
         return(
             <div class="workflow-details">
-                {reactDom.createPortal(
-                    [
-                        <hr/>,
-                        <a class="hover-shade" title={gettext("Show/Hide Legend")} onClick={this.toggleLegend.bind(this)}>
-                            {gettext("Show/Hide Legend")}
-                        </a>,
-                    ],
-                $("#overflow-links")[0]
-                )}
-                {this.state.show_legend && 
-                    <WorkflowLegend renderer={renderer} toggle={this.toggleLegend.bind(this)}/>
-                }
+                <WorkflowLegend renderer={renderer}/>
                 <div class="column-row" id={data.id+"-column-block"}>
                     {columnworkflows}
                 </div>
@@ -417,14 +406,6 @@ class WorkflowViewUnconnected extends ComponentJSON{
         if(type=="weekworkflow"){
             this.props.renderer.micro_update(moveWeekWorkflow(id,new_position,new_parent,child_id));
             insertedAt(this.props.renderer,child_id,"week",new_parent,"workflow",new_position,"weekworkflow");
-        }
-    }
-    
-    toggleLegend(){
-        if(this.state.show_legend){
-            this.setState({show_legend:false});
-        }else{
-            this.setState({show_legend:true});
         }
     }
 }
@@ -725,18 +706,7 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
         
         return(
             <div class="workflow-details">
-                {reactDom.createPortal(
-                    [
-                        <hr/>,
-                        <a class="hover-shade" title={gettext("Show/Hide Legend")} onClick={this.toggleLegend.bind(this)}>
-                            {gettext("Show/Hide Legend")}
-                        </a>,
-                    ],
-                $("#overflow-links")[0]
-                )}
-                {this.state.show_legend && 
-                    <WorkflowOutcomeLegend renderer={renderer} toggle={this.toggleLegend.bind(this)}/>
-                }
+                <WorkflowOutcomeLegend renderer={renderer} outcomes_type={data.outcomes_type}/>
                 <WorkflowOutcomeView renderer={renderer} outcomes_type={data.outcomes_type}/>
             </div>
         );
@@ -744,14 +714,6 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                      
     openEdit(evt){
         this.props.renderer.selection_manager.changeSelection(evt,this);
-    }
-                     
-    toggleLegend(){
-        if(this.state.show_legend){
-            this.setState({show_legend:false});
-        }else{
-            this.setState({show_legend:true});
-        }
     }
     
     

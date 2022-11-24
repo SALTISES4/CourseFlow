@@ -5,6 +5,7 @@ import {ComponentJSON, OutcomeTitle, TitleText, NodeTitle} from "./ComponentJSON
 import * as Constants from "./Constants";
 import {getOutcomeByID, getWeekWorkflowByID, getWeekByID, getNodeWeekByID, getNodeByID, getOutcomeNodeByID, getTableOutcomeNodeByID} from "./FindState";
 import {TableOutcomeNode} from "./OutcomeNode";
+import {WorkflowOutcomeLegend} from "./WorkflowLegend";
 
 
 //Creates a competency matrix. Probably should only be active at the program level.
@@ -50,6 +51,7 @@ class CompetencyMatrixView extends ComponentJSON{
             
             return(
                 <div class="workflow-details">
+                    <WorkflowOutcomeLegend renderer={this.props.renderer} outcomes_type={data.outcomes_type}/>
                     <div ref={this.maindiv} class="outcome-table competency-matrix">
                         <div class="outcome-row node-row">
                             <div class="outcome-head empty"></div>

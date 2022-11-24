@@ -1169,6 +1169,17 @@ export class QuillDiv extends React.Component{
     
 }
 
+export class Slider extends React.Component{
+    render(){
+        return (
+            <label class="switch">
+                <input type="checkbox" checked={this.props.checked} onChange={this.props.toggleAction.bind(this)}/>
+                <span class="slider round"></span>
+            </label>
+        );
+    }
+}
+
 export class DatePicker extends React.Component{
     constructor(props){
         super(props);
