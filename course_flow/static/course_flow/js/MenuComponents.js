@@ -47,16 +47,17 @@ export class WorkflowsMenu extends React.Component{
     
     render(){
         var data_package = this.props.data.data_package;
-        
+        let no_hyperlink = false;
+        if(this.props.type=="linked_workflow_menu" || this.props.type=="added_workflow_menu" || this.props.type=="target_project_menu")no_hyperlink=true;
         var tabs = [];
         var tab_li = [];
         var i = 0;
         for(var prop in data_package){
             tab_li.push(
-                <li class="tab-header"><a href={"#tabs-"+i}>{data_package[prop].title}</a></li>
+                <li class="tab-header"><a class="hover-shade" href={"#tabs-"+i}>{data_package[prop].title}</a></li>
             )
             tabs.push(
-                <MenuTab data={data_package[prop]} type={this.props.type} identifier={i} selected_id={this.state.selected} selectAction={this.workflowSelected.bind(this)}/>
+                <MenuTab no_hyperlink={no_hyperlink} data={data_package[prop]} type={this.props.type} identifier={i} selected_id={this.state.selected} selectAction={this.workflowSelected.bind(this)}/>
             )
             i++;
         }
@@ -177,7 +178,7 @@ export class WorkflowForMenu extends React.Component{
         return(
             <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
                 <div class="workflow-top-row">
-                    <WorkflowTitle class_name="workflow-title" data={data}/>
+                    <WorkflowTitle no_hyperlink={this.props.no_hyperlink} class_name="workflow-title" data={data}/>
                     {this.getButtons()}
                     {this.getTypeIndicator()}
                 </div>
@@ -197,6 +198,7 @@ export class WorkflowForMenu extends React.Component{
         let data = this.props.workflow_data;
         let type=data.type
         let type_text = gettext(type);
+        if(type=="liveproject")type_text=gettext("classroom");
         if(data.is_strategy)type_text+=gettext(" strategy");
         return (
             <div class={"workflow-type-indicator "+type}>{type_text}</div>
@@ -226,7 +228,6 @@ export class WorkflowForMenu extends React.Component{
                 <img src={iconpath+favourite_img} title={gettext("Favourite")}/>
             </div>
         );
-        console.log(this.props.type);
         if(this.props.type=="projectmenu"||this.props.type=="gridmenu"||this.props.type=="exploremenu"){
             if(this.props.workflow_data.is_owned){
                 if(!this.props.workflow_data.deleted){
@@ -349,9 +350,8 @@ export class MenuSection extends React.Component{
         let section_type = this.props.section_data.object_type;
         let is_strategy = this.props.section_data.is_strategy;
         let parentID = this.props.parentID;
-        
         var objects = this.props.section_data.objects.map((object)=>
-            <WorkflowForMenu key={object.id} type={this.props.type} workflow_data={object} objectType={section_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
+            <WorkflowForMenu no_hyperlink={this.props.no_hyperlink} key={object.id} type={this.props.type} workflow_data={object} objectType={section_type} selected={(this.props.selected_id==object.id)}  dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.duplicate}/>                            
         );
         if(this.props.replacement_text)objects=this.props.replacement_text;
         
@@ -439,7 +439,7 @@ export class MenuTab extends React.Component{
         let replacement_text;
         if(is_empty)replacement_text=this.props.data.emptytext;
         var sections = this.props.data.sections.map((section,i)=>
-            <MenuSection type={this.props.type} replacement_text={i==0?replacement_text:null} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.data.duplicate}/>
+            <MenuSection no_hyperlink={this.props.no_hyperlink} type={this.props.type} replacement_text={i==0?replacement_text:null} section_data={section} add={this.props.data.add} selected_id={this.props.selected_id} dispatch={this.props.dispatch} selectAction={this.props.selectAction} parentID={this.props.parentID} duplicate={this.props.data.duplicate}/>
         );
         return (
             <div id={"tabs-"+this.props.identifier}>
@@ -456,7 +456,7 @@ class WorkflowGridMenuUnconnected extends React.Component{
         var i = 0;
         for(var prop in this.props.data_package){
             tab_li.push(
-                <li><a href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
+                <li><a class="hover-shade" href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
             )
             tabs.push(
                 <MenuTab data={this.props.data_package[prop]} dispatch={this.props.dispatch} type="gridmenu" identifier={i}/>
@@ -501,7 +501,7 @@ class ProjectMenuUnconnected extends React.Component{
         var i = 0;
         for(var prop in this.props.data_package){
             tab_li.push(
-                <li><a href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
+                <li><a class="hover-shade" href={"#tabs-"+i}>{this.props.data_package[prop].title}</a></li>
             )
             tabs.push(
                 <MenuTab data={this.props.data_package[prop]} dispatch={this.props.dispatch} type="projectmenu" identifier={i} parentID={this.props.project.id}/>
@@ -509,56 +509,46 @@ class ProjectMenuUnconnected extends React.Component{
             i++;
         }
         let share;
-        if(!this.props.renderer.read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
+        if(!read_only)share = <div class="hover-shade" id="share-button" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person_grey.svg"}/></div>
         
-        let publish_icon = iconpath+'view_none.svg';
-        let publish_text = gettext("PRIVATE");
-        if(this.props.project.published){
-            publish_icon = iconpath+'published.svg';
-            publish_text = gettext("PUBLISHED");
-        }
 
         let liveproject;
-        console.log(data);
         if(data.author_id==user_id){
             if(this.state.liveproject){
                 liveproject=(
-                    <a id="live-project" class="menu-create hover-shade" href={update_path.liveproject.replace("0",this.state.id)}>{gettext("View Classroom")}</a>
+                    <a id="live-project" class="hover-shade" href={update_path.liveproject.replace("0",this.state.id)}>{gettext("View Classroom")}</a>
                 );
             }else{
                 liveproject=(
-                    <a id="live-project" class="menu-create hover-shade" onClick={this.makeLive.bind(this)}>{gettext("Create Classroom")}</a>
+                    <a id="live-project" class="hover-shade" onClick={this.makeLive.bind(this)}>{gettext("Create Classroom")}</a>
                 );
             }
         }
+
+        let overflow_links = [];
+        overflow_links.push(liveproject);
+        overflow_links.push(<hr/>);
+        overflow_links.push(this.getExportButton());
+        overflow_links.push(<hr/>);
+        overflow_links.push(
+            <a id="comparison-view" class="hover-shade" href="comparison">
+                {gettext("Workflow Comparison Tool")}
+            </a>
+        );
         
         return(
             <div class="project-menu">
                 <div class="project-header">
-                    {reactDom.createPortal(
-                        <div>{this.state.title||gettext("Unnamed Project")}</div>,
-                        $("#workflowtitle")[0]
-                    )}
-                    <WorkflowForMenu workflow_data={this.state} selectAction={this.openEdit.bind(this)}/>
+                    <WorkflowForMenu no_hyperlink={true} workflow_data={this.state} selectAction={this.openEdit.bind(this)}/>
                     <p>
                         Disciplines: {
                             (this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||gettext("None"))
                         }
                     </p>
-                    <a id="comparison-view" class="menu-create hover-shade" href="comparison">
-                        {gettext("Comparison View")}
-                    </a>
-                    {liveproject}
+                    
                     {reactDom.createPortal(
                         share,
-                        $("#floatbar")[0]
-                    )}
-                    {this.getExportButton()}
-                    {reactDom.createPortal(
-                        <div class="workflow-publication">
-                            <img src={publish_icon}/><div>{publish_text}</div>
-                        </div>,
-                        $("#floatbar")[0]
+                        $("#visible-icons")[0]
                     )}
                     
                     {this.props.project.author_id==user_id  &&
@@ -566,9 +556,13 @@ class ProjectMenuUnconnected extends React.Component{
                             <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
                                 <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
                             </div>,
-                            $("#viewbar")[0]
+                            $("#visible-icons")[0]
                         )
                     }
+                    {reactDom.createPortal(
+                        overflow_links,
+                        $("#overflow-links")[0]
+                    )}
 
                     
                 </div>
@@ -616,16 +610,12 @@ class ProjectMenuUnconnected extends React.Component{
 
     getExportButton(){
         let export_button = (
-            <div id="export-button" class="floatbardiv hover-shade" onClick={()=>renderMessageBox(this.state,"export",closeMessageBox)}><img src={iconpath+"download.svg"}/><div>{gettext("Export")}</div>
+            <div id="export-button" class="hover-shade" onClick={()=>renderMessageBox(this.state,"export",closeMessageBox)}>
+                <div>{gettext("Export")}</div>
             </div>
             
         );
-        return (
-            reactDom.createPortal(
-                export_button,
-                $("#floatbar")[0]
-            )
-        );
+        return export_button;
     }
                      
 //    getExportButton(){

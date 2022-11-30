@@ -28,14 +28,9 @@ export class ComparisonView extends React.Component{
         let selection_manager = renderer.selection_manager;
         
         var selector = this;
-        let publish_icon = iconpath+'view_none.svg';
-        let publish_text = gettext("PRIVATE");
-        if(data.published){
-            publish_icon = iconpath+'published.svg';
-            publish_text = gettext("PUBLISHED");
-        }
+
         let share;
-        if(!this.props.renderer.read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
+        if(!this.props.renderer.read_only)share = <div id="share-button" class="hover-shade" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/></div>
         if(renderer.view_type=="outcomeedit"){
             this.allowed_tabs=[];
         }else{
@@ -70,8 +65,6 @@ export class ComparisonView extends React.Component{
                 </button>
             </div>
         );
-        console.log("rendering");
-        console.log(workflow_content);
         
         let style={};
         if(data.lock){
@@ -90,24 +83,13 @@ export class ComparisonView extends React.Component{
                 </div>
                 <div class = "workflow-container comparison-view">
                     {reactDom.createPortal(
-                        <div>{data.title||gettext("Unnamed Project")}</div>,
-                        $("#workflowtitle")[0]
-                    )}
-                    {reactDom.createPortal(
                         share,
-                        $("#floatbar")[0]
-                    )}
-                    {reactDom.createPortal(
-                        <div class="workflow-publication">
-                            <img src={publish_icon}/><div>{publish_text}</div>
-                        </div>,
-                        $("#floatbar")[0]
+                        $("#visible-icons")[0]
                     )}
                     <div class="workflow-array">
                         {workflow_content}
                     </div>
                     {add_button}
-                    
                     
                     <ViewBar toggleObjectSet={this.toggleObjectSet.bind(this)} object_sets={this.state.object_sets} renderer={this.props.renderer}/>
                 </div>

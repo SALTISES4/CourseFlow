@@ -153,7 +153,7 @@ button, input[type="submit"]{
     margin-left:-5px;
 }
 
-.views-dropdown div{
+.views-dropdown a{
     display:block;
     margin:2px;
 }
@@ -201,7 +201,7 @@ button, input[type="submit"]{
 }
 
 .week-workflow.dragging{
-    height:100px;
+    height:50px;
     overflow:hidden;
     border-width:2px;
     border-radius:5px;
@@ -456,6 +456,32 @@ button, input[type="submit"]{
     text-align: left;
 }
 
+.node .assignment-timing{
+    background: white;
+}
+
+.assignment-timing{
+    padding: 5px;
+    box-sizing: border-box;
+    width: 100%;
+    display: flex;
+    gap: 5px;
+}
+
+.flatpickr-input+input:disabled{
+    background: none;
+    border: none;
+    color: #444444;
+}
+
+.assignment.node{
+    width: 600px
+}
+
+.linked-workflow.link-noaccess{
+    color: "#444444";
+}
+
 .linked-workflow{
     background:white;
     width:100%;
@@ -463,10 +489,13 @@ button, input[type="submit"]{
     box-sizing:border-box;
 }
 
+.linked-workflow.hover-shade{
+    color:#1976bc;
+}
+
 .linked-workflow > *{
     display:inline-block;
     vertical-align:middle;
-    color:#1976bc;
 }
 
 .linked-workflow > img{
@@ -1491,10 +1520,10 @@ circle.mouseover{
 .workflow-canvas.dragging-weekworkflow{
     opacity:0;
 }
-
+/*
 .node input{
     width:100px;
-}
+}*/
 
 .side-bar{
     z-index:4;

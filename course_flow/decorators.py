@@ -568,6 +568,15 @@ def public_model_access(model, **outer_kwargs):
 # Live project decorators
 
 
+def get_enrollment_objects(model, request, **kwargs):
+    model_data = get_model_from_request(model, request, **kwargs)
+    object_type = get_model_from_str(model_data["model"])
+    permission_objects = [
+        object_type.objects.get(pk=model_data["pk"]).get_live_project()
+    ]
+    return permission_objects
+
+
 def check_object_enrollment(instance, user, role):
     if hasattr(instance, "get_subclass"):
         instance = instance.get_subclass()
@@ -624,11 +633,6 @@ def user_enrolled_as_teacher(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
-                model_data = get_model_from_request(
-                    model, request, **outer_kwargs
-                )
-                if model_data["pk"] is None or model_data["pk"] == -1:
-                    return fct(request, *args, **kwargs)
                 permission_objects = get_permission_objects(
                     model, request, **outer_kwargs
                 )
@@ -661,11 +665,6 @@ def user_enrolled_as_student(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
-                model_data = get_model_from_request(
-                    model, request, **outer_kwargs
-                )
-                if model_data["pk"] is None or model_data["pk"] == -1:
-                    return fct(request, *args, **kwargs)
                 permission_objects = get_permission_objects(
                     model, request, **outer_kwargs
                 )
@@ -698,11 +697,6 @@ def user_can_view_or_enrolled_as_student(model, **outer_kwargs):
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
         ):
             try:
-                model_data = get_model_from_request(
-                    model, request, **outer_kwargs
-                )
-                if model_data["pk"] is None or model_data["pk"] == -1:
-                    return fct(request, *args, **kwargs)
                 permission_objects = get_permission_objects(
                     model, request, **outer_kwargs
                 )
@@ -714,6 +708,42 @@ def user_can_view_or_enrolled_as_student(model, **outer_kwargs):
                 permission_objects,
                 User.objects.get(pk=request.user.pk),
                 LiveProjectUser.ROLE_STUDENT,
+            ) or check_objects_permission(
+                permission_objects,
+                User.objects.get(pk=request.user.pk),
+                ObjectPermission.PERMISSION_VIEW,
+            ):
+                return fct(request, *args, **kwargs)
+            else:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 403
+                return response
+
+        return _wrapped_view
+
+    return wrapped_view
+
+
+def user_can_view_or_enrolled_as_teacher(model, **outer_kwargs):
+    def wrapped_view(fct):
+        @require_POST
+        @ajax_login_required
+        @wraps(fct)
+        def _wrapped_view(
+            request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs
+        ):
+            try:
+                permission_objects = get_permission_objects(
+                    model, request, **outer_kwargs
+                )
+            except AttributeError:
+                response = JsonResponse({"login_url": settings.LOGIN_URL})
+                response.status_code = 403
+                return response
+            if check_objects_enrollment(
+                permission_objects,
+                User.objects.get(pk=request.user.pk),
+                LiveProjectUser.ROLE_TEACHER,
             ) or check_objects_permission(
                 permission_objects,
                 User.objects.get(pk=request.user.pk),

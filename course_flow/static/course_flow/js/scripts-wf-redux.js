@@ -156,6 +156,7 @@ export class WorkflowRenderer{
         this.outcome_sort_choices = data_package.outcome_sort_choices;
         this.strategy_classification_choices = data_package.strategy_classification_choices;
         this.is_strategy = data_package.is_strategy;
+        this.project = data_package.project;
         this.column_colours = {}
         this.user_permission=user_permission;
         try{
@@ -196,15 +197,7 @@ export class WorkflowRenderer{
             this.getWorkflowParentData=getWorkflowParentData;
             this.getWorkflowChildData=getWorkflowChildData;
         }
-        console.log("static view");
-        console.log(this.public_view);
         this.is_static=this.always_static;
-        if(data_package.project && !this.is_student){
-            $("#floatbar").append("<a id='project-return' href='"+update_path["project"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Project")+"</div></div>");
-        }
-        if(data_package.project && (this.is_teacher || this.is_student)){
-            $("#floatbar").append("<a id='live-project-return' href='"+update_path["liveproject"].replace(0,data_package.project.id)+"' class='floatbardiv'><img src='"+iconpath+"goback.svg'/><div>"+gettext("Classroom")+"</div></div>");
-        }
     }
     
     connect(){
@@ -246,8 +239,6 @@ export class WorkflowRenderer{
                 }
                 renderer.is_static=true;
                 renderer.has_rendered=true;
-                console.log(e);
-                console.log("Lost connection to server");
                 if(!renderer.has_disconnected)alert(gettext("Unable to establish connection to the server, or connection has been lost."));
                 renderer.has_disconnected=true;
             }

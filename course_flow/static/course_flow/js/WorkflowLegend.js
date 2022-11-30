@@ -3,6 +3,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import * as Constants from "./Constants.js";
 import {Provider, connect} from "react-redux";
+import {Slider} from "./ComponentJSON";
 
 class LegendLine extends React.Component{
     render(){
@@ -23,8 +24,15 @@ class LegendLine extends React.Component{
 }
 
 class WorkflowLegend extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={show_legend:localStorage.getItem("show_legend")};
+    }
     
     render(){
+        console.log("renderering legend");
+        if(!this.state.show_legend)return this.getSlider();
+
         let contexts = this.props.contexts.map((value)=>
             <LegendLine icon={Constants.context_keys[value]} text = {this.props.renderer.context_choices.find((obj)=>obj.type==value).name}/>
         );
@@ -37,6 +45,7 @@ class WorkflowLegend extends React.Component{
 
         return (
             <div class="workflow-legend">
+                {this.getSlider()}
                 <h4>Legend</h4>
                 {contexts.length>0 &&
                     <div class="legend-section">
@@ -59,10 +68,25 @@ class WorkflowLegend extends React.Component{
                         {strategies}
                     </div>
                 }
-                <div class="window-close-button" onClick = {this.props.toggle}>
+                <div class="window-close-button" onClick = {this.toggle.bind(this)}>
                     <img src = {iconpath+"close.svg"}/>
                 </div>
             </div>
+        );
+    }
+
+    toggle(){
+        this.setState({show_legend:!this.state.show_legend});
+        localStorage.setItem("show_legend",this.state.show_legend);
+    }
+
+    getSlider(){
+        return reactDom.createPortal(
+            [
+                <div>{gettext("Legend")}</div>,
+                <Slider checked={this.state.show_legend} toggleAction={this.toggle.bind(this)}/>
+            ]
+            ,$("#viewbar")[0]
         );
     }
     
@@ -87,13 +111,13 @@ export default connect(
     null
 )(WorkflowLegend)
 
-class WorkflowOutcomeLegendUnconnected extends React.Component{
+class WorkflowOutcomeLegendUnconnected extends WorkflowLegend{
     
     render(){
-        
-
+        if(!this.state.show_legend)return this.getSlider();
         return (
             <div class="workflow-legend">
+                {this.getSlider()}
                 <h4>Legend</h4>
                 <div class="legend-section">
                     <hr/>
@@ -114,15 +138,11 @@ class WorkflowOutcomeLegendUnconnected extends React.Component{
                         <LegendLine div="A" divclass="outcome-advanced" text="Advanced (Auto-Calculated)"/>
                     </div>
                 }
-                <div class="window-close-button" onClick = {this.props.toggle}>
+                <div class="window-close-button" onClick = {this.toggle.bind(this)}>
                     <img src = {iconpath+"close.svg"}/>
                 </div>
             </div>
         );
-    }
-    
-    componentDidMount(){
-        $(".workflow-legend").draggable();
     }
 }
 const mapWorkflowOutcomeLegendStateToProps = (state)=>{

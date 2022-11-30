@@ -1,9 +1,11 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {WorkflowTitle} from "./ComponentJSON";
+import {WorkflowTitle, NodeTitle, TitleText, ActionButton} from "./ComponentJSON";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
-import {getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility} from "./PostFunctions";
+import {createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "./PostFunctions";
 import {StudentManagement} from "./StudentManagement";
+import {AssignmentView} from "./LiveAssignmentView";
+import * as Constants from "./Constants";
 
 export class LiveProjectMenu extends React.Component{
     constructor(props){
@@ -18,7 +20,7 @@ export class LiveProjectMenu extends React.Component{
             (item)=>{
                 let view_class = "hover-shade";
                 if(item.type==this.state.view_type)view_class += " active";
-                return <div id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</div>;
+                return <a id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</a>;
             }
         );
 
@@ -26,11 +28,7 @@ export class LiveProjectMenu extends React.Component{
         return(
             <div class="project-menu">
                 <div class="project-header">
-                    {reactDom.createPortal(
-                        <div>{this.state.title||gettext("Unnamed Project")}</div>,
-                        $("#workflowtitle")[0]
-                    )}
-                    <WorkflowForMenu workflow_data={this.props.liveproject} selectAction={this.openEdit.bind(this)}/>
+                    <WorkflowForMenu no_hyperlink={true} workflow_data={this.props.liveproject} selectAction={this.openEdit.bind(this)}/>
                     {this.getHeader()}
                     
                 </div>
@@ -61,7 +59,6 @@ export class LiveProjectMenu extends React.Component{
 
     openEdit(){
         return null;
-        // renderMessageBox({...this.state,id:this.props.project.id},"project_edit_menu",this.updateFunction.bind(this));
     }
 
     changeView(view_type){
@@ -69,58 +66,24 @@ export class LiveProjectMenu extends React.Component{
     }
     
     componentDidMount(){
-        $("#home-tabs").tabs({
-            activate:(evt,ui)=>{
-                window.location.hash=ui.newPanel[0].id;
-            }
-        });
     }
 
     getHeader(){
-        // let publish_icon = iconpath+'view_none.svg';
-        // let publish_text = gettext("PRIVATE");
-        // if(this.props.project.published){
-        //     publish_icon = iconpath+'published.svg';
-        //     publish_text = gettext("PUBLISHED");
-        // }
-        // let share;
-        // if(!read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,this.props.project,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>{gettext("Sharing")}</div></div>
-        // let edit_project;
-        // if(this.props.project.author_id==user_id)edit_project=reactDom.createPortal(
-        //     <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-        //         <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Project")}/>
-        //     </div>,
-        //     $("#viewbar")[0]
-        // );
-        // return [
-        //     reactDom.createPortal(
-        //         share,
-        //         $("#floatbar")[0]
-        //     ),
-        //     reactDom.createPortal(
-        //         <div class="workflow-publication">
-        //             <img src={publish_icon}/><div>{publish_text}</div>
-        //         </div>,
-        //         $("#floatbar")[0]
-        //     ),
-        //     // edit_project,
-        //     <a class="menu-create hover-shade" href={update_path.project.replace("0",this.state.id)}>{gettext("Design Mode")}</a>,
-        // ];
+        return null;
     }
 
     getContent(){
-        console.log(this.props)
         switch(this.state.view_type){
             case "overview":
-                return (<LiveProjectOverview role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectOverview renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "students":
-                return (<LiveProjectStudents role={this.getRole()} liveproject={this.props.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectStudents renderer={this.props.renderer} role={this.getRole()} liveproject={this.props.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "assignments":
-                return (<LiveProjectAssignments role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectAssignments renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "workflows":
-                return (<LiveProjectWorkflows role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectWorkflows renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "settings":
-                return (<LiveProjectSettings role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectSettings renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
         }
     }
 
@@ -140,22 +103,17 @@ export class StudentLiveProjectMenu extends LiveProjectMenu{
         ];
     }
 
-    getHeader(){
-        return null;
-    }
-
     getRole(){
         return "student";
     }
     getContent(){
-        console.log(this.props)
         switch(this.state.view_type){
             case "overview":
-                return (<StudentLiveProjectOverview role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<StudentLiveProjectOverview renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "assignments":
-                return (<StudentLiveProjectAssignments role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<StudentLiveProjectAssignments renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "workflows":
-                return (<StudentLiveProjectWorkflows role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<StudentLiveProjectWorkflows renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
         }
     }
 
@@ -200,9 +158,8 @@ class LiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
         return (
-            <div>Got data</div>
+            <div>Not yet implemented</div>
         );
     }
 
@@ -212,9 +169,8 @@ class StudentLiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
         return (
-            <div>Got data</div>
+            <div>Not yet implemented</div>
         );
     }
 
@@ -224,9 +180,155 @@ class LiveProjectAssignments extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
+        let assignments = this.state.data.assignments.map(assignment=>
+            <AssignmentView renderer={this.props.renderer} data={assignment}/>
+        );
+        let workflow_options = this.state.data.workflows.map(
+            (workflow)=>{
+                let view_class = "hover-shade";
+                if(workflow.id==this.state.selected_id)view_class += " active";
+                return <div id={"button_"+workflow.id} class={view_class} onClick = {this.changeView.bind(this,workflow.id)}><WorkflowTitle no_hyperlink={true} data={workflow}/></div>;
+            }
+        );
+        let workflow_nodes;
+        if(this.state.selected_id){
+            workflow_nodes=<AssignmentWorkflowNodesDisplay renderer={this.props.renderer} objectID={this.state.selected_id}/>
+        }
+
         return (
-            <div>Got data</div>
+            <div class="workflow-details">
+                <h3>{gettext("Assigned Tasks")}</h3>
+                <div>
+                    {assignments}
+                </div>
+                <h3>{gettext("All Tasks")}</h3>
+                <div id="select-workflow" class="workflow-view-select">
+                    {workflow_options}
+                </div>
+                {workflow_nodes}
+            </div>
+        );
+    }
+
+    changeView(workflow_id){
+        this.setState({selected_id:workflow_id})
+    }
+
+}
+
+class AssignmentWorkflowNodesDisplay extends React.Component{
+    constructor(props){
+        super(props)
+        this.state={};
+    }
+
+    render(){
+        if(!this.state.data)return this.defaultRender();
+        let weeks = this.state.data.weeks.map((week,i)=>{
+            let nodes = week.nodes.map(node=>
+                <AssignmentNode renderer={this.props.renderer} data={node}/>
+            );
+            let default_text;
+            default_text = week.week_type_display+" "+(i+1);
+            return(
+                <div class="week">
+                    <TitleText text={week.title} defaultText={default_text}/>
+                    <div class="node-block-grid">
+                        {nodes}
+                    </div>
+                </div>
+            )
+        });
+        return (
+            <div>
+                {weeks}
+            </div>
+        );
+    }
+
+    componentDidMount(){
+        this.getData();
+    }
+
+    getData(){
+        let component = this;
+        getWorkflowNodes(this.props.objectID,
+            (data)=>{
+                component.setState({data:data.data_package});
+            }
+        )
+    }
+
+    componentDidUpdate(prevProps){
+        if(prevProps.objectID!=this.props.objectID){
+            this.setState({data:null},this.getData.bind(this));
+        }
+    }
+
+    defaultRender(){
+        return (<renderers.WorkflowLoader/>);
+    }
+}
+
+class AssignmentNode extends React.Component{
+    render(){
+        let data = this.props.data;
+        let lefticon;
+        let righticon;
+        if(data.context_classification>0)lefticon=(
+            <img title={
+                renderer.context_choices.find(
+                    (obj)=>obj.type==data.context_classification
+                ).name
+            } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+        )
+        if(data.task_classification>0)righticon=(
+            <img title={
+                renderer.task_choices.find(
+                    (obj)=>obj.type==data.task_classification
+                ).name
+            }src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+        )
+        let style = {backgroundColor:Constants.getColumnColour(this.props.data)};
+        let mouseover_actions = [this.addCreateAssignment(data)];
+
+        return (
+            <div style={style} class="node">
+                <div class="mouseover-actions">
+                    {mouseover_actions}
+                </div>
+                <div class = "node-top-row">
+                    <div class = "node-icon">
+                        {lefticon}
+                    </div>
+                    <NodeTitle data={this.props.data}/>
+                    <div class = "node-icon">
+                        {righticon}
+                    </div>
+                </div>
+                <div class="node-drop-row">
+
+                </div>
+            </div>
+        )
+    }
+
+    addCreateAssignment(data){
+        return (
+            <ActionButton button_icon="assignment.svg" button_class="duplicate-self-button" titletext={gettext("Create Assignment")} handleClick={this.createAssignment.bind(this,data)}/>
+        );
+    }
+
+    createAssignment(data){
+        let props = this.props;
+        props.renderer.tiny_loader.startLoad();
+        createAssignment(
+            data.id,
+            props.renderer.live_project_data.pk,
+            (response_data)=>{
+                props.renderer.tiny_loader.endLoad();
+                window.location = update_path.liveassignment.replace("0",response_data.assignmentPk);
+            }
         );
     }
 
@@ -236,9 +338,25 @@ class StudentLiveProjectAssignments extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
+        let assignments_past = this.state.data.assignments_past.map(assignment=>
+            <AssignmentView renderer={this.props.renderer} data={assignment}/>
+        );
+        let assignments_upcoming = this.state.data.assignments_upcoming.map(assignment=>
+            <AssignmentView renderer={this.props.renderer} data={assignment}/>
+        );
+
         return (
-            <div>Got data</div>
+            <div class="workflow-details">
+                <h3>{gettext("Your Tasks")}:</h3>
+                <h4>{gettext("Upcoming")}:</h4>
+                <div>
+                    {assignments_upcoming}
+                </div>
+                <h4>{gettext("Past")}:</h4>
+                <div>
+                    {assignments_past}
+                </div>
+            </div>
         );
     }
 
@@ -248,7 +366,6 @@ class LiveProjectWorkflows extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state.data);
         let workflows_added = this.state.data.workflows_added.map(workflow=>
             <WorkflowVisibility workflow_data={workflow} visibility="visible" visibilityFunction={this.switchVisibility.bind(this)}/>
         );
@@ -272,17 +389,12 @@ class LiveProjectWorkflows extends LiveProjectSection{
     switchVisibility(pk,visibility){
         let workflows_added=this.state.data.workflows_added.slice()
         let workflows_not_added=this.state.data.workflows_not_added.slice()
-        console.log("switching visibility");
-        console.log(pk);
-        console.log(workflows_added);
-        console.log(workflows_not_added);
         if(visibility=="visible"){
             for(let i=0;i<workflows_not_added.length;i++){
                 if(workflows_not_added[i].id==pk){
                     let removed = workflows_not_added.splice(i,1);
                     setWorkflowVisibility(this.props.objectID,pk,true)
                     workflows_added.push(removed[0]);
-                    console.log(removed);
                 }
             }
         }else{
@@ -291,7 +403,6 @@ class LiveProjectWorkflows extends LiveProjectSection{
                     let removed = workflows_added.splice(i,1);
                     setWorkflowVisibility(this.props.objectID,pk,false)
                     workflows_not_added.push(removed[0]);
-                    console.log(removed);
                 }
             }
         }
@@ -305,7 +416,6 @@ class StudentLiveProjectWorkflows extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
         let workflows_added = this.state.data.workflows_added.map(workflow=>
             <WorkflowForMenu workflow_data={workflow}/>
         );
@@ -327,7 +437,6 @@ class LiveProjectStudents extends React.Component{
         let liveproject = this.props.liveproject;
 
         let register_link;
-        console.log(liveproject);
         if(liveproject && liveproject.registration_hash){
             let register_url = registration_path.replace("project_hash",liveproject.registration_hash);
             register_link = (
@@ -372,9 +481,8 @@ class LiveProjectSettings extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
         return (
-            <div>Got data</div>
+            <div>Not yet implemented</div>
         );
     }
 

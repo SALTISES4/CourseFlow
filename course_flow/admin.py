@@ -4,15 +4,27 @@ from .models import (
     Activity,
     Column,
     ColumnWorkflow,
+    Comment,
     Course,
+    Discipline,
+    Favourite,
+    LiveAssignment,
+    LiveProject,
+    LiveProjectUser,
     Node,
     NodeLink,
     NodeWeek,
+    ObjectPermission,
+    ObjectSet,
     Outcome,
+    OutcomeHorizontalLink,
     OutcomeNode,
     OutcomeOutcome,
+    OutcomeWorkflow,
     Program,
     Project,
+    UpdateNotification,
+    UserAssignment,
     Week,
     WeekWorkflow,
     Workflow,
@@ -35,3 +47,15 @@ admin.site.register(WorkflowProject)
 admin.site.register(Outcome)
 admin.site.register(OutcomeNode)
 admin.site.register(OutcomeOutcome)
+admin.site.register(OutcomeWorkflow)
+admin.site.register(ObjectPermission)
+admin.site.register(ObjectSet)
+admin.site.register(OutcomeHorizontalLink)
+admin.site.register(Discipline)
+admin.site.register(Favourite)
+admin.site.register(Comment)
+admin.site.register(LiveProject)
+admin.site.register(LiveProjectUser)
+admin.site.register(LiveAssignment)
+admin.site.register(UserAssignment)
+admin.site.register(UpdateNotification)

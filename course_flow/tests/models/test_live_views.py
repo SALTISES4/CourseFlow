@@ -22,6 +22,7 @@ from course_flow.models import (
     Course,
     Discipline,
     Favourite,
+    LiveAssignment,
     LiveProject,
     LiveProjectUser,
     Node,
@@ -36,6 +37,7 @@ from course_flow.models import (
     Program,
     Project,
     User,
+    UserAssignment,
     Week,
     WeekWorkflow,
     Workflow,
@@ -612,3 +614,243 @@ class ModelViewTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 200)
+
+    def test_assignment_create_view(self):
+        author = get_author()
+        project = Project.objects.create(author=author)
+        workflow = Course.objects.create(author=author)
+        WorkflowProject.objects.create(workflow=workflow, project=project)
+        column = workflow.columns.create(author=author)
+        week = workflow.weeks.create(author=author)
+        node = week.nodes.create(author=author)
+
+        liveproject = LiveProject.objects.create(project=project)
+        response = self.client.post(
+            reverse("course_flow:create-live-assignment"),
+            {"liveprojectPk": liveproject.pk, "nodePk": node.pk},
+        )
+        self.assertEqual(response.status_code, 401)
+        user = login(self)
+        response = self.client.post(
+            reverse("course_flow:create-live-assignment"),
+            {"liveprojectPk": liveproject.pk, "nodePk": node.pk},
+        )
+        self.assertEqual(response.status_code, 403)
+        LiveProjectUser.objects.create(
+            user=user,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_STUDENT,
+        )
+        response = self.client.post(
+            reverse("course_flow:create-live-assignment"),
+            {"liveprojectPk": liveproject.pk, "nodePk": node.pk},
+        )
+        self.assertEqual(response.status_code, 403)
+        LiveProjectUser.objects.create(
+            user=user,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_TEACHER,
+        )
+        response = self.client.post(
+            reverse("course_flow:create-live-assignment"),
+            {"liveprojectPk": liveproject.pk, "nodePk": node.pk},
+        )
+        self.assertEqual(response.status_code, 403)
+        liveproject.visible_workflows.add(workflow)
+        response = self.client.post(
+            reverse("course_flow:create-live-assignment"),
+            {"liveprojectPk": liveproject.pk, "nodePk": node.pk},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(LiveAssignment.objects.all().count(), 1)
+
+    def test_assignment_add_users_view(self):
+        author = get_author()
+        project = Project.objects.create(author=author)
+        workflow = Course.objects.create(author=author)
+        WorkflowProject.objects.create(workflow=workflow, project=project)
+        column = workflow.columns.create(author=author)
+        week = workflow.weeks.create(author=author)
+        node = week.nodes.create(author=author)
+
+        liveproject = LiveProject.objects.create(project=project)
+        assignment = LiveAssignment.objects.create(
+            liveproject=liveproject, task=node
+        )
+        LiveProjectUser.objects.create(
+            user=author,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_TEACHER,
+        )
+        user_list = [author.pk]
+        response = self.client.post(
+            reverse("course_flow:add-users-to-assignment"),
+            {
+                "liveassignmentPk": assignment.pk,
+                "user_list": JSONRenderer().render(user_list).decode("utf-8"),
+                "add": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 401)
+        user = login(self)
+        response = self.client.post(
+            reverse("course_flow:add-users-to-assignment"),
+            {
+                "liveassignmentPk": assignment.pk,
+                "user_list": JSONRenderer().render(user_list).decode("utf-8"),
+                "add": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        LiveProjectUser.objects.create(
+            user=user,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_STUDENT,
+        )
+        response = self.client.post(
+            reverse("course_flow:add-users-to-assignment"),
+            {
+                "liveassignmentPk": assignment.pk,
+                "user_list": JSONRenderer().render(user_list).decode("utf-8"),
+                "add": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        LiveProjectUser.objects.create(
+            user=user,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_TEACHER,
+        )
+        response = self.client.post(
+            reverse("course_flow:add-users-to-assignment"),
+            {
+                "liveassignmentPk": assignment.pk,
+                "user_list": JSONRenderer().render(user_list).decode("utf-8"),
+                "add": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            UserAssignment.objects.filter(
+                user=user_list[0], assignment=assignment
+            ).count(),
+            1,
+        )
+        response = self.client.post(
+            reverse("course_flow:add-users-to-assignment"),
+            {
+                "liveassignmentPk": assignment.pk,
+                "user_list": JSONRenderer().render(user_list).decode("utf-8"),
+                "add": JSONRenderer().render(False).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            UserAssignment.objects.filter(
+                user=user_list[0], assignment=assignment
+            ).count(),
+            0,
+        )
+
+    def test_set_assignment_completion_view(self):
+        author = get_author()
+        project = Project.objects.create(author=author)
+        workflow = Course.objects.create(author=author)
+        WorkflowProject.objects.create(workflow=workflow, project=project)
+        column = workflow.columns.create(author=author)
+        week = workflow.weeks.create(author=author)
+        node = week.nodes.create(author=author)
+
+        liveproject = LiveProject.objects.create(project=project)
+        assignment = LiveAssignment.objects.create(
+            liveproject=liveproject, task=node
+        )
+        LiveProjectUser.objects.create(
+            user=author,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_TEACHER,
+        )
+        userassignment = UserAssignment.objects.create(
+            user=author,
+            assignment=assignment,
+        )
+        response = self.client.post(
+            reverse("course_flow:set-assignment-completion"),
+            {
+                "userassignmentPk": userassignment.pk,
+                "completed": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 401)
+        user = login(self)
+        response = self.client.post(
+            reverse("course_flow:set-assignment-completion"),
+            {
+                "userassignmentPk": userassignment.pk,
+                "completed": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        lpu = LiveProjectUser.objects.create(
+            user=user,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_STUDENT,
+        )
+        response = self.client.post(
+            reverse("course_flow:set-assignment-completion"),
+            {
+                "userassignmentPk": userassignment.pk,
+                "completed": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(
+            UserAssignment.objects.get(user=author).completed, False
+        )
+        self.assertEqual(response.status_code, 403)
+        userassignment2 = UserAssignment.objects.create(
+            user=user,
+            assignment=assignment,
+        )
+        response = self.client.post(
+            reverse("course_flow:set-assignment-completion"),
+            {
+                "userassignmentPk": userassignment2.pk,
+                "completed": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(UserAssignment.objects.get(user=user).completed, True)
+        assignment.self_reporting = False
+        assignment.save()
+        response = self.client.post(
+            reverse("course_flow:set-assignment-completion"),
+            {
+                "userassignmentPk": userassignment2.pk,
+                "completed": JSONRenderer().render(False).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        lpu.role_type = LiveProjectUser.ROLE_TEACHER
+        lpu.save()
+        response = self.client.post(
+            reverse("course_flow:set-assignment-completion"),
+            {
+                "userassignmentPk": userassignment2.pk,
+                "completed": JSONRenderer().render(False).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            UserAssignment.objects.get(user=user).completed, False
+        )
+        response = self.client.post(
+            reverse("course_flow:set-assignment-completion"),
+            {
+                "userassignmentPk": userassignment.pk,
+                "completed": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            UserAssignment.objects.get(user=author).completed, True
+        )

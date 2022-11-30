@@ -11,12 +11,16 @@ body, html{
     font-size: 14px;
 }
 
-.left-panel a, .workflow-title-bar a, .home-tabs .ui-tabs-tab a, .titlebar a, .home-item a{
+.left-panel a, .workflow-title-bar a, .home-tabs .ui-tabs-tab a, .home-item a{
     color:#444444;
+}
+
+a.hover-shade{
+    color: unset;
     text-decoration: none;
 }
 
-a:hover{
+a.hover-shade:hover{
     text-decoration:underline;
 }
 
@@ -90,11 +94,34 @@ button:hover{
 
 .title{
     padding-left:20px;
-    display:inline-block;
+    display:flex;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
-.title *{
-    font-family:initial;
+.title a img{
+    width: 24px;
+    margin-right: 5px;
+}
+
+.title a{
+    display: flex;
+    color: white;
+}
+
+.inline-title{
+    display: inline;
+}
+
+
+#update-notifications{
+    position: relative;
+}
+
+#notification-inner{
+    height: 32px;
+    box-sizing: border-box;
+    padding: 5px;
 }
 
 .menubar{
@@ -103,6 +130,10 @@ button:hover{
     width:100%;
     font-family:'Open Sans',sans-serif;
     align-items: center;
+}
+
+.menubar.hidden{
+    display: none;
 }
 
 .workflow-title-bar{
@@ -122,8 +153,8 @@ button:hover{
 
 .floatbar{
     flex-shrink:99;
-    color:white;
-
+    display: flex;
+    align-items: center;
 }
 
 .floatbardiv{
@@ -143,10 +174,15 @@ button:hover{
     display:inline-block;
 }
 
+.floatbardiv .create-dropdown{
+    color: #444444;
+}
+
 .floatbar img{
     display:inline-block;
     vertical-align: middle;
     width:24px;
+    margin:5px;
 }
 
 .floatbar > div{
@@ -156,9 +192,15 @@ button:hover{
     padding-right:6px;
 }
 
+#visible-icons{
+    display: flex;
+}
+
 .users-box{
     position:relative;
     height:100%;
+    margin-right: 20px;
+    margin-bottom: 8px;
 }
 
 .users-box.connection-failed{
@@ -173,6 +215,7 @@ button:hover{
 }
 
 .user-indicator {
+    color: white;
     display: inline-block;
     width: 20px;
     height: 20px;
@@ -206,19 +249,26 @@ button:hover{
 .users-hidden{
     display:none;
     position:absolute;
-    top:44px;
-    right:0px;
     padding:5px;
     background-color:white;
     border:1px solid grey;
+    z-index: 10;
+    right: 0px;
+    top: 2px;
 }
 
 .users-more:hover+.users-hidden, .users-hidden:hover{
     display:inline-block;
 }
 
+#viewbar{
+    color: #444444;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+}
 
-
+/*
 .viewbar{
     display:inline-block;
     height:100%;
@@ -235,7 +285,7 @@ button:hover{
 .viewbar > div >img{
     width:30px;
     height:30px;
-}
+}*/
 
 .topnavimage{
     box-sizing: border-box;
@@ -392,17 +442,13 @@ button:hover{
     margin-right:6px;
     padding-top:8px;
     padding-bottom:8px;
-    display:block;
+    display:flex;
+    align-items: center;
     font-size: 14px;
 }
 
 .panel-item > img{
     margin-right:10px;
-}
-
-.panel-item > *{
-    display:inline-block;
-    vertical-align: middle;
 }
 
 .panel-item img{
@@ -549,7 +595,6 @@ button:hover{
 }
 
 .floatbar .create-dropdown{
-    margin-top:8px;
     margin-left:-6px;
 }
 
@@ -618,6 +663,11 @@ button:hover{
     font-size:12px;
     margin-bottom:6px;
     color:gray;
+}
+
+.warning{
+    font-size: 12px;
+    color: red;
 }
 
 .workflow-type-indicator{
@@ -923,6 +973,12 @@ button:hover{
 }
 #student-class-activity-section {
 
+}
+
+.node-block-grid{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
 }
 
 

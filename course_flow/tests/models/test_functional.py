@@ -24,6 +24,7 @@ from course_flow.models import (
     Course,
     Discipline,
     Favourite,
+    LiveAssignment,
     LiveProject,
     LiveProjectUser,
     ObjectPermission,
@@ -34,6 +35,7 @@ from course_flow.models import (
     OutcomeWorkflow,
     Program,
     Project,
+    UserAssignment,
     Week,
     Workflow,
     WorkflowProject,
@@ -98,6 +100,7 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
 
         self.assertEqual(self.live_server_url + "/home/", selenium.current_url)
 
+
 class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
@@ -130,12 +133,15 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
         )
+        time.sleep(1)
+        selenium.find_element_by_id("overflow-options-icon").click()
         selenium.find_element_by_id("live-project").click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
+        time.sleep(1)
         assert (
             "new title"
-            in selenium.find_element_by_css_selector("#workflowtitle div").text
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
 
     def test_my_classrooms_teacher(self):
@@ -148,32 +154,32 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "#panel-my-live-projects"
         ).click()
         selenium.find_element_by_css_selector(".workflow-top-row a").click()
-        windows = selenium.window_handles
-        selenium.switch_to_window(windows[0])
-        selenium.close()
-        selenium.switch_to_window(windows[1])
+        # windows = selenium.window_handles
+        # selenium.switch_to_window(windows[0])
+        # selenium.close()
+        # selenium.switch_to_window(windows[1])
         assert (
             "new title"
-            in selenium.find_element_by_css_selector("#workflowtitle div").text
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
         selenium.get(self.live_server_url + "/home/")
         selenium.find_element_by_css_selector(
             "#home-liveprojects a:first-child"
         ).click()
         selenium.find_element_by_css_selector(".workflow-top-row a").click()
-        windows = selenium.window_handles
-        selenium.switch_to_window(windows[0])
-        selenium.close()
-        selenium.switch_to_window(windows[1])
+        # windows = selenium.window_handles
+        # selenium.switch_to_window(windows[0])
+        # selenium.close()
+        # selenium.switch_to_window(windows[1])
         assert (
             "new title"
-            in selenium.find_element_by_css_selector("#workflowtitle div").text
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
         selenium.get(self.live_server_url + "/home/")
         selenium.find_element_by_css_selector("#home-liveprojects a+a").click()
         assert (
             "new title"
-            in selenium.find_element_by_css_selector("#workflowtitle div").text
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
 
     def test_my_classrooms_student(self):
@@ -198,32 +204,32 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "#panel-my-live-projects"
         ).click()
         selenium.find_element_by_css_selector(".workflow-top-row a").click()
-        windows = selenium.window_handles
-        selenium.switch_to_window(windows[0])
-        selenium.close()
-        selenium.switch_to_window(windows[1])
+        # windows = selenium.window_handles
+        # selenium.switch_to_window(windows[0])
+        # selenium.close()
+        # selenium.switch_to_window(windows[1])
         assert (
             "new title"
-            in selenium.find_element_by_css_selector("#workflowtitle div").text
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
         selenium.get(self.live_server_url + "/home/")
         selenium.find_element_by_css_selector(
             "#home-liveprojects a:first-child"
         ).click()
         selenium.find_element_by_css_selector(".workflow-top-row a").click()
-        windows = selenium.window_handles
-        selenium.switch_to_window(windows[0])
-        selenium.close()
-        selenium.switch_to_window(windows[1])
+        # windows = selenium.window_handles
+        # selenium.switch_to_window(windows[0])
+        # selenium.close()
+        # selenium.switch_to_window(windows[1])
         assert (
             "new title"
-            in selenium.find_element_by_css_selector("#workflowtitle div").text
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
         selenium.get(self.live_server_url + "/home/")
         selenium.find_element_by_css_selector("#home-liveprojects a+a").click()
         assert (
             "new title"
-            in selenium.find_element_by_css_selector("#workflowtitle div").text
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
 
     def test_add_roles(self):
@@ -308,7 +314,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         assert (
             "new title"
-            in selenium.find_element_by_css_selector("#workflowtitle div").text
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
 
     def test_add_workflows(self):
@@ -428,15 +434,214 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             ".menu-grid .workflow-for-menu .workflow-title"
         ).click()
 
-        windows = selenium.window_handles
-        selenium.switch_to_window(windows[0])
-        selenium.close()
-        selenium.switch_to_window(windows[1])
+        # windows = selenium.window_handles
+        # selenium.switch_to_window(windows[0])
+        # selenium.close()
+        # selenium.switch_to_window(windows[1])
 
         time.sleep(1)
         assert (
             "new workflow"
-            in selenium.find_element_by_css_selector("#workflowtitle a").text
+            in selenium.find_element_by_css_selector(".workflow-title").text
+        )
+
+    def test_create_assignment(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user, title="new title")
+        workflow = Course.objects.create(
+            author=self.user, title="new workflow"
+        )
+        node = workflow.weeks.first().nodes.create(
+            author=self.user, column=workflow.columns.first()
+        )
+        WorkflowProject.objects.create(project=project, workflow=workflow)
+        liveproject = LiveProject.objects.create(project=project)
+        liveproject.visible_workflows.add(workflow)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:live-project-update", args=[project.id])
+        )
+        time.sleep(1)
+        selenium.find_element_by_css_selector("#button_assignments").click()
+        time.sleep(3)
+
+        selenium.find_element_by_css_selector("#select-workflow > div").click()
+
+        time.sleep(3)
+
+        hover_item = selenium.find_element_by_css_selector(".node")
+        click_item = selenium.find_element_by_css_selector(
+            ".node .mouseover-actions img"
+        )
+        action_hover_click(selenium, hover_item, click_item).perform()
+
+        time.sleep(3)
+
+        selenium.find_elements_by_css_selector("#users_all option")[0].click()
+        selenium.find_element_by_id("add-user").click()
+
+        time.sleep(2)
+
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector("#users_chosen option")
+            ),
+            1,
+        )
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector("#users_all option")), 0
+        )
+        self.assertEqual(
+            UserAssignment.objects.filter(
+                user=self.user,
+                assignment=liveproject.liveassignment_set.all().first(),
+            ).count(),
+            1,
+        )
+
+        selenium.find_element_by_id("button_report").click()
+        time.sleep(2)
+        selenium.find_element_by_css_selector("td > input").click()
+        time.sleep(1)
+        self.assertEqual(UserAssignment.objects.first().completed, True)
+
+    def test_student_assignment(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        user2 = get_author()
+        project = Project.objects.create(author=user2, title="new title")
+        workflow = Course.objects.create(author=user2, title="new workflow")
+        workflow2 = Activity.objects.create(
+            author=user2, title="linked workflow"
+        )
+        WorkflowProject.objects.create(project=project, workflow=workflow)
+        WorkflowProject.objects.create(project=project, workflow=workflow2)
+        node = workflow.weeks.first().nodes.create(
+            author=self.user, column=workflow.columns.first()
+        )
+        node.linked_workflow = workflow2
+        node.save()
+        liveproject = LiveProject.objects.create(project=project)
+        LiveProjectUser.objects.create(
+            liveproject=liveproject,
+            user=self.user,
+            role_type=LiveProjectUser.ROLE_STUDENT,
+        )
+        assignment = LiveAssignment.objects.create(
+            author=user2, task=node, liveproject=liveproject
+        )
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:live-project-update", args=[project.id])
+        )
+        selenium.find_element_by_css_selector("#button_assignments").click()
+        time.sleep(1)
+
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".workflow-details .node"
+                )
+            ),
+            0,
+        )
+
+        UserAssignment.objects.create(user=self.user, assignment=assignment)
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:live-project-update", args=[project.id])
+        )
+        selenium.find_element_by_css_selector("#button_assignments").click()
+        time.sleep(1)
+
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".workflow-details .node"
+                )
+            ),
+            1,
+        )
+
+        selenium.find_element_by_css_selector(
+            ".node input[type='checkbox']"
+        ).click()
+
+        time.sleep(1)
+
+        self.assertEqual(
+            UserAssignment.objects.get(user=self.user).completed, True
+        )
+
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".node .linked-workflow"
+                )
+            ),
+            0,
+        )
+
+        liveproject.visible_workflows.add(workflow)
+        liveproject.visible_workflows.add(workflow2)
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:live-project-update", args=[project.id])
+        )
+        selenium.find_element_by_css_selector("#button_assignments").click()
+        time.sleep(1)
+
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".node .linked-workflow"
+                )
+            ),
+            2,
+        )
+        selenium.find_element_by_css_selector(
+            ".node .containing-workflow"
+        ).click()
+        time.sleep(2)
+
+        windows = selenium.window_handles
+        selenium.switch_to_window(windows[1])
+
+        self.assertEqual(
+            "new workflow", selenium.find_element_by_css_selector(".workflow-title").text
+        )
+
+        selenium.close()
+        selenium.switch_to_window(windows[0])
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:live-project-update", args=[project.id])
+        )
+        selenium.find_element_by_css_selector("#button_assignments").click()
+        time.sleep(1)
+
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".node .linked-workflow"
+                )
+            ),
+            2,
+        )
+        selenium.find_element_by_css_selector(
+            ".node .linked-workflow:not(.containing-workflow)"
+        ).click()
+        time.sleep(2)
+        windows = selenium.window_handles
+        selenium.switch_to_window(windows[1])
+        self.assertEqual(
+            "linked workflow",
+            selenium.find_element_by_css_selector(".workflow-title").text,
         )
 
 
@@ -486,7 +691,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         description.send_keys(project_description)
         selenium.find_element_by_id("save-button").click()
         assert (
-            project_title in selenium.find_element_by_id("workflowtitle").text
+            project_title in selenium.find_element_by_css_selector(".workflow-title").text
         )
         assert (
             project_description
@@ -523,7 +728,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             assert (
                 project_title
-                in selenium.find_element_by_id("workflowtitle").text
+                in selenium.find_element_by_css_selector(".workflow-title").text
             )
             assert (
                 project_description
@@ -574,14 +779,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             time.sleep(5)
 
-            windows = selenium.window_handles
-            selenium.switch_to_window(windows[0])
-            selenium.close()
-            selenium.switch_to_window(windows[1])
+            # windows = selenium.window_handles
+            # selenium.switch_to_window(windows[0])
+            # selenium.close()
+            # selenium.switch_to_window(windows[1])
 
             assert (
                 project_title
-                in selenium.find_element_by_id("workflowtitle").text
+                in selenium.find_element_by_css_selector(".workflow-title").text
             )
             selenium.get(project_url)
             selenium.find_element_by_css_selector(
@@ -660,7 +865,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element_by_id("save-changes").click()
         assert (
             "new title"
-            in selenium.find_element_by_css_selector("#workflowtitle div").text
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
         assert (
             "new description"
@@ -1460,7 +1665,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert (
                 "project title"
                 in selenium.find_element_by_css_selector(
-                    "#workflowtitle div"
+                    ".workflow-title"
                 ).text
             )
 
@@ -1515,15 +1720,15 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             selenium.find_element_by_css_selector(".workflow-title").click()
             time.sleep(2)
 
-            windows = selenium.window_handles
-            selenium.switch_to_window(windows[0])
-            selenium.close()
-            selenium.switch_to_window(windows[1])
+            # windows = selenium.window_handles
+            # selenium.switch_to_window(windows[0])
+            # selenium.close()
+            # selenium.switch_to_window(windows[1])
 
             assert (
                 "new strategy"
                 in selenium.find_element_by_css_selector(
-                    "#workflowtitle a"
+                    ".workflow-title"
                 ).text
             )
             self.assertEqual(
@@ -2262,7 +2467,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert (
                 workflow_types[i - 1]
                 in selenium.find_element_by_css_selector(
-                    "#workflowtitle a"
+                    ".workflow-title"
                 ).text
             )
             selenium.get(this_url)
@@ -2288,7 +2493,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert (
                 workflow_type
                 in selenium.find_element_by_css_selector(
-                    "#workflowtitle a"
+                    ".workflow-title"
                 ).text
             )
 
@@ -3473,6 +3678,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(3)
 
+        selenium.find_element_by_id("overflow-options-icon").click()
         selenium.find_element_by_id("comparison-view").click()
         time.sleep(3)
         selenium.find_element_by_id("load-workflow").click()
@@ -3711,5 +3917,3 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         communicator.scope["user"] = user
         connected, subprotocol = async_to_sync_connect(communicator)
         assert not connected
-
-

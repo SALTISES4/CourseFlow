@@ -58,6 +58,7 @@
     <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
 
     <!-- * Icons -->
+    <link rel="icon" type="image/x-icon" href="{% static 'course_flow/img/courseflow-favicon.png' %}";>
     <!-- ** Preloads -->
     <link
       rel="preload"
@@ -164,7 +165,7 @@
         {% endif %}
         <div class="left-panel-extra">
           {% if user|has_group:"Teacher" %}
-            <a class="panel-item hover-hade" href="{% url 'course_flow:my-favourites' %}">
+            <a class="panel-item hover-shade" href="{% url 'course_flow:my-favourites' %}">
               {% trans 'My Favourites' %}
             </a>
               {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
@@ -193,17 +194,15 @@
             </div>
             <div class="floatbar">
               <div id="username-container" class="topdropwrapper">
-                <button id="username" class="topdropbutton">
-                  <a class="username-link" href="{% url 'course_flow:home' %}">
-                      {{ user.username }}
-                  </a>
-                </button>
+                <a class="topdropbutton hover-shade" href="{% url 'course_flow:home' %}">
+                    {{ user.username }}
+                </a>
               </div>
               {% if user.username %}
               <div id="logout-container" class="topdropwrapper">
-                <button id="logout" class="topdropbutton">
+                <a id="logout" class="topdropbutton hover-shade">
                   {% trans 'logout' %}
-                </button>
+                </a>
               </div>
               {% endif %}
               {% if user|has_group:"Teacher" %}
@@ -228,14 +227,23 @@
               {% endif %}
             </div>
           </div>
-            <div class="menubar">
-                <div id="workflowtitle" class="workflow-title-bar">
-                </div>
+            <div id="update-notifications">
+            </div>
+            <div class="menubar hidden">
                 <div id="floatbar" class="floatbar">
+                  <div id="visible-icons"></div>
+                  <div id="overflow-options">
+                    <img id="overflow-options-icon" class="hover-shade"
+                      src="{% static 'course_flow/img/images_svg/more_options.svg' %}"
+                    />
+                    <div id="overflow-links" class="create-dropdown">
+                      
+                    </div>
+                  </div>
                 </div>
                 <div id="userbar" class="floatbar">
                 </div>
-                <div id="viewbar" class="viewbar">
+                <div id="viewbar" class="floatbar">
                 </div>
               </div>
         </div>
@@ -270,6 +278,7 @@
       toggle_strategy: "{% url 'course_flow:toggle-strategy' %}",
       new_node_link: "{% url 'course_flow:new-node-link' %}",
       delete_self: "{% url 'course_flow:delete-self' %}",
+      delete_self_live: "{% url 'course_flow:delete-self-live' %}",
       restore_self: "{% url 'course_flow:restore-self' %}",
       delete_self_soft: "{% url 'course_flow:delete-self-soft' %}",
       duplicate_self: "{% url 'course_flow:duplicate-self' %}",
@@ -306,6 +315,13 @@
       set_workflow_visibility: "{% url 'course_flow:set-workflow-visibility' %}",
       get_live_project_data: "{% url 'course_flow:get-live-project-data' %}",
       get_live_project_data_student: "{% url 'course_flow:get-live-project-data-student' %}",
+      get_assignment_data: "{% url 'course_flow:get-assignment-data' %}",
+      get_assignment_data_student: "{% url 'course_flow:get-assignment-data-student' %}",
+      get_workflow_nodes: "{% url 'course_flow:get-workflow-nodes' %}",
+      create_live_assignment: "{% url 'course_flow:create-live-assignment' %}",
+      add_users_to_assignment: "{% url 'course_flow:add-users-to-assignment' %}",
+      update_liveproject_value: "{% url 'course_flow:update-liveproject-value' %}",
+      set_assignment_completion: "{% url 'course_flow:set-assignment-completion' %}",
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
@@ -321,7 +337,8 @@
         course:"{% url 'course_flow:workflow-update' pk='0'%}",
         program:"{% url 'course_flow:workflow-update' pk='0'%}",
         workflow:"{% url 'course_flow:workflow-update' pk='0'%}",
-        liveproject:"{% url 'course_flow:live-project-update' pk='0'%}"
+        liveproject:"{% url 'course_flow:live-project-update' pk='0'%}",
+        liveassignment:"{% url 'course_flow:assignment-update' pk='0'%}"
     };
     const public_update_path = {
         activity:"{% url 'course_flow:workflow-public' pk='0'%}",
@@ -333,6 +350,14 @@
 
     $("#logout").on("click",()=>{
         window.location.replace("{% url 'course_flow:logout' %}");
+    });
+
+    $("#overflow-options").on("click",(evt)=>{
+      evt.stopPropagation();
+      $("#overflow-links").toggleClass("active");
+    });
+    document.addEventListener("click",()=>{
+      $("#overflow-links").removeClass("active");
     });
 
     //reload if we got here using forward or back button
@@ -386,6 +411,23 @@
         $(".workflow-wrapper, #container").removeClass("printing");
     });
 
+
+
+    update_notifications =  {{ update_notifications |safe }}
+    if(update_notifications.title && update_notifications.id != localStorage.getItem("last_hidden_notification")){
+      $("#update-notifications").html(
+        "<div id='notification-inner'>"+
+          update_notifications.title+
+        "</div>"+
+        "<div id='close-notification' class='window-close-button'>"+
+          "<img src='{% static 'course_flow/img/images_svg/close.svg' %}'/>"+
+        "</div>"
+      );
+    }
+    $("#close-notification").on("click", ()=>{
+      localStorage.setItem("last_hidden_notification",update_notifications.id);
+      $("#update-notifications").css({display:"none"})
+    });
 
     </script>
     {% endblock %}
