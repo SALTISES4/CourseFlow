@@ -5,7 +5,7 @@ from course_flow.serializers import UpdateNotificationSerializer
 
 
 def update_notifications(request):
-    if request.path.startswith("/course-flow/"):
+    if "course-flow" in request.path:
         updates = UpdateNotification.objects.order_by("-created_on")
         if updates.count() > 0:
             last_update = updates.first()
