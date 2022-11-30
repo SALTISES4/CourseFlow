@@ -35,7 +35,12 @@ class Project(models.Model):
         max_length=title_max_length, null=True, blank=True
     )
     description = models.TextField(null=True, blank=True)
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(
+        User,
+        related_name="authored_projects",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
@@ -1065,7 +1070,12 @@ class Course(Workflow):
 
 
 class Program(Workflow):
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(
+        User,
+        related_name="authored_programs",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
 
     DEFAULT_CUSTOM_COLUMN = 20
     DEFAULT_COLUMNS = [20, 20, 20]

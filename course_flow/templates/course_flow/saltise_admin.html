@@ -1,0 +1,33 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %} {% load course_flow_templatetags %}
+<!-- -->
+{% block header %} {% endblock %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<div id="content-container" class="body-wrapper">
+    <div class="home-menu-container">
+        <h1>CourseFlow Analytics</h1>
+        <hr>
+        <p>{% trans "Analytics on CourseFlow usage" %}</p>
+        <h3>{% trans "Workflow Information:" %}</h3>
+        <p>{% trans "Total workflows, projects, and nodes created by month. Bracketed numbers show content-rich objects (three or more nodes)." %}</p>
+        {% get_saltise_admin_workflows %}
+        <h3>{% trans "User Information:" %}</h3>
+        <p>{% trans "Number of users who have created at least one of each the given objects (workflows, projects, or nodes) within the given month." %}</p>
+        {% get_saltise_admin_users %}
+    </div>
+
+
+</div>
+<!-- -->
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
