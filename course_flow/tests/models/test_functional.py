@@ -77,7 +77,7 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
     def test_register_user(self):
         selenium = self.selenium
 
-        selenium.get(self.live_server_url + "course-flow/register/")
+        selenium.get(self.live_server_url + "register/")
 
         first_name = selenium.find_element_by_id("id_first_name")
         last_name = selenium.find_element_by_id("id_last_name")
@@ -98,7 +98,9 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
 
         selenium.find_element_by_id("register-button").click()
 
-        self.assertEqual(self.live_server_url + "course-flow/home/", selenium.current_url)
+        self.assertEqual(
+            self.live_server_url + "course-flow/home/", selenium.current_url
+        )
 
 
 class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
@@ -612,7 +614,8 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium.switch_to_window(windows[1])
 
         self.assertEqual(
-            "new workflow", selenium.find_element_by_css_selector(".workflow-title").text
+            "new workflow",
+            selenium.find_element_by_css_selector(".workflow-title").text,
         )
 
         selenium.close()
@@ -691,7 +694,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         description.send_keys(project_description)
         selenium.find_element_by_id("save-button").click()
         assert (
-            project_title in selenium.find_element_by_css_selector(".workflow-title").text
+            project_title
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
         assert (
             project_description
@@ -728,7 +732,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             assert (
                 project_title
-                in selenium.find_element_by_css_selector(".workflow-title").text
+                in selenium.find_element_by_css_selector(
+                    ".workflow-title"
+                ).text
             )
             assert (
                 project_description
@@ -786,7 +792,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             assert (
                 project_title
-                in selenium.find_element_by_css_selector(".workflow-title").text
+                in selenium.find_element_by_css_selector(
+                    ".workflow-title"
+                ).text
             )
             selenium.get(project_url)
             selenium.find_element_by_css_selector(

@@ -15,4 +15,4 @@ def update_notifications(request):
                 .decode("utf-8")
             )
             return {"update_notifications": last_update_serialized}
-        return {"update_notifications": {}}
+    return {"update_notifications": {}}
