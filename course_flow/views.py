@@ -2114,6 +2114,21 @@ def get_parent_workflow_info(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted", "parent_workflows": data_package})
 
 
+@public_model_access("workflow")
+def get_public_parent_workflow_info(request: HttpRequest, pk) -> HttpResponse:
+    try:
+        parent_workflows = [
+            node.get_workflow()
+            for node in Node.objects.filter(linked_workflow__id=pk)
+        ]
+        data_package = InfoBoxSerializer(
+            parent_workflows, many=True, context={"user": request.user}
+        ).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "parent_workflows": data_package})
+
+
 @user_can_comment(False)
 def get_comments_for_object(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))

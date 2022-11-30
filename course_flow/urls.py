@@ -300,6 +300,11 @@ def course_flow_patterns():
             name="get-parent-workflow-info",
         ),
         path(
+            "workflow/<int:pk>/get-public-parent-workflow-info/",
+            views.get_public_parent_workflow_info,
+            name="get-public-parent-workflow-info",
+        ),
+        path(
             "exports/get/",
             views.get_export,
             name="get-export",

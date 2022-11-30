@@ -14,7 +14,7 @@ import StrategyView from "./Strategy";
 import WorkflowOutcomeView from "./WorkflowOutcomeView";
 import WorkflowLegend from "./WorkflowLegend";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend";
-import {getParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport} from "./PostFunctions";
+import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
@@ -128,7 +128,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
 
         let parent_workflow_indicator;
         parent_workflow_indicator = (
-            <ParentWorkflowIndicator workflow_id={data.id}/>
+            <ParentWorkflowIndicator renderer={renderer} workflow_id={data.id}/>
         )
 
         let share;
@@ -762,9 +762,15 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
     }
     
     componentDidMount(){
-        getParentWorkflowInfo(this.props.workflow_id,response_data=>
-            this.setState({parent_workflows:response_data.parent_workflows,has_loaded:true})
-        );
+        if(this.props.renderer.public_view){
+            getPublicParentWorkflowInfo(this.props.workflow_id,response_data=>
+                this.setState({parent_workflows:response_data.parent_workflows,has_loaded:true})
+            );
+        }else{
+            getParentWorkflowInfo(this.props.workflow_id,response_data=>
+                this.setState({parent_workflows:response_data.parent_workflows,has_loaded:true})
+            );
+        }
     }
 
 
