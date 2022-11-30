@@ -27,7 +27,7 @@ def auth_patterns():
 def app_patterns():
     patterns = [
         path(
-            "",
+            "course-flow/",
             include(
                 (urls.urlpatterns, urls.app_name),
                 namespace="course_flow",
