@@ -10,13 +10,15 @@
 <!-- -->
 {% block body %}
 <div class="home-menu-container">
-    <h1>SALTISE Administration</h1>
+    <h1>CourseFlow Analytics</h1>
     <hr>
-    <div>
-      <p><a href="{% url 'admin:course_flow_updatenotification_changelist' %}">
-        {% trans 'Manage update notifications' %}
-      </a></p>
-    </div>
+    <p>{% trans "Analytics on CourseFlow usage" %}</p>
+    <h3>{% trans "Workflow Information:" %}</h3>
+    <p>{% trans "Total workflows, projects, and nodes created by month. Bracketed numbers show content-rich objects (three or more nodes)." %}</p>
+    {% get_saltise_admin_workflows %}
+    <h3>{% trans "User Information:" %}</h3>
+    <p>{% trans "Number of users who have created at least one of each the given objects (workflows, projects, or nodes) within the given month." %}</p>
+    {% get_saltise_admin_users %}
 </div>
 
 <!-- -->

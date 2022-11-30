@@ -14,11 +14,16 @@ app_name = "course_flow"
 def course_flow_patterns():
     return [
         path("home/", views.home_view, name="home"),
-        path(
-            "saltise_analytics/$",
-            views.SALTISEAnalyticsView.as_view(),
-            name="saltise_analytics",
-        ),
+        # path(
+        #     "admin/",
+        #     views.SALTISEAdminView.as_view(),
+        #     name="saltise-admin",
+        # ),
+        # path(
+        #     "admin/saltise-analytics",
+        #     views.SALTISEAnalyticsView.as_view(),
+        #     name="saltise-analytics",
+        # ),
         path("logout/", views.logout_view, name="logout"),
         path("myprojects/", views.myprojects_view, name="my-projects"),
         path(

@@ -1208,6 +1208,17 @@ def import_view(request):
 class SALTISEAnalyticsView(
     LoginRequiredMixin, UserPassesTestMixin, TemplateView
 ):
+    template_name = "course_flow/saltise_analytics.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name="SALTISE_Staff")
+            in self.request.user.groups.all()
+        )
+
+class SALTISEAdminView(
+    LoginRequiredMixin, UserPassesTestMixin, TemplateView
+):
     template_name = "course_flow/saltise_admin.html"
 
     def test_func(self):
