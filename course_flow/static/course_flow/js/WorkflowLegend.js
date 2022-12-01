@@ -26,11 +26,12 @@ class LegendLine extends React.Component{
 class WorkflowLegend extends React.Component{
     constructor(props){
         super(props);
-        this.state={show_legend:localStorage.getItem("show_legend")};
+        this.state={show_legend:JSON.parse(localStorage.getItem("show_legend"))};
     }
     
     render(){
         console.log("renderering legend");
+        console.log(this.state);
         if(!this.state.show_legend)return this.getSlider();
 
         let contexts = this.props.contexts.map((value)=>
@@ -76,8 +77,8 @@ class WorkflowLegend extends React.Component{
     }
 
     toggle(){
+        localStorage.setItem("show_legend",!this.state.show_legend);
         this.setState({show_legend:!this.state.show_legend});
-        localStorage.setItem("show_legend",this.state.show_legend);
     }
 
     getSlider(){
