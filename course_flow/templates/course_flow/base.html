@@ -181,7 +181,7 @@
         {% endif %}
         <div class="left-panel-extra">
           {% if user|has_group:"Teacher" %}
-            <a class="panel-item hover-shade" href="{% url 'course_flow:my-favourites' %}">
+            <a id="my-favourites" class="panel-item hover-shade" href="{% url 'course_flow:my-favourites' %}">
               {% trans 'My Favourites' %}
             </a>
               {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}

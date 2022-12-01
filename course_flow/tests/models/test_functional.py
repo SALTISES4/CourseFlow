@@ -3285,7 +3285,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             1,
         )
         selenium.find_element_by_css_selector(
-            "a[href='/myfavourites/']"
+            "#my-favourites"
         ).click()
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-for-menu")),
@@ -3333,7 +3333,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             2,
         )
         selenium.find_element_by_css_selector(
-            "a[href='/myfavourites/']"
+            "#my-favourites"
         ).click()
         time.sleep(10)
         self.assertEqual(
