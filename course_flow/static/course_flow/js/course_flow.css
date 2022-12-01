@@ -32,6 +32,11 @@ button{
     cursor:pointer;
 }
 
+[contentEditable=true]:empty:not(:focus):before {
+  content: attr(data-text);
+  color: grey;
+}
+
 .disabled{
     pointer-events: none;
     cursor:default;
@@ -375,8 +380,8 @@ button:hover{
 }
 
 .topdropdiv hr{
-    margin-left:12px;
-    margin-right:12px;
+    margin-left:5px;
+    margin-right:5px;
 }
 
 .topdroptitle{
@@ -2608,29 +2613,65 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 .comment-box{
     text-align:left;
     position:absolute;
-    width:200px;
+    width:300px;
     max-height:400px;
     border:1px solid #1976bc;
     background:white;
     z-index:7;
-    overflow-y:auto;
+    overflow:auto;
     padding: 5px;
     font-size: 12px;
     box-sizing: border-box;
     top:0px;
-    right:-205px;
+    right:-305px;
     border-radius:5px;
-    padding-top:24px;
     box-shadow: 0px 1px 2px 1px rgba(0,0,0,0.3);
 }
 
-.comment-box textarea, .comment-box button{
-    display:block;
+.comment-top-row{
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 16px;
+}
+
+.comment-top-row img{
+    width: 20px;
+}
+
+.comment-block{
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.comment .mouseover-actions{
+    top: 1px;
+    right: 1px;
+}
+
+.comment .action-button{
+    width: 12px;
+    height: 12px;
+}
+
+.comment-box .comment-input-line{
     width:100%;
     box-sizing: border-box;
-    resize:none;
     margin:0px;
     margin-top:4px;
+}
+
+.add-comment-button{
+    width: 20px;
+    margin: 10px;
+}
+
+.add-comment-button.hidden{
+    display: none;
+}
+
+.comment-input-line{
+    display: flex;
+    align-items: center;
 }
 
 .comment-box button.small{
@@ -2638,21 +2679,31 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     font-size:10px;
 }
 
-.comment-box textarea{
-    height:80px;
+.comment-box .comment-input{
+    min-height: 60px;
+    max-height:100px;
     white-space:normal;
+    background: #EEEEEE;
+    flex-grow: 99;
+    border: none;
+    border-radius: 5px;
+    resize: none;
 }
 
 .comment-text{
-    white-space:normal;
+    white-space:pre-line;
 }
 
 .comment{
     position:relative;
-    padding-bottom:5px;
     margin-top:5px;
     padding:2px;
+    padding-bottom:5px;
     border:1px solid white;
+    box-sizing: border-box;
+    width: 100%;
+    overflow-x: hidden;
+    color: #222222;
 }
 
 .comment:hover{
@@ -2661,7 +2712,17 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 }
 
 .comment-by{
+    display: flex;
+    justify-content: space-between;
+}
+.comment-on{
     font-size:10px;
+    color: grey;
+}
+.comment-user{
+    font-size:14px;
+    font-weight: 600;
+
 }
 
 .comment-indicator{
@@ -3317,8 +3378,8 @@ circle.mouseover{
 
 hr{
     margin:4px;
-    margin-left:20%;
-    margin-right:20%;
+    margin-left:10%;
+    margin-right:10%;
 }
 
 h1{

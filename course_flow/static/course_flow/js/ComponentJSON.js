@@ -854,6 +854,7 @@ export class CommentBox extends React.Component{
     constructor(props){
         super(props);
         this.input = React.createRef();
+        this.submit = React.createRef();
         this.state={};
     }
     
@@ -882,47 +883,71 @@ export class CommentBox extends React.Component{
         let comments;
         if(this.props.comments)comments = this.props.comments.map(comment=>
             <div class="comment">
+                <div class="comment-by">
+                    <div class="comment-user">
+                        {Constants.getUserDisplay(comment.user)}
+                    </div>
+                    <div class="comment-on">
+                        {comment.created_on}
+                    </div>
+                </div>
                 <div class="comment-text">
                     {comment.text}
                 </div>
-                <div class="comment-by">
-                    { "-"+comment.user+" ("+comment.created_on+")"}
-                </div>
                 {!this.props.renderer.read_only && <div class="mouseover-actions">
-                    <div class="window-close-button" onClick={this.removeComment.bind(this,comment.id)}>
-                        <img src={iconpath+"close.svg"}/>
+                    <div class="action-button" title={gettext("Delete Comment")} onClick={this.removeComment.bind(this,comment.id)}>
+                        <img src={iconpath+"rubbish.svg"}/>
                     </div>
                 </div>
                 }
             </div>               
         )
         
+        let top_contents=[];
+        top_contents.push(
+            <div class="hover-shade" title={gettext("Close")} onClick = {this.props.parent.commentClick.bind(this.props.parent)}>
+                <img src = {iconpath+"close.svg"}/>
+            </div>
+        );
+        if(!this.props.renderer.read_only && comments.length>1)top_contents.push(
+            <div class="hover-shade" title={gettext("Clear All Comments")} onClick={this.removeAllComments.bind(this)}>
+                <img src = {iconpath+"rubbish.svg"}/>
+            </div>
+        );
+
+        let input_default=gettext("Add a comment");
+        if(this.props.comments && this.props.comments.length>0)input_default=gettext("Reply");
+
         return reactDom.createPortal(
             [
-            <div class="comment-box" onClick={(evt)=>evt.stopPropagation()}>
-                <div class="window-close-button" onClick = {this.props.parent.commentClick.bind(this.props.parent)}>
-                    <img src = {iconpath+"close.svg"}/>
+            <div class="comment-box" onClick={(evt)=>evt.stopPropagation()} onMouseDown={(evt)=>evt.stopPropagation()}>
+                <div class="comment-top-row">
+                    {top_contents}
                 </div>
+                <hr/>
                 <div class="comment-block">
                     {comments}
                 </div>
                 {(this.props.renderer.add_comments) && 
-                    [
-                        <textarea ref={this.input}/>,
-                        <button class="menu-create" onClick={this.appendComment.bind(this)}>{gettext("Submit")}</button>
-                    ]
-                }
-                {(!this.props.renderer.read_only && comments.length>1) && 
-                    [
-                        <hr/>,
-                        <button class="menu-create small" onClick={this.removeAllComments.bind(this)}>{gettext("Clear All Comments")}</button>
-                    ]
+                    <div class="comment-input-line">
+                        <textarea class="comment-input" placeholder={input_default} contentEditable="true" onInput={this.textChange.bind(this)} ref={this.input}/>
+                        <img ref={this.submit} src={iconpath+"add_new.svg"} class="add-comment-button hidden hover-shade" onClick={this.appendComment.bind(this)} title={gettext("Submit")}/>
+                    </div>
                 }
             </div>,
             comment_indicator
             ],
             this.props.parent.maindiv.current
         )
+    }
+
+    textChange(evt){
+        console.log("GOT TEXT CHANGE");
+        if($(this.input.current)[0].value && $(this.input.current)[0].value!=""){
+            $(this.submit.current).removeClass("hidden");
+        }else{
+            $(this.submit.current).addClass("hidden");
+        }
     }
     
     removeComment(id){
@@ -946,11 +971,14 @@ export class CommentBox extends React.Component{
     }
     
     appendComment(){
-        let text=this.input.current.value;
+        console.log(this.input.current);
+        console.log($(this.input.current)[0].value);
+        let text=$(this.input.current)[0].value;
         if(!text)return;
         let parent = this.props.parent;
         let props = parent.props;
-        this.input.current.value=null;
+        $(this.input.current)[0].value="";
+        $(this.submit.current).addClass("hidden");
         addComment(props.objectID,Constants.object_dictionary[parent.objectType]   ,text,parent.reloadComments.bind(parent));
     }
 

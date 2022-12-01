@@ -28,8 +28,6 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         super(props);
         this.objectType="workflow";
         this.allowed_tabs=[0,1,2,3];
-        this.exportDropDown = React.createRef();
-        this.importDropDown = React.createRef();
     }
     
     render(){
@@ -39,12 +37,6 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         let selection_manager = renderer.selection_manager;
         
         var selector = this;
-        let publish_icon = iconpath+'view_none.svg';
-        // let publish_text = gettext("PRIVATE");
-        // if(data.published){
-        //     publish_icon = iconpath+'published.svg';
-        //     publish_text = gettext("PUBLISHED");
-        // }
 
         let workflow_content;
         if(renderer.view_type=="outcometable"){
@@ -153,13 +145,21 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             }
         }
         let return_links = [];
-        if(renderer.project && !renderer.is_student){
+        if(renderer.project && !renderer.is_student && !renderer.public_view){
             return_links.push(
                 <a class="hover-shade" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
                     <img src={iconpath+"goback.svg"}/>
                     <div>{gettext("Return to project (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
                 </a>
             );
+        }
+        if(renderer.public_view && renderer.can_view){
+            return_links.push(
+                <a class="hover-shade" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+                    <img src={iconpath+"goback.svg"}/>
+                    <div>{gettext("Return to Editable Workflow")}</div>
+                </a>
+            )
         }
         if(renderer.project && (renderer.is_teacher || renderer.is_student)){
             return_links.push(
@@ -266,6 +266,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     }
        
     getExportButton(){
+        if(this.props.renderer.public_view)return null;
         if(this.props.renderer.is_student && !this.props.renderer.can_view)return null;
         let export_button = (
             <a id="export-button" class="hover-shade" onClick={()=>renderMessageBox({...this.props.data,object_sets:this.props.object_sets},"export",closeMessageBox)}>

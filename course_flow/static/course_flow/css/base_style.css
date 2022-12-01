@@ -32,6 +32,11 @@ button{
     cursor:pointer;
 }
 
+[contentEditable=true]:empty:not(:focus):before {
+  content: attr(data-text);
+  color: grey;
+}
+
 .disabled{
     pointer-events: none;
     cursor:default;
@@ -375,8 +380,8 @@ button:hover{
 }
 
 .topdropdiv hr{
-    margin-left:12px;
-    margin-right:12px;
+    margin-left:5px;
+    margin-right:5px;
 }
 
 .topdroptitle{
