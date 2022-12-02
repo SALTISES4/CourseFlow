@@ -2134,3 +2134,73 @@ def switch_week_to_static(sender, instance, created, **kwargs):
         if instance.workflow.static:
             for node in instance.week.nodes.all():
                 node.students.add(*list(instance.workflow.students.all()))
+
+
+# Live project receivers
+
+
+@receiver(pre_save, sender=LiveProject)
+def add_all_workflows(sender, instance, **kwargs):
+    if instance.default_all_workflows_visible:
+        if LiveProject.objects.get(
+            pk=instance.pk
+        ).default_all_workflows_visible:
+            return
+        instance.visible_workflows.add(
+            *Workflow.objects.filter(project=instance.project, deleted=False)
+        )
+
+
+@receiver(post_save, sender=WorkflowProject)
+def add_to_visible_workflows(sender, instance, created, **kwargs):
+    if created and abs(
+        instance.workflow.created_on - timezone.now()
+    ) < timezone.timedelta(seconds=10):
+        project = instance.project
+        if project is not None:
+            try:
+                liveproject = project.liveproject
+                if liveproject.default_all_workflows_visible:
+                    liveproject.visible_workflows.add(instance.workflow)
+            except AttributeError:
+                pass
+
+
+@receiver(pre_save, sender=Workflow)
+def add_or_remove_visible_workflow_on_delete_restore(
+    sender, instance, **kwargs
+):
+    workflow = Workflow.objects.get(pk=instance.pk)
+    if workflow.deleted != instance.deleted:
+        project = instance.get_project()
+        if project is not None:
+            try:
+                liveproject = project.liveproject
+                if instance.deleted:
+                    liveproject.visible_workflows.remove(workflow)
+                elif liveproject.default_all_workflows_visible:
+                    liveproject.visible_workflows.add(workflow)
+            except AttributeError:
+                pass
+
+
+@receiver(post_save, sender=LiveProjectUser)
+def add_user_to_assignments(sender, instance, created, **kwargs):
+    if (
+        instance.role_type == LiveProjectUser.ROLE_STUDENT
+        and instance.liveproject.default_assign_to_all
+    ):
+        for assignment in LiveAssignment.objects.filter(
+            liveproject=instance.liveproject,
+        ).exclude(userassignment__user=instance.user):
+            UserAssignment.objects.create(
+                user=instance.user, assignment=assignment
+            )
+
+
+@receiver(post_save, sender=LiveProjectUser)
+def add_user_to_assignments(sender, instance, created, **kwargs):
+    if instance.role_type == LiveProjectUser.ROLE_NONE:
+        UserAssignment.objects.filter(
+            assignment__liveproject=instance.liveproject
+        ).delete()

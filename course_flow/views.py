@@ -1216,9 +1216,8 @@ class SALTISEAnalyticsView(
             in self.request.user.groups.all()
         )
 
-class SALTISEAdminView(
-    LoginRequiredMixin, UserPassesTestMixin, TemplateView
-):
+
+class SALTISEAdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "course_flow/saltise_admin.html"
 
     def test_func(self):
@@ -5897,6 +5896,14 @@ def create_live_assignment(request: HttpRequest) -> HttpResponse:
             single_completion=liveproject.default_single_completion,
             author=request.user,
         )
+        if liveproject.default_assign_to_all:
+            students = LiveProjectUser.objects.filter(
+                liveproject=liveproject, role_type=LiveProjectUser.ROLE_STUDENT
+            )
+            for student in students:
+                UserAssignment.objects.create(
+                    user=student.user, assignment=assignment
+                )
 
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -6183,6 +6190,7 @@ def update_liveproject_value(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("objectID"))
         object_type = json.loads(request.POST.get("objectType"))
         data = json.loads(request.POST.get("data"))
+        print(data)
         changeFieldID = request.POST.get("changeFieldID", False)
         if changeFieldID:
             changeFieldID = json.loads(changeFieldID)

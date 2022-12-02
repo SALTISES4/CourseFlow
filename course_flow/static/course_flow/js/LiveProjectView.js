@@ -2,7 +2,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {WorkflowTitle, NodeTitle, TitleText, ActionButton} from "./ComponentJSON";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
-import {createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "./PostFunctions";
+import {updateLiveProjectValue, createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "./PostFunctions";
 import {StudentManagement} from "./StudentManagement";
 import {AssignmentView} from "./LiveAssignmentView";
 import * as Constants from "./Constants";
@@ -10,7 +10,7 @@ import * as Constants from "./Constants";
 export class LiveProjectMenu extends React.Component{
     constructor(props){
         super(props);
-        this.state={...props.project,view_type:"overview"};
+        this.state={...props.project,liveproject:this.props.liveproject,view_type:"overview"};
     }
     
     render(){
@@ -28,7 +28,7 @@ export class LiveProjectMenu extends React.Component{
         return(
             <div class="project-menu">
                 <div class="project-header">
-                    <WorkflowForMenu no_hyperlink={true} workflow_data={this.props.liveproject} selectAction={this.openEdit.bind(this)}/>
+                    <WorkflowForMenu no_hyperlink={true} workflow_data={this.state.liveproject} selectAction={this.openEdit.bind(this)}/>
                     {this.getHeader()}
                     
                 </div>
@@ -77,13 +77,13 @@ export class LiveProjectMenu extends React.Component{
             case "overview":
                 return (<LiveProjectOverview renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "students":
-                return (<LiveProjectStudents renderer={this.props.renderer} role={this.getRole()} liveproject={this.props.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectStudents renderer={this.props.renderer} role={this.getRole()} liveproject={this.state.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "assignments":
                 return (<LiveProjectAssignments renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "workflows":
                 return (<LiveProjectWorkflows renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "settings":
-                return (<LiveProjectSettings renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectSettings updateLiveProject={this.updateFunction.bind(this)} renderer={this.props.renderer} role={this.getRole()} liveproject={this.state.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
         }
     }
 
@@ -477,13 +477,58 @@ class LiveProjectStudents extends React.Component{
 
 }
 
-class LiveProjectSettings extends LiveProjectSection{
+class LiveProjectSettings extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={liveproject:this.props.liveproject,has_changed:false};
+        this.changed_values={};
+    }
+
 
     render(){
-        if(!this.state.data)return this.defaultRender();
+        let data=this.state.liveproject;
+        let changeField = this.changeField.bind(this);
+
         return (
-            <div>Not yet implemented</div>
+            <div class="workflow-details">
+                <h3>{gettext("Configuration")}:</h3>
+                <div>
+                    <label for="default-signle-completion" title={gettext("Whether to mark the assignment as complete if any user has completed it.")}>{gettext("By default, mark assignments as complete when a single user has completed them:")}</label><input id="default-single-completion" name="default-single-completion" type="checkbox" checked={data.default_single_completion} onChange={(evt)=>changeField("default_single_completion",evt.target.checked)}/>
+                </div>
+                <div>
+                    <label for="default-assign-to-all" title={gettext("Whether creating an assignment automatically adds all students to it.")}>{gettext("Assign new assignments to all students by default:")}</label><input id="default-assign-to-all" name="default-assign-to-all" type="checkbox" checked={data.default_assign_to_all} onChange={(evt)=>changeField("default_assign_to_all",evt.target.checked)}/>
+                </div>
+                <div>
+                    <label for="default-self-reporting" title={gettext("Whether students can mark their own assignments as complete.")}>{gettext("Let students self-report their assignment completion by default:")}</label><input id="default-self-reporting" name="default-self-reporting" type="checkbox" checked={data.default_self_reporting} onChange={(evt)=>changeField("default_self_reporting",evt.target.checked)}/>
+                </div>
+                <div>
+                    <label for="default-all-workflows-visible" title={gettext("Whether all workflows in the project will be visible to students by default.")}>{gettext("All Workflows Visible To Students:")}</label><input id="default-all-workflows-visible" name="default-all-workflows-visible" type="checkbox" checked={data.default_all_workflows_visible} onChange={(evt)=>changeField("default_all_workflows_visible",evt.target.checked)}/>
+                </div>
+                <div>
+                <button disabled={(!this.state.has_changed)} onClick={this.saveChanges.bind(this)}>{gettext("Save Changes")}</button>
+                </div>
+            </div>
         );
+    }
+
+
+    changeField(type,new_value){
+        let new_state={...this.state.liveproject};
+        new_state[type]=new_value;
+        this.changed_values[type]=new_value;
+        this.setState({has_changed:true,liveproject:new_state});
+    }
+
+
+    saveChanges(){
+        updateLiveProjectValue(
+            this.state.liveproject.id,
+            "liveproject",
+            this.changed_values,
+        );
+        this.props.updateLiveProject({liveproject:{...this.state.liveproject,...this.changed_values}});
+        this.changed_values={};
+        this.setState({has_changed:false});
     }
 
 }

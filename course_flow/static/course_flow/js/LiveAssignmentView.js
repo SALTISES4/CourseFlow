@@ -138,10 +138,10 @@ class LiveAssignmentEdit extends React.Component{
                     <label>{gettext("Start Date")}: </label><DatePicker id="start_date" default_value={data.start_date} onChange={this.changeField.bind(this,"start_date")}/>
                 </div>
                 <div>
-                    <label for="single-completion" title={gettext("Whether to mark the assignment as complete if any user has completed it.")}>{gettext("Single Completion")}</label><input id="single-completion" name="single-completion" type="checkbox" checked={data.single_completion} onChange={(evt)=>changeField("single_completion",evt.target.checked)}/>
+                    <label for="single-completion" title={gettext("Whether to mark the assignment as complete if any user has completed it.")}>{gettext("Mark assignment as complete when a single user has completed it:")}</label><input id="single-completion" name="single-completion" type="checkbox" checked={data.single_completion} onChange={(evt)=>changeField("single_completion",evt.target.checked)}/>
                 </div>
                 <div>
-                    <label for="self-reporting" title={gettext("Whether students can mark their own assignments as complete.")}>{gettext("Self Reporting")}</label><input id="self-reporting" name="self-reporting" type="checkbox" checked={data.self_reporting} onChange={(evt)=>changeField("self_reporting",evt.target.checked)}/>
+                    <label for="self-reporting" title={gettext("Whether students can mark their own assignments as complete.")}>{gettext("Let students self-report their assignment completion:")}</label><input id="self-reporting" name="self-reporting" type="checkbox" checked={data.self_reporting} onChange={(evt)=>changeField("self_reporting",evt.target.checked)}/>
                 </div>
                 <div>
                 <button disabled={(!this.state.has_changed)} onClick={this.saveChanges.bind(this)}>{gettext("Save Changes")}</button>

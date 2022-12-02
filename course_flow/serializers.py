@@ -1478,6 +1478,7 @@ class LiveProjectSerializer(
             "default_self_reporting",
             "default_assign_to_all",
             "default_single_completion",
+            "default_all_workflows_visible",
             "registration_hash",
             "id",
         ]
@@ -1508,6 +1509,7 @@ class LiveProjectSerializer(
         return instance.pk
 
     def update(self, instance, validated_data):
+        print(validated_data)
         instance.default_self_reporting = validated_data.get(
             "default_self_reporting", instance.default_self_reporting
         )
@@ -1516,6 +1518,10 @@ class LiveProjectSerializer(
         )
         instance.default_single_completion = validated_data.get(
             "default_single_completion", instance.default_single_completion
+        )
+        instance.default_all_workflows_visible = validated_data.get(
+            "default_all_workflows_visible",
+            instance.default_all_workflows_visible,
         )
 
         instance.save()
