@@ -2068,6 +2068,15 @@ circle.mouseover{
     padding:50px;
 }
 
+.comparison-view .workflow-description, .comparison-view .workflow-publication{
+    display: none;
+}
+
+.comparison-view .workflow-title{
+    font-size: 12px;
+
+}
+
 .comparison-view .workflow-array{
     display:flex;
     gap:20px;
@@ -2123,6 +2132,7 @@ circle.mouseover{
 .comparison-view .workflow-for-menu{
     margin:0px;
     width:100%;
+    padding: 5px;
 }
 
 .comparison-view .outcome{
