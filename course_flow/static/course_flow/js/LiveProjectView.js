@@ -1,8 +1,8 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {WorkflowTitle, NodeTitle, TitleText, ActionButton} from "./ComponentJSON";
+import {DatePicker, AssignmentTitle, WorkflowTitle, NodeTitle, TitleText, ActionButton, SimpleWorkflow} from "./ComponentJSON";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
-import {updateLiveProjectValue, createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "./PostFunctions";
+import {setAssignmentCompletion, updateLiveProjectValue, createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "./PostFunctions";
 import {StudentManagement} from "./StudentManagement";
 import {AssignmentView} from "./LiveAssignmentView";
 import * as Constants from "./Constants";
@@ -158,8 +158,69 @@ class LiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
+        console.log(this.state);
+
+        let workflows = this.state.data.workflows.map((workflow)=>
+            <SimpleWorkflow workflow_data = {workflow}/>
+        );
+        if(workflows.length==0)workflows=gettext("No workflows have been made visible to students.");
+        let teachers = this.state.data.teachers.map((user)=>
+            <tr>
+                <td class="table-user">
+                    {Constants.getUserDisplay(user.user)}
+                </td>
+                <td>
+                    {user.completion}
+                </td>
+            </tr>
+        );
+        let students = this.state.data.students.map((user)=>
+            <tr>
+                <td class="table-user">
+                    {Constants.getUserDisplay(user.user)}
+                </td>
+                <td>
+                    {user.completion}
+                </td>
+            </tr>
+        );
+
+        let assignments = this.state.data.assignments.map((assignment)=>
+            <tr>
+                <td>
+                    <AssignmentTitle data={assignment} user_role={this.props.renderer.user_role}/>
+                </td>
+                <td>
+                    {assignment.completion_info}
+                </td>
+                <td>
+                    <DatePicker default_value={assignment.end_date} disabled={true}/>
+                </td>
+            </tr>
+        );
+
         return (
-            <div>Not yet implemented</div>
+            <div class="workflow-details">
+                <h3>{gettext("Teachers")}:</h3>
+                <table class="overview-table">
+                    <tr><th>{gettext("User")}</th><th>{gettext("Assignments Complete")}</th></tr>
+                    {teachers}
+                </table>
+                <h3>{gettext("Students")}:</h3>
+                <table class="overview-table">
+                    <tr><th>{gettext("User")}</th><th>{gettext("Assignments Complete")}</th></tr>
+                    {students}
+                </table>
+                <h3>{gettext("Visible Workflows")}:</h3>
+                <div class="menu-grid">
+                    {workflows}
+                </div>
+                <h3>{gettext("Assignments")}:</h3>
+                <table class="overview-table">
+                    <tr><th>{gettext("Assignment")}</th><th>{gettext("Completion")}</th><th>{gettext("End Date")}</th></tr>
+                    {assignments}
+                </table>
+            </div>
         );
     }
 
@@ -169,9 +230,46 @@ class StudentLiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        return (
-            <div>Not yet implemented</div>
+        console.log(this.state);
+
+        let workflows = this.state.data.workflows.map((workflow)=>
+            <SimpleWorkflow workflow_data = {workflow}/>
         );
+        if(workflows.length==0)workflows=gettext("No workflows have been made visible to students.");
+
+        let assignments = this.state.data.assignments.filter(assignment=>
+            assignment.user_assignment.completed==false
+        ).map((assignment)=>
+            <tr>
+                <td>
+                    <AssignmentTitle data={assignment} user_role={this.props.renderer.user_role}/>
+                </td>
+                <td>
+                    <input type="checkbox" disabled={(!assignment.self_reporting)} onChange={this.toggleAssignment.bind(this,assignment.user_assignment.id)}/>
+                </td>
+                <td>
+                    <DatePicker default_value={assignment.end_date} disabled={true}/>
+                </td>
+            </tr>
+        );
+
+        return (
+            <div class="workflow-details">
+                <h3>{gettext("Your Incomplete Assignments")}:</h3>
+                <table class="overview-table">
+                    <tr><th>{gettext("Assignment")}</th><th>{gettext("Completion")}</th><th>{gettext("End Date")}</th></tr>
+                    {assignments}
+                </table>
+                <h3>{gettext("Visible Workflows")}:</h3>
+                <div class="menu-grid">
+                    {workflows}
+                </div>
+            </div>
+        );
+    }
+
+    toggleAssignment(id,evt){
+        setAssignmentCompletion(id,evt.target.checked);
     }
 
 }

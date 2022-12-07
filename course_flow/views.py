@@ -93,8 +93,10 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     InfoBoxSerializer,
     LinkedWorkflowSerializerShallow,
     LiveAssignmentSerializer,
+    LiveAssignmentWithCompletionSerializer,
     LiveProjectSerializer,
     LiveProjectUserSerializer,
+    LiveProjectUserSerializerWithCompletion,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
@@ -5779,7 +5781,20 @@ def get_live_project_data_student(request: HttpRequest) -> HttpResponse:
     data_type = json.loads(request.POST.get("data_type"))
     try:
         if data_type == "overview":
-            data_package = {"data": "Hello world!"}
+            data_package = {
+                "workflows": InfoBoxSerializer(
+                    liveproject.visible_workflows.filter(deleted=False),
+                    many=True,
+                    context={"user": request.user},
+                ).data,
+                "assignments": LiveAssignmentSerializer(
+                    LiveAssignment.objects.filter(
+                        userassignment__user=request.user,
+                    ).order_by("end_date"),
+                    many=True,
+                    context={"user": request.user},
+                ).data,
+            }
         elif data_type == "assignments":
             assignments = liveproject.liveassignment_set.filter(
                 userassignment__user=request.user
@@ -5831,7 +5846,34 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
     data_type = json.loads(request.POST.get("data_type"))
     try:
         if data_type == "overview":
-            data_package = {"data": "Hello world!"}
+            data_package = {
+                "workflows": InfoBoxSerializer(
+                    liveproject.visible_workflows.filter(deleted=False),
+                    many=True,
+                    context={"user": request.user},
+                ).data,
+                "students": LiveProjectUserSerializerWithCompletion(
+                    LiveProjectUser.objects.filter(
+                        liveproject=liveproject,
+                        role_type=LiveProjectUser.ROLE_STUDENT,
+                    ),
+                    many=True,
+                ).data,
+                "teachers": LiveProjectUserSerializerWithCompletion(
+                    LiveProjectUser.objects.filter(
+                        liveproject=liveproject,
+                        role_type=LiveProjectUser.ROLE_TEACHER,
+                    ),
+                    many=True,
+                ).data,
+                "assignments": LiveAssignmentWithCompletionSerializer(
+                    LiveAssignment.objects.filter(
+                        liveproject=liveproject
+                    ).order_by("end_date"),
+                    many=True,
+                ).data,
+            }
+
         elif data_type == "students":
             data_package = {"data": "Hello world!"}
         elif data_type == "assignments":

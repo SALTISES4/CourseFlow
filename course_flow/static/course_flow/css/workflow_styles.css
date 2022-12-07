@@ -165,14 +165,14 @@ button, input[type="submit"]{
 .workflow-details{
     padding:50px;
 }
-
+/*
 .workflow-details .workflow-for-menu{
     color:black;
     margin-left:10px;
     border-color:black;
     margin-bottom:30px;
 }
-
+*/
 .workflow-wrapper *:is(.node,.week,.column,.workflow-for-menu,.outcome):not(.selected):not(.valid-drop):hover{
     border-color:gray;
 }
@@ -2072,7 +2072,7 @@ circle.mouseover{
     display: none;
 }
 
-.comparison-view .workflow-title{
+.comparison-view .workflow-title, .simple-workflow .workflow-title{
     font-size: 12px;
 
 }
@@ -2105,10 +2105,6 @@ circle.mouseover{
     padding:0;
     box-shadow:none;
     margin:0;
-}
-
-.comparison-view .workflow-details{
-    padding:0;
 }
 
 .comparison-view .workflow-header{

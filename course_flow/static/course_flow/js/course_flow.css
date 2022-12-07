@@ -636,6 +636,11 @@ button:hover{
     max-width:600px;
 }
 
+.workflow-for-menu.simple-workflow{
+    border-color: lightgrey;
+    max-width: 400px;
+}
+
 .workflow-description{
     font-size:13px;
     color:#444444;
@@ -989,6 +994,24 @@ button:hover{
     gap: 5px;
 }
 
+.overview-table td{
+    padding: 5px;
+    font-size: 12px;
+}
+
+.overview-table th{
+    text-align: left;
+    padding: 5px;
+}
+
+.overview-table .workflow-title{
+    font-size: 12px;
+}
+
+.overview-table .table-user{
+    font-weight: 600;
+}
+
 
 /* The popup form - hidden by default */
 .form-popup {
@@ -1100,77 +1123,7 @@ text {
     border:0px;
 }
 
-  .mdc-card {
-    background-color: white;
-    margin-bottom: 10px;
-    padding: 20px 20px 12px;
-    border-radius: 10px;
-    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-      0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-    max-width: 400px;
-    border: 2px solid #1976bc;
-  }
-  .mdc-typography--title {
-    font-family: "Montserrat", serif;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    font-size: 1.25rem;
-    line-height: 2rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-decoration: inherit;
-    text-transform: inherit;
-    font-weight: bold;
-  }
-  .mdc-typography--caption {
-    font-family: "Montserrat", serif;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    font-size: 0.75rem;
-    line-height: 1.25rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    text-decoration: inherit;
-    text-transform: inherit;
-  }
-  .mdc-typography--body1 {
-    font-size: 16px;
-    letter-spacing: 0em;
-    font-family: "Montserrat", serif;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    text-decoration: inherit;
-    text-transform: inherit;
-  }
-  .mdc-card__actions {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    box-sizing: border-box;
-    min-height: 52px;
-    padding: 8px;
-  }
-  .mdc-card__action-buttons,
-  .mdc-card__action-icons {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    box-sizing: border-box;
-  }
-  .mdc-card__action-icons {
-    margin-left: auto;
-    margin-right: 0;
-  }
-  .mdc-card__action-icons,
-  .mdc-typography--caption,
-  .mdc-typography--body1,
-  .mdc-typography--title {
-    color: #1976bc;
-  }
+
 
 #user-feedback-app {
   bottom: 0px;
@@ -1399,14 +1352,14 @@ button, input[type="submit"]{
 .workflow-details{
     padding:50px;
 }
-
+/*
 .workflow-details .workflow-for-menu{
     color:black;
     margin-left:10px;
     border-color:black;
     margin-bottom:30px;
 }
-
+*/
 .workflow-wrapper *:is(.node,.week,.column,.workflow-for-menu,.outcome):not(.selected):not(.valid-drop):hover{
     border-color:gray;
 }
@@ -3306,7 +3259,7 @@ circle.mouseover{
     display: none;
 }
 
-.comparison-view .workflow-title{
+.comparison-view .workflow-title, .simple-workflow .workflow-title{
     font-size: 12px;
 
 }
@@ -3339,10 +3292,6 @@ circle.mouseover{
     padding:0;
     box-shadow:none;
     margin:0;
-}
-
-.comparison-view .workflow-details{
-    padding:0;
 }
 
 .comparison-view .workflow-header{

@@ -1622,6 +1622,36 @@ class LiveAssignmentSerializer(
         return instance
 
 
+class LiveAssignmentWithCompletionSerializer(LiveAssignmentSerializer):
+    class Meta:
+        model = LiveAssignment
+        fields = [
+            "id",
+            "author",
+            "created_on",
+            "self_reporting",
+            "single_completion",
+            "task",
+            "start_date",
+            "end_date",
+            "parent_workflow_id",
+            "workflow_access",
+            "linked_workflow_access",
+            "liveproject",
+            "completion_info",
+        ]
+
+    completion_info = serializers.SerializerMethodField()
+
+    def get_completion_info(self, instance):
+        userassignments = UserAssignment.objects.filter(assignment=instance)
+        num_total = userassignments.count()
+        num_completed = userassignments.filter(completed=True).count()
+        if instance.single_completion and num_completed > 0:
+            return str(num_total) + "/" + str(num_total)
+        return str(num_completed) + "/" + str(num_total)
+
+
 class UserAssignmentSerializer(
     serializers.ModelSerializer,
 ):
@@ -1675,6 +1705,43 @@ class LiveProjectUserSerializer(
 
     def get_user(self, instance):
         return UserSerializer(instance.user).data
+
+
+class LiveProjectUserSerializerWithCompletion(
+    LiveProjectUserSerializer,
+):
+    class Meta:
+        model = LiveProjectUser
+        fields = [
+            "id",
+            "user",
+            "role_type",
+            "role_type_display",
+            "completion",
+        ]
+
+    completion = serializers.SerializerMethodField()
+
+    def get_completion(self, instance):
+        assignments = UserAssignment.objects.filter(
+            assignment__liveproject=instance.liveproject,
+            user=instance.user,
+        )
+        return (
+            str(
+                assignments.filter(
+                    Q(completed=True)
+                    | Q(
+                        assignment__single_completion=True,
+                        assignment__userassignment__completed=True,
+                    )
+                )
+                .distinct()
+                .count()
+            )
+            + "/"
+            + str(assignments.count())
+        )
 
 
 class WorkflowSerializerForAssignments(
