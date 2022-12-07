@@ -6,9 +6,9 @@ from course_flow.serializers import UpdateNotificationSerializer
 
 def update_notifications(request):
     try:
-        if "course-flow" in request.path:
+        if "course_flow" in request.resolver_match.namespace:
             updates = UpdateNotification.objects.order_by("-created_on")
-            if updates.count() > 0:
+            if updates.exists():
                 last_update = updates.first()
                 last_update_serialized = (
                     JSONRenderer()
