@@ -16,6 +16,22 @@
     <!-- * Fonts and icons -->
 
     <!-- * Scripts -->
+    <!-- Matomo -->
+    <!-- <script>
+      var _paq = window._paq = window._paq || [];
+      /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="//matomo-analytics-staging.mydalite.org/";
+        _paq.push(['setTrackerUrl', u+'matomo.php']);
+        _paq.push(['setSiteId', '2']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+      })();
+    </script> -->
+    <!-- End Matomo Code -->
+    
     <!-- ** Preloads -->
     <!-- ** Polyfills for non-awesome browsers-->
     <script
@@ -165,7 +181,7 @@
         {% endif %}
         <div class="left-panel-extra">
           {% if user|has_group:"Teacher" %}
-            <a class="panel-item hover-shade" href="{% url 'course_flow:my-favourites' %}">
+            <a id="my-favourites" class="panel-item hover-shade" href="{% url 'course_flow:my-favourites' %}">
               {% trans 'My Favourites' %}
             </a>
               {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
@@ -329,6 +345,7 @@
       get_public_workflow_data: "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
       get_public_workflow_parent_data: "{% url 'course_flow:get-public-workflow-parent-data' pk='0' %}",
       get_public_workflow_child_data: "{% url 'course_flow:get-public-workflow-child-data' pk='0' %}",
+      get_public_parent_workflow_info: "{% url 'course_flow:get-public-parent-workflow-info' pk='0' %}",
     };
 
     const update_path = {

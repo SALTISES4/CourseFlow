@@ -471,7 +471,6 @@ button:hover{
 .home-menu-container{
     padding:70px;
     background:white;
-    height:calc(100% - 100px);
 }
 
 .home-menu-container hr{

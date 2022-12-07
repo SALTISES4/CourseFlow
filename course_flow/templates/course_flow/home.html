@@ -19,7 +19,7 @@
         <div class="home-item" id="home-projects">
             <a class="hover-shade" href='{% url "course_flow:my-projects" %}'><h4>{% trans "My Projects" %}</h4>
             <p>{% trans "Explore and create your projects" %}</p></a>
-            {% for project in user.project_set.all|not_deleted|slice:":7" %}
+            {% for project in user.authored_projects.all|not_deleted|slice:":7" %}
               <a class="hover-shade"
                     href="{% url 'course_flow:project-update' pk=project.pk %}"
                  >
@@ -78,7 +78,6 @@
 <!-- -->
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
-
   $(".home-menu-container").detach().appendTo("#container");
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";

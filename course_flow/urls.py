@@ -14,6 +14,16 @@ app_name = "course_flow"
 def course_flow_patterns():
     return [
         path("home/", views.home_view, name="home"),
+        path(
+            "saltise-admin/",
+            views.SALTISEAdminView.as_view(),
+            name="saltise-admin",
+        ),
+        path(
+            "admin/saltise-analytics",
+            views.SALTISEAnalyticsView.as_view(),
+            name="saltise-analytics",
+        ),
         path("logout/", views.logout_view, name="logout"),
         path("myprojects/", views.myprojects_view, name="my-projects"),
         path(
@@ -298,6 +308,11 @@ def course_flow_patterns():
             "parentworkflows/get/",
             views.get_parent_workflow_info,
             name="get-parent-workflow-info",
+        ),
+        path(
+            "workflow/<int:pk>/get-public-parent-workflow-info/",
+            views.get_public_parent_workflow_info,
+            name="get-public-parent-workflow-info",
         ),
         path(
             "exports/get/",

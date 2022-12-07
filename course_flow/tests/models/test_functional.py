@@ -98,7 +98,9 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
 
         selenium.find_element_by_id("register-button").click()
 
-        self.assertEqual(self.live_server_url + "/home/", selenium.current_url)
+        self.assertEqual(
+            self.live_server_url + "/course-flow/home/", selenium.current_url
+        )
 
 
 class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
@@ -149,7 +151,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         wait = WebDriverWait(selenium, timeout=10)
         project = Project.objects.create(author=self.user, title="new title")
         LiveProject.objects.create(project=project)
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         selenium.find_element_by_css_selector(
             "#panel-my-live-projects"
         ).click()
@@ -162,7 +164,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "new title"
             in selenium.find_element_by_css_selector(".workflow-title").text
         )
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         selenium.find_element_by_css_selector(
             "#home-liveprojects a:first-child"
         ).click()
@@ -175,7 +177,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "new title"
             in selenium.find_element_by_css_selector(".workflow-title").text
         )
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         selenium.find_element_by_css_selector("#home-liveprojects a+a").click()
         assert (
             "new title"
@@ -194,7 +196,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             user=self.user,
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         # make sure only correct items are visible
         assert (
             len(selenium.find_elements_by_css_selector("#panel-my-projects"))
@@ -212,7 +214,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "new title"
             in selenium.find_element_by_css_selector(".workflow-title").text
         )
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         selenium.find_element_by_css_selector(
             "#home-liveprojects a:first-child"
         ).click()
@@ -225,7 +227,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "new title"
             in selenium.find_element_by_css_selector(".workflow-title").text
         )
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         selenium.find_element_by_css_selector("#home-liveprojects a+a").click()
         assert (
             "new title"
@@ -612,7 +614,8 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium.switch_to_window(windows[1])
 
         self.assertEqual(
-            "new workflow", selenium.find_element_by_css_selector(".workflow-title").text
+            "new workflow",
+            selenium.find_element_by_css_selector(".workflow-title").text,
         )
 
         selenium.close()
@@ -658,7 +661,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         selenium.maximize_window()
 
         self.user = login(self)
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         username = selenium.find_element_by_id("id_username")
         password = selenium.find_element_by_id("id_password")
         username.send_keys("testuser1")
@@ -672,11 +675,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
     def test_create_project_and_workflows(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         home = selenium.current_url
 
         # Create a project
-        selenium.get(self.live_server_url + "/myprojects/")
+        selenium.get(self.live_server_url + "/course-flow/myprojects/")
         selenium.find_element_by_css_selector(
             ".section-project .menu-create"
         ).click()
@@ -691,7 +694,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         description.send_keys(project_description)
         selenium.find_element_by_id("save-button").click()
         assert (
-            project_title in selenium.find_element_by_css_selector(".workflow-title").text
+            project_title
+            in selenium.find_element_by_css_selector(".workflow-title").text
         )
         assert (
             project_description
@@ -702,7 +706,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         project_url = selenium.current_url
 
         # Create templates
-        selenium.get(self.live_server_url + "/mytemplates/")
+        selenium.get(self.live_server_url + "/course-flow/mytemplates/")
         templates = selenium.current_url
 
         for template_type in ["activity", "course"]:
@@ -728,7 +732,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             assert (
                 project_title
-                in selenium.find_element_by_css_selector(".workflow-title").text
+                in selenium.find_element_by_css_selector(
+                    ".workflow-title"
+                ).text
             )
             assert (
                 project_description
@@ -786,7 +792,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             assert (
                 project_title
-                in selenium.find_element_by_css_selector(".workflow-title").text
+                in selenium.find_element_by_css_selector(
+                    ".workflow-title"
+                ).text
             )
             selenium.get(project_url)
             selenium.find_element_by_css_selector(
@@ -2856,7 +2864,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         selenium.maximize_window()
 
         self.user = login(self)
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         username = selenium.find_element_by_id("id_username")
         password = selenium.find_element_by_id("id_password")
         username.send_keys("testuser1")
@@ -3277,7 +3285,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             1,
         )
         selenium.find_element_by_css_selector(
-            "a[href='/myfavourites/']"
+            "#my-favourites"
         ).click()
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-for-menu")),
@@ -3325,7 +3333,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             2,
         )
         selenium.find_element_by_css_selector(
-            "a[href='/myfavourites/']"
+            "#my-favourites"
         ).click()
         time.sleep(10)
         self.assertEqual(
@@ -3442,7 +3450,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         selenium.maximize_window()
 
         self.user = login(self)
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         username = selenium.find_element_by_id("id_username")
         password = selenium.find_element_by_id("id_password")
         username.send_keys("testuser1")
@@ -3643,7 +3651,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         selenium.maximize_window()
 
         self.user = login(self)
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         username = selenium.find_element_by_id("id_username")
         password = selenium.find_element_by_id("id_password")
         username.send_keys("testuser1")
@@ -3771,7 +3779,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         selenium.maximize_window()
 
         self.user = login(self)
-        selenium.get(self.live_server_url + "/home/")
+        selenium.get(self.live_server_url + "/course-flow/home/")
         username = selenium.find_element_by_id("id_username")
         password = selenium.find_element_by_id("id_password")
         username.send_keys("testuser1")

@@ -1,0 +1,39 @@
+{% extends "course_flow/base.html" %}
+<!-- -->
+{% load static i18n %} {% load course_flow_templatetags %}
+<!-- -->
+{% block header %} {% endblock %}
+<!-- -->
+{% block title %}{% endblock %}
+<!-- -->
+{% block metadescription %} {% endblock %}
+<!-- -->
+{% block body %}
+<div class="home-menu-container">
+    <h1>SALTISE Administration</h1>
+    <hr>
+    <div>
+      <p><a href="{% url 'admin:course_flow_updatenotification_changelist' %}">
+        {% trans 'Manage update notifications' %}
+      </a></p>
+    </div>
+    <div>
+      <p><a href="{% url 'course_flow:saltise-analytics' %}">
+        {% trans 'CourseFlow Analytics' %}
+      </a></p>
+    </div>
+</div>
+
+<!-- -->
+{% endblock %}
+<!-- -->
+{% block foot %} {% endblock %}
+<!-- -->
+{% csrf_token %}
+<!-- -->
+
+{% block scripts %} {{ block.super }}
+<script nonce="{{request.csp_nonce}}">
+  $(".home-menu-container").detach().appendTo("#container");
+</script>
+{% endblock %}

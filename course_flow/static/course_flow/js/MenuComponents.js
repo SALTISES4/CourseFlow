@@ -48,7 +48,8 @@ export class WorkflowsMenu extends React.Component{
     render(){
         var data_package = this.props.data.data_package;
         let no_hyperlink = false;
-        if(this.props.type=="linked_workflow_menu" || this.props.type=="added_workflow_menu" || this.props.type=="target_project_menu")no_hyperlink=true;
+        console.log(this.props.type);
+        if(this.props.type=="linked_workflow_menu" || this.props.type=="added_workflow_menu" || this.props.type=="target_project_menu" || this.props.type=="workflow_select_menu")no_hyperlink=true;
         var tabs = [];
         var tab_li = [];
         var i = 0;

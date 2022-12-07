@@ -1205,6 +1205,29 @@ def import_view(request):
     return render(request, "course_flow/import.html")
 
 
+class SALTISEAnalyticsView(
+    LoginRequiredMixin, UserPassesTestMixin, TemplateView
+):
+    template_name = "course_flow/saltise_analytics.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name="SALTISE_Staff")
+            in self.request.user.groups.all()
+        )
+
+class SALTISEAdminView(
+    LoginRequiredMixin, UserPassesTestMixin, TemplateView
+):
+    template_name = "course_flow/saltise_admin.html"
+
+    def test_func(self):
+        return (
+            Group.objects.get(name="SALTISE_Staff")
+            in self.request.user.groups.all()
+        )
+
+
 class ProjectCreateView(
     LoginRequiredMixin, UserPassesTestMixin, CreateView_No_Autocomplete
 ):
@@ -2105,6 +2128,21 @@ def get_parent_workflow_info(request: HttpRequest) -> HttpResponse:
         parent_workflows = [
             node.get_workflow()
             for node in Node.objects.filter(linked_workflow__id=workflow_id)
+        ]
+        data_package = InfoBoxSerializer(
+            parent_workflows, many=True, context={"user": request.user}
+        ).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted", "parent_workflows": data_package})
+
+
+@public_model_access("workflow")
+def get_public_parent_workflow_info(request: HttpRequest, pk) -> HttpResponse:
+    try:
+        parent_workflows = [
+            node.get_workflow()
+            for node in Node.objects.filter(linked_workflow__id=pk)
         ]
         data_package = InfoBoxSerializer(
             parent_workflows, many=True, context={"user": request.user}

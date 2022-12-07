@@ -780,6 +780,20 @@ export function getParentWorkflowInfo(workflowPk,callBackFunction=()=>console.lo
     }
 }
 
+//Get the public data from the workflow
+export function getPublicParentWorkflowInfo(workflowPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.get(
+                get_paths.get_public_parent_workflow_info.replace("0",workflowPk)
+        ).done(function(data){
+            if(data.action=="posted")callBackFunction(data);
+            else fail_function(data.action)
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 //get exported data
 export function getExport(objectID,objectType,exportType,callBackFunction=()=>console.log("success")){
     try{

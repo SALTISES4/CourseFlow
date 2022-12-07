@@ -5,13 +5,16 @@ from course_flow.serializers import UpdateNotificationSerializer
 
 
 def update_notifications(request):
-    updates = UpdateNotification.objects.order_by("-created_on")
-    if updates.count() > 0:
-        last_update = updates.first()
-        last_update_serialized = (
-            JSONRenderer()
-            .render(UpdateNotificationSerializer(last_update).data)
-            .decode("utf-8")
-        )
-        return {"update_notifications": last_update_serialized}
+    try:
+        if "course_flow" in request.resolver_match.namespace:
+            last_update = UpdateNotification.objects.last()
+            if last_update is not None:
+                last_update_serialized = (
+                    JSONRenderer()
+                    .render(UpdateNotificationSerializer(last_update).data)
+                    .decode("utf-8")
+                )
+                return {"update_notifications": last_update_serialized}
+    except:
+        pass
     return {"update_notifications": {}}
