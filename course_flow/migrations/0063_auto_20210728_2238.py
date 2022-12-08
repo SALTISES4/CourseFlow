@@ -11,7 +11,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(model_name="nodelink", name="parent_nodelink",),
+        migrations.RemoveField(
+            model_name="nodelink",
+            name="parent_nodelink",
+        ),
         migrations.AlterField(
             model_name="column",
             name="created_on",

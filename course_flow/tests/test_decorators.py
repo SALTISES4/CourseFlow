@@ -1,13 +1,8 @@
 import json
 
-import pytest
-from django.conf import settings
-from django.contrib.auth.models import AnonymousUser, Group
-from django.core.exceptions import PermissionDenied
-from django.http import HttpRequest, HttpResponseNotAllowed, JsonResponse
+from django.contrib.auth.models import Group
+from django.http import JsonResponse
 from django.urls import reverse
-
-from course_flow import decorators
 
 
 def default_view(request):

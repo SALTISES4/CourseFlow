@@ -54,13 +54,13 @@ def try_async(func):
                 info = "Celery workers available ({}).  Executing {} asynchronously.".format(  # noqa
                     list(available_workers.keys()), func.__name__
                 )
-                logger.info(info)                
+                logger.info(info)
                 return func.delay(*args, **kwargs)
             else:
                 info = "No celery workers available.  Executing {} synchronously.".format(  # noqa
                     func.__name__
                 )
-                logger.info(info)                
+                logger.info(info)
                 return func(*args, **kwargs)
 
     return wrapper

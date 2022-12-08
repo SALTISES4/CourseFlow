@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0096_auto_20221118_1539'),
+        ("course_flow", "0096_auto_20221118_1539"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='userassignment',
-            name='completed_on',
+            model_name="userassignment",
+            name="completed_on",
             field=models.DateTimeField(null=True),
         ),
     ]

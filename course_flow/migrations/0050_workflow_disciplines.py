@@ -6,13 +6,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0049_projectfavourite'),
+        ("course_flow", "0049_projectfavourite"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='workflow',
-            name='disciplines',
-            field=models.ManyToManyField(blank=True, to='course_flow.Discipline'),
+            model_name="workflow",
+            name="disciplines",
+            field=models.ManyToManyField(
+                blank=True, to="course_flow.Discipline"
+            ),
         ),
     ]

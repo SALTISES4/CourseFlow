@@ -1,56 +1,25 @@
-import json
-import os
-import time
-
-import pandas as pd
-from celery.result import AsyncResult
-from channels.routing import URLRouter
 from django.contrib.auth.models import Group
-from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.urls import re_path, reverse
+from django.urls import reverse
 from rest_framework.renderers import JSONRenderer
 
-from course_flow import settings, tasks
-from course_flow.consumers import WorkflowUpdateConsumer
+from course_flow import settings
 from course_flow.models import (
     Activity,
-    Column,
-    ColumnWorkflow,
-    Comment,
     Course,
-    Discipline,
-    Favourite,
     LiveAssignment,
     LiveProject,
     LiveProjectUser,
-    Node,
-    NodeLink,
-    NodeWeek,
     ObjectPermission,
-    Outcome,
-    OutcomeHorizontalLink,
-    OutcomeNode,
-    OutcomeOutcome,
-    OutcomeWorkflow,
-    Program,
     Project,
     User,
     UserAssignment,
-    Week,
-    WeekWorkflow,
-    Workflow,
     WorkflowProject,
 )
 from course_flow.serializers import LiveProjectSerializer
-from course_flow.utils import (
-    get_model_from_str,
-    get_parent_model,
-    get_parent_model_str,
-)
 
-from .utils import check_order, get_author, login, login_student, make_object
+from .utils import get_author, login, login_student
 
 
 class ModelViewTest(TestCase):
@@ -620,7 +589,7 @@ class ModelViewTest(TestCase):
         project = Project.objects.create(author=author)
         workflow = Course.objects.create(author=author)
         WorkflowProject.objects.create(workflow=workflow, project=project)
-        column = workflow.columns.create(author=author)
+        column = workflow.columns.create(author=author)  # noqa F841
         week = workflow.weeks.create(author=author)
         node = week.nodes.create(author=author)
 
@@ -669,7 +638,7 @@ class ModelViewTest(TestCase):
         project = Project.objects.create(author=author)
         workflow = Course.objects.create(author=author)
         WorkflowProject.objects.create(workflow=workflow, project=project)
-        column = workflow.columns.create(author=author)
+        column = workflow.columns.create(author=author)  # noqa F841
         week = workflow.weeks.create(author=author)
         node = week.nodes.create(author=author)
 
@@ -757,7 +726,7 @@ class ModelViewTest(TestCase):
         project = Project.objects.create(author=author)
         workflow = Course.objects.create(author=author)
         WorkflowProject.objects.create(workflow=workflow, project=project)
-        column = workflow.columns.create(author=author)
+        column = workflow.columns.create(author=author)  # noqa F841
         week = workflow.weeks.create(author=author)
         node = week.nodes.create(author=author)
 

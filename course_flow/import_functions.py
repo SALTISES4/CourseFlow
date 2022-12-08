@@ -1,18 +1,8 @@
 import re
-import time
-from io import BytesIO
-
-import pandas as pd
-from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils import timezone
-from django.utils.translation import gettext as _
 
 from course_flow import redux_actions as actions
 
 from .models import (
-    Column,
-    ColumnWorkflow,
     Node,
     NodeWeek,
     Outcome,
@@ -106,10 +96,12 @@ def import_outcomes(df, workflow, user):
                 "parentID": outcomeoutcome.parent.id,
             }
             actions.dispatch_wf(
-                workflow, actions.insertChildAction(response_data, "outcome"),
+                workflow,
+                actions.insertChildAction(response_data, "outcome"),
             )
             actions.dispatch_to_parent_wf(
-                workflow, actions.insertChildAction(response_data, "outcome"),
+                workflow,
+                actions.insertChildAction(response_data, "outcome"),
             )
         try:
             if isinstance(code, str) and code.isnumeric():
@@ -157,7 +149,11 @@ def import_nodes(df, workflow, user):
                 data["title"] = title
             if description is not None and description != "":
                 data["description"] = description
-            serializer = WeekSerializerShallow(week, data=data, partial=True,)
+            serializer = WeekSerializerShallow(
+                week,
+                data=data,
+                partial=True,
+            )
             save_serializer(serializer)
             if created:
                 response_data = {
@@ -188,7 +184,7 @@ def import_nodes(df, workflow, user):
                 column = workflow.columns.filter(deleted=False).order_by(
                     "columnworkflow__rank"
                 )[column_rank]
-            except (IndexError, ValueError) as e:
+            except (IndexError, ValueError):
                 column = (
                     workflow.columns.filter(deleted=False)
                     .order_by("columnworkflow__rank")

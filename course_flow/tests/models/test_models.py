@@ -1,18 +1,14 @@
 import json
 import os
-import time
 
 import pandas as pd
-from celery.result import AsyncResult
-from channels.routing import URLRouter
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.test.client import RequestFactory
-from django.urls import re_path, reverse
+from django.urls import reverse
 from rest_framework.renderers import JSONRenderer
 
 from course_flow import tasks
-from course_flow.consumers import WorkflowUpdateConsumer
 from course_flow.models import (
     Activity,
     Column,
@@ -37,11 +33,7 @@ from course_flow.models import (
     Workflow,
     WorkflowProject,
 )
-from course_flow.utils import (
-    get_model_from_str,
-    get_parent_model,
-    get_parent_model_str,
-)
+from course_flow.utils import get_model_from_str
 
 from .utils import check_order, get_author, login, make_object
 
@@ -1274,7 +1266,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 403)
         # Make sure this fails if the objects (even if you own them) are in different workflows
         week2b = make_object("week", user)
-        workflow2b = make_object("activity",user)
+        workflow2b = make_object("activity", user)
         weekworkflow2b = WeekWorkflow.objects.create(
             week=week2b, workflow=workflow2b
         )
@@ -1583,7 +1575,9 @@ class ModelViewTest(TestCase):
         WeekWorkflow.objects.create(week=myweek, workflow=myactivity)
         myoutcome2 = make_object("outcome", myself)
         myactivity2 = make_object("activity", myself)
-        OutcomeWorkflow.objects.create(outcome=myoutcome2, workflow=myactivity2)
+        OutcomeWorkflow.objects.create(
+            outcome=myoutcome2, workflow=myactivity2
+        )
         response = self.client.post(
             reverse("course_flow:update-outcomenode-degree"),
             {"nodePk": mynode.id, "outcomePk": outcome.id, "degree": 1},
@@ -2750,41 +2744,85 @@ class PermissionsTests(TestCase):
         author = get_author()
         project = Project.objects.create(author=author)
         workflow = Course.objects.create(author=author)
-        WorkflowProject.objects.create(project=project,workflow=workflow)
+        WorkflowProject.objects.create(project=project, workflow=workflow)
 
-        response = self.client.get(reverse("course_flow:workflow-public",args=[workflow.pk]))
+        response = self.client.get(
+            reverse("course_flow:workflow-public", args=[workflow.pk])
+        )
         self.assertEqual(response.status_code, 302)
-        response = self.client.get(reverse("course_flow:get-public-workflow-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+        response = self.client.get(
+            reverse(
+                "course_flow:get-public-workflow-data", args=[workflow.pk]
+            ),
+            REMOTE_ADDR="127.0.0.1",
+        )
         self.assertEqual(response.status_code, 403)
-        response = self.client.get(reverse("course_flow:get-public-workflow-child-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+        response = self.client.get(
+            reverse(
+                "course_flow:get-public-workflow-child-data",
+                args=[workflow.pk],
+            ),
+            REMOTE_ADDR="127.0.0.1",
+        )
         self.assertEqual(response.status_code, 403)
-        response = self.client.get(reverse("course_flow:get-public-workflow-parent-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
+        response = self.client.get(
+            reverse(
+                "course_flow:get-public-workflow-parent-data",
+                args=[workflow.pk],
+            ),
+            REMOTE_ADDR="127.0.0.1",
+        )
         self.assertEqual(response.status_code, 403)
 
-        workflow.public_view=True 
+        workflow.public_view = True
         workflow.save()
-        #Try five (equal to max, since we did one above) times in one minute
+        # Try five (equal to max, since we did one above) times in one minute
         for i in range(6):
-            response = self.client.get(reverse("course_flow:workflow-public",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
-            if i<4: self.assertEqual(response.status_code, 200)
-            else: self.assertEqual(response.status_code, 429)
-        
-        for i in range(6):
-            response = self.client.get(reverse("course_flow:get-public-workflow-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
-            if i<4: self.assertEqual(response.status_code, 200)
-            else: 
+            response = self.client.get(
+                reverse("course_flow:workflow-public", args=[workflow.pk]),
+                REMOTE_ADDR="127.0.0.1",
+            )
+            if i < 4:
+                self.assertEqual(response.status_code, 200)
+            else:
                 self.assertEqual(response.status_code, 429)
-        
+
         for i in range(6):
-            response = self.client.get(reverse("course_flow:get-public-workflow-child-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
-            if i<4: self.assertEqual(response.status_code, 200)
-            else: 
+            response = self.client.get(
+                reverse(
+                    "course_flow:get-public-workflow-data", args=[workflow.pk]
+                ),
+                REMOTE_ADDR="127.0.0.1",
+            )
+            if i < 4:
+                self.assertEqual(response.status_code, 200)
+            else:
                 self.assertEqual(response.status_code, 429)
-        
+
         for i in range(6):
-            response = self.client.get(reverse("course_flow:get-public-workflow-parent-data",args=[workflow.pk]), REMOTE_ADDR="127.0.0.1")
-            if i<4: self.assertEqual(response.status_code, 200)
-            else: 
+            response = self.client.get(
+                reverse(
+                    "course_flow:get-public-workflow-child-data",
+                    args=[workflow.pk],
+                ),
+                REMOTE_ADDR="127.0.0.1",
+            )
+            if i < 4:
+                self.assertEqual(response.status_code, 200)
+            else:
+                self.assertEqual(response.status_code, 429)
+
+        for i in range(6):
+            response = self.client.get(
+                reverse(
+                    "course_flow:get-public-workflow-parent-data",
+                    args=[workflow.pk],
+                ),
+                REMOTE_ADDR="127.0.0.1",
+            )
+            if i < 4:
+                self.assertEqual(response.status_code, 200)
+            else:
                 self.assertEqual(response.status_code, 429)
 
     def test_permissions_delete_self_workflows(self):

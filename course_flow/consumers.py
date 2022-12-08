@@ -1,11 +1,7 @@
 import json
 
 from asgiref.sync import async_to_sync
-from channels.db import database_sync_to_async
-from channels.generic.websocket import (
-    AsyncWebsocketConsumer,
-    WebsocketConsumer,
-)
+from channels.generic.websocket import WebsocketConsumer
 
 from .decorators import check_object_permission
 from .models import ObjectPermission, Workflow
@@ -28,7 +24,7 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
 
         try:
             self.get_permission()
-        except:
+        except Exception:
             return self.close()
         if self.VIEW or self.EDIT:
             async_to_sync(self.channel_layer.group_add)(
@@ -108,4 +104,3 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         # Send message to WebSocket
         if event["type"] == "workflow_child_updated":
             self.send(text_data=json.dumps(event))
-

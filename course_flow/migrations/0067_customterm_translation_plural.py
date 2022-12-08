@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0066_auto_20210827_2042'),
+        ("course_flow", "0066_auto_20210827_2042"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='customterm',
-            name='translation_plural',
+            model_name="customterm",
+            name="translation_plural",
             field=models.CharField(max_length=50, null=True),
         ),
     ]

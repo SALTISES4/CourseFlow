@@ -11,6 +11,8 @@ safety
 selenium
 tox
 twine
-django==3.2.15
+
+daphne >= 4
+twisted[tls] == 22.8.0
 
 -e file:./#egg=saltise_course_flow

@@ -18,7 +18,6 @@ from django.utils.translation import gettext_lazy as _
 from model_utils.managers import InheritanceManager
 
 from course_flow.utils import (
-    benchmark,
     get_all_outcomes_for_outcome,
     get_descendant_outcomes,
 )

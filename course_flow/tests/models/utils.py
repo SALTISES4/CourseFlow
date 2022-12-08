@@ -29,6 +29,7 @@ def login(test_case):
     test_case.assertTrue(logged_in)
     return user
 
+
 def login_student(test_case):
     user = User.objects.create(username="testuser1")
     user.set_password("testpass1")

@@ -6,38 +6,38 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0071_workflow_edit_count'),
+        ("course_flow", "0071_workflow_edit_count"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='column',
-            name='deleted',
+            model_name="column",
+            name="deleted",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='node',
-            name='deleted',
+            model_name="node",
+            name="deleted",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='outcome',
-            name='deleted',
+            model_name="outcome",
+            name="deleted",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='project',
-            name='deleted',
+            model_name="project",
+            name="deleted",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='week',
-            name='deleted',
+            model_name="week",
+            name="deleted",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='workflow',
-            name='deleted',
+            model_name="workflow",
+            name="deleted",
             field=models.BooleanField(default=False),
         ),
     ]

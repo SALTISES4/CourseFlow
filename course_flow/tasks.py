@@ -6,12 +6,11 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.utils import timezone
-from django.utils.translation import gettext as _
 
 from course_flow import export_functions, import_functions
 from course_flow import redux_actions as actions
 
-from .celery import try_async, logger
+from .celery import logger, try_async
 from .models import ObjectSet, User
 from .utils import dateTimeFormatNoSpace, get_model_from_str
 
@@ -69,7 +68,10 @@ def async_send_export_email(
         + file_ext
     )
     email = EmailMessage(
-        email_subject, email_text, settings.DEFAULT_FROM_EMAIL, [user_email],
+        email_subject,
+        email_text,
+        settings.DEFAULT_FROM_EMAIL,
+        [user_email],
     )
     if export_format == "csv":
         file_data = "text/csv"
@@ -79,11 +81,15 @@ def async_send_export_email(
         )
 
     email.attach(
-        filename, file, file_data,
+        filename,
+        file,
+        file_data,
     )
     try:
         email.send()
-        logger.info(f"Email - {email_subject} - {filename} - sent to {user_email}")
+        logger.info(
+            f"Email - {email_subject} - {filename} - sent to {user_email}"
+        )
     except SMTPException:
         print("Email could not be sent")
 
@@ -105,7 +111,7 @@ def async_import_file_data(pk, object_type, task_type, file_json, user_id):
             import_functions.import_outcomes(df, model_object, user)
         if task_type == "nodes":
             import_functions.import_nodes(df, model_object, user)
-    except:
+    except Exception:
         pass
     cache.delete(object_type + str(pk) + "importing")
     if object_type == "workflow":

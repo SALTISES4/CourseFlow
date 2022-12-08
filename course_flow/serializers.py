@@ -22,7 +22,6 @@ from .models import (
     Node,
     NodeLink,
     NodeWeek,
-    ObjectPermission,
     ObjectSet,
     Outcome,
     OutcomeHorizontalLink,
@@ -1620,7 +1619,6 @@ class LiveAssignmentSerializer(
         instance.end_date = validated_data.get("end_date", instance.end_date)
         instance.save()
         return instance
-
 
 class LiveAssignmentWithCompletionSerializer(LiveAssignmentSerializer):
     class Meta:
