@@ -291,7 +291,7 @@ twisted[tls]==22.8.0
     # via
     #   -r requirements/requirements.in
     #   daphne
-txaio==21.2.1
+txaio==22.2.1
     # via autobahn
 typed-ast==1.4.3
     # via black
