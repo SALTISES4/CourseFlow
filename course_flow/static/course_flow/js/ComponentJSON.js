@@ -330,7 +330,6 @@ export class ComponentJSON extends React.Component{
 
     //Adds a button that opens/closes the comments dialogue
     addCommenting(data){
-        let commentbox;
         return(
             [
                 <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext={gettext("Comments")} handleClick={this.commentClick.bind(this)}/>,

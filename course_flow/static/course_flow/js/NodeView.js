@@ -1,12 +1,13 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON.js";
-import NodeLinkView from "./NodeLinkView.js";
-import OutcomeNodeView from "./OutcomeNode.js";
-import {getNodeByID} from "./FindState.js";
-import * as Constants from "./Constants.js";
-import {updateOutcomenodeDegree, updateValueInstant, toggleDrop} from "./PostFunctions.js"
+import {ActionButton, ComponentJSON, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON.js";
+import NodeLinkView from "./NodeLinkView";
+import {AssignmentBox} from "./LiveAssignmentView"
+import OutcomeNodeView from "./OutcomeNode";
+import {getNodeByID} from "./FindState";
+import * as Constants from "./Constants";
+import {updateOutcomenodeDegree, updateValueInstant, toggleDrop} from "./PostFunctions"
 
 
 //Basic component to represent a Node
@@ -121,6 +122,7 @@ class NodeView extends ComponentJSON{
             mouseover_actions.push(this.addDeleteSelf(data));
         }
         if(renderer.view_comments)mouseover_actions.push(this.addCommenting(data));
+        if(renderer.show_assignments)mouseover_actions.push(this.addShowAssignment(data));
 
         return (
             <div 
@@ -258,6 +260,52 @@ class NodeView extends ComponentJSON{
                 $(document).off(evt);
             }
         });
+    }
+
+
+    addShowAssignment(data){
+        return (
+            [
+                <ActionButton button_icon="assignment.svg" button_class="comment-button" titletext={gettext("Show Assignment Info")} handleClick={this.showAssignment.bind(this)}/>,
+                <AssignmentBox show={this.state.show_comments} comments={this.props.data.comments} parent={this} renderer={this.props.renderer}/>
+            ]
+        );
+    }
+
+    showAssignment(evt){
+        evt.stopPropagation();
+        if(!this.state.show_assignments){
+            this.reloadAssignments(true);
+        }else(this.setState({show_assignments:false}));
+    }
+
+    reloadAssignments(show_assignments){
+        let props = this.props;
+        let data = props.data;
+        props.renderer.tiny_loader.startLoad();
+        // getAssignmentsForNode(data.id,
+        //     (response_data)=>{
+        //         if(show_assignments){
+        //             this.setState({show_assignments:true});
+        //         }
+        //         //this.setState({show_assignments:true,assignment_data:response_data.data_package});
+        //         props.renderer.tiny_loader.endLoad();
+        //     }
+        // );
+    }
+
+
+    createAssignment(data){
+        let props = this.props;
+        props.renderer.tiny_loader.startLoad();
+        createAssignment(
+            data.id,
+            props.renderer.live_project_data.pk,
+            (response_data)=>{
+                props.renderer.tiny_loader.endLoad();
+                window.location = update_path.liveassignment.replace("0",response_data.assignmentPk);
+            }
+        );
     }
 
 }

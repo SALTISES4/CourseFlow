@@ -512,3 +512,27 @@ class ReportRow extends React.Component{
         );
     }
 }
+
+
+
+//A commenting box
+export class AssignmentBox extends React.Component{
+    constructor(props){
+        super(props);
+        this.input = React.createRef();
+        this.state={};
+    }
+    
+    render(){
+        return (
+            <div class="comment-box" onClick={(evt)=>evt.stopPropagation()}>
+                <div class="window-close-button" onClick = {this.props.parent.commentClick.bind(this.props.parent)}>
+                    <img src = {iconpath+"close.svg"}/>
+                </div>
+                Rendered!
+            </div>
+        );
+    }
+    
+    
+}
