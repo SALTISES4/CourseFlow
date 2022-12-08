@@ -416,6 +416,31 @@ export class AssignmentView extends React.Component{
 
 }
 
+export class AssignmentViewSmall extends React.Component{
+
+    render(){
+        let data = this.props.data;
+        let node_data = data.task;
+        let data_override;
+        if(node_data.represents_workflow) data_override = {...node_data,...node_data.linked_workflow_data};
+        else data_override={...node_data};
+        
+        let css_class = "node assignment";
+        console.log("setting style");
+        let style = {backgroundColor:Constants.getColumnColour(node_data)};
+        console.log(style);
+        return (
+            <div style={style} class={css_class}>
+                <div class = "node-top-row">
+                    <AssignmentTitle user_role={this.props.renderer.user_role} data={data}/>
+                </div>
+            </div>
+        );
+    }
+
+
+}
+
 
 class LiveAssignmentReport extends React.Component{
     constructor(props){

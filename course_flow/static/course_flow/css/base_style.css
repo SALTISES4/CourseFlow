@@ -762,6 +762,7 @@ button:hover{
 
 .project-menu{
     height:100%;
+    width: fit-content;
 }
 
 .explore-menu{

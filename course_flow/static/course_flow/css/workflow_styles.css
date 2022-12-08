@@ -991,6 +991,24 @@ ol.children-block{
     border-right:2px solid black;
 }
 
+.outcome-table.node-rows .outcome-head.user-head{
+    width: 200px;
+    border-right: none;
+}
+
+.user-table .table-cell input{
+    display: block;
+}
+
+.user-table .table-cell .workflow-title{
+    font-size: 12px;
+}
+
+.user-table{
+    white-space: nowrap;
+}
+
+
 .competency-matrix .outcome{
     font-size:14px;
     transform-origin:top left;

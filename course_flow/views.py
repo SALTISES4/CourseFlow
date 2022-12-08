@@ -109,6 +109,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     ProjectSerializerShallow,
     RefreshSerializerNode,
     RefreshSerializerOutcome,
+    UserAssignmentSerializer,
     UserAssignmentSerializerWithUser,
     UserSerializer,
     WeekSerializerShallow,
@@ -5873,7 +5874,34 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
                     many=True,
                 ).data,
             }
+        elif data_type == "completion_table":
+            assignments = LiveAssignment.objects.filter(
+                liveproject=liveproject
+            ).order_by("end_date")
+            users = (
+                LiveProjectUser.objects.filter(liveproject=liveproject)
+                .exclude(role_type=LiveProjectUser.ROLE_NONE)
+                .order_by("-role_type")
+            )
 
+            table_rows = [
+                {
+                    "user": UserSerializer(user.user).data,
+                    "assignments": UserAssignmentSerializer(
+                        UserAssignment.objects.filter(
+                            user=user.user, assignment__liveproject=liveproject
+                        ),
+                        many=True,
+                    ).data,
+                }
+                for user in users
+            ]
+            data_package = {
+                "table_rows": table_rows,
+                "assignments": LiveAssignmentWithCompletionSerializer(
+                    assignments, many=True
+                ).data,
+            }
         elif data_type == "students":
             data_package = {"data": "Hello world!"}
         elif data_type == "assignments":

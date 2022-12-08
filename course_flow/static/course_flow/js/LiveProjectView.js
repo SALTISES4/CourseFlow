@@ -4,7 +4,7 @@ import {DatePicker, AssignmentTitle, WorkflowTitle, NodeTitle, TitleText, Action
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
 import {setAssignmentCompletion, updateLiveProjectValue, createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "./PostFunctions";
 import {StudentManagement} from "./StudentManagement";
-import {AssignmentView} from "./LiveAssignmentView";
+import {AssignmentView, AssignmentViewSmall} from "./LiveAssignmentView";
 import * as Constants from "./Constants";
 
 export class LiveProjectMenu extends React.Component{
@@ -49,6 +49,7 @@ export class LiveProjectMenu extends React.Component{
             {type:"students",name:gettext("Students")},
             {type:"assignments",name:gettext("Assignments")},
             {type:"workflows",name:gettext("Workflow Visibility")},
+            {type:"completion_table",name:gettext("Completion Table")},
             {type:"settings",name:gettext("Classroom Settings")},
         ];
     }
@@ -82,6 +83,8 @@ export class LiveProjectMenu extends React.Component{
                 return (<LiveProjectAssignments renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "workflows":
                 return (<LiveProjectWorkflows renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+            case "completion_table":
+                return (<LiveProjectCompletionTable renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "settings":
                 return (<LiveProjectSettings updateLiveProject={this.updateFunction.bind(this)} renderer={this.props.renderer} role={this.getRole()} liveproject={this.state.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
         }
@@ -676,4 +679,57 @@ export class WorkflowVisibility extends WorkflowForMenu{
             </div>
         );
     }
+}
+
+
+class LiveProjectCompletionTable extends LiveProjectSection{
+    
+    render(){
+        if(!this.state.data)return this.defaultRender();
+        let data=this.state.liveproject;
+        console.log(this.state);
+        let head = this.state.data.assignments.map(assignment=>
+            <th class="table-cell nodewrapper"><AssignmentViewSmall renderer={this.props.renderer} data={assignment}/></th>
+        );
+        let assignment_ids = this.state.data.assignments.map(assignment=>assignment.id)
+        let body = this.state.data.table_rows.map((row,row_index)=>
+            <tr class="outcome-row">
+                <td class="user-head outcome-head">{Constants.getUserDisplay(row.user)}</td>
+                {assignment_ids.map(id=>{
+                    let assignment = row.assignments.find(row_element=>row_element.assignment==id);
+                    if(!assignment)return <td class="table-cell"></td>
+                    return <td class="table-cell"><input onChange={this.toggleCompletion.bind(this,assignment.id,row_index)} type="checkbox" checked={assignment.completed}/></td>
+                })}
+                <td class="table-cell total-cell grand-total-cell">
+                    {row.assignments.reduce((total,assignment)=>total+assignment.completed,0)+"/"+row.assignments.length}
+                </td>
+            </tr>
+        );
+
+        return (
+            <div class="workflow-details">
+                <h3>{gettext("Table")}:</h3>
+                <table class="user-table outcome-table node-rows">
+                <tr class="outcome-row node-row">
+                    <th class="user-head outcome-head empty"></th>
+                    {head}
+                    <th class="table-cell nodewrapper total-cell grand-total-cell"><div class="total-header">{gettext("Total")}:</div></th>
+                </tr>
+                {body}
+                </table>
+            </div>
+        );
+    }
+
+    toggleCompletion(id,row_index,evt){
+        setAssignmentCompletion(id,evt.target.checked);
+        let new_data = {...this.state.data};
+        new_data.table_rows = new_data.table_rows.slice();
+        new_data.table_rows[row_index]={...new_data.table_rows[row_index]}
+        new_data.table_rows[row_index].assignments=new_data.table_rows[row_index].assignments.slice();
+        let index = new_data.table_rows[row_index].assignments.findIndex(assignment=>assignment.id==id);
+        new_data.table_rows[row_index].assignments[index]={...new_data.table_rows[row_index].assignments[index],completed:evt.target.checked};
+        this.setState({data:new_data});
+    }
+
 }
