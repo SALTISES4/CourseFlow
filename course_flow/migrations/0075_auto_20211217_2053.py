@@ -6,43 +6,43 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0074_auto_20211210_1907'),
+        ("course_flow", "0074_auto_20211210_1907"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='comment',
-            name='text',
+            model_name="comment",
+            name="text",
             field=models.CharField(max_length=10000),
         ),
         migrations.AlterField(
-            model_name='node',
-            name='description',
+            model_name="node",
+            name="description",
             field=models.TextField(blank=True, max_length=10000, null=True),
         ),
         migrations.AlterField(
-            model_name='outcome',
-            name='description',
+            model_name="outcome",
+            name="description",
             field=models.TextField(blank=True, max_length=10000, null=True),
         ),
         migrations.AlterField(
-            model_name='outcome',
-            name='title',
+            model_name="outcome",
+            name="title",
             field=models.CharField(blank=True, max_length=10000, null=True),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='description',
+            model_name="project",
+            name="description",
             field=models.CharField(blank=True, max_length=10000, null=True),
         ),
         migrations.AlterField(
-            model_name='week',
-            name='description',
+            model_name="week",
+            name="description",
             field=models.TextField(blank=True, max_length=10000, null=True),
         ),
         migrations.AlterField(
-            model_name='workflow',
-            name='description',
+            model_name="workflow",
+            name="description",
             field=models.TextField(blank=True, max_length=10000, null=True),
         ),
     ]

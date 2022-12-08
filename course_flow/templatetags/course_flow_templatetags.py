@@ -5,13 +5,10 @@ from django.conf import settings
 from django.db.models import Count, Q
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html
 
 from course_flow import models
-from course_flow.utils import (
-    get_classrooms_for_student,
-    get_nondeleted_favourites,
-)
+from course_flow.utils import get_classrooms_for_student
 
 register = template.Library()
 

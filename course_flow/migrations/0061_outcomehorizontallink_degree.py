@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0060_auto_20210621_2207'),
+        ("course_flow", "0060_auto_20210621_2207"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='outcomehorizontallink',
-            name='degree',
+            model_name="outcomehorizontallink",
+            name="degree",
             field=models.PositiveIntegerField(default=1),
         ),
     ]

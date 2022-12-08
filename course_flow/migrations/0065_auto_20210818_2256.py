@@ -14,10 +14,22 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(model_name="column", name="published",),
-        migrations.RemoveField(model_name="node", name="published",),
-        migrations.RemoveField(model_name="nodelink", name="published",),
-        migrations.RemoveField(model_name="week", name="published",),
+        migrations.RemoveField(
+            model_name="column",
+            name="published",
+        ),
+        migrations.RemoveField(
+            model_name="node",
+            name="published",
+        ),
+        migrations.RemoveField(
+            model_name="nodelink",
+            name="published",
+        ),
+        migrations.RemoveField(
+            model_name="week",
+            name="published",
+        ),
         migrations.CreateModel(
             name="Comment",
             fields=[

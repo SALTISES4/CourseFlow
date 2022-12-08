@@ -15,6 +15,6 @@ def update_notifications(request):
                     .decode("utf-8")
                 )
                 return {"update_notifications": last_update_serialized}
-    except:
+    except Exception:
         pass
     return {"update_notifications": {}}

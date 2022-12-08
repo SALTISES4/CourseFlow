@@ -1,12 +1,6 @@
-import json
-
 from django.core.management.base import BaseCommand
 
-from course_flow.models import (
-    Discipline
-)
-
-
+from course_flow.models import Discipline
 
 
 class Command(BaseCommand):
@@ -49,7 +43,6 @@ class Command(BaseCommand):
             "Other",
         ]:
             try:
-                discipline = Discipline.objects.get(title=title)
-            except:
-                discipline = Discipline.objects.create(title=title)
-            
+                Discipline.objects.get(title=title)
+            except Exception:
+                Discipline.objects.create(title=title)

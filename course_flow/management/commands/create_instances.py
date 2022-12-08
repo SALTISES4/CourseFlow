@@ -5,7 +5,6 @@ from django.core.management.base import BaseCommand
 
 from course_flow.serializers import ActivitySerializer
 
-
 User = get_user_model()
 
 

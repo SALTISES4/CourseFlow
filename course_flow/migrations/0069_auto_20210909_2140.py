@@ -6,33 +6,46 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0068_workflow_code'),
+        ("course_flow", "0068_workflow_code"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='workflow',
-            name='ponderation_individual',
+            model_name="workflow",
+            name="ponderation_individual",
             field=models.PositiveIntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='workflow',
-            name='ponderation_practical',
+            model_name="workflow",
+            name="ponderation_practical",
             field=models.PositiveIntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='workflow',
-            name='ponderation_theory',
+            model_name="workflow",
+            name="ponderation_theory",
             field=models.PositiveIntegerField(default=0),
         ),
         migrations.AddField(
-            model_name='workflow',
-            name='time_required',
+            model_name="workflow",
+            name="time_required",
             field=models.CharField(blank=True, max_length=30, null=True),
         ),
         migrations.AddField(
-            model_name='workflow',
-            name='time_units',
-            field=models.PositiveIntegerField(choices=[(0, ''), (1, 'seconds'), (2, 'minutes'), (3, 'hours'), (4, 'days'), (5, 'weeks'), (6, 'months'), (7, 'yrs'), (8, 'credits')], default=0),
+            model_name="workflow",
+            name="time_units",
+            field=models.PositiveIntegerField(
+                choices=[
+                    (0, ""),
+                    (1, "seconds"),
+                    (2, "minutes"),
+                    (3, "hours"),
+                    (4, "days"),
+                    (5, "weeks"),
+                    (6, "months"),
+                    (7, "yrs"),
+                    (8, "credits"),
+                ],
+                default=0,
+            ),
         ),
     ]

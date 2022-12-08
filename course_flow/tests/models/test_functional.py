@@ -3,11 +3,7 @@ import json
 import time
 
 from channels.routing import URLRouter
-from channels.testing import (
-    ChannelsLiveServerTestCase,
-    HttpCommunicator,
-    WebsocketCommunicator,
-)
+from channels.testing import ChannelsLiveServerTestCase, WebsocketCommunicator
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -18,7 +14,6 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.ui import WebDriverWait
 
-from course_flow.consumers import WorkflowUpdateConsumer
 from course_flow.models import (
     Activity,
     Course,
@@ -36,7 +31,6 @@ from course_flow.models import (
     Program,
     Project,
     UserAssignment,
-    Week,
     Workflow,
     WorkflowProject,
 )
@@ -3284,9 +3278,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             len(selenium.find_elements_by_css_selector(".panel-favourite")),
             1,
         )
-        selenium.find_element_by_css_selector(
-            "#my-favourites"
-        ).click()
+        selenium.find_element_by_css_selector("#my-favourites").click()
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-for-menu")),
             0,
@@ -3332,9 +3324,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             len(selenium.find_elements_by_css_selector(".panel-favourite")),
             2,
         )
-        selenium.find_element_by_css_selector(
-            "#my-favourites"
-        ).click()
+        selenium.find_element_by_css_selector("#my-favourites").click()
         time.sleep(10)
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-for-menu")),

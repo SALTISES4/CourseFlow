@@ -22,7 +22,6 @@ from .models import (
     Node,
     NodeLink,
     NodeWeek,
-    ObjectPermission,
     ObjectSet,
     Outcome,
     OutcomeHorizontalLink,
@@ -1584,17 +1583,19 @@ class LiveAssignmentSerializer(
 
     def get_user_assignment(self, instance):
         if instance.single_completion:
-            if instance.userassignment_set.filter(completed=True).count()>0:
-                userassignment = instance.userassignment_set.filter(completed=True).order_by("completed_on").first()
+            if instance.userassignment_set.filter(completed=True).count() > 0:
+                userassignment = (
+                    instance.userassignment_set.filter(completed=True)
+                    .order_by("completed_on")
+                    .first()
+                )
                 return UserAssignmentSerializerWithUser(userassignment).data
         try:
             userassignment = UserAssignment.objects.filter(
                 user=self.context["user"], assignment=instance
             ).first()
             if userassignment is not None:
-                return UserAssignmentSerializerWithUser(
-                    userassignment
-                ).data
+                return UserAssignmentSerializerWithUser(userassignment).data
         except AttributeError:
             return None
         return None
@@ -1612,6 +1613,7 @@ class LiveAssignmentSerializer(
         instance.end_date = validated_data.get("end_date", instance.end_date)
         instance.save()
         return instance
+
 
 class UserAssignmentSerializer(
     serializers.ModelSerializer,

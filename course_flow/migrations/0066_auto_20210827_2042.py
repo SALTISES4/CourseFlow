@@ -6,21 +6,31 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0065_auto_20210818_2256'),
+        ("course_flow", "0065_auto_20210818_2256"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CustomTerm',
+            name="CustomTerm",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('term', models.CharField(max_length=50)),
-                ('translation', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("term", models.CharField(max_length=50)),
+                ("translation", models.CharField(max_length=50)),
             ],
         ),
         migrations.AddField(
-            model_name='project',
-            name='terminology_dict',
-            field=models.ManyToManyField(blank=True, to='course_flow.CustomTerm'),
+            model_name="project",
+            name="terminology_dict",
+            field=models.ManyToManyField(
+                blank=True, to="course_flow.CustomTerm"
+            ),
         ),
     ]

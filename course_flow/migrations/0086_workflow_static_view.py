@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0085_nodelink_text_position'),
+        ("course_flow", "0085_nodelink_text_position"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='workflow',
-            name='static_view',
+            model_name="workflow",
+            name="static_view",
             field=models.BooleanField(default=False),
         ),
     ]

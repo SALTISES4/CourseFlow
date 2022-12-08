@@ -1,17 +1,12 @@
 from io import BytesIO
 
 import pandas as pd
-from django.conf import settings
 from django.db.models import Q
-from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from .celery import try_async
 from .models import (
-    Column,
     Course,
     Node,
-    NodeWeek,
     OutcomeNode,
     OutcomeWorkflow,
     Program,
@@ -25,16 +20,12 @@ from .serializers import (
     WorkflowExportSerializer,
 )
 from .utils import (
-    dateTimeFormatNoSpace,
-    get_all_outcomes_ordered,
     get_all_outcomes_ordered_filtered,
     get_all_outcomes_ordered_for_outcome,
     get_alphanum,
-    get_model_from_str,
     get_outcomenodes,
     get_parent_nodes_for_workflow,
     get_unique_outcomehorizontallinks,
-    get_unique_outcomenodes,
 )
 
 #
@@ -127,7 +118,7 @@ def get_framework_line_for_outcome(outcome, columns, allowed_sets):
 def get_course_framework(workflow, allowed_sets):
     workflow_serialized = WorkflowExportSerializer(workflow).data
     num_columns = workflow.columns.all().count()
-    df_columns = max(6, 3 + num_columns)
+    # df_columns = max(6, 3 + num_columns)
     df = pd.DataFrame(columns=[str(i) for i in range(num_columns)])
     df = df.append(
         {
@@ -196,14 +187,16 @@ def get_course_framework(workflow, allowed_sets):
         )
         prereqs = (
             Node.objects.filter(
-                outgoing_links__target_node__in=nodes, deleted=False,
+                outgoing_links__target_node__in=nodes,
+                deleted=False,
             )
             .filter(allowed_sets_Q(allowed_sets))
             .distinct()
         )
         postreqs = (
             Node.objects.filter(
-                incoming_links__source_node__in=nodes, deleted=False,
+                incoming_links__source_node__in=nodes,
+                deleted=False,
             )
             .filter(allowed_sets_Q(allowed_sets))
             .distinct()
@@ -246,7 +239,10 @@ def get_course_framework(workflow, allowed_sets):
     columns = workflow.columns.order_by("columnworkflow__rank").all()
     for i, column in enumerate(columns):
         headers[str(3 + i)] = column.get_display_title()
-    df = df.append(headers, ignore_index=True,)
+    df = df.append(
+        headers,
+        ignore_index=True,
+    )
     for outcome in workflow.outcomes.filter(deleted=False).filter(
         allowed_sets_Q(allowed_sets)
     ):
@@ -598,7 +594,7 @@ def get_matrix_entry(row, outcomes):
         node = row["object"]
         return evaluate_outcome(node, outcomes)
     else:
-        week = row["object"]
+        # week = row["object"]
         return ""
 
 
@@ -613,7 +609,7 @@ def get_matrix_sum_line(rows, fn):
                 value = 0
             try:
                 this_value = float(value)
-            except:
+            except Exception:
                 this_value = 0
             total += this_value
         else:

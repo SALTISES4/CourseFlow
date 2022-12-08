@@ -9,17 +9,47 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('course_flow', '0092_auto_20220930_1948'),
+        ("course_flow", "0092_auto_20220930_1948"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LiveProjectUser',
+            name="LiveProjectUser",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('role_type', models.PositiveIntegerField(choices=[(0, 'None'), (1, 'Student'), (2, 'Instructor')], default=0)),
-                ('liveproject', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='course_flow.liveproject')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "role_type",
+                    models.PositiveIntegerField(
+                        choices=[
+                            (0, "None"),
+                            (1, "Student"),
+                            (2, "Instructor"),
+                        ],
+                        default=0,
+                    ),
+                ),
+                (
+                    "liveproject",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="course_flow.liveproject",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

@@ -52,7 +52,10 @@ def dispatch_child_updated(workflow):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         "workflow_" + str(workflow.pk),
-        {"type": "workflow_child_updated", "edit_count": workflow.edit_count,},
+        {
+            "type": "workflow_child_updated",
+            "edit_count": workflow.edit_count,
+        },
     )
 
 
@@ -183,6 +186,7 @@ def changeField(id, objectType, json, changeFieldID=0):
             "changeFieldID": changeFieldID,
         },
     }
+
 
 def changeFieldMany(ids, objectType, json, changeFieldID=0):
     return {

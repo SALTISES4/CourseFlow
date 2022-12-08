@@ -1216,9 +1216,8 @@ class SALTISEAnalyticsView(
             in self.request.user.groups.all()
         )
 
-class SALTISEAdminView(
-    LoginRequiredMixin, UserPassesTestMixin, TemplateView
-):
+
+class SALTISEAdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "course_flow/saltise_admin.html"
 
     def test_func(self):
