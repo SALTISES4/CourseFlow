@@ -12,4 +12,7 @@ selenium
 tox
 twine
 
+daphne
+twisted[tls] == 22.8.0
+
 -e file:./#egg=saltise_course_flow
