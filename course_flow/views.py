@@ -1536,7 +1536,7 @@ def get_workflow_data_flat(workflow, user):
     weeks = workflow.weeks.all()
     nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
     nodes = Node.objects.filter(week__workflow=workflow).prefetch_related(
-        "outcomenode_set"
+        "outcomenode_set","liveassignment_set"
     )
     nodelinks = NodeLink.objects.filter(source_node__in=nodes)
     if not workflow.is_strategy:

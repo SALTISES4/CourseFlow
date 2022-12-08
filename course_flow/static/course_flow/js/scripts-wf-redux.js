@@ -185,8 +185,10 @@ export class WorkflowRenderer{
 
         }else if(this.user_role==Constants.role_keys["student"]){
             this.is_student=true;
+            this.show_assignments=true;
         }else if(this.user_role==Constants.role_keys["teacher"]){
             this.is_teacher=true;
+            this.show_assignments=true;
         }
         if(this.public_view){
             this.getWorkflowData=getPublicWorkflowData;

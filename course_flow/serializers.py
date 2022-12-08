@@ -249,6 +249,7 @@ class NodeSerializerShallow(
     columnworkflow = serializers.SerializerMethodField()
     column = serializers.SerializerMethodField()
     linked_workflow_data = serializers.SerializerMethodField()
+    has_assignment = serializers.SerializerMethodField()
 
     node_type_display = serializers.CharField(source="get_node_type_display")
 
@@ -283,6 +284,7 @@ class NodeSerializerShallow(
             # "is_dropped",
             "comments",
             "sets",
+            "has_assignment",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -359,6 +361,14 @@ class NodeSerializerShallow(
                 linked_workflow,
                 context={"user": self.context.get("user", None)},
             ).data
+
+    def get_has_assignment(self,instance):
+        user = self.context.get("user", None)
+        if user is None: return False
+        assignments = instance.liveassignment_set.all()
+        if assignments.exists():
+            return instance.liveassignment_set.filter(Q(userassignment__user=user)|Q(liveproject__liveprojectuser__role_type=LiveProjectUser.ROLE_TEACHER)).exists()
+        return False
 
     def create(self, validated_data):
         return Node.objects.create(
