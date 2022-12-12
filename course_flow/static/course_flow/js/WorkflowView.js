@@ -499,7 +499,7 @@ class NodeBarUnconnected extends ComponentJSON{
         
         var nodebarweekworkflows;
         if(this.props.renderer.view_type=="workflowview")nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
-            <NodeBarWeekWorkflow key={weekworkflow} renderer={this.props.renderer} objectID={weekworkflow}/>
+            <NodeBarWeekWorkflow key={weekworkflow} order={data.weekworkflow_set} renderer={this.props.renderer} objectID={weekworkflow}/>
         );
         var sort_type;
         
@@ -512,6 +512,7 @@ class NodeBarUnconnected extends ComponentJSON{
                 <div class="node-bar-column-block">
                     {nodebarcolumnworkflows}
                 </div>
+                <h4>{gettext("Jump To")}:</h4>
                 <div class="node-bar-week-block">
                     {nodebarweekworkflows}
                 </div>

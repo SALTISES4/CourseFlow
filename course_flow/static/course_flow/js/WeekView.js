@@ -290,3 +290,44 @@ export const WeekComparisonView = connect(
     mapWeekStateToProps,
     null
 )(WeekComparisonViewUnconnected)
+
+
+//Represents a week in the nodebar
+export class NodeBarWeekViewUnconnected extends React.Component{
+    constructor(props){
+        super(props);
+        this.objectType="week";
+        this.objectClass=".week";
+    }
+    
+    render(){
+        let data = this.props.data;
+        let renderer = this.props.renderer;
+        let default_text;
+        if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
+        
+        
+        return (
+            <div class="node-bar-week hover-shade" onClick={this.jumpTo.bind(this)}>
+                <TitleText text={data.title} defaultText={default_text}/>
+            </div>
+        );
+    }
+
+    jumpTo(){
+        let week_id = this.props.data.id;
+        console.log("jump to week"+week_id);
+        let week = $(".week-workflow[data-child-id='"+week_id+"'] > .week");
+        if(week.length>0){
+            let container = $("#container");
+
+            $("#container").animate({
+                scrollTop: week.offset().top+container[0].scrollTop-container.offset().top-200
+            }, 300);
+        }
+    }
+}
+export const NodeBarWeekView = connect(
+    mapWeekStateToProps,
+    null
+)(NodeBarWeekViewUnconnected)
