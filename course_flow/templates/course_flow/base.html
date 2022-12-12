@@ -338,6 +338,7 @@
       add_users_to_assignment: "{% url 'course_flow:add-users-to-assignment' %}",
       update_liveproject_value: "{% url 'course_flow:update-liveproject-value' %}",
       set_assignment_completion: "{% url 'course_flow:set-assignment-completion' %}",
+      get_assignments_for_node: "{% url 'course_flow:get-assignments-for-node' %}",
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
@@ -428,7 +429,16 @@
         $(".workflow-wrapper, #container").removeClass("printing");
     });
 
-
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isTablet = /(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/.test(userAgent);
+    const isMobile = (/android|iphone/i.test(userAgent));
+    const isTouch = (isMobile || isTablet);
+    if(isTouch){
+      if(!sessionStorage.getItem("unsupported_alerted")){
+          sessionStorage.setItem("unsupported_alerted",true);
+          alert('{% trans "Your device is not supported. Please use a laptop or desktop for the best experience." %}');
+      }
+    }
 
     update_notifications =  {{ update_notifications |safe }}
     if(update_notifications.title && update_notifications.id != localStorage.getItem("last_hidden_notification")){

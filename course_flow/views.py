@@ -1539,7 +1539,7 @@ def get_workflow_data_flat(workflow, user):
     weeks = workflow.weeks.all()
     nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
     nodes = Node.objects.filter(week__workflow=workflow).prefetch_related(
-        "outcomenode_set","liveassignment_set"
+        "outcomenode_set", "liveassignment_set"
     )
     nodelinks = NodeLink.objects.filter(source_node__in=nodes)
     if not workflow.is_strategy:
@@ -6064,6 +6064,41 @@ def get_workflow_nodes(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
         data_package = WorkflowSerializerForAssignments(workflow).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+        }
+    )
+
+
+@user_enrolled_as_student("nodePk")
+def get_assignments_for_node(request: HttpRequest) -> HttpResponse:
+    node = Node.objects.get(pk=request.POST.get("nodePk"))
+    try:
+        user = request.user
+        workflow = node.get_workflow()
+        role_type = get_user_role(workflow, user)
+        my_assignments = LiveAssignmentSerializer(
+            LiveAssignment.objects.filter(
+                task=node, userassignment__user=user
+            ),
+            many=True,
+            context={"user": user},
+        ).data
+        if role_type == LiveProjectUser.ROLE_TEACHER:
+            all_assignments = LiveAssignmentWithCompletionSerializer(
+                LiveAssignment.objects.filter(task=node),
+                many=True,
+            ).data
+        else:
+            all_assignments = None
+        data_package = {
+            "my_assignments": my_assignments,
+            "all_assignments": all_assignments,
+        }
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse(

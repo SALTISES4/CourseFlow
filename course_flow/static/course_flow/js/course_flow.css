@@ -645,7 +645,7 @@ button:hover{
     font-size:13px;
     color:#444444;
     margin-bottom:2px;
-    white-space:normal;
+    white-space:pre-wrap;
     max-height: 140px;
     overflow-y: auto;
 }
@@ -753,6 +753,11 @@ button:hover{
     background:white;
     width: -moz-fit-content;
     width: fit-content;
+}
+
+#project-description-input{
+    min-width: 400px;
+    min-height: 200px;
 }
 
 .project-import{
@@ -1387,6 +1392,7 @@ button, input[type="submit"]{
 .week > .title-text{
     font-weight:600;
     font-size:14px;
+    white-space: normal;
 }
 
 .week-workflow.dragging{
@@ -1470,7 +1476,7 @@ button, input[type="submit"]{
     position:relative;
     padding:5px;
     width:160px;
-    white-space:normal;
+    white-space: normal;
     text-align:center;
     vertical-align:top;
     box-sizing:border-box;
@@ -1541,9 +1547,6 @@ button, input[type="submit"]{
     width:120px;
 }
 
-.term .outcome-node-indicator{
-    right:-24px;
-}
 
 .node-ghost{
     width:160px;
@@ -1655,6 +1658,18 @@ button, input[type="submit"]{
     width: 100%;
     display: flex;
     gap: 5px;
+}
+
+.assignment-timing .flatpickr-input+input{
+    font-size: 12px;
+}
+
+.assignment-in-node .assignment-timing{
+    flex-wrap: wrap;
+}
+
+.assignment-in-node .workflow-title{
+    font-size: 12px;
 }
 
 .flatpickr-input+input:disabled{
@@ -1971,11 +1986,15 @@ ol.children-block{
     position:absolute;
 }
 
-.outcome-node-indicator{
+.side-actions{
     position:absolute;
     top:0px;
-    right:-30px;
-    
+    right:-22px;
+}
+
+.side-actions .comment-indicator{
+    position: unset;
+    background: unset;
 }
 
 .outcome-node-container{

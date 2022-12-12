@@ -385,6 +385,11 @@ def course_flow_patterns():
             name="set-assignment-completion",
         ),
         path(
+            "assignment/getassignmentsfornode/",
+            views.get_assignments_for_node,
+            name="get-assignments-for-node",
+        ),
+        path(
             "liveproject/register/student/<project_hash>/",
             views.register_as_student,
             name="register-as-student",

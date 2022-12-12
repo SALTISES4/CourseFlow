@@ -47,9 +47,9 @@ class NodeView extends ComponentJSON{
         let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
             <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
         );
-        let outcomeDiv;
+        let side_actions = [];
         if(outcomenodes.length>0){
-            outcomeDiv = (
+            side_actions.push(
                 <div class="outcome-node-indicator">
                     <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes.length}</div>
                     <div class={"outcome-node-container column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes}</div>
@@ -159,7 +159,12 @@ class NodeView extends ComponentJSON{
                 {nodePorts}
                 {node_links}
                 {auto_link}
-                {outcomeDiv}
+                <div class="side-actions">
+                    {side_actions}
+                    <div class="comment-indicator-container"></div>
+                    <div class="assignment-indicator-container"></div>
+
+                </div>
             </div>
         );
 
@@ -267,47 +272,18 @@ class NodeView extends ComponentJSON{
         return (
             [
                 <ActionButton button_icon="assignment.svg" button_class="comment-button" titletext={gettext("Show Assignment Info")} handleClick={this.showAssignment.bind(this)}/>,
-                <AssignmentBox show={this.state.show_comments} comments={this.props.data.comments} parent={this} renderer={this.props.renderer}/>
+                <AssignmentBox dispatch={this.props.dispatch.bind(this)} node_id={data.id} show={this.state.show_assignments} has_assignment={this.props.data.has_assignment} parent={this} renderer={this.props.renderer}/>
             ]
         );
     }
 
     showAssignment(evt){
+        let props = this.props;
         evt.stopPropagation();
         if(!this.state.show_assignments){
-            this.reloadAssignments(true);
+            this.setState({show_assignments:true});
         }else(this.setState({show_assignments:false}));
     }
-
-    reloadAssignments(show_assignments){
-        let props = this.props;
-        let data = props.data;
-        props.renderer.tiny_loader.startLoad();
-        // getAssignmentsForNode(data.id,
-        //     (response_data)=>{
-        //         if(show_assignments){
-        //             this.setState({show_assignments:true});
-        //         }
-        //         //this.setState({show_assignments:true,assignment_data:response_data.data_package});
-        //         props.renderer.tiny_loader.endLoad();
-        //     }
-        // );
-    }
-
-
-    createAssignment(data){
-        let props = this.props;
-        props.renderer.tiny_loader.startLoad();
-        createAssignment(
-            data.id,
-            props.renderer.live_project_data.pk,
-            (response_data)=>{
-                props.renderer.tiny_loader.endLoad();
-                window.location = update_path.liveassignment.replace("0",response_data.assignmentPk);
-            }
-        );
-    }
-
 }
 const mapNodeStateToProps = (state,own_props)=>(
     getNodeByID(state,own_props.objectID)
@@ -389,9 +365,9 @@ class NodeComparisonViewUnconnected extends ComponentJSON{
         let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
             <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
         );
-        let outcomeDiv;
+        let side_actions=[];
         if(outcomenodes.length>0){
-            outcomeDiv = (
+            side_actions.push(
                 <div class="outcome-node-indicator">
                     <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes.length}</div>
                     <div class={"outcome-node-container column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes}</div>
@@ -459,7 +435,9 @@ class NodeComparisonViewUnconnected extends ComponentJSON{
                     {mouseover_actions}
                 </div>
                 {this.addEditable(data_override)}
-                {outcomeDiv}
+                <div class="side-actions">
+                    {side_actions}
+                </div>
             </div>
         );
 

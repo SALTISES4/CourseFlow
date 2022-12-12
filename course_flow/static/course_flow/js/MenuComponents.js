@@ -4,7 +4,7 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {makeProjectLive, updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology, getExport} from "./PostFunctions";
 import {gridMenuItemAdded} from "./Reducers";
-import {object_sets_types,Loader} from "./Constants";
+import * as Constants from "./Constants";
 import {ShareMenu} from "./ShareMenu";
 import {ImportMenu} from "./ImportMenu";
 import {ExportMenu} from "./ExportMenu";
@@ -236,7 +236,7 @@ export class WorkflowForMenu extends React.Component{
                         <div  class="workflow-delete-button hover-shade" onClick={(evt)=>{
                             evt.stopPropagation();
                             if(window.confirm(gettext("Are you sure you want to delete this?"))){
-                                let loader = new Loader('body');
+                                let loader = new Constants.Loader('body');
                                 deleteSelf(this.props.workflow_data.id,this.props.workflow_data.type,true,(response_data)=>{
                                     loader.endLoad();
                                     window.location.reload();
@@ -250,7 +250,7 @@ export class WorkflowForMenu extends React.Component{
                     buttons.push(
                         <div  class="workflow-delete-button hover-shade" onClick={(evt)=>{
                             evt.stopPropagation();
-                            let loader = new Loader('body');
+                            let loader = new Constants.Loader('body');
                             restoreSelf(this.props.workflow_data.id,this.props.workflow_data.type,(response_data)=>{
                                 loader.endLoad();
                                 window.location.reload();
@@ -269,7 +269,7 @@ export class WorkflowForMenu extends React.Component{
                     titletext=gettext("Duplicate");
                     buttons.push(
                         <div class="workflow-duplicate-button hover-shade" onClick={(evt)=>{
-                            let loader = new Loader('body');
+                            let loader = new Constants.Loader('body');
                             duplicateBaseItem(this.props.workflow_data.id,this.props.workflow_data.type,this.props.parentID,(response_data)=>{
                                 loader.endLoad();
                                 window.location.reload();
@@ -287,7 +287,7 @@ export class WorkflowForMenu extends React.Component{
                         <div class="workflow-duplicate-button hover-shade" onClick={(evt)=>{
                             var target_parent;
                             if(this.props.workflow_data.type=="project"||this.props.workflow_data.is_strategy){
-                                let loader = new Loader('body');
+                                let loader = new Constants.Loader('body');
                                 duplicateBaseItem(
                                     this.props.workflow_data.id,this.props.workflow_data.type,
                                     target_parent,(response_data)=>{
@@ -300,7 +300,7 @@ export class WorkflowForMenu extends React.Component{
                             }else{
                                 getTargetProjectMenu(this.props.workflow_data.id,(response_data)=>{
                                     if(response_data.parentID!=null){
-                                        let loader = new Loader('body');
+                                        let loader = new Constants.Loader('body');
                                         duplicateBaseItem(
                                             this.props.workflow_data.id,this.props.workflow_data.type,
                                             response_data.parentID,(duplication_response_data)=>{
@@ -375,7 +375,7 @@ export class MenuSection extends React.Component{
                     <a class="hover-shade" onClick={()=>{
                         getAddedWorkflowMenu(parentID,section_type,is_strategy,false,(response_data)=>{
                             if(response_data.workflowID!=null){
-                                let loader = new Loader('body');
+                                let loader = new Constants.Loader('body');
                                 duplicateBaseItem(
                                     response_data.workflowID,section_type,
                                     parentID,(duplication_response_data)=>{
@@ -684,8 +684,10 @@ export class ProjectEditMenu extends React.Component{
                 <option value={discipline.id}>{discipline.title}</option>
             );
         }
+        let title=Constants.unescapeCharacters(data.title || "");
+        let description=Constants.unescapeCharacters(data.description || "");
         
-        let object_sets=object_sets_types();
+        let object_sets=Constants.object_sets_types();
         let set_options = Object.keys(object_sets).map(key=>
             <option value={key}>{object_sets[key]}</option>
         );
@@ -711,11 +713,11 @@ export class ProjectEditMenu extends React.Component{
                 <h3>{gettext("Edit Project")+":"}</h3>
                 <div>
                     <h4>{gettext("Title")+":"}</h4>
-                    <input autocomplete="off" id="project-title-input" value={data.title} onChange={this.inputChanged.bind(this,"title")}/>
+                    <textarea autocomplete="off" id="project-title-input" value={title} onChange={this.inputChanged.bind(this,"title")}/>
                 </div>
                 <div>
                     <h4>{gettext("Description")+":"}</h4>
-                    <input autocomplete="off" id="project-description-input" value={data.description} onChange={this.inputChanged.bind(this,"description")}/>
+                    <textarea autocomplete="off" id="project-description-input" value={description} onChange={this.inputChanged.bind(this,"description")}/>
                 </div>
                 <div>
                     <h4>{gettext("Disciplines")+":"}</h4>

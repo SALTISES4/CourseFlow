@@ -156,7 +156,7 @@ class TitleSerializerTextMixin(serializers.Serializer):
         if title is None or title == "":
             if self.get_type(instance) == "week":
                 return (
-                    _("Term")
+                    instance.get_week_type_display()
                     + " "
                     + str(
                         WeekWorkflow.objects.filter(week=instance)
@@ -362,12 +362,18 @@ class NodeSerializerShallow(
                 context={"user": self.context.get("user", None)},
             ).data
 
-    def get_has_assignment(self,instance):
+    def get_has_assignment(self, instance):
         user = self.context.get("user", None)
-        if user is None: return False
+        if user is None:
+            return False
         assignments = instance.liveassignment_set.all()
         if assignments.exists():
-            return instance.liveassignment_set.filter(Q(userassignment__user=user)|Q(liveproject__liveprojectuser__role_type=LiveProjectUser.ROLE_TEACHER)).exists()
+            return instance.liveassignment_set.filter(
+                Q(userassignment__user=user)
+                | Q(
+                    liveproject__liveprojectuser__role_type=LiveProjectUser.ROLE_TEACHER
+                )
+            ).exists()
         return False
 
     def create(self, validated_data):
@@ -1629,6 +1635,7 @@ class LiveAssignmentSerializer(
         instance.end_date = validated_data.get("end_date", instance.end_date)
         instance.save()
         return instance
+
 
 class LiveAssignmentWithCompletionSerializer(LiveAssignmentSerializer):
     class Meta:

@@ -37,7 +37,7 @@ class ColumnView extends ComponentJSON{
             <div ref={this.maindiv} style={style} class={css_class} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="column-line">
                     <img src={this.getIcon()}/>
-                    <div>{title}</div>
+                    <div dangerouslySetInnerHTML={{ __html: title }}></div>
                 </div>
                 {this.addEditable(data)}
                 <div class="mouseover-actions">
@@ -69,8 +69,7 @@ class NodeBarColumnUnconnected extends ComponentJSON{
         if(data)title = data.title;
         if(!title)title=data.column_type_display;
         return(
-            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:Constants.getColumnColour(data)}}>
-                {title}
+            <div dangerouslySetInnerHTML={{ __html: title }} class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:Constants.getColumnColour(data)}}>
             </div>
         );
     }

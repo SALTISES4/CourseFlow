@@ -146,13 +146,15 @@ export class ComparisonView extends React.Component{
     }
 
     loadWorkflow(){
+        let renderer = this.props.renderer;
+        renderer.tiny_loader.startLoad();
         getWorkflowSelectMenu(this.props.data.id,"workflow",false,true,(response_data)=>{
             if(response_data.workflowID!=null){
                 let workflows = this.state.workflows.slice();
                 workflows.push(response_data.workflowID);
                 this.setState({workflows:workflows});
             }
-        })
+        },()=>{renderer.tiny_loader.endLoad()})
     }
     removeWorkflow(workflow_id){
         let workflows = this.state.workflows.slice();

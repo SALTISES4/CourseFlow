@@ -39,13 +39,16 @@ export function getWorkflowContext(workflowPk,callBackFunction=()=>console.log("
     }
 }
 
-export function getWorkflowSelectMenu(projectPk,type_filter,get_strategies,self_only,updateFunction){
+export function getWorkflowSelectMenu(projectPk,type_filter,get_strategies,self_only,updateFunction,receiptFunction){
     $.post(post_paths.get_possible_added_workflows,{
         projectPk:JSON.stringify(projectPk),
         type_filter:JSON.stringify(type_filter),
         get_strategies:JSON.stringify(get_strategies),
         self_only:JSON.stringify(self_only),
-    },(data)=>openWorkflowSelectMenu(data,updateFunction));
+    },(data)=>{
+        openWorkflowSelectMenu(data,updateFunction);
+        if(receiptFunction)receiptFunction();
+    });
 }
 
 export function getLinkedWorkflowMenu(nodeData,updateFunction,callBackFunction=()=>console.log("success")){
@@ -979,6 +982,19 @@ export function setAssignmentCompletion(userassignmentPk,completed,callBackFunct
         $.post(post_paths.set_assignment_completion, {
             userassignmentPk:JSON.stringify(userassignmentPk),
             completed:JSON.stringify(completed),
+        }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+export function getAssignmentsForNode(nodePk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_assignments_for_node, {
+            nodePk:JSON.stringify(nodePk),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else fail_function(data.action);

@@ -19,6 +19,13 @@ export const reloadCommentsAction = (id,objectType,comment_data) => {
     }
 }
 
+export const reloadAssignmentsAction = (id,has_assignment) => {
+    return {
+        type:"node/reloadAssignments",
+        payload:{id:id,has_assignment:has_assignment}
+    }
+}
+
 export const moveColumnWorkflow = (id,new_position,new_parent,child_id) => {
     return {
         type: 'columnworkflow/movedTo',
@@ -1039,6 +1046,15 @@ export function nodeReducer(state=[],action){
                 }
             }
             return state;
+        case 'node/reloadAssignments':
+            var new_state=state.slice();
+            for(var i=0;i<new_state.length;i++){
+                let obj = new_state[i];
+                if(obj.id==action.payload.id){
+                    new_state[i]={...obj,has_assignment:action.payload.has_assignment};
+                    return new_state;
+                }
+            }
         default:
             return state;
     }

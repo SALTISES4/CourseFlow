@@ -866,12 +866,16 @@ export class CommentBox extends React.Component{
                 has_comments = this.props.parent.props.data.comments.length>0;
             }
         }
+        let render_div;
+        let side_actions = $(this.props.parent.maindiv.current).children(".side-actions").children(".comment-indicator-container");
+        if(side_actions.length>0)render_div=side_actions[0];
+        else render_div = this.props.parent.maindiv.current;
         let comment_indicator=null;
         if(has_comments)comment_indicator=reactDom.createPortal(
             <div class="comment-indicator hover-shade" onClick={this.props.parent.commentClick.bind(this.props.parent)}>
                 <img src={iconpath+"comment_new.svg"}/>
             </div>,
-            this.props.parent.maindiv.current
+            render_div
         );
         
         
@@ -936,12 +940,11 @@ export class CommentBox extends React.Component{
             </div>,
             comment_indicator
             ],
-            this.props.parent.maindiv.current
+            render_div
         )
     }
 
     textChange(evt){
-        console.log("GOT TEXT CHANGE");
         if($(this.input.current)[0].value && $(this.input.current)[0].value!=""){
             $(this.submit.current).removeClass("hidden");
         }else{
@@ -970,8 +973,6 @@ export class CommentBox extends React.Component{
     }
     
     appendComment(){
-        console.log(this.input.current);
-        console.log($(this.input.current)[0].value);
         let text=$(this.input.current)[0].value;
         if(!text)return;
         let parent = this.props.parent;
