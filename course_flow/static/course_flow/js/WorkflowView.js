@@ -14,7 +14,7 @@ import StrategyView from "./Strategy";
 import WorkflowOutcomeView from "./WorkflowOutcomeView";
 import WorkflowLegend from "./WorkflowLegend";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend";
-import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport} from "./PostFunctions";
+import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport, toggleDrop} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
@@ -512,19 +512,36 @@ class NodeBarUnconnected extends ComponentJSON{
                 <div class="node-bar-column-block">
                     {nodebarcolumnworkflows}
                 </div>
+                <hr/>
                 <h4>{gettext("Jump To")}:</h4>
                 <div class="node-bar-week-block">
                     {nodebarweekworkflows}
+                </div>
+                <hr/>
+                <div id="expand-collapse-all">
+                    <div>{gettext("Expand/Collapse All")}</div>
+                    <div>
+                        <img class="hover-shade" src={iconpath+"plus.svg"} onClick={this.expandAll.bind(this)}/><img class="hover-shade" src={iconpath+"minus.svg"} onClick={this.collapseAll.bind(this)}/>
+                    </div>
                 </div>
                 {sort_type}
             </div>
         ,$("#node-bar")[0]);
     }
+
+    expandAll(){
+        this.props.weeks.forEach(week=>toggleDrop(week.id,"week",true,this.props.dispatch));
+    }
+
+    collapseAll(){
+        this.props.weeks.forEach(week=>toggleDrop(week.id,"week",false,this.props.dispatch));
+    }
     
 }
 const mapNodeBarStateToProps = state=>({
     data:state.workflow,
-    columns:state.column
+    columns:state.column,
+    weeks:state.week,
 })
 export const NodeBar = connect(
     mapNodeBarStateToProps,

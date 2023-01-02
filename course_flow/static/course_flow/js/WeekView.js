@@ -6,7 +6,7 @@ import {NodeWeekComparisonView} from "./NodeWeekView.js";
 import {getWeekByID, getNodeWeekByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
 import {columnChangeNode, moveNodeWeek} from "./Reducers.js";
-import {insertedAt,columnChanged,addStrategy,updateValueInstant} from "./PostFunctions";
+import {toggleDrop, insertedAt,columnChanged,addStrategy,updateValueInstant} from "./PostFunctions";
 import {Loader} from "./Constants.js";
 
 //Basic component to represent a Week
@@ -305,11 +305,12 @@ export class NodeBarWeekViewUnconnected extends React.Component{
         let renderer = this.props.renderer;
         let default_text;
         if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
-        
-        
+        console.log(data);
+        let src = iconpath+"plus.svg";
+        if(data.is_dropped)src=iconpath+"minus.svg";
         return (
             <div class="node-bar-week hover-shade" onClick={this.jumpTo.bind(this)}>
-                <TitleText text={data.title} defaultText={default_text}/>
+                <div><TitleText text={data.title} defaultText={default_text}/><img onClick={this.toggleDrop.bind(this)} src={src}/></div>
             </div>
         );
     }
@@ -325,6 +326,11 @@ export class NodeBarWeekViewUnconnected extends React.Component{
                 scrollTop: week.offset().top+container[0].scrollTop-container.offset().top-200
             }, 300);
         }
+    }
+
+    toggleDrop(evt){
+        // evt.stopPropagation();
+        toggleDrop(this.props.objectID,this.objectType,!this.props.data.is_dropped,this.props.dispatch)
     }
 }
 export const NodeBarWeekView = connect(

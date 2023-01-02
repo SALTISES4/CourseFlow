@@ -2203,3 +2203,19 @@ def add_user_to_assignments(sender, instance, created, **kwargs):
         UserAssignment.objects.filter(
             assignment__liveproject=instance.liveproject
         ).delete()
+
+
+@receiver(post_save, sender=LiveAssignment)
+def live_assignment_creation_defaults(sender, instance, created, **kwargs):
+    if created:
+        liveproject = instance.liveproject
+        instance.self_reporting = liveproject.default_self_reporting
+        instance.single_completion = liveproject.default_single_completion
+        if liveproject.default_assign_to_all:
+            students = LiveProjectUser.objects.filter(
+                liveproject=liveproject, role_type=LiveProjectUser.ROLE_STUDENT
+            )
+            for student in students:
+                UserAssignment.objects.create(
+                    user=student.user, assignment=instance
+                )

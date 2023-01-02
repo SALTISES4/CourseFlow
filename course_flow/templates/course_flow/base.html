@@ -192,7 +192,7 @@
                       href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
                    {% endif %}
                    >
-                  {{ favourite.content_object }}
+                  {{ favourite.content_object | safe }}
                 </a>
               {% endfor %}
             <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>

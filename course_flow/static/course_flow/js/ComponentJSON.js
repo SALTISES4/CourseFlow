@@ -648,7 +648,7 @@ export class NodeLinkSVG extends React.Component{
                 title = (
                     <foreignObject width="100" height="100" x={text_position[0]-50} y={text_position[1]-50}>
                     <div class="nodelinkwrapper">
-                        <div class="nodelinktext" onClick={this.props.clickFunction}>{this.props.title}</div>
+                        <div class="nodelinktext" dangerouslySetInnerHTML={{ __html:this.props.title}} onClick={this.props.clickFunction}></div>
                     </div>
                     </foreignObject>
                 )

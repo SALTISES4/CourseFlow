@@ -544,18 +544,18 @@ export class AssignmentBox extends React.Component{
 
         let top_contents=[];
         top_contents.push(
-            <div class="hover-shade" title={gettext("Close")} onClick = {this.props.parent.showAssignment.bind(this.props.parent)}>
+            <div class="close-button hover-shade" title={gettext("Close")} onClick = {this.props.parent.showAssignment.bind(this.props.parent)}>
                 <img src = {iconpath+"close.svg"}/>
             </div>
         );
         if(this.props.renderer.is_teacher){
             top_contents.push(
-                <div class="hover-shade" title={gettext("Create New")} onClick={this.createAssignment.bind(this)}>
+                <div class="create-assignment hover-shade" title={gettext("Create New")} onClick={this.createAssignment.bind(this)}>
                     <img src = {iconpath+"add_new.svg"}/>
                 </div>
             );
         }
-        if(!this.state.has_assignment){
+        if(!this.props.has_assignment){
             top_contents.push(<div>{gettext("Not yet assigned")}</div>);
         }
 

@@ -602,6 +602,7 @@ button:hover{
 
 .floatbar .create-dropdown{
     margin-left:-6px;
+    z-index: 3;
 }
 
 .create-dropdown a{
@@ -3021,6 +3022,27 @@ circle.mouseover{
 
 .node-bar-week:nth-child(2n+1){
     background: #e0e0e0e0;
+}
+
+.node-bar-week > div{
+    display: flex;
+    justify-content: space-between;
+}
+
+.node-bar-week img{
+    width: 16px;
+}
+
+#expand-collapse-all{
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    padding: 10px;
+}
+
+#expand-collapse-all img{
+    width: 16px;
+    margin-left: 4px;
 }
 
 .strategy-bar-strategy{

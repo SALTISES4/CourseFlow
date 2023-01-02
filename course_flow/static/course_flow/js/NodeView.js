@@ -271,7 +271,7 @@ class NodeView extends ComponentJSON{
     addShowAssignment(data){
         return (
             [
-                <ActionButton button_icon="assignment.svg" button_class="comment-button" titletext={gettext("Show Assignment Info")} handleClick={this.showAssignment.bind(this)}/>,
+                <ActionButton button_icon="assignment.svg" button_class="assignment-button" titletext={gettext("Show Assignment Info")} handleClick={this.showAssignment.bind(this)}/>,
                 <AssignmentBox dispatch={this.props.dispatch.bind(this)} node_id={data.id} show={this.state.show_assignments} has_assignment={this.props.data.has_assignment} parent={this} renderer={this.props.renderer}/>
             ]
         );

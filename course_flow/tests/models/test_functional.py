@@ -228,6 +228,32 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             in selenium.find_element_by_css_selector(".workflow-title").text
         )
 
+    def test_settings(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user, title="new title")
+        liveproject = LiveProject.objects.create(project=project)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:live-project-update", args=[project.id])
+        )
+        selenium.find_element_by_css_selector("#button_settings").click()
+        time.sleep(1)
+        selenium.find_element_by_id("default-assign-to-all").click()
+        selenium.find_element_by_id("default-self-reporting").click()
+        selenium.find_element_by_id("default-single-completion").click()
+        selenium.find_element_by_id("default-all-workflows-visible").click()
+
+        selenium.find_element_by_css_selector(
+            ".workflow-details button"
+        ).click()
+        time.sleep(1)
+        liveproject = LiveProject.objects.first()
+        self.assertEqual(liveproject.default_self_reporting, False)
+        self.assertEqual(liveproject.default_assign_to_all, False)
+        self.assertEqual(liveproject.default_single_completion, True)
+        self.assertEqual(liveproject.default_all_workflows_visible, True)
+
     def test_add_roles(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
@@ -639,6 +665,115 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             "linked workflow",
             selenium.find_element_by_css_selector(".workflow-title").text,
+        )
+
+    def test_create_assignment_from_workflow(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user, title="new title")
+        workflow = Activity.objects.create(
+            author=self.user, title="new workflow"
+        )
+        node = workflow.weeks.first().nodes.create(
+            author=self.user, column=workflow.columns.first()
+        )
+        WorkflowProject.objects.create(project=project, workflow=workflow)
+        liveproject = LiveProject.objects.create(project=project)
+        liveproject.visible_workflows.add(workflow)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[workflow.id])
+        )
+        time.sleep(2)
+
+        hover_item = selenium.find_element_by_css_selector(
+            ".workflow-details .node"
+        )
+        click_item = selenium.find_element_by_css_selector(
+            ".node .assignment-button img"
+        )
+        action_hover_click(selenium, hover_item, click_item).perform()
+
+        selenium.find_element_by_css_selector(
+            ".node .create-assignment img"
+        ).click()
+        time.sleep(1)
+
+        self.assertEqual(LiveAssignment.objects.filter(task=node).count(), 1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".assignment-in-node")),
+            1,
+        )
+
+    def test_student_complete_assignment_from_workflow(self):
+        user2 = get_author()
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=user2, title="new title")
+        workflow = Activity.objects.create(author=user2, title="new workflow")
+        node = workflow.weeks.first().nodes.create(
+            author=user2, column=workflow.columns.first()
+        )
+        WorkflowProject.objects.create(project=project, workflow=workflow)
+        liveproject = LiveProject.objects.create(
+            project=project, default_assign_to_all=False
+        )
+        liveproject.visible_workflows.add(workflow)
+        LiveProjectUser.objects.create(
+            user=self.user,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_STUDENT,
+        )
+        assignment = LiveAssignment.objects.create(
+            liveproject=liveproject, task=node
+        )
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[workflow.id])
+        )
+        time.sleep(2)
+
+        hover_item = selenium.find_element_by_css_selector(
+            ".workflow-details .node"
+        )
+        click_item = selenium.find_element_by_css_selector(
+            ".node .assignment-button img"
+        )
+        action_hover_click(selenium, hover_item, click_item).perform()
+
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".assignment-in-node")),
+            0,
+        )
+        UserAssignment.objects.create(user=self.user, assignment=assignment)
+
+        selenium.find_element_by_css_selector(
+            ".node .close-button img"
+        ).click()
+        time.sleep(0.5)
+
+        action_hover_click(selenium, hover_item, click_item).perform()
+        time.sleep(2)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".assignment-in-node")),
+            1,
+        )
+        selenium.find_element_by_css_selector(
+            ".assignment-timing input[type='checkbox']"
+        ).click()
+        time.sleep(1)
+        self.assertEqual(
+            UserAssignment.objects.filter(user=self.user).first().completed,
+            True,
+        )
+        selenium.find_element_by_css_selector(
+            ".assignment-timing input[type='checkbox']"
+        ).click()
+        time.sleep(1)
+        self.assertEqual(
+            UserAssignment.objects.filter(user=self.user).first().completed,
+            False,
         )
 
 

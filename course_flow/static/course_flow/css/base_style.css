@@ -600,6 +600,7 @@ button:hover{
 
 .floatbar .create-dropdown{
     margin-left:-6px;
+    z-index: 3;
 }
 
 .create-dropdown a{

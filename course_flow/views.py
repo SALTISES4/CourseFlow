@@ -5791,6 +5791,7 @@ def get_live_project_data_student(request: HttpRequest) -> HttpResponse:
                 "assignments": LiveAssignmentSerializer(
                     LiveAssignment.objects.filter(
                         userassignment__user=request.user,
+                        liveproject=liveproject,
                     ).order_by("end_date"),
                     many=True,
                     context={"user": request.user},
@@ -5962,18 +5963,16 @@ def create_live_assignment(request: HttpRequest) -> HttpResponse:
         assignment = LiveAssignment.objects.create(
             liveproject=liveproject,
             task=node,
-            self_reporting=liveproject.default_self_reporting,
-            single_completion=liveproject.default_single_completion,
             author=request.user,
         )
-        if liveproject.default_assign_to_all:
-            students = LiveProjectUser.objects.filter(
-                liveproject=liveproject, role_type=LiveProjectUser.ROLE_STUDENT
-            )
-            for student in students:
-                UserAssignment.objects.create(
-                    user=student.user, assignment=assignment
-                )
+        # if liveproject.default_assign_to_all:
+        #     students = LiveProjectUser.objects.filter(
+        #         liveproject=liveproject, role_type=LiveProjectUser.ROLE_STUDENT
+        #     )
+        #     for student in students:
+        #         UserAssignment.objects.create(
+        #             user=student.user, assignment=assignment
+        #         )
 
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -6295,7 +6294,6 @@ def update_liveproject_value(request: HttpRequest) -> HttpResponse:
         object_id = json.loads(request.POST.get("objectID"))
         object_type = json.loads(request.POST.get("objectType"))
         data = json.loads(request.POST.get("data"))
-        print(data)
         changeFieldID = request.POST.get("changeFieldID", False)
         if changeFieldID:
             changeFieldID = json.loads(changeFieldID)

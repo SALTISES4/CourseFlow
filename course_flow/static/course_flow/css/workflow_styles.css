@@ -1829,6 +1829,27 @@ circle.mouseover{
     background: #e0e0e0e0;
 }
 
+.node-bar-week > div{
+    display: flex;
+    justify-content: space-between;
+}
+
+.node-bar-week img{
+    width: 16px;
+}
+
+#expand-collapse-all{
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    padding: 10px;
+}
+
+#expand-collapse-all img{
+    width: 16px;
+    margin-left: 4px;
+}
+
 .strategy-bar-strategy{
     width:100%;
     display:block;
