@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, OutcomeTitle} from "./ComponentJSON";
+import {EditableComponentWithSorting, OutcomeTitle} from "./ComponentJSON";
 import OutcomeWorkflowView from "./OutcomeWorkflowView";
 import {OutcomeBarOutcomeView, OutcomeBarOutcomeViewUnconnected} from "./OutcomeView";
 import OutcomeView from "./OutcomeView";
@@ -12,7 +12,7 @@ import {newOutcome, insertedAt} from "./PostFunctions";
 import * as Constants from "./Constants";
 
 //Basic component representing the outcome view
-export class OutcomeEditViewUnconnected extends ComponentJSON{
+export class OutcomeEditViewUnconnected extends EditableComponentWithSorting{
     
     constructor(props){
         super(props);
@@ -62,7 +62,7 @@ export class OutcomeEditViewUnconnected extends ComponentJSON{
         return <ParentOutcomeBar renderer={this.props.renderer}/>
     }
 
-    postMountFunction(){
+    componentDidMount(){
         this.makeDragAndDrop();
     }
     componentDidUpdate(){
@@ -96,7 +96,7 @@ export default connect(
 )(OutcomeEditViewUnconnected)
 
 
-class ParentOutcomeNodeViewUnconnected extends ComponentJSON{
+class ParentOutcomeNodeViewUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         
@@ -201,7 +201,7 @@ export const ParentOutcomeView = connect(
     null
 )(ParentOutcomeViewUnconnected)
 
-class ParentOutcomeOutcomeViewUnconnected extends ComponentJSON{
+class ParentOutcomeOutcomeViewUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         
@@ -224,7 +224,7 @@ export const ParentOutcomeOutcomeView = connect(
 
 
 
-class OutcomeBarUnconnected extends ComponentJSON{
+class OutcomeBarUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         var outcomebaroutcomes = data.map((category)=>
@@ -266,7 +266,7 @@ export const OutcomeBar = connect(
 )(OutcomeBarUnconnected)
 
 
-class ParentOutcomeBarUnconnected extends ComponentJSON{
+class ParentOutcomeBarUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         var outcomebaroutcomes = data.map((category)=>

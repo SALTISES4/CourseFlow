@@ -1,11 +1,11 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, TitleText} from "./ComponentJSON.js";
-import * as Constants from "./Constants.js";
-import {getStrategyByID} from "./FindState.js";
+import * as Constants from "./Constants";
+import {Component} from "./ComponentJSON";
+import {getStrategyByID} from "./FindState";
 
 //Basic component to represent a Strategy
-class StrategyView extends ComponentJSON{
+class StrategyView extends Component{
     constructor(props){
         super(props);
         this.objectType="strategy";
@@ -57,7 +57,7 @@ class StrategyView extends ComponentJSON{
         });
     }
     
-    postMountFunction(){
+    componentDidMount(){
         this.makeDraggable();
         $(this.maindiv.current)[0].dataDraggable={strategy:this.props.data.id}
     }

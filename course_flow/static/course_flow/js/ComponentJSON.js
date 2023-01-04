@@ -8,359 +8,20 @@ import {toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibli
 
 
 //Extends the react component to add a few features that are used in a large number of components
-export class ComponentJSON extends React.Component{
+export class Component extends React.Component{
     constructor(props){
         super(props);
         this.state={};
         this.maindiv = React.createRef();
     }
-    
-    componentDidMount(){
-        this.postMountFunction();
-        if(this.props.renderer&& this.props.renderer.initial_loading)this.props.renderer.container.triggerHandler("component-loaded",this.objectType);
-    }
-    
-    postMountFunction(){};
-    
+}
+
+//Extends the react component to add a few features that are used in a large number of components
+export class EditableComponent extends Component{
     toggleDrop(){
         toggleDrop(this.props.objectID,Constants.object_dictionary[this.objectType],!this.props.data.is_dropped,this.props.dispatch,this.props.data.depth);
     }
 
-    makeSortableNode(
-        sortable_block,
-        parent_id,
-        draggable_type,
-        draggable_selector,
-        axis=false,
-        grid=false,
-        restrictTo=null,
-        handle=false,
-        containment=".workflow-container"
-    ){
-        if(this.props.renderer.read_only)return;
-        let cursorAt={};
-        if(draggable_type=="weekworkflow")cursorAt={top:20};
-        if(draggable_type=="nodeweek")cursorAt={top:20,left:50};
-        var props = this.props;
-        sortable_block.draggable({
-            containment:containment,
-            axis:axis,
-            cursor:"move",
-            cursorAt:cursorAt,
-            handle:handle,
-            distance:10,
-            refreshPositions:true,
-            helper:(e,item)=>{
-                var helper = $(document.createElement('div'));
-                helper.addClass(draggable_type+"-ghost");
-                helper.appendTo(".workflow-wrapper > .workflow-container");
-                helper.width($(e.target).width());
-                return helper;
-            },
-            start:(e,ui)=>{
-                var drag_item = $(e.target);
-                if(drag_item.hasClass("placeholder") || drag_item.hasClass("no-drag")){e.preventDefault();return false;}
-                if(drag_item.children(".locked:not(.locked-"+user_id+")").length>0){e.preventDefault();return false;}
-                $(".workflow-canvas").addClass("dragging-"+draggable_type);
-                $(draggable_selector).addClass("dragging");
-                var old_parent_id = parent_id;
-                drag_item.attr("data-old-parent-id",parent_id);
-                drag_item.attr("data-restrict-to",restrictTo);
-                var old_index = drag_item.prevAll().length;
-                drag_item.attr("data-old-index",old_index);
-                props.renderer.selection_manager.changeSelection(null,null);
-                this.startSortFunction(parseInt(drag_item.attr("data-child-id")),draggable_type);
-                
-            },
-            drag:(e,ui)=>{
-                if(draggable_type=="nodeweek"){
-                    let new_target = $("#"+$(e.target).attr("id")+draggable_selector);
-                    var delta_x= Math.round((ui.helper.offset().left-$("#"+$(e.target).attr("id")+draggable_selector).children(handle).first().offset().left)/Constants.columnwidth);
-                    if(delta_x!=0){
-                        let child_id = parseInt($(e.target).attr("data-child-id"));
-                        this.sortableColumnChangedFunction(child_id,delta_x,parseInt(new_target.attr("data-column-id")));
-                    }
-                }
-                //$("#"+$(e.target).attr("id")+draggable_selector).addClass("selected");
-            },
-            stop:(e,ui)=>{
-                $(".workflow-canvas").removeClass("dragging-"+draggable_type);
-                $(draggable_selector).removeClass("dragging");
-                $(document).triggerHandler(draggable_type+"-dropped");
-                //$("#"+$(e.target).attr("id")+draggable_selector).removeClass("selected");
-            
-            }
-            
-            
-        });
-        
-        sortable_block.droppable({
-            tolerance:"pointer",
-            droppable:".node-ghost",
-            over:(e,ui)=>{
-                var drop_item = $(e.target);
-                var drag_item = ui.draggable;
-                var drag_helper = ui.helper;
-                var new_index = drop_item.prevAll().length;
-                var new_parent_id = parseInt(drop_item.parent().attr("id")); 
-                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
-                    drag_helper.addClass("valid-drop");
-                    drop_item.addClass("new-node-drop-over");
-                }else if(drag_item.is(draggable_selector)){
-                    var old_parent_id = parseInt(drag_item.attr("data-old-parent-id"));
-                    var old_index = parseInt(drag_item.attr("data-old-index"));
-                    if(old_parent_id!=new_parent_id || old_index!=new_index){
-                        let child_id = parseInt(drag_item.attr("data-child-id"));
-
-                        if(restrictTo && drag_item.attr("data-restrict-to")!=restrictTo){
-                            this.sortableMovedOutFunction(
-                                parseInt(drag_item.attr("id")),
-                                new_index,draggable_type,new_parent_id,child_id
-                            );
-                        }else{
-                            drag_item.attr("data-old-parent-id",new_parent_id)
-                            drag_item.attr("data-old-index",new_index);
-                            this.sortableMovedFunction(
-                                parseInt(drag_item.attr("id")),
-                                new_index,draggable_type,new_parent_id,child_id
-                            );
-                        }
-                        this.lockChild(child_id,true,draggable_type);
-                    }
-                }else{
-//                    console.log(drag_item);
-                }
-            },
-            out:(e,ui)=>{
-                var drag_item = ui.draggable;
-                var drag_helper = ui.helper;
-                var drop_item = $(e.target);
-                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
-                    drag_helper.removeClass("valid-drop");
-                    drop_item.removeClass("new-node-drop-over");
-                }
-            },
-            drop:(e,ui)=>{
-                $(".new-node-drop-over").removeClass("new-node-drop-over");
-                var drop_item = $(e.target);
-                var drag_item = ui.draggable;
-                var new_index = drop_item.prevAll().length+1;
-                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
-                    newNode(this.props.objectID,new_index,drag_item[0].dataDraggable.column,drag_item[0].dataDraggable.column_type,
-                        (response_data)=>{
-                        
-                        }
-                    );
-                }
-            }
-        });
-        
-    }
-
-    sortableMovedOutFunction(){
-        console.log("A sortable was moved out, but no specific function was given to the component.");
-    }
-    
-    stopSortFunction(){
-        
-    }
-    
-    startSortFunction(id,through_type){
-        this.lockChild(id,true,through_type);
-    }
-    
-    
-    lockChild(id,lock,through_type){
-        let object_type;
-        if(through_type=="nodeweek")object_type="node";
-        if(through_type=="weekworkflow")object_type="week";
-        if(through_type=="columnworkflow")object_type="column";
-        if(through_type=="outcomeoutcome")object_type="outcome";
-        if(through_type=="outcomeworkflow")object_type="outcome";
-        this.props.renderer.lock_update(
-            {object_id:id,object_type:object_type},Constants.lock_times.move,lock
-        );
-    }
-    
-//    makeSortable(sortable_block,parent_id,draggable_type,draggable_selector,axis=false,grid=false,connectWith=false,handle=false){
-//        if(this.props.renderer.read_only)return;
-//        var props = this.props;
-//        sortable_block.sortable({
-//            containment:".workflow-container",
-//            axis:axis,
-//            cursor:"move",
-//            grid:grid,
-//            cursorAt:{top:20},
-//            handle:handle,
-//            tolerance:"pointer",
-//            distance:10,
-//            connectWith:connectWith,
-//            start:(e,ui)=>{
-//                $(".workflow-canvas").addClass("dragging-"+draggable_type);
-//                $(draggable_selector).addClass("dragging");
-//                //Calls a refresh of the sortable in case adding the draggable class resized the object (which it does in many cases)
-//                sortable_block.sortable("refresh");
-//                //Fix the vertical containment. This is especially necessary when the item resizes.
-//                var sort = $(sortable_block).sortable("instance");
-//                sort.containment[3]+=sort.currentItem[0].offsetTop+sort.currentItem[0].offsetHeight;
-//                
-//            },
-//            //Tell the dragging object that we are dragging it
-//            sort:(e,ui)=>{
-//                //figure out if the order has changed
-//                var placeholder_index = ui.placeholder.prevAll().not(".ui-sortable-helper").length;
-//                if(ui.placeholder.parent()[0]!=ui.item.parent()[0]||ui.item.prevAll().not(".ui-sortable-placeholder").length!=placeholder_index){
-//                    var new_parent_id = parseInt(ui.placeholder.parent().attr("id"));
-//                    this.sortableMovedFunction(parseInt(ui.item.attr("id")),placeholder_index,draggable_type,new_parent_id,ui.item.attr("data-child-id"));
-//                }
-//                
-//                ui.item.triggerHandler("dragging");
-//            },
-//            stop:(evt,ui)=>{
-//                $(".workflow-canvas").removeClass("dragging-"+draggable_type);
-//                $(draggable_selector).removeClass("dragging");
-//                var object_id = parseInt(ui.item.attr("id"));
-//                var new_position = ui.item.prevAll().length;
-//                var new_parent_id = parseInt(ui.item.parent().attr("id"));
-//                $(draggable_selector).removeClass("dragging");
-//                //Automatic scroll, useful when moving weeks that shrink significantly to make sure the dropped item is kept in focus. This should be updated to only scroll if the item ends up outside the viewport, and to scroll the minimum amount to keep it within.
-//                $("#container").animate({
-//                    scrollTop: ui.item.offset().top-200
-//                },20);
-//                $(document).triggerHandler(draggable_type+"-dropped");
-//                this.stopSortFunction();
-//            }
-//        });
-//        
-//        
-//    }
-    
-    //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
-    addDeleteSelf(data,alt_icon){
-        let icon=alt_icon || "rubbish.svg";
-        return (
-            <ActionButton button_icon={icon} button_class="delete-self-button" titletext={gettext("Delete")} handleClick={this.deleteSelf.bind(this,data)}/>
-        );
-    }
-    
-    deleteSelf(data){
-        var props = this.props;
-        //Temporary confirmation; add better confirmation dialogue later
-        if(this.props.renderer)this.props.renderer.selection_manager.deleted(this);
-        if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
-            alert(gettext("You cannot delete the last ")+this.objectType);
-            return;
-        }
-        let extra_data = this.props.column_order;
-        if(Constants.object_dictionary[this.objectType]=="outcome")extra_data=this.props.outcomenodes;
-        if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.object_dictionary[this.objectType]+"?")){
-            props.renderer.tiny_loader.startLoad();
-            deleteSelf(data.id,Constants.object_dictionary[this.objectType],true,
-                (response_data)=>{
-                    props.renderer.tiny_loader.endLoad();
-                }
-            );
-        }
-    }
-    
-    //Adds a button that duplicates the item (with a confirmation).
-    addDuplicateSelf(data){
-        return (
-            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext={gettext("Duplicate")} handleClick={this.duplicateSelf.bind(this,data)}/>
-        );
-    }
-    
-    duplicateSelf(data){
-        var props = this.props;
-        var type = this.objectType;
-        props.renderer.tiny_loader.startLoad();
-        duplicateSelf(
-            data.id,
-            Constants.object_dictionary[type],
-            props.parentID,
-            Constants.parent_dictionary[type],
-            Constants.through_parent_dictionary[type],
-            (response_data)=>{
-                props.renderer.tiny_loader.endLoad();
-            }
-        );
-    }
-    
-    //Adds a button that inserts a sibling below the item. 
-    addInsertSibling(data){
-        return(
-            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext={gettext("Insert Below")} handleClick={this.insertSibling.bind(this,data)}/>
-        );
-    }
-    
-    insertSibling(data){
-        var props = this.props;
-        var type = this.objectType;
-        props.renderer.tiny_loader.startLoad();
-        insertSibling(
-            data.id,
-            Constants.object_dictionary[type],
-            props.parentID,
-            Constants.parent_dictionary[type],
-            Constants.through_parent_dictionary[type],
-            (response_data)=>{
-                props.renderer.tiny_loader.endLoad();
-            }
-        );
-    }
-    
-    
-    //Adds a button that inserts a child to them item
-    addInsertChild(data){
-        return(
-            <ActionButton button_icon="create_new_child.svg" button_class="insert-child-button" titletext={gettext("Insert Child")} handleClick={this.insertChild.bind(this,data)}/>
-        );
-    }
-    
-    insertChild(data){
-        var props = this.props;
-        var type = this.objectType;
-        props.renderer.tiny_loader.startLoad();
-        insertChild(data.id,Constants.object_dictionary[type],
-            (response_data)=>{
-                props.renderer.tiny_loader.endLoad();
-            }
-        );
-    }
-
-    //Adds a button that opens/closes the comments dialogue
-    addCommenting(data){
-        return(
-            [
-                <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext={gettext("Comments")} handleClick={this.commentClick.bind(this)}/>,
-                <CommentBox show={this.state.show_comments} comments={this.props.data.comments} parent={this} renderer={this.props.renderer}/>
-            ]
-        );
-    }
-    
-    commentClick(evt){
-        evt.stopPropagation();
-        if(!this.state.show_comments){
-            this.reloadComments(true);
-        }else(this.setState({show_comments:false}));
-    }
-
-    reloadComments(show_comments){
-        let props = this.props;
-        let data = props.data;
-        props.renderer.tiny_loader.startLoad();
-        getCommentsForObject(data.id,Constants.object_dictionary[this.objectType],
-            (response_data)=>{
-                this.props.dispatch(reloadCommentsAction(this.props.data.id,Constants.object_dictionary[this.objectType],response_data.data_package));
-                if(show_comments){
-                    this.setState({show_comments:true});
-                }
-                //this.setState({show_comments:true,comment_data:response_data.data_package});
-                props.renderer.tiny_loader.endLoad();
-            }
-        );
-    }
-    
     //Makes the item selectable
     addEditable(data,no_delete=false){
         let read_only = this.props.renderer.read_only;
@@ -540,7 +201,7 @@ export class ComponentJSON extends React.Component{
                             }
                             <div>
                                 <label for="public_view">{gettext("Create Public Page")}</label>
-                                <input disabled={read_only} type="checkbox" name="public_view" checked={data.public_view} onChange={this.publicViewCheckboxChanged.bind(this,"public_view")}/>
+                                <input disabled={read_only} type="checkbox" name="public_view" checked={data.public_view} onChange={this.checkboxChanged.bind(this,"public_view")}/>
                             </div>
                         </div>
                     }
@@ -601,23 +262,337 @@ export class ComponentJSON extends React.Component{
     }
 
     checkboxChanged(field,evt){
-         this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
-    }
-
-    publicViewCheckboxChanged(field,evt){
-        if(!this.props.data.public_view){
+        let do_change=true;
+        if(field=="public_view" && evt.target.checked){
             if(window.confirm(gettext("Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."))){
-                this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
+                
+            }else{
+                do_change=false;
             }
-        }else{
-            this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
         }
+        if(do_change)this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
     }
 
     valueChanged(field,new_value){
         this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,new_value);
     }
+
+    get_border_style(){
+        let data = this.props.data;
+        if(!data)return;
+        let style={};
+        if(data.lock){
+            style.border="2px solid "+data.lock.user_colour;
+        }
+        return style;
+    }
 }
+
+//Extends the react component to add a few features that are used in a large number of components
+export class EditableComponentWithComments extends EditableComponent{
+    //Adds a button that opens/closes the comments dialogue
+    addCommenting(data){
+        return(
+            [
+                <ActionButton button_icon="comment_new.svg" button_class="comment-button" titletext={gettext("Comments")} handleClick={this.commentClick.bind(this)}/>,
+                <CommentBox show={this.state.show_comments} comments={this.props.data.comments} parent={this} renderer={this.props.renderer}/>
+            ]
+        );
+    }
+    
+    commentClick(evt){
+        evt.stopPropagation();
+        if(!this.state.show_comments){
+            this.reloadComments(true);
+        }else(this.setState({show_comments:false}));
+    }
+
+    reloadComments(show_comments){
+        let props = this.props;
+        let data = props.data;
+        props.renderer.tiny_loader.startLoad();
+        getCommentsForObject(data.id,Constants.object_dictionary[this.objectType],
+            (response_data)=>{
+                this.props.dispatch(reloadCommentsAction(this.props.data.id,Constants.object_dictionary[this.objectType],response_data.data_package));
+                if(show_comments){
+                    this.setState({show_comments:true});
+                }
+                //this.setState({show_comments:true,comment_data:response_data.data_package});
+                props.renderer.tiny_loader.endLoad();
+            }
+        );
+    }
+}
+
+//Extends the react component to add a few features that are used in a large number of components
+export class EditableComponentWithActions extends EditableComponentWithComments{
+
+    //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+    addDeleteSelf(data,alt_icon){
+        let icon=alt_icon || "rubbish.svg";
+        return (
+            <ActionButton button_icon={icon} button_class="delete-self-button" titletext={gettext("Delete")} handleClick={this.deleteSelf.bind(this,data)}/>
+        );
+    }
+    
+    deleteSelf(data){
+        var props = this.props;
+        //Temporary confirmation; add better confirmation dialogue later
+        if(this.props.renderer)this.props.renderer.selection_manager.deleted(this);
+        if((this.objectType=="week"||this.objectType=="column")&&this.props.sibling_count<2){
+            alert(gettext("You cannot delete the last ")+this.objectType);
+            return;
+        }
+        let extra_data = this.props.column_order;
+        if(Constants.object_dictionary[this.objectType]=="outcome")extra_data=this.props.outcomenodes;
+        if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.object_dictionary[this.objectType]+"?")){
+            props.renderer.tiny_loader.startLoad();
+            deleteSelf(data.id,Constants.object_dictionary[this.objectType],true,
+                (response_data)=>{
+                    props.renderer.tiny_loader.endLoad();
+                }
+            );
+        }
+    }
+    
+    //Adds a button that duplicates the item (with a confirmation).
+    addDuplicateSelf(data){
+        return (
+            <ActionButton button_icon="duplicate.svg" button_class="duplicate-self-button" titletext={gettext("Duplicate")} handleClick={this.duplicateSelf.bind(this,data)}/>
+        );
+    }
+    
+    duplicateSelf(data){
+        var props = this.props;
+        var type = this.objectType;
+        props.renderer.tiny_loader.startLoad();
+        duplicateSelf(
+            data.id,
+            Constants.object_dictionary[type],
+            props.parentID,
+            Constants.parent_dictionary[type],
+            Constants.through_parent_dictionary[type],
+            (response_data)=>{
+                props.renderer.tiny_loader.endLoad();
+            }
+        );
+    }
+    
+    //Adds a button that inserts a sibling below the item. 
+    addInsertSibling(data){
+        return(
+            <ActionButton button_icon="add_new.svg" button_class="insert-sibling-button" titletext={gettext("Insert Below")} handleClick={this.insertSibling.bind(this,data)}/>
+        );
+    }
+    
+    insertSibling(data){
+        var props = this.props;
+        var type = this.objectType;
+        props.renderer.tiny_loader.startLoad();
+        insertSibling(
+            data.id,
+            Constants.object_dictionary[type],
+            props.parentID,
+            Constants.parent_dictionary[type],
+            Constants.through_parent_dictionary[type],
+            (response_data)=>{
+                props.renderer.tiny_loader.endLoad();
+            }
+        );
+    }
+    
+    
+    //Adds a button that inserts a child to them item
+    addInsertChild(data){
+        return(
+            <ActionButton button_icon="create_new_child.svg" button_class="insert-child-button" titletext={gettext("Insert Child")} handleClick={this.insertChild.bind(this,data)}/>
+        );
+    }
+    
+    insertChild(data){
+        var props = this.props;
+        var type = this.objectType;
+        props.renderer.tiny_loader.startLoad();
+        insertChild(data.id,Constants.object_dictionary[type],
+            (response_data)=>{
+                props.renderer.tiny_loader.endLoad();
+            }
+        );
+    }
+}
+
+//Extends the react component to add a few features that are used in a large number of components
+export class EditableComponentWithSorting extends EditableComponentWithActions{
+
+    makeSortableNode(
+        sortable_block,
+        parent_id,
+        draggable_type,
+        draggable_selector,
+        axis=false,
+        grid=false,
+        restrictTo=null,
+        handle=false,
+        containment=".workflow-container"
+    ){
+        if(this.props.renderer.read_only)return;
+        let cursorAt={};
+        if(draggable_type=="weekworkflow")cursorAt={top:20};
+        if(draggable_type=="nodeweek")cursorAt={top:20,left:50};
+        var props = this.props;
+        sortable_block.draggable({
+            containment:containment,
+            axis:axis,
+            cursor:"move",
+            cursorAt:cursorAt,
+            handle:handle,
+            distance:10,
+            refreshPositions:true,
+            helper:(e,item)=>{
+                var helper = $(document.createElement('div'));
+                helper.addClass(draggable_type+"-ghost");
+                helper.appendTo(".workflow-wrapper > .workflow-container");
+                helper.width($(e.target).width());
+                return helper;
+            },
+            start:(e,ui)=>{
+                var drag_item = $(e.target);
+                if(drag_item.hasClass("placeholder") || drag_item.hasClass("no-drag")){e.preventDefault();return false;}
+                if(drag_item.children(".locked:not(.locked-"+user_id+")").length>0){e.preventDefault();return false;}
+                $(".workflow-canvas").addClass("dragging-"+draggable_type);
+                $(draggable_selector).addClass("dragging");
+                var old_parent_id = parent_id;
+                drag_item.attr("data-old-parent-id",parent_id);
+                drag_item.attr("data-restrict-to",restrictTo);
+                var old_index = drag_item.prevAll().length;
+                drag_item.attr("data-old-index",old_index);
+                props.renderer.selection_manager.changeSelection(null,null);
+                this.startSortFunction(parseInt(drag_item.attr("data-child-id")),draggable_type);
+                
+            },
+            drag:(e,ui)=>{
+                if(draggable_type=="nodeweek"){
+                    let new_target = $("#"+$(e.target).attr("id")+draggable_selector);
+                    var delta_x= Math.round((ui.helper.offset().left-$("#"+$(e.target).attr("id")+draggable_selector).children(handle).first().offset().left)/Constants.columnwidth);
+                    if(delta_x!=0){
+                        let child_id = parseInt($(e.target).attr("data-child-id"));
+                        this.sortableColumnChangedFunction(child_id,delta_x,parseInt(new_target.attr("data-column-id")));
+                    }
+                }
+                //$("#"+$(e.target).attr("id")+draggable_selector).addClass("selected");
+            },
+            stop:(e,ui)=>{
+                $(".workflow-canvas").removeClass("dragging-"+draggable_type);
+                $(draggable_selector).removeClass("dragging");
+                $(document).triggerHandler(draggable_type+"-dropped");
+                //$("#"+$(e.target).attr("id")+draggable_selector).removeClass("selected");
+            
+            }
+            
+            
+        });
+        
+        sortable_block.droppable({
+            tolerance:"pointer",
+            droppable:".node-ghost",
+            over:(e,ui)=>{
+                var drop_item = $(e.target);
+                var drag_item = ui.draggable;
+                var drag_helper = ui.helper;
+                var new_index = drop_item.prevAll().length;
+                var new_parent_id = parseInt(drop_item.parent().attr("id")); 
+                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
+                    drag_helper.addClass("valid-drop");
+                    drop_item.addClass("new-node-drop-over");
+                }else if(drag_item.is(draggable_selector)){
+                    var old_parent_id = parseInt(drag_item.attr("data-old-parent-id"));
+                    var old_index = parseInt(drag_item.attr("data-old-index"));
+                    if(old_parent_id!=new_parent_id || old_index!=new_index){
+                        let child_id = parseInt(drag_item.attr("data-child-id"));
+
+                        if(restrictTo && drag_item.attr("data-restrict-to")!=restrictTo){
+                            this.sortableMovedOutFunction(
+                                parseInt(drag_item.attr("id")),
+                                new_index,draggable_type,new_parent_id,child_id
+                            );
+                        }else{
+                            drag_item.attr("data-old-parent-id",new_parent_id)
+                            drag_item.attr("data-old-index",new_index);
+                            this.sortableMovedFunction(
+                                parseInt(drag_item.attr("id")),
+                                new_index,draggable_type,new_parent_id,child_id
+                            );
+                        }
+                        this.lockChild(child_id,true,draggable_type);
+                    }
+                }else{
+//                    console.log(drag_item);
+                }
+            },
+            out:(e,ui)=>{
+                var drag_item = ui.draggable;
+                var drag_helper = ui.helper;
+                var drop_item = $(e.target);
+                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
+                    drag_helper.removeClass("valid-drop");
+                    drop_item.removeClass("new-node-drop-over");
+                }
+            },
+            drop:(e,ui)=>{
+                $(".new-node-drop-over").removeClass("new-node-drop-over");
+                var drop_item = $(e.target);
+                var drag_item = ui.draggable;
+                var new_index = drop_item.prevAll().length+1;
+                if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
+                    newNode(this.props.objectID,new_index,drag_item[0].dataDraggable.column,drag_item[0].dataDraggable.column_type,
+                        (response_data)=>{
+                        
+                        }
+                    );
+                }
+            }
+        });
+        
+    }
+
+    sortableMovedOutFunction(){
+        console.log("A sortable was moved out, but no specific function was given to the component.");
+    }
+    
+    stopSortFunction(){
+        
+    }
+    
+    startSortFunction(id,through_type){
+        this.lockChild(id,true,through_type);
+    }
+    
+    
+    lockChild(id,lock,through_type){
+        let object_type;
+        if(through_type=="nodeweek")object_type="node";
+        if(through_type=="weekworkflow")object_type="week";
+        if(through_type=="columnworkflow")object_type="column";
+        if(through_type=="outcomeoutcome")object_type="outcome";
+        if(through_type=="outcomeworkflow")object_type="outcome";
+        this.props.renderer.lock_update(
+            {object_id:id,object_type:object_type},Constants.lock_times.move,lock
+        );
+    }
+    
+}
+
+// //Extends the react component to add a few features that are used in a large number of components
+// export class EditableComponentWithTrigger extends EditableComponentWithSorting{
+    
+//     componentDidMount(){
+//         this.postMountFunction();
+//         if(this.props.renderer&& this.props.renderer.initial_loading)this.props.renderer.container.triggerHandler("component-loaded",this.objectType);
+//     }
+    
+//     postMountFunction(){};
+
+// }
 
 
 
@@ -823,11 +798,9 @@ export class NodePorts extends React.Component{
         this.updatePorts();
         $(this.props.node_div.current).on("component-updated",this.updatePorts.bind(this));
         //$(this.props.node_div.current).triggerHandler("ports-rendered");
-        this.props.renderer.container.triggerHandler("ports-rendered");
     }
     
     updatePorts(){
-        
         if(!this.props.node_div.current)return;
         var node = $(this.props.node_div.current);
         var node_offset = Constants.getCanvasOffset(node);
@@ -849,7 +822,7 @@ export class NodePorts extends React.Component{
 
 
 //A commenting box
-export class CommentBox extends React.Component{
+export class CommentBox extends Component{
     constructor(props){
         super(props);
         this.input = React.createRef();

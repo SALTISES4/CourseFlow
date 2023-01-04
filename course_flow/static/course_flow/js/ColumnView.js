@@ -1,11 +1,11 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON.js";
+import {Component, EditableComponentWithActions} from "./ComponentJSON.js";
 import {getColumnByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
 
 //Basic component representing a column
-class ColumnView extends ComponentJSON{
+class ColumnView extends EditableComponentWithActions{
     
     constructor(props){
         super(props);
@@ -62,7 +62,7 @@ export default connect(
 
 
 
-class NodeBarColumnUnconnected extends ComponentJSON{
+class NodeBarColumnUnconnected extends Component{
     render(){
         let data = this.props.data;
         var title;
@@ -98,7 +98,7 @@ class NodeBarColumnUnconnected extends ComponentJSON{
         });
     }
     
-    postMountFunction(){
+    componentDidMount(){
         this.makeDraggable();
         $(this.maindiv.current)[0].dataDraggable={column:this.props.data.id,column_type:null}
     }
@@ -129,7 +129,7 @@ export class NodeBarColumnCreator extends NodeBarColumnUnconnected{
     }
     
     
-    postMountFunction(){
+    componentDidMount(){
         this.makeDraggable();
         $(this.maindiv.current)[0].dataDraggable={column:null,column_type:this.props.columnType}
     }

@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, NodeLinkSVG} from "./ComponentJSON.js";
-import {getNodeLinkByID} from "./FindState.js";
-import * as Constants from "./Constants.js";
-import {} from "./Reducers.js";
+import {EditableComponentWithActions, NodeLinkSVG} from "./ComponentJSON";
+import {getNodeLinkByID} from "./FindState";
+import * as Constants from "./Constants";
+import {} from "./Reducers";
 
 //Basic component to represent a NodeLink
-class NodeLinkView extends ComponentJSON{
+class NodeLinkView extends EditableComponentWithActions{
     constructor(props){
         super(props);
         this.objectType="nodelink";

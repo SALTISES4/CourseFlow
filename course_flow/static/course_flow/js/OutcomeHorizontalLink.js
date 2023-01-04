@@ -1,12 +1,11 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, NodeTitle} from "./ComponentJSON";
 import {getNodeByID, getOutcomeByID, getOutcomeWorkflowByID} from "./FindState";
 import {updateOutcomehorizontallinkDegree} from "./PostFunctions";
 
 
-export class TableHorizontalOutcomeLinkUnconnected extends ComponentJSON{
+export class TableHorizontalOutcomeLinkUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         let outcomenode = this.props.outcomenode;
@@ -63,7 +62,7 @@ export class TableHorizontalOutcomeLinkUnconnected extends ComponentJSON{
         }
     }
 
-    postMountFunction(){
+    componentDidMount(){
         let value=null;
         if(this.props.data)value=this.props.data.degree;
         if(this.props.updateParentCompletion && value)this.props.updateParentCompletion(this.props.outcomeID,this.props.parent_outcomeID,value);
@@ -138,7 +137,7 @@ export const TableHorizontalOutcomeLink = connect(
 )(TableHorizontalOutcomeLinkUnconnected)
 
 
-export class TableChildWorkflowViewUnconnected extends ComponentJSON{
+export class TableChildWorkflowViewUnconnected extends React.Component{
     render(){
         
         if(!this.props.data || this.props.data.outcomeworkflow_set.length==0){
@@ -172,7 +171,7 @@ export const TableChildWorkflowView = connect(
     null
 )(TableChildWorkflowViewUnconnected)
 
-class TableChildWorkflowHeaderUnconnected extends ComponentJSON{
+class TableChildWorkflowHeaderUnconnected extends React.Component{
     render(){
         let node = this.props.node_data;
         let node_title=<NodeTitle data={node}/>
@@ -208,7 +207,7 @@ export const TableChildWorkflowHeader = connect(
     null
 )(TableChildWorkflowHeaderUnconnected)
 
-class TableChildOutcomeHeaderUnconnected extends ComponentJSON{
+class TableChildOutcomeHeaderUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         let class_name="table-cell nodewrapper";

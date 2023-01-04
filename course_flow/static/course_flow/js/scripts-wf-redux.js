@@ -4,7 +4,6 @@ import * as Redux from "redux";
 import * as React from "react";
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
-import {ComponentJSON} from "./ComponentJSON";
 import {WorkflowBaseView} from "./WorkflowView";
 import {ProjectMenu, WorkflowGridMenu, ExploreMenu, renderMessageBox} from "./MenuComponents";
 import {WorkflowView_Outcome} from"./WorkflowView";
@@ -261,39 +260,8 @@ export class WorkflowRenderer{
         this.container = container;
         this.locks={}
         let weeks = initial_workflow_data.week.filter(x=>!x.deleted);
-        this.items_to_load = {
-            column:initial_workflow_data.column.filter(x=>!x.deleted).length,
-            week:weeks.length,
-            node:weeks.reduce((previousValue,currentValue)=>
-                previousValue+currentValue.nodeweek_set.length
-            ,0)
-        };
-        this.ports_to_render = this.items_to_load.node;
         
-        container.on("component-loaded",(evt,objectType)=>{
-            evt.stopPropagation();
-            if(objectType&&renderer.items_to_load[objectType]){
-                renderer.items_to_load[objectType]--;
-                for(let prop in renderer.items_to_load){
-                    if(renderer.items_to_load[prop]>0)return;
-                }
-                renderer.initial_loading=false;
-                container.triggerHandler("render-ports");
-            }
-        });
-        
-        
-        container.on("ports-rendered",(evt)=>{
-            evt.stopPropagation();
-            renderer.ports_to_render--;
-            if(renderer.ports_to_render>0)return;
-            renderer.ports_rendered=true;
-            container.triggerHandler("render-links");
-        });
-        
-        container.on("render-links",(evt)=>{
-           evt.stopPropagation(); 
-        });
+
     
         this.selection_manager = new SelectionManager(this.read_only); 
         this.selection_manager.renderer = renderer;

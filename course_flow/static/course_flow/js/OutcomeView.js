@@ -1,17 +1,17 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, OutcomeTitle} from "./ComponentJSON.js";
-import OutcomeOutcomeView from "./OutcomeOutcomeView.js";
-import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView.js";
-import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode.js";
-import {getOutcomeByID, getOutcomeHorizontalLinkByID} from "./FindState.js";
-import {moveOutcomeOutcome} from "./Reducers.js";
+import {ActionButton, Component, EditableComponentWithSorting, EditableComponentWithComments, OutcomeTitle} from "./ComponentJSON";
+import OutcomeOutcomeView from "./OutcomeOutcomeView";
+import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView";
+import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode";
+import {getOutcomeByID, getOutcomeHorizontalLinkByID} from "./FindState";
+import {moveOutcomeOutcome} from "./Reducers";
 import {updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant} from "./PostFunctions";
 import * as Constants from "./Constants";
 
 //Basic component representing an outcome
-class OutcomeView extends ComponentJSON{
+class OutcomeView extends EditableComponentWithSorting{
     
     constructor(props){
         super(props);
@@ -31,9 +31,9 @@ class OutcomeView extends ComponentJSON{
         let outcomehorizontallinks = data.outcome_horizontal_links_unique.map((horizontal_link)=>
             <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link} renderer={this.props.renderer}/>
         );
-        let outcomeDiv;
+        let side_actions = [];
         if(this.props.show_horizontal && outcomehorizontallinks.length>0){
-            outcomeDiv = (
+            side_actions.push(
                 <div class="outcome-node-indicator">
                     <div class={"outcome-node-indicator-number"}>...</div>
                     <div class={"outcome-node-container"}>{outcomehorizontallinks}</div>
@@ -101,12 +101,15 @@ class OutcomeView extends ComponentJSON{
                     this.addEditable(data)
                 }
                 
-                {outcomeDiv}
+                <div class="side-actions">
+                    {side_actions}
+                    <div class="comment-indicator-container"></div>
+                </div>
             </div>
         );
     }
     
-    postMountFunction(){
+    componentDidMount(){
         if(this.props.show_horizontal)this.makeDragAndDrop();
 //        if(this.props.show_horizontal)this.updateIndicator();
     }
@@ -202,7 +205,7 @@ export default connect(
 
 
 //Basic component representing an outcome in the outcome bar
-export class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
+export class OutcomeBarOutcomeViewUnconnected extends Component{
     
     constructor(props){
         super(props);
@@ -306,7 +309,7 @@ export class OutcomeBarOutcomeViewUnconnected extends ComponentJSON{
         }
     }
     
-    postMountFunction(){
+    componentDidMount(){
         this.makeDraggable();
         $(this.maindiv.current)[0].dataDraggable={outcome:this.props.data.id}
         $(this.maindiv.current).mouseenter((evt)=>{
@@ -331,7 +334,7 @@ export const OutcomeBarOutcomeView = connect(
 
 
 //Basic component representing an outcome in a node, or somewhere else where it doesn't have to do anything
-export class SimpleOutcomeViewUnconnected extends ComponentJSON{
+export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments{
     
     constructor(props){
         super(props);
@@ -365,17 +368,12 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         onClick=(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this);
         
         
-        let style={};
-        if(data.lock){
-            style.border="2px solid "+data.lock.user_colour;
-        }
-        
         let css_class="outcome outcome-"+data.id;
         if(this.state.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
         return(
-            <div class={css_class} style={style}
+            <div class={css_class} style={this.get_border_style()}
             ref={this.maindiv} onClick={onClick}>
                 <div class="outcome-title">
                     <OutcomeTitle data={data} rank={this.props.rank} titles={this.props.titles}/>
@@ -396,6 +394,9 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
                 <div class="mouseover-actions">
                     {comments}
                 </div>
+                <div class="side-actions">
+                    <div class="comment-indicator-container"></div>
+                </div>
                 {edit}
             </div>
             
@@ -413,7 +414,7 @@ export class SimpleOutcomeViewUnconnected extends ComponentJSON{
         );
     }
 
-    postMountFunction(){
+    componentDidMount(){
         if(this.props.checkHidden)this.props.checkHidden();
     }
 
@@ -432,7 +433,7 @@ export const SimpleOutcomeView = connect(
 //Basic component representing an outcome inside a table
 //The component must keep track of both the completion status it receives from descendant outcomes (for each node) and that it gets from its own table cells (also for each node). The completion status it receives from its own table cells is then combined with that it receives from its descendant outcomes to compute whether or not an outcome is achieved in the grand total column.
 //To receive updates from the child outcomes, the updateParentCompletion function is passed to the child outcomes. This is called any time a table cell is updated, adding the the node-outcome pair. descendant_completion_status has the format {node_id:{outcome_id:degree}}.
-class TableOutcomeViewUnconnected extends ComponentJSON{
+class TableOutcomeViewUnconnected extends EditableComponentWithComments{
     
     constructor(props){
         super(props);
@@ -536,7 +537,7 @@ Horizontal OutcomeLinking
 
 */
 //Basic component representing an outcome to parent outcome
-class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
+class OutcomeHorizontalLinkViewUnconnected extends Component{
     
     constructor(props){
         super(props);
@@ -570,6 +571,13 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
         }
     }
 
+    //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+    addDeleteSelf(data){
+        let icon="close.svg";
+        return (
+            <ActionButton button_icon={icon} button_class="delete-self-button" titletext={gettext("Delete")} handleClick={this.deleteSelf.bind(this,data)}/>
+        );
+    }
     checkHidden(){
         if($(this.maindiv.current).children(".outcome").length==0)$(this.maindiv.current).css("display","none");
         else $(this.maindiv.current).css("display","");
@@ -582,7 +590,7 @@ class OutcomeHorizontalLinkViewUnconnected extends ComponentJSON{
         }
     }
 
-    postMountFunction(){
+    componentDidMount(){
         this.checkHidden();
     }
 
@@ -601,91 +609,3 @@ export const OutcomeHorizontalLinkView = connect(
     mapOutcomeHorizontalLinkStateToProps,
     null
 )(OutcomeHorizontalLinkViewUnconnected)
-
-//class OutcomeViewForHorizontalUnconnected extends SimpleOutcomeViewUnconnected{
-//    constructor(props){
-//        super(props);
-//        this.objectType="outcome";
-//        this.children_block = React.createRef();
-//        this.state={is_dropped:false};
-//    }
-//    
-//    render(){
-//        let data = this.props.data;
-//        
-//        var children = data.child_outcome_links.map((outcomeoutcome)=>
-//            this.getChildType(outcomeoutcome)
-//        );
-//                
-//        let dropIcon;
-//        if(this.state.is_dropped)dropIcon = "droptriangleup";
-//        else dropIcon = "droptriangledown";
-//        
-//        let droptext;
-//        if(this.state.is_dropped)droptext=gettext("hide");
-//        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
-//        
-//        return(
-//            <div
-//            class={
-//                "outcome"+((this.state.is_dropped && " dropped")||"")+" outcome-"+data.id
-//            }
-//            ref={this.maindiv}>
-//                <div class="outcome-title">
-//                    <TitleText text={data.title} defaultText={"Click to edit"}/>
-//                </div>
-//                {children.length>0 && 
-//                    <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
-//                        <div class = "outcome-drop-img">
-//                            <img src={iconpath+dropIcon+".svg"}/>
-//                        </div>
-//                        <div class = "outcome-drop-text">
-//                            {droptext}
-//                        </div>
-//                    </div>
-//                }
-//                <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
-//                    {children}
-//                </div>
-//            </div>
-//            
-//        );
-//    }
-//    
-//    toggleDrop(){
-//        this.setState({is_dropped:(!this.state.is_dropped)});
-//    }
-//    
-//    getChildType(outcomeoutcome){
-//        let data = this.props.data;
-//        return (
-//            <OutcomeOutcomeViewForHorizontal key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer}/>
-//        );
-//    }
-//}
-//const mapParentOutcomeStateToProps = (state,own_props)=>(
-//    getParentOutcomeByID(state,own_props.objectID)
-//)
-//export const OutcomeViewForHorizontal = connect(
-//    mapParentOutcomeStateToProps,
-//    null
-//)(OutcomeViewForHorizontalUnconnected)
-//
-//class OutcomeOutcomeViewForHorizontalUnconnected extends SimpleOutcomeOutcomeViewUnconnected{
-//    getChildType(){
-//        let data = this.props.data;
-//        return (
-//            <OutcomeViewForHorizontal objectID={data.child} parentID={this.props.parentID} throughParentID={data.id}/>
-//        )
-//    }
-//}
-//const mapParentOutcomeOutcomeStateToProps = (state,own_props)=>(
-//    getParentOutcomeOutcomeByID(state,own_props.objectID)
-//)
-//export const OutcomeOutcomeViewForHorizontal = connect(
-//    mapParentOutcomeOutcomeStateToProps,
-//    null
-//)(OutcomeOutcomeViewForHorizontalUnconnected)
-
-
-

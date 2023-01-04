@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, OutcomeTitle, TitleText, NodeTitle} from "./ComponentJSON";
+import {Component, EditableComponentWithComments, OutcomeTitle, TitleText, NodeTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {getOutcomeByID, getWeekWorkflowByID, getWeekByID, getNodeWeekByID, getNodeByID, getOutcomeNodeByID, getTableOutcomeNodeByID} from "./FindState";
 import {TableOutcomeNode} from "./OutcomeNode";
@@ -9,7 +9,7 @@ import {WorkflowOutcomeLegend} from "./WorkflowLegend";
 
 
 //Creates a competency matrix. Probably should only be active at the program level.
-class CompetencyMatrixView extends ComponentJSON{
+class CompetencyMatrixView extends Component{
     constructor(props){
         super(props);
         this.objectType="workflow";
@@ -75,154 +75,9 @@ class CompetencyMatrixView extends ComponentJSON{
         }
     }
     
-//    getOutcomes(outcomes_tree,state,display=true){
-//        let outcomes=[];
-//        outcomes_tree.forEach(outcome=>{
-//            let descendants;
-//            descendants = this.getOutcomes(outcome.children,state,this.state.dropped_list.indexOf(outcome.id)>=0);
-//            outcomes.push({...getOutcomeByID(state,outcome.id),descendants:descendants.map(des=>des.data.id),display:display});
-//            outcomes.concat(descendants);
-//        });
-//        return outcomes;
-//        
-//    }
-//    
-//    getWeeks(state){
-//        let weeks = Constants.filterThenSortByID(state.week,Constants.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(weekworkflow=>weekworkflow.week)).map(week=>{
-//            let nodes = Constants.filterThenSortByID(state.node,Constants.filterThenSortByID(state.nodeweek,week.nodeweek_set).map(nodeweek=>nodeweek.node));
-//            return {week_data:week,nodes:nodes}
-//        });
-//        return weeks;
-//        
-//    }
-//    
-//    createWeekRow(week_data,rank,outcome_ids,totals_data){
-//        let text = week_data.week_type_display+" "+(rank+1);
-//        if(week_data.title)text = week_data.title;
-//        let row = text+",";
-//        row+=outcome_ids.map(id=>"").join(",")+",";
-//        row+=","+totals_data.general_education;
-//        row+=","+totals_data.specific_education;
-//        row+=","+(totals_data.general_education+totals_data.specific_education);
-//        row+=",";
-//        row+=","+totals_data.theory;
-//        row+=","+totals_data.practical;
-//        row+=","+totals_data.individual;
-//        row+=","+totals_data.total;
-//        row+=","+totals_data.required;
-//        return row;
-//    }
-//    
-//    createNodeRow(state,node_data,outcomes_displayed,totals_data){
-//        let title="";
-//        let linked_workflow_data=node_data.linked_workflow_data;
-//        if(linked_workflow_data){
-//            if(linked_workflow_data.code)title=linked_workflow_data.code+" - ";
-//            title+=linked_workflow_data.title;
-//        }else title+=node_data.title;
-//        
-//        let row = title+",";
-//        let outcomenodes_all = state.outcomenode.filter(outcomenode=>outcomenode.node==node_data.id);
-//        row+=outcomes_displayed.map(outcome=>{
-//            let outcomenode = getTableOutcomeNodeByID(state,node_data.id,outcome.data.id).data;
-//            let degree;
-//            if(!outcomenode){
-//                for(let i=0;i<outcome.descendants.length;i++){
-//                    for(let j=0;j<outcomenodes_all.length;j++){
-//                        if(outcome.descendants[i]==outcomenodes_all[j].outcome){
-//                            degree=0;
-//                            break;
-//                        }
-//                    }
-//                    if(degree===0)break;
-//                }
-//            }else{
-//                degree=outcomenode.degree;
-//            }
-//            
-//            if(degree===0)return "P";
-//            else if(degree==1)return "X";
-//            else{
-//                let returnval="";
-//                if(degree & 2)returnval+="I";
-//                if(degree & 4)returnval+="D";
-//                if(degree & 8)returnval+="A";
-//            }
-//            
-//            
-//        }).join(",");
-//        if(linked_workflow_data){
-//            row+=",";
-//            let general_education = linked_workflow_data.time_general_hours;
-//            row+=","+general_education;
-//            if(!general_education)general_education=0;
-//            totals_data.general_education+=general_education;
-//            let specific_education = linked_workflow_data.time_specific_hours;
-//            row+=","+specific_education;
-//            if(!specific_education)specific_education=0;
-//            totals_data.specific_education+=specific_education;
-//            row+=","+(general_education+specific_education);
-//            row+=",";
-//            let theory = linked_workflow_data.ponderation_theory
-//            row+=","+theory;
-//            if(!theory)theory=0;
-//            totals_data.theory+=theory;
-//            let practical = linked_workflow_data.ponderation_practical
-//            row+=","+practical;
-//            if(!practical)practical=0;
-//            totals_data.practical+=practical;
-//            let individual = linked_workflow_data.ponderation_individual
-//            row+=","+individual;
-//            if(!individual)individual=0;
-//            totals_data.individual+=individual;
-//            let total = theory+practical+individual;
-//            row+=","+total;
-//            totals_data.total+=total;
-//            let time_required = parseInt(linked_workflow_data.time_required);
-//            if(!time_required)time_required=0;
-//            row+=","+time_required;
-//            totals_data.required+=time_required;
-//        }
-//        else row+=",,,,,,,,,,";
-//        return row;
-//    }
-//
-//    outputCSV(){
-//        
-//        let state = this.props.renderer.store.getState();
-//        
-//        //Get the top row of competencies
-//        let outcomes = this.getOutcomes(this.props.outcomes_tree,state,outcomes);
-//        let outcomes_displayed = outcomes.filter(outcome=>outcome.display)
-//        let outcomes_row = ","+outcomes_displayed.map(outcome=>{
-//            return '"'+Constants.csv_safe(outcome.rank.join(".")+" - "+outcome.data.title)+'"';
-//        }).join(",");
-//        outcomes_row+=",,Gen Ed, Specific Ed,Total Hours,,Theory,Practical,Individual,Total,Credits";
-//        
-//        //Get individual weeks and nodes
-//        let weeks = this.getWeeks(state)
-//        
-//        
-//        //Convert each week/node into a row
-//        let rows=[outcomes_row];
-//        weeks.forEach((week,i)=>{
-//            let totals_data = {theory:0,practical:0,individual:0,total:0,required:0,general_education:0,specific_education:0};
-//            week.nodes.forEach(node=>{
-//                let node_row = this.createNodeRow(state,node,outcomes_displayed,totals_data);
-//                rows.push(node_row);
-//            });
-//            let week_row = this.createWeekRow(week.week_data,i,outcomes_displayed,totals_data);
-//            rows.push(week_row);
-//            rows.push("\n");
-//        });
-//        
-//        Constants.download("outcomes_matrix.csv",rows.join("\n"));
-//        
-//        alert(gettext("Data has been output to csv in your downloads folder."));
-//        
-//    }
+
     
-    postMountFunction(){
+    componentDidMount(){
         $(this.maindiv.current).on("toggle-outcome-drop",(evt,extra_data)=>{
             this.setState((prev_state)=>{
                 let dropped = prev_state.dropped_list.slice();
@@ -247,7 +102,7 @@ export default connect(
     null
 )(CompetencyMatrixView)
 
-class MatrixOutcomeViewUnconnected extends ComponentJSON{
+class MatrixOutcomeViewUnconnected extends EditableComponentWithComments{
     constructor(props){
         super(props);
         this.objectType="outcome";
@@ -266,10 +121,18 @@ class MatrixOutcomeViewUnconnected extends ComponentJSON{
         
         let class_name="outcome-block";
         if(is_dropped)class_name+=" dropped";
+
+
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
+        
+        let onClick;
+        onClick=(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this);
+        
         return (
             <div class={class_name}>
-                <div class="table-cell nodewrapper">
-                    <div class="outcome">
+                <div class="table-cell nodewrapper" ref={this.maindiv}>
+                    <div style={this.get_border_style()} class="outcome" onClick={onClick}>
                         <OutcomeTitle data={data} titles={this.props.titles} rank={this.props.rank}/>
                         {children.length>0 && 
                             <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
@@ -278,6 +141,13 @@ class MatrixOutcomeViewUnconnected extends ComponentJSON{
                                 </div>
                             </div>
                         }
+                        <div class="mouseover-actions">
+                            {comments}
+                        </div>
+                        {this.addEditable(data,true)}
+                    </div>
+                    <div class="side-actions">
+                        <div class="comment-indicator-container"></div>
                     </div>
                 </div>
                 <div class="outcome-block-children">
@@ -299,7 +169,7 @@ export const MatrixOutcomeView = connect(
     null
 )(MatrixOutcomeViewUnconnected)
 
-class MatrixWeekWorkflowViewUnconnected extends ComponentJSON{
+class MatrixWeekWorkflowViewUnconnected extends React.Component{
     constructor(props){
         super(props);
         this.objectType="weekworkflow";
@@ -322,7 +192,7 @@ export const MatrixWeekWorkflowView = connect(
     null
 )(MatrixWeekWorkflowViewUnconnected)
 
-class MatrixWeekViewUnconnected extends ComponentJSON{
+class MatrixWeekViewUnconnected extends EditableComponentWithComments{
     constructor(props){
         super(props);
         this.objectType="week";
@@ -336,6 +206,9 @@ class MatrixWeekViewUnconnected extends ComponentJSON{
         let nodes = this.props.nodes.map(node=>
             <MatrixNodeView outcomes_tree={this.props.outcomes_tree} renderer={this.props.renderer} objectID={node.id} dropped_list={this.props.dropped_list}/>
         )
+        
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
         
         let outcomecells = this.props.outcomes_tree.map(category=>{
             let categories = category.outcomes.map(outcome=>
@@ -351,8 +224,14 @@ class MatrixWeekViewUnconnected extends ComponentJSON{
         return (
             <div class="week">
                 <div class="node-row">
-                    <div class="outcome-head">
+                    <div onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)} ref={this.maindiv} class="outcome-head" style={this.get_border_style()}>
                         <TitleText title={data.title} defaultText={default_text}/>
+                        <div class="mouseover-actions">
+                            {comments}
+                        </div>
+                        <div class="side-actions">
+                            <div class="comment-indicator-container"></div>
+                        </div>
                     </div>
                     <div class="table-cell blank"></div>
                     {outcomecells}
@@ -368,6 +247,7 @@ class MatrixWeekViewUnconnected extends ComponentJSON{
                     <div class="table-cell">{this.props.total_required}</div>
                 </div>
                 {nodes}
+                {this.addEditable(data,true)}
             </div>
         )
     }
@@ -442,7 +322,7 @@ class MatrixWeekOutcomeBlockView extends React.Component{
     }
 }
 
-//class MatrixNodeWeekViewUnconnected extends ComponentJSON{
+//class MatrixNodeWeekViewUnconnected extends React.Component{
 //    constructor(props){
 //        super(props);
 //        this.objectType="nodeweek";
@@ -465,7 +345,7 @@ class MatrixWeekOutcomeBlockView extends React.Component{
 //    null
 //)(MatrixNodeWeekViewUnconnected)
 
-class MatrixNodeViewUnconnected extends ComponentJSON{
+class MatrixNodeViewUnconnected extends EditableComponentWithComments{
     constructor(props){
         super(props);
         this.objectType="node";
@@ -478,14 +358,16 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
         else data_override = data;
         let selection_manager = this.props.renderer.selection_manager;
         
-        let style = {backgroundColor:Constants.getColumnColour(this.props.column)}
-        if(data.lock){
-            style.outline="2px solid "+data.lock.user_colour;
-        }
+        
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
+        let style = this.get_border_style();
+        style.backgroundColor=Constants.getColumnColour(this.props.column)
+        
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
         
         let outcomenodes = this.props.outcomes_tree.map(category=>{
             let categories = category.outcomes.map(outcome=>
@@ -510,13 +392,19 @@ class MatrixNodeViewUnconnected extends ComponentJSON{
                         <div class = "node-top-row">
                             <NodeTitle data={data}/>
                         </div>
+                        <div class="mouseover-actions">
+                            {comments}
+                        </div>
+                        <div class="side-actions">
+                            <div class="comment-indicator-container"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="table-cell blank"></div>
                 {outcomenodes}
                 <div class="table-cell blank"></div>
                 {this.getTimeData(data_override)}
-                {this.addEditable(data_override)}
+                {this.addEditable(data_override,true)}
             </div>
         )
     }

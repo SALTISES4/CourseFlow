@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, OutcomeTitle, TitleText, NodeTitle} from "./ComponentJSON";
+import {EditableComponentWithComments, OutcomeTitle, TitleText, NodeTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {getOutcomeByID, getWeekWorkflowByID, getWeekByID, getNodeWeekByID, getNodeByID} from "./FindState";
 
 
 //Creates a grid with just nodes by week and their times
-class GridView extends ComponentJSON{
+class GridView extends React.Component{
     constructor(props){
         super(props);
         this.objectType="workflow";
@@ -42,7 +42,7 @@ export default connect(
     null
 )(GridView)
 
-class GridWeekViewUnconnected extends ComponentJSON{
+class GridWeekViewUnconnected extends EditableComponentWithComments{
     constructor(props){
         super(props);
         this.objectType="week";
@@ -111,7 +111,7 @@ export const GridWeekView = connect(
     null
 )(GridWeekViewUnconnected)
 
-class GridNodeViewUnconnected extends ComponentJSON{
+class GridNodeViewUnconnected extends EditableComponentWithComments{
     constructor(props){
         super(props);
         this.objectType="node";

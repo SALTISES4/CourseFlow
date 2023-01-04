@@ -1,14 +1,14 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON.js";
-import OutcomeView from "./OutcomeView.js";
-import {OutcomeBarOutcomeView} from "./OutcomeView.js";
-import {getOutcomeByID} from "./FindState.js";
-import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents.js'
+import {EditableComponent} from "./ComponentJSON";
+import OutcomeView from "./OutcomeView";
+import {OutcomeBarOutcomeView} from "./OutcomeView";
+import {getOutcomeByID} from "./FindState";
+import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents'
 
 //Basic component representing the outcome view
-class OutcomeTopView extends ComponentJSON{
+class OutcomeTopView extends EditableComponent{
     
     constructor(props){
         super(props);
@@ -48,7 +48,7 @@ export default connect(
 )(OutcomeTopView)
 
 
-class OutcomeBarUnconnected extends ComponentJSON{
+class OutcomeBarUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         var outcomebaroutcomes = data.map((outcome)=>

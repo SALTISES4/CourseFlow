@@ -1,14 +1,14 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON.js";
-import WeekView from "./WeekView.js";
-import TermView from "./TermView.js";
-import {getWeekWorkflowByID} from "./FindState.js";
-import {} from "./Reducers.js";
+import WeekView from "./WeekView";
+import TermView from "./TermView";
+import {getWeekWorkflowByID} from "./FindState";
+import {Component} from "./ComponentJSON";
+import {} from "./Reducers";
 import {WeekComparisonView, NodeBarWeekView} from "./WeekView";
 
 //Basic weekworkflow component
-class WeekWorkflowView extends ComponentJSON{
+class WeekWorkflowView extends Component{
     constructor(props){
         super(props);
         this.objectType="weekworkflow";

@@ -1,14 +1,14 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, WorkflowTitle} from "./ComponentJSON";
+import {EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "./ComponentJSON";
 import ColumnWorkflowView from "./ColumnWorkflowView";
 import WeekWorkflowView from "./WeekWorkflowView";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";
 import {NodeBarWeekWorkflow} from "./WeekWorkflowView";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
 import * as Constants from "./Constants";
-import {moveColumnWorkflow, moveWeekWorkflow, toggleObjectSet} from "./Reducers";
+import {changeField, moveColumnWorkflow, moveWeekWorkflow, toggleObjectSet} from "./Reducers";
 import {OutcomeBar} from "./OutcomeEditView";
 import StrategyView from "./Strategy";
 import WorkflowOutcomeView from "./WorkflowOutcomeView";
@@ -22,7 +22,7 @@ import GridView from './GridView';
 
 
 //Container for common elements for workflows
-class WorkflowBaseViewUnconnected extends ComponentJSON{
+class WorkflowBaseViewUnconnected extends EditableComponent{
     
     constructor(props){
         super(props);
@@ -229,7 +229,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         );
     }
                      
-    postMountFunction(){
+    componentDidMount(){
         this.updateTabs();    
         window.addEventListener("click",(evt)=>{
             if($(evt.target).closest(".other-views").length==0){
@@ -315,7 +315,7 @@ export const WorkflowBaseView = connect(
 
 
 //Basic component representing the workflow
-class WorkflowViewUnconnected extends ComponentJSON{
+class WorkflowViewUnconnected extends EditableComponentWithSorting{
     
     constructor(props){
         super(props);
@@ -359,10 +359,8 @@ class WorkflowViewUnconnected extends ComponentJSON{
                      
     
                      
-    postMountFunction(){
+    componentDidMount(){
         this.makeDragAndDrop();
-        
-        
     }
 
     componentDidUpdate(){
@@ -416,7 +414,7 @@ export const WorkflowView =  connect(
 )(WorkflowViewUnconnected)
 
 
-class ViewBarUnconnected extends ComponentJSON{
+class ViewBarUnconnected extends React.Component{
      
     render(){
         let sets=(
@@ -451,7 +449,7 @@ export const ViewBar =  connect(
 )(ViewBarUnconnected)
 
 
-class NodeBarUnconnected extends ComponentJSON{
+class NodeBarUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -467,7 +465,7 @@ class NodeBarUnconnected extends ComponentJSON{
             sort_type=(
                 <div class="node-bar-sort-block">
                     {this.props.renderer.outcome_sort_choices.map((choice)=>
-                        <div><input type="radio" id={"sort_type_choice"+choice.type} name="sort_type" value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.inputChanged.bind(this,"outcomes_sort")}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></div>
+                        <div><input type="radio" id={"sort_type_choice"+choice.type} name="sort_type" value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.changeSort.bind(this)}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></div>
 
                     )}
                 </div>
@@ -536,6 +534,10 @@ class NodeBarUnconnected extends ComponentJSON{
     collapseAll(){
         this.props.weeks.forEach(week=>toggleDrop(week.id,"week",false,this.props.dispatch));
     }
+
+    changeSort(evt){
+        this.props.dispatch(changeField(this.props.data.id,"workflow",{"outcomes_sort":evt.target.value}));
+    }
     
 }
 const mapNodeBarStateToProps = state=>({
@@ -548,7 +550,7 @@ export const NodeBar = connect(
     null
 )(NodeBarUnconnected)
 
-class RestoreBarUnconnected extends ComponentJSON{
+class RestoreBarUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -658,7 +660,7 @@ class RestoreBarItem extends React.Component{
     }
 }
 
-class StrategyBarUnconnected extends ComponentJSON{
+class StrategyBarUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -707,7 +709,7 @@ export const StrategyBar = connect(
 
 
 //Basic component representing the workflow
-class WorkflowView_Outcome_Unconnected extends ComponentJSON{
+class WorkflowView_Outcome_Unconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -720,7 +722,6 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
         
         var selector = this;
         let renderer = this.props.renderer;
-        let selection_manager = renderer.selection_manager;
         
         
         return(
@@ -729,10 +730,6 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
                 <WorkflowOutcomeView renderer={renderer} outcomes_type={data.outcomes_type}/>
             </div>
         );
-    }
-                     
-    openEdit(evt){
-        this.props.renderer.selection_manager.changeSelection(evt,this);
     }
     
     

@@ -527,8 +527,6 @@ export class AssignmentBox extends React.Component{
 
     
     render(){
-        console.log("rendering the assignment box");
-        console.log(this.state);
         if(!this.state.has_rendered)return null;
         let assignment_indicator = null;
         if(this.props.has_assignment)assignment_indicator=reactDom.createPortal(
@@ -643,9 +641,6 @@ export class AssignmentBox extends React.Component{
 export class AssignmentViewForNode extends AssignmentView{
 
     render(){
-        console.log("rendering the assignment view for node");
-        console.log(this.props.data);
-        console.log(this.state);
         let data = this.props.data;
         let node_data = data.task;
         let data_override;

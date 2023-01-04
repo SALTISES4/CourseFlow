@@ -1,13 +1,12 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON";
 import OutcomeView from "./OutcomeView";
 import {TableOutcomeView} from "./OutcomeView";
 import {getOutcomeWorkflowByID} from "./FindState";
 
 
 //Basic component to represent a outcomeworkflow
-class OutcomeWorkflowView extends ComponentJSON{
+class OutcomeWorkflowView extends React.Component{
     constructor(props){
         super(props);
         this.objectType="outcomeworkflow";
@@ -34,7 +33,7 @@ export default connect(
 )(OutcomeWorkflowView)
 
 
-class TableOutcomeWorkflowViewUnconnected extends ComponentJSON{
+class TableOutcomeWorkflowViewUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         return (

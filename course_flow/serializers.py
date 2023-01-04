@@ -885,10 +885,15 @@ class WorkflowSerializerShallow(
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
     author = serializers.SerializerMethodField()
+    outcomes_sort = serializers.SerializerMethodField()
 
     strategy_icon = serializers.SerializerMethodField()
 
     url = serializers.SerializerMethodField()
+
+    #Although we'll hang onto outcomes_sort as a field for now, this should just reset to 0
+    def get_outcomes_sort(self,instance):
+        return 0;
 
     def get_url(self, instance):
         user = self.context.get("user", None)

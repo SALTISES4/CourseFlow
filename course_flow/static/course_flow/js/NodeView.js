@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ActionButton, ComponentJSON, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON.js";
+import {ActionButton, EditableComponentWithActions, EditableComponentWithComments, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON";
 import NodeLinkView from "./NodeLinkView";
 import {AssignmentBox} from "./LiveAssignmentView"
 import OutcomeNodeView from "./OutcomeNode";
@@ -11,14 +11,12 @@ import {updateOutcomenodeDegree, updateValueInstant, toggleDrop} from "./PostFun
 
 
 //Basic component to represent a Node
-class NodeView extends ComponentJSON{
+class NodeView extends EditableComponentWithActions{
     constructor(props){
         super(props);
         this.objectType="node";
         this.objectClass=".node";
-        this.state={
-            initial_render:true
-        }
+        this.state={initial_render:true};
     }
     
     render(){
@@ -32,11 +30,11 @@ class NodeView extends ComponentJSON{
         var node_links;
         var auto_link;
         
-        if(!this.state.initial_render)nodePorts = reactDom.createPortal(
+        if(!this.state.initial_render){
+            nodePorts = reactDom.createPortal(
                 <NodePorts renderer={renderer} nodeID={this.props.objectID} node_div={this.maindiv} dispatch={this.props.dispatch}/>
-            ,$(".workflow-canvas")[0]
-        );
-        if(renderer.ports_rendered&&!this.state.port_render){
+                ,$(".workflow-canvas")[0]
+            );
             node_links = data.outgoing_links.map((link)=>
                 <NodeLinkView key={link} objectID={link} node_div={this.maindiv} renderer={renderer}/>
             );
@@ -180,10 +178,9 @@ class NodeView extends ComponentJSON{
         else $(this.maindiv.current).parent(".nodeweek").removeClass("empty");
     }
     
-    postMountFunction(){
+    componentDidMount(){
+        if(this.state.initial_render)this.setState({initial_render:false});
         $(this.maindiv.current).on("mouseenter",this.mouseIn.bind(this));
-        $(document).on("render-ports render-links",()=>{this.setState({})});
-        if(this.state.initial_render)this.setState({initial_render:false,port_render:true});
         this.makeDroppable();
         $(this.maindiv.current).on("dblclick",this.doubleClick.bind(this));
         this.updateHidden();
@@ -192,7 +189,6 @@ class NodeView extends ComponentJSON{
     componentDidUpdate(prevProps, prevState){
         if(this.props.data.is_dropped==prevProps.data.is_dropped)this.updatePorts();
         else Constants.triggerHandlerEach($(".node"),"component-updated");
-        if(this.state.port_render)this.setState({initial_render:false,port_render:false});
         this.updateHidden();
     }
 
@@ -295,7 +291,7 @@ export default connect(
 
 
 //Basic component to represent a node in the outcomes table
-class NodeOutcomeViewUnconnected extends ComponentJSON{
+class NodeOutcomeViewUnconnected extends EditableComponentWithComments{
     constructor(props){
         super(props);
         this.objectType="node";
@@ -347,7 +343,7 @@ export const NodeOutcomeView = connect(
 )(NodeOutcomeViewUnconnected)
 
 //Basic component to represent a Node
-class NodeComparisonViewUnconnected extends ComponentJSON{
+class NodeComparisonViewUnconnected extends EditableComponentWithActions{
     constructor(props){
         super(props);
         this.objectType="node";

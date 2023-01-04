@@ -1,16 +1,16 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, TitleText} from "./ComponentJSON.js";
-import NodeWeekView from "./NodeWeekView.js";
-import {NodeWeekComparisonView} from "./NodeWeekView.js";
-import {getWeekByID, getNodeWeekByID} from "./FindState.js";
-import * as Constants from "./Constants.js";
-import {columnChangeNode, moveNodeWeek} from "./Reducers.js";
+import {EditableComponentWithSorting, TitleText} from "./ComponentJSON";
+import NodeWeekView from "./NodeWeekView";
+import {NodeWeekComparisonView} from "./NodeWeekView";
+import {getWeekByID, getNodeWeekByID} from "./FindState";
+import * as Constants from "./Constants";
+import {columnChangeNode, moveNodeWeek} from "./Reducers";
 import {toggleDrop, insertedAt,columnChanged,addStrategy,updateValueInstant} from "./PostFunctions";
-import {Loader} from "./Constants.js";
+import {Loader} from "./Constants";
 
 //Basic component to represent a Week
-export class WeekViewUnconnected extends ComponentJSON{
+export class WeekViewUnconnected extends EditableComponentWithSorting{
     constructor(props){
         super(props);
         this.objectType="week";
@@ -93,7 +93,7 @@ export class WeekViewUnconnected extends ComponentJSON{
         return nodes;
     }
     
-    postMountFunction(){
+    componentDidMount(){
         this.makeDragAndDrop();
     }
 
@@ -259,7 +259,7 @@ export class WeekComparisonViewUnconnected extends WeekViewUnconnected{
         $(".week-block .week-workflow:nth-child("+rank+") .week").css({"height":max_height+"px"});
     }
     
-    postMountFunction(){
+    componentDidMount(){
         this.makeDragAndDrop();
         this.alignAllWeeks();
     }

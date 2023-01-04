@@ -1993,6 +1993,12 @@ ol.children-block{
     right:-22px;
 }
 
+.competency-matrix .nodewrapper .side-actions {
+    top: -202px;
+    left: 0px;
+    right: auto;
+}
+
 .side-actions .comment-indicator{
     position: unset;
     background: unset;
@@ -2735,6 +2741,10 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 .comment-indicator img{
     width:20px;
     filter: brightness(0) saturate(100%) invert(38%) sepia(98%) saturate(461%) hue-rotate(164deg) brightness(87%) contrast(100%);
+}
+
+.outcome-node-container .comment-indicator img{
+    width: 12px;
 }
 
 .nomenclature-row{

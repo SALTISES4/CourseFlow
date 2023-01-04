@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON";
 import {NodeOutcomeView} from "./NodeView";
 import {TableOutcomeView} from "./OutcomeView";
 import {TableOutcomeWorkflowView} from "./OutcomeWorkflowView"
@@ -11,7 +10,7 @@ import {getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
 
 
 //Represents the entire outcomeview, barring top level workflow stuff
-class WorkflowOutcomeView extends ComponentJSON{
+class WorkflowOutcomeView extends React.Component{
     constructor(props){
         super(props);
         this.objectType="workflow";

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, NodeTitle, TitleText, OutcomeTitle, getOutcomeTitle, WeekTitle} from "./ComponentJSON";
+import {EditableComponent, NodeTitle, TitleText, OutcomeTitle, getOutcomeTitle, WeekTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {getOutcomeByID,getOutcomeOutcomeByID, getChildWorkflowByID, getWeekByID, getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
 import OutcomeView from "./OutcomeView";
@@ -10,7 +10,7 @@ import OutcomeNodeView from "./OutcomeNode";
 import {newOutcome, updateOutcomenodeDegree, updateOutcomehorizontallinkDegree} from "./PostFunctions"
 
 //Analytics view
-class AlignmentView extends ComponentJSON{
+class AlignmentView extends React.Component{
     constructor(props){
         super(props);
         this.objectType="workflow";
@@ -365,7 +365,7 @@ export const AlignmentHorizontalReverseWeek = connect(
 
 
 
-class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
+class AlignmentHorizontalReverseNodeUnconnected extends EditableComponent{
     constructor(props){
         super(props);
         this.objectType="node";
