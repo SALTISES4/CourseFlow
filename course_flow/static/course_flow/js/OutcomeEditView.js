@@ -174,7 +174,7 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected{
                     <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
                 </div>
                 <input class="outcome-toggle-checkbox" type="checkbox" title="Toggle highlighting" onChange={this.clickFunction.bind(this)}/>
-                {children.length>0 && 
+                {data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>

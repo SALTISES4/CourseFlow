@@ -56,14 +56,23 @@ class GridWeekViewUnconnected extends EditableComponentWithComments{
             <GridNodeView renderer={this.props.renderer} data={node}/>
         );
         
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
         
         return (
-            <div class="week">
+            <div class="week" ref={this.maindiv} style={this.get_border_style()} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="week-title">
                     <TitleText title={data.title} defaultText={default_text}/>
                     <div class="grid-ponderation">{this.props.total_theory+"/"+this.props.total_practical+"/"+this.props.total_individual}</div>
                 </div>
                 {nodes}
+                {this.addEditable(data,true)}
+                <div class="mouseover-actions">
+                    {comments}
+                </div>
+                <div class="side-actions">
+                    <div class="comment-indicator-container"></div>
+                </div>
             </div>
         )
     }
@@ -137,6 +146,9 @@ class GridNodeViewUnconnected extends EditableComponentWithComments{
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
+        
         return (
             <div style={style}
                 id={data.id} 
@@ -148,7 +160,13 @@ class GridNodeViewUnconnected extends EditableComponentWithComments{
                     <NodeTitle data={data}/>
                     {ponderation}
                 </div>
-                {this.addEditable(data_override)}
+                <div class="mouseover-actions">
+                    {comments}
+                </div>
+                <div class="side-actions">
+                    <div class="comment-indicator-container"></div>
+                </div>
+                {this.addEditable(data_override,true)}
             </div>
         )
     }

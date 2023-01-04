@@ -79,7 +79,7 @@ class OutcomeView extends EditableComponentWithSorting{
                 <div class="outcome-title">
                     <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
                 </div>
-                {children.length>0 && 
+                {data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>
@@ -240,7 +240,7 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
                     <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
                 </div>
                 <input class="outcome-toggle-checkbox" type="checkbox" title="Toggle highlighting" onChange={this.clickFunction.bind(this)}/>
-                {children.length>0 && 
+                {data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>
@@ -378,7 +378,7 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments{
                 <div class="outcome-title">
                     <OutcomeTitle data={data} rank={this.props.rank} titles={this.props.titles}/>
                 </div>
-                {children.length>0 && 
+                {data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>
@@ -451,8 +451,7 @@ class TableOutcomeViewUnconnected extends EditableComponentWithComments{
 
         let outcomeGroups = this.props.nodecategory.map((nodecategory)=>
             <TableOutcomeGroup renderer={this.props.renderer} nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.childUpdatedFunction.bind(this)} descendant_completion_status={this.state.descendant_completion_status} outcomes_type={this.props.outcomes_type}/>
-                                                        
-                                                         
+                                                                                                 
         );
                 
         let dropIcon;
@@ -462,21 +461,25 @@ class TableOutcomeViewUnconnected extends EditableComponentWithComments{
         let droptext;
         if(data.is_dropped)droptext=gettext("hide");
         else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
-        
 
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
         
         return(
             <div
             class={
                 "outcome depth-"+data.depth+((data.is_dropped && " dropped")||"")
-            }
-            ref={this.maindiv}>
+            }>
                 <div class = "outcome-row">
-                    <div class="outcome-head" style={{paddingLeft:data.depth*12}}>
-                        <div class="outcome-title">
+                    <div class="outcome-head" 
+                        ref={this.maindiv} 
+                        style={{paddingLeft:data.depth*12}}
+                        onClick={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,this)}}
+                    >
+                        <div class="outcome-title" style={this.get_border_style()}>
                             <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
                         </div>
-                        {children.length>0 && 
+                        {data.child_outcome_links.length>0 && 
                             <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                                 <div class = "outcome-drop-img">
                                     <img src={iconpath+dropIcon+".svg"}/>
@@ -486,6 +489,12 @@ class TableOutcomeViewUnconnected extends EditableComponentWithComments{
                                 </div>
                             </div>
                         }
+                        <div class="mouseover-actions">
+                            {comments}
+                        </div>
+                        <div class="side-actions">
+                            <div class="comment-indicator-container"></div>
+                        </div>
                     </div>
                     <div class="outcome-cells">
                         {outcomeGroups}
@@ -496,6 +505,7 @@ class TableOutcomeViewUnconnected extends EditableComponentWithComments{
                 <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
                     {children}
                 </div>
+                {this.addEditable(data,true)}
             </div>
             
         );

@@ -38,9 +38,7 @@ class WorkflowOutcomeView extends React.Component{
                 <div class="table-group">
                     <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
                     {nodecategory.nodes.map((node)=>
-                        <div class="table-cell nodewrapper">
                             <NodeOutcomeView renderer={this.props.renderer} objectID={node}/>
-                        </div>
                     )}
                     <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
                 </div>

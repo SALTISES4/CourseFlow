@@ -1993,10 +1993,15 @@ ol.children-block{
     right:-22px;
 }
 
-.competency-matrix .nodewrapper .side-actions {
+.competency-matrix .nodewrapper .side-actions{
     top: -202px;
     left: 0px;
     right: auto;
+}
+
+.outcome-table .nodewrapper .side-actions{
+    top: -160px;
+    right: -70px;
 }
 
 .side-actions .comment-indicator{
@@ -2312,6 +2317,10 @@ ol.children-block{
     display:flex;
 }
 
+.workflow-grid .week{
+    margin-right: 20px;
+}
+
 .workflow-grid .node-top-row{
     border-radius:0 0 5px 5px;
 }
@@ -2374,7 +2383,7 @@ ol.children-block{
 
 .outcome-table.node-rows .outcome-head{
     display:inline-block;
-    width:380px;
+    width:280px;
     position:sticky;
     left:0px;
     background:white;
@@ -3213,10 +3222,26 @@ circle.mouseover{
     border-top:2px solid lightgrey;
 }
 
+.alignment-block .child-outcome.child-outcome-header{
+    font-weight: 600;
+    padding-left: 5px;
+}
+
 .alignment-block .child-outcome .half-width{
     vertical-align: top;
 }
 
+.alignment-block .child-outcome{
+    font-size: 12px;
+}
+
+.alignment-block .alignment-added-outcomes{
+    font-size: 12px;
+}
+
+.alignment-block .node-outcomes-header{
+    font-weight: 600;
+}
 
 #popup-container{
     position:absolute;

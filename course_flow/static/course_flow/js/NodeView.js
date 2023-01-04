@@ -316,20 +316,29 @@ class NodeOutcomeViewUnconnected extends EditableComponentWithComments{
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
         
         return (
-            <div 
-                
-                class={css_class}
-                style={style}
-                id={data.id} 
-                ref={this.maindiv} 
-                onClick={(evt)=>selection_manager.changeSelection(evt,this)}
-            >
-                <div class = "node-top-row">
-                    <NodeTitle data={data}/>
+            <div ref={this.maindiv} class="table-cell nodewrapper">
+                <div 
+                    
+                    class={css_class}
+                    style={style}
+                    id={data.id} 
+                    onClick={(evt)=>selection_manager.changeSelection(evt,this)}
+                >
+                    <div class = "node-top-row">
+                        <NodeTitle data={data}/>
+                    </div>
+                    {this.addEditable(data_override,true)}
+                    <div class="mouseover-actions">
+                        {comments}
+                    </div>
                 </div>
-                {this.addEditable(data_override,true)}
+                <div class="side-actions">
+                    <div class="comment-indicator-container"></div>
+                </div>
             </div>
         );
 
