@@ -422,11 +422,11 @@
     <script nonce="{{ request.csp_nonce }}">
         window.addEventListener("beforeprint",()=>{
         $(".hide-print").hide();
-        $(".workflow-wrapper, #container").addClass("printing");
+        $(".workflow-wrapper, #container, body").addClass("printing");
     });
     window.addEventListener("afterprint",()=>{
         $(".hide-print").show()
-        $(".workflow-wrapper, #container").removeClass("printing");
+        $(".workflow-wrapper, #container, body").removeClass("printing");
     });
 
     const userAgent = navigator.userAgent.toLowerCase();

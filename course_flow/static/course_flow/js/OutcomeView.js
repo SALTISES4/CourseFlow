@@ -431,21 +431,25 @@ export const SimpleOutcomeView = connect(
 )(SimpleOutcomeViewUnconnected)
 
 class TableOutcomeBaseUnconnected extends Component{
+
+
     render(){
-        let outcome_tree = JSON.parse(this.props.outcome_tree);
+        let outcome_tree = Constants.createOutcomeNodeBranch(this.props,this.props.objectID,this.props.nodecategory);
+        
+        //avoid further rerenders if possible
+        let outcome_tree_json = JSON.stringify(outcome_tree);
+        if(this.outcome_tree_json == outcome_tree_json)outcome_tree=this.outcome_tree;
+        else{this.outcome_tree=outcome_tree;this.outcome_tree_json=outcome_tree_json}
+
         return (
-            <TableOutcomeView outcomes_type={this.props.outcomes_type} objectID={outcome_tree.id} outcome_tree={outcome_tree} renderer={this.props.renderer}/>
+            <TableOutcomeView outcomes_type={this.props.outcomes_type} objectID={outcome_tree.id} outcome_tree={this.outcome_tree} renderer={this.props.renderer}/>
         );
     }
+
 }
-//Note here we stringify the outcome tree. Likewise the incoming nodecategory has been stringified.
-//This way, this component does NOT rerender every time a change has been made to state, speeding things up.
-//If we did not do this, the props would change (even though the derived object is the same, the ref is not),
-//and this would trickle down too all the sub-components that use nodecategory.
 export const TableOutcomeBase = connect(
     (state,own_props)=>{
-        let outcome_tree = Constants.createOutcomeNodeBranch(state,own_props.objectID,JSON.parse(own_props.nodecategory));
-        return {outcome_tree:JSON.stringify(outcome_tree),outcomes_type:state.workflow.outcomes_type};
+        return {outcomes_type:state.workflow.outcomes_type,outcome:state.outcome,outcomenode:state.outcomenode,outcomeoutcome:state.outcomeoutcome}
     },
     null
 )(TableOutcomeBaseUnconnected)
@@ -457,6 +461,7 @@ class TableOutcomeViewUnconnected extends EditableComponentWithComments{
     }
 
     render(){
+        console.log("a table outcome is rerendering");
         let data = this.props.data;
                 
         let dropIcon;

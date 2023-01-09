@@ -283,7 +283,7 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
     
 }
 const mapTableOutcomeNodeStateToProps = (state,own_props)=>(
-    getTableOutcomeNodeByID(state,own_props.nodeID, own_props.outcomeID)
+    getTableOutcomeNodeByID(state.outcomenode,own_props.nodeID, own_props.outcomeID)
 )
 export const TableOutcomeNode = connect(
     mapTableOutcomeNodeStateToProps,

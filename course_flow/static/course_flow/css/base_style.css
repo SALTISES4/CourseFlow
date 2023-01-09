@@ -11,6 +11,10 @@ body, html{
     font-size: 14px;
 }
 
+body.printing{
+    height: unset;
+}
+
 .left-panel a, .workflow-title-bar a, .home-tabs .ui-tabs-tab a, .home-item a{
     color:#444444;
 }

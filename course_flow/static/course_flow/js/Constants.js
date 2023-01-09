@@ -295,19 +295,19 @@ export function flattenOutcomeTree(outcomes_tree,array){
     });
 }
 
-export function createOutcomeNodeBranch(state,outcome_id,nodecategory){
-    for(let i=0;i<state.outcome.length;i++){
-        if(state.outcome[i].id==outcome_id){
+export function createOutcomeNodeBranch(props,outcome_id,nodecategory){
+    for(let i=0;i<props.outcome.length;i++){
+        if(props.outcome[i].id==outcome_id){
             let children;
-            if(state.outcome[i].child_outcome_links.length==0)children=[];
-            else children = filterThenSortByID(state.outcomeoutcome,state.outcome[i].child_outcome_links).map(outcomeoutcome=>createOutcomeNodeBranch(state,outcomeoutcome.child,nodecategory));
+            if(props.outcome[i].child_outcome_links.length==0)children=[];
+            else children = filterThenSortByID(props.outcomeoutcome,props.outcome[i].child_outcome_links).map(outcomeoutcome=>createOutcomeNodeBranch(props,outcomeoutcome.child,nodecategory));
             let outcomenodes = [];
             for(var ii=0;ii<nodecategory.length;ii++){
                 let category = nodecategory[ii];
                 let outcomenodes_group=[];
                 for(var j=0;j<category.nodes.length;j++){
                     let node = category.nodes[j];
-                    let outcomenode = getTableOutcomeNodeByID(state,node,outcome_id).data;
+                    let outcomenode = getTableOutcomeNodeByID(props.outcomenode,node,outcome_id).data;
                     if(outcomenode){
                         outcomenodes_group.push({node_id:node,degree:outcomenode.degree});
                         continue;
