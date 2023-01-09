@@ -7,7 +7,7 @@ import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOut
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode";
 import {getOutcomeByID, getOutcomeHorizontalLinkByID} from "./FindState";
 import {moveOutcomeOutcome} from "./Reducers";
-import {updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant} from "./PostFunctions";
+import {updateOutcomenodeDegree, updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant} from "./PostFunctions";
 import * as Constants from "./Constants";
 
 //Basic component representing an outcome
@@ -77,7 +77,7 @@ class OutcomeView extends EditableComponentWithSorting{
             ref={this.maindiv} 
             onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="outcome-title">
-                    <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
+                    <OutcomeTitle data={this.props.data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
                 {data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
@@ -237,7 +237,7 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
             
             ref={this.maindiv}>
                 <div class="outcome-title" >
-                    <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
+                    <OutcomeTitle data={this.props.data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
                 <input class="outcome-toggle-checkbox" type="checkbox" title="Toggle highlighting" onChange={this.clickFunction.bind(this)}/>
                 {data.child_outcome_links.length>0 && 
@@ -376,7 +376,7 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments{
             <div class={css_class} style={this.get_border_style()}
             ref={this.maindiv} onClick={onClick}>
                 <div class="outcome-title">
-                    <OutcomeTitle data={data} rank={this.props.rank} titles={this.props.titles}/>
+                    <OutcomeTitle data={data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
                 {data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
@@ -430,29 +430,34 @@ export const SimpleOutcomeView = connect(
     null
 )(SimpleOutcomeViewUnconnected)
 
-//Basic component representing an outcome inside a table
-//The component must keep track of both the completion status it receives from descendant outcomes (for each node) and that it gets from its own table cells (also for each node). The completion status it receives from its own table cells is then combined with that it receives from its descendant outcomes to compute whether or not an outcome is achieved in the grand total column.
-//To receive updates from the child outcomes, the updateParentCompletion function is passed to the child outcomes. This is called any time a table cell is updated, adding the the node-outcome pair. descendant_completion_status has the format {node_id:{outcome_id:degree}}.
+class TableOutcomeBaseUnconnected extends Component{
+    render(){
+        let outcome_tree = JSON.parse(this.props.outcome_tree);
+        return (
+            <TableOutcomeView outcomes_type={this.props.outcomes_type} objectID={outcome_tree.id} outcome_tree={outcome_tree} renderer={this.props.renderer}/>
+        );
+    }
+}
+//Note here we stringify the outcome tree. Likewise the incoming nodecategory has been stringified.
+//This way, this component does NOT rerender every time a change has been made to state, speeding things up.
+//If we did not do this, the props would change (even though the derived object is the same, the ref is not),
+//and this would trickle down too all the sub-components that use nodecategory.
+export const TableOutcomeBase = connect(
+    (state,own_props)=>{
+        let outcome_tree = Constants.createOutcomeNodeBranch(state,own_props.objectID,JSON.parse(own_props.nodecategory));
+        return {outcome_tree:JSON.stringify(outcome_tree),outcomes_type:state.workflow.outcomes_type};
+    },
+    null
+)(TableOutcomeBaseUnconnected)
+
 class TableOutcomeViewUnconnected extends EditableComponentWithComments{
-    
     constructor(props){
         super(props);
         this.objectType="outcome";
-        this.children_block = React.createRef();
-        this.state={descendant_completion_status:{}};
     }
-    
+
     render(){
         let data = this.props.data;
-        
-        var children = data.child_outcome_links.map((outcomeoutcome)=>
-            <TableOutcomeOutcomeView renderer={this.props.renderer} key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.childUpdatedFunction.bind(this)} descendant_completion_status={this.state.descendant_completion_status} outcomes_type={this.props.outcomes_type}/>
-        );
-
-        let outcomeGroups = this.props.nodecategory.map((nodecategory)=>
-            <TableOutcomeGroup renderer={this.props.renderer} nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.childUpdatedFunction.bind(this)} descendant_completion_status={this.state.descendant_completion_status} outcomes_type={this.props.outcomes_type}/>
-                                                                                                 
-        );
                 
         let dropIcon;
         if(data.is_dropped)dropIcon = "droptriangleup";
@@ -460,85 +465,303 @@ class TableOutcomeViewUnconnected extends EditableComponentWithComments{
         
         let droptext;
         if(data.is_dropped)droptext=gettext("hide");
-        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
+        else droptext = gettext("show ")+data.child_outcome_links.length+" "+ngettext("descendant","descendants",data.child_outcome_links.length);
 
         let comments;
         if(this.props.renderer.view_comments)comments=this.addCommenting();
         
-        return(
-            <div
-            class={
-                "outcome depth-"+data.depth+((data.is_dropped && " dropped")||"")
-            }>
-                <div class = "outcome-row">
-                    <div class="outcome-head" 
-                        ref={this.maindiv} 
-                        style={{paddingLeft:data.depth*12}}
-                        onClick={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,this)}}
-                    >
-                        <div class="outcome-title" style={this.get_border_style()}>
-                            <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
-                        </div>
-                        {data.child_outcome_links.length>0 && 
-                            <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
-                                <div class = "outcome-drop-img">
-                                    <img src={iconpath+dropIcon+".svg"}/>
-                                </div>
-                                <div class = "outcome-drop-text">
-                                    {droptext}
-                                </div>
-                            </div>
-                        }
-                        <div class="mouseover-actions">
-                            {comments}
-                        </div>
-                        <div class="side-actions">
-                            <div class="comment-indicator-container"></div>
-                        </div>
-                    </div>
-                    <div class="outcome-cells">
-                        {outcomeGroups}
-                        <div class="table-cell blank-cell"></div>
-                        <TableTotalCell grand_total={true} outcomes_type={this.props.outcomes_type} outcomeID={data.id} descendant_completion_status={this.state.descendant_completion_status}/>
-                    </div>
+        let outcome_head = (
+            <div class="outcome-head" 
+                ref={this.maindiv} 
+                style={{paddingLeft:data.depth*12}}
+                onClick={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,this)}}
+            >
+                <div class="outcome-title" style={this.get_border_style()}>
+                    <OutcomeTitle data={this.props.data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
-                <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
-                    {children}
+                {data.child_outcome_links.length>0 && 
+                    <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+                        <div class = "outcome-drop-img">
+                            <img src={iconpath+dropIcon+".svg"}/>
+                        </div>
+                        <div class = "outcome-drop-text">
+                            {droptext}
+                        </div>
+                    </div>
+                }
+                <div class="mouseover-actions">
+                    {comments}
+                </div>
+                <div class="side-actions">
+                    <div class="comment-indicator-container"></div>
                 </div>
                 {this.addEditable(data,true)}
             </div>
-            
+
+        )
+
+
+        let outcome_row = this.props.outcome_tree.outcomenodes.map(outcomenodegroup=>{
+            let group_row = outcomenodegroup.map(outcomenode=>
+                    <TableCell outcomes_type={this.props.outcomes_type} renderer={this.props.renderer} nodeID={outcomenode.node_id} degree={outcomenode.degree} outcomeID={this.props.outcome_tree.id}/>
+            );
+            group_row.push(
+                <TableCell outcomes_type={this.props.outcomes_type} renderer={this.props.renderer} total={true} degree={outcomenodegroup.total}/>
+            );
+            return (
+                <div class="table-group">
+                    <div class="table-cell blank-cell">
+                    </div>
+                    {group_row}
+                </div>
+            );
+        });
+        outcome_row.push(
+            <div class="table-cell blank-cell">
+            </div>
         );
+        outcome_row.push(
+            <TableCell outcomes_type={this.props.outcomes_type} renderer={this.props.renderer} total={true} grand_total={true} degree={this.props.outcome_tree.outcomenodes.total}/>
+        );
+        let full_row = (
+            <div class = "outcome-row">
+                {outcome_head}
+                <div class="outcome-cells">
+                    {outcome_row}
+                </div>
+            </div>
+        );
+
+        let child_rows;
+        if(data.is_dropped)child_rows = this.props.outcome_tree.children.map(child=><TableOutcomeView outcomes_type={this.props.outcomes_type} objectID={child.id} outcome_tree={child} renderer={this.props.renderer}/>);
+        return [
+            full_row,
+            child_rows
+        ];
     }
-    
-
-    childUpdatedFunction(node_id,outcome_id,value){
-        
-        this.setState((prevState,props)=>{
-            let new_descendant_completion = {...prevState.descendant_completion_status};
-            if(!new_descendant_completion[node_id] && value){
-                new_descendant_completion[node_id]={};
-                new_descendant_completion[node_id][outcome_id]=value;
-            }else if(value){
-                new_descendant_completion[node_id]={...new_descendant_completion[node_id]};
-                new_descendant_completion[node_id][outcome_id]=value;
-            }else{
-                new_descendant_completion[node_id]={...new_descendant_completion[node_id]};
-                delete new_descendant_completion[node_id][outcome_id];
-                if($.isEmptyObject(new_descendant_completion[node_id]))delete new_descendant_completion[node_id];
-            }
-            return {...prevState,descendant_completion_status:new_descendant_completion};
-            
-        });        
-        if(this.props.updateParentCompletion)this.props.updateParentCompletion(node_id,outcome_id,value);
-    }
-
-
 }
 export const TableOutcomeView = connect(
     mapOutcomeStateToProps,
     null
 )(TableOutcomeViewUnconnected)
+
+
+class TableCell extends React.Component{
+    render(){
+        let degree=this.props.degree;
+        let class_name = "table-cell"
+        if(this.props.total) class_name+= " total-cell";
+        if(this.props.grand_total)class_name+=" grand-total-cell";
+
+        let checked=false;
+        if(degree)checked=true;
+        
+        let input;
+        if(!this.props.renderer.read_only && !this.props.total){
+                if(this.props.outcomes_type==0)input=(
+                <input type="checkbox" onChange={this.toggleFunction.bind(this)} checked={checked}/>
+            );
+            else {
+                let button_content="+";
+                if(degree){
+                    if(degree&2)button_content="I";
+                    if(degree&4)button_content="D";
+                    if(degree&8)button_content="A";
+                    if(degree&1)button_content="Y";
+                }
+                input=(
+                    <button onClick={this.clickFunction.bind(this)}>{button_content}</button>
+                );
+            }
+        }
+
+        return (
+            <div class={class_name} ref={this.maindiv}>
+                {this.getContents(degree, !this.props.total)}
+                {input}
+            </div>
+        );
+    }
+
+    toggleFunction(){
+        let props = this.props;
+        let value;
+        if(props.degree)value=0;
+        else value=1;
+        props.renderer.tiny_loader.startLoad();
+        updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
+            (response_data)=>{
+                props.renderer.tiny_loader.endLoad();
+            }
+        );
+    }
+
+    clickFunction(){
+        let props = this.props;
+        let value;
+        if(props.data.degree){
+            value=props.data.degree << 1;
+            if(value>15)value=0;
+        }else value=1;
+        props.renderer.tiny_loader.startLoad();
+        updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
+            (response_data)=>{
+                props.renderer.tiny_loader.endLoad();
+            }
+        );
+    }
+
+    getContents(completion_status,self_completion){
+        if(completion_status===0){
+            return (
+                <img src={iconpath+'nocheck.svg'}/>
+            );
+        }else if(!completion_status){
+            return "";
+        }
+        if(this.props.outcomes_type==0 || completion_status & 1){
+            if(self_completion)return(
+                <img class="self-completed" src={iconpath+'solid_check.svg'}/>
+            );
+            else return (
+                <img src={iconpath+'check.svg'}/>
+            );
+        }
+        let contents=[];
+        if(completion_status & 2){
+            let divclass="";
+            if(self_completion & 2)divclass=" self-completed";
+            contents.push(
+                <div class={"outcome-introduced outcome-degree"+divclass}>I</div>
+            );
+        }
+        if(completion_status & 4){
+            let divclass="";
+            if(self_completion & 4)divclass=" self-completed";
+            contents.push(
+                <div class={"outcome-developed outcome-degree"+divclass}>D</div>
+            );
+        }
+        if(completion_status & 8){
+            let divclass="";
+            if(self_completion & 8)divclass=" self-completed";
+            contents.push(
+                <div class={"outcome-advanced outcome-degree"+divclass}>A</div>
+            );
+        }
+        return contents;
+    }
+}
+
+//Basic component representing an outcome inside a table
+//The component must keep track of both the completion status it receives from descendant outcomes (for each node) and that it gets from its own table cells (also for each node). The completion status it receives from its own table cells is then combined with that it receives from its descendant outcomes to compute whether or not an outcome is achieved in the grand total column.
+//To receive updates from the child outcomes, the updateParentCompletion function is passed to the child outcomes. This is called any time a table cell is updated, adding the the node-outcome pair. descendant_completion_status has the format {node_id:{outcome_id:degree}}.
+// class TableOutcomeViewUnconnected extends EditableComponentWithComments{
+    
+//     constructor(props){
+//         super(props);
+//         this.objectType="outcome";
+//         this.children_block = React.createRef();
+//         this.state={descendant_completion_status:{}};
+//     }
+    
+//     render(){
+//         let data = this.props.data;
+        
+//         var children = data.child_outcome_links.map((outcomeoutcome)=>
+//             <TableOutcomeOutcomeView renderer={this.props.renderer} key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.childUpdatedFunction.bind(this)} descendant_completion_status={this.state.descendant_completion_status} outcomes_type={this.props.outcomes_type}/>
+//         );
+
+//         let outcomeGroups = this.props.nodecategory.map((nodecategory)=>
+//             <TableOutcomeGroup renderer={this.props.renderer} nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.childUpdatedFunction.bind(this)} descendant_completion_status={this.state.descendant_completion_status} outcomes_type={this.props.outcomes_type}/>
+                                                                                                 
+//         );
+                
+//         let dropIcon;
+//         if(data.is_dropped)dropIcon = "droptriangleup";
+//         else dropIcon = "droptriangledown";
+        
+//         let droptext;
+//         if(data.is_dropped)droptext=gettext("hide");
+//         else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
+
+//         let comments;
+//         if(this.props.renderer.view_comments)comments=this.addCommenting();
+        
+//         return(
+//             <div
+//             class={
+//                 "outcome depth-"+data.depth+((data.is_dropped && " dropped")||"")
+//             }>
+//                 <div class = "outcome-row">
+//                     <div class="outcome-head" 
+//                         ref={this.maindiv} 
+//                         style={{paddingLeft:data.depth*12}}
+//                         onClick={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,this)}}
+//                     >
+//                         <div class="outcome-title" style={this.get_border_style()}>
+//                             <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
+//                         </div>
+//                         {data.child_outcome_links.length>0 && 
+//                             <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+//                                 <div class = "outcome-drop-img">
+//                                     <img src={iconpath+dropIcon+".svg"}/>
+//                                 </div>
+//                                 <div class = "outcome-drop-text">
+//                                     {droptext}
+//                                 </div>
+//                             </div>
+//                         }
+//                         <div class="mouseover-actions">
+//                             {comments}
+//                         </div>
+//                         <div class="side-actions">
+//                             <div class="comment-indicator-container"></div>
+//                         </div>
+//                     </div>
+//                     <div class="outcome-cells">
+//                         {outcomeGroups}
+//                         <div class="table-cell blank-cell"></div>
+//                         <TableTotalCell grand_total={true} outcomes_type={this.props.outcomes_type} outcomeID={data.id} descendant_completion_status={this.state.descendant_completion_status}/>
+//                     </div>
+//                 </div>
+//                 <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
+//                     {children}
+//                 </div>
+//                 {this.addEditable(data,true)}
+//             </div>
+            
+//         );
+//     }
+    
+
+//     childUpdatedFunction(node_id,outcome_id,value){
+        
+//         this.setState((prevState,props)=>{
+//             let new_descendant_completion = {...prevState.descendant_completion_status};
+//             if(!new_descendant_completion[node_id] && value){
+//                 new_descendant_completion[node_id]={};
+//                 new_descendant_completion[node_id][outcome_id]=value;
+//             }else if(value){
+//                 new_descendant_completion[node_id]={...new_descendant_completion[node_id]};
+//                 new_descendant_completion[node_id][outcome_id]=value;
+//             }else{
+//                 new_descendant_completion[node_id]={...new_descendant_completion[node_id]};
+//                 delete new_descendant_completion[node_id][outcome_id];
+//                 if($.isEmptyObject(new_descendant_completion[node_id]))delete new_descendant_completion[node_id];
+//             }
+//             return {...prevState,descendant_completion_status:new_descendant_completion};
+            
+//         });        
+//         if(this.props.updateParentCompletion)this.props.updateParentCompletion(node_id,outcome_id,value);
+//     }
+
+
+// }
+// export const TableOutcomeView = connect(
+//     mapOutcomeStateToProps,
+//     null
+// )(TableOutcomeViewUnconnected)
 
 
 /*

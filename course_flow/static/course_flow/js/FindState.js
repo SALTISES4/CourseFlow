@@ -198,7 +198,11 @@ export const getOutcomeByID = (state,id)=>{
             if(!top_rank)top_rank = findTopRank(state,root_outcome);
             titles.push(outcome.title);
             rank.unshift(top_rank);
-            return {data:outcome,outcomenodes:state.outcomenode,rank:rank,titles:titles,object_sets:state.objectset,workflow_id:state.workflow.id};
+            let hovertext = rank.map((rank_i,i)=>
+                rank_i+". "+titles[i]
+            ).join(" -> ");
+            let prefix = rank.join(".");
+            return {data:outcome,hovertext:hovertext,prefix:prefix,object_sets:state.objectset,workflow_id:state.workflow.id};
         }
     }
     console.log("failed to find outcome");
@@ -298,6 +302,37 @@ export const getSortedOutcomeNodesFromNodes = (state,nodes)=>{
             (objectset)=>({
                 objectset:objectset,
                 outcomes:outcomes.filter(outcome=>outcome.sets.indexOf(objectset.id)>=0)
+            })
+        )
+    ];
+    return categories;
+}
+//Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
+export const getSortedOutcomeIDFromOutcomeWorkflowSet = (state,outcomeworkflow_set)=>{
+    let outcomeworkflows = Constants.filterThenSortByID(state.outcomeworkflow,outcomeworkflow_set);
+    let outcome_ids = outcomeworkflows.map(outcomeworkflow=>outcomeworkflow.outcome);
+    let outcomes = Constants.filterThenSortByID(state.outcome,outcome_ids);
+    for(var i=0;i<outcomes.length;i++){
+        outcomes[i].outcomeworkflow=outcomeworkflows[i].id;
+        outcomes[i].through_no_drag=outcomeworkflows[i].no_drag;
+    };
+    if(outcomes.length==0)return outcomes;
+    let base_title = Constants.capWords(gettext("outcomes"));
+    let object_sets = state.objectset.filter(objectset=>objectset.term==outcomes[0].type);
+    if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes}];
+    let uncategorized = outcomes.filter(outcome=>outcome.sets.length==0).map(outcome=>outcome.id);
+    let categories=[];
+    if(uncategorized.length>0)categories=
+        [{
+            objectset:{title:gettext("Uncategorized")},
+            outcomes:uncategorized
+        }];
+    categories = [
+        ...categories,
+        ...object_sets.filter(objectset=>!objectset.hidden).map(
+            (objectset)=>({
+                objectset:objectset,
+                outcomes:outcomes.filter(outcome=>outcome.sets.indexOf(objectset.id)>=0).map(outcome=>outcome.id)
             })
         )
     ];

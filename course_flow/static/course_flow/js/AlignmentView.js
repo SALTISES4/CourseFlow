@@ -28,7 +28,7 @@ class AlignmentView extends React.Component{
                         if(this.state.sort=="outcome" && i==this.state.active && j==this.state.active2)view_class+=" active";
                         return(
                             <div id={"button-outcome-"+outcome.data.id} class={view_class} onClick={this.changeView.bind(this,i,"outcome",j)}>
-                                <OutcomeTitle data={outcome.data} rank={outcome.rank} titles={outcome.titles}/>
+                                <OutcomeTitle data={outcome.data} prefix={outcome.prefix} hovertext={outcome.hovertext}/>
                             </div>
                         );
                     })}

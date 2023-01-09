@@ -1,3 +1,4 @@
+// import * as wdyr from './wdyr';
 import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as Redux from "redux";

@@ -1140,6 +1140,10 @@ ol.children-block{
     background:#E0E0E0;
 }
 
+.outcome-row:not(.node-row):hover .outcome-head{
+    background: #E0E0E0;
+}
+
 .table-cell .outcome-degree{
     display:inline-block;
     font-family:serif;

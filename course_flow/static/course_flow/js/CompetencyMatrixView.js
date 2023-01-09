@@ -133,7 +133,7 @@ class MatrixOutcomeViewUnconnected extends EditableComponentWithComments{
             <div class={class_name}>
                 <div class="table-cell nodewrapper" ref={this.maindiv}>
                     <div style={this.get_border_style()} class="outcome" onClick={onClick}>
-                        <OutcomeTitle data={data} titles={this.props.titles} rank={this.props.rank}/>
+                        <OutcomeTitle data={data}  prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                         {children.length>0 && 
                             <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                                 <div class = "outcome-drop-img">

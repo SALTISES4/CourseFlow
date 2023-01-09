@@ -343,8 +343,6 @@ export class EditableComponentWithActions extends EditableComponentWithComments{
             alert(gettext("You cannot delete the last ")+this.objectType);
             return;
         }
-        let extra_data = this.props.column_order;
-        if(Constants.object_dictionary[this.objectType]=="outcome")extra_data=this.props.outcomenodes;
         if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.object_dictionary[this.objectType]+"?")){
             props.renderer.tiny_loader.startLoad();
             deleteSelf(data.id,Constants.object_dictionary[this.objectType],true,
@@ -1121,13 +1119,9 @@ export class OutcomeTitle extends React.Component{
             text=gettext("Untitled");
         }
         
-        let hovertext = this.props.rank.map((rank,i)=>
-            rank+". "+this.props.titles[i]
-        ).join(" -> ");
-        
         return (
-            <div title={hovertext} class="title-text">
-                <span>{this.props.rank.join(".")+" - "}</span>
+            <div title={this.props.hovertext} class="title-text">
+                <span>{this.props.prefix+" - "}</span>
                 <span dangerouslySetInnerHTML={{ __html: text }}></span>
             </div>
         )

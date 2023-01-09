@@ -2,11 +2,11 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {NodeOutcomeView} from "./NodeView";
-import {TableOutcomeView} from "./OutcomeView";
+import {TableOutcomeBase} from "./OutcomeView";
 import {TableOutcomeWorkflowView} from "./OutcomeWorkflowView"
 import {pushOrCreate, filterThenSortByID, checkSetHidden} from "./Constants"
 import {TableChildWorkflowHeader} from "./OutcomeHorizontalLink";
-import {getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
+import {getSortedOutcomeIDFromOutcomeWorkflowSet} from "./FindState";
 
 
 //Represents the entire outcomeview, barring top level workflow stuff
@@ -17,7 +17,8 @@ class WorkflowOutcomeView extends React.Component{
     }
     
     render(){
-        
+
+        let nodecategory_json = JSON.stringify(this.props.data);
         let has_nodes=false;
         for(let i=0;i<this.props.data.length;i++){
             if(this.props.data[i].nodes.length>0){has_nodes=true;break;}
@@ -60,7 +61,7 @@ class WorkflowOutcomeView extends React.Component{
                         </div>
                     }
                 {category.outcomes.map(outcome=>
-                    <TableOutcomeView renderer={this.props.renderer} objectID={outcome.id} nodecategory={this.props.data} outcomes_type={this.props.outcomes_type}/>
+                    <TableOutcomeBase key={outcome} renderer={this.props.renderer} objectID={outcome} nodecategory={nodecategory_json} outcomes_type={this.props.outcomes_type}/>
                 )}</div>                                       
             );
 
@@ -84,8 +85,7 @@ const mapStateToProps = (state,own_props)=>{
     let object_sets = state.objectset;
     let nodes_ordered = filterThenSortByID(state.node,node_order).filter(node=>!checkSetHidden(node,object_sets));
     
-    let outcomes_sorted = getSortedOutcomesFromOutcomeWorkflowSet(state,state.workflow.outcomeworkflow_set);
-    
+    let outcomes_sorted = getSortedOutcomeIDFromOutcomeWorkflowSet(state,state.workflow.outcomeworkflow_set);
     
     switch(parseInt(state.workflow.outcomes_sort)){
         case 0:

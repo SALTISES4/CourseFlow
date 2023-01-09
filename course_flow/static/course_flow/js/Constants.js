@@ -1,5 +1,5 @@
 import * as React from "react";
-import {getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
+import {getSortedOutcomesFromOutcomeWorkflowSet, getTableOutcomeNodeByID} from "./FindState";
 
 export const lock_times = {
     move:5000,
@@ -295,6 +295,77 @@ export function flattenOutcomeTree(outcomes_tree,array){
     });
 }
 
+export function createOutcomeNodeBranch(state,outcome_id,nodecategory){
+    for(let i=0;i<state.outcome.length;i++){
+        if(state.outcome[i].id==outcome_id){
+            let children;
+            if(state.outcome[i].child_outcome_links.length==0)children=[];
+            else children = filterThenSortByID(state.outcomeoutcome,state.outcome[i].child_outcome_links).map(outcomeoutcome=>createOutcomeNodeBranch(state,outcomeoutcome.child,nodecategory));
+            let outcomenodes = [];
+            for(var ii=0;ii<nodecategory.length;ii++){
+                let category = nodecategory[ii];
+                let outcomenodes_group=[];
+                for(var j=0;j<category.nodes.length;j++){
+                    let node = category.nodes[j];
+                    let outcomenode = getTableOutcomeNodeByID(state,node,outcome_id).data;
+                    if(outcomenode){
+                        outcomenodes_group.push({node_id:node,degree:outcomenode.degree});
+                        continue;
+                    }
+                    //If the outcomenode doesn't exist and there are children, check them.
+                    let added=false;
+                    for(var k=0;k<children.length;k++){
+                        if(children[k].outcomenodes[ii][j].degree!==null){
+                            outcomenodes_group.push({node_id:node,degree:0});
+                            added=true;
+                            break;
+                        }
+                    }
+                    if(!added)outcomenodes_group.push({node_id:node,degree:null});
+                }
+                let total = null;
+                if(children.length>0){
+                    total = 15;
+                    let all_null=true;
+                    for(let k=0;k<children.length;k++){
+                        var child_total = children[k].outcomenodes[ii].total;
+                        if(child_total!==null)all_null=false;
+                        total&=child_total;
+                    }
+                    if(all_null)total=null;
+                }else{
+                    total = outcomenodes_group.reduce((acc,curr)=>{
+                        if(curr.degree===null)return acc;
+                        if(acc===null)return curr.degree;
+                        return acc|curr;
+                    },null);
+                }
+                outcomenodes_group.total=total;
+                outcomenodes.push(outcomenodes_group);
+            }
+            let total=null;
+            if(children.length>0){
+                total = 15;
+                let all_null=true;
+                for(let k=0;k<children.length;k++){
+                    var child_total = children[k].outcomenodes.total;
+                    if(child_total!==null)all_null=false;
+                    total&=child_total;
+                }
+                if(all_null)total=null;
+            }else{
+                total = outcomenodes.reduce((acc,curr)=>{
+                    if(curr.total===null)return acc;
+                    if(acc===null)return curr.total;
+                    return acc|curr.total;
+                },null);
+            }
+            outcomenodes.total=total;
+            return {id:outcome_id, children:children, outcomenodes:outcomenodes};
+        }
+    }
+    return null;
+}
 
 export function getCompletionImg(completion_status,outcomes_type){
     if(outcomes_type==0 || completion_status & 1){
