@@ -16,7 +16,7 @@ class NodeView extends EditableComponentWithActions{
         super(props);
         this.objectType="node";
         this.objectClass=".node";
-        this.state={initial_render:true};
+        this.state={initial_render:true,show_outcomes:false};
     }
     
     render(){
@@ -42,15 +42,21 @@ class NodeView extends EditableComponentWithActions{
                 <AutoLinkView nodeID={this.props.objectID} node_div={this.maindiv}/>
             );
         }
-        let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
-            <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
+        let outcomenodes;
+        if(this.state.show_outcomes)outcomenodes = (
+            <div class={"outcome-node-container column-"+data.column} onMouseLeave={()=>{this.setState({show_outcomes:false});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>
+                {data.outcomenode_unique_set.map((outcomenode)=>
+                    <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
+                )}
+            </div>
         );
+
         let side_actions = [];
-        if(outcomenodes.length>0){
+        if(data.outcomenode_unique_set.length>0){
             side_actions.push(
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes.length}</div>
-                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} onMouseEnter={()=>{this.setState({show_outcomes:true});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{data.outcomenode_unique_set.length}</div>
+                    {outcomenodes}
                 </div>
             );
         }
@@ -367,15 +373,20 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions{
         let renderer = this.props.renderer;
         let selection_manager=renderer.selection_manager;
         
-        let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
-            <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
+        let outcomenodes;
+        if(this.state.show_outcomes)outcomenodes = (
+            <div class={"outcome-node-container column-"+data.column} onMouseLeave={()=>{this.setState({show_outcomes:false});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>
+                {data.outcomenode_unique_set.map((outcomenode)=>
+                    <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
+                )}
+            </div>
         );
         let side_actions=[];
-        if(outcomenodes.length>0){
+        if(data.outcomenode_unique_set.length>0){
             side_actions.push(
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes.length}</div>
-                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} onMouseEnter={()=>{this.setState({show_outcomes:true});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{data.outcomenode_unique_set.length}</div>
+                    {outcomenodes}
                 </div>
             );
         }

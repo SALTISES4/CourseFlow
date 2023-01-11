@@ -18,7 +18,8 @@ export class Component extends React.Component{
 
 //Extends the react component to add a few features that are used in a large number of components
 export class EditableComponent extends Component{
-    toggleDrop(){
+    toggleDrop(evt){
+        evt.stopPropagation();
         toggleDrop(this.props.objectID,Constants.object_dictionary[this.objectType],!this.props.data.is_dropped,this.props.dispatch,this.props.data.depth);
     }
 

@@ -41,7 +41,7 @@ export default connect(
 )(NodeWeekView)
 
 //Basic component to represent a NodeWeek for comparisons
-class NodeWeekComparisonViewUnconnected extends React.Component{
+class NodeWeekComparisonViewUnconnected extends NodeWeekView{
     getNode(){
         let data = this.props.data;
         return (

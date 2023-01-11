@@ -4222,7 +4222,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-# favourite/unfavourite a project or workflow or outcome for a user
+# favourite/unfavourite a project or workflow for a user
 @user_can_view(False)
 def toggle_favourite(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -4230,7 +4230,7 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
     favourite = json.loads(request.POST.get("favourite"))
     response = {}
     try:
-        item = get_model_from_str(objectType).objects.get(id=object_id)
+        item = get_model_from_str(objectType).objects.get(pk=object_id)
         Favourite.objects.filter(
             user=request.user,
             content_type=ContentType.objects.get_for_model(item),

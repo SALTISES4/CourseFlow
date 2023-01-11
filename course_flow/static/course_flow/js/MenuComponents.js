@@ -219,7 +219,7 @@ export class WorkflowForMenu extends React.Component{
         var buttons=[];
         let favourite_img = "no_favourite.svg";
         if(this.state.favourite)favourite_img = "favourite.svg";
-        buttons.push(
+        if(this.props.workflow_data.type!="liveproject")buttons.push(
             <div class="workflow-toggle-favourite hover-shade" onClick={(evt)=>{
                 toggleFavourite(this.props.workflow_data.id,this.props.workflow_data.type,(!this.state.favourite));
                 let state=this.state;

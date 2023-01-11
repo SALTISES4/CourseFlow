@@ -2229,6 +2229,7 @@ circle.mouseover{
 .comparison-view .workflow-wrapper{
     margin:0px;
     width:260px;
+    position: relative;
 }
 
 .comparison-view .workflow-for-menu{

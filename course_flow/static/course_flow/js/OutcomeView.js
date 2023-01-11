@@ -23,20 +23,27 @@ class OutcomeView extends EditableComponentWithSorting{
     render(){
         let data = this.props.data;
         if(Constants.checkSetHidden(data,this.props.object_sets))return null;
-        var children = data.child_outcome_links.map((outcomeoutcome)=>
+        var children;
+        if(data.is_dropped)children = data.child_outcome_links.map((outcomeoutcome)=>
             <OutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer} show_horizontal={this.props.show_horizontal} parent_depth={this.props.data.depth}/>
         );
         
         
-        let outcomehorizontallinks = data.outcome_horizontal_links_unique.map((horizontal_link)=>
-            <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link} renderer={this.props.renderer}/>
+        let outcomehorizontallinks;
+        if(this.state.show_horizontal_links)outcomehorizontallinks = (
+            <div class={"outcome-node-container"} onMouseLeave={()=>{this.setState({show_horizontal_links:false});}}>{
+                data.outcome_horizontal_links_unique.map((horizontal_link)=>
+                    <OutcomeHorizontalLinkView key={horizontal_link} objectID={horizontal_link} renderer={this.props.renderer}/>
+                )
+            }</div>
         );
+
         let side_actions = [];
-        if(this.props.show_horizontal && outcomehorizontallinks.length>0){
+        if(this.props.show_horizontal && data.outcome_horizontal_links_unique.length>0){
             side_actions.push(
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number"}>...</div>
-                    <div class={"outcome-node-container"}>{outcomehorizontallinks}</div>
+                    <div class={"outcome-node-indicator-number"} onMouseEnter={()=>{this.setState({show_horizontal_links:true});}}>{data.outcome_horizontal_links_unique.length}</div>
+                    {outcomehorizontallinks}
                 </div>
             );
         }
@@ -56,9 +63,9 @@ class OutcomeView extends EditableComponentWithSorting{
         
         let droptext;
         if(data.is_dropped)droptext=gettext("hide");
-        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
+        else droptext = gettext("show ")+data.child_outcome_links.length+" "+ngettext("descendant","descendants",data.child_outcome_links.length);
         
-        if(!this.props.renderer.read_only && data.depth<2 && children.length==0)children.push(
+        if(!this.props.renderer.read_only && data.depth<2 && data.child_outcome_links.length==0 && children)children.push(
             <div class="outcome-outcome" style={{height:"5px"}}></div>
         );
         
@@ -217,7 +224,8 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
     render(){
         let data = this.props.data;
         if(Constants.checkSetHidden(data,this.props.object_sets))return null;
-        var children = data.child_outcome_links.map((outcomeoutcome)=>
+        var children;
+        if(this.state.is_dropped) children = data.child_outcome_links.map((outcomeoutcome)=>
             <OutcomeBarOutcomeOutcomeView key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} renderer={this.props.renderer}/>
         );
                 
@@ -227,7 +235,7 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
         
         let droptext;
         if(this.state.is_dropped)droptext=gettext("hide");
-        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
+        else droptext = gettext("show ")+data.child_outcome_links.length+" "+ngettext("descendant","descendants",data.child_outcome_links.length);
         
         return(
             <div
@@ -346,7 +354,8 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments{
     render(){
         let data = this.props.data;
         if(Constants.checkSetHidden(data,this.props.object_sets))return null;
-        var children = data.child_outcome_links.map((outcomeoutcome)=>
+        var children;
+        if(this.state.is_dropped) children = data.child_outcome_links.map((outcomeoutcome)=>
             this.getChildType(outcomeoutcome)
         );
         
@@ -357,7 +366,7 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments{
         
         let droptext;
         if(this.state.is_dropped)droptext=gettext("hide");
-        else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
+        else droptext = gettext("show ")+data.child_outcome_links.length+" "+ngettext("descendant","descendants",data.child_outcome_links.length);
         
         let comments;
         if(this.props.renderer.view_comments)comments=this.addCommenting();
