@@ -63,18 +63,22 @@ class NodeView extends EditableComponentWithActions{
         let lefticon;
         let righticon;
         if(data.context_classification>0)lefticon=(
-            <img title={
-                renderer.context_choices.find(
-                    (obj)=>obj.type==data.context_classification
-                ).name
-            } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+            <div class = "node-icon">
+                <img title={
+                    renderer.context_choices.find(
+                        (obj)=>obj.type==data.context_classification
+                    ).name
+                } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+            </div>
         )
         if(data.task_classification>0)righticon=(
-            <img title={
-                renderer.task_choices.find(
-                    (obj)=>obj.type==data.task_classification
-                ).name
-            }src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+            <div class = "node-icon">
+                <img title={
+                    renderer.task_choices.find(
+                        (obj)=>obj.type==data.task_classification
+                    ).name
+                }src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+            </div>
         )
         let dropIcon;
         if(data.is_dropped)dropIcon = "droptriangleup";
@@ -137,13 +141,9 @@ class NodeView extends EditableComponentWithActions{
                 onClick={(evt)=>selection_manager.changeSelection(evt,this)}
             >
                 <div class = "node-top-row">
-                    <div class = "node-icon">
-                        {lefticon}
-                    </div>
+                    {lefticon}
                     {titleText}
-                    <div class = "node-icon">
-                        {righticon}
-                    </div>
+                    {righticon}
                 </div>
                 {linkIcon}
                 <div class = "node-details">

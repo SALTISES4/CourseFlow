@@ -321,6 +321,10 @@ button, input[type="submit"]{
     border:2px solid white;
 }
 
+.node-week:first-child {
+    padding-top: 5px;
+}
+
 .node-week{
     width:100%;
     display:block;
@@ -416,37 +420,30 @@ button, input[type="submit"]{
     background:white;
     margin-top:5px;
     width:100%;
-}
-
-.node-icon{
-    display:inline-block;
-    width:24px;
-    height:24px;
-    text-align: center;
-    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .node-icon img{
-    width:100%;
+    width:24px;
     vertical-align:middle;
 }
+
 
 .node.program .node-icon{
     width:0;
 }
 
 .node-title{
-    padding-left:5px;
-    padding-right:5px;
-    display:inline-block;
     overflow-x:hidden;
-    width:calc(100% - 48px);
     text-align: center;
     min-height:20px;
     font-weight:600;
     box-sizing:border-box;
     font-size:12px;
     vertical-align:middle;
+    flex-grow: 1;
 }
 
 .node.program .node-title{
