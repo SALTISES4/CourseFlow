@@ -41,16 +41,16 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
         let workflow_content;
         if(renderer.view_type=="outcometable"){
             workflow_content=(
-                <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
+                <WorkflowTableView data={data} renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[1];
+            this.allowed_tabs=[4];
         }
-        else if(renderer.view_type=="competencymatrix"){
-            workflow_content=(
-                <CompetencyMatrixView renderer={renderer} view_type={renderer.view_type}/>
-            );
-            this.allowed_tabs=[];
-        }
+        // else if(renderer.view_type=="competencymatrix"){
+        //     workflow_content=(
+        //         <CompetencyMatrixView renderer={renderer} view_type={renderer.view_type}/>
+        //     );
+        //     this.allowed_tabs=[];
+        // }
         else if(renderer.view_type=="outcomeedit"){
             workflow_content=(
                 <OutcomeEditView renderer={renderer}/>
@@ -58,23 +58,23 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
             if(data.type=="program")this.allowed_tabs=[];
             else this.allowed_tabs=[2,4];
         }
-        else if(renderer.view_type=="horizontaloutcometable"){
-            workflow_content=(
-                <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
-            );
-            this.allowed_tabs=[1];
-        }
+        // else if(renderer.view_type=="horizontaloutcometable"){
+        //     workflow_content=(
+        //         <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
+        //     );
+        //     this.allowed_tabs=[1];
+        // }
         else if(renderer.view_type=="alignmentanalysis"){
             workflow_content=(
                 <AlignmentView renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[];
+            this.allowed_tabs=[4];
         }
         else if(renderer.view_type=="grid"){
             workflow_content=(
                 <GridView renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[];
+            this.allowed_tabs=[4];
         }
         else{
             workflow_content = (
@@ -89,7 +89,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
             {type:"outcomeedit",name:Constants.capWords(gettext("View")+" "+gettext(data.type+" outcomes")),disabled:[]},
             {type:"outcometable",name:Constants.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
             {type:"alignmentanalysis",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
-            {type:"competencymatrix",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
+            //{type:"competencymatrix",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
             {type:"grid",name:gettext("Grid View"),disabled:["activity", "course"]},
             //{type:"horizontaloutcometable",name:gettext("Alignment Table"),disabled:["activity"]}
         ].filter(item=>item.disabled.indexOf(data.type)==-1).map(
@@ -221,7 +221,7 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
                         <RestoreBar renderer={this.props.renderer}/>
                     }
                     {!data.is_strategy &&
-                        <ViewBar renderer={this.props.renderer}/>
+                        <ViewBar data={this.props.data} renderer={this.props.renderer}/>
                     }
                 </div>
             </div>
@@ -413,10 +413,46 @@ export const WorkflowView =  connect(
     null
 )(WorkflowViewUnconnected)
 
+class WorkflowTableView extends React.Component{
+    render(){
+        let data=this.props.data;
+        if(data.table_type==1)return <CompetencyMatrixView view_type={this.props.view_type} renderer={this.props.renderer}/>
+        else return <WorkflowView_Outcome view_type={this.props.view_type} renderer={this.props.renderer}/>
+    }
+}
 
 class ViewBarUnconnected extends React.Component{
      
     render(){
+        let data=this.props.data;
+        let sort_block;
+        if(this.props.renderer.view_type=="outcometable"||this.props.renderer.view_type=="horizontaloutcometable"){        
+            let table_type_value=data.table_type || 0;
+            let sort_type=(
+                <div class="node-bar-sort-block">
+                    {this.props.renderer.outcome_sort_choices.map((choice)=>
+                        <div><input disabled={(table_type_value==1 || (data.type=="program" && choice.type>1))} type="radio" id={"sort_type_choice"+choice.type} name={"sort_type_choice"+choice.type} value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.changeSort.bind(this)}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></div>
+
+                    )}
+                </div>
+            );
+            let table_type=(
+                <div class="node-bar-sort-block">
+                    <div><input type="radio" id={"table_type_table"} name="table_type_table" value={0} checked={(table_type_value==0)} onChange={this.changeTableType.bind(this)}/><label for="table_type_table">{gettext("Table Style")}</label></div>
+                    <div><input type="radio" id={"table_type_matrix"} name="table_type_matrix" value={1} checked={(table_type_value==1)} onChange={this.changeTableType.bind(this)}/><label for="table_type_matrix">{gettext("Competency Matrix Style")}</label></div>
+                </div>
+            );
+            sort_block = (
+                <div>
+                    <h4>{gettext("Sort Nodes")}:</h4>
+                    {sort_type}
+                    <h4>{gettext("Table Type")}:</h4>
+                    {table_type}
+                </div>
+            );
+        }
+
+
         let sets=(
             <div class="node-bar-sort-block">
                 {this.props.object_sets.sort((a,b)=>{
@@ -433,6 +469,7 @@ class ViewBarUnconnected extends React.Component{
         );
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
+                {sort_block}
                 <h4>{gettext("Object Sets")+":"}</h4>
                 {sets}
             </div>
@@ -441,6 +478,14 @@ class ViewBarUnconnected extends React.Component{
     
     toggleHidden(id,hidden){
         this.props.dispatch(toggleObjectSet(id,hidden));
+    }
+
+
+    changeSort(evt){
+        this.props.dispatch(changeField(this.props.data.id,"workflow",{"outcomes_sort":evt.target.value}));
+    }
+    changeTableType(evt){
+        this.props.dispatch(changeField(this.props.data.id,"workflow",{"table_type":evt.target.value}));
     }
 }
 export const ViewBar =  connect(
@@ -460,23 +505,6 @@ class NodeBarUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         
-        
-        if(this.props.renderer.view_type=="outcometable"||this.props.renderer.view_type=="horizontaloutcometable"){
-            sort_type=(
-                <div class="node-bar-sort-block">
-                    {this.props.renderer.outcome_sort_choices.map((choice)=>
-                        <div><input type="radio" id={"sort_type_choice"+choice.type} name="sort_type" value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.changeSort.bind(this)}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></div>
-
-                    )}
-                </div>
-            );
-            return reactDom.createPortal(
-                <div id="node-bar-workflow" class="right-panel-inner">
-                    <h4>Sort Nodes:</h4>
-                    {sort_type}
-                </div>
-            ,$("#node-bar")[0]);
-        }
         
         
         var nodebarcolumnworkflows = data.columnworkflow_set.map((columnworkflow)=>
@@ -535,9 +563,6 @@ class NodeBarUnconnected extends React.Component{
         this.props.weeks.forEach(week=>toggleDrop(week.id,"week",false,this.props.dispatch));
     }
 
-    changeSort(evt){
-        this.props.dispatch(changeField(this.props.data.id,"workflow",{"outcomes_sort":evt.target.value}));
-    }
     
 }
 const mapNodeBarStateToProps = state=>({
@@ -731,8 +756,6 @@ class WorkflowView_Outcome_Unconnected extends React.Component{
             </div>
         );
     }
-    
-    
 }
 export const WorkflowView_Outcome = connect(
     mapWorkflowStateToProps,

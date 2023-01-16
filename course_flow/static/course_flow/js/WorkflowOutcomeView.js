@@ -9,6 +9,7 @@ import {TableChildWorkflowHeader} from "./OutcomeHorizontalLink";
 import {getSortedOutcomeIDFromOutcomeWorkflowSet} from "./FindState";
 
 
+
 //Represents the entire outcomeview, barring top level workflow stuff
 class WorkflowOutcomeView extends React.Component{
     constructor(props){
@@ -33,7 +34,8 @@ class WorkflowOutcomeView extends React.Component{
         if(outcomes_sorted.length==0 || !has_nodes){
             let text;
             if(this.props.renderer.view_type=="outcometable")text=gettext("This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.");
-            else text = gettext("This view renders a table showing the relationships between this workflow's outcomes and the outcomes of their linked workflows. To use this feature, you must link the nodes in this workflow to child workflows (ex. program nodes to course workflows) and ensure that those child workflows have their own sets of outcomes.");
+            
+            //else text = gettext("This view renders a table showing the relationships between this workflow's outcomes and the outcomes of their linked workflows. To use this feature, you must link the nodes in this workflow to child workflows (ex. program nodes to course workflows) and ensure that those child workflows have their own sets of outcomes.");
             return(
                 <div class="emptytext">
                     {text}
@@ -41,22 +43,13 @@ class WorkflowOutcomeView extends React.Component{
             );
         }else{
             let nodes;
-            if(this.props.renderer.view_type=="outcometable")nodes = nodecategory.map((nodecategory)=>
+            nodes = nodecategory.map((nodecategory)=>
                 <div class="table-group">
-                    <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
+                    <div class="table-cell nodewrapper blank-cell"></div>
+                    <div class="table-cell nodewrapper total-cell"><div class="node-category-header">{nodecategory.title}</div></div>
                     {nodecategory.nodes.map((node)=>
                             <NodeOutcomeView renderer={this.props.renderer} objectID={node}/>
                     )}
-                    <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
-                </div>
-            );
-            else nodes = nodecategory.map((nodecategory)=>
-                <div class="table-group">
-                    <div class="table-cell nodewrapper blank-cell"><div class="node-category-header">{nodecategory.title}</div></div>
-                    {nodecategory.nodes.map((node)=>
-                        <TableChildWorkflowHeader renderer={this.props.renderer} nodeID={node}/>
-                    )}
-                    <div class="table-cell nodewrapper total-cell"><div class="total-header">Total</div></div>
                 </div>
             );
             let outcomes = outcomes_sorted.map((category)=>
@@ -67,13 +60,13 @@ class WorkflowOutcomeView extends React.Component{
                         </div>
                     }
                 {category.outcomes.map(outcome=>
-                    <TableOutcomeBase key={outcome} renderer={this.props.renderer} objectID={outcome} nodecategory={nodecategory} outcomes_type={this.props.outcomes_type}/>
+                    <TableOutcomeBase key={outcome} renderer={this.props.renderer} objectID={outcome} nodecategory={nodecategory} outcomes_type={this.props.outcomes_type} type="outcome_table"/>
                 )}</div>                                       
             );
 
             return(
                 <div class="outcome-table node-rows">
-                    <div class="outcome-row node-row"><div class="outcome-head empty"></div><div class="outcome-cells">{nodes}</div>
+                    <div class="outcome-row node-row"><div class="outcome-wrapper"><div class="outcome-head empty"></div></div><div class="outcome-cells">{nodes}</div>
                     <div class="table-cell blank-cell"><div class="node-category-header"></div></div><div class="table-cell total-cell grand-total-cell"><div class="total-header">Grand Total</div></div></div>
                     {outcomes}
                 </div>
@@ -115,8 +108,8 @@ class WorkflowOutcomeView extends React.Component{
                 }
                 return columns_ordered.map((column,index)=>{return {title:(column.title||column.column_type_display),nodes:(nodes_by_column[column_order[index]]||[])};});
             case 2:
-                var workflow_type = ["activity","course","program"].indexOf(state.workflow.type)
-                let task_ordered = own_props.renderer.task_choices.filter((x)=> (x.type==0 || (x.type>100*workflow_type &&x.type<100*(workflow_type+1))));
+                var workflow_type = ["activity","course","program"].indexOf(this.props.workflow_type)
+                let task_ordered = this.props.renderer.task_choices.filter((x)=> (x.type==0 || (x.type>100*workflow_type &&x.type<100*(workflow_type+1))));
                 let nodes_by_task={};
                 for(let i=0;i<nodes_ordered.length;i++){
                     let node = nodes_ordered[i];
@@ -124,8 +117,8 @@ class WorkflowOutcomeView extends React.Component{
                 }
                 return task_ordered.map((task)=>{return {title:task.name,nodes:(nodes_by_task[task.type]||[])};});
             case 3:
-                var workflow_type = ["activity","course","program"].indexOf(state.workflow.type)
-                let context_ordered = own_props.renderer.context_choices.filter((x)=> (x.type==0 || (x.type>100*workflow_type &&x.type<100*(workflow_type+1))));
+                var workflow_type = ["activity","course","program"].indexOf(this.props.workflow_type)
+                let context_ordered = this.props.renderer.context_choices.filter((x)=> (x.type==0 || (x.type>100*workflow_type &&x.type<100*(workflow_type+1))));
                 let nodes_by_context={};
                 for(let i=0;i<nodes_ordered.length;i++){
                     let node = nodes_ordered[i];
@@ -138,6 +131,7 @@ class WorkflowOutcomeView extends React.Component{
 }
 const mapStateToProps = (state,own_props)=>{
     return {
+        workflow_type:state.workflow.type,
         weekworkflows:state.weekworkflow,
         weeks:state.week,
         nodeweeks:state.nodeweek,
@@ -145,7 +139,8 @@ const mapStateToProps = (state,own_props)=>{
         object_sets:state.objectset,
         weekworkflow_order:state.workflow.weekworkflow_set,
         columnworkflow_order:state.workflow.columnworkflow_set,
-        columnworkflow:state.workflow.columnworkflow,
+        columnworkflows:state.columnworkflow,
+        columns:state.column,
         outcomes_sort:state.workflow.outcomes_sort,
         outcomeworkflow_order:state.workflow.outcomeworkflow_set,
         outcomeworkflows:state.outcomeworkflow,

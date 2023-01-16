@@ -5733,6 +5733,11 @@ class LiveProjectDetailView(LoginRequiredMixin, UserEnrolledMixin, DetailView):
             )
             .decode("utf-8")
         )
+        context["user_permission"] = (
+            JSONRenderer()
+            .render(get_user_permission(project, self.request.user))
+            .decode("utf-8")
+        )
         return context
 
 

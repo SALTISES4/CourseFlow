@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ActionButton, EditableComponentWithActions, EditableComponentWithComments, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON";
+import {ActionButton, Component, EditableComponentWithActions, EditableComponentWithComments, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON";
 import NodeLinkView from "./NodeLinkView";
 import {AssignmentBox} from "./LiveAssignmentView"
 import OutcomeNodeView from "./OutcomeNode";
@@ -297,7 +297,7 @@ export default connect(
 
 
 //Basic component to represent a node in the outcomes table
-class NodeOutcomeViewUnconnected extends EditableComponentWithComments{
+class NodeOutcomeViewUnconnected extends Component{
     constructor(props){
         super(props);
         this.objectType="node";
@@ -315,15 +315,15 @@ class NodeOutcomeViewUnconnected extends EditableComponentWithComments{
         let selection_manager = this.props.renderer.selection_manager;
         
         let style = {backgroundColor:Constants.getColumnColour(this.props.column)}
-        if(data.lock){
-            style.outline="2px solid "+data.lock.user_colour;
-        }
+        // if(data.lock){
+        //     style.outline="2px solid "+data.lock.user_colour;
+        // }
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
         let comments;
-        if(this.props.renderer.view_comments)comments=this.addCommenting();
+        // if(this.props.renderer.view_comments)comments=this.addCommenting();
         
         return (
             <div ref={this.maindiv} class="table-cell nodewrapper">
@@ -332,12 +332,12 @@ class NodeOutcomeViewUnconnected extends EditableComponentWithComments{
                     class={css_class}
                     style={style}
                     id={data.id} 
-                    onClick={(evt)=>selection_manager.changeSelection(evt,this)}
+                    // onClick={(evt)=>selection_manager.changeSelection(evt,this)}
                 >
                     <div class = "node-top-row">
                         <NodeTitle data={data}/>
                     </div>
-                    {this.addEditable(data_override,true)}
+                    {/*this.addEditable(data_override,true)*/}
                     <div class="mouseover-actions">
                         {comments}
                     </div>

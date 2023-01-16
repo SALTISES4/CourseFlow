@@ -16,6 +16,14 @@ export class LiveProjectMenu extends React.Component{
     render(){
         let data = this.props.project;
 
+        let overflow_links = [];
+        if(this.props.renderer.user_permission > 0){
+            overflow_links.push(
+                <a id="project" class="hover-shade" href={update_path.project.replace("0",data.id)}>{gettext("Edit Project")}</a>
+            );
+        }
+
+
         let view_buttons = this.getViewButtons().map(
             (item)=>{
                 let view_class = "hover-shade";
@@ -39,6 +47,10 @@ export class LiveProjectMenu extends React.Component{
                 <div class = "workflow-container">
                     {this.getContent()}
                 </div>
+                {reactDom.createPortal(
+                    overflow_links,
+                    $("#overflow-links")[0]
+                )}
             </div>
         );
     }

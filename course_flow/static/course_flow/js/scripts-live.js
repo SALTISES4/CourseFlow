@@ -12,6 +12,7 @@ export class LiveProjectRenderer{
         this.live_project_data = live_project_data;
         this.project_data = project_data;
         this.user_role = user_role;
+        this.user_permission = user_permission;
     }
     
     render(container){

@@ -450,8 +450,16 @@ class TableOutcomeBaseUnconnected extends Component{
         if(this.outcome_tree_json == outcome_tree_json)outcome_tree=this.outcome_tree;
         else{this.outcome_tree=outcome_tree;this.outcome_tree_json=outcome_tree_json}
 
-        return (
+        return this.getOutcomeView(outcome_tree);
+    }
+
+
+    getOutcomeView(outcome_tree){
+        if(this.props.type=="outcome_table")return (
             <TableOutcomeView outcomes_type={this.props.outcomes_type} objectID={outcome_tree.id} outcome_tree={this.outcome_tree} renderer={this.props.renderer}/>
+        );
+        else return(
+            <MatrixOutcomeView outcomes_type={this.props.outcomes_type} objectID={outcome_tree.id} outcome_tree={this.outcome_tree} renderer={this.props.renderer}/>
         );
     }
 
@@ -463,53 +471,57 @@ export const TableOutcomeBase = connect(
     null
 )(TableOutcomeBaseUnconnected)
 
-class TableOutcomeViewUnconnected extends EditableComponentWithComments{
+class TableOutcomeViewUnconnected extends Component{
     constructor(props){
         super(props);
         this.objectType="outcome";
     }
 
     render(){
-        console.log("a table outcome is rerendering");
         let data = this.props.data;
-                
+        let is_dropped = this.getIsDropped();
         let dropIcon;
-        if(data.is_dropped)dropIcon = "droptriangleup";
+        if(is_dropped)dropIcon = "droptriangleup";
         else dropIcon = "droptriangledown";
         
         let droptext;
-        if(data.is_dropped)droptext=gettext("hide");
+        if(is_dropped)droptext=gettext("hide");
         else droptext = gettext("show ")+data.child_outcome_links.length+" "+ngettext("descendant","descendants",data.child_outcome_links.length);
 
         let comments;
-        if(this.props.renderer.view_comments)comments=this.addCommenting();
+        // if(this.props.renderer.view_comments)comments=this.addCommenting();
+
+        let style;
+        // let style=this.get_border_style();
         
         let outcome_head = (
-            <div class="outcome-head" 
-                ref={this.maindiv} 
-                style={{paddingLeft:data.depth*12}}
-                onClick={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,this)}}
-            >
-                <div class="outcome-title" style={this.get_border_style()}>
-                    <OutcomeTitle data={this.props.data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
-                </div>
-                {data.child_outcome_links.length>0 && 
-                    <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
-                        <div class = "outcome-drop-img">
-                            <img src={iconpath+dropIcon+".svg"}/>
-                        </div>
-                        <div class = "outcome-drop-text">
-                            {droptext}
-                        </div>
+            <div class="outcome-wrapper">
+                <div class="outcome-head" 
+                    ref={this.maindiv} 
+                    style={{paddingLeft:data.depth*12}}
+                    // onClick={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,this)}}
+                >
+                    <div class="outcome-title" style={style}>
+                        <OutcomeTitle data={this.props.data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                     </div>
-                }
-                <div class="mouseover-actions">
-                    {comments}
+                    {data.child_outcome_links.length>0 && 
+                        <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+                            <div class = "outcome-drop-img">
+                                <img src={iconpath+dropIcon+".svg"}/>
+                            </div>
+                            <div class = "outcome-drop-text">
+                                {droptext}
+                            </div>
+                        </div>
+                    }
+                    <div class="mouseover-actions">
+                        {comments}
+                    </div>
+                    <div class="side-actions">
+                        <div class="comment-indicator-container"></div>
+                    </div>
+                  {/*  {this.addEditable(data,true)}*/}
                 </div>
-                <div class="side-actions">
-                    <div class="comment-indicator-container"></div>
-                </div>
-                {this.addEditable(data,true)}
             </div>
 
         )
@@ -519,7 +531,7 @@ class TableOutcomeViewUnconnected extends EditableComponentWithComments{
             let group_row = outcomenodegroup.map(outcomenode=>
                     <TableCell outcomes_type={this.props.outcomes_type} renderer={this.props.renderer} nodeID={outcomenode.node_id} degree={outcomenode.degree} outcomeID={this.props.outcome_tree.id}/>
             );
-            group_row.push(
+            group_row.unshift(
                 <TableCell outcomes_type={this.props.outcomes_type} renderer={this.props.renderer} total={true} degree={outcomenodegroup.total}/>
             );
             return (
@@ -538,7 +550,7 @@ class TableOutcomeViewUnconnected extends EditableComponentWithComments{
             <TableCell outcomes_type={this.props.outcomes_type} renderer={this.props.renderer} total={true} grand_total={true} degree={this.props.outcome_tree.outcomenodes.total}/>
         );
         let full_row = (
-            <div class = "outcome-row">
+            <div class = {"outcome-row depth-"+data.depth}>
                 {outcome_head}
                 <div class="outcome-cells">
                     {outcome_row}
@@ -547,17 +559,47 @@ class TableOutcomeViewUnconnected extends EditableComponentWithComments{
         );
 
         let child_rows;
-        if(data.is_dropped)child_rows = this.props.outcome_tree.children.map(child=><TableOutcomeView outcomes_type={this.props.outcomes_type} objectID={child.id} outcome_tree={child} renderer={this.props.renderer}/>);
+        if(is_dropped)child_rows = this.props.outcome_tree.children.map(child=>this.getChildOutcomeView(child));
         return [
             full_row,
             child_rows
         ];
+    }
+
+    getIsDropped(){
+        return this.props.data.is_dropped;
+    }
+
+    getChildOutcomeView(child){
+        return (
+            <TableOutcomeView outcomes_type={this.props.outcomes_type} objectID={child.id} outcome_tree={child} renderer={this.props.renderer}/>
+        );
     }
 }
 export const TableOutcomeView = connect(
     mapOutcomeStateToProps,
     null
 )(TableOutcomeViewUnconnected)
+
+class MatrixOutcomeViewUnconnected extends TableOutcomeViewUnconnected{
+    toggleDrop(){
+        this.setState({is_dropped:(!this.state.is_dropped)});
+    }
+
+    getIsDropped(){
+        return this.state.is_dropped;
+    }
+
+    getChildOutcomeView(child){
+        return (
+            <MatrixOutcomeView outcomes_type={this.props.outcomes_type} objectID={child.id} outcome_tree={child} renderer={this.props.renderer}/>
+        );
+    }
+}
+export const MatrixOutcomeView = connect(
+    mapOutcomeStateToProps,
+    null
+)(MatrixOutcomeViewUnconnected)
 
 
 class TableCell extends React.Component{
@@ -576,15 +618,25 @@ class TableCell extends React.Component{
                 <input type="checkbox" onChange={this.toggleFunction.bind(this)} checked={checked}/>
             );
             else {
-                let button_content="+";
-                if(degree){
-                    if(degree&2)button_content="I";
-                    if(degree&4)button_content="D";
-                    if(degree&8)button_content="A";
-                    if(degree&1)button_content="Y";
-                }
+                // let button_content="+";
+                // if(degree){
+                //     if(degree&2)button_content="I";
+                //     if(degree&4)button_content="D";
+                //     if(degree&8)button_content="A";
+                //     if(degree&1)button_content="Y";
+                // }
                 input=(
-                    <button onClick={this.clickFunction.bind(this)}>{button_content}</button>
+                    <select value={degree} onChange={this.changeFunction.bind(this)}>
+                        <option value={0}>{"-"}</option>
+                        <option value={1}>{"C"}</option>
+                        <option value={2}>{"I"}</option>
+                        <option value={4}>{"D"}</option>
+                        <option value={8}>{"A"}</option>
+                        <option value={6}>{"ID"}</option>
+                        <option value={10}>{"IA"}</option>
+                        <option value={12}>{"DA"}</option>
+                        <option value={14}>{"IDA"}</option>
+                    </select>
                 );
             }
         }
@@ -610,13 +662,23 @@ class TableCell extends React.Component{
         );
     }
 
-    clickFunction(){
+    // clickFunction(){
+    //     let props = this.props;
+    //     let value;
+    //     if(props.data.degree){
+    //         value=props.data.degree << 1;
+    //         if(value>15)value=0;
+    //     }else value=1;
+    //     props.renderer.tiny_loader.startLoad();
+    //     updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
+    //         (response_data)=>{
+    //             props.renderer.tiny_loader.endLoad();
+    //         }
+    //     );
+    // }
+    changeFunction(evt){
         let props = this.props;
-        let value;
-        if(props.data.degree){
-            value=props.data.degree << 1;
-            if(value>15)value=0;
-        }else value=1;
+        let value = evt.target.value;
         props.renderer.tiny_loader.startLoad();
         updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
             (response_data)=>{

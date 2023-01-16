@@ -797,12 +797,12 @@ ol.children-block{
     top:0px;
     right:-22px;
 }
-
+/*
 .competency-matrix .nodewrapper .side-actions{
     top: -202px;
     left: 0px;
     right: auto;
-}
+}*/
 
 .outcome-table .nodewrapper .side-actions{
     top: -160px;
@@ -951,7 +951,7 @@ ol.children-block{
 
 .outcome-table .outcome-drop{
     margin-top:-2px;
-    margin-left:-5px;
+    margin-left:-2px;
 }
 
 .outcome-table .node-row .outcome-head{
@@ -962,16 +962,19 @@ ol.children-block{
     z-index:1;
 }
 
-.outcome-table .table-cell{
+.outcome-table .table-cell, .competency-matrix .table-cell{
     width:30px;
     min-height:24px;
-    height:100%;
-    display:inline-block;
-    border-left:2px solid black;
+    border-left:1px solid black;
     vertical-align:top;
     text-align:center;
     position:relative;
     box-shadow:0px 1px 0 0 #dddddd;
+}
+
+.outcome-table .table-cell{
+    display: inline-block;
+    height:100%;
 }
 
 
@@ -998,7 +1001,7 @@ ol.children-block{
     position:relative;
 }
 
-.outcome-table .total-cell, .outcome-table .total-header{
+.outcome-table .total-cell, .outcome-table .total-header, .competency-matrix .total-cell, .competency-matrix .total-header{
     background:#EAEAEA;
 }
 
@@ -1013,7 +1016,7 @@ ol.children-block{
 }
 
 .outcome-table .grand-total-cell{
-    border-right:2px solid black;
+    border-right:1px solid black;
 }
 
 .outcome-table.node-rows .outcome-head.user-head{
@@ -1033,7 +1036,7 @@ ol.children-block{
     white-space: nowrap;
 }
 
-
+/*
 .competency-matrix .outcome{
     font-size:14px;
     transform-origin:top left;
@@ -1088,16 +1091,8 @@ ol.children-block{
     vertical-align:top;
 }
 
-.competency-matrix .week .node-row:first-child{
-    background:#E0E0E0;
-}
-
 .competency-matrix .week .node-row:first-child .outcome-header{
     background:#E0E0E0;
-}
-
-.competency-matrix .node-row{
-    height:30px;
 }
 
 .competency-matrix .week{
@@ -1108,14 +1103,119 @@ ol.children-block{
     border:0px;
 }
 
-.competency-matrix .table-cell{
-    border-left:0px;
-    border-right:2px solid black;
-}
 
 .competency-matrix .outcome-head{
     display:inline-block;
     width:160px;
+}*/
+
+
+.competency-matrix .outcome-row.node-row{
+    position:sticky;
+    left:0px;
+    z-index:2;
+    background:white;
+}
+
+.competency-matrix .outcome-row.node-row .table-cell{
+    width: 202px;
+    border-left: 0px;
+}
+
+.competency-matrix .table-body{
+    display: inline-block;
+    vertical-align: top;
+}
+
+.competency-matrix .node-top-row{
+    padding: 2px;
+    border-radius: 0 0 5px 5px;
+}
+
+.competency-matrix .outcome-row{
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+}
+
+.competency-matrix .week .node-row:first-child{
+    background:#E0E0E0;
+}
+
+.competency-matrix .table-cell{
+    height:30px;
+}
+
+.competency-matrix .outcome-wrapper{
+    width: 30px;
+    position: sticky;
+    top: 180px;
+    z-index: 3;
+}
+
+.competency-matrix .outcome-head{
+    font-size:14px;
+    transform-origin:top left;
+    transform: rotate(-90deg);
+    position:absolute;
+    margin:0px;
+    border-top:1px solid black;
+    text-align:left;
+    height:30px;
+    box-sizing:border-box;
+    left:0px;
+    min-width:revert;
+    width:180px;    
+    background: white;
+}
+
+.competency-matrix .matrix-time-block{
+    display: inline-block;
+}
+
+.competency-matrix .matrix-time-block .outcome-head{
+    left: -1px;
+}
+
+.matrix-time-block > .matrix-time-row:first-child {
+    position: sticky;
+    top: 180px;
+    z-index: 3;
+}
+
+.competency-matrix .matrix-time-block .table-cell{
+    display: inline-block;
+}
+
+.competency-matrix .node-row .outcome-head{
+    border: 0px;
+    height: 203px;
+    left: 0px;
+}
+
+.competency-matrix .outcome-title{
+    padding-top: 0px;
+    max-height: 20px;
+    overflow-y: hidden;
+}
+
+.competency-matrix .outcome-drop{
+    position: relative;
+    top: -5px;
+}
+
+.competency-matrix .outcome-row+.outcome-row:not(.depth-0) .table-cell{
+    border-left: 0px;
+}
+
+.competency-matrix .outcome-row+.outcome-row:not(.depth-0) .outcome-head{
+    border-top: 0px;
+}
+
+.competency-matrix{
+    padding: 40px;
+    padding-top: 220px;
+
 }
 
 .workflow-grid{
@@ -1191,6 +1291,10 @@ ol.children-block{
 }
 
 .outcome-table.node-rows .outcome-head{
+    height: 100%;
+}
+
+.outcome-table .outcome-wrapper{
     display:inline-block;
     width:280px;
     position:sticky;
@@ -1204,6 +1308,7 @@ ol.children-block{
 .outcome-table .outcome-head.empty{
     border-right-color:white;
     position:relative;
+    width: 280px;
 }
 
 .outcome-table.node-rows .outcome .outcome .outcome-head{
@@ -1215,7 +1320,7 @@ ol.children-block{
 }
 
 
-.outcome-row.node-row{
+.outcome-table .outcome-row.node-row{
     padding-top:140px;
     position:sticky;
     top:0px;
@@ -1223,7 +1328,8 @@ ol.children-block{
     background:white;
 }
 
-.outcome-row.outcome-category{
+
+.outcome-table .outcome-row.outcome-category{
     border-bottom:2px solid lightgrey;
     border-top:2px solid lightgrey;
 }
@@ -1248,11 +1354,16 @@ ol.children-block{
     opacity:1;
 }
 
-.table-cell input, .table-cell button{
+.table-cell input, .table-cell button, .table-cell select{
     position:absolute;
     top:3px;
     right:4px;
     display:none;
+}
+
+.table-cell select{
+    width: 30px;
+    right: 0px;
 }
 
 .table-cell button{
@@ -1262,7 +1373,7 @@ ol.children-block{
     border-radius:3px;
 }
 
-.table-cell:hover input, .table-cell:hover button{
+.table-cell:hover input, .table-cell:hover button, .table-cell:hover select{
     display:inline-block;
 }
 
@@ -1277,7 +1388,7 @@ ol.children-block{
 }
 
 .outcome-table .child-outcome{
-    border-top:2px solid black;
+    border-top:1px solid black;
     text-align:left;
     padding-left:10px;
     white-space:normal;
@@ -1310,6 +1421,9 @@ ol.children-block{
     text-align:left;
     font-size:10px;
     white-space:normal;
+    background: inherit;
+    border-top: 1px solid black;
+    left: -1px;
 }
 
 .outcome-table .total-header::before, .outcome-table .node-category-header::before{
@@ -1319,11 +1433,11 @@ ol.children-block{
     display:inline-block;
 }
 
-.outcome-table .total-header::after, .outcome-table .node-category-header::after{
+.outcome-table .total-header::after{
     content:"";
     position:absolute;
     margin-left:14px;
-    border-bottom:2px solid black;
+    border-bottom:1px solid black;
     bottom:-2px;
     width:calc(100% - 14px);
     left:0px;

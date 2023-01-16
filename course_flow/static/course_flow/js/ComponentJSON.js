@@ -14,14 +14,15 @@ export class Component extends React.Component{
         this.state={};
         this.maindiv = React.createRef();
     }
-}
-
-//Extends the react component to add a few features that are used in a large number of components
-export class EditableComponent extends Component{
+    
     toggleDrop(evt){
         evt.stopPropagation();
         toggleDrop(this.props.objectID,Constants.object_dictionary[this.objectType],!this.props.data.is_dropped,this.props.dispatch,this.props.data.depth);
     }
+}
+
+//Extends the react component to add a few features that are used in a large number of components
+export class EditableComponent extends Component{
 
     //Makes the item selectable
     addEditable(data,no_delete=false){
