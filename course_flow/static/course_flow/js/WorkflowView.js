@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "./ComponentJSON";
+import {Component, EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "./ComponentJSON";
 import ColumnWorkflowView from "./ColumnWorkflowView";
 import WeekWorkflowView from "./WeekWorkflowView";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";
@@ -584,20 +584,23 @@ class RestoreBarUnconnected extends React.Component{
     
     
     render(){
+        console.log("rendering restore bar");
+        console.log(this.props.outcomes);
+
         let columns = this.props.columns.map((column)=>
-            <RestoreBarItem objectType="column" data={column} renderer={this.props.renderer}/>
+            <RestoreBarItem key={column.id} objectType="column" data={column} renderer={this.props.renderer}/>
         )
         let weeks = this.props.weeks.map((week)=>
-            <RestoreBarItem objectType="week" data={week} renderer={this.props.renderer}/>
+            <RestoreBarItem key={week.id} objectType="week" data={week} renderer={this.props.renderer}/>
         )
         let nodes = this.props.nodes.map((node)=>
-            <RestoreBarItem objectType="node" data={node} renderer={this.props.renderer}/>
+            <RestoreBarItem key={node.id} objectType="node" data={node} renderer={this.props.renderer}/>
         )
         let outcomes = this.props.outcomes.map((outcome)=>
-            <RestoreBarItem objectType="outcome" data={outcome} renderer={this.props.renderer}/>
+            <RestoreBarItem key={outcome.id} objectType="outcome" data={outcome} renderer={this.props.renderer}/>
         )
         let nodelinks = this.props.nodelinks.map((nodelink)=>
-            <RestoreBarItem objectType="nodelink" data={nodelink} renderer={this.props.renderer}/>
+            <RestoreBarItem key={nodelink.id} objectType="nodelink" data={nodelink} renderer={this.props.renderer}/>
         )
         
         
@@ -641,17 +644,11 @@ export const RestoreBar = connect(
     null
 )(RestoreBarUnconnected)
 
-class RestoreBarItem extends React.Component{
-    constructor(props){
-        super(props);
-        //The disabling prevents double clicks from sending two calls
-        this.state={disabled:false};
-    }
+class RestoreBarItem extends Component{
     
     render(){
-        if(this.state.disabled)return null;
-        else return (
-            <div class="restore-bar-item">
+        return (
+            <div ref={this.maindiv} class="restore-bar-item">
                 <div>{this.getTitle()}</div>
                 <div class="workflow-created">{gettext("Deleted")+" "+this.props.data.deleted_on}</div>
                 <button onClick={this.restore.bind(this)}>{gettext("Restore")}</button>
@@ -675,8 +672,8 @@ class RestoreBarItem extends React.Component{
     }
 
     delete(){
-        this.setState({disabled:true});
         if(window.confirm(gettext("Are you sure you want to permanently delete this object?"))){
+            $(this.maindiv.current).children("button").attr("disabled",true);
             this.props.renderer.tiny_loader.startLoad();
             deleteSelf(this.props.data.id,this.props.objectType,false,()=>{
                 this.props.renderer.tiny_loader.endLoad();
