@@ -143,6 +143,7 @@ CSP_FONT_SRC = [
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "course_flow:home"
 LOGOUT_REDIRECT_URL = "login"
+COURSE_FLOW_PASSWORD_CHANGE_URL = "login"
 
 ADMINS = [("John", "john@example.com"), ("Mary", "mary@example.com")]
 

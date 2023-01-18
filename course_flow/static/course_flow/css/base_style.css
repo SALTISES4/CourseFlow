@@ -183,10 +183,6 @@ button:hover{
     display:inline-block;
 }
 
-.floatbardiv .create-dropdown{
-    color: #444444;
-}
-
 .floatbar img{
     display:inline-block;
     vertical-align: middle;
@@ -422,16 +418,53 @@ button:hover{
 
 .left-panel{
     background:white;
+    min-width: 220px;
     width:240px;
-    min-width:240px;
     border-right:1px solid lightgray;
-    left:0px;
-    top:0px;
     height:100%;
     box-sizing:border-box;
     color:#444444;
     display:flex;
     flex-direction:column;
+    position: relative;
+}
+
+.left-panel.collapsed{
+    min-width: 0px;
+    width: 0px;
+}
+
+.left-panel.collapsed > *:not(.left-panel-toggle){
+    display: none;
+}
+
+.left-panel.collapsed .left-panel-toggle{
+    right: -30px;
+}
+
+.left-panel-toggle{
+    width: 24px;
+    height: 24px;
+    background: #04ba74;
+    border-radius: 50%;
+    position: absolute;
+    right: -10px;
+    top: 100px;
+    z-index: 10;
+}
+
+.left-panel-toggle .material-symbols-rounded{
+    font-size: 20px;
+    padding: 2px;
+    color: white;
+}
+
+.collapsed #left-panel-collapse{
+    display: none;
+}
+
+.left-panel:not(.collapsed) #left-panel-expand{
+    display: none;
 }
 
 .left-panel-extra{
@@ -593,9 +626,11 @@ button:hover{
     z-index:1;
     background:white;
     position:absolute;
-    padding:10px;
-    border-radius:5px;
+    padding-top:10px;
+    padding-bottom: 10px;
+    border-radius:10px;
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+    color: #444444;
 }
 
 .project-menu .create-dropdown, .home-tabs .create-dropdown{
@@ -607,10 +642,19 @@ button:hover{
     z-index: 3;
 }
 
-.create-dropdown a{
+.create-dropdown > a, .create-dropdown > div{
     display:block;
-    padding:2px;
+    padding:8px;
+    padding-left: 15px;
+    padding-right: 15px;
     margin:0px;
+}
+
+.create-dropdown > hr{
+    margin-right: 0px;
+    margin-left:  0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .create-dropdown.active, .create-dropdown.activate{

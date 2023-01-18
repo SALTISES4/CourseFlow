@@ -27,7 +27,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
@@ -1228,6 +1228,9 @@ class SALTISEAdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             Group.objects.get(name="SALTISE_Staff")
             in self.request.user.groups.all()
         )
+
+class UserUpdateView(LoginRequiredMixin,UpdateView):
+    fields = ["first_name","last_name"]
 
 
 class ProjectCreateView(

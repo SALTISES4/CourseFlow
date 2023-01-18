@@ -665,7 +665,7 @@ export class AutoLinkView extends React.Component{
     }
     
     render(){
-        if(!this.source_node||this.source_node.length==0){
+        if(!this.source_node||this.source_node.length==0 || !this.source_port_handle || this.source_port_handle.empty()){
             this.source_node = $(this.props.node_div.current);
             this.source_port_handle = d3.select(
                 "g.port-"+this.props.nodeID+" circle[data-port-type='source'][data-port='s']"

@@ -29,6 +29,13 @@ def course_flow_return_title():
     return settings.COURSE_FLOW_RETURN_URL.get("title", "Return Home")
 
 
+@register.simple_tag
+def course_flow_password_change_url():
+    if not hasattr(settings, "COURSE_FLOW_PASSWORD_CHANGE_URL"):
+        return reverse("login")
+    return settings.COURSE_FLOW_PASSWORD_CHANGE_URL
+
+
 @register.filter
 def not_deleted(query):
     return query.filter(deleted=False)

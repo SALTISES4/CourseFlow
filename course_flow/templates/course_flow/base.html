@@ -72,19 +72,19 @@
     ></script>
     <!-- fonts -->
     <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
-
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <!-- * Icons -->
     <link rel="icon" type="image/x-icon" href="{% static 'course_flow/img/courseflow-favicon.png' %}";>
     <!-- ** Preloads -->
     <link
       rel="preload"
-      href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded&display=swap"
       as="style"
     />
     <!-- ** Loads -->
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/icon?family=Material+Icons&display=swap"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded&display=swap"
       type="text/css"
     />
 
@@ -145,7 +145,16 @@
   </head>
   <body id="site">
     <div class="main-wrapper">
-      <div class="left-panel hide-print">
+      <div class="left-panel collapsed hide-print">
+        <div class="left-panel-toggle hover-shade">
+          <!-- <img src="{% static 'course_flow/img/images_svg/arrowright_white.svg' %}"/> -->
+          <span id="left-panel-collapse" class="material-symbols-rounded">
+            menu_open
+          </span>
+          <span id="left-panel-expand" class="material-symbols-rounded">
+            menu
+          </span>
+        </div>
         <img class="title-image" src="{% static 'course_flow/img/images_svg/logo-courseflow-beta.svg' %}"/>
         <a class="panel-item hover-shade" href="{% url 'course_flow:home' %}">
           <img src="{% static 'course_flow/img/images_svg/home_black.svg' %}"/>
@@ -171,10 +180,6 @@
           <div>{% trans 'Shared With Me' %}</div>
         </a>
         {% endif %}
-        <a class="panel-item hover-shade" href={% course_flow_return_url %}>
-          <img src="{% static 'course_flow/img/images_svg/return_to_project.svg' %}"/>
-          <div>{% course_flow_return_title %}</div>
-        </a>
 
         {% if user|has_group:"Teacher" %}
         <hr>
@@ -209,18 +214,28 @@
             <div class="title">
             </div>
             <div class="floatbar">
+              {% if user.username %}
+              <div id="account-options">
+                <div class="hover-shade">
+                  <span class="material-symbols-rounded">account_circle</span>
+                </div>
+                <div id="account-links" class="create-dropdown">
+                  <a id="profile" class="hover-shade">{% trans 'Profile' %}</a>
+                  <a id="reset-password" class="hover-shade" href={% course_flow_password_change_url %}>{% trans 'Reset my password' %}</a>
+                  <a id="notification-settings" class="hover-shade">{% trans 'Notification settings' %}</a>
+                  <hr>
+                  <a id="return-my-dalite" class="hover-shade" href={% course_flow_return_url %}>
+                    {% course_flow_return_title %}
+                  </a>
+                  <a id="logout" class="hover-shade">{% trans 'Sign out' %}</a>
+                </div>
+              </div>
+              {% endif %}
               <div id="username-container" class="topdropwrapper">
                 <a class="topdropbutton hover-shade" href="{% url 'course_flow:home' %}">
                     {{ user.username }}
                 </a>
               </div>
-              {% if user.username %}
-              <div id="logout-container" class="topdropwrapper">
-                <a id="logout" class="topdropbutton hover-shade">
-                  {% trans 'logout' %}
-                </a>
-              </div>
-              {% endif %}
               {% if user|has_group:"Teacher" %}
               <div class="topdropwrapper">
                 <button class="topdropbutton">
@@ -378,6 +393,14 @@
       $("#overflow-links").removeClass("active");
     });
 
+    $("#account-options").on("click",(evt)=>{
+      evt.stopPropagation();
+      $("#account-links").toggleClass("active");
+    });
+    document.addEventListener("click",()=>{
+      $("#account-links").removeClass("active");
+    });
+
     //reload if we got here using forward or back button
     if (
       window.performance &&
@@ -455,6 +478,13 @@
       localStorage.setItem("last_hidden_notification",update_notifications.id);
       $("#update-notifications").css({display:"none"})
     });
+    $(".left-panel-toggle").on("click",()=>{
+      $(".left-panel").toggleClass("collapsed");
+      if($(".left-panel").hasClass("collapsed"))sessionStorage.setItem("collapsed_sidebar",true);
+      else sessionStorage.removeItem("collapsed_sidebar");
+    });
+    if(!sessionStorage.getItem("collapsed_sidebar"))$(".left-panel").removeClass("collapsed");
+
 
     </script>
     {% endblock %}
