@@ -24,19 +24,16 @@ def update_notifications(request):
                         user=request.user
                     ).first()
                     if courseflow_user is None:
-                        print("create the user")
                         courseflow_user = CourseFlowUser.objects.create(
                             first_name=request.user.first_name,
                             last_name=request.user.last_name,
                             user=request.user,
                         )
-                    print("in this")
                     show_notification_request = (
                         not courseflow_user.notifications_active
                     )
                 else:
                     show_notification_request = False
-                print(show_notification_request)
                 return {
                     "update_notifications": last_update_serialized,
                     "show_notification_request": JSONRenderer()
@@ -44,7 +41,6 @@ def update_notifications(request):
                     .decode("utf-8"),
                 }
     except Exception:
-        print("exception")
         pass
     return {
         "update_notifications": {},

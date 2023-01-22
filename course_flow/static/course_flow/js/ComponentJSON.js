@@ -596,7 +596,8 @@ export class EditableComponentWithSorting extends EditableComponentWithActions{
 
 
 
-export class NodeLinkSVG extends React.Component{
+export class NodeLinkSVG extends Component{
+
     render(){
         
         try{
@@ -614,9 +615,19 @@ export class NodeLinkSVG extends React.Component{
             
             var path=(this.getPath(path_array.findPath()));
             
-            let stroke="black";
-            if(this.props.style && this.props.style.stroke)stroke=this.props.style.stroke;
-            
+            let style={}
+            if(this.props.hovered||this.state.hovered){
+                style.stroke="yellow";
+            }else if(this.props.node_selected){
+                style.stroke=myColour;
+            }else if(this.props.selected){
+                style.stroke=myColour;
+                style.opacity=1;
+            }else if(this.props.lock){
+                style.stroke=lock.user_colour;
+                style.opacity=1;
+            }
+
             let title;
             if(this.props.title && this.props.title!=""){
                 let text_position=path_array.getFractionalPoint(this.props.text_position/100.0);
@@ -630,9 +641,9 @@ export class NodeLinkSVG extends React.Component{
             }
             
             return (
-                <g fill="none" stroke={stroke}>
-                    <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} class={"nodelink"}/>
-                    <path style={this.props.style} opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
+                <g ref={this.maindiv} stroke="black" fill="none">
+                    <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} onMouseEnter={()=>this.setState({hovered:true})} onMouseLeave={()=>this.setState({hovered:false})} class={"nodelink"}/>
+                    <path style={style} stroke="black" opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
                     {title}
                 </g>
             );
@@ -654,6 +665,13 @@ export class NodeLinkSVG extends React.Component{
             path+=thispoint[0]+" "+thispoint[1];
         }
         return path;
+    }
+
+    componentDidUpdate(){
+        if(this.props.hovered || this.state.hovered || this.props.selected || this.props.node_selected){
+            d3.select(this.maindiv.current).raise();
+            d3.selectAll(".node-ports").raise();
+        }
     }
 }
 
@@ -677,10 +695,14 @@ export class AutoLinkView extends React.Component{
         if(!this.target_node)return null;
         var source_dims = {width:this.source_node.outerWidth(),height:this.source_node.outerHeight()};
         var target_dims = {width:this.target_node.outerWidth(),height:this.target_node.outerHeight()};
+        
+        let node_selected=(this.source_node.attr("data-selected")==='true' || this.target_node.attr("data-selected")==='true');
+        let node_hovered=(this.source_node.attr("data-hovered")==='true' || this.target_node.attr("data-hovered")==='true');
+
         return(
             <div>
                 {reactDom.createPortal(
-                    <NodeLinkSVG source_port_handle={this.source_port_handle} source_port="2" target_port_handle={this.target_port_handle} target_port="0" source_dimensions={source_dims} target_dimensions={target_dims}/>
+                    <NodeLinkSVG hovered={node_hovered} node_selected={node_selected} source_port_handle={this.source_port_handle} source_port="2" target_port_handle={this.target_port_handle} target_port="0" source_dimensions={source_dims} target_dimensions={target_dims}/>
                     ,$(".workflow-canvas")[0])}
             </div>
         );

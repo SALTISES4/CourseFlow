@@ -138,6 +138,8 @@ class NodeView extends EditableComponentWithActions{
                 class={css_class}
                 id={data.id} 
                 ref={this.maindiv} 
+                data-selected={this.state.selected}
+                data-hovered={this.state.hovered}
                 onClick={(evt)=>selection_manager.changeSelection(evt,this)}
             >
                 <div class = "node-top-row">
@@ -260,11 +262,14 @@ class NodeView extends EditableComponentWithActions{
         if(!this.props.renderer.read_only)$("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
         d3.selectAll(".node-ports").raise();
         var mycomponent = this;
+        this.setState({hovered:true});
         
         $(document).on("mousemove",function(evt){
             if(!mycomponent||!mycomponent.maindiv||Constants.mouseOutsidePadding(evt,$(mycomponent.maindiv.current),20)){
                 $("circle[data-node-id='"+mycomponent.props.objectID+"'][data-port-type='source']").removeClass("mouseover");
                 $(document).off(evt);
+                mycomponent.setState({hovered:false});
+
             }
         });
     }
