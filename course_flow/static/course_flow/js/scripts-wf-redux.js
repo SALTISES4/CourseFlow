@@ -12,7 +12,7 @@ import {ComparisonView, WorkflowComparisonBaseView} from "./ComparisonView";
 import * as Constants from "./Constants";
 import * as Reducers from "./Reducers";
 import OutcomeTopView from './OutcomeTopView';
-import {getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from './PostFunctions';
+import {getTargetProjectMenu, getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from './PostFunctions';
 import {ConnectionBar} from './ConnectedUsers'
 import '../css/base_style.css';
 import '../css/workflow_styles.css';
@@ -583,6 +583,17 @@ export class WorkflowLoader extends React.Component{
         
         )
     }
+}
+
+export function CreateNew(create_url){
+    console.log(create_url);
+    getTargetProjectMenu(-1,(response_data)=>{
+        if(response_data.parentID!=null){
+            let loader = new Constants.Loader('body');
+            console.log(response_data);
+            window.location=create_url.replace("/0/","/"+response_data.parentID+"/");
+        }
+    });
 }
 
 

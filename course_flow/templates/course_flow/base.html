@@ -214,15 +214,28 @@
             <div class="title">
             </div>
             <div class="floatbar">
+              {% if user|has_group:"Teacher" %}
+              <div id="create-options">
+                <div class="hover-shade">
+                  <span class="material-symbols-rounded">add_circle</span>
+                </div>
+                <div id="create-links" class="create-dropdown">
+                  <a id="project-create" class="hover-shade" href="{% url 'course_flow:project-create' %}">{% trans 'Project' %}</a>
+                  <a id="activity-create" class="hover-shade">{% trans 'Activity' %}</a>
+                  <a id="course-create" class="hover-shade">{% trans 'Course' %}</a>
+                  <a id="program-create" class="hover-shade">{% trans 'Program' %}</a>
+                </div>
+              </div>
+              {% endif %}
               {% if user.username %}
               <div id="account-options">
                 <div class="hover-shade">
                   <span class="material-symbols-rounded">account_circle</span>
                 </div>
                 <div id="account-links" class="create-dropdown">
-                  <a id="profile" class="hover-shade">{% trans 'Profile' %}</a>
+                  <a id="profile" class="hover-shade" href="{% url 'course_flow:user-update' %}">{% trans 'Profile' %}</a>
                   <a id="reset-password" class="hover-shade" href={% course_flow_password_change_url %}>{% trans 'Reset my password' %}</a>
-                  <a id="notification-settings" class="hover-shade">{% trans 'Notification settings' %}</a>
+                  <a id="notification-settings" class="hover-shade" href="{% url 'course_flow:user-update' %}">{% trans 'Notification settings' %}</a>
                   <hr>
                   <a id="return-my-dalite" class="hover-shade" href={% course_flow_return_url %}>
                     {% course_flow_return_title %}
@@ -284,7 +297,9 @@
         </div>
       </div>
     </div>
-    {% block body %}{% endblock %}
+    <div id="popup-container"></div>
+    {% block body %}
+    {% endblock %}
     <footer>{% block foot %}{% endblock %}</footer>
     {% csrf_token %}
   </body>
@@ -401,6 +416,14 @@
       $("#account-links").removeClass("active");
     });
 
+    $("#create-options").on("click",(evt)=>{
+      evt.stopPropagation();
+      $("#create-links").toggleClass("active");
+    });
+    document.addEventListener("click",()=>{
+      $("#create-links").removeClass("active");
+    });
+
     //reload if we got here using forward or back button
     if (
       window.performance &&
@@ -409,7 +432,26 @@
     ) {
       location.reload();
     }
-      
+
+    let show_notification_request={{ show_notification_request }};
+
+    $(window).on("load",()=>{
+      console.log(renderers)
+      $("#create-links #activity-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:activity-create' projectPk='0' %}"));
+      $("#create-links #course-create").on("click",()=>renderers.CreateNew("course"));
+      $("#create-links #program-create").on("click",()=>renderers.CreateNew("program"));
+
+      if(show_notification_request){
+        if(window.confirm(
+          '{% trans "Hi there! Would you like to receive emails about updates to CourseFlow? You can always change your mind by viewing your profile." %}'
+        )){
+          $.post("{% url 'course_flow:select-notifications' %}",{"notifications":JSON.stringify(true)});
+        }else{
+          $.post("{% url 'course_flow:select-notifications' %}",{"notifications":JSON.stringify(false)});
+        }
+      }
+    });
+
     //Fix Quilljs's link sanitization
     const Link = Quill.import('formats/link')
     // Override the existing property on the Quill global object and add custom protocols

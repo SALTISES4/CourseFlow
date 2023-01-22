@@ -33,7 +33,7 @@ def course_flow_return_title():
 def course_flow_password_change_url():
     if not hasattr(settings, "COURSE_FLOW_PASSWORD_CHANGE_URL"):
         return reverse("login")
-    return settings.COURSE_FLOW_PASSWORD_CHANGE_URL
+    return reverse(settings.COURSE_FLOW_PASSWORD_CHANGE_URL)
 
 
 @register.filter

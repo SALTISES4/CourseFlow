@@ -639,7 +639,7 @@ button:hover{
 
 .floatbar .create-dropdown{
     margin-left:-6px;
-    z-index: 3;
+    z-index: 5;
 }
 
 .create-dropdown > a, .create-dropdown > div{

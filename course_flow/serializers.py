@@ -14,6 +14,7 @@ from .models import (
     ColumnWorkflow,
     Comment,
     Course,
+    CourseFlowUser,
     Discipline,
     Favourite,
     LiveAssignment,
@@ -192,6 +193,57 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
         ]
+
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
+
+    def get_first_name(self, instance):
+        courseflow_user = CourseFlowUser.objects.filter(user=instance).first()
+        if courseflow_user is None:
+            print("create the user")
+            courseflow_user = CourseFlowUser.objects.create(
+                first_name=instance.first_name,
+                last_name=instance.last_name,
+                user=instance,
+            )
+        return bleach_sanitizer(
+            courseflow_user.first_name,
+            tags=[],
+            attributes=[],
+        )
+
+    def validate_first_name(self, value):
+        if value is None:
+            return None
+        return bleach_sanitizer(
+            value,
+            tags=[],
+            attributes=[],
+        )
+
+    def get_last_name(self, instance):
+        courseflow_user = CourseFlowUser.objects.filter(user=instance).first()
+        if courseflow_user is None:
+            print("create the user")
+            courseflow_user = CourseFlowUser.objects.create(
+                first_name=instance.first_name,
+                last_name=instance.last_name,
+                user=instance,
+            )
+        return bleach_sanitizer(
+            courseflow_user.last_name,
+            tags=[],
+            attributes=[],
+        )
+
+    def validate_last_name(self, value):
+        if value is None:
+            return None
+        return bleach_sanitizer(
+            value,
+            tags=[],
+            attributes=[],
+        )
 
 
 class DisciplineSerializer(serializers.ModelSerializer):
@@ -891,9 +943,9 @@ class WorkflowSerializerShallow(
 
     url = serializers.SerializerMethodField()
 
-    #Although we'll hang onto outcomes_sort as a field for now, this should just reset to 0
-    def get_outcomes_sort(self,instance):
-        return 0;
+    # Although we'll hang onto outcomes_sort as a field for now, this should just reset to 0
+    def get_outcomes_sort(self, instance):
+        return 0
 
     def get_url(self, instance):
         user = self.context.get("user", None)

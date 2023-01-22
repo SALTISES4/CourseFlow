@@ -1315,6 +1315,37 @@ class UserAssignment(models.Model):
 
 
 """
+User Models
+"""
+
+
+class CourseFlowUser(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        related_name="courseflow_user",
+    )
+    first_name = models.CharField(
+        max_length=title_max_length,
+        null=True,
+        blank=True,
+    )
+    last_name = models.CharField(
+        max_length=title_max_length, null=True, blank=True
+    )
+
+    # Whether the user wants to receive notifications
+    notifications = models.BooleanField(
+        default=False,
+        help_text="Check this box if you would like to receive emails from us about updates to CourseFlow.",
+    )
+
+    # Whether the user has had the opportunity to choose whether they receive notifications
+    notifications_active = models.BooleanField(default=False)
+
+
+"""
 Other receivers
 """
 

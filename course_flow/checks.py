@@ -14,3 +14,17 @@ def check_return_url(app_configs, **kwargs):
             )
         )
     return errors
+
+
+@register()
+def check_password_url(app_configs, **kwargs):
+    errors = []
+    if not hasattr(settings, "COURSE_FLOW_PASSWORD_CHANGE_URL"):
+        errors.append(
+            Warning(
+                "COURSE_FLOW_PASSWORD_CHANGE_URL not found",
+                hint="Provide a value for COURSE_FLOW_PASSWORD_CHANGE_URL in settings.py to allow the user to change their password.",
+                id="courseflow.E002",
+            )
+        )
+    return errors

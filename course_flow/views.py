@@ -59,6 +59,7 @@ from .models import (  # OutcomeProject,
     Column,
     ColumnWorkflow,
     Course,
+    CourseFlowUser,
     Discipline,
     Favourite,
     LiveAssignment,
@@ -399,7 +400,12 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         }
 
 
-def get_my_projects(user, add):
+def get_my_projects(user, add, **kwargs):
+    for_add = kwargs.get("for_add", False)
+    permission_filter = {}
+    if for_add:
+        permission_filter["permission_type"] = ObjectPermission.PERMISSION_EDIT
+
     data_package = {
         "owned_projects": {
             "title": _("My Projects"),
@@ -435,6 +441,7 @@ def get_my_projects(user, add):
                                     Project
                                 ),
                                 project__deleted=False,
+                                **permission_filter,
                             )
                         ],
                         many=True,
@@ -447,7 +454,9 @@ def get_my_projects(user, add):
                 "Projects shared with you by others (for which you have either view or edit permissions) will appear here."
             ),
         },
-        "deleted_projects": {
+    }
+    if not for_add:
+        data_package["deleted_projects"] = {
             "title": _("Restore Projects"),
             "sections": [
                 {
@@ -473,8 +482,7 @@ def get_my_projects(user, add):
             "emptytext": _(
                 "Projects you have deleted can be restored from here."
             ),
-        },
-    }
+        }
     return data_package
 
 
@@ -1229,8 +1237,46 @@ class SALTISEAdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             in self.request.user.groups.all()
         )
 
-class UserUpdateView(LoginRequiredMixin,UpdateView):
-    fields = ["first_name","last_name"]
+
+class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = CourseFlowUser
+    fields = ["first_name", "last_name", "notifications"]
+    template_name = "course_flow/courseflowuser_update.html"
+
+    def test_func(self):
+        print("IN TEST FUNCTION")
+        print(self.kwargs)
+        user = self.request.user
+        courseflow_user = CourseFlowUser.objects.filter(user=user).first()
+        if courseflow_user is None:
+            print("create the user")
+            courseflow_user = CourseFlowUser.objects.create(
+                first_name=user.first_name, last_name=user.last_name, user=user
+            )
+        self.kwargs["pk"] = courseflow_user.pk
+        return True
+
+    def get_form(self, *args, **kwargs):
+        form = super(UpdateView, self).get_form()
+        print(form)
+        return form
+
+    def get_success_url(self):
+        return reverse("course_flow:user-update")
+
+
+@ajax_login_required
+def select_notifications(request: HttpRequest) -> HttpResponse:
+    notifications = json.loads(request.POST.get("notifications"))
+    try:
+        courseflowuser = CourseFlowUser.objects.get(pk=request.user.pk)
+        print(courseflowuser)
+        courseflowuser.notifications = notifications
+        courseflowuser.notifications_active = True
+        courseflowuser.save()
+    except ObjectDoesNotExist:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted"})
 
 
 class ProjectCreateView(
@@ -2278,18 +2324,23 @@ def get_project_data(request: HttpRequest) -> HttpResponse:
     )
 
 
-@user_can_view("workflowPk")
+@user_is_teacher()
 def get_target_projects(request: HttpRequest) -> HttpResponse:
-    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
-        data_package = get_my_projects(request.user, False)
+        workflow_id = Workflow.objects.get(
+            pk=request.POST.get("workflowPk")
+        ).id
+    except ObjectDoesNotExist:
+        workflow_id = 0
+    try:
+        data_package = get_my_projects(request.user, False, for_add=True)
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {
             "action": "posted",
             "data_package": data_package,
-            "workflow_id": workflow.id,
+            "workflow_id": workflow_id,
         }
     )
 
