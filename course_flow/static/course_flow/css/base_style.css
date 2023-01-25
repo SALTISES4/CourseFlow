@@ -655,6 +655,14 @@ button:hover{
     z-index: 5;
 }
 
+#account-options, #create-options{
+    position: relative;
+}
+
+#account-links, #create-links {
+    right: 0px;
+}
+
 .create-dropdown > a, .create-dropdown > div{
     display:block;
     padding:8px;
