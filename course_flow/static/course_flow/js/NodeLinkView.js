@@ -34,6 +34,7 @@ class NodeLinkView extends EditableComponentWithActions{
         let node_selected=(this.source_node.attr("data-selected")==='true' || this.target_node.attr("data-selected")==='true');
         let node_hovered=(this.source_node.attr("data-hovered")==='true' || this.target_node.attr("data-hovered")==='true');
 
+        let style={};
         if(data.dashed)style.strokeDasharray="5,5"
         if(this.source_node.css("display")=="none"||this.target_node.css("display")=="none")style["display"]="none";
         
@@ -48,7 +49,7 @@ class NodeLinkView extends EditableComponentWithActions{
         return(
             <div>
                 {reactDom.createPortal(
-                    <NodeLinkSVG hovered={node_hovered} node_selected={node_selected} lock={data.lock}  title={data.title} text_position={data.text_position} source_port_handle={this.source_port_handle} source_port={data.source_port} target_port_handle={this.target_port_handle} target_port={data.target_port} clickFunction={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,selector)} selected={this.state.selected} source_dimensions={source_dims} target_dimensions={target_dims}/>
+                    <NodeLinkSVG style={style} hovered={node_hovered} node_selected={node_selected} lock={data.lock}  title={data.title} text_position={data.text_position} source_port_handle={this.source_port_handle} source_port={data.source_port} target_port_handle={this.target_port_handle} target_port={data.target_port} clickFunction={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,selector)} selected={this.state.selected} source_dimensions={source_dims} target_dimensions={target_dims}/>
                     ,$(".workflow-canvas")[0])}
                 {this.addEditable(data)}
             </div>

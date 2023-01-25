@@ -456,10 +456,10 @@ class TableOutcomeBaseUnconnected extends Component{
 
     getOutcomeView(outcome_tree){
         if(this.props.type=="outcome_table")return (
-            <TableOutcomeView outcomes_type={this.props.outcomes_type} objectID={outcome_tree.id} outcome_tree={this.outcome_tree} renderer={this.props.renderer}/>
+            <TableOutcomeView outcomes_type={this.props.outcomes_type} objectID={this.outcome_tree.id} outcome_tree={this.outcome_tree} renderer={this.props.renderer}/>
         );
         else return(
-            <MatrixOutcomeView outcomes_type={this.props.outcomes_type} objectID={outcome_tree.id} outcome_tree={this.outcome_tree} renderer={this.props.renderer}/>
+            <MatrixOutcomeView outcomes_type={this.props.outcomes_type} objectID={this.outcome_tree.id} outcome_tree={this.outcome_tree} renderer={this.props.renderer}/>
         );
     }
 

@@ -200,7 +200,6 @@ class UserSerializer(serializers.ModelSerializer):
     def get_first_name(self, instance):
         courseflow_user = CourseFlowUser.objects.filter(user=instance).first()
         if courseflow_user is None:
-            print("create the user")
             courseflow_user = CourseFlowUser.objects.create(
                 first_name=instance.first_name,
                 last_name=instance.last_name,
@@ -224,7 +223,6 @@ class UserSerializer(serializers.ModelSerializer):
     def get_last_name(self, instance):
         courseflow_user = CourseFlowUser.objects.filter(user=instance).first()
         if courseflow_user is None:
-            print("create the user")
             courseflow_user = CourseFlowUser.objects.create(
                 first_name=instance.first_name,
                 last_name=instance.last_name,
@@ -1581,7 +1579,6 @@ class LiveProjectSerializer(
         return instance.pk
 
     def update(self, instance, validated_data):
-        print(validated_data)
         instance.default_self_reporting = validated_data.get(
             "default_self_reporting", instance.default_self_reporting
         )

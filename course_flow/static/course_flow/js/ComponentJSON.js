@@ -615,17 +615,24 @@ export class NodeLinkSVG extends Component{
             
             var path=(this.getPath(path_array.findPath()));
             
-            let style={}
+            let style;
+            if(this.props.style)style={...this.props.style};
+            else style={};
             if(this.props.hovered||this.state.hovered){
                 style.stroke="yellow";
+                style.opacity=1;
             }else if(this.props.node_selected){
                 style.stroke=myColour;
+                style.opacity=0.4;
             }else if(this.props.selected){
                 style.stroke=myColour;
                 style.opacity=1;
             }else if(this.props.lock){
                 style.stroke=lock.user_colour;
                 style.opacity=1;
+            }else{
+                style.stroke="black";
+                style.opacity=0.4;
             }
 
             let title;
@@ -643,7 +650,7 @@ export class NodeLinkSVG extends Component{
             return (
                 <g ref={this.maindiv} stroke="black" fill="none">
                     <path opacity="0" stroke-width="10px" d={path} onClick={this.props.clickFunction} onMouseEnter={()=>this.setState({hovered:true})} onMouseLeave={()=>this.setState({hovered:false})} class={"nodelink"}/>
-                    <path style={style} stroke="black" opacity="0.4" stroke-width="2px" d={path} marker-end="url(#arrow)"/>
+                    <path style={style} stroke-width="2px" d={path} marker-end="url(#arrow)"/>
                     {title}
                 </g>
             );
@@ -669,8 +676,8 @@ export class NodeLinkSVG extends Component{
 
     componentDidUpdate(){
         if(this.props.hovered || this.state.hovered || this.props.selected || this.props.node_selected){
-            d3.select(this.maindiv.current).raise();
-            d3.selectAll(".node-ports").raise();
+            // d3.select(this.maindiv.current).raise();
+            // d3.selectAll(".node-ports").raise();
         }
     }
 }
@@ -1154,13 +1161,13 @@ export class OutcomeTitle extends React.Component{
 }
 
 //Returns the outcome title as a string
-export function getOutcomeTitle(data,rank){
+export function getOutcomeTitle(data,prefix){
     let text = data.title;
     if(data.title==null || data.title==""){
         text=gettext("Untitled");
     }
 
-    return rank.join(".")+" - "+ text;
+    return prefix+" - "+ text;
 
 }
 

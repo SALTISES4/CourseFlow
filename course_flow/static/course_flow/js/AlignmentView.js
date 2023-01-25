@@ -561,7 +561,7 @@ class OutcomeAdderOptionUnconnected extends React.Component{
     render(){
         return (
             <option value={this.props.objectID}>
-                {"\u00A0 ".repeat(this.props.data.depth)+getOutcomeTitle(this.props.data,this.props.rank)}
+                {"\u00A0 ".repeat(this.props.data.depth)+getOutcomeTitle(this.props.data,this.props.prefix)}
             </option>
         );
     }

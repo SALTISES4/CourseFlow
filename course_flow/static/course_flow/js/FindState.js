@@ -316,10 +316,10 @@ export const getSortedOutcomeIDFromOutcomeWorkflowSet = (outcomes_unsorted,outco
         outcomes[i].outcomeworkflow=outcomeworkflows[i].id;
         outcomes[i].through_no_drag=outcomeworkflows[i].no_drag;
     };
-    if(outcomes.length==0)return outcomes;
+    if(outcomes.length==0)return outcomes.map(outcome=>outcome.id);
     let base_title = Constants.capWords(gettext("outcomes"));
     let object_sets = object_sets_unfiltered.filter(objectset=>objectset.term==outcomes[0].type);
-    if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes}];
+    if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes.map(outcome=>outcome.id)}];
     let uncategorized = outcomes.filter(outcome=>outcome.sets.length==0).map(outcome=>outcome.id);
     let categories=[];
     if(uncategorized.length>0)categories=

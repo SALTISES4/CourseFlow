@@ -732,7 +732,9 @@ class ModelViewTest(TestCase):
         week = workflow.weeks.create(author=author)
         node = week.nodes.create(author=author)
 
-        liveproject = LiveProject.objects.create(project=project)
+        liveproject = LiveProject.objects.create(
+            project=project, default_assign_to_all=False
+        )
         assignment = LiveAssignment.objects.create(
             liveproject=liveproject, task=node
         )

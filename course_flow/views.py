@@ -1244,8 +1244,6 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     template_name = "course_flow/courseflowuser_update.html"
 
     def test_func(self):
-        print("IN TEST FUNCTION")
-        print(self.kwargs)
         user = self.request.user
         courseflow_user = CourseFlowUser.objects.filter(user=user).first()
         if courseflow_user is None:
@@ -1258,7 +1256,6 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_form(self, *args, **kwargs):
         form = super(UpdateView, self).get_form()
-        print(form)
         return form
 
     def get_success_url(self):
@@ -1270,7 +1267,6 @@ def select_notifications(request: HttpRequest) -> HttpResponse:
     notifications = json.loads(request.POST.get("notifications"))
     try:
         courseflowuser = CourseFlowUser.objects.get(pk=request.user.pk)
-        print(courseflowuser)
         courseflowuser.notifications = notifications
         courseflowuser.notifications_active = True
         courseflowuser.save()
