@@ -30,8 +30,6 @@ class WorkflowLegend extends React.Component{
     }
     
     render(){
-        console.log("renderering legend");
-        console.log(this.state);
         if(!this.state.show_legend)return this.getSlider();
 
         let contexts = this.props.contexts.map((value)=>

@@ -15,7 +15,6 @@ class CompetencyMatrixView extends React.Component{
         this.objectType="workflow";
     }
     render(){
-        console.log("The entire workflowoutcomeview is rendering");
 
         let nodecategory = this.getNodecategory();
         let nodecategory_json = JSON.stringify(nodecategory);
@@ -71,7 +70,6 @@ class CompetencyMatrixView extends React.Component{
                     <TableOutcomeBase key={outcome} renderer={this.props.renderer} objectID={outcome} nodecategory={nodecategory} outcomes_type={this.props.outcomes_type} type="competency_matrix"/>
                 )}</div>                                       
             );
-            console.log(nodecategory);
             let blank_row = Array(10).fill(
                 <div class="table-cell empty-cell"></div>
             );
@@ -293,7 +291,6 @@ class MatrixNodeViewUnconnected extends Component{
     }
     
     render(){
-        console.log("Creating a node view");
         let data = this.props.data;
         let data_override;
         if(data.represents_workflow)data_override = {...data,...data.linked_workflow_data}

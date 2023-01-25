@@ -235,7 +235,6 @@ export class WeekComparisonViewUnconnected extends WeekViewUnconnected{
     }
 
     makeDroppable(){
-        console.log("overrode make droppable");
     }
     
     getNodes(){
@@ -305,7 +304,6 @@ export class NodeBarWeekViewUnconnected extends React.Component{
         let renderer = this.props.renderer;
         let default_text;
         if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
-        console.log(data);
         let src = iconpath+"plus.svg";
         if(data.is_dropped)src=iconpath+"minus.svg";
         return (
@@ -317,7 +315,6 @@ export class NodeBarWeekViewUnconnected extends React.Component{
 
     jumpTo(){
         let week_id = this.props.data.id;
-        console.log("jump to week"+week_id);
         let week = $(".week-workflow[data-child-id='"+week_id+"'] > .week");
         if(week.length>0){
             let container = $("#container");

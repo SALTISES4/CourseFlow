@@ -147,24 +147,24 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
         let return_links = [];
         if(renderer.project && !renderer.is_student && !renderer.public_view){
             return_links.push(
-                <a class="hover-shade" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
-                    <img src={iconpath+"goback.svg"}/>
+                <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+                    <span class="material-symbols-rounded">arrow_back_ios</span>
                     <div>{gettext("Return to project (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
                 </a>
             );
         }
         if(renderer.public_view && renderer.can_view){
             return_links.push(
-                <a class="hover-shade" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
-                    <img src={iconpath+"goback.svg"}/>
+                <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+                    <span class="material-symbols-rounded">arrow_back_ios</span>
                     <div>{gettext("Return to Editable Workflow")}</div>
                 </a>
             )
         }
         if(renderer.project && (renderer.is_teacher || renderer.is_student)){
             return_links.push(
-                <a class="hover-shade" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
-                    <img src={iconpath+"goback.svg"}/>
+                <a class="hover-shade no-underline" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
+                    <span class="material-symbols-rounded">arrow_back_ios</span>
                     <div>{gettext("Return to classroom (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
                 </a>
             );
@@ -584,8 +584,6 @@ class RestoreBarUnconnected extends React.Component{
     
     
     render(){
-        console.log("rendering restore bar");
-        console.log(this.props.outcomes);
 
         let columns = this.props.columns.map((column)=>
             <RestoreBarItem key={column.id} objectType="column" data={column} renderer={this.props.renderer}/>

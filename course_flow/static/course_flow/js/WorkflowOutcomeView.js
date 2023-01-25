@@ -18,7 +18,6 @@ class WorkflowOutcomeView extends React.Component{
     }
     
     render(){
-        console.log("The entire workflowoutcomeview is rendering");
 
         let nodecategory = this.getNodecategory();
         let nodecategory_json = JSON.stringify(nodecategory);

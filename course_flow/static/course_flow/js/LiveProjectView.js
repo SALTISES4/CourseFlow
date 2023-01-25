@@ -173,7 +173,6 @@ class LiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
 
         let workflows = this.state.data.workflows.map((workflow)=>
             <SimpleWorkflow workflow_data = {workflow}/>
@@ -245,7 +244,6 @@ class StudentLiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        console.log(this.state);
 
         let workflows = this.state.data.workflows.map((workflow)=>
             <SimpleWorkflow workflow_data = {workflow}/>
@@ -699,7 +697,6 @@ class LiveProjectCompletionTable extends LiveProjectSection{
     render(){
         if(!this.state.data)return this.defaultRender();
         let data=this.state.liveproject;
-        console.log(this.state);
         let head = this.state.data.assignments.map(assignment=>
             <th class="table-cell nodewrapper"><AssignmentViewSmall renderer={this.props.renderer} data={assignment}/></th>
         );

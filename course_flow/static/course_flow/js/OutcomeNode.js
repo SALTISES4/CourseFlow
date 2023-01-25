@@ -207,7 +207,6 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
     render(){
         let data = this.props.data;
         
-        console.log("rendering a table cell");
         let completion_status=null;
         if(data!==null)completion_status=data.degree;
         else if(this.props.partial_completion)completion_status=0;

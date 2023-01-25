@@ -586,11 +586,9 @@ export class WorkflowLoader extends React.Component{
 }
 
 export function CreateNew(create_url){
-    console.log(create_url);
     getTargetProjectMenu(-1,(response_data)=>{
         if(response_data.parentID!=null){
             let loader = new Constants.Loader('body');
-            console.log(response_data);
             window.location=create_url.replace("/0/","/"+response_data.parentID+"/");
         }
     });

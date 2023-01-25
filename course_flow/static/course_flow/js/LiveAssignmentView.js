@@ -31,8 +31,8 @@ export class LiveAssignmentMenu extends React.Component{
             <div class="project-menu">
                 <div class="project-header">
                     {reactDom.createPortal(
-                        <a id='live-project-return' href={update_path["liveproject"].replace(0,liveproject.pk)} class='floatbardiv'>
-                            <img src={iconpath+"goback.svg"}/>
+                        <a id='live-project-return' href={update_path["liveproject"].replace(0,liveproject.pk)} class='floatbardiv hover-shade no-underline'>
+                            <span class="material-symbols-rounded">arrow_back_ios</span>
                             <div>{gettext("Return to Classroom")}</div>
                         </a>,
                         $(".titlebar .title")[0]
@@ -427,9 +427,7 @@ export class AssignmentViewSmall extends React.Component{
         else data_override={...node_data};
         
         let css_class = "node assignment";
-        console.log("setting style");
         let style = {backgroundColor:Constants.getColumnColour(node_data)};
-        console.log(style);
         return (
             <div style={style} class={css_class}>
                 <div class = "node-top-row">
@@ -596,7 +594,6 @@ export class AssignmentBox extends React.Component{
         props.renderer.tiny_loader.startLoad();
         getAssignmentsForNode(node_id,
             (response_data)=>{
-                console.log("ending load");
                 props.renderer.tiny_loader.endLoad();
                 this.setState(response_data.data_package);
                 if(!this.props.has_assignment && 
