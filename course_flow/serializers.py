@@ -23,6 +23,7 @@ from .models import (
     Node,
     NodeLink,
     NodeWeek,
+    ObjectPermission,
     ObjectSet,
     Outcome,
     OutcomeHorizontalLink,
@@ -42,6 +43,7 @@ from .utils import (
     dateTimeFormat,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
+    get_user_permission,
     linkIDMap,
     user_workflow_url,
 )
@@ -1249,6 +1251,7 @@ class InfoBoxSerializer(
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
+    can_edit = serializers.SerializerMethodField()
 
     def get_url(self, instance):
         if instance.type in ["project", "liveproject"]:
@@ -1290,6 +1293,21 @@ class InfoBoxSerializer(
             return instance.is_strategy
         else:
             return False
+
+    def get_can_edit(self, instance):
+        user = self.context.get("user")
+        if instance.type in [
+            "project",
+            "activity",
+            "course",
+            "program",
+            "workflow",
+        ]:
+            return (
+                get_user_permission(instance, user)
+                == ObjectPermission.PERMISSION_EDIT
+            )
+        return False
 
 
 # class RefreshSerializerWeek(serializers.Serializer):

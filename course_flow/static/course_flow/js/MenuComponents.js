@@ -264,7 +264,7 @@ export class WorkflowForMenu extends React.Component{
             if(this.props.duplicate){
                 let icon;
                 let titletext;
-                if(this.props.duplicate=="copy"){
+                if(this.props.duplicate=="copy" && this.props.workflow_data.can_edit){
                     icon = 'duplicate.svg';
                     titletext=gettext("Duplicate");
                     buttons.push(

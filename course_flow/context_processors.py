@@ -20,15 +20,7 @@ def update_notifications(request):
                     Group.objects.get(name=settings.TEACHER_GROUP)
                     in request.user.groups.all()
                 ):
-                    courseflow_user = CourseFlowUser.objects.filter(
-                        user=request.user
-                    ).first()
-                    if courseflow_user is None:
-                        courseflow_user = CourseFlowUser.objects.create(
-                            first_name=request.user.first_name,
-                            last_name=request.user.last_name,
-                            user=request.user,
-                        )
+                    courseflow_user = CourseFlowUser.ensure_user(request.user)
                     show_notification_request = (
                         not courseflow_user.notifications_active
                     )

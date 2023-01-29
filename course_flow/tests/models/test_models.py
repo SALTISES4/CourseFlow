@@ -15,6 +15,7 @@ from course_flow.models import (
     ColumnWorkflow,
     Comment,
     Course,
+    CourseFlowUser,
     Discipline,
     Favourite,
     Node,
@@ -61,6 +62,13 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         login(self)
         response = self.client.get(reverse("course_flow:home"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_user_update(self):
+        response = self.client.get(reverse("course_flow:user-update"))
+        self.assertEqual(response.status_code, 302)
+        login(self)
+        response = self.client.get(reverse("course_flow:user-update"))
         self.assertEqual(response.status_code, 200)
 
     def test_myprojects_view(self):
@@ -3144,6 +3152,32 @@ class PermissionsTests(TestCase):
                 },
             )
             self.assertEqual(response.status_code, 200)
+
+
+class UserTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def test_select_notifications(self):
+        # Check no update if not logged in
+        response = self.client.post(
+            reverse("course_flow:select-notifications"),
+            {
+                "notifications": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 401)
+        user = login(self)
+        # check that user has no courseflowuser field
+        self.assertEqual(CourseFlowUser.objects.filter(user=user).count(), 0)
+        response = self.client.post(
+            reverse("course_flow:select-notifications"),
+            {
+                "notifications": JSONRenderer().render(True).decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(user.courseflow_user.notifications, True)
 
 
 class ExportTest(TestCase):

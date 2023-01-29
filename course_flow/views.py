@@ -1229,8 +1229,11 @@ class SALTISEAnalyticsView(
 
     def get_context_data(self, **kwargs):
         context = super(TemplateView, self).get_context_data(**kwargs)
-        context["notified_users"] = User.objects.filter(courseflow_user__notifications=True)
+        context["notified_users"] = User.objects.filter(
+            courseflow_user__notifications=True
+        )
         return context
+
 
 class SALTISEAdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "course_flow/saltise_admin.html"
@@ -1270,7 +1273,7 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 def select_notifications(request: HttpRequest) -> HttpResponse:
     notifications = json.loads(request.POST.get("notifications"))
     try:
-        courseflowuser = CourseFlowUser.objects.get(pk=request.user.pk)
+        courseflowuser = CourseFlowUser.ensure_user(request.user)
         courseflowuser.notifications = notifications
         courseflowuser.notifications_active = True
         courseflowuser.save()

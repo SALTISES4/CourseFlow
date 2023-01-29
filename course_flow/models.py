@@ -1344,6 +1344,16 @@ class CourseFlowUser(models.Model):
     # Whether the user has had the opportunity to choose whether they receive notifications
     notifications_active = models.BooleanField(default=False)
 
+    def ensure_user(user):
+        courseflow_user = CourseFlowUser.objects.filter(user=user).first()
+        if courseflow_user is None:
+            courseflow_user = CourseFlowUser.objects.create(
+                first_name=user.first_name,
+                last_name=user.last_name,
+                user=user,
+            )
+        return courseflow_user
+
 
 """
 Other receivers
