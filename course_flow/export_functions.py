@@ -760,6 +760,5 @@ def get_workflow_nodes_table(workflow, allowed_sets):
     df = pd.DataFrame(
         entries, columns=["type", "title", "description", "column_order", "id"]
     )
-    print(df)
     pd.set_option("display.max_colwidth", None)
     return df

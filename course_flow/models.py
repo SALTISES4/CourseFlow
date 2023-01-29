@@ -2226,6 +2226,9 @@ def add_or_remove_visible_workflow_on_delete_restore(
 
 @receiver(post_save, sender=LiveProjectUser)
 def add_user_to_assignments(sender, instance, created, **kwargs):
+    print("Live project user post_save")
+    print(instance.role_type)
+    print(instance.liveproject.default_assign_to_all)
     if (
         instance.role_type == LiveProjectUser.ROLE_STUDENT
         and instance.liveproject.default_assign_to_all
@@ -2233,6 +2236,7 @@ def add_user_to_assignments(sender, instance, created, **kwargs):
         for assignment in LiveAssignment.objects.filter(
             liveproject=instance.liveproject,
         ).exclude(userassignment__user=instance.user):
+            print("auto-creating a userassignment")
             UserAssignment.objects.create(
                 user=instance.user, assignment=assignment
             )
