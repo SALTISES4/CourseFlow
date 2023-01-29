@@ -4148,7 +4148,7 @@ class UserTestCase(ChannelsStaticLiveServerTestCase):
         self.user.first_name = "old first"
         self.user.last_name = "old last"
         self.user.save()
-        selenium.get(self.live_server_url + "/course-flow/home/")
+        selenium.get(self.live_server_url + reverse("course_flow:home"))
         username = selenium.find_element_by_id("id_username")
         password = selenium.find_element_by_id("id_password")
         username.send_keys("testuser1")
@@ -4162,7 +4162,7 @@ class UserTestCase(ChannelsStaticLiveServerTestCase):
     def test_edit_user(self):
         selenium = self.selenium
         wait = WebDriverWait(selenium, timeout=10)
-        selenium.get(self.live_server_url + "/course-flow/user/update/")
+        selenium.get(self.live_server_url + reverse("course_flow:user-update"))
 
         courseflow_user = CourseFlowUser.objects.get(pk=self.user.pk)
         assert courseflow_user.first_name == "old first"

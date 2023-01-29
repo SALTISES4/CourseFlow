@@ -1,4 +1,4 @@
-import json
+import json, time
 
 from django.contrib.auth.models import Group
 from django.test import TestCase
@@ -881,6 +881,8 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
         liveproject.visible_workflows.add(workflow)
+        liveproject.save()
+        time.sleep(2)
         response = self.client.post(
             reverse("course_flow:get-assignments-for-node"),
             {
