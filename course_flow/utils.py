@@ -284,7 +284,7 @@ def get_user_role(obj, user):
         user=user, liveproject=liveproject
     )
     if permissions.count() == 0:
-        return models.LiveProjectUser.PERMISSION_NONE
+        return models.LiveProjectUser.ROLE_NONE
     return permissions.first().role_type
 
 
