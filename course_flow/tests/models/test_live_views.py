@@ -843,8 +843,6 @@ class ModelViewTest(TestCase):
         assignment = LiveAssignment.objects.create(
             liveproject=liveproject, task=node
         )
-        print("the assignment has been created. The following users have been added")
-        print([ua.user for ua in UserAssignment.objects.filter(assignment=assignment)])
         LiveProjectUser.objects.create(
             user=author,
             liveproject=liveproject,
@@ -874,8 +872,6 @@ class ModelViewTest(TestCase):
             liveproject=liveproject,
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
-        print("the liveprojectuser has been created. The following users have been added")
-        print([ua.user for ua in UserAssignment.objects.filter(assignment=assignment)])
         response = self.client.post(
             reverse("course_flow:get-assignments-for-node"),
             {
@@ -885,8 +881,10 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
         liveproject.visible_workflows.add(workflow)
-        liveproject.save()
-        time.sleep(2)
+        UserAssignment.objects.create(
+            user=user,
+            assignment=assignment,
+        )
         response = self.client.post(
             reverse("course_flow:get-assignments-for-node"),
             {

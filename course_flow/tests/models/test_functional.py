@@ -98,6 +98,60 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
         )
 
 
+class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
+        else:
+            self.selenium = webdriver.Chrome()
+
+        super(UserTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        self.user.first_name = "old first"
+        self.user.last_name = "old last"
+        self.user.save()
+        selenium.get(self.live_server_url + reverse("course_flow:home"))
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(UserTestCase, self).tearDown()
+
+    def test_edit_user(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        selenium.get(self.live_server_url + reverse("course_flow:user-update"))
+
+        courseflow_user = CourseFlowUser.objects.get(pk=self.user.pk)
+        assert courseflow_user.first_name == "old first"
+        assert courseflow_user.last_name == "old last"
+        first_name = selenium.find_element_by_id("id_first_name")
+        last_name = selenium.find_element_by_id("id_last_name")
+        first_name.clear()
+        last_name.clear()
+
+        new_first = "new first"
+        new_last = "new last"
+
+        first_name.send_keys(new_first)
+        last_name.send_keys(new_last)
+        selenium.find_element_by_id("save-button").click()
+
+        time.sleep(1)
+
+        courseflow_user = CourseFlowUser.objects.get(pk=self.user.pk)
+
+        assert courseflow_user.first_name == "new first"
+        assert courseflow_user.last_name == "new last"
+
 class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
@@ -4131,57 +4185,3 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         connected, subprotocol = async_to_sync_connect(communicator)
         assert not connected
 
-
-class UserTestCase(ChannelsStaticLiveServerTestCase):
-    def setUp(self):
-        chrome_options = webdriver.chrome.options.Options()
-        if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
-        else:
-            self.selenium = webdriver.Chrome()
-
-        super(UserTestCase, self).setUp()
-        selenium = self.selenium
-        selenium.maximize_window()
-
-        self.user = login(self)
-        self.user.first_name = "old first"
-        self.user.last_name = "old last"
-        self.user.save()
-        selenium.get(self.live_server_url + reverse("course_flow:home"))
-        username = selenium.find_element_by_id("id_username")
-        password = selenium.find_element_by_id("id_password")
-        username.send_keys("testuser1")
-        password.send_keys("testpass1")
-        selenium.find_element_by_css_selector("button[type=Submit]").click()
-
-    def tearDown(self):
-        self.selenium.quit()
-        super(UserTestCase, self).tearDown()
-
-    def test_edit_user(self):
-        selenium = self.selenium
-        wait = WebDriverWait(selenium, timeout=10)
-        selenium.get(self.live_server_url + reverse("course_flow:user-update"))
-
-        courseflow_user = CourseFlowUser.objects.get(pk=self.user.pk)
-        assert courseflow_user.first_name == "old first"
-        assert courseflow_user.last_name == "old last"
-        first_name = selenium.find_element_by_id("id_first_name")
-        last_name = selenium.find_element_by_id("id_last_name")
-        first_name.clear()
-        last_name.clear()
-
-        new_first = "new first"
-        new_last = "new last"
-
-        first_name.send_keys(new_first)
-        last_name.send_keys(new_last)
-        selenium.find_element_by_id("save-button").click()
-
-        time.sleep(1)
-
-        courseflow_user = CourseFlowUser.objects.get(pk=self.user.pk)
-
-        assert courseflow_user.first_name == "new first"
-        assert courseflow_user.last_name == "new last"
