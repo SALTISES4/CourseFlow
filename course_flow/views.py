@@ -1227,6 +1227,10 @@ class SALTISEAnalyticsView(
             in self.request.user.groups.all()
         )
 
+    def get_context_data(self, **kwargs):
+        context = super(TemplateView, self).get_context_data(**kwargs)
+        context["notified_users"] = User.objects.filter(courseflow_user__notifications=True)
+        return context
 
 class SALTISEAdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "course_flow/saltise_admin.html"

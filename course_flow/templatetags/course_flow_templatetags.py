@@ -282,3 +282,7 @@ def get_saltise_admin_users():
     ]
     table = "\n".join(rows)
     return format_html("<table>" + table + "</table>")
+
+@register.simple_tag
+def get_saltise_admin_user_details():
+    return format_html("<table></table>")

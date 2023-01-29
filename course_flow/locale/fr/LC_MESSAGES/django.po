@@ -598,7 +598,7 @@ msgstr "Gérer les notifications de mise à jour"
 
 #: templates/course_flow/saltise_admin.html:22
 msgid "CourseFlow Analytics"
-msgstr "un utilisateur"
+msgstr "Analyse de CourseFlow"
 
 #: templates/course_flow/saltise_analytics.html:15
 msgid "Analytics on CourseFlow usage"
