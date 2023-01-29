@@ -106,7 +106,7 @@ class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
         else:
             self.selenium = webdriver.Chrome()
 
-        super(UserTestCase, self).setUp()
+        super(SeleniumUserTestCase, self).setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -123,7 +123,7 @@ class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(UserTestCase, self).tearDown()
+        super(SeleniumUserTestCase, self).tearDown()
 
     def test_edit_user(self):
         selenium = self.selenium
