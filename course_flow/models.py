@@ -44,6 +44,8 @@ class Project(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
 
+    is_strategy = models.BooleanField(default=False)
+    
     workflows = models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
     )
@@ -86,6 +88,9 @@ class Project(models.Model):
     @property
     def type(self):
         return "project"
+
+    def get_project(self):
+        return self
 
     def get_live_project(self):
         try:
@@ -831,9 +836,12 @@ class NodeWeek(models.Model):
 class Workflow(models.Model):
     objects = InheritanceManager()
 
-    @property
-    def author(self):
-        return self.get_subclass().author
+    author = models.ForeignKey(
+        User,
+        related_name="authored_workflows",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
 
     @property
     def importing(self):
@@ -861,6 +869,10 @@ class Workflow(models.Model):
     from_saltise = models.BooleanField(default=False)
 
     condensed = models.BooleanField(default=False)
+
+    user_permissions = GenericRelation(
+        "ObjectPermission", related_query_name="workflow"
+    )
 
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
@@ -995,21 +1007,8 @@ class Workflow(models.Model):
 
 
 class Activity(Workflow):
-    author = models.ForeignKey(
-        User,
-        related_name="authored_activities",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
-
-    students = models.ManyToManyField(
-        User, related_name="assigned_activities", blank=True
-    )
 
     favourited_by = GenericRelation("Favourite", related_query_name="activity")
-    user_permissions = GenericRelation(
-        "ObjectPermission", related_query_name="activity"
-    )
 
     DEFAULT_CUSTOM_COLUMN = 0
     DEFAULT_COLUMNS = [1, 2, 3, 4]
@@ -1034,21 +1033,8 @@ class Activity(Workflow):
 
 
 class Course(Workflow):
-    author = models.ForeignKey(
-        User,
-        related_name="authored_courses",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
-
-    students = models.ManyToManyField(
-        User, related_name="assigned_courses", blank=True
-    )
 
     favourited_by = GenericRelation("Favourite", related_query_name="course")
-    user_permissions = GenericRelation(
-        "ObjectPermission", related_query_name="course"
-    )
 
     DEFAULT_CUSTOM_COLUMN = 10
     DEFAULT_COLUMNS = [11, 12, 13, 14]
@@ -1069,21 +1055,12 @@ class Course(Workflow):
 
 
 class Program(Workflow):
-    author = models.ForeignKey(
-        User,
-        related_name="authored_programs",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
 
     DEFAULT_CUSTOM_COLUMN = 20
     DEFAULT_COLUMNS = [20, 20, 20]
     WORKFLOW_TYPE = 2
 
     favourited_by = GenericRelation("Favourite", related_query_name="program")
-    user_permissions = GenericRelation(
-        "ObjectPermission", related_query_name="program"
-    )
 
     @property
     def type(self):
@@ -1178,9 +1155,15 @@ class Comment(models.Model):
     created_on = models.DateTimeField(default=timezone.now)
 
 
+workflow_choices = [
+    ContentType.objects.get_for_model(Activity),
+    ContentType.objects.get_for_model(Course),
+    ContentType.objects.get_for_model(Program),
+]
+
 class ObjectPermission(models.Model):
     content_choices = {
-        "model__in": ["project", "activity", "course", "program"]
+        "model__in": ["project", "workflow"]
     }
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content_type = models.ForeignKey(
@@ -1204,6 +1187,11 @@ class ObjectPermission(models.Model):
     permission_type = models.PositiveIntegerField(
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
+
+    def save(self,*args,**kwargs):
+        print("called object permission")
+        if self.content_type in workflow_choices: self.content_type=ContentType.objects.get_for_model(Workflow)
+        super().save(*args,**kwargs)
 
 
 class UpdateNotification(models.Model):
@@ -1942,11 +1930,15 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                 ):
                     pass
                 else:
-                    ObjectPermission.objects.create(
-                        user=instance.user,
-                        content_object=workflow.get_subclass(),
-                        permission_type=instance.permission_type,
-                    )
+                    #If user is the owner, don't override their ownership
+                    if workflow.author == instance.user:
+                        pass
+                    else:
+                        ObjectPermission.objects.create(
+                            user=instance.user,
+                            content_object=workflow.get_subclass(),
+                            permission_type=instance.permission_type,
+                        )
 
 
 #        elif instance.content_type == ContentType.objects.get_for_model(Workflow):
@@ -2117,6 +2109,15 @@ def create_default_program_content(sender, instance, created, **kwargs):
         instance.condensed = True
         instance.save()
 
+@receiver(post_save, sender=Project)
+@receiver(post_save, sender=Workflow)
+def add_default_editor_workflow(sender, instance, created, **kwargs):
+    if created and instance.author is not None:
+        ObjectPermission.objects.create(
+            content_object=instance,
+            user=instance.author,
+            permission_type=ObjectPermission.PERMISSION_EDIT
+        )
 
 @receiver(post_save, sender=WorkflowProject)
 def set_publication_workflow(sender, instance, created, **kwargs):
@@ -2226,9 +2227,6 @@ def add_or_remove_visible_workflow_on_delete_restore(
 
 @receiver(post_save, sender=LiveProjectUser)
 def add_user_to_assignments(sender, instance, created, **kwargs):
-    print("Live project user post_save")
-    print(instance.role_type)
-    print(instance.liveproject.default_assign_to_all)
     if (
         instance.role_type == LiveProjectUser.ROLE_STUDENT
         and instance.liveproject.default_assign_to_all

@@ -665,6 +665,7 @@ export function setLiveProjectRole(user_id,liveprojectPk,permission_type,callBac
 
 //Get the list of users for a project
 export function getUsersForObject(objectID,objectType,callBackFunction=()=>console.log("success")){
+    if(["program","course","activity"].indexOf(objectType)>=0)objectType="workflow"
     try{
         $.post(post_paths.get_users_for_object,{
             objectID:JSON.stringify(objectID),

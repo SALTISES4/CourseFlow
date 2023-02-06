@@ -25,6 +25,7 @@ def course_flow_patterns():
             name="saltise-analytics",
         ),
         path("logout/", views.logout_view, name="logout"),
+        path("mylibrary/", views.mylibrary_view, name="my-library"),
         path("myprojects/", views.myprojects_view, name="my-projects"),
         path(
             "myliveprojects/",

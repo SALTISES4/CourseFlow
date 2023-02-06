@@ -1241,16 +1241,15 @@ class InfoBoxSerializer(
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
-    code = serializers.SerializerMethodField()
-    type = serializers.SerializerMethodField()
+    type = serializers.ReadOnlyField()
     favourite = serializers.SerializerMethodField()
-    is_owned = serializers.SerializerMethodField()
-    is_strategy = serializers.SerializerMethodField()
+    # is_owned = serializers.SerializerMethodField()
+    is_strategy = serializers.ReadOnlyField()
     published = serializers.ReadOnlyField()
     author = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
-    url = serializers.SerializerMethodField()
+    # url = serializers.SerializerMethodField()
     can_edit = serializers.SerializerMethodField()
 
     def get_url(self, instance):
@@ -1279,23 +1278,9 @@ class InfoBoxSerializer(
         else:
             return False
 
-    def get_code(self, instance):
-        if hasattr(instance, "code"):
-            return instance.code
-        else:
-            return None
-
-    def get_type(self, instance):
-        return instance.type
-
-    def get_is_strategy(self, instance):
-        if hasattr(instance, "is_strategy"):
-            return instance.is_strategy
-        else:
-            return False
-
     def get_can_edit(self, instance):
         user = self.context.get("user")
+        return False
         if instance.type in [
             "project",
             "activity",
