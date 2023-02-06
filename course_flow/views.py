@@ -401,17 +401,20 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             .decode("utf-8"),
         }
 
+
 def get_my_library(user):
-    last_time=time.time()
+    last_time = time.time()
     all_projects = Project.objects.filter(user_permissions__user=user)
     print(all_projects)
-    last_time=benchmark("got all the projects",last_time)
-    projects_serialized = InfoBoxSerializer(all_projects,many=True,context={"user":user}).data
+    last_time = benchmark("got all the projects", last_time)
+    projects_serialized = InfoBoxSerializer(
+        all_projects, many=True, context={"user": user}
+    ).data
     return projects_serialized
 
 
 def get_my_projects(user, add, **kwargs):
-    last_time=time.time()
+    last_time = time.time()
     for_add = kwargs.get("for_add", False)
     permission_filter = {}
     if for_add:
@@ -466,7 +469,7 @@ def get_my_projects(user, add, **kwargs):
             ),
         },
     }
-    last_time=benchmark("got shared",last_time)
+    last_time = benchmark("got shared", last_time)
     if not for_add:
         data_package["deleted_projects"] = {
             "title": _("Restore Projects"),
@@ -495,7 +498,7 @@ def get_my_projects(user, add, **kwargs):
                 "Projects you have deleted can be restored from here."
             ),
         }
-    last_time=benchmark("got my projects",last_time)
+    last_time = benchmark("got my projects", last_time)
     return data_package
 
 
@@ -1192,6 +1195,7 @@ def myprojects_view(request):
         .decode("utf-8")
     }
     return render(request, "course_flow/myprojects.html", context)
+
 
 @login_required
 def mylibrary_view(request):
@@ -4353,7 +4357,9 @@ def set_permission(request: HttpRequest) -> HttpResponse:
 
         project = item.get_project()
         if permission_type != ObjectPermission.PERMISSION_EDIT:
-            if item.author == user or (project is not None and project.author==user):
+            if item.author == user or (
+                project is not None and project.author == user
+            ):
                 response = JsonResponse(
                     {
                         "action": "error",
@@ -4362,7 +4368,6 @@ def set_permission(request: HttpRequest) -> HttpResponse:
                 )
                 response.status_code = 403
                 return response
-
 
         # if permission_type == ObjectPermission.PERMISSION_STUDENT:
         #     if objectType == "project":
@@ -4416,7 +4421,8 @@ def set_permission(request: HttpRequest) -> HttpResponse:
 def get_users_for_object(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-    if object_type in ["activity","course","program"]: object_type="workflow"
+    if object_type in ["activity", "course", "program"]:
+        object_type = "workflow"
     content_type = ContentType.objects.get(model=object_type)
     try:
         editors = set()

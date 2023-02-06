@@ -45,7 +45,7 @@ class Project(models.Model):
     published = models.BooleanField(default=False)
 
     is_strategy = models.BooleanField(default=False)
-    
+
     workflows = models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
     )
@@ -1161,10 +1161,9 @@ workflow_choices = [
     ContentType.objects.get_for_model(Program),
 ]
 
+
 class ObjectPermission(models.Model):
-    content_choices = {
-        "model__in": ["project", "workflow"]
-    }
+    content_choices = {"model__in": ["project", "workflow"]}
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, limit_choices_to=content_choices
@@ -1188,10 +1187,11 @@ class ObjectPermission(models.Model):
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
 
-    def save(self,*args,**kwargs):
+    def save(self, *args, **kwargs):
         print("called object permission")
-        if self.content_type in workflow_choices: self.content_type=ContentType.objects.get_for_model(Workflow)
-        super().save(*args,**kwargs)
+        if self.content_type in workflow_choices:
+            self.content_type = ContentType.objects.get_for_model(Workflow)
+        super().save(*args, **kwargs)
 
 
 class UpdateNotification(models.Model):
@@ -1930,7 +1930,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                 ):
                     pass
                 else:
-                    #If user is the owner, don't override their ownership
+                    # If user is the owner, don't override their ownership
                     if workflow.author == instance.user:
                         pass
                     else:
@@ -2109,6 +2109,7 @@ def create_default_program_content(sender, instance, created, **kwargs):
         instance.condensed = True
         instance.save()
 
+
 @receiver(post_save, sender=Project)
 @receiver(post_save, sender=Workflow)
 def add_default_editor_workflow(sender, instance, created, **kwargs):
@@ -2116,8 +2117,9 @@ def add_default_editor_workflow(sender, instance, created, **kwargs):
         ObjectPermission.objects.create(
             content_object=instance,
             user=instance.author,
-            permission_type=ObjectPermission.PERMISSION_EDIT
+            permission_type=ObjectPermission.PERMISSION_EDIT,
         )
+
 
 @receiver(post_save, sender=WorkflowProject)
 def set_publication_workflow(sender, instance, created, **kwargs):

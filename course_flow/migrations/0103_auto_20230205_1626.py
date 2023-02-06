@@ -6,20 +6,20 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0102_auto_20230205_1612'),
+        ("course_flow", "0102_auto_20230205_1612"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='activity',
-            name='author',
+            model_name="activity",
+            name="author",
         ),
         migrations.RemoveField(
-            model_name='course',
-            name='author',
+            model_name="course",
+            name="author",
         ),
         migrations.RemoveField(
-            model_name='program',
-            name='author',
+            model_name="program",
+            name="author",
         ),
     ]

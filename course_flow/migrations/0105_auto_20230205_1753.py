@@ -2,17 +2,23 @@
 
 from django.db import migrations
 
+
 def forwards_func(apps, schema_editor):
-    Activity = apps.get_model("course_flow","Activity")
-    Course = apps.get_model("course_flow","Course")
-    Program = apps.get_model("course_flow","Program")
-    Project = apps.get_model("course_flow","Project")
-    ObjectPermission = apps.get_model("course_flow","ObjectPermission")
-    ContentType = apps.get_model("contenttypes","ContentType")
+    Activity = apps.get_model("course_flow", "Activity")
+    Course = apps.get_model("course_flow", "Course")
+    Program = apps.get_model("course_flow", "Program")
+    Project = apps.get_model("course_flow", "Project")
+    ObjectPermission = apps.get_model("course_flow", "ObjectPermission")
+    ContentType = apps.get_model("contenttypes", "ContentType")
     db_alias = schema_editor.connection.alias
 
-    for workflow in list(Activity.objects.all())+list(Course.objects.all())+list(Program.objects.all()):
-        if workflow.author is None: continue
+    for workflow in (
+        list(Activity.objects.all())
+        + list(Course.objects.all())
+        + list(Program.objects.all())
+    ):
+        if workflow.author is None:
+            continue
         ObjectPermission.objects.using(db_alias).create(
             content_type=ContentType.objects.get_for_model(workflow),
             object_id=workflow.id,
@@ -20,7 +26,8 @@ def forwards_func(apps, schema_editor):
             permission_type=2,
         )
     for project in Project.objects.all():
-        if project.author is None: continue
+        if project.author is None:
+            continue
         ObjectPermission.objects.using(db_alias).create(
             content_type=ContentType.objects.get_for_model(project),
             object_id=project.id,
@@ -32,20 +39,21 @@ def forwards_func(apps, schema_editor):
 def reverse_func(apps, schema_editor):
     pass
 
+
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('course_flow', '0104_rename_author_temp_workflow_author'),
+        ("course_flow", "0104_rename_author_temp_workflow_author"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='activity',
-            name='students',
+            model_name="activity",
+            name="students",
         ),
         migrations.RemoveField(
-            model_name='course',
-            name='students',
+            model_name="course",
+            name="students",
         ),
-        migrations.RunPython(forwards_func,reverse_func),
+        migrations.RunPython(forwards_func, reverse_func),
     ]
