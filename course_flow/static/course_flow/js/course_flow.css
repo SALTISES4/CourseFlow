@@ -648,10 +648,6 @@ button:hover{
     color: #444444;
 }
 
-.project-menu .create-dropdown, .home-tabs .create-dropdown{
-    margin-top:-20px;
-}
-
 .floatbar .create-dropdown{
     margin-left:-6px;
     z-index: 5;

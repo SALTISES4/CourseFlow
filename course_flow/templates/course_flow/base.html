@@ -122,6 +122,14 @@
       charset="utf-8"
     ></script>
     {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script
+      src="{% static 'course_flow/js/scripts-library.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
     <script nonce="{{ request.csp_nonce }}"
       src="{% url 'course_flow:javascript-catalog' %}"
       defer="true"
@@ -355,9 +363,11 @@
       update_liveproject_value: "{% url 'course_flow:update-liveproject-value' %}",
       set_assignment_completion: "{% url 'course_flow:set-assignment-completion' %}",
       get_assignments_for_node: "{% url 'course_flow:get-assignments-for-node' %}",
+      get_workflows_for_project: "{% url 'course_flow:get-workflows-for-project' %}",
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
+      get_library: "{% url 'course_flow:get-library' %}",
       import: "{% url 'course_flow:import' %}",
       get_public_workflow_data: "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
       get_public_workflow_parent_data: "{% url 'course_flow:get-public-workflow-parent-data' pk='0' %}",
@@ -386,29 +396,20 @@
         window.location.replace("{% url 'course_flow:logout' %}");
     });
 
-    $("#overflow-options").on("click",(evt)=>{
-      evt.stopPropagation();
-      $("#overflow-links").toggleClass("active");
-    });
-    document.addEventListener("click",()=>{
-      $("#overflow-links").removeClass("active");
-    });
-
-    $("#account-options").on("click",(evt)=>{
-      evt.stopPropagation();
-      $("#account-links").toggleClass("active");
-    });
-    document.addEventListener("click",()=>{
-      $("#account-links").removeClass("active");
-    });
-
-    $("#create-options").on("click",(evt)=>{
-      evt.stopPropagation();
-      $("#create-links").toggleClass("active");
-    });
-    document.addEventListener("click",()=>{
-      $("#create-links").removeClass("active");
-    });
+    const makeDropdown = (click_element)=>{
+      $(click_element).on("click",(evt)=>{
+        console.log("hi")
+        console.log(click_element);
+        $(click_element).children(".create-dropdown").toggleClass("active");
+        console.log($(click_element).children(".create-dropdown"));
+      });
+      document.addEventListener("click",(evt)=>{
+        if(! $(evt.target).closest(click_element)[0])$(click_element).children(".create-dropdown").removeClass("active");
+      });
+    }
+    makeDropdown("#overflow-options","#overflow-links");
+    makeDropdown("#account-options","#account-links");
+    makeDropdown("#create-options","#create-links");
 
     //reload if we got here using forward or back button
     if (

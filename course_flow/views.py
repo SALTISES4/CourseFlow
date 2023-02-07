@@ -401,18 +401,6 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             .decode("utf-8"),
         }
 
-
-def get_my_library(user):
-    last_time = time.time()
-    all_projects = Project.objects.filter(user_permissions__user=user)
-    print(all_projects)
-    last_time = benchmark("got all the projects", last_time)
-    projects_serialized = InfoBoxSerializer(
-        all_projects, many=True, context={"user": user}
-    ).data
-    return projects_serialized
-
-
 def get_my_projects(user, add, **kwargs):
     last_time = time.time()
     for_add = kwargs.get("for_add", False)
@@ -1199,12 +1187,7 @@ def myprojects_view(request):
 
 @login_required
 def mylibrary_view(request):
-    context = {
-        "project_data_package": JSONRenderer()
-        .render(get_my_library(request.user))
-        .decode("utf-8")
-    }
-    return render(request, "course_flow/myprojects.html", context)
+    return render(request, "course_flow/library.html")
 
 
 @login_required
@@ -2253,6 +2236,25 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
     queryset = Discipline.objects.order_by("title")
     serializer_class = DisciplineSerializer
 
+@login_required
+def get_library(request: HttpRequest)->HttpResponse:
+    user=request.user
+    last_time = time.time()
+    all_projects = Project.objects.filter(user_permissions__user=user)
+    last_time = benchmark("got all the projects", last_time)
+    projects_serialized = InfoBoxSerializer(
+        all_projects, many=True, context={"user": user}
+    ).data
+    return JsonResponse({"data_package":projects_serialized})
+
+@user_can_view("projectPk")
+def get_workflows_for_project(request: HttpRequest)->HttpResponse:
+    user=request.user
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    workflows_serialized = InfoBoxSerializer(
+        project.workflows.all(), many=True, context={"user": user}
+    ).data
+    return JsonResponse({"data_package":workflows_serialized})
 
 @user_can_view_or_enrolled_as_student("workflowPk")
 def get_workflow_parent_data(request: HttpRequest) -> HttpResponse:
@@ -2330,9 +2332,6 @@ def get_public_workflow_parent_data(request: HttpRequest, pk) -> HttpResponse:
 def get_project_data(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
-        data_package = get_workflow_data_package(
-            request.user, project, self_only=True
-        )
         project_data = (
             JSONRenderer()
             .render(

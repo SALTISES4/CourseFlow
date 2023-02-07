@@ -1004,3 +1004,28 @@ export function getAssignmentsForNode(nodePk,callBackFunction=()=>console.log("s
         fail_function();
     }
 }
+
+
+//Get the library projects
+export function getLibrary(callBackFunction=()=>console.log("success")){
+    try{
+        $.get(get_paths.get_library).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the workflows for a project
+export function getWorkflowsForProject(projectPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_workflows_for_project,{
+            projectPk:projectPk
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}

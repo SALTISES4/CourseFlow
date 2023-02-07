@@ -1243,14 +1243,14 @@ class InfoBoxSerializer(
     description = serializers.SerializerMethodField()
     type = serializers.ReadOnlyField()
     favourite = serializers.SerializerMethodField()
-    # is_owned = serializers.SerializerMethodField()
+    is_owned = serializers.SerializerMethodField()
     is_strategy = serializers.ReadOnlyField()
     published = serializers.ReadOnlyField()
     author = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     # url = serializers.SerializerMethodField()
-    can_edit = serializers.SerializerMethodField()
+    # can_edit = serializers.SerializerMethodField()
 
     def get_url(self, instance):
         if instance.type in ["project", "liveproject"]:
@@ -1278,21 +1278,31 @@ class InfoBoxSerializer(
         else:
             return False
 
-    def get_can_edit(self, instance):
+    def get_permission_type(self, instance):
         user = self.context.get("user")
-        return False
-        if instance.type in [
-            "project",
-            "activity",
-            "course",
-            "program",
-            "workflow",
-        ]:
-            return (
-                get_user_permission(instance, user)
-                == ObjectPermission.PERMISSION_EDIT
-            )
-        return False
+        if user is None or not user.is_authenticated:
+            return 0
+        return ObjectPermission.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(instance),
+            object_id=instance.id,
+        ).first().permission_type
+
+    # def get_can_edit(self, instance):
+    #     user = self.context.get("user")
+    #     return False
+    #     if instance.type in [
+    #         "project",
+    #         "activity",
+    #         "course",
+    #         "program",
+    #         "workflow",
+    #     ]:
+    #         return (
+    #             get_user_permission(instance, user)
+    #             == ObjectPermission.PERMISSION_EDIT
+    #         )
+    #     return False
 
 
 # class RefreshSerializerWeek(serializers.Serializer):

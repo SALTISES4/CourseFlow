@@ -392,17 +392,15 @@ export class MenuSection extends React.Component{
                 );
             }
             add_button=(
-                [
-                    <div class="menu-create hover-shade" onClick={this.clickAdd.bind(this)}>
-                        <img
-                          class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title={gettext("Add New")}
-                          src={iconpath+"add_new_white.svg"}
-                        /><div>{this.props.section_data.title}</div>
-                    </div>,
-                    <div class="create-dropdown" ref={this.dropdownDiv}>
+                <div class="menu-create hover-shade" ref={this.dropdownDiv}>
+                    <img
+                      class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title={gettext("Add New")}
+                      src={iconpath+"add_new_white.svg"}
+                    /><div>{this.props.section_data.title}</div>
+                    <div class="create-dropdown">
                         {adds}
                     </div>
-                ]
+                </div>
             )
             
         }
@@ -417,18 +415,12 @@ export class MenuSection extends React.Component{
         );
         
     }
-    
-    clickAdd(evt){
-        $(this.dropdownDiv.current)[0].classList.toggle("active");
-    }
 
     componentDidMount(){
-        window.addEventListener("click",(evt)=>{
-            if($(evt.target).closest(".menu-create").length==0){
-                $(".create-dropdown").removeClass("active");
-            }
-        });
+        makeDropdown(this.dropdownDiv.current);
     }
+
+    
 }
 
 export class MenuTab extends React.Component{
