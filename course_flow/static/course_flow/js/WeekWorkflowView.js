@@ -1,14 +1,14 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON.js";
-import WeekView from "./WeekView.js";
-import TermView from "./TermView.js";
-import {getWeekWorkflowByID} from "./FindState.js";
-import {} from "./Reducers.js";
-import {WeekComparisonView} from "./WeekView";
+import WeekView from "./WeekView";
+import TermView from "./TermView";
+import {getWeekWorkflowByID} from "./FindState";
+import {Component} from "./ComponentJSON";
+import {} from "./Reducers";
+import {WeekComparisonView, NodeBarWeekView} from "./WeekView";
 
 //Basic weekworkflow component
-class WeekWorkflowView extends ComponentJSON{
+class WeekWorkflowView extends Component{
     constructor(props){
         super(props);
         this.objectType="weekworkflow";
@@ -66,10 +66,12 @@ export const WeekWorkflowComparisonView = connect(
 )(WeekWorkflowComparisonViewUnconnected)
 
 
-class NodeBarWeekWorkflowUnconnected extends ComponentJSON{
+class NodeBarWeekWorkflowUnconnected extends React.Component{
     render(){
         let data = this.props.data;
-        return null;
+        return(
+            <NodeBarWeekView objectID={data.week} rank={this.props.order.indexOf(data.id)} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
+        )
     }
 }
 export const NodeBarWeekWorkflow = connect(

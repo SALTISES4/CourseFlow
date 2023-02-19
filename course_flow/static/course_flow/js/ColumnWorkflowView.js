@@ -1,12 +1,11 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON.js";
 import ColumnView from "./ColumnView.js";
 import {NodeBarColumn, NodeBarColumnCreator} from "./ColumnView.js";
 import {getColumnWorkflowByID} from "./FindState.js";
 
 //Basic component to represent a columnworkflow
-class ColumnWorkflowView extends ComponentJSON{
+class ColumnWorkflowView extends React.Component{
     constructor(props){
         super(props);
         this.objectType="columnworkflow";
@@ -34,7 +33,7 @@ export default connect(
 )(ColumnWorkflowView)
 
 
-class NodeBarColumnWorkflowUnconnected extends ComponentJSON{
+class NodeBarColumnWorkflowUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         if(data)return(

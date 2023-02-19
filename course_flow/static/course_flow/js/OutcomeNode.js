@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON";
+import {Component, ActionButton} from "./ComponentJSON";
 import {SimpleOutcomeView} from "./OutcomeView";
 import {getOutcomeNodeByID, getTableOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getNodeByID, getChildWorkflowByID, getOutcomeWorkflowByID} from "./FindState";
 import {updateOutcomenodeDegree} from "./PostFunctions";
@@ -9,7 +9,7 @@ import * as Constants from "./Constants";
 import {TableChildWorkflowView} from "./OutcomeHorizontalLink"
 
 //Basic component representing an outcome to node link
-class OutcomeNodeView extends ComponentJSON{
+class OutcomeNodeView extends Component{
     
     constructor(props){
         super(props);
@@ -32,6 +32,14 @@ class OutcomeNodeView extends ComponentJSON{
         );
     }
     
+    //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
+    addDeleteSelf(data){
+        let icon="close.svg";
+        return (
+            <ActionButton button_icon={icon} button_class="delete-self-button" titletext={gettext("Delete")} handleClick={this.deleteSelf.bind(this,data)}/>
+        );
+    }
+
     deleteSelf(data){
         let props=this.props;
         if(this.props.deleteSelfOverride)this.props.deleteSelfOverride();
@@ -56,7 +64,7 @@ class OutcomeNodeView extends ComponentJSON{
         }
     }
 
-    postMountFunction(){
+    componentDidMount(){
         this.checkHidden();
     }
 
@@ -80,7 +88,7 @@ export default connect(
 
 
 //Component representing a cell in a totals column
-class TableTotalCellUnconnected extends ComponentJSON{
+class TableTotalCellUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -199,10 +207,9 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
     render(){
         let data = this.props.data;
         
-        
         let completion_status=null;
         if(data!==null)completion_status=data.degree;
-        else if(this.props.descendant_completion_status[this.props.nodeID])completion_status=0;
+        else if(this.props.partial_completion)completion_status=0;
         let checked=false;
         if(data)checked=true;
         
@@ -244,8 +251,6 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
                 props.renderer.tiny_loader.endLoad();
             }
         );
-        
-        
     }
 
     clickFunction(){
@@ -264,14 +269,6 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
     }
 
     componentDidUpdate(prevProps){
-        if(!this.props.updateParentCompletion)return;
-        if(prevProps.data && this.props.data){
-            if(prevProps.data.degree!=this.props.data.degree)this.props.updateParentCompletion(this.props.nodeID,this.props.outcomeID,this.props.data.degree);
-        }else if(!prevProps.data && this.props.data){
-            this.props.updateParentCompletion(this.props.nodeID,this.props.outcomeID,this.props.data.degree);
-        }else if(prevProps.data&&!this.props.data){
-            this.props.updateParentCompletion(this.props.nodeID,this.props.outcomeID,0);
-        }
     }
 
 
@@ -280,15 +277,12 @@ export class TableOutcomeNodeUnconnected extends TableTotalCellUnconnected{
         this.props.updateParentCompletion(this.props.nodeID,this.props.outcomeID,0);
     }
 
-    postMountFunction(){
-        let value=null;
-        if(this.props.data)value=this.props.data.degree;
-        if(this.props.updateParentCompletion && value)this.props.updateParentCompletion(this.props.nodeID,this.props.outcomeID,value);
+    componentDidMount(){
     }
     
 }
 const mapTableOutcomeNodeStateToProps = (state,own_props)=>(
-    getTableOutcomeNodeByID(state,own_props.nodeID, own_props.outcomeID)
+    getTableOutcomeNodeByID(state.outcomenode,own_props.nodeID, own_props.outcomeID)
 )
 export const TableOutcomeNode = connect(
     mapTableOutcomeNodeStateToProps,
@@ -296,7 +290,7 @@ export const TableOutcomeNode = connect(
 )(TableOutcomeNodeUnconnected)
 
 //Component representing a group of cells
-class TableOutcomeGroupUnconnected extends ComponentJSON{
+class TableOutcomeGroupUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -306,11 +300,11 @@ class TableOutcomeGroupUnconnected extends ComponentJSON{
         let tableCells;
         if(this.props.renderer.view_type=="horizontaloutcometable"){
             tableCells = this.props.nodes.map((node)=>
-                <TableChildWorkflowView renderer={this.props.renderer} descendant_completion_status={this.props.descendant_completion_status} updateParentCompletion={this.props.updateParentCompletion} nodeID={node} outcomeID={this.props.outcomeID}/> 
+                <TableChildWorkflowView renderer={this.props.renderer} nodeID={node} outcomeID={this.props.outcomeID}/> 
             )
         }
         else tableCells = this.props.nodes.map((node)=>
-            <TableOutcomeNode renderer={this.props.renderer} nodeID={node} outcomeID={this.props.outcomeID} updateParentCompletion={this.props.updateParentCompletion} descendant_completion_status={this.props.descendant_completion_status} outcomes_type={this.props.outcomes_type}/>
+            <TableOutcomeNode renderer={this.props.renderer} nodeID={node} outcomeID={this.props.outcomeID} outcomes_type={this.props.outcomes_type}/>
         )
         
         let total_list;
@@ -322,7 +316,7 @@ class TableOutcomeGroupUnconnected extends ComponentJSON{
             <div class="table-group">
                 <div class="table-cell blank-cell"></div>
                 {tableCells}
-                <TableTotalCell outcomes_type={this.props.outcomes_type} nodes={total_list} outcomeID={this.props.outcomeID} descendant_completion_status={this.props.descendant_completion_status}/>
+                <TableTotalCell outcomes_type={this.props.outcomes_type} nodes={total_list} outcomeID={this.props.outcomeID}/>
             </div>
         );
     }

@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, OutcomeTitle, TitleText, NodeTitle} from "./ComponentJSON";
+import {EditableComponentWithComments, OutcomeTitle, TitleText, NodeTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {getOutcomeByID, getWeekWorkflowByID, getWeekByID, getNodeWeekByID, getNodeByID} from "./FindState";
 
 
 //Creates a grid with just nodes by week and their times
-class GridView extends ComponentJSON{
+class GridView extends React.Component{
     constructor(props){
         super(props);
         this.objectType="workflow";
@@ -42,7 +42,7 @@ export default connect(
     null
 )(GridView)
 
-class GridWeekViewUnconnected extends ComponentJSON{
+class GridWeekViewUnconnected extends EditableComponentWithComments{
     constructor(props){
         super(props);
         this.objectType="week";
@@ -56,14 +56,23 @@ class GridWeekViewUnconnected extends ComponentJSON{
             <GridNodeView renderer={this.props.renderer} data={node}/>
         );
         
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
         
         return (
-            <div class="week">
+            <div class="week" ref={this.maindiv} style={this.get_border_style()} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="week-title">
                     <TitleText title={data.title} defaultText={default_text}/>
                     <div class="grid-ponderation">{this.props.total_theory+"/"+this.props.total_practical+"/"+this.props.total_individual}</div>
                 </div>
                 {nodes}
+                {this.addEditable(data,true)}
+                <div class="mouseover-actions">
+                    {comments}
+                </div>
+                <div class="side-actions">
+                    <div class="comment-indicator-container"></div>
+                </div>
             </div>
         )
     }
@@ -111,7 +120,7 @@ export const GridWeekView = connect(
     null
 )(GridWeekViewUnconnected)
 
-class GridNodeViewUnconnected extends ComponentJSON{
+class GridNodeViewUnconnected extends EditableComponentWithComments{
     constructor(props){
         super(props);
         this.objectType="node";
@@ -137,6 +146,9 @@ class GridNodeViewUnconnected extends ComponentJSON{
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
+        
         return (
             <div style={style}
                 id={data.id} 
@@ -148,7 +160,13 @@ class GridNodeViewUnconnected extends ComponentJSON{
                     <NodeTitle data={data}/>
                     {ponderation}
                 </div>
-                {this.addEditable(data_override)}
+                <div class="mouseover-actions">
+                    {comments}
+                </div>
+                <div class="side-actions">
+                    <div class="comment-indicator-container"></div>
+                </div>
+                {this.addEditable(data_override,true)}
             </div>
         )
     }

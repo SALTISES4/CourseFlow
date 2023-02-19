@@ -23,7 +23,7 @@
               <a class="hover-shade"
                     href="{% url 'course_flow:project-update' pk=project.pk %}"
                  >
-                {{ project.title }}
+                {{ project.title | safe }}
               </a>
             {% endfor %}
             <a class="hover-shade" href="{% url 'course_flow:project-create' %}">{% trans "+Create new project" %}</a>
@@ -39,7 +39,7 @@
                     href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
                  {% endif %}
                  >
-                {{ favourite.content_object }}
+                {{ favourite.content_object  | safe }}
               </a>
             {% endfor %}
         </div>
@@ -61,7 +61,7 @@
               <a class="hover-shade"
                     href="{% url 'course_flow:live-project-update' pk=project.pk %}"
                  >
-                {{ project.title }}
+                {{ project.title  | safe }}
               </a>
             {% endfor %}
         </div>
@@ -88,10 +88,6 @@
   };
   const user_id = {{ user.id }};
   const read_only=false;
-
-  
-
-
 
 function deleteSelf(objectID,objectType,soft=false,callBackFunction=()=>console.log("success")){
     let path;

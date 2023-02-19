@@ -14,6 +14,7 @@ from .models import (
     ColumnWorkflow,
     Comment,
     Course,
+    CourseFlowUser,
     Discipline,
     Favourite,
     LiveAssignment,
@@ -22,6 +23,7 @@ from .models import (
     Node,
     NodeLink,
     NodeWeek,
+    ObjectPermission,
     ObjectSet,
     Outcome,
     OutcomeHorizontalLink,
@@ -41,6 +43,7 @@ from .utils import (
     dateTimeFormat,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
+    get_user_permission,
     linkIDMap,
     user_workflow_url,
 )
@@ -156,7 +159,7 @@ class TitleSerializerTextMixin(serializers.Serializer):
         if title is None or title == "":
             if self.get_type(instance) == "week":
                 return (
-                    _("Term")
+                    instance.get_week_type_display()
                     + " "
                     + str(
                         WeekWorkflow.objects.filter(week=instance)
@@ -192,6 +195,55 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
         ]
+
+    first_name = serializers.SerializerMethodField()
+    last_name = serializers.SerializerMethodField()
+
+    def get_first_name(self, instance):
+        courseflow_user = CourseFlowUser.objects.filter(user=instance).first()
+        if courseflow_user is None:
+            courseflow_user = CourseFlowUser.objects.create(
+                first_name=instance.first_name,
+                last_name=instance.last_name,
+                user=instance,
+            )
+        return bleach_sanitizer(
+            courseflow_user.first_name,
+            tags=[],
+            attributes=[],
+        )
+
+    def validate_first_name(self, value):
+        if value is None:
+            return None
+        return bleach_sanitizer(
+            value,
+            tags=[],
+            attributes=[],
+        )
+
+    def get_last_name(self, instance):
+        courseflow_user = CourseFlowUser.objects.filter(user=instance).first()
+        if courseflow_user is None:
+            courseflow_user = CourseFlowUser.objects.create(
+                first_name=instance.first_name,
+                last_name=instance.last_name,
+                user=instance,
+            )
+        return bleach_sanitizer(
+            courseflow_user.last_name,
+            tags=[],
+            attributes=[],
+        )
+
+    def validate_last_name(self, value):
+        if value is None:
+            return None
+        return bleach_sanitizer(
+            value,
+            tags=[],
+            attributes=[],
+        )
 
 
 class DisciplineSerializer(serializers.ModelSerializer):
@@ -249,6 +301,7 @@ class NodeSerializerShallow(
     columnworkflow = serializers.SerializerMethodField()
     column = serializers.SerializerMethodField()
     linked_workflow_data = serializers.SerializerMethodField()
+    has_assignment = serializers.SerializerMethodField()
 
     node_type_display = serializers.CharField(source="get_node_type_display")
 
@@ -283,6 +336,7 @@ class NodeSerializerShallow(
             # "is_dropped",
             "comments",
             "sets",
+            "has_assignment",
         ]
 
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -359,6 +413,20 @@ class NodeSerializerShallow(
                 linked_workflow,
                 context={"user": self.context.get("user", None)},
             ).data
+
+    def get_has_assignment(self, instance):
+        user = self.context.get("user", None)
+        if user is None:
+            return False
+        assignments = instance.liveassignment_set.all()
+        if assignments.exists():
+            return instance.liveassignment_set.filter(
+                Q(userassignment__user=user)
+                | Q(
+                    liveproject__liveprojectuser__role_type=LiveProjectUser.ROLE_TEACHER
+                )
+            ).exists()
+        return False
 
     def create(self, validated_data):
         return Node.objects.create(
@@ -806,7 +874,7 @@ class CommentSerializer(serializers.ModelSerializer):
     created_on = serializers.DateTimeField(format=dateTimeFormat())
 
     def get_user(self, instance):
-        return str(instance.user)
+        return UserSerializer(instance.user).data
 
     def update(self, instance, validated_data):
         instance.text = validated_data.get("text", instance.text)
@@ -869,10 +937,15 @@ class WorkflowSerializerShallow(
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
     author = serializers.SerializerMethodField()
+    outcomes_sort = serializers.SerializerMethodField()
 
     strategy_icon = serializers.SerializerMethodField()
 
     url = serializers.SerializerMethodField()
+
+    # Although we'll hang onto outcomes_sort as a field for now, this should just reset to 0
+    def get_outcomes_sort(self, instance):
+        return 0
 
     def get_url(self, instance):
         user = self.context.get("user", None)
@@ -1178,6 +1251,7 @@ class InfoBoxSerializer(
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
+    can_edit = serializers.SerializerMethodField()
 
     def get_url(self, instance):
         if instance.type in ["project", "liveproject"]:
@@ -1219,6 +1293,21 @@ class InfoBoxSerializer(
             return instance.is_strategy
         else:
             return False
+
+    def get_can_edit(self, instance):
+        user = self.context.get("user")
+        if instance.type in [
+            "project",
+            "activity",
+            "course",
+            "program",
+            "workflow",
+        ]:
+            return (
+                get_user_permission(instance, user)
+                == ObjectPermission.PERMISSION_EDIT
+            )
+        return False
 
 
 # class RefreshSerializerWeek(serializers.Serializer):
@@ -1477,6 +1566,7 @@ class LiveProjectSerializer(
             "default_self_reporting",
             "default_assign_to_all",
             "default_single_completion",
+            "default_all_workflows_visible",
             "registration_hash",
             "id",
         ]
@@ -1515,6 +1605,10 @@ class LiveProjectSerializer(
         )
         instance.default_single_completion = validated_data.get(
             "default_single_completion", instance.default_single_completion
+        )
+        instance.default_all_workflows_visible = validated_data.get(
+            "default_all_workflows_visible",
+            instance.default_all_workflows_visible,
         )
 
         instance.save()
@@ -1615,6 +1709,36 @@ class LiveAssignmentSerializer(
         return instance
 
 
+class LiveAssignmentWithCompletionSerializer(LiveAssignmentSerializer):
+    class Meta:
+        model = LiveAssignment
+        fields = [
+            "id",
+            "author",
+            "created_on",
+            "self_reporting",
+            "single_completion",
+            "task",
+            "start_date",
+            "end_date",
+            "parent_workflow_id",
+            "workflow_access",
+            "linked_workflow_access",
+            "liveproject",
+            "completion_info",
+        ]
+
+    completion_info = serializers.SerializerMethodField()
+
+    def get_completion_info(self, instance):
+        userassignments = UserAssignment.objects.filter(assignment=instance)
+        num_total = userassignments.count()
+        num_completed = userassignments.filter(completed=True).count()
+        if instance.single_completion and num_completed > 0:
+            return str(num_total) + "/" + str(num_total)
+        return str(num_completed) + "/" + str(num_total)
+
+
 class UserAssignmentSerializer(
     serializers.ModelSerializer,
 ):
@@ -1668,6 +1792,43 @@ class LiveProjectUserSerializer(
 
     def get_user(self, instance):
         return UserSerializer(instance.user).data
+
+
+class LiveProjectUserSerializerWithCompletion(
+    LiveProjectUserSerializer,
+):
+    class Meta:
+        model = LiveProjectUser
+        fields = [
+            "id",
+            "user",
+            "role_type",
+            "role_type_display",
+            "completion",
+        ]
+
+    completion = serializers.SerializerMethodField()
+
+    def get_completion(self, instance):
+        assignments = UserAssignment.objects.filter(
+            assignment__liveproject=instance.liveproject,
+            user=instance.user,
+        )
+        return (
+            str(
+                assignments.filter(
+                    Q(completed=True)
+                    | Q(
+                        assignment__single_completion=True,
+                        assignment__userassignment__completed=True,
+                    )
+                )
+                .distinct()
+                .count()
+            )
+            + "/"
+            + str(assignments.count())
+        )
 
 
 class WorkflowSerializerForAssignments(

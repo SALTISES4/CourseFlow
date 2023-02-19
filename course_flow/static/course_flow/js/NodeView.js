@@ -1,23 +1,22 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON.js";
-import NodeLinkView from "./NodeLinkView.js";
-import OutcomeNodeView from "./OutcomeNode.js";
-import {getNodeByID} from "./FindState.js";
-import * as Constants from "./Constants.js";
-import {updateOutcomenodeDegree, updateValueInstant, toggleDrop} from "./PostFunctions.js"
+import {ActionButton, Component, EditableComponentWithActions, EditableComponentWithComments, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON";
+import NodeLinkView from "./NodeLinkView";
+import {AssignmentBox} from "./LiveAssignmentView"
+import OutcomeNodeView from "./OutcomeNode";
+import {getNodeByID} from "./FindState";
+import * as Constants from "./Constants";
+import {updateOutcomenodeDegree, updateValueInstant, toggleDrop} from "./PostFunctions"
 
 
 //Basic component to represent a Node
-class NodeView extends ComponentJSON{
+class NodeView extends EditableComponentWithActions{
     constructor(props){
         super(props);
         this.objectType="node";
         this.objectClass=".node";
-        this.state={
-            initial_render:true
-        }
+        this.state={initial_render:true,show_outcomes:false};
     }
     
     render(){
@@ -31,11 +30,11 @@ class NodeView extends ComponentJSON{
         var node_links;
         var auto_link;
         
-        if(!this.state.initial_render)nodePorts = reactDom.createPortal(
+        if(!this.state.initial_render){
+            nodePorts = reactDom.createPortal(
                 <NodePorts renderer={renderer} nodeID={this.props.objectID} node_div={this.maindiv} dispatch={this.props.dispatch}/>
-            ,$(".workflow-canvas")[0]
-        );
-        if(renderer.ports_rendered&&!this.state.port_render){
+                ,$(".workflow-canvas")[0]
+            );
             node_links = data.outgoing_links.map((link)=>
                 <NodeLinkView key={link} objectID={link} node_div={this.maindiv} renderer={renderer}/>
             );
@@ -43,33 +42,43 @@ class NodeView extends ComponentJSON{
                 <AutoLinkView nodeID={this.props.objectID} node_div={this.maindiv}/>
             );
         }
-        let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
-            <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
+        let outcomenodes;
+        if(this.state.show_outcomes)outcomenodes = (
+            <div class={"outcome-node-container column-"+data.column} onMouseLeave={()=>{this.setState({show_outcomes:false});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>
+                {data.outcomenode_unique_set.map((outcomenode)=>
+                    <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
+                )}
+            </div>
         );
-        let outcomeDiv;
-        if(outcomenodes.length>0){
-            outcomeDiv = (
+
+        let side_actions = [];
+        if(data.outcomenode_unique_set.length>0){
+            side_actions.push(
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes.length}</div>
-                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} onMouseEnter={()=>{this.setState({show_outcomes:true});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{data.outcomenode_unique_set.length}</div>
+                    {outcomenodes}
                 </div>
             );
         }
         let lefticon;
         let righticon;
         if(data.context_classification>0)lefticon=(
-            <img title={
-                renderer.context_choices.find(
-                    (obj)=>obj.type==data.context_classification
-                ).name
-            } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+            <div class = "node-icon">
+                <img title={
+                    renderer.context_choices.find(
+                        (obj)=>obj.type==data.context_classification
+                    ).name
+                } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+            </div>
         )
         if(data.task_classification>0)righticon=(
-            <img title={
-                renderer.task_choices.find(
-                    (obj)=>obj.type==data.task_classification
-                ).name
-            }src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+            <div class = "node-icon">
+                <img title={
+                    renderer.task_choices.find(
+                        (obj)=>obj.type==data.task_classification
+                    ).name
+                }src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+            </div>
         )
         let dropIcon;
         if(data.is_dropped)dropIcon = "droptriangleup";
@@ -121,6 +130,7 @@ class NodeView extends ComponentJSON{
             mouseover_actions.push(this.addDeleteSelf(data));
         }
         if(renderer.view_comments)mouseover_actions.push(this.addCommenting(data));
+        if(renderer.show_assignments)mouseover_actions.push(this.addShowAssignment(data));
 
         return (
             <div 
@@ -128,16 +138,14 @@ class NodeView extends ComponentJSON{
                 class={css_class}
                 id={data.id} 
                 ref={this.maindiv} 
+                data-selected={this.state.selected}
+                data-hovered={this.state.hovered}
                 onClick={(evt)=>selection_manager.changeSelection(evt,this)}
             >
                 <div class = "node-top-row">
-                    <div class = "node-icon">
-                        {lefticon}
-                    </div>
+                    {lefticon}
                     {titleText}
-                    <div class = "node-icon">
-                        {righticon}
-                    </div>
+                    {righticon}
                 </div>
                 {linkIcon}
                 <div class = "node-details">
@@ -157,7 +165,12 @@ class NodeView extends ComponentJSON{
                 {nodePorts}
                 {node_links}
                 {auto_link}
-                {outcomeDiv}
+                <div class="side-actions">
+                    {side_actions}
+                    <div class="comment-indicator-container"></div>
+                    <div class="assignment-indicator-container"></div>
+
+                </div>
             </div>
         );
 
@@ -173,10 +186,9 @@ class NodeView extends ComponentJSON{
         else $(this.maindiv.current).parent(".nodeweek").removeClass("empty");
     }
     
-    postMountFunction(){
+    componentDidMount(){
+        if(this.state.initial_render)this.setState({initial_render:false});
         $(this.maindiv.current).on("mouseenter",this.mouseIn.bind(this));
-        $(document).on("render-ports render-links",()=>{this.setState({})});
-        if(this.state.initial_render)this.setState({initial_render:false,port_render:true});
         this.makeDroppable();
         $(this.maindiv.current).on("dblclick",this.doubleClick.bind(this));
         this.updateHidden();
@@ -185,7 +197,6 @@ class NodeView extends ComponentJSON{
     componentDidUpdate(prevProps, prevState){
         if(this.props.data.is_dropped==prevProps.data.is_dropped)this.updatePorts();
         else Constants.triggerHandlerEach($(".node"),"component-updated");
-        if(this.state.port_render)this.setState({initial_render:false,port_render:false});
         this.updateHidden();
     }
 
@@ -251,15 +262,35 @@ class NodeView extends ComponentJSON{
         if(!this.props.renderer.read_only)$("circle[data-node-id='"+this.props.objectID+"'][data-port-type='source']").addClass("mouseover");
         d3.selectAll(".node-ports").raise();
         var mycomponent = this;
+        this.setState({hovered:true});
         
         $(document).on("mousemove",function(evt){
             if(!mycomponent||!mycomponent.maindiv||Constants.mouseOutsidePadding(evt,$(mycomponent.maindiv.current),20)){
                 $("circle[data-node-id='"+mycomponent.props.objectID+"'][data-port-type='source']").removeClass("mouseover");
                 $(document).off(evt);
+                mycomponent.setState({hovered:false});
+
             }
         });
     }
 
+
+    addShowAssignment(data){
+        return (
+            [
+                <ActionButton button_icon="assignment.svg" button_class="assignment-button" titletext={gettext("Show Assignment Info")} handleClick={this.showAssignment.bind(this)}/>,
+                <AssignmentBox dispatch={this.props.dispatch.bind(this)} node_id={data.id} show={this.state.show_assignments} has_assignment={this.props.data.has_assignment} parent={this} renderer={this.props.renderer}/>
+            ]
+        );
+    }
+
+    showAssignment(evt){
+        let props = this.props;
+        evt.stopPropagation();
+        if(!this.state.show_assignments){
+            this.setState({show_assignments:true});
+        }else(this.setState({show_assignments:false}));
+    }
 }
 const mapNodeStateToProps = (state,own_props)=>(
     getNodeByID(state,own_props.objectID)
@@ -271,7 +302,7 @@ export default connect(
 
 
 //Basic component to represent a node in the outcomes table
-class NodeOutcomeViewUnconnected extends ComponentJSON{
+class NodeOutcomeViewUnconnected extends Component{
     constructor(props){
         super(props);
         this.objectType="node";
@@ -289,27 +320,36 @@ class NodeOutcomeViewUnconnected extends ComponentJSON{
         let selection_manager = this.props.renderer.selection_manager;
         
         let style = {backgroundColor:Constants.getColumnColour(this.props.column)}
-        if(data.lock){
-            style.outline="2px solid "+data.lock.user_colour;
-        }
+        // if(data.lock){
+        //     style.outline="2px solid "+data.lock.user_colour;
+        // }
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
         
+        let comments;
+        // if(this.props.renderer.view_comments)comments=this.addCommenting();
         
         return (
-            <div 
-                
-                class={css_class}
-                style={style}
-                id={data.id} 
-                ref={this.maindiv} 
-                onClick={(evt)=>selection_manager.changeSelection(evt,this)}
-            >
-                <div class = "node-top-row">
-                    <NodeTitle data={data}/>
+            <div ref={this.maindiv} class="table-cell nodewrapper">
+                <div 
+                    
+                    class={css_class}
+                    style={style}
+                    id={data.id} 
+                    // onClick={(evt)=>selection_manager.changeSelection(evt,this)}
+                >
+                    <div class = "node-top-row">
+                        <NodeTitle data={data}/>
+                    </div>
+                    {/*this.addEditable(data_override,true)*/}
+                    <div class="mouseover-actions">
+                        {comments}
+                    </div>
                 </div>
-                {this.addEditable(data_override,true)}
+                <div class="side-actions">
+                    <div class="comment-indicator-container"></div>
+                </div>
             </div>
         );
 
@@ -323,7 +363,7 @@ export const NodeOutcomeView = connect(
 )(NodeOutcomeViewUnconnected)
 
 //Basic component to represent a Node
-class NodeComparisonViewUnconnected extends ComponentJSON{
+class NodeComparisonViewUnconnected extends EditableComponentWithActions{
     constructor(props){
         super(props);
         this.objectType="node";
@@ -338,15 +378,20 @@ class NodeComparisonViewUnconnected extends ComponentJSON{
         let renderer = this.props.renderer;
         let selection_manager=renderer.selection_manager;
         
-        let outcomenodes = data.outcomenode_unique_set.map((outcomenode)=>
-            <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
+        let outcomenodes;
+        if(this.state.show_outcomes)outcomenodes = (
+            <div class={"outcome-node-container column-"+data.column} onMouseLeave={()=>{this.setState({show_outcomes:false});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>
+                {data.outcomenode_unique_set.map((outcomenode)=>
+                    <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
+                )}
+            </div>
         );
-        let outcomeDiv;
-        if(outcomenodes.length>0){
-            outcomeDiv = (
+        let side_actions=[];
+        if(data.outcomenode_unique_set.length>0){
+            side_actions.push(
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes.length}</div>
-                    <div class={"outcome-node-container column-"+data.column} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{outcomenodes}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} onMouseEnter={()=>{this.setState({show_outcomes:true});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{data.outcomenode_unique_set.length}</div>
+                    {outcomenodes}
                 </div>
             );
         }
@@ -411,7 +456,9 @@ class NodeComparisonViewUnconnected extends ComponentJSON{
                     {mouseover_actions}
                 </div>
                 {this.addEditable(data_override)}
-                {outcomeDiv}
+                <div class="side-actions">
+                    {side_actions}
+                </div>
             </div>
         );
 

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON";
+import {Component, EditableComponent, EditableComponentWithSorting} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {renderMessageBox,closeMessageBox, WorkflowForMenu} from "./MenuComponents";
 import {getWorkflowSelectMenu,getWorkflowContext,insertedAt} from "./PostFunctions";
@@ -146,13 +146,15 @@ export class ComparisonView extends React.Component{
     }
 
     loadWorkflow(){
+        let renderer = this.props.renderer;
+        renderer.tiny_loader.startLoad();
         getWorkflowSelectMenu(this.props.data.id,"workflow",false,true,(response_data)=>{
             if(response_data.workflowID!=null){
                 let workflows = this.state.workflows.slice();
                 workflows.push(response_data.workflowID);
                 this.setState({workflows:workflows});
             }
-        })
+        },()=>{renderer.tiny_loader.endLoad()})
     }
     removeWorkflow(workflow_id){
         let workflows = this.state.workflows.slice();
@@ -176,7 +178,7 @@ export class ComparisonView extends React.Component{
     }
 }
 
-class WorkflowComparisonRendererComponent extends React.Component{
+class WorkflowComparisonRendererComponent extends Component{
     constructor(props){
         super(props)
         this.maindiv = React.createRef();
@@ -224,7 +226,7 @@ class WorkflowComparisonRendererComponent extends React.Component{
 
 
 //Container for common elements for workflows
-class WorkflowComparisonBaseViewUnconnected extends ComponentJSON{
+class WorkflowComparisonBaseViewUnconnected extends EditableComponent{
     
     constructor(props){
         super(props);
@@ -276,7 +278,7 @@ class WorkflowComparisonBaseViewUnconnected extends ComponentJSON{
         this.props.renderer.selection_manager.changeSelection(evt,this);
     }
     
-    postMountFunction(){
+    componentDidMount(){
         this.alignAllHeaders();
         this.addObjectSetTrigger();
     }
@@ -318,7 +320,7 @@ export const WorkflowComparisonBaseView = connect(
 
 
 //Basic component representing the workflow
-class WorkflowComparisonViewUnconnected extends ComponentJSON{
+class WorkflowComparisonViewUnconnected extends EditableComponentWithSorting{
     
     constructor(props){
         super(props);
@@ -342,7 +344,7 @@ class WorkflowComparisonViewUnconnected extends ComponentJSON{
         );
     }
                
-    postMountFunction(){
+    componentDidMount(){
         this.makeDragAndDrop();
     }
 

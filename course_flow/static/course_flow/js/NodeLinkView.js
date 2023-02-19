@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, NodeLinkSVG} from "./ComponentJSON.js";
-import {getNodeLinkByID} from "./FindState.js";
-import * as Constants from "./Constants.js";
-import {} from "./Reducers.js";
+import {EditableComponentWithActions, NodeLinkSVG} from "./ComponentJSON";
+import {getNodeLinkByID} from "./FindState";
+import * as Constants from "./Constants";
+import {} from "./Reducers";
 
 //Basic component to represent a NodeLink
-class NodeLinkView extends ComponentJSON{
+class NodeLinkView extends EditableComponentWithActions{
     constructor(props){
         super(props);
         this.objectType="nodelink";
@@ -31,11 +31,10 @@ class NodeLinkView extends ComponentJSON{
         }
         
         
+        let node_selected=(this.source_node.attr("data-selected")==='true' || this.target_node.attr("data-selected")==='true');
+        let node_hovered=(this.source_node.attr("data-hovered")==='true' || this.target_node.attr("data-hovered")==='true');
+
         let style={};
-        if(data.lock){
-            style.stroke=data.lock.user_colour;
-            style.opacity=1;
-        }
         if(data.dashed)style.strokeDasharray="5,5"
         if(this.source_node.css("display")=="none"||this.target_node.css("display")=="none")style["display"]="none";
         
@@ -50,7 +49,7 @@ class NodeLinkView extends ComponentJSON{
         return(
             <div>
                 {reactDom.createPortal(
-                    <NodeLinkSVG style={style} title={data.title} text_position={data.text_position} source_port_handle={this.source_port_handle} source_port={data.source_port} target_port_handle={this.target_port_handle} target_port={data.target_port} clickFunction={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,selector)} selected={this.state.selected} source_dimensions={source_dims} target_dimensions={target_dims}/>
+                    <NodeLinkSVG style={style} hovered={node_hovered} node_selected={node_selected} lock={data.lock}  title={data.title} text_position={data.text_position} source_port_handle={this.source_port_handle} source_port={data.source_port} target_port_handle={this.target_port_handle} target_port={data.target_port} clickFunction={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,selector)} selected={this.state.selected} source_dimensions={source_dims} target_dimensions={target_dims}/>
                     ,$(".workflow-canvas")[0])}
                 {this.addEditable(data)}
             </div>

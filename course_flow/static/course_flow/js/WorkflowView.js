@@ -1,20 +1,20 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, WorkflowTitle} from "./ComponentJSON";
+import {Component, EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "./ComponentJSON";
 import ColumnWorkflowView from "./ColumnWorkflowView";
 import WeekWorkflowView from "./WeekWorkflowView";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";
 import {NodeBarWeekWorkflow} from "./WeekWorkflowView";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
 import * as Constants from "./Constants";
-import {moveColumnWorkflow, moveWeekWorkflow, toggleObjectSet} from "./Reducers";
+import {changeField, moveColumnWorkflow, moveWeekWorkflow, toggleObjectSet} from "./Reducers";
 import {OutcomeBar} from "./OutcomeEditView";
 import StrategyView from "./Strategy";
 import WorkflowOutcomeView from "./WorkflowOutcomeView";
 import WorkflowLegend from "./WorkflowLegend";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend";
-import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport} from "./PostFunctions";
+import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport, toggleDrop} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
@@ -22,14 +22,12 @@ import GridView from './GridView';
 
 
 //Container for common elements for workflows
-class WorkflowBaseViewUnconnected extends ComponentJSON{
+class WorkflowBaseViewUnconnected extends EditableComponent{
     
     constructor(props){
         super(props);
         this.objectType="workflow";
         this.allowed_tabs=[0,1,2,3];
-        this.exportDropDown = React.createRef();
-        this.importDropDown = React.createRef();
     }
     
     render(){
@@ -39,26 +37,20 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         let selection_manager = renderer.selection_manager;
         
         var selector = this;
-        let publish_icon = iconpath+'view_none.svg';
-        // let publish_text = gettext("PRIVATE");
-        // if(data.published){
-        //     publish_icon = iconpath+'published.svg';
-        //     publish_text = gettext("PUBLISHED");
-        // }
 
         let workflow_content;
         if(renderer.view_type=="outcometable"){
             workflow_content=(
-                <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
+                <WorkflowTableView data={data} renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[1];
+            this.allowed_tabs=[4];
         }
-        else if(renderer.view_type=="competencymatrix"){
-            workflow_content=(
-                <CompetencyMatrixView renderer={renderer} view_type={renderer.view_type}/>
-            );
-            this.allowed_tabs=[];
-        }
+        // else if(renderer.view_type=="competencymatrix"){
+        //     workflow_content=(
+        //         <CompetencyMatrixView renderer={renderer} view_type={renderer.view_type}/>
+        //     );
+        //     this.allowed_tabs=[];
+        // }
         else if(renderer.view_type=="outcomeedit"){
             workflow_content=(
                 <OutcomeEditView renderer={renderer}/>
@@ -66,23 +58,23 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             if(data.type=="program")this.allowed_tabs=[];
             else this.allowed_tabs=[2,4];
         }
-        else if(renderer.view_type=="horizontaloutcometable"){
-            workflow_content=(
-                <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
-            );
-            this.allowed_tabs=[1];
-        }
+        // else if(renderer.view_type=="horizontaloutcometable"){
+        //     workflow_content=(
+        //         <WorkflowView_Outcome renderer={renderer} view_type={renderer.view_type}/>
+        //     );
+        //     this.allowed_tabs=[1];
+        // }
         else if(renderer.view_type=="alignmentanalysis"){
             workflow_content=(
                 <AlignmentView renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[];
+            this.allowed_tabs=[4];
         }
         else if(renderer.view_type=="grid"){
             workflow_content=(
                 <GridView renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[];
+            this.allowed_tabs=[4];
         }
         else{
             workflow_content = (
@@ -97,7 +89,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             {type:"outcomeedit",name:Constants.capWords(gettext("View")+" "+gettext(data.type+" outcomes")),disabled:[]},
             {type:"outcometable",name:Constants.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
             {type:"alignmentanalysis",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
-            {type:"competencymatrix",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
+            //{type:"competencymatrix",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
             {type:"grid",name:gettext("Grid View"),disabled:["activity", "course"]},
             //{type:"horizontaloutcometable",name:gettext("Alignment Table"),disabled:["activity"]}
         ].filter(item=>item.disabled.indexOf(data.type)==-1).map(
@@ -153,18 +145,26 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
             }
         }
         let return_links = [];
-        if(renderer.project && !renderer.is_student){
+        if(renderer.project && !renderer.is_student && !renderer.public_view){
             return_links.push(
-                <a class="hover-shade" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
-                    <img src={iconpath+"goback.svg"}/>
+                <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+                    <span class="material-symbols-rounded">arrow_back_ios</span>
                     <div>{gettext("Return to project (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
                 </a>
             );
         }
+        if(renderer.public_view && renderer.can_view){
+            return_links.push(
+                <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+                    <span class="material-symbols-rounded">arrow_back_ios</span>
+                    <div>{gettext("Return to Editable Workflow")}</div>
+                </a>
+            )
+        }
         if(renderer.project && (renderer.is_teacher || renderer.is_student)){
             return_links.push(
-                <a class="hover-shade" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
-                    <img src={iconpath+"goback.svg"}/>
+                <a class="hover-shade no-underline" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
+                    <span class="material-symbols-rounded">arrow_back_ios</span>
                     <div>{gettext("Return to classroom (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
                 </a>
             );
@@ -221,7 +221,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
                         <RestoreBar renderer={this.props.renderer}/>
                     }
                     {!data.is_strategy &&
-                        <ViewBar renderer={this.props.renderer}/>
+                        <ViewBar data={this.props.data} renderer={this.props.renderer}/>
                     }
                 </div>
             </div>
@@ -229,7 +229,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
         );
     }
                      
-    postMountFunction(){
+    componentDidMount(){
         this.updateTabs();    
         window.addEventListener("click",(evt)=>{
             if($(evt.target).closest(".other-views").length==0){
@@ -266,6 +266,7 @@ class WorkflowBaseViewUnconnected extends ComponentJSON{
     }
        
     getExportButton(){
+        if(this.props.renderer.public_view)return null;
         if(this.props.renderer.is_student && !this.props.renderer.can_view)return null;
         let export_button = (
             <a id="export-button" class="hover-shade" onClick={()=>renderMessageBox({...this.props.data,object_sets:this.props.object_sets},"export",closeMessageBox)}>
@@ -314,7 +315,7 @@ export const WorkflowBaseView = connect(
 
 
 //Basic component representing the workflow
-class WorkflowViewUnconnected extends ComponentJSON{
+class WorkflowViewUnconnected extends EditableComponentWithSorting{
     
     constructor(props){
         super(props);
@@ -358,10 +359,8 @@ class WorkflowViewUnconnected extends ComponentJSON{
                      
     
                      
-    postMountFunction(){
+    componentDidMount(){
         this.makeDragAndDrop();
-        
-        
     }
 
     componentDidUpdate(){
@@ -414,10 +413,46 @@ export const WorkflowView =  connect(
     null
 )(WorkflowViewUnconnected)
 
+class WorkflowTableView extends React.Component{
+    render(){
+        let data=this.props.data;
+        if(data.table_type==1)return <CompetencyMatrixView view_type={this.props.view_type} renderer={this.props.renderer}/>
+        else return <WorkflowView_Outcome view_type={this.props.view_type} renderer={this.props.renderer}/>
+    }
+}
 
-class ViewBarUnconnected extends ComponentJSON{
+class ViewBarUnconnected extends React.Component{
      
     render(){
+        let data=this.props.data;
+        let sort_block;
+        if(this.props.renderer.view_type=="outcometable"||this.props.renderer.view_type=="horizontaloutcometable"){        
+            let table_type_value=data.table_type || 0;
+            let sort_type=(
+                <div class="node-bar-sort-block">
+                    {this.props.renderer.outcome_sort_choices.map((choice)=>
+                        <div><input disabled={(table_type_value==1 || (data.type=="program" && choice.type>1))} type="radio" id={"sort_type_choice"+choice.type} name={"sort_type_choice"+choice.type} value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.changeSort.bind(this)}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></div>
+
+                    )}
+                </div>
+            );
+            let table_type=(
+                <div class="node-bar-sort-block">
+                    <div><input type="radio" id={"table_type_table"} name="table_type_table" value={0} checked={(table_type_value==0)} onChange={this.changeTableType.bind(this)}/><label for="table_type_table">{gettext("Table Style")}</label></div>
+                    <div><input type="radio" id={"table_type_matrix"} name="table_type_matrix" value={1} checked={(table_type_value==1)} onChange={this.changeTableType.bind(this)}/><label for="table_type_matrix">{gettext("Competency Matrix Style")}</label></div>
+                </div>
+            );
+            sort_block = (
+                <div>
+                    <h4>{gettext("Sort Nodes")}:</h4>
+                    {sort_type}
+                    <h4>{gettext("Table Type")}:</h4>
+                    {table_type}
+                </div>
+            );
+        }
+
+
         let sets=(
             <div class="node-bar-sort-block">
                 {this.props.object_sets.sort((a,b)=>{
@@ -434,6 +469,7 @@ class ViewBarUnconnected extends ComponentJSON{
         );
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
+                {sort_block}
                 <h4>{gettext("Object Sets")+":"}</h4>
                 {sets}
             </div>
@@ -443,6 +479,14 @@ class ViewBarUnconnected extends ComponentJSON{
     toggleHidden(id,hidden){
         this.props.dispatch(toggleObjectSet(id,hidden));
     }
+
+
+    changeSort(evt){
+        this.props.dispatch(changeField(this.props.data.id,"workflow",{"outcomes_sort":evt.target.value}));
+    }
+    changeTableType(evt){
+        this.props.dispatch(changeField(this.props.data.id,"workflow",{"table_type":evt.target.value}));
+    }
 }
 export const ViewBar =  connect(
     (state)=>({object_sets:state.objectset}),
@@ -450,7 +494,7 @@ export const ViewBar =  connect(
 )(ViewBarUnconnected)
 
 
-class NodeBarUnconnected extends ComponentJSON{
+class NodeBarUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -461,23 +505,6 @@ class NodeBarUnconnected extends ComponentJSON{
     render(){
         let data = this.props.data;
         
-        
-        if(this.props.renderer.view_type=="outcometable"||this.props.renderer.view_type=="horizontaloutcometable"){
-            sort_type=(
-                <div class="node-bar-sort-block">
-                    {this.props.renderer.outcome_sort_choices.map((choice)=>
-                        <div><input type="radio" id={"sort_type_choice"+choice.type} name="sort_type" value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.inputChanged.bind(this,"outcomes_sort")}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></div>
-
-                    )}
-                </div>
-            );
-            return reactDom.createPortal(
-                <div id="node-bar-workflow" class="right-panel-inner">
-                    <h4>Sort Nodes:</h4>
-                    {sort_type}
-                </div>
-            ,$("#node-bar")[0]);
-        }
         
         
         var nodebarcolumnworkflows = data.columnworkflow_set.map((columnworkflow)=>
@@ -498,7 +525,7 @@ class NodeBarUnconnected extends ComponentJSON{
         
         var nodebarweekworkflows;
         if(this.props.renderer.view_type=="workflowview")nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
-            <NodeBarWeekWorkflow key={weekworkflow} renderer={this.props.renderer} objectID={weekworkflow}/>
+            <NodeBarWeekWorkflow key={weekworkflow} order={data.weekworkflow_set} renderer={this.props.renderer} objectID={weekworkflow}/>
         );
         var sort_type;
         
@@ -511,25 +538,44 @@ class NodeBarUnconnected extends ComponentJSON{
                 <div class="node-bar-column-block">
                     {nodebarcolumnworkflows}
                 </div>
+                <hr/>
+                <h4>{gettext("Jump To")}:</h4>
                 <div class="node-bar-week-block">
                     {nodebarweekworkflows}
+                </div>
+                <hr/>
+                <div id="expand-collapse-all">
+                    <div>{gettext("Expand/Collapse All")}</div>
+                    <div>
+                        <img class="hover-shade" src={iconpath+"plus.svg"} onClick={this.expandAll.bind(this)}/><img class="hover-shade" src={iconpath+"minus.svg"} onClick={this.collapseAll.bind(this)}/>
+                    </div>
                 </div>
                 {sort_type}
             </div>
         ,$("#node-bar")[0]);
     }
+
+    expandAll(){
+        this.props.weeks.forEach(week=>toggleDrop(week.id,"week",true,this.props.dispatch));
+    }
+
+    collapseAll(){
+        this.props.weeks.forEach(week=>toggleDrop(week.id,"week",false,this.props.dispatch));
+    }
+
     
 }
 const mapNodeBarStateToProps = state=>({
     data:state.workflow,
-    columns:state.column
+    columns:state.column,
+    weeks:state.week,
 })
 export const NodeBar = connect(
     mapNodeBarStateToProps,
     null
 )(NodeBarUnconnected)
 
-class RestoreBarUnconnected extends ComponentJSON{
+class RestoreBarUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -538,20 +584,21 @@ class RestoreBarUnconnected extends ComponentJSON{
     
     
     render(){
+
         let columns = this.props.columns.map((column)=>
-            <RestoreBarItem objectType="column" data={column} renderer={this.props.renderer}/>
+            <RestoreBarItem key={column.id} objectType="column" data={column} renderer={this.props.renderer}/>
         )
         let weeks = this.props.weeks.map((week)=>
-            <RestoreBarItem objectType="week" data={week} renderer={this.props.renderer}/>
+            <RestoreBarItem key={week.id} objectType="week" data={week} renderer={this.props.renderer}/>
         )
         let nodes = this.props.nodes.map((node)=>
-            <RestoreBarItem objectType="node" data={node} renderer={this.props.renderer}/>
+            <RestoreBarItem key={node.id} objectType="node" data={node} renderer={this.props.renderer}/>
         )
         let outcomes = this.props.outcomes.map((outcome)=>
-            <RestoreBarItem objectType="outcome" data={outcome} renderer={this.props.renderer}/>
+            <RestoreBarItem key={outcome.id} objectType="outcome" data={outcome} renderer={this.props.renderer}/>
         )
         let nodelinks = this.props.nodelinks.map((nodelink)=>
-            <RestoreBarItem objectType="nodelink" data={nodelink} renderer={this.props.renderer}/>
+            <RestoreBarItem key={nodelink.id} objectType="nodelink" data={nodelink} renderer={this.props.renderer}/>
         )
         
         
@@ -595,17 +642,11 @@ export const RestoreBar = connect(
     null
 )(RestoreBarUnconnected)
 
-class RestoreBarItem extends React.Component{
-    constructor(props){
-        super(props);
-        //The disabling prevents double clicks from sending two calls
-        this.state={disabled:false};
-    }
+class RestoreBarItem extends Component{
     
     render(){
-        if(this.state.disabled)return null;
-        else return (
-            <div class="restore-bar-item">
+        return (
+            <div ref={this.maindiv} class="restore-bar-item">
                 <div>{this.getTitle()}</div>
                 <div class="workflow-created">{gettext("Deleted")+" "+this.props.data.deleted_on}</div>
                 <button onClick={this.restore.bind(this)}>{gettext("Restore")}</button>
@@ -629,8 +670,8 @@ class RestoreBarItem extends React.Component{
     }
 
     delete(){
-        this.setState({disabled:true});
         if(window.confirm(gettext("Are you sure you want to permanently delete this object?"))){
+            $(this.maindiv.current).children("button").attr("disabled",true);
             this.props.renderer.tiny_loader.startLoad();
             deleteSelf(this.props.data.id,this.props.objectType,false,()=>{
                 this.props.renderer.tiny_loader.endLoad();
@@ -639,7 +680,7 @@ class RestoreBarItem extends React.Component{
     }
 }
 
-class StrategyBarUnconnected extends ComponentJSON{
+class StrategyBarUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -688,7 +729,7 @@ export const StrategyBar = connect(
 
 
 //Basic component representing the workflow
-class WorkflowView_Outcome_Unconnected extends ComponentJSON{
+class WorkflowView_Outcome_Unconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -701,7 +742,6 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
         
         var selector = this;
         let renderer = this.props.renderer;
-        let selection_manager = renderer.selection_manager;
         
         
         return(
@@ -711,12 +751,6 @@ class WorkflowView_Outcome_Unconnected extends ComponentJSON{
             </div>
         );
     }
-                     
-    openEdit(evt){
-        this.props.renderer.selection_manager.changeSelection(evt,this);
-    }
-    
-    
 }
 export const WorkflowView_Outcome = connect(
     mapWorkflowStateToProps,

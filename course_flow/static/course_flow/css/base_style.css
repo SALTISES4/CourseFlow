@@ -11,6 +11,10 @@ body, html{
     font-size: 14px;
 }
 
+body.printing{
+    height: unset;
+}
+
 .left-panel a, .workflow-title-bar a, .home-tabs .ui-tabs-tab a, .home-item a{
     color:#444444;
 }
@@ -30,6 +34,11 @@ body{
 
 button{
     cursor:pointer;
+}
+
+[contentEditable=true]:empty:not(:focus):before {
+  content: attr(data-text);
+  color: grey;
 }
 
 .disabled{
@@ -64,9 +73,13 @@ button:hover{
 
 .topnav{
     width:100%;
-    color: #1976bc;
     background: white;
     position: relative;
+    box-sizing: border-box;
+}
+
+.topnav > div{
+    padding-left: 10px;
 }
 
 
@@ -82,14 +95,15 @@ button:hover{
 
 
 .titlebar{
-    background:rgb(25,118,188);
-    height:50px;
+    height:36px;
     width:100%;
     color:white;
+    background: #1976bc;
     position:relative;
     display:flex;
     justify-content: space-between;
     align-items: center;
+    box-sizing: border-box;
 }
 
 .title{
@@ -99,14 +113,12 @@ button:hover{
     gap: 20px;
 }
 
-.title a img{
-    width: 24px;
-    margin-right: 5px;
+.title a .material-symbols-rounded{
+    font-size: 20px;
 }
 
 .title a{
     display: flex;
-    color: white;
 }
 
 .inline-title{
@@ -172,10 +184,6 @@ button:hover{
 
 .floatbardiv > *{
     display:inline-block;
-}
-
-.floatbardiv .create-dropdown{
-    color: #444444;
 }
 
 .floatbar img{
@@ -375,8 +383,8 @@ button:hover{
 }
 
 .topdropdiv hr{
-    margin-left:12px;
-    margin-right:12px;
+    margin-left:5px;
+    margin-right:5px;
 }
 
 .topdroptitle{
@@ -413,16 +421,55 @@ button:hover{
 
 .left-panel{
     background:white;
-    width:240px;
-    min-width:240px;
+    min-width: 180px;
+    width:200px;
     border-right:1px solid lightgray;
-    left:0px;
-    top:0px;
     height:100%;
     box-sizing:border-box;
     color:#444444;
     display:flex;
     flex-direction:column;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0px 0px 10px grey;
+}
+
+.left-panel.collapsed{
+    min-width: 0px;
+    width: 0px;
+}
+
+.left-panel.collapsed > *:not(.left-panel-toggle){
+    display: none;
+}
+
+.left-panel.collapsed .left-panel-toggle{
+    right: -30px;
+}
+
+.left-panel-toggle{
+    width: 24px;
+    height: 24px;
+    background: #04ba74;
+    border-radius: 50%;
+    position: absolute;
+    right: -10px;
+    top: 100px;
+    z-index: 10;
+}
+
+.left-panel-toggle .material-symbols-rounded{
+    font-size: 20px;
+    padding: 2px;
+    color: white;
+}
+
+.collapsed #left-panel-collapse{
+    display: none;
+}
+
+.left-panel:not(.collapsed) #left-panel-expand{
+    display: none;
 }
 
 .left-panel-extra{
@@ -447,8 +494,16 @@ button:hover{
     font-size: 14px;
 }
 
-.panel-item > img{
+.panel-item > img, .panel-item .material-symbols-rounded{
     margin-right:10px;
+}
+
+.no-underline.hover-shade:hover{
+    text-decoration: none;
+}
+
+.no-underline.hover-shade:hover > *:not(.material-symbols-rounded){
+    text-decoration: underline;
 }
 
 .panel-item img{
@@ -584,9 +639,11 @@ button:hover{
     z-index:1;
     background:white;
     position:absolute;
-    padding:10px;
-    border-radius:5px;
+    padding-top:10px;
+    padding-bottom: 10px;
+    border-radius:10px;
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+    color: #444444;
 }
 
 .project-menu .create-dropdown, .home-tabs .create-dropdown{
@@ -595,12 +652,30 @@ button:hover{
 
 .floatbar .create-dropdown{
     margin-left:-6px;
+    z-index: 5;
 }
 
-.create-dropdown a{
+#account-options, #create-options{
+    position: relative;
+}
+
+#account-links, #create-links {
+    right: 0px;
+}
+
+.create-dropdown > a, .create-dropdown > div{
     display:block;
-    padding:2px;
+    padding:8px;
+    padding-left: 15px;
+    padding-right: 15px;
     margin:0px;
+}
+
+.create-dropdown > hr{
+    margin-right: 0px;
+    margin-left:  0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .create-dropdown.active, .create-dropdown.activate{
@@ -629,11 +704,16 @@ button:hover{
     max-width:600px;
 }
 
+.workflow-for-menu.simple-workflow{
+    border-color: lightgrey;
+    max-width: 400px;
+}
+
 .workflow-description{
     font-size:13px;
     color:#444444;
     margin-bottom:2px;
-    white-space:normal;
+    white-space:pre-wrap;
     max-height: 140px;
     overflow-y: auto;
 }
@@ -741,6 +821,11 @@ button:hover{
     width: fit-content;
 }
 
+#project-description-input{
+    min-width: 400px;
+    min-height: 200px;
+}
+
 .project-import{
     margin-left:20px;
 }
@@ -752,6 +837,7 @@ button:hover{
 
 .project-menu{
     height:100%;
+    width: fit-content;
 }
 
 .explore-menu{
@@ -980,6 +1066,24 @@ button:hover{
     gap: 5px;
 }
 
+.overview-table td{
+    padding: 5px;
+    font-size: 12px;
+}
+
+.overview-table th{
+    text-align: left;
+    padding: 5px;
+}
+
+.overview-table .workflow-title{
+    font-size: 12px;
+}
+
+.overview-table .table-user{
+    font-weight: 600;
+}
+
 
 /* The popup form - hidden by default */
 .form-popup {
@@ -1091,83 +1195,9 @@ text {
     border:0px;
 }
 
-  .mdc-card {
-    background-color: white;
-    margin-bottom: 10px;
-    padding: 20px 20px 12px;
-    border-radius: 10px;
-    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-      0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-    max-width: 400px;
-    border: 2px solid #1976bc;
-  }
-  .mdc-typography--title {
-    font-family: "Montserrat", serif;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    font-size: 1.25rem;
-    line-height: 2rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    text-decoration: inherit;
-    text-transform: inherit;
-    font-weight: bold;
-  }
-  .mdc-typography--caption {
-    font-family: "Montserrat", serif;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    font-size: 0.75rem;
-    line-height: 1.25rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    text-decoration: inherit;
-    text-transform: inherit;
-  }
-  .mdc-typography--body1 {
-    font-size: 16px;
-    letter-spacing: 0em;
-    font-family: "Montserrat", serif;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-    font-weight: 400;
-    letter-spacing: 0.04em;
-    text-decoration: inherit;
-    text-transform: inherit;
-  }
-  .mdc-card__actions {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-    -webkit-align-items: center;
-    align-items: center;
-    box-sizing: border-box;
-    min-height: 52px;
-    padding: 8px;
-  }
-  .mdc-card__action-buttons,
-  .mdc-card__action-icons {
-    display: -webkit-flex;
-    display: flex;
-    -webkit-flex-direction: row;
-    flex-direction: row;
-    -webkit-align-items: center;
-    align-items: center;
-    box-sizing: border-box;
-  }
-  .mdc-card__action-icons {
-    margin-left: auto;
-    margin-right: 0;
-  }
-  .mdc-card__action-icons,
-  .mdc-typography--caption,
-  .mdc-typography--body1,
-  .mdc-typography--title {
-    color: #1976bc;
-  }
+#user-feedback{
+    margin-top: auto;
+}
 
 #user-feedback-app {
   bottom: 0px;

@@ -41,9 +41,9 @@ def login_student(test_case):
     return user
 
 
-def get_author():
-    author = User.objects.create(username="testuser2")
-    author.set_password("testpass2")
+def get_author(integer="2"):
+    author = User.objects.create(username="testuser" + integer)
+    author.set_password("testpass" + integer)
     author.save()
     teacher_group, _ = Group.objects.get_or_create(name=settings.TEACHER_GROUP)
     author.groups.add(teacher_group)

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, NodeTitle, TitleText, OutcomeTitle, getOutcomeTitle, WeekTitle} from "./ComponentJSON";
+import {EditableComponent, EditableComponentWithComments, NodeTitle, TitleText, OutcomeTitle, getOutcomeTitle, WeekTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {getOutcomeByID,getOutcomeOutcomeByID, getChildWorkflowByID, getWeekByID, getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
 import OutcomeView from "./OutcomeView";
@@ -10,7 +10,7 @@ import OutcomeNodeView from "./OutcomeNode";
 import {newOutcome, updateOutcomenodeDegree, updateOutcomehorizontallinkDegree} from "./PostFunctions"
 
 //Analytics view
-class AlignmentView extends ComponentJSON{
+class AlignmentView extends React.Component{
     constructor(props){
         super(props);
         this.objectType="workflow";
@@ -28,7 +28,7 @@ class AlignmentView extends ComponentJSON{
                         if(this.state.sort=="outcome" && i==this.state.active && j==this.state.active2)view_class+=" active";
                         return(
                             <div id={"button-outcome-"+outcome.data.id} class={view_class} onClick={this.changeView.bind(this,i,"outcome",j)}>
-                                <OutcomeTitle data={outcome.data} rank={outcome.rank} titles={outcome.titles}/>
+                                <OutcomeTitle data={outcome.data} prefix={outcome.prefix} hovertext={outcome.hovertext}/>
                             </div>
                         );
                     })}
@@ -323,7 +323,13 @@ const getDescendantOutcomes = (state,outcome,outcomes)=>{
 
 
 
-class AlignmentHorizontalReverseWeekUnconnected extends React.Component{
+class AlignmentHorizontalReverseWeekUnconnected extends EditableComponentWithComments{
+    constructor(props){
+        super(props);
+        this.objectType="week";
+        this.state={};
+    }
+
     render(){
         let data = this.props.data;
         
@@ -338,11 +344,21 @@ class AlignmentHorizontalReverseWeekUnconnected extends React.Component{
         });
         
         
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
+        
         return(
-            <div class="week">
+            <div class="week" ref={this.maindiv} style={this.get_border_style()} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <TitleText text={data.title} defaultText={default_text}/>
                 <div class="node-block">
                     {nodeweeks}
+                </div>
+                {this.addEditable(data,true)}
+                <div class="side-actions">
+                    <div class="comment-indicator-container"></div>
+                </div>
+                <div class="mouseover-actions">
+                    {comments}
                 </div>
             </div>
         )
@@ -365,7 +381,7 @@ export const AlignmentHorizontalReverseWeek = connect(
 
 
 
-class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
+class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithComments{
     constructor(props){
         super(props);
         this.objectType="node";
@@ -378,7 +394,23 @@ class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
         if(data.represents_workflow) data_override = {...data,...data.linked_workflow_data};
         else data_override={...data};
         let selection_manager = this.props.renderer.selection_manager;
-        
+        let child_outcomes_header;
+        if(this.props.child_outcomes.length>0){
+            child_outcomes_header=<div class="child-outcome child-outcome-header">
+                <div class="half-width alignment-column">
+                    {gettext(Constants.capWords(gettext(data.linked_workflow_data.type+" outcomes"))+" From Linked Workflow")}
+                </div>
+                <div class="half-width alignment-column">
+                    {gettext("Associated ")+Constants.capWords(gettext(this.props.workflow.type+" outcomes"))}
+                </div>
+            </div>
+        }else{
+            if(data.linked_workflow){
+                child_outcomes_header=<div class="child-outcome child-outcome-header">{gettext("No outcomes have been added to the linked workflow. When added, they will appear here.")}</div>;
+            }else{
+                child_outcomes_header=<div class="child-outcome child-outcome-header">{gettext("No workflow has been linked to this node. If you link a workflow, its outcomes will appear here.")}</div>;
+            }
+        }
         let child_outcomes = this.props.child_outcomes.map(child_outcome=>{
             
             if(!this.state.show_all && this.props.restriction_set && this.props.restriction_set.child_outcomes && this.props.restriction_set.child_outcomes.indexOf(child_outcome)==-1)return null;
@@ -398,7 +430,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
         if(!this.props.renderer.read_only)outcomeadder = <OutcomeAdder renderer={this.props.renderer} outcome_set={outcome_restriction} addFunction={updateOutcomenodeDegree.bind(this,this.props.objectID)}/>
         let outcomes_for_node = (
             <div>
-                <div>{gettext("Outcomes for node:")}</div>
+                <div class="node-outcomes-header">{Constants.capWords(gettext(this.props.workflow.type+" outcomes"))+gettext(" for node:")}</div>
                 {outcomenodes}
                 {outcomeadder}
             </div>
@@ -414,7 +446,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
             if(this.state.show_all){
                 
                 show_all = (
-                    <div>
+                    <div class="alignment-added-outcomes">
                         {add_new_outcome}
                         {outcomes_for_node}
                         <div class="alignment-show-all" onClick={()=>this.setState({show_all:false})}>{"-"+gettext("Hide Unused")}</div>
@@ -422,14 +454,14 @@ class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
                 );
             }else{
                 show_all = (
-                    <div>
+                    <div class="alignment-added-outcomes">
                         <div class="alignment-show-all" onClick={()=>this.setState({show_all:true})}>{"+"+gettext("Show All")}</div>
                     </div>
                 );
             }
         }else{
             show_all = (
-                <div>
+                <div class="alignment-added-outcomes">
                     {add_new_outcome}
                     {outcomes_for_node}
                 </div>
@@ -441,21 +473,32 @@ class AlignmentHorizontalReverseNodeUnconnected extends ComponentJSON{
             style.outline="2px solid "+data.lock.user_colour;
         }
         
+        let comments;
+        if(this.props.renderer.view_comments)comments=this.addCommenting();
+        
         return (
             <div class="node-week">
                 <div 
                     style={style} 
                     class={"node column-"+data.column} 
                     onClick={(evt)=>selection_manager.changeSelection(evt,this)}
+                    ref={this.maindiv}
                 >
                     <div class="node-top-row">
                         <NodeTitle data={data}/>
                     </div>
                     <div class="outcome-block">
+                        {child_outcomes_header}
                         {child_outcomes}
                     </div>
                     <div class="node-drop-row">{show_all}</div>
                     {this.addEditable(data_override,true)}
+                    <div class="side-actions">
+                        <div class="comment-indicator-container"></div>
+                    </div>
+                    <div class="mouseover-actions">
+                        {comments}
+                    </div>
                 </div>
             </div>
         );
@@ -476,11 +519,11 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
             }
             let node_outcomes = Constants.filterThenSortByID(state.outcomenode,node.outcomenode_set).map(ocn=>ocn.outcome);
             if(!node.linked_workflow || node.linked_workflow_data.deleted){
-                return {data:node,column:column,child_outcomes:[],outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
+                return {workflow:state.workflow,data:node,column:column,child_outcomes:[],outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
             }
             let child_workflow = getChildWorkflowByID(state,node.linked_workflow);
             let child_outcomes = Constants.filterThenSortByID(state.outcomeworkflow,child_workflow.data.outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
-            return {data:node,column:column,child_outcomes:child_outcomes,outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
+            return {workflow:state.workflow,data:node,column:column,child_outcomes:child_outcomes,outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
             
         }
     }
@@ -518,7 +561,7 @@ class OutcomeAdderOptionUnconnected extends React.Component{
     render(){
         return (
             <option value={this.props.objectID}>
-                {"\u00A0 ".repeat(this.props.data.depth)+getOutcomeTitle(this.props.data,this.props.rank)}
+                {"\u00A0 ".repeat(this.props.data.depth)+getOutcomeTitle(this.props.data,this.props.prefix)}
             </option>
         );
     }

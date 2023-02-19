@@ -1,13 +1,12 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON.js";
 import NodeView from "./NodeView.js";
 import {NodeComparisonView} from "./NodeView.js";
 import {getNodeWeekByID} from "./FindState.js";
 import {} from "./Reducers.js";
 
 //Basic component to represent a NodeWeek
-class NodeWeekView extends ComponentJSON{
+class NodeWeekView extends React.Component{
     constructor(props){
         super(props);
         this.objectType="nodeweek";

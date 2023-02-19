@@ -245,6 +245,11 @@ def course_flow_patterns():
             name="get-user-list",
         ),
         path(
+            "user/update/",
+            views.UserUpdateView.as_view(),
+            name="user-update",
+        ),
+        path(
             "project/create/",
             views.ProjectCreateView.as_view(),
             name="project-create",
@@ -385,9 +390,19 @@ def course_flow_patterns():
             name="set-assignment-completion",
         ),
         path(
+            "assignment/getassignmentsfornode/",
+            views.get_assignments_for_node,
+            name="get-assignments-for-node",
+        ),
+        path(
             "liveproject/register/student/<project_hash>/",
             views.register_as_student,
             name="register-as-student",
+        ),
+        path(
+            "user/select-notifications/",
+            views.select_notifications,
+            name="select-notifications",
         ),
         path(
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"

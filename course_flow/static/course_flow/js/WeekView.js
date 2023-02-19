@@ -1,16 +1,16 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, TitleText} from "./ComponentJSON.js";
-import NodeWeekView from "./NodeWeekView.js";
-import {NodeWeekComparisonView} from "./NodeWeekView.js";
-import {getWeekByID, getNodeWeekByID} from "./FindState.js";
-import * as Constants from "./Constants.js";
-import {columnChangeNode, moveNodeWeek} from "./Reducers.js";
-import {insertedAt,columnChanged,addStrategy,updateValueInstant} from "./PostFunctions";
-import {Loader} from "./Constants.js";
+import {EditableComponentWithSorting, TitleText} from "./ComponentJSON";
+import NodeWeekView from "./NodeWeekView";
+import {NodeWeekComparisonView} from "./NodeWeekView";
+import {getWeekByID, getNodeWeekByID} from "./FindState";
+import * as Constants from "./Constants";
+import {columnChangeNode, moveNodeWeek} from "./Reducers";
+import {toggleDrop, insertedAt,columnChanged,addStrategy,updateValueInstant} from "./PostFunctions";
+import {Loader} from "./Constants";
 
 //Basic component to represent a Week
-export class WeekViewUnconnected extends ComponentJSON{
+export class WeekViewUnconnected extends EditableComponentWithSorting{
     constructor(props){
         super(props);
         this.objectType="week";
@@ -93,7 +93,7 @@ export class WeekViewUnconnected extends ComponentJSON{
         return nodes;
     }
     
-    postMountFunction(){
+    componentDidMount(){
         this.makeDragAndDrop();
     }
 
@@ -235,7 +235,6 @@ export class WeekComparisonViewUnconnected extends WeekViewUnconnected{
     }
 
     makeDroppable(){
-        console.log("overrode make droppable");
     }
     
     getNodes(){
@@ -259,7 +258,7 @@ export class WeekComparisonViewUnconnected extends WeekViewUnconnected{
         $(".week-block .week-workflow:nth-child("+rank+") .week").css({"height":max_height+"px"});
     }
     
-    postMountFunction(){
+    componentDidMount(){
         this.makeDragAndDrop();
         this.alignAllWeeks();
     }
@@ -290,3 +289,48 @@ export const WeekComparisonView = connect(
     mapWeekStateToProps,
     null
 )(WeekComparisonViewUnconnected)
+
+
+//Represents a week in the nodebar
+export class NodeBarWeekViewUnconnected extends React.Component{
+    constructor(props){
+        super(props);
+        this.objectType="week";
+        this.objectClass=".week";
+    }
+    
+    render(){
+        let data = this.props.data;
+        let renderer = this.props.renderer;
+        let default_text;
+        if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
+        let src = iconpath+"plus.svg";
+        if(data.is_dropped)src=iconpath+"minus.svg";
+        return (
+            <div class="node-bar-week hover-shade" onClick={this.jumpTo.bind(this)}>
+                <div><TitleText text={data.title} defaultText={default_text}/><img onClick={this.toggleDrop.bind(this)} src={src}/></div>
+            </div>
+        );
+    }
+
+    jumpTo(){
+        let week_id = this.props.data.id;
+        let week = $(".week-workflow[data-child-id='"+week_id+"'] > .week");
+        if(week.length>0){
+            let container = $("#container");
+
+            $("#container").animate({
+                scrollTop: week.offset().top+container[0].scrollTop-container.offset().top-200
+            }, 300);
+        }
+    }
+
+    toggleDrop(evt){
+        // evt.stopPropagation();
+        toggleDrop(this.props.objectID,this.objectType,!this.props.data.is_dropped,this.props.dispatch)
+    }
+}
+export const NodeBarWeekView = connect(
+    mapWeekStateToProps,
+    null
+)(NodeBarWeekViewUnconnected)

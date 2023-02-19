@@ -1,20 +1,28 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {WorkflowTitle, NodeTitle, TitleText, ActionButton} from "./ComponentJSON";
+import {DatePicker, AssignmentTitle, WorkflowTitle, NodeTitle, TitleText, ActionButton, SimpleWorkflow} from "./ComponentJSON";
 import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
-import {createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "./PostFunctions";
+import {setAssignmentCompletion, updateLiveProjectValue, createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "./PostFunctions";
 import {StudentManagement} from "./StudentManagement";
-import {AssignmentView} from "./LiveAssignmentView";
+import {AssignmentView, AssignmentViewSmall} from "./LiveAssignmentView";
 import * as Constants from "./Constants";
 
 export class LiveProjectMenu extends React.Component{
     constructor(props){
         super(props);
-        this.state={...props.project,view_type:"overview"};
+        this.state={...props.project,liveproject:this.props.liveproject,view_type:"overview"};
     }
     
     render(){
         let data = this.props.project;
+
+        let overflow_links = [];
+        if(this.props.renderer.user_permission > 0){
+            overflow_links.push(
+                <a id="project" class="hover-shade" href={update_path.project.replace("0",data.id)}>{gettext("Edit Project")}</a>
+            );
+        }
+
 
         let view_buttons = this.getViewButtons().map(
             (item)=>{
@@ -28,7 +36,7 @@ export class LiveProjectMenu extends React.Component{
         return(
             <div class="project-menu">
                 <div class="project-header">
-                    <WorkflowForMenu no_hyperlink={true} workflow_data={this.props.liveproject} selectAction={this.openEdit.bind(this)}/>
+                    <WorkflowForMenu no_hyperlink={true} workflow_data={this.state.liveproject} selectAction={this.openEdit.bind(this)}/>
                     {this.getHeader()}
                     
                 </div>
@@ -39,6 +47,10 @@ export class LiveProjectMenu extends React.Component{
                 <div class = "workflow-container">
                     {this.getContent()}
                 </div>
+                {reactDom.createPortal(
+                    overflow_links,
+                    $("#overflow-links")[0]
+                )}
             </div>
         );
     }
@@ -49,6 +61,7 @@ export class LiveProjectMenu extends React.Component{
             {type:"students",name:gettext("Students")},
             {type:"assignments",name:gettext("Assignments")},
             {type:"workflows",name:gettext("Workflow Visibility")},
+            {type:"completion_table",name:gettext("Completion Table")},
             {type:"settings",name:gettext("Classroom Settings")},
         ];
     }
@@ -77,13 +90,15 @@ export class LiveProjectMenu extends React.Component{
             case "overview":
                 return (<LiveProjectOverview renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "students":
-                return (<LiveProjectStudents renderer={this.props.renderer} role={this.getRole()} liveproject={this.props.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectStudents renderer={this.props.renderer} role={this.getRole()} liveproject={this.state.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "assignments":
                 return (<LiveProjectAssignments renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "workflows":
                 return (<LiveProjectWorkflows renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+            case "completion_table":
+                return (<LiveProjectCompletionTable renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             case "settings":
-                return (<LiveProjectSettings renderer={this.props.renderer} role={this.getRole()} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+                return (<LiveProjectSettings updateLiveProject={this.updateFunction.bind(this)} renderer={this.props.renderer} role={this.getRole()} liveproject={this.state.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
         }
     }
 
@@ -158,8 +173,68 @@ class LiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
+
+        let workflows = this.state.data.workflows.map((workflow)=>
+            <SimpleWorkflow workflow_data = {workflow}/>
+        );
+        if(workflows.length==0)workflows=gettext("No workflows have been made visible to students.");
+        let teachers = this.state.data.teachers.map((user)=>
+            <tr>
+                <td class="table-user">
+                    {Constants.getUserDisplay(user.user)}
+                </td>
+                <td>
+                    {user.completion}
+                </td>
+            </tr>
+        );
+        let students = this.state.data.students.map((user)=>
+            <tr>
+                <td class="table-user">
+                    {Constants.getUserDisplay(user.user)}
+                </td>
+                <td>
+                    {user.completion}
+                </td>
+            </tr>
+        );
+
+        let assignments = this.state.data.assignments.map((assignment)=>
+            <tr>
+                <td>
+                    <AssignmentTitle data={assignment} user_role={this.props.renderer.user_role}/>
+                </td>
+                <td>
+                    {assignment.completion_info}
+                </td>
+                <td>
+                    <DatePicker default_value={assignment.end_date} disabled={true}/>
+                </td>
+            </tr>
+        );
+
         return (
-            <div>Not yet implemented</div>
+            <div class="workflow-details">
+                <h3>{gettext("Teachers")}:</h3>
+                <table class="overview-table">
+                    <tr><th>{gettext("User")}</th><th>{gettext("Assignments Complete")}</th></tr>
+                    {teachers}
+                </table>
+                <h3>{gettext("Students")}:</h3>
+                <table class="overview-table">
+                    <tr><th>{gettext("User")}</th><th>{gettext("Assignments Complete")}</th></tr>
+                    {students}
+                </table>
+                <h3>{gettext("Visible Workflows")}:</h3>
+                <div class="menu-grid">
+                    {workflows}
+                </div>
+                <h3>{gettext("Assignments")}:</h3>
+                <table class="overview-table">
+                    <tr><th>{gettext("Assignment")}</th><th>{gettext("Completion")}</th><th>{gettext("End Date")}</th></tr>
+                    {assignments}
+                </table>
+            </div>
         );
     }
 
@@ -169,9 +244,45 @@ class StudentLiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
-        return (
-            <div>Not yet implemented</div>
+
+        let workflows = this.state.data.workflows.map((workflow)=>
+            <SimpleWorkflow workflow_data = {workflow}/>
         );
+        if(workflows.length==0)workflows=gettext("No workflows have been made visible to students.");
+
+        let assignments = this.state.data.assignments.filter(assignment=>
+            assignment.user_assignment.completed==false
+        ).map((assignment)=>
+            <tr>
+                <td>
+                    <AssignmentTitle data={assignment} user_role={this.props.renderer.user_role}/>
+                </td>
+                <td>
+                    <input type="checkbox" disabled={(!assignment.self_reporting)} onChange={this.toggleAssignment.bind(this,assignment.user_assignment.id)}/>
+                </td>
+                <td>
+                    <DatePicker default_value={assignment.end_date} disabled={true}/>
+                </td>
+            </tr>
+        );
+
+        return (
+            <div class="workflow-details">
+                <h3>{gettext("Your Incomplete Assignments")}:</h3>
+                <table class="overview-table">
+                    <tr><th>{gettext("Assignment")}</th><th>{gettext("Completion")}</th><th>{gettext("End Date")}</th></tr>
+                    {assignments}
+                </table>
+                <h3>{gettext("Visible Workflows")}:</h3>
+                <div class="menu-grid">
+                    {workflows}
+                </div>
+            </div>
+        );
+    }
+
+    toggleAssignment(id,evt){
+        setAssignmentCompletion(id,evt.target.checked);
     }
 
 }
@@ -477,13 +588,58 @@ class LiveProjectStudents extends React.Component{
 
 }
 
-class LiveProjectSettings extends LiveProjectSection{
+class LiveProjectSettings extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={liveproject:this.props.liveproject,has_changed:false};
+        this.changed_values={};
+    }
+
 
     render(){
-        if(!this.state.data)return this.defaultRender();
+        let data=this.state.liveproject;
+        let changeField = this.changeField.bind(this);
+
         return (
-            <div>Not yet implemented</div>
+            <div class="workflow-details">
+                <h3>{gettext("Configuration")}:</h3>
+                <div>
+                    <label for="default-signle-completion" title={gettext("Whether to mark the assignment as complete if any user has completed it.")}>{gettext("By default, mark assignments as complete when a single user has completed them:")}</label><input id="default-single-completion" name="default-single-completion" type="checkbox" checked={data.default_single_completion} onChange={(evt)=>changeField("default_single_completion",evt.target.checked)}/>
+                </div>
+                <div>
+                    <label for="default-assign-to-all" title={gettext("Whether creating an assignment automatically adds all students to it.")}>{gettext("Assign new assignments to all students by default:")}</label><input id="default-assign-to-all" name="default-assign-to-all" type="checkbox" checked={data.default_assign_to_all} onChange={(evt)=>changeField("default_assign_to_all",evt.target.checked)}/>
+                </div>
+                <div>
+                    <label for="default-self-reporting" title={gettext("Whether students can mark their own assignments as complete.")}>{gettext("Let students self-report their assignment completion by default:")}</label><input id="default-self-reporting" name="default-self-reporting" type="checkbox" checked={data.default_self_reporting} onChange={(evt)=>changeField("default_self_reporting",evt.target.checked)}/>
+                </div>
+                <div>
+                    <label for="default-all-workflows-visible" title={gettext("Whether all workflows in the project will be visible to students by default.")}>{gettext("All Workflows Visible To Students:")}</label><input id="default-all-workflows-visible" name="default-all-workflows-visible" type="checkbox" checked={data.default_all_workflows_visible} onChange={(evt)=>changeField("default_all_workflows_visible",evt.target.checked)}/>
+                </div>
+                <div>
+                <button disabled={(!this.state.has_changed)} onClick={this.saveChanges.bind(this)}>{gettext("Save Changes")}</button>
+                </div>
+            </div>
         );
+    }
+
+
+    changeField(type,new_value){
+        let new_state={...this.state.liveproject};
+        new_state[type]=new_value;
+        this.changed_values[type]=new_value;
+        this.setState({has_changed:true,liveproject:new_state});
+    }
+
+
+    saveChanges(){
+        updateLiveProjectValue(
+            this.state.liveproject.id,
+            "liveproject",
+            this.changed_values,
+        );
+        this.props.updateLiveProject({liveproject:{...this.state.liveproject,...this.changed_values}});
+        this.changed_values={};
+        this.setState({has_changed:false});
     }
 
 }
@@ -533,4 +689,56 @@ export class WorkflowVisibility extends WorkflowForMenu{
             </div>
         );
     }
+}
+
+
+class LiveProjectCompletionTable extends LiveProjectSection{
+    
+    render(){
+        if(!this.state.data)return this.defaultRender();
+        let data=this.state.liveproject;
+        let head = this.state.data.assignments.map(assignment=>
+            <th class="table-cell nodewrapper"><AssignmentViewSmall renderer={this.props.renderer} data={assignment}/></th>
+        );
+        let assignment_ids = this.state.data.assignments.map(assignment=>assignment.id)
+        let body = this.state.data.table_rows.map((row,row_index)=>
+            <tr class="outcome-row">
+                <td class="user-head outcome-head">{Constants.getUserDisplay(row.user)}</td>
+                {assignment_ids.map(id=>{
+                    let assignment = row.assignments.find(row_element=>row_element.assignment==id);
+                    if(!assignment)return <td class="table-cell"></td>
+                    return <td class="table-cell"><input onChange={this.toggleCompletion.bind(this,assignment.id,row_index)} type="checkbox" checked={assignment.completed}/></td>
+                })}
+                <td class="table-cell total-cell grand-total-cell">
+                    {row.assignments.reduce((total,assignment)=>total+assignment.completed,0)+"/"+row.assignments.length}
+                </td>
+            </tr>
+        );
+
+        return (
+            <div class="workflow-details">
+                <h3>{gettext("Table")}:</h3>
+                <table class="user-table outcome-table node-rows">
+                <tr class="outcome-row node-row">
+                    <th class="user-head outcome-head empty"></th>
+                    {head}
+                    <th class="table-cell nodewrapper total-cell grand-total-cell"><div class="total-header">{gettext("Total")}:</div></th>
+                </tr>
+                {body}
+                </table>
+            </div>
+        );
+    }
+
+    toggleCompletion(id,row_index,evt){
+        setAssignmentCompletion(id,evt.target.checked);
+        let new_data = {...this.state.data};
+        new_data.table_rows = new_data.table_rows.slice();
+        new_data.table_rows[row_index]={...new_data.table_rows[row_index]}
+        new_data.table_rows[row_index].assignments=new_data.table_rows[row_index].assignments.slice();
+        let index = new_data.table_rows[row_index].assignments.findIndex(assignment=>assignment.id==id);
+        new_data.table_rows[row_index].assignments[index]={...new_data.table_rows[row_index].assignments[index],completed:evt.target.checked};
+        this.setState({data:new_data});
+    }
+
 }

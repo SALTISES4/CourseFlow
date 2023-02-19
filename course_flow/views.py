@@ -27,7 +27,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, TemplateView
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
 
@@ -59,6 +59,7 @@ from .models import (  # OutcomeProject,
     Column,
     ColumnWorkflow,
     Course,
+    CourseFlowUser,
     Discipline,
     Favourite,
     LiveAssignment,
@@ -93,8 +94,10 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     InfoBoxSerializer,
     LinkedWorkflowSerializerShallow,
     LiveAssignmentSerializer,
+    LiveAssignmentWithCompletionSerializer,
     LiveProjectSerializer,
     LiveProjectUserSerializer,
+    LiveProjectUserSerializerWithCompletion,
     NodeLinkSerializerShallow,
     NodeSerializerShallow,
     NodeWeekSerializerShallow,
@@ -107,6 +110,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     ProjectSerializerShallow,
     RefreshSerializerNode,
     RefreshSerializerOutcome,
+    UserAssignmentSerializer,
     UserAssignmentSerializerWithUser,
     UserSerializer,
     WeekSerializerShallow,
@@ -396,7 +400,12 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         }
 
 
-def get_my_projects(user, add):
+def get_my_projects(user, add, **kwargs):
+    for_add = kwargs.get("for_add", False)
+    permission_filter = {}
+    if for_add:
+        permission_filter["permission_type"] = ObjectPermission.PERMISSION_EDIT
+
     data_package = {
         "owned_projects": {
             "title": _("My Projects"),
@@ -432,6 +441,7 @@ def get_my_projects(user, add):
                                     Project
                                 ),
                                 project__deleted=False,
+                                **permission_filter,
                             )
                         ],
                         many=True,
@@ -444,7 +454,9 @@ def get_my_projects(user, add):
                 "Projects shared with you by others (for which you have either view or edit permissions) will appear here."
             ),
         },
-        "deleted_projects": {
+    }
+    if not for_add:
+        data_package["deleted_projects"] = {
             "title": _("Restore Projects"),
             "sections": [
                 {
@@ -470,8 +482,7 @@ def get_my_projects(user, add):
             "emptytext": _(
                 "Projects you have deleted can be restored from here."
             ),
-        },
-    }
+        }
     return data_package
 
 
@@ -1216,6 +1227,13 @@ class SALTISEAnalyticsView(
             in self.request.user.groups.all()
         )
 
+    def get_context_data(self, **kwargs):
+        context = super(TemplateView, self).get_context_data(**kwargs)
+        context["notified_users"] = User.objects.filter(
+            courseflow_user__notifications=True
+        )
+        return context
+
 
 class SALTISEAdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "course_flow/saltise_admin.html"
@@ -1225,6 +1243,43 @@ class SALTISEAdminView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             Group.objects.get(name="SALTISE_Staff")
             in self.request.user.groups.all()
         )
+
+
+class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = CourseFlowUser
+    fields = ["first_name", "last_name", "notifications"]
+    template_name = "course_flow/courseflowuser_update.html"
+
+    def test_func(self):
+        user = self.request.user
+        courseflow_user = CourseFlowUser.objects.filter(user=user).first()
+        if courseflow_user is None:
+            print("create the user")
+            courseflow_user = CourseFlowUser.objects.create(
+                first_name=user.first_name, last_name=user.last_name, user=user
+            )
+        self.kwargs["pk"] = courseflow_user.pk
+        return True
+
+    def get_form(self, *args, **kwargs):
+        form = super(UpdateView, self).get_form()
+        return form
+
+    def get_success_url(self):
+        return reverse("course_flow:user-update")
+
+
+@ajax_login_required
+def select_notifications(request: HttpRequest) -> HttpResponse:
+    notifications = json.loads(request.POST.get("notifications"))
+    try:
+        courseflowuser = CourseFlowUser.ensure_user(request.user)
+        courseflowuser.notifications = notifications
+        courseflowuser.notifications_active = True
+        courseflowuser.save()
+    except ObjectDoesNotExist:
+        return JsonResponse({"action": "error"})
+    return JsonResponse({"action": "posted"})
 
 
 class ProjectCreateView(
@@ -1536,7 +1591,7 @@ def get_workflow_data_flat(workflow, user):
     weeks = workflow.weeks.all()
     nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
     nodes = Node.objects.filter(week__workflow=workflow).prefetch_related(
-        "outcomenode_set"
+        "outcomenode_set", "liveassignment_set"
     )
     nodelinks = NodeLink.objects.filter(source_node__in=nodes)
     if not workflow.is_strategy:
@@ -2272,18 +2327,23 @@ def get_project_data(request: HttpRequest) -> HttpResponse:
     )
 
 
-@user_can_view("workflowPk")
+@user_is_teacher()
 def get_target_projects(request: HttpRequest) -> HttpResponse:
-    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
-        data_package = get_my_projects(request.user, False)
+        workflow_id = Workflow.objects.get(
+            pk=request.POST.get("workflowPk")
+        ).id
+    except ObjectDoesNotExist:
+        workflow_id = 0
+    try:
+        data_package = get_my_projects(request.user, False, for_add=True)
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
         {
             "action": "posted",
             "data_package": data_package,
-            "workflow_id": workflow.id,
+            "workflow_id": workflow_id,
         }
     )
 
@@ -4219,7 +4279,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-# favourite/unfavourite a project or workflow or outcome for a user
+# favourite/unfavourite a project or workflow for a user
 @user_can_view(False)
 def toggle_favourite(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -4227,7 +4287,7 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
     favourite = json.loads(request.POST.get("favourite"))
     response = {}
     try:
-        item = get_model_from_str(objectType).objects.get(id=object_id)
+        item = get_model_from_str(objectType).objects.get(pk=object_id)
         Favourite.objects.filter(
             user=request.user,
             content_type=ContentType.objects.get_for_model(item),
@@ -5730,6 +5790,11 @@ class LiveProjectDetailView(LoginRequiredMixin, UserEnrolledMixin, DetailView):
             )
             .decode("utf-8")
         )
+        context["user_permission"] = (
+            JSONRenderer()
+            .render(get_user_permission(project, self.request.user))
+            .decode("utf-8")
+        )
         return context
 
 
@@ -5779,7 +5844,21 @@ def get_live_project_data_student(request: HttpRequest) -> HttpResponse:
     data_type = json.loads(request.POST.get("data_type"))
     try:
         if data_type == "overview":
-            data_package = {"data": "Hello world!"}
+            data_package = {
+                "workflows": InfoBoxSerializer(
+                    liveproject.visible_workflows.filter(deleted=False),
+                    many=True,
+                    context={"user": request.user},
+                ).data,
+                "assignments": LiveAssignmentSerializer(
+                    LiveAssignment.objects.filter(
+                        userassignment__user=request.user,
+                        liveproject=liveproject,
+                    ).order_by("end_date"),
+                    many=True,
+                    context={"user": request.user},
+                ).data,
+            }
         elif data_type == "assignments":
             assignments = liveproject.liveassignment_set.filter(
                 userassignment__user=request.user
@@ -5831,7 +5910,61 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
     data_type = json.loads(request.POST.get("data_type"))
     try:
         if data_type == "overview":
-            data_package = {"data": "Hello world!"}
+            data_package = {
+                "workflows": InfoBoxSerializer(
+                    liveproject.visible_workflows.filter(deleted=False),
+                    many=True,
+                    context={"user": request.user},
+                ).data,
+                "students": LiveProjectUserSerializerWithCompletion(
+                    LiveProjectUser.objects.filter(
+                        liveproject=liveproject,
+                        role_type=LiveProjectUser.ROLE_STUDENT,
+                    ),
+                    many=True,
+                ).data,
+                "teachers": LiveProjectUserSerializerWithCompletion(
+                    LiveProjectUser.objects.filter(
+                        liveproject=liveproject,
+                        role_type=LiveProjectUser.ROLE_TEACHER,
+                    ),
+                    many=True,
+                ).data,
+                "assignments": LiveAssignmentWithCompletionSerializer(
+                    LiveAssignment.objects.filter(
+                        liveproject=liveproject
+                    ).order_by("end_date"),
+                    many=True,
+                ).data,
+            }
+        elif data_type == "completion_table":
+            assignments = LiveAssignment.objects.filter(
+                liveproject=liveproject
+            ).order_by("end_date")
+            users = (
+                LiveProjectUser.objects.filter(liveproject=liveproject)
+                .exclude(role_type=LiveProjectUser.ROLE_NONE)
+                .order_by("-role_type")
+            )
+
+            table_rows = [
+                {
+                    "user": UserSerializer(user.user).data,
+                    "assignments": UserAssignmentSerializer(
+                        UserAssignment.objects.filter(
+                            user=user.user, assignment__liveproject=liveproject
+                        ),
+                        many=True,
+                    ).data,
+                }
+                for user in users
+            ]
+            data_package = {
+                "table_rows": table_rows,
+                "assignments": LiveAssignmentWithCompletionSerializer(
+                    assignments, many=True
+                ).data,
+            }
         elif data_type == "students":
             data_package = {"data": "Hello world!"}
         elif data_type == "assignments":
@@ -5892,10 +6025,16 @@ def create_live_assignment(request: HttpRequest) -> HttpResponse:
         assignment = LiveAssignment.objects.create(
             liveproject=liveproject,
             task=node,
-            self_reporting=liveproject.default_self_reporting,
-            single_completion=liveproject.default_single_completion,
             author=request.user,
         )
+        # if liveproject.default_assign_to_all:
+        #     students = LiveProjectUser.objects.filter(
+        #         liveproject=liveproject, role_type=LiveProjectUser.ROLE_STUDENT
+        #     )
+        #     for student in students:
+        #         UserAssignment.objects.create(
+        #             user=student.user, assignment=assignment
+        #         )
 
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -5986,6 +6125,41 @@ def get_workflow_nodes(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
     try:
         data_package = WorkflowSerializerForAssignments(workflow).data
+    except AttributeError:
+        return JsonResponse({"action": "error"})
+    return JsonResponse(
+        {
+            "action": "posted",
+            "data_package": data_package,
+        }
+    )
+
+
+@user_enrolled_as_student("nodePk")
+def get_assignments_for_node(request: HttpRequest) -> HttpResponse:
+    node = Node.objects.get(pk=request.POST.get("nodePk"))
+    try:
+        user = request.user
+        workflow = node.get_workflow()
+        role_type = get_user_role(workflow, user)
+        my_assignments = LiveAssignmentSerializer(
+            LiveAssignment.objects.filter(
+                task=node, userassignment__user=user
+            ),
+            many=True,
+            context={"user": user},
+        ).data
+        if role_type == LiveProjectUser.ROLE_TEACHER:
+            all_assignments = LiveAssignmentWithCompletionSerializer(
+                LiveAssignment.objects.filter(task=node),
+                many=True,
+            ).data
+        else:
+            all_assignments = None
+        data_package = {
+            "my_assignments": my_assignments,
+            "all_assignments": all_assignments,
+        }
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse(

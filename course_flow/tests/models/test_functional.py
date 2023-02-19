@@ -17,6 +17,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from course_flow.models import (
     Activity,
     Course,
+    CourseFlowUser,
     Discipline,
     Favourite,
     LiveAssignment,
@@ -96,6 +97,60 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
             self.live_server_url + "/course-flow/home/", selenium.current_url
         )
 
+
+class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
+        else:
+            self.selenium = webdriver.Chrome()
+
+        super(SeleniumUserTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        self.user.first_name = "old first"
+        self.user.last_name = "old last"
+        self.user.save()
+        selenium.get(self.live_server_url + reverse("course_flow:home"))
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(SeleniumUserTestCase, self).tearDown()
+
+    def test_edit_user(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        selenium.get(self.live_server_url + reverse("course_flow:user-update"))
+
+        courseflow_user = CourseFlowUser.objects.get(pk=self.user.pk)
+        assert courseflow_user.first_name == "old first"
+        assert courseflow_user.last_name == "old last"
+        first_name = selenium.find_element_by_id("id_first_name")
+        last_name = selenium.find_element_by_id("id_last_name")
+        first_name.clear()
+        last_name.clear()
+
+        new_first = "new first"
+        new_last = "new last"
+
+        first_name.send_keys(new_first)
+        last_name.send_keys(new_last)
+        selenium.find_element_by_id("save-button").click()
+
+        time.sleep(1)
+
+        courseflow_user = CourseFlowUser.objects.get(pk=self.user.pk)
+
+        assert courseflow_user.first_name == "new first"
+        assert courseflow_user.last_name == "new last"
 
 class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
@@ -227,6 +282,32 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "new title"
             in selenium.find_element_by_css_selector(".workflow-title").text
         )
+
+    def test_settings(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user, title="new title")
+        liveproject = LiveProject.objects.create(project=project)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:live-project-update", args=[project.id])
+        )
+        selenium.find_element_by_css_selector("#button_settings").click()
+        time.sleep(1)
+        selenium.find_element_by_id("default-assign-to-all").click()
+        selenium.find_element_by_id("default-self-reporting").click()
+        selenium.find_element_by_id("default-single-completion").click()
+        selenium.find_element_by_id("default-all-workflows-visible").click()
+
+        selenium.find_element_by_css_selector(
+            ".workflow-details button"
+        ).click()
+        time.sleep(1)
+        liveproject = LiveProject.objects.first()
+        self.assertEqual(liveproject.default_self_reporting, False)
+        self.assertEqual(liveproject.default_assign_to_all, False)
+        self.assertEqual(liveproject.default_single_completion, True)
+        self.assertEqual(liveproject.default_all_workflows_visible, True)
 
     def test_add_roles(self):
         selenium = self.selenium
@@ -518,7 +599,9 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         node.linked_workflow = workflow2
         node.save()
-        liveproject = LiveProject.objects.create(project=project)
+        liveproject = LiveProject.objects.create(
+            project=project, default_assign_to_all=False
+        )
         LiveProjectUser.objects.create(
             liveproject=liveproject,
             user=self.user,
@@ -533,7 +616,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:live-project-update", args=[project.id])
         )
         selenium.find_element_by_css_selector("#button_assignments").click()
-        time.sleep(1)
+        time.sleep(2)
 
         self.assertEqual(
             len(
@@ -639,6 +722,115 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             "linked workflow",
             selenium.find_element_by_css_selector(".workflow-title").text,
+        )
+
+    def test_create_assignment_from_workflow(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=self.user, title="new title")
+        workflow = Activity.objects.create(
+            author=self.user, title="new workflow"
+        )
+        node = workflow.weeks.first().nodes.create(
+            author=self.user, column=workflow.columns.first()
+        )
+        WorkflowProject.objects.create(project=project, workflow=workflow)
+        liveproject = LiveProject.objects.create(project=project)
+        liveproject.visible_workflows.add(workflow)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[workflow.id])
+        )
+        time.sleep(2)
+
+        hover_item = selenium.find_element_by_css_selector(
+            ".workflow-details .node"
+        )
+        click_item = selenium.find_element_by_css_selector(
+            ".node .assignment-button img"
+        )
+        action_hover_click(selenium, hover_item, click_item).perform()
+
+        selenium.find_element_by_css_selector(
+            ".node .create-assignment img"
+        ).click()
+        time.sleep(1)
+
+        self.assertEqual(LiveAssignment.objects.filter(task=node).count(), 1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".assignment-in-node")),
+            1,
+        )
+
+    def test_student_complete_assignment_from_workflow(self):
+        user2 = get_author()
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+        project = Project.objects.create(author=user2, title="new title")
+        workflow = Activity.objects.create(author=user2, title="new workflow")
+        node = workflow.weeks.first().nodes.create(
+            author=user2, column=workflow.columns.first()
+        )
+        WorkflowProject.objects.create(project=project, workflow=workflow)
+        liveproject = LiveProject.objects.create(
+            project=project, default_assign_to_all=False
+        )
+        liveproject.visible_workflows.add(workflow)
+        LiveProjectUser.objects.create(
+            user=self.user,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_STUDENT,
+        )
+        assignment = LiveAssignment.objects.create(
+            liveproject=liveproject, task=node
+        )
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[workflow.id])
+        )
+        time.sleep(2)
+
+        hover_item = selenium.find_element_by_css_selector(
+            ".workflow-details .node"
+        )
+        click_item = selenium.find_element_by_css_selector(
+            ".node .assignment-button img"
+        )
+        action_hover_click(selenium, hover_item, click_item).perform()
+
+        time.sleep(1)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".assignment-in-node")),
+            0,
+        )
+        UserAssignment.objects.create(user=self.user, assignment=assignment)
+
+        selenium.find_element_by_css_selector(
+            ".node .close-button img"
+        ).click()
+        time.sleep(0.5)
+
+        action_hover_click(selenium, hover_item, click_item).perform()
+        time.sleep(2)
+        self.assertEqual(
+            len(selenium.find_elements_by_css_selector(".assignment-in-node")),
+            1,
+        )
+        selenium.find_element_by_css_selector(
+            ".assignment-timing input[type='checkbox']"
+        ).click()
+        time.sleep(1)
+        self.assertEqual(
+            UserAssignment.objects.filter(user=self.user).first().completed,
+            True,
+        )
+        selenium.find_element_by_css_selector(
+            ".assignment-timing input[type='checkbox']"
+        ).click()
+        time.sleep(1)
+        self.assertEqual(
+            UserAssignment.objects.filter(user=self.user).first().completed,
+            False,
         )
 
 
@@ -1478,13 +1670,19 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             OutcomeOutcome.objects.filter(parent=base_outcome).count(), 2
         )
         time.sleep(1)
+
+        hover_item = selenium.find_element_by_css_selector(
+            ".workflow-details .outcome .outcome"
+        )
+        click_item = selenium.find_element_by_css_selector(
+            ".outcome .outcome .insert-child-button img"
+        )
+        action_hover_click(selenium, hover_item, click_item).perform()
+        time.sleep(2)
         selenium.find_element_by_css_selector(
             ".outcome:not(.dropped) > .outcome-drop"
         ).click()
-        selenium.find_element_by_css_selector(
-            ".children-block:not(:empty)+.outcome-create-child"
-        ).click()
-        time.sleep(2)
+        time.sleep(1)
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
@@ -1790,32 +1988,32 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 "#button_outcometable"
             ).click()
             time.sleep(1)
-            base_outcome_row_select = ".outcome-table > div > .outcome > .outcome-row > .outcome-cells"
-            outcome1_row_select = ".outcome .outcome-outcome:first-of-type .outcome > .outcome-row"
-            outcome2_row_select = ".outcome .outcome-outcome+.outcome-outcome .outcome > .outcome-row"
+            base_outcome_row_select = ".outcome-table > div > .outcome-row:first-child > .outcome-cells"
+            outcome1_row_select = ".outcome-table > div > .outcome-row:first-child+.outcome-row .outcome-cells"
+            outcome2_row_select = ".outcome-table > div > .outcome-row:first-child+.outcome-row+.outcome-row .outcome-cells"
             base_cell = (
                 base_outcome_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell"
+                + " .table-group:first-of-type .total-cell+.table-cell"
             )
             base_cell2 = (
                 base_outcome_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+                + " .table-group:first-of-type .total-cell+.table-cell+.table-cell"
             )
             base_input = (
                 base_outcome_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell input"
+                + " .table-group:first-of-type .total-cell+.table-cell input"
             )
             base_input2 = (
                 base_outcome_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+                + " .table-group:first-of-type .total-cell+.table-cell+.table-cell input"
             )
             base_img = (
                 base_outcome_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell img"
+                + " .table-group:first-of-type .total-cell+.table-cell img"
             )
             base_img2 = (
                 base_outcome_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
+                + " .table-group:first-of-type .total-cell+.table-cell+.table-cell img"
             )
             base_total_img = (
                 base_outcome_row_select
@@ -1831,27 +2029,27 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             outcome1_cell = (
                 outcome1_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell"
+                + " .table-group:first-of-type .total-cell+.table-cell"
             )
             outcome1_cell2 = (
                 outcome1_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+                + " .table-group:first-of-type .total-cell+.table-cell+.table-cell"
             )
             outcome1_input = (
                 outcome1_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell input"
+                + " .table-group:first-of-type .total-cell+.table-cell input"
             )
             outcome1_input2 = (
                 outcome1_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+                + " .table-group:first-of-type .total-cell+.table-cell+.table-cell input"
             )
             outcome1_img = (
                 outcome1_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell img"
+                + " .table-group:first-of-type .total-cell+.table-cell img"
             )
             outcome1_img2 = (
                 outcome1_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
+                + " .table-group:first-of-type .total-cell+.table-cell+.table-cell img"
             )
             outcome1_total_img = (
                 outcome1_row_select
@@ -1867,27 +2065,27 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             outcome2_cell = (
                 outcome2_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell"
+                + " .table-group:first-of-type .total-cell+.table-cell"
             )
             outcome2_cell2 = (
                 outcome2_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell"
+                + " .table-group:first-of-type .total-cell+.table-cell+.table-cell"
             )
             outcome2_input = (
                 outcome2_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell input"
+                + " .table-group:first-of-type .total-cell+.table-cell input"
             )
             outcome2_input2 = (
                 outcome2_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell input"
+                + " .table-group:first-of-type .total-cell+.table-cell+.table-cell input"
             )
             outcome2_img = (
                 outcome2_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell img"
+                + " .table-group:first-of-type .total-cell+.table-cell img"
             )
             outcome2_img2 = (
                 outcome2_row_select
-                + " .table-group:first-of-type .blank-cell+.table-cell+.table-cell img"
+                + " .table-group:first-of-type .total-cell+.table-cell+.table-cell img"
             )
             outcome2_total_img = (
                 outcome2_row_select
@@ -2306,13 +2504,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             == "Term 1"
         )
         assert len(selenium.find_elements_by_css_selector(".week .node")) == 1
+
         assert (
             len(
                 selenium.find_elements_by_css_selector(
                     ".week .node .child-outcome"
                 )
             )
-            == 2
+            == 3
         )
         assert (
             len(
@@ -2343,6 +2542,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         WorkflowProject.objects.create(workflow=program, project=project)
         base_outcome = Outcome.objects.create(author=self.user)
         OutcomeWorkflow.objects.create(outcome=base_outcome, workflow=program)
+        # program outcome-outcome
         poo1 = OutcomeOutcome.objects.create(
             parent=base_outcome,
             child=Outcome.objects.create(author=self.user),
@@ -2369,22 +2569,23 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(2)
         selenium.find_element_by_css_selector(".other-views").click()
-        selenium.find_element_by_css_selector(
-            "#button_competencymatrix"
-        ).click()
+        selenium.find_element_by_css_selector("#button_outcometable").click()
+        time.sleep(2)
+
+        selenium.find_element_by_css_selector("#table_type_matrix").click()
         time.sleep(2)
         assert (
-            len(selenium.find_elements_by_css_selector(".outcome-head .node"))
+            len(selenium.find_elements_by_css_selector(".table-cell .node"))
             == 1
         )
         assert (
             len(selenium.find_elements_by_css_selector(".table-cell input"))
-            == 3
+            == 1
         )
         time.sleep(2)
         assert (
             len(selenium.find_elements_by_css_selector(".table-cell > img"))
-            == 2
+            == 3
         )
 
     def test_grid_view(self):
@@ -2439,9 +2640,13 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             this_url = selenium.current_url
             if workflow_type == "activity":
                 continue
-            selenium.find_element_by_css_selector(
-                ".workflow-details .node .node-title"
-            ).click()
+            ActionChains(selenium).move_to_element_with_offset(
+                selenium.find_element_by_css_selector(
+                    ".workflow-details .node .node-title"
+                ),
+                5,
+                5,
+            ).click().perform()
             time.sleep(2)
             selenium.find_element_by_id("linked-workflow-editor").click()
             time.sleep(2)
@@ -2454,11 +2659,13 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 workflow.weeks.first().nodes.first().linked_workflow.id,
                 get_model_from_str(workflow_types[i - 1]).objects.first().id,
             )
-            ActionChains(selenium).double_click(
+            ActionChains(selenium).move_to_element_with_offset(
                 selenium.find_element_by_css_selector(
-                    ".workflow-details .node"
-                )
-            ).perform()
+                    ".workflow-details .node .node-title"
+                ),
+                5,
+                5,
+            ).double_click().perform()
             time.sleep(2)
             selenium.window_handles
             windows = selenium.window_handles
@@ -2474,9 +2681,13 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             selenium.get(this_url)
             time.sleep(2)
-            selenium.find_element_by_css_selector(
-                ".workflow-details .node .node-title"
-            ).click()
+            ActionChains(selenium).move_to_element_with_offset(
+                selenium.find_element_by_css_selector(
+                    ".workflow-details .node .node-title"
+                ),
+                5,
+                5,
+            ).click().perform()
             selenium.find_element_by_id("linked-workflow-editor").click()
             time.sleep(2)
             selenium.find_element_by_css_selector(
@@ -2487,11 +2698,13 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             self.assertEqual(
                 workflow.weeks.first().nodes.first().linked_workflow, None
             )
-            ActionChains(selenium).double_click(
+            ActionChains(selenium).move_to_element_with_offset(
                 selenium.find_element_by_css_selector(
-                    ".workflow-details .node"
-                )
-            ).perform()
+                    ".workflow-details .node .node-title"
+                ),
+                5,
+                5,
+            ).double_click().perform()
             assert (
                 workflow_type
                 in selenium.find_element_by_css_selector(
@@ -3114,6 +3327,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
             time.sleep(3)
+            ActionChains(selenium).move_to_element(
+                selenium.find_elements_by_css_selector(".node .side-actions")[
+                    1
+                ]
+            ).perform()
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -3122,13 +3340,18 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 ),
                 1,
             )
+            ActionChains(selenium).move_to_element(
+                selenium.find_elements_by_css_selector(".node .side-actions")[
+                    0
+                ]
+            ).perform()
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
                         ".outcome-node .outcome-" + str(child1.id)
                     )
                 ),
-                2,
+                1,
             )
 
             selenium.find_element_by_css_selector(
@@ -3151,6 +3374,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             ).click()
 
             # Make sure the outcomenodes have vanished
+            ActionChains(selenium).move_to_element(
+                selenium.find_elements_by_css_selector(".node .side-actions")[
+                    1
+                ]
+            ).perform()
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -3159,6 +3387,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 ),
                 0,
             )
+            ActionChains(selenium).move_to_element(
+                selenium.find_elements_by_css_selector(".node .side-actions")[
+                    0
+                ]
+            ).perform()
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -3174,6 +3407,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
             time.sleep(2)
+            ActionChains(selenium).move_to_element(
+                selenium.find_elements_by_css_selector(".node .side-actions")[
+                    1
+                ]
+            ).perform()
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -3182,6 +3420,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 ),
                 0,
             )
+            ActionChains(selenium).move_to_element(
+                selenium.find_elements_by_css_selector(".node .side-actions")[
+                    0
+                ]
+            ).perform()
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -3201,6 +3444,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
 
             # Make sure the outcome was restored
+            ActionChains(selenium).move_to_element(
+                selenium.find_elements_by_css_selector(".node .side-actions")[
+                    1
+                ]
+            ).perform()
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -3209,13 +3457,18 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 ),
                 1,
             )
+            ActionChains(selenium).move_to_element(
+                selenium.find_elements_by_css_selector(".node .side-actions")[
+                    0
+                ]
+            ).perform()
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
                         ".outcome-node .outcome-" + str(child1.id)
                     )
                 ),
-                2,
+                1,
             )
 
             # Refresh, and make sure the change is permanent
@@ -3224,6 +3477,11 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
             )
             time.sleep(2)
+            ActionChains(selenium).move_to_element(
+                selenium.find_elements_by_css_selector(".node .side-actions")[
+                    1
+                ]
+            ).perform()
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
@@ -3232,13 +3490,18 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 ),
                 1,
             )
+            ActionChains(selenium).move_to_element(
+                selenium.find_elements_by_css_selector(".node .side-actions")[
+                    0
+                ]
+            ).perform()
             self.assertEqual(
                 len(
                     selenium.find_elements_by_css_selector(
                         ".outcome-node .outcome-" + str(child1.id)
                     )
                 ),
-                2,
+                1,
             )
 
     def test_delete_restore_workflow(self):
@@ -3290,9 +3553,13 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:workflow-update", args=[program.pk])
         )
         time.sleep(2)
-        selenium.find_element_by_css_selector(
-            ".workflow-details .node .node-title"
-        ).click()
+        ActionChains(selenium).move_to_element_with_offset(
+            selenium.find_element_by_css_selector(
+                ".workflow-details .node .node-title"
+            ),
+            5,
+            5,
+        ).click().perform()
         time.sleep(1)
         selenium.find_element_by_css_selector(
             "#linked-workflow-editor"
@@ -3337,9 +3604,13 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:workflow-update", args=[program.pk])
         )
         time.sleep(2)
-        selenium.find_element_by_css_selector(
-            ".workflow-details .node .node-title"
-        ).click()
+        ActionChains(selenium).move_to_element_with_offset(
+            selenium.find_element_by_css_selector(
+                ".workflow-details .node .node-title"
+            ),
+            5,
+            5,
+        ).click().perform()
         time.sleep(1)
         selenium.find_element_by_css_selector(
             "#linked-workflow-editor"
@@ -3511,6 +3782,9 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".node")), 1
         )
+        ActionChains(selenium).move_to_element(
+            selenium.find_elements_by_css_selector(".node .side-actions")[0]
+        ).perform()
         self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
@@ -3577,11 +3851,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".node")), 0
         )
-
-        selenium.find_element_by_css_selector(".other-views").click()
-        selenium.find_element_by_css_selector(
-            "#button_alignmentanalysis"
-        ).click()
+        selenium.find_element_by_css_selector("#table_type_matrix").click()
         time.sleep(3)
         self.assertEqual(
             len(
@@ -3594,10 +3864,9 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".node")), 0
         )
-
         selenium.find_element_by_css_selector(".other-views").click()
         selenium.find_element_by_css_selector(
-            "#button_competencymatrix"
+            "#button_alignmentanalysis"
         ).click()
         time.sleep(3)
         self.assertEqual(
@@ -3915,3 +4184,4 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         communicator.scope["user"] = user
         connected, subprotocol = async_to_sync_connect(communicator)
         assert not connected
+

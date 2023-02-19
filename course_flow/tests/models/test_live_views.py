@@ -1,3 +1,5 @@
+import json, time
+
 from django.contrib.auth.models import Group
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -730,7 +732,9 @@ class ModelViewTest(TestCase):
         week = workflow.weeks.create(author=author)
         node = week.nodes.create(author=author)
 
-        liveproject = LiveProject.objects.create(project=project)
+        liveproject = LiveProject.objects.create(
+            project=project, default_assign_to_all=False
+        )
         assignment = LiveAssignment.objects.create(
             liveproject=liveproject, task=node
         )
@@ -822,4 +826,229 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             UserAssignment.objects.get(user=author).completed, True
+        )
+
+    def test_get_assignments_for_node(self):
+        author = get_author()
+        project = Project.objects.create(author=author)
+        workflow = Course.objects.create(author=author)
+        WorkflowProject.objects.create(workflow=workflow, project=project)
+        column = workflow.columns.first()
+        week = workflow.weeks.create(author=author)
+        node = week.nodes.create(author=author)
+        node.column = column
+        node.save()
+
+        liveproject = LiveProject.objects.create(project=project)
+        assignment = LiveAssignment.objects.create(
+            liveproject=liveproject, task=node
+        )
+        LiveProjectUser.objects.create(
+            user=author,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_TEACHER,
+        )
+        userassignment = UserAssignment.objects.create(
+            user=author,
+            assignment=assignment,
+        )
+        response = self.client.post(
+            reverse("course_flow:get-assignments-for-node"),
+            {
+                "nodePk": node.pk,
+            },
+        )
+        self.assertEqual(response.status_code, 401)
+        user = login(self)
+        response = self.client.post(
+            reverse("course_flow:get-assignments-for-node"),
+            {
+                "nodePk": node.pk,
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+        lpu = LiveProjectUser.objects.create(
+            user=user,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_STUDENT,
+        )
+        response = self.client.post(
+            reverse("course_flow:get-assignments-for-node"),
+            {
+                "nodePk": node.pk,
+            },
+        )
+        self.assertEqual(response.status_code, 403)
+
+        liveproject.visible_workflows.add(workflow)
+        UserAssignment.objects.create(
+            user=user,
+            assignment=assignment,
+        )
+        response = self.client.post(
+            reverse("course_flow:get-assignments-for-node"),
+            {
+                "nodePk": node.pk,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content)["action"], "posted")
+        self.assertEqual(
+            len(
+                json.loads(response.content)["data_package"]["my_assignments"]
+            ),
+            1,
+        )
+        self.assertEqual(
+            json.loads(response.content)["data_package"]["all_assignments"],
+            None,
+        )
+
+        UserAssignment.objects.filter(user=user).delete()
+        response = self.client.post(
+            reverse("course_flow:get-assignments-for-node"),
+            {
+                "nodePk": node.pk,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content)["action"], "posted")
+        self.assertEqual(
+            len(
+                json.loads(response.content)["data_package"]["my_assignments"]
+            ),
+            0,
+        )
+        self.assertEqual(
+            json.loads(response.content)["data_package"]["all_assignments"],
+            None,
+        )
+
+        userassignment = UserAssignment.objects.create(
+            user=user,
+            assignment=assignment,
+        )
+        lpu = LiveProjectUser.objects.create(
+            user=user,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_TEACHER,
+        )
+        response = self.client.post(
+            reverse("course_flow:get-assignments-for-node"),
+            {
+                "nodePk": node.pk,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content)["action"], "posted")
+        self.assertEqual(
+            len(
+                json.loads(response.content)["data_package"]["my_assignments"]
+            ),
+            1,
+        )
+        self.assertEqual(
+            len(
+                json.loads(response.content)["data_package"]["all_assignments"]
+            ),
+            1,
+        )
+
+        UserAssignment.objects.filter(user=user).delete()
+        response = self.client.post(
+            reverse("course_flow:get-assignments-for-node"),
+            {
+                "nodePk": node.pk,
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(json.loads(response.content)["action"], "posted")
+        self.assertEqual(
+            len(
+                json.loads(response.content)["data_package"]["my_assignments"]
+            ),
+            0,
+        )
+        self.assertEqual(
+            len(
+                json.loads(response.content)["data_package"]["all_assignments"]
+            ),
+            1,
+        )
+
+    def test_assignment_default_values(self):
+        author = get_author()
+        student = get_author("3")
+        teacher = get_author("4")
+        project = Project.objects.create(author=author)
+        workflow = Course.objects.create(author=author)
+        WorkflowProject.objects.create(workflow=workflow, project=project)
+        column = workflow.columns.first()
+        week = workflow.weeks.first()
+        node = week.nodes.create(author=author)
+        node.column = column
+        node.save()
+        liveproject = LiveProject.objects.create(project=project)
+
+        LiveProjectUser.objects.create(
+            user=student,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_STUDENT,
+        )
+        LiveProjectUser.objects.create(
+            user=teacher,
+            liveproject=liveproject,
+            role_type=LiveProjectUser.ROLE_TEACHER,
+        )
+
+        assignment = LiveAssignment.objects.create(
+            liveproject=liveproject, task=node
+        )
+
+        self.assertEqual(
+            assignment.self_reporting, liveproject.default_self_reporting
+        )
+        self.assertEqual(
+            assignment.single_completion, liveproject.default_single_completion
+        )
+        self.assertEqual(
+            UserAssignment.objects.filter(
+                user=student, assignment=assignment
+            ).count(),
+            1,
+        )
+        self.assertEqual(
+            UserAssignment.objects.filter(
+                user=teacher, assignment=assignment
+            ).count(),
+            0,
+        )
+
+        liveproject.default_single_completion = True
+        liveproject.default_self_reporting = False
+        liveproject.default_assign_to_all = False
+
+        liveproject.save()
+
+        assignment = LiveAssignment.objects.create(
+            liveproject=liveproject, task=node
+        )
+
+        self.assertEqual(
+            assignment.self_reporting, liveproject.default_self_reporting
+        )
+        self.assertEqual(
+            assignment.single_completion, liveproject.default_single_completion
+        )
+        self.assertEqual(
+            UserAssignment.objects.filter(
+                user=student, assignment=assignment
+            ).count(),
+            0,
+        )
+        self.assertEqual(
+            UserAssignment.objects.filter(
+                user=teacher, assignment=assignment
+            ).count(),
+            0,
         )

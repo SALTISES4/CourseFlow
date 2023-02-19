@@ -1,10 +1,10 @@
+// import * as wdyr from './wdyr';
 import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as Redux from "redux";
 import * as React from "react";
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
-import {ComponentJSON} from "./ComponentJSON";
 import {WorkflowBaseView} from "./WorkflowView";
 import {ProjectMenu, WorkflowGridMenu, ExploreMenu, renderMessageBox} from "./MenuComponents";
 import {WorkflowView_Outcome} from"./WorkflowView";
@@ -12,7 +12,7 @@ import {ComparisonView, WorkflowComparisonBaseView} from "./ComparisonView";
 import * as Constants from "./Constants";
 import * as Reducers from "./Reducers";
 import OutcomeTopView from './OutcomeTopView';
-import {getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from './PostFunctions';
+import {getTargetProjectMenu, getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from './PostFunctions';
 import {ConnectionBar} from './ConnectedUsers'
 import '../css/base_style.css';
 import '../css/workflow_styles.css';
@@ -185,8 +185,10 @@ export class WorkflowRenderer{
 
         }else if(this.user_role==Constants.role_keys["student"]){
             this.is_student=true;
+            this.show_assignments=true;
         }else if(this.user_role==Constants.role_keys["teacher"]){
             this.is_teacher=true;
+            this.show_assignments=true;
         }
         if(this.public_view){
             this.getWorkflowData=getPublicWorkflowData;
@@ -259,39 +261,8 @@ export class WorkflowRenderer{
         this.container = container;
         this.locks={}
         let weeks = initial_workflow_data.week.filter(x=>!x.deleted);
-        this.items_to_load = {
-            column:initial_workflow_data.column.filter(x=>!x.deleted).length,
-            week:weeks.length,
-            node:weeks.reduce((previousValue,currentValue)=>
-                previousValue+currentValue.nodeweek_set.length
-            ,0)
-        };
-        this.ports_to_render = this.items_to_load.node;
         
-        container.on("component-loaded",(evt,objectType)=>{
-            evt.stopPropagation();
-            if(objectType&&renderer.items_to_load[objectType]){
-                renderer.items_to_load[objectType]--;
-                for(let prop in renderer.items_to_load){
-                    if(renderer.items_to_load[prop]>0)return;
-                }
-                renderer.initial_loading=false;
-                container.triggerHandler("render-ports");
-            }
-        });
-        
-        
-        container.on("ports-rendered",(evt)=>{
-            evt.stopPropagation();
-            renderer.ports_to_render--;
-            if(renderer.ports_to_render>0)return;
-            renderer.ports_rendered=true;
-            container.triggerHandler("render-links");
-        });
-        
-        container.on("render-links",(evt)=>{
-           evt.stopPropagation(); 
-        });
+
     
         this.selection_manager = new SelectionManager(this.read_only); 
         this.selection_manager.renderer = renderer;
@@ -612,6 +583,15 @@ export class WorkflowLoader extends React.Component{
         
         )
     }
+}
+
+export function CreateNew(create_url){
+    getTargetProjectMenu(-1,(response_data)=>{
+        if(response_data.parentID!=null){
+            let loader = new Constants.Loader('body');
+            window.location=create_url.replace("/0/","/"+response_data.parentID+"/");
+        }
+    });
 }
 
 

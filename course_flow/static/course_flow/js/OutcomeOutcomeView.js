@@ -1,14 +1,14 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON, TitleText} from "./ComponentJSON.js";
-import OutcomeView from "./OutcomeView.js";
-import {OutcomeBarOutcomeView} from "./OutcomeView.js";
-import {SimpleOutcomeView, TableOutcomeView} from "./OutcomeView.js";
-import {getOutcomeOutcomeByID} from "./FindState.js";
+import {TitleText} from "./ComponentJSON";
+import OutcomeView from "./OutcomeView";
+import {OutcomeBarOutcomeView} from "./OutcomeView";
+import {SimpleOutcomeView, TableOutcomeView} from "./OutcomeView";
+import {getOutcomeOutcomeByID} from "./FindState";
 
 //Basic component representing an outcome to outcome link
-class OutcomeOutcomeView extends ComponentJSON{
+class OutcomeOutcomeView extends React.Component{
     
     constructor(props){
         super(props);
@@ -37,7 +37,7 @@ export default connect(
 )(OutcomeOutcomeView)
 
 //Basic component representing an outcome to outcome link
-class OutcomeBarOutcomeOutcomeViewUnconnected extends ComponentJSON{
+class OutcomeBarOutcomeOutcomeViewUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -62,7 +62,7 @@ export const OutcomeBarOutcomeOutcomeView = connect(
 
 
 //Basic component representing an outcome to outcome link for a simple non-editable block
-export class SimpleOutcomeOutcomeViewUnconnected extends ComponentJSON{
+export class SimpleOutcomeOutcomeViewUnconnected extends React.Component{
     
     constructor(props){
         super(props);
@@ -94,7 +94,7 @@ export const SimpleOutcomeOutcomeView = connect(
 
 
 //Basic component representing an outcome to outcome link
-class TableOutcomeOutcomeViewUnconnected extends ComponentJSON{
+class TableOutcomeOutcomeViewUnconnected extends React.Component{
     
     constructor(props){
         super(props);

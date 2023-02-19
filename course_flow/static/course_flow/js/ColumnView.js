@@ -1,11 +1,11 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {ComponentJSON} from "./ComponentJSON.js";
+import {Component, EditableComponentWithActions} from "./ComponentJSON.js";
 import {getColumnByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
 
 //Basic component representing a column
-class ColumnView extends ComponentJSON{
+class ColumnView extends EditableComponentWithActions{
     
     constructor(props){
         super(props);
@@ -37,7 +37,7 @@ class ColumnView extends ComponentJSON{
             <div ref={this.maindiv} style={style} class={css_class} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="column-line">
                     <img src={this.getIcon()}/>
-                    <div>{title}</div>
+                    <div dangerouslySetInnerHTML={{ __html: title }}></div>
                 </div>
                 {this.addEditable(data)}
                 <div class="mouseover-actions">
@@ -62,15 +62,14 @@ export default connect(
 
 
 
-class NodeBarColumnUnconnected extends ComponentJSON{
+class NodeBarColumnUnconnected extends Component{
     render(){
         let data = this.props.data;
         var title;
         if(data)title = data.title;
         if(!title)title=data.column_type_display;
         return(
-            <div class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:Constants.getColumnColour(data)}}>
-                {title}
+            <div dangerouslySetInnerHTML={{ __html: title }} class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:Constants.getColumnColour(data)}}>
             </div>
         );
     }
@@ -99,7 +98,7 @@ class NodeBarColumnUnconnected extends ComponentJSON{
         });
     }
     
-    postMountFunction(){
+    componentDidMount(){
         this.makeDraggable();
         $(this.maindiv.current)[0].dataDraggable={column:this.props.data.id,column_type:null}
     }
@@ -130,7 +129,7 @@ export class NodeBarColumnCreator extends NodeBarColumnUnconnected{
     }
     
     
-    postMountFunction(){
+    componentDidMount(){
         this.makeDraggable();
         $(this.maindiv.current)[0].dataDraggable={column:null,column_type:this.props.columnType}
     }
