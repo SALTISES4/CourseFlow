@@ -32,6 +32,8 @@
   }
 
   const project_data= {{project_data|safe}};
+  const disciplines = {{disciplines | safe}};
+  console.log(project_data);
 
   $(".menubar").removeClass("hidden");
 
@@ -39,7 +41,7 @@
   const user_id = {{ user.id }};
 
   window.addEventListener("load",function(){
-      library_renderer = new library_renderers.ProjectRenderer(project_data);
+      library_renderer = new library_renderers.ProjectRenderer(project_data,disciplines);
       $(document).ajaxError(renderers.fail_function);
       library_renderer.render($("#container"));
   });

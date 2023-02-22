@@ -19,6 +19,11 @@ def forwards_func(apps, schema_editor):
     ):
         if workflow.author is None:
             continue
+        ObjectPermission.objects.using(db_alias).filter(
+            content_type=ContentType.objects.get_for_model(workflow),
+            object_id=workflow.id,
+            user=workflow.author,
+        ).delete()
         ObjectPermission.objects.using(db_alias).create(
             content_type=ContentType.objects.get_for_model(workflow),
             object_id=workflow.id,
@@ -28,12 +33,24 @@ def forwards_func(apps, schema_editor):
     for project in Project.objects.all():
         if project.author is None:
             continue
+        ObjectPermission.objects.using(db_alias).filter(
+            content_type=ContentType.objects.get_for_model(project),
+            object_id=project.id,
+            user=project.author,
+        ).delete()
         ObjectPermission.objects.using(db_alias).create(
             content_type=ContentType.objects.get_for_model(project),
             object_id=project.id,
             user=project.author,
             permission_type=2,
         )
+    op = ObjectPermission.objects.filter(
+        user__id=1,
+        object_id=1,
+        content_type=ContentType.objects.get_for_model(
+            apps.get_model("course_flow", "Project")
+        ),
+    )
 
 
 def reverse_func(apps, schema_editor):

@@ -73,12 +73,18 @@
     <!-- fonts -->
     <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <!-- * Icons -->
     <link rel="icon" type="image/x-icon" href="{% static 'course_flow/img/courseflow-favicon.png' %}";>
     <!-- ** Preloads -->
     <link
       rel="preload"
       href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded&display=swap"
+      as="style"
+    />
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined&display=swap"
       as="style"
     />
     <!-- ** Loads -->
@@ -169,13 +175,13 @@
           <div>{% trans 'Home' %}</div>
         </a>
         {% if user|has_group:"Teacher" %}
-        <a id="panel-my-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project">
-          <span class="material-symbols-rounded">search</span>
-          <div>{% trans 'Search' %}</div>
+        <a id="panel-my-library" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-library' %}">
+          <span class="material-symbols-rounded">collections_bookmark</span>
+          <div>{% trans 'Your Library' %}</div>
         </a>
-        <a id="panel-my-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-projects' %}">
-          <span class="material-symbols-rounded">folder</span>
-          <div>{% trans 'My Projects' %}</div>
+        <a id="panel-my-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project">
+          <span class="material-symbols-rounded">manage_search</span>
+          <div>{% trans 'Explore' %}</div>
         </a>
         {% endif %}
         <a id="panel-my-live-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-live-projects' %}">
@@ -339,6 +345,7 @@
       get_users_for_object: "{% url 'course_flow:get-users-for-object' %}",
       get_users_for_liveproject: "{% url 'course_flow:get-users-for-liveproject' %}",
       get_user_list: "{% url 'course_flow:get-user-list' %}",
+      search_all_objects: "{% url 'course_flow:search-all-objects' %}",
       set_permission: "{% url 'course_flow:set-permission' %}",
       set_liveproject_role: "{% url 'course_flow:set-liveproject-role' %}",
       get_comments_for_object: "{% url 'course_flow:get-comments-for-object' %}",
@@ -395,6 +402,14 @@
     $("#logout").on("click",()=>{
         window.location.replace("{% url 'course_flow:logout' %}");
     });
+
+    const debounce = (func,timeout=300)=>{
+      let timer;
+      return(...args)=>{
+        clearTimeout(timer);
+        timer = setTimeout(()=>{func.apply(this,args);},timeout);
+      };
+    }
 
     const makeDropdown = (click_element)=>{
       $(click_element).on("click",(evt)=>{

@@ -21,14 +21,15 @@ export class LibraryRenderer{
 
     getContents(){
         return (
-            <LibraryMenu/>
+            <LibraryMenu renderer={this}/>
         )
     }
 }
 
 export class ProjectRenderer{
-    constructor(project_data){
+    constructor(project_data,disciplines){
         this.project_data=project_data;
+        this.all_disciplines=disciplines;
     }
     
     render(container){
@@ -43,7 +44,7 @@ export class ProjectRenderer{
 
     getContents(){
         return (
-            <ProjectMenu data={this.project_data}/>
+            <ProjectMenu renderer={this} data={this.project_data}/>
         )
     }
 }

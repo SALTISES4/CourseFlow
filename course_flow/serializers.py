@@ -687,6 +687,7 @@ class ProjectSerializerShallow(
             "object_sets",
             "favourite",
             "liveproject",
+            "object_permission",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -696,6 +697,7 @@ class ProjectSerializerShallow(
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
     author = serializers.SerializerMethodField()
+    object_permission = serializers.SerializerMethodField()
 
     def get_favourite(self, instance):
         user = self.context.get("user")
@@ -726,6 +728,22 @@ class ProjectSerializerShallow(
             workflow__deleted=False
         ).order_by("rank")
         return list(map(linkIDMap, links))
+
+    def get_object_permission(self, instance):
+        user = self.context.get("user")
+        if user is None or not user.is_authenticated:
+            return 0
+        object_permission = ObjectPermission.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(instance),
+            object_id=instance.id,
+        ).first()
+        if object_permission is None:
+            return None
+        return {
+            "permission_type": object_permission.permission_type,
+            "last_viewed": object_permission.last_viewed,
+        }
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -1251,6 +1269,8 @@ class InfoBoxSerializer(
     description = serializers.SerializerMethodField()
     # url = serializers.SerializerMethodField()
     # can_edit = serializers.SerializerMethodField()
+    object_permission = serializers.SerializerMethodField()
+    has_liveproject = serializers.SerializerMethodField()
 
     def get_url(self, instance):
         if instance.type in ["project", "liveproject"]:
@@ -1278,15 +1298,27 @@ class InfoBoxSerializer(
         else:
             return False
 
-    def get_permission_type(self, instance):
+    def get_object_permission(self, instance):
         user = self.context.get("user")
         if user is None or not user.is_authenticated:
             return 0
-        return ObjectPermission.objects.filter(
+        object_permission = ObjectPermission.objects.filter(
             user=user,
             content_type=ContentType.objects.get_for_model(instance),
             object_id=instance.id,
-        ).first().permission_type
+        ).first()
+        if object_permission is None:
+            return None
+        return {
+            "permission_type": object_permission.permission_type,
+            "last_viewed": object_permission.last_viewed,
+        }
+
+    def get_has_liveproject(self, instance):
+        if instance.type == "project":
+            if LiveProject.objects.filter(project=instance).count() > 0:
+                return True
+        return False
 
     # def get_can_edit(self, instance):
     #     user = self.context.get("user")

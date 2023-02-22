@@ -24,6 +24,11 @@ a.hover-shade{
     text-decoration: none;
 }
 
+a.unset{
+    color: unset;
+    text-decoration: none;
+}
+
 a.hover-shade:hover{
     text-decoration:underline;
 }
@@ -618,6 +623,7 @@ button:hover{
 }
 
 
+
 .menu-create{
     padding:8px;
     background:#1976bc;
@@ -698,13 +704,29 @@ button:hover{
     padding:10px;
     color:#1976bc;
     border-radius:10px;
-    border:2px solid white;
+    border:1px solid lightgrey;
     max-width:600px;
 }
 
 .workflow-for-menu.simple-workflow{
-    border-color: lightgrey;
     max-width: 400px;
+    min-width: 200px;
+    border-width: 0px;
+}
+
+.workflow-buttons-row{
+    display: flex;
+    gap: 5px;
+}
+
+.workflow-for-menu .workflow-toggle-favourite{
+    color: #F7BA2A
+}
+.workflow-toggle-favourite .favourite{
+    font-variation-settings: 'FILL' 1;
+}
+.workflow-live-classroom{
+    font-variation-settings: 'FILL' 1;
 }
 
 .workflow-description{
@@ -718,7 +740,7 @@ button:hover{
 
 .menu-grid .workflow-description{
     overflow:hidden;
-    max-height:50px;
+    height:36px;
 }
 
 .workflow-publication{
@@ -811,15 +833,6 @@ button:hover{
     width:24px;
 }
 
-.project-header{
-    margin:20px;
-    margin-top:70px;
-    padding:20px;
-    border-radius:10px;
-    background:white;
-    width: -moz-fit-content;
-    width: fit-content;
-}
 
 #project-description-input{
     min-width: 400px;
@@ -830,15 +843,150 @@ button:hover{
     margin-left:20px;
 }
 
-.project-header + .home-tabs{
-    height:calc(100% - 150px);
-    box-sizing:border-box;
-}
-
 .project-menu{
-    height:100%;
+    min-height:100%;
     width: -moz-fit-content;
     width: fit-content;
+    background: white;
+    padding: 50px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.workflow-filter-top{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.workflow-filter-sort{
+    display: flex;
+    gap: 20px;
+}
+
+#workflow-search{
+    position: relative;
+}
+
+#workflow-search .material-symbols-rounded{
+    position: absolute;
+    font-size: 20px;
+    left: 4px;
+    top: 2px;
+    color: grey;
+}
+
+.filter-option{
+    position: relative;
+}
+
+.filter-option .material-symbols-rounded{
+    position: absolute;
+    left: -2px;
+    font-size: 18px;
+}
+
+.filter-option.active{
+    background: #EEFFF8;
+}
+
+#workflow-search-input{
+    border-radius: 12px;
+    border: 1px solid lightgrey;
+    padding:  4px;
+    padding-left: 28px;
+    padding-right: 10px;
+}
+
+#workflow-search-input{
+    content: "<span class='material-symbols-rounded'>search</span>";
+}
+
+.search-filter-lock{
+    color: white;
+    border-radius: 3px;
+    padding: 3px 10px 3px 10px;
+    background: #027A4C;
+    display: flex;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+.workflow-filter-sort > div{
+    min-width: 100px;
+    border-radius: 12px;
+    height: 24px;
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+.workflow-filter-sort span{
+    font-size: 20px;
+}
+
+.workflow-filter-sort .workflow-sort-indicator{
+    display: flex;
+    gap: 5px;
+}
+.workflow-filter-sort .workflow-sort-indicator:not(.item-0){
+    background: #EEFFF8;
+}
+
+.project-header{
+    padding:20px;
+    border-radius:10px;
+    background:white;
+    width: 100%;
+    color: #444444;
+}
+
+.project-header h4{
+    color: #444444;
+}
+
+.project-header .project-title{
+    font-size: 28px;
+}
+
+.project-header-info{
+    display: flex;
+    gap: 20px;
+}
+
+.project-members{
+    min-width: 250px;
+    flex-grow: 1;
+}
+
+.project-other{
+    flex-grow: 2;
+}
+
+.project-info-section{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-top: 1px solid lightgrey;
+}
+
+.title-text.collapsible-text{
+    -webkit-line-clamp: 3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.title-text.collapsible-text.dropped{
+    -webkit-line-clamp: unset;
+}
+
+.collapsed-text-show-more{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.title-text{
+    white-space: pre-wrap;
 }
 
 .explore-menu{

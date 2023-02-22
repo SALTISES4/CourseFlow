@@ -1003,7 +1003,49 @@ export class TitleText extends React.Component{
             <div class="title-text" title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
         )
     }
+}
 
+export class CollapsibleText extends Component{
+
+    render(){
+        let css_class = "title-text collapsible-text";
+        let drop_text = gettext("show more");
+        if(this.state.is_dropped){
+            css_class+=" dropped";
+            drop_text = gettext("show less");
+        }
+        let overflow;
+        if(this.state.overflow)overflow=(
+            <div onClick={()=>this.setState({is_dropped:!this.state.is_dropped})} class="collapsed-text-show-more">{drop_text}</div>
+        );
+
+        var text = this.props.text;
+        if((this.props.text==null || this.props.text=="") && this.props.defaultText!=null){
+            text=this.props.defaultText;
+        }
+        return (
+            [
+                <div ref={this.maindiv} class={css_class} title={text} dangerouslySetInnerHTML={{ __html: text }}></div>,
+                overflow,
+            ]
+        )
+    }
+    componentDidMount(){
+        this.checkSize();
+    }
+
+    componentDidUpdate(){
+        this.checkSize();
+    }
+
+    checkSize(){
+        if(this.state.is_dropped)return;
+        if(this.maindiv.current.scrollHeight>this.maindiv.current.clientHeight){
+            if(!this.state.overflow)this.setState({overflow:true});
+        }else{
+            if(this.state.overflow)this.setState({overflow:false})
+        }
+    }
 }
 
 export class SimpleWorkflow extends React.Component{

@@ -873,6 +873,7 @@ class Workflow(models.Model):
     user_permissions = GenericRelation(
         "ObjectPermission", related_query_name="workflow"
     )
+    favourited_by = GenericRelation("Favourite", related_query_name="workflow")
 
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
@@ -1008,8 +1009,6 @@ class Workflow(models.Model):
 
 class Activity(Workflow):
 
-    favourited_by = GenericRelation("Favourite", related_query_name="activity")
-
     DEFAULT_CUSTOM_COLUMN = 0
     DEFAULT_COLUMNS = [1, 2, 3, 4]
     WORKFLOW_TYPE = 0
@@ -1034,8 +1033,6 @@ class Activity(Workflow):
 
 class Course(Workflow):
 
-    favourited_by = GenericRelation("Favourite", related_query_name="course")
-
     DEFAULT_CUSTOM_COLUMN = 10
     DEFAULT_COLUMNS = [11, 12, 13, 14]
     WORKFLOW_TYPE = 1
@@ -1059,8 +1056,6 @@ class Program(Workflow):
     DEFAULT_CUSTOM_COLUMN = 20
     DEFAULT_COLUMNS = [20, 20, 20]
     WORKFLOW_TYPE = 2
-
-    favourited_by = GenericRelation("Favourite", related_query_name="program")
 
     @property
     def type(self):
@@ -1135,16 +1130,26 @@ class Discipline(models.Model):
         verbose_name_plural = _("disciplines")
 
 
+workflow_choices = [
+    ContentType.objects.get_for_model(Activity),
+    ContentType.objects.get_for_model(Course),
+    ContentType.objects.get_for_model(Program),
+]
+
+
 class Favourite(models.Model):
-    content_choices = {
-        "model__in": ["project", "activity", "course", "program"]
-    }
+    content_choices = {"model__in": ["project", "workflow"]}
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, limit_choices_to=content_choices
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+
+    def save(self, *args, **kwargs):
+        if self.content_type in workflow_choices:
+            self.content_type = ContentType.objects.get_for_model(Workflow)
+        super().save(*args, **kwargs)
 
 
 class Comment(models.Model):
@@ -1153,13 +1158,6 @@ class Comment(models.Model):
         blank=False,
     )
     created_on = models.DateTimeField(default=timezone.now)
-
-
-workflow_choices = [
-    ContentType.objects.get_for_model(Activity),
-    ContentType.objects.get_for_model(Course),
-    ContentType.objects.get_for_model(Program),
-]
 
 
 class ObjectPermission(models.Model):
@@ -1187,8 +1185,16 @@ class ObjectPermission(models.Model):
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
 
+    last_viewed = models.DateTimeField(default=timezone.now)
+
+    def update_last_viewed(user, view_object):
+        ObjectPermission.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(view_object),
+            object_id=view_object.id,
+        ).update(last_viewed=timezone.now())
+
     def save(self, *args, **kwargs):
-        print("called object permission")
         if self.content_type in workflow_choices:
             self.content_type = ContentType.objects.get_for_model(Workflow)
         super().save(*args, **kwargs)
@@ -1471,15 +1477,9 @@ def delete_project_objects(sender, instance, **kwargs):
     #    courses = filter(lambda x: x.type == "course", workflow_subclasses)
     #    programs = filter(lambda x: x.type == "program", workflow_subclasses)
     objectpermissions = ObjectPermission.objects.filter(
-        Q(activity__in=workflows)
-        | Q(course__in=workflows)
-        | Q(program__in=workflows)
+        Q(workflow__in=workflows)
     )
-    favourites = Favourite.objects.filter(
-        Q(activity__in=workflows)
-        | Q(course__in=workflows)
-        | Q(program__in=workflows)
-    )
+    favourites = Favourite.objects.filter(Q(workflow__in=workflows))
     Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
     Node.objects.filter(linked_workflow__in=workflows).update(
         linked_workflow=None
@@ -1904,7 +1904,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                     and ObjectPermission.objects.filter(
                         user=instance.user,
                         content_type=ContentType.objects.get_for_model(
-                            workflow.get_subclass()
+                            workflow
                         ),
                         object_id=workflow.id,
                         permission_type__in=[
@@ -1921,7 +1921,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                     and ObjectPermission.objects.filter(
                         user=instance.user,
                         content_type=ContentType.objects.get_for_model(
-                            workflow.get_subclass()
+                            workflow
                         ),
                         object_id=workflow.id,
                         permission_type__in=[ObjectPermission.PERMISSION_EDIT],
@@ -1936,7 +1936,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                     else:
                         ObjectPermission.objects.create(
                             user=instance.user,
-                            content_object=workflow.get_subclass(),
+                            content_object=workflow,
                             permission_type=instance.permission_type,
                         )
 
@@ -1977,9 +1977,7 @@ def remove_permissions_to_project_objects(sender, instance, **kwargs):
         for workflow in instance.content_object.workflows.all():
             ObjectPermission.objects.filter(
                 user=instance.user,
-                content_type=ContentType.objects.get_for_model(
-                    workflow.get_subclass()
-                ),
+                content_type=ContentType.objects.get_for_model(workflow),
                 object_id=workflow.get_subclass().id,
             ).delete()
 
@@ -2139,7 +2137,7 @@ def set_publication_workflow(sender, instance, created, **kwargs):
             object_id=instance.project.id,
         ):
             ObjectPermission.objects.create(
-                content_object=workflow.get_subclass(),
+                content_object=workflow,
                 user=op.user,
                 permission_type=op.permission_type,
             )

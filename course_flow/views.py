@@ -146,38 +146,47 @@ class ContentPublicViewMixin(UserPassesTestMixin):
 
 class UserCanViewMixin(UserPassesTestMixin):
     def test_func(self):
+        view_object = self.get_object()
         if Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
             check_object_permission(
-                self.get_object(),
+                view_object,
                 self.request.user,
                 ObjectPermission.PERMISSION_VIEW,
             )
         ):
+            ObjectPermission.update_last_viewed(self.request.user, view_object)
             return True
         return False
 
 
 class UserCanViewOrEnrolledMixin(UserPassesTestMixin):
     def test_func(self):
+        view_object = self.get_object()
         if Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
             check_object_permission(
-                self.get_object(),
+                view_object,
                 self.request.user,
                 ObjectPermission.PERMISSION_VIEW,
             )
         ):
+            print("here")
+            ObjectPermission.update_last_viewed(self.request.user, view_object)
             return True
         else:
             try:
-                return check_object_enrollment(
-                    self.get_object(),
+                if check_object_enrollment(
+                    view_object,
                     self.request.user,
                     LiveProjectUser.ROLE_STUDENT,
-                )
+                ):
+                    ObjectPermission.update_last_viewed(
+                        self.request.user, view_object
+                    )
+                    return True
             except AttributeError:
                 return False
         return False
@@ -238,7 +247,7 @@ class UserEnrolledAsTeacherMixin(UserPassesTestMixin):
 
 class UserCanEditMixin(UserPassesTestMixin):
     def test_func(self):
-        return Group.objects.get(
+        if Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
             check_object_permission(
@@ -246,7 +255,10 @@ class UserCanEditMixin(UserPassesTestMixin):
                 self.request.user,
                 ObjectPermission.PERMISSION_EDIT,
             )
-        )
+        ):
+            ObjectPermission.update_last_viewed(self.request.user, view_object)
+            return True
+        return False
 
 
 class UserCanEditProjectMixin(UserPassesTestMixin):
@@ -400,6 +412,7 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             )
             .decode("utf-8"),
         }
+
 
 def get_my_projects(user, add, **kwargs):
     last_time = time.time()
@@ -1322,11 +1335,6 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         project = self.object
-        context["workflow_data_package"] = (
-            JSONRenderer()
-            .render(get_data_package_for_project(self.request.user, project))
-            .decode("utf-8")
-        )
         context["project_data"] = (
             JSONRenderer()
             .render(
@@ -1336,28 +1344,37 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             )
             .decode("utf-8")
         )
-        context["read_only"] = JSONRenderer().render(True).decode("utf-8")
-        context["comment"] = JSONRenderer().render(False).decode("utf-8")
-        editor = (
-            project.author == self.request.user
-            or ObjectPermission.objects.filter(
-                user=self.request.user,
-                project=project,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
-            ).count()
-            > 0
+        context["disciplines"] = (
+            JSONRenderer()
+            .render(
+                DisciplineSerializer(
+                    Discipline.objects.order_by("title"), many=True
+                ).data
+            )
+            .decode("utf-8")
         )
-        if editor:
-            context["read_only"] = JSONRenderer().render(False).decode("utf-8")
-        elif (
-            ObjectPermission.objects.filter(
-                user=self.request.user,
-                permission_type=ObjectPermission.PERMISSION_COMMENT,
-                project=project,
-            ).count()
-            > 0
-        ):
-            context["comment"] = JSONRenderer().render(True).decode("utf-8")
+        # context["read_only"] = JSONRenderer().render(True).decode("utf-8")
+        # context["comment"] = JSONRenderer().render(False).decode("utf-8")
+        # editor = (
+        #     project.author == self.request.user
+        #     or ObjectPermission.objects.filter(
+        #         user=self.request.user,
+        #         project=project,
+        #         permission_type=ObjectPermission.PERMISSION_EDIT,
+        #     ).count()
+        #     > 0
+        # )
+        # if editor:
+        #     context["read_only"] = JSONRenderer().render(False).decode("utf-8")
+        # elif (
+        #     ObjectPermission.objects.filter(
+        #         user=self.request.user,
+        #         permission_type=ObjectPermission.PERMISSION_COMMENT,
+        #         project=project,
+        #     ).count()
+        #     > 0
+        # ):
+        #     context["comment"] = JSONRenderer().render(True).decode("utf-8")
 
         return context
 
@@ -2236,25 +2253,34 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
     queryset = Discipline.objects.order_by("title")
     serializer_class = DisciplineSerializer
 
+
 @login_required
-def get_library(request: HttpRequest)->HttpResponse:
-    user=request.user
+def get_library(request: HttpRequest) -> HttpResponse:
+    user = request.user
     last_time = time.time()
     all_projects = Project.objects.filter(user_permissions__user=user)
+    print(all_projects)
+    print(all_projects.count())
+    print(all_projects.distinct())
+    print(all_projects.distinct().count())
+    perms = Project.objects.get(id=1).user_permissions.filter(user=user)
+    print([perm.permission_type for perm in perms])
     last_time = benchmark("got all the projects", last_time)
     projects_serialized = InfoBoxSerializer(
         all_projects, many=True, context={"user": user}
     ).data
-    return JsonResponse({"data_package":projects_serialized})
+    return JsonResponse({"data_package": projects_serialized})
+
 
 @user_can_view("projectPk")
-def get_workflows_for_project(request: HttpRequest)->HttpResponse:
-    user=request.user
+def get_workflows_for_project(request: HttpRequest) -> HttpResponse:
+    user = request.user
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     workflows_serialized = InfoBoxSerializer(
         project.workflows.all(), many=True, context={"user": user}
     ).data
-    return JsonResponse({"data_package":workflows_serialized})
+    return JsonResponse({"data_package": workflows_serialized})
+
 
 @user_can_view_or_enrolled_as_student("workflowPk")
 def get_workflow_parent_data(request: HttpRequest) -> HttpResponse:
@@ -4319,7 +4345,10 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
             object_id=object_id,
         ).delete()
         if favourite:
-            Favourite.objects.create(user=request.user, content_object=item)
+            fav = Favourite.objects.create(
+                user=request.user, content_object=item
+            )
+            print(fav.content_type)
         response["action"] = "posted"
     except ValidationError:
         response["action"] = "error"
@@ -4515,6 +4544,51 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
         {
             "action": "posted",
             "user_list": UserSerializer(user_list, many=True).data,
+        }
+    )
+
+
+@user_is_teacher()
+def search_all_objects(request: HttpRequest) -> HttpResponse:
+    name_filter = json.loads(request.POST.get("filter"))
+    max_count = json.loads(request.POST.get("max_count", "0"))
+    print(max_count)
+    print(name_filter)
+    all_objects = ObjectPermission.objects.filter(user=request.user).filter(
+        Q(project__title__istartswith=name_filter, project__deleted=False)
+        | Q(workflow__title__istartswith=name_filter, workflow__deleted=False)
+    )
+    print("c")
+    # add ordering
+
+    if max_count > 0:
+        all_objects = all_objects[:max_count]
+    return_objects = [x.content_object for x in all_objects]
+    count = len(return_objects)
+    if max_count == 0 or count < max_count:
+        extra_objects = ObjectPermission.objects.filter(
+            user=request.user
+        ).filter(
+            Q(
+                project__title__icontains=" " + name_filter,
+                project__deleted=False,
+            )
+            | Q(
+                workflow__title__icontains=" " + name_filter,
+                workflow__deleted=False,
+            )
+        )
+        if max_count > 0:
+            extra_objects = extra_objects[: max_count - count]
+        return_objects += [x.content_object for x in extra_objects]
+
+    print(return_objects)
+    return JsonResponse(
+        {
+            "action": "posted",
+            "workflow_list": InfoBoxSerializer(
+                return_objects, context={"user": request.user}, many=True
+            ).data,
         }
     )
 

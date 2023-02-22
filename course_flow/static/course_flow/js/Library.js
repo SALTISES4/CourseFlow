@@ -2,9 +2,9 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {getLibrary, getWorkflowsForProject} from "./PostFunctions";
+import {getLibrary, getWorkflowsForProject, searchAllObjects, toggleFavourite, getUsersForObject} from "./PostFunctions";
 import * as Constants from "./Constants";
-import {WorkflowTitle, Component} from "./ComponentJSON";
+import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./ComponentJSON";
 
 /*
 The main library menu
@@ -22,7 +22,7 @@ export class LibraryMenu extends React.Component{
     render(){
         return (
             <div class="project-menu">
-                <WorkflowFilter workflows={this.state.project_data} context="library"/>
+                <WorkflowFilter renderer={this.props.renderer} workflows={this.state.project_data} context="library"/>
             </div>
         );
     }
@@ -52,9 +52,12 @@ export class ProjectMenu extends LibraryMenu{
     }
 
     render(){
+        console.log(this.state);
         return (
             <div class="project-menu">
-                <WorkflowFilter workflows={this.state.workflow_data} context="library"/>
+                {this.getHeader()}
+                <WorkflowFilter renderer={this.props.renderer} workflows={this.state.workflow_data} context="project"/>
+                }
             </div>
         );
     }
@@ -68,6 +71,64 @@ export class ProjectMenu extends LibraryMenu{
                 component.setState({workflow_data:data.data_package});
             }
         );
+        getUsersForObject(this.props.data.id,this.props.data.type,(data)=>{
+            component.setState({users:data});
+        });
+    }
+
+    getHeader(){
+        let data=this.props.data;
+        return (
+            <div class="project-header">
+                <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
+                <div class="project-header-info">
+                    <div class="project-info-section project-members">
+                        <h4>{gettext("Project Members")}</h4>
+                        {this.getUsers()}
+                    </div>
+                    <div class="project-other">
+                        <div class="project-info-section project-description">
+                            <h4>{gettext("Description")}</h4>
+                            <CollapsibleText text={data.description} defaultText={gettext("No description")}/>
+                        </div>
+                        <div class="project-info-section project-disciplines">
+                            <h4>{gettext("Disciplines")}</h4>
+                            {this.props.renderer.all_disciplines.filter(discipline=>data.disciplines.indexOf(discipline.id)>=0).map(discipline=>discipline.title).join(", ")||gettext("None")}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    getUsers(){
+        if(!this.state.users)return null;
+        let author = this.state.users.author;
+        let editors = this.state.users.editors;
+        let commenters = this.state.users.commentors;
+        let viewers = this.state.users.viewers;
+        if(!author)return null;
+        return [
+            <div class="user-name">
+                {Constants.getUserDisplay(author)+" ("+gettext("owner")+")"}
+            </div>,
+            editors.filter(user=>user.id!=author.id).map(user=>
+                <div class="user-name">
+                    {Constants.getUserDisplay(user)+" ("+gettext("edit")+")"}
+                </div>
+            ),
+            commenters.map(user=>
+                <div class="user-name">
+                    {Constants.getUserDisplay(user)+" ("+gettext("comment")+")"}
+                </div>
+            ),
+            viewers.map(user=>
+                <div class="user-name">
+                    {Constants.getUserDisplay(user)+" ("+gettext("view")+")"}
+                </div>
+            ),
+        ]
+
     }
 }
 
@@ -82,43 +143,65 @@ Optional prop search_within restricts searches to the existing list of workflows
 export class WorkflowFilter extends Component{
     constructor(props){
         super(props);
-        this.state={active_filter:0,active_sort:0,reversed:false,search_results:[]}
+        this.state={workflows:props.workflows,active_filter:0,active_sort:0,reversed:false,search_results:[]}
         this.filters = [
             {name:"all",display:gettext("All")},
             {name:"owned",display:gettext("Owned")},
             {name:"shared",display:gettext("Shared")},
+            {name:"favourite",display:gettext("My Favourites")},
             {name:"archived",display:gettext("Archived")},
         ];
         this.sorts = [
+            {name:"last_viewed",display:gettext("Recent")},
             {name:"title",display:gettext("A-Z")},
             {name:"created_on",display:gettext("Creation date")},
-            {name:"edit",display:gettext("Recently Edited")},
             {name:"type",display:gettext("Type")},
         ];
+        if(this.props.context=="library")this.search_without=true;
     }
 
     render(){
         let workflows;
-        if(!this.props.workflows)workflows=this.defaultRender();
-        else workflows=this.sortWorkflows(this.filterWorkflows(this.props.workflows)).map(workflow=>
-            <WorkflowForMenu workflow_data={workflow} context={this.props.context}/>
-        );
+        if(!this.state.workflows)workflows=this.defaultRender();
+        else{
+            workflows=this.sortWorkflows(this.filterWorkflows(this.state.workflows));
+            workflows = workflows.map(workflow=>
+                <WorkflowForMenu workflow_data={workflow} context={this.props.context}/>
+            );
+        } 
         let search_results=this.state.search_results.map(workflow=>
             <WorkflowForMenuCondensed workflow_data={workflow} context={this.props.context}/>
         );
-        console.log(this.state.search_results);
-        console.log(search_results);
+        if(this.state.search_filter && this.state.search_filter.length>0 && this.state.search_results.length==0){
+            search_results.push(
+                <div>{gettext("No results found")}</div>
+            );
+        }else if(search_results.length==10){
+            search_results.push(
+                <div class="hover-shade" onClick={()=>this.seeAll()}>{gettext("+ See all")}</div>
+            );
+        }
+        let search_filter_lock;
+        if(this.state.search_filter_lock){
+            search_filter_lock=(
+                <div class="search-filter-lock">
+                    <span onClick={this.clearSearchLock.bind(this)} class="material-symbols-rounded hover-shade">close</span>
+                    {gettext("Search: "+this.state.search_filter_lock)}
+                </div>
+            );
+        }
         return (
             [
                 <div class="workflow-filter-top">
                     <div id="workflow-search">
-                        <input 
-                            onFocus={()=>$("#workflow-search .create-dropdown").addClass("active")}
-                            onBlur={()=>$("#workflow-search .create-dropdown").removeClass("active")}
-                            onChange={this.searchChange.bind(this)}
+                        <input
+                            placeholder={gettext("Search")}
+                            onChange={debounce(this.searchChange.bind(this))}
                             id="workflow-search-input"
                         />
+                        <span class="material-symbols-rounded">search</span>
                         <div class="create-dropdown">{search_results}</div>
+                        {search_filter_lock}
                     </div>
                     <div class="workflow-filter-sort">
                         {this.getFilter()}
@@ -134,7 +217,11 @@ export class WorkflowFilter extends Component{
 
     sortWorkflows(workflows){
         let sort = this.sorts[this.state.active_sort].name;
-        workflows = workflows.sort((a,b)=>(""+a[sort]).localeCompare(b[sort]));
+        if(sort=="last_viewed"){
+            workflows = workflows.sort((a,b)=>(""+a.object_permission[sort]).localeCompare(b.object_permission[sort]));
+            if(!this.state.reversed)return workflows.reverse();
+        }
+        else workflows = workflows.sort((a,b)=>(""+a[sort]).localeCompare(b[sort]));
         if(this.state.reversed)return workflows.reverse();
         return workflows;
     }
@@ -145,6 +232,7 @@ export class WorkflowFilter extends Component{
         else return workflows.filter((workflow)=>workflow.deleted);
         if(filter=="owned")return workflows.filter((workflow)=>workflow.is_owned);
         if(filter=="shared")return workflows.filter((workflow)=>!workflow.is_owned);
+        if(filter=="favourite")return workflows.filter((workflow)=>workflow.favourite);
         return workflows;
     }
 
@@ -152,11 +240,20 @@ export class WorkflowFilter extends Component{
         let active_filter = this.filters[this.state.active_filter];
         return (
             <div id="workflow-filter" class="hover-shade">
-                <div class="hover-shade">{active_filter.display}</div>
+                <div class={"workflow-sort-indicator hover-shade item-"+this.state.active_filter}>
+                    <span class="material-symbols-rounded">filter_alt</span>
+                    <div>{active_filter.display}</div>
+                </div>
                 <div class="create-dropdown">
-                    {this.filters.map((filter,i)=>
-                        <div onClick={()=>this.setState({active_filter:i})}>{filter.display}</div>
-                    )}
+                    {this.filters.map((filter,i)=>{
+                        let css_class="filter-option";
+                        if(this.state.active_filter==i)css_class+=" active";
+                        return(
+                            <div class={css_class} onClick={()=>this.setState({active_filter:i})}>
+                                {filter.display}
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         );
@@ -166,31 +263,91 @@ export class WorkflowFilter extends Component{
         let active_sort = this.sorts[this.state.active_sort];
         return (
             <div id="workflow-sort" class="hover-shade">
-                <div class="hover-shade">{active_sort.display}</div>
+                <div class={"workflow-sort-indicator hover-shade item-"+this.state.active_sort}>
+                    <span class="material-symbols-rounded">sort</span>
+                    <div>{active_sort.display}</div>
+                </div>
                 <div class="create-dropdown">
-                    {this.sorts.map((sort,i)=>
-                        <div onClick={()=>this.setState({active_sort:i})}>{sort.display}</div>
-                    )}
+                    {this.sorts.map((sort,i)=>{
+                        let sort_dir;
+                        let css_class="filter-option";
+                        if(this.state.active_sort==i){
+                            css_class+=" active";
+                            if(this.state.reversed)sort_dir=<span class="material-symbols-rounded">north</span>;
+                            else sort_dir=<span class="material-symbols-rounded">south</span>
+                        }
+                        return (<div class={css_class} onClick={(evt)=>{
+                            evt.stopPropagation();
+                            this.sortChange(i);
+                            //This is very hacky, but if we're updating we need to re-open the sort dropdown
+                            $("#workflow-sort .create-dropdown").addClass("active");
+                        }}>
+                            {sort_dir}
+                            {sort.display}
+                        </div>);
+                    })}
                 </div>
             </div>
         );
     }
 
+    componentDidUpdate(prevProps,prevState){
+        if(prevProps.workflows!=this.props.workflows)this.setState({workflows:this.props.workflows});
+    }
+
+    sortChange(index){
+        if(this.state.active_sort==index)this.setState({reversed:!this.state.reversed});
+        else this.setState({active_sort:index,reversed:false});
+    }
+
     searchChange(evt){
         let component=this;
-        this.searchWithin(evt.target.value,(response)=>component.setState({search_results:response}));
+        if(evt.target.value && evt.target.value!=""){
+            let filter = evt.target.value.toLowerCase();
+            if(this.search_without)component.searchWithout(filter,(response)=>{
+                component.setState({search_results:response,search_filter:filter});
+                $("#workflow-search").addClass("active");
+            });
+            else component.searchWithin(filter,(response)=>{
+                component.setState({search_results:response,search_filter:filter});
+                $("#workflow-search").addClass("active");
+            });
+        }else{
+            component.setState({search_results:[],search_filter:""});
+            $("#workflow-search").removeClass("active");
+        }
     }
 
     componentDidMount(){
         makeDropdown("#workflow-filter");
         makeDropdown("#workflow-sort");
+        makeDropdown("#workflow-search");
     }
 
     searchWithin(request,response_function){
-        let workflows = this.props.workflows.filter(workflow=>workflow.title.indexOf(request)>=0);
-        console.log("in search within");
-        console.log(workflows);
+        let workflows = this.state.workflows.filter(workflow=>workflow.title.toLowerCase().indexOf(request)>=0);
         response_function(workflows);
+    }
+
+    searchWithout(request,response_function){
+        searchAllObjects(request,10,(response_data)=>{
+            response_function(response_data.workflow_list);
+        });
+    }
+
+    seeAll(){
+        this.props.renderer.tiny_loader.startLoad();
+        let search_filter = this.state.search_filter;
+        searchAllObjects(search_filter,0,(response_data)=>{
+            this.setState({workflows:response_data.workflow_list,search_filter_lock:search_filter});
+            this.props.renderer.tiny_loader.endLoad();
+            $("#workflow-search").removeClass("active");
+        });
+    }
+
+    clearSearchLock(evt){
+        this.setState({workflows:this.props.workflows,search_filter_lock:null})
+        evt.stopPropagation();
     }
 
     defaultRender(){
@@ -212,7 +369,7 @@ on click, and "selected" to give it the selected css class.
 export class WorkflowForMenu extends Component{
     constructor(props){
         super(props);
-        this.state={favourite:props.workflow_data.workflow_favourite};
+        this.state={favourite:props.workflow_data.favourite};
     }
 
     render(){
@@ -228,7 +385,6 @@ export class WorkflowForMenu extends Component{
             <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
                 <div class="workflow-top-row">
                     <WorkflowTitle no_hyperlink={this.props.no_hyperlink} class_name="workflow-title" data={data}/>
-                    {this.getButtons()}
                     {this.getTypeIndicator()}
                 </div>
                 <div class="workflow-created">
@@ -236,6 +392,7 @@ export class WorkflowForMenu extends Component{
                 </div>
                 <div class="workflow-description" dangerouslySetInnerHTML={{ __html: data.description }}>
                 </div>
+                {this.getButtons()}
             </div>
         );
     }
@@ -253,7 +410,31 @@ export class WorkflowForMenu extends Component{
     }
 
     getButtons(){
-        return null;
+        let fav_class="";
+        if(this.state.favourite)fav_class=" favourite";
+        let buttons=[];
+        if(this.props.workflow_data.type!="liveproject")buttons.push(
+            <div class="workflow-toggle-favourite hover-shade" onClick={(evt)=>{
+                toggleFavourite(this.props.workflow_data.id,this.props.workflow_data.type,(!this.state.favourite));
+                let state=this.state;
+                this.setState({favourite:!(state.favourite)})
+                evt.stopPropagation();
+            }}>
+                <span class={"material-symbols-outlined"+fav_class} title={gettext("Favourite")}>star</span>
+            </div>
+        )
+        if(this.props.workflow_data.type=="project" && this.props.workflow_data.has_liveproject)buttons.push(
+            <a class="workflow-live-classroom unset" href={
+                update_path["liveproject"].replace("0",this.props.workflow_data.id)
+            }>
+                <span class="material-symbols-rounded hover-shade" title={gettext("Live Classroom")}>bookmark_added</span>
+            </a>
+        )
+        return (
+            <div class="workflow-buttons-row">
+                {buttons}
+            </div>
+        )
     }
 
     clickAction(){
@@ -273,7 +454,7 @@ primarily to be used in the search bar
 export class WorkflowForMenuCondensed extends WorkflowForMenu{
     render(){
         let data = this.props.workflow_data;
-        let css_class = "workflow-for-menu hover-shade "+data.type;
+        let css_class = "workflow-for-menu simple-workflow hover-shade "+data.type;
 
         return(
             <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
@@ -284,6 +465,10 @@ export class WorkflowForMenuCondensed extends WorkflowForMenu{
                 </div>
             </div>
         );
+    }
+
+    getButtons(){
+        return null;
     }
 }
 

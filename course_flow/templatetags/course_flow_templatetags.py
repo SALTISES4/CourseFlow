@@ -46,9 +46,7 @@ def not_deleted_favourites(query):
     if query is None:
         return None
     return query.filter(
-        Q(program__deleted=False, program__project__deleted=False)
-        | Q(course__deleted=False, course__project__deleted=False)
-        | Q(activity__deleted=False, activity__project__deleted=False)
+        Q(workflow__deleted=False, workflow__project__deleted=False)
         | Q(project__deleted=False)
     )
 
@@ -282,6 +280,7 @@ def get_saltise_admin_users():
     ]
     table = "\n".join(rows)
     return format_html("<table>" + table + "</table>")
+
 
 @register.simple_tag
 def get_saltise_admin_user_details():
