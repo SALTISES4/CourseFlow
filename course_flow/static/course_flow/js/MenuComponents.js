@@ -749,11 +749,55 @@ export class ProjectEditMenu extends React.Component{
                         </button>
                     </div>
                 </div>
+                <div>
+                    <h4>{gettext("Delete/restore")}:</h4>
+                    {this.getDeleteProject()}
+                </div>
                 <div class="action-bar">
                     {this.getActions()}
                 </div>
             </div>
         );
+    }
+
+    getDeleteProject(){
+        if(!this.state.deleted)return (
+            <div title={gettext("Delete")} class="hover-shade" onClick={this.deleteProject.bind(this)}>
+                {gettext("Delete: ")}<span class="material-symbols-rounded">delete</span>
+            </div>
+        )
+        else return([
+            <div title={gettext("Restore")} class="hover-shade" onClick={this.restoreProject.bind(this)}>
+                {gettext("Restore: ")}<span class="material-symbols-rounded">restore_from_trash</span>
+            </div>,
+            <div title={gettext("Permanently delete")} class="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
+                {gettext("Permanently delete: ")}<span class="material-symbols-rounded">delete_forever</span>
+            </div>
+        ])
+    }
+
+    deleteProject(){
+        let component=this;
+        if(window.confirm(gettext("Are you sure you want to delete this project?"))){
+            deleteSelf(this.props.data.id,"project",true,()=>{
+                component.setState({deleted:true})
+            });
+        }
+    }
+
+    deleteProjectHard(){
+        let component=this;
+        if(window.confirm(gettext("Are you sure you want to permanently delete this project?"))){
+            deleteSelf(this.props.data.id,"project",false,()=>{
+                window.location=home_path;
+            });
+        }
+    }
+
+    restoreProject(){
+        restoreSelf(this.props.data.id,"project",()=>{
+            this.setState({deleted:false})
+        });
     }
     
     deleteTerm(id){

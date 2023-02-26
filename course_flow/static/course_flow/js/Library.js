@@ -2,9 +2,10 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {getLibrary, getWorkflowsForProject, searchAllObjects, toggleFavourite, getUsersForObject} from "./PostFunctions";
+import {getLibrary, getWorkflowsForProject, searchAllObjects, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive} from "./PostFunctions";
 import * as Constants from "./Constants";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./ComponentJSON";
+import {MessageBox} from "./MenuComponents";
 
 /*
 The main library menu
@@ -48,7 +49,8 @@ retrieved it will display them in a workflowfilter.
 export class ProjectMenu extends LibraryMenu{
     constructor(props){
         super(props);
-        this.state={};
+        this.state={data:props.data};
+        this.createDiv = React.createRef();
     }
 
     render(){
@@ -57,11 +59,87 @@ export class ProjectMenu extends LibraryMenu{
             <div class="project-menu">
                 {this.getHeader()}
                 <WorkflowFilter renderer={this.props.renderer} workflows={this.state.workflow_data} context="project"/>
-                }
+                {reactDom.createPortal(
+                    this.getOverflowLinks(),
+                    $("#overflow-links")[0]
+                )}
+                {reactDom.createPortal(
+                    this.getEdit(),
+                    $("#visible-icons")[0]
+                )}
+                {reactDom.createPortal(
+                    this.getCreate(),
+                    $("#visible-icons")[0]
+                )}
+                {reactDom.createPortal(
+                    this.getShare(),
+                    $("#visible-icons")[0]
+                )}
             </div>
         );
     }
 
+    getOverflowLinks(){
+        let data = this.state.data;
+        let liveproject;
+        if(data.author_id==user_id){
+            if(data.liveproject){
+                liveproject=(
+                    <a id="live-project" class="hover-shade" href={update_path.liveproject.replace("0",data.id)}>{gettext("View Classroom")}</a>
+                );
+            }else{
+                liveproject=(
+                    <a id="live-project" class="hover-shade" onClick={this.makeLive.bind(this)}>{gettext("Create Classroom")}</a>
+                );
+            }
+        }
+
+        let overflow_links=[liveproject];
+        overflow_links.push(<hr/>);
+        overflow_links.push(this.getExportButton());
+        overflow_links.push(this.getCopyButton());
+        overflow_links.push(<hr/>);
+        overflow_links.push(
+            <a id="comparison-view" class="hover-shade" href="comparison">
+                {gettext("Workflow comparison tool")}
+            </a>
+        );
+        return overflow_links;
+    }
+
+    makeLive(){
+        let component = this;
+        if(window.confirm(gettext("Are you sure you want to create a live classroom for this project?"))){
+            makeProjectLive(this.props.data.id,(data)=>{
+                window.location = update_path.liveproject.replace("0",component.props.data.id);
+            });
+        }
+    }
+
+    getExportButton(){
+        let export_button = (
+            <div id="export-button" class="hover-shade" onClick={()=>renderMessageBox(this.state.data,"export",closeMessageBox)}>
+                <div>{gettext("Export")}</div>
+            </div>
+        );
+        return export_button;
+    }
+
+    getCopyButton(){
+        let export_button = (
+            <div id="copy-button" class="hover-shade" onClick={()=>{ 
+                let loader = this.props.renderer.tiny_loader;
+                loader.startLoad();
+                duplicateBaseItem(this.props.data.id,this.props.data.type,null,(response_data)=>{
+                    loader.endLoad();
+                    window.location = update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
+                })
+            }}>
+                <div>{gettext("Copy to my library")}</div>
+            </div>
+        );
+        return export_button;
+    }
 
     componentDidMount(){
         let component = this;
@@ -71,13 +149,19 @@ export class ProjectMenu extends LibraryMenu{
                 component.setState({workflow_data:data.data_package});
             }
         );
+        this.getUserData();
+        makeDropdown($(this.createDiv.current));
+    }
+
+    getUserData(){
+        let component = this;
         getUsersForObject(this.props.data.id,this.props.data.type,(data)=>{
             component.setState({users:data});
         });
     }
 
     getHeader(){
-        let data=this.props.data;
+        let data=this.state.data;
         return (
             <div class="project-header">
                 <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
@@ -108,7 +192,7 @@ export class ProjectMenu extends LibraryMenu{
         let commenters = this.state.users.commentors;
         let viewers = this.state.users.viewers;
         if(!author)return null;
-        return [
+        let users = [
             <div class="user-name">
                 {Constants.getUserDisplay(author)+" ("+gettext("owner")+")"}
             </div>,
@@ -128,7 +212,69 @@ export class ProjectMenu extends LibraryMenu{
                 </div>
             ),
         ]
+        if(this.state.users.published){
+            users.push(
+                <div class="user-name">
+                    <span class="material-symbols-rounded">public</span> {gettext("All CourseFlow (view)")}
+                </div>
+            );
+        }
+        users.push(
+            <div class="user-name collapsed-text-show-more" onClick={this.openShareMenu.bind(this)}>
+                {gettext("Modify")}
+            </div>
+        )
+        console.log("returning users");
+        console.log(users);
+        return users;
 
+    }
+
+    getEdit(){
+        let edit;
+        if(this.props.data.author_id==user_id)edit = <div class="hover-shade" id="edit-project-button" title={gettext("Edit Project")} onClick={this.openEditMenu.bind(this)}><span class="material-symbols-rounded filled">edit</span></div>
+        return edit;
+    }
+
+    openEditMenu(){
+        let data = this.state.data;
+        renderMessageBox({...data,all_disciplines:this.props.renderer.all_disciplines},"project_edit_menu",this.updateFunction.bind(this));
+    }
+
+    getCreate(){
+        let create;
+        if(!this.props.renderer.read_only)create = (
+            <div class="hover-shade" id="create-project-button" title={gettext("Create workflow")} ref={this.createDiv}>
+                <span class="material-symbols-rounded filled">add_circle</span>
+                <div id="create-links-project" class="create-dropdown">
+                    <a id="activity-create-project" href={create_path.activity} class="hover-shade">{gettext("New activity")}</a>
+                    <a id="course-create-project" href={create_path.course} class="hover-shade">{gettext("New course")}</a>
+                    <a id="program-create-project" href={create_path.program} class="hover-shade">{gettext("New program")}</a>
+                </div>
+            </div>
+        )
+        return create;
+    }
+
+    updateFunction(new_data){
+        let new_state={...this.state};
+        new_state.data={...new_state.data,...new_data};
+        this.setState(new_state);
+    }
+
+    getShare(){
+        let share;
+        if(!this.props.renderer.read_only)share = <div class="hover-shade" id="share-button" title={gettext("Sharing")} onClick={this.openShareMenu.bind(this)}><span class="material-symbols-rounded filled">person_add</span></div>
+        return share;
+    }
+
+    openShareMenu(){
+        let component=this;
+        let data = this.state.data;
+        renderMessageBox(data,"share_menu",()=>{
+            closeMessageBox();
+            component.getUserData();
+        });
     }
 }
 
@@ -158,6 +304,9 @@ export class WorkflowFilter extends Component{
             {name:"type",display:gettext("Type")},
         ];
         if(this.props.context=="library")this.search_without=true;
+        this.filterDOM=React.createRef();
+        this.searchDOM=React.createRef();
+        this.sortDOM=React.createRef();
     }
 
     render(){
@@ -193,7 +342,7 @@ export class WorkflowFilter extends Component{
         return (
             [
                 <div class="workflow-filter-top">
-                    <div id="workflow-search">
+                    <div id="workflow-search" ref={this.searchDOM}>
                         <input
                             placeholder={gettext("Search")}
                             onChange={debounce(this.searchChange.bind(this))}
@@ -239,7 +388,7 @@ export class WorkflowFilter extends Component{
     getFilter(){
         let active_filter = this.filters[this.state.active_filter];
         return (
-            <div id="workflow-filter" class="hover-shade">
+            <div id="workflow-filter" ref={this.filterDOM} class="hover-shade">
                 <div class={"workflow-sort-indicator hover-shade item-"+this.state.active_filter}>
                     <span class="material-symbols-rounded">filter_alt</span>
                     <div>{active_filter.display}</div>
@@ -262,7 +411,7 @@ export class WorkflowFilter extends Component{
     getSort(){
         let active_sort = this.sorts[this.state.active_sort];
         return (
-            <div id="workflow-sort" class="hover-shade">
+            <div id="workflow-sort" ref={this.sortDOM} class="hover-shade">
                 <div class={"workflow-sort-indicator hover-shade item-"+this.state.active_sort}>
                     <span class="material-symbols-rounded">sort</span>
                     <div>{active_sort.display}</div>
@@ -280,7 +429,7 @@ export class WorkflowFilter extends Component{
                             evt.stopPropagation();
                             this.sortChange(i);
                             //This is very hacky, but if we're updating we need to re-open the sort dropdown
-                            $("#workflow-sort .create-dropdown").addClass("active");
+                            $(this.sortDOM.current).children(".create-dropdown").addClass("active");
                         }}>
                             {sort_dir}
                             {sort.display}
@@ -306,22 +455,22 @@ export class WorkflowFilter extends Component{
             let filter = evt.target.value.toLowerCase();
             if(this.search_without)component.searchWithout(filter,(response)=>{
                 component.setState({search_results:response,search_filter:filter});
-                $("#workflow-search").addClass("active");
+                $(this.searchDOM.current).addClass("active");
             });
             else component.searchWithin(filter,(response)=>{
                 component.setState({search_results:response,search_filter:filter});
-                $("#workflow-search").addClass("active");
+                $(this.searchDOM.current).addClass("active");
             });
         }else{
             component.setState({search_results:[],search_filter:""});
-            $("#workflow-search").removeClass("active");
+            $(this.searchDOM.current).removeClass("active");
         }
     }
 
     componentDidMount(){
-        makeDropdown("#workflow-filter");
-        makeDropdown("#workflow-sort");
-        makeDropdown("#workflow-search");
+        makeDropdown(this.filterDOM.current);
+        makeDropdown(this.sortDOM.current);
+        makeDropdown(this.searchDOM.current);
     }
 
     searchWithin(request,response_function){
@@ -411,7 +560,7 @@ export class WorkflowForMenu extends Component{
 
     getButtons(){
         let fav_class="";
-        if(this.state.favourite)fav_class=" favourite";
+        if(this.state.favourite)fav_class=" filled";
         let buttons=[];
         if(this.props.workflow_data.type!="liveproject")buttons.push(
             <div class="workflow-toggle-favourite hover-shade" onClick={(evt)=>{
@@ -427,7 +576,7 @@ export class WorkflowForMenu extends Component{
             <a class="workflow-live-classroom unset" href={
                 update_path["liveproject"].replace("0",this.props.workflow_data.id)
             }>
-                <span class="material-symbols-rounded hover-shade" title={gettext("Live Classroom")}>bookmark_added</span>
+                <span class="material-symbols-rounded filled hover-shade" title={gettext("Live Classroom")}>bookmark_added</span>
             </a>
         )
         return (
@@ -470,6 +619,19 @@ export class WorkflowForMenuCondensed extends WorkflowForMenu{
     getButtons(){
         return null;
     }
+}
+
+export function renderMessageBox(data,type,updateFunction){
+    reactDom.render(
+        <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
+        $("#popup-container")[0]
+    );
+}
+
+
+
+export function closeMessageBox(){
+    reactDom.render(null,$("#popup-container")[0]);
 }
 
 // export class WorkflowForMenu extends React.Component{

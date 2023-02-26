@@ -33,6 +33,10 @@ a.hover-shade:hover{
     text-decoration:underline;
 }
 
+.material-symbols-rounded.filled, .material-symbols-outlined.filled{
+    font-variation-settings: 'FILL' 1;
+}
+
 body{
     background:#EEEEEE;
 }
@@ -207,7 +211,10 @@ button:hover{
 
 #visible-icons{
     display: flex;
+    color: #04BA74;
+    gap: 8px;
 }
+
 
 .users-box{
     position:relative;
@@ -720,12 +727,6 @@ button:hover{
 .workflow-for-menu .workflow-toggle-favourite{
     color: #F7BA2A
 }
-.workflow-toggle-favourite .favourite{
-    font-variation-settings: 'FILL' 1;
-}
-.workflow-live-classroom{
-    font-variation-settings: 'FILL' 1;
-}
 
 .workflow-description{
     font-size:13px;
@@ -1099,6 +1100,41 @@ button:hover{
     padding:3px 1em 3px .4em;
 }
 
+.big-buttons-wrapper{
+    display: flex;
+    gap: 10px;
+}
+
+.big-button{
+    border-radius: 10px;
+    box-sizing: border-box;
+    border: 1px solid lightgrey;
+    padding: 20px;
+    text-align: center;
+    width: 220px;
+}
+
+.big-button > .material-symbols-rounded{
+    display: block;
+    font-size: 36px;
+    color: #04BA74;
+}
+
+.big-button-title{
+    font-size:  16px;
+    line-height: 30px;
+}
+
+.big-button-description{
+    color: grey;
+    font-size: 10px;
+    line-height: 14px;
+}
+
+.big-button.active{
+    background: #EEFFF8;
+}
+
 .user-list{
     list-style:none;
     padding:0;
@@ -1151,6 +1187,11 @@ button:hover{
 
 .user-name{
     font-size:14px;
+}
+
+.user-name .material-symbols-rounded{
+    color: grey;
+    font-size: 16px;
 }
 
 .user-username{

@@ -3369,17 +3369,18 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
             for i, object_set in enumerate(new_object_sets)
         }
 
-        # Link everything up
-        WorkflowProject.objects.bulk_create(
-            [
-                WorkflowProject(
-                    rank=workflowproject.rank,
-                    workflow=id_dict["workflow"][workflowproject.workflow.id],
-                    project=new_project,
-                )
-                for workflowproject in workflowprojects
-            ]
-        )
+        # Link everything up.
+
+        # DO NOT bulk create workflowprojects, as then the
+        # necessary permissions won't be created for the author
+        [
+            WorkflowProject.objects.create(
+                rank=workflowproject.rank,
+                workflow=id_dict["workflow"][workflowproject.workflow.id],
+                project=new_project,
+            )
+            for workflowproject in workflowprojects
+        ]
 
         ColumnWorkflow.objects.bulk_create(
             [
@@ -4452,6 +4453,9 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     if object_type in ["activity", "course", "program"]:
         object_type = "workflow"
     content_type = ContentType.objects.get(model=object_type)
+    published = (
+        get_model_from_str(object_type).objects.get(id=object_id).published
+    )
     try:
         editors = set()
         for object_permission in ObjectPermission.objects.filter(
@@ -4496,6 +4500,7 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
             "commentors": UserSerializer(commentors, many=True).data,
             "editors": UserSerializer(editors, many=True).data,
             "students": UserSerializer(students, many=True).data,
+            "published": published,
         }
     )
 
@@ -5097,7 +5102,6 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             workflow = model.get_workflow()
         except AttributeError:
             pass
-
         # Check to see if we have any linked workflows that need to be updated
         linked_workflows = False
         if object_type == "node":
@@ -5160,7 +5164,6 @@ def delete_self(request: HttpRequest) -> HttpResponse:
         # Delete the object
         with transaction.atomic():
             model.delete()
-
         if object_type == "outcome" or object_type == "outcome_base":
             extra_data = RefreshSerializerNode(
                 Node.objects.filter(pk__in=affected_nodes),

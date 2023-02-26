@@ -1477,9 +1477,11 @@ def delete_project_objects(sender, instance, **kwargs):
     #    courses = filter(lambda x: x.type == "course", workflow_subclasses)
     #    programs = filter(lambda x: x.type == "program", workflow_subclasses)
     objectpermissions = ObjectPermission.objects.filter(
-        Q(workflow__in=workflows)
+        Q(workflow__in=workflows) | Q(project=instance)
     )
-    favourites = Favourite.objects.filter(Q(workflow__in=workflows))
+    favourites = Favourite.objects.filter(
+        Q(workflow__in=workflows) | Q(project=instance)
+    )
     Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
     Node.objects.filter(linked_workflow__in=workflows).update(
         linked_workflow=None
@@ -1513,8 +1515,13 @@ def delete_project_objects(sender, instance, **kwargs):
     courses._raw_delete(courses.db)
     programs = Program.objects.filter(pk__in=workflows)
     programs._raw_delete(programs.db)
+    print(instance.disciplines.all())
+    print(Discipline.objects.filter(workflow__in=workflows))
     workflows = Workflow.objects.filter(pk__in=workflows)
-    workflows._raw_delete(workflows.db)
+    workflows.delete()
+    # raw delete was presenting issues with the disciplines for some reason
+    # Given that most usage is soft delete, might as well just .delete()
+    # workflows._raw_delete(workflows.db)
 
 
 @receiver(pre_delete, sender=Workflow)
@@ -1706,6 +1713,19 @@ def reorder_for_deleted_outcome_outcome(sender, instance, **kwargs):
 #    ):
 #        out_of_order_link.rank -= 1
 #        out_of_order_link.save()
+
+
+@receiver(pre_save, sender=WorkflowProject)
+def delete_existing_workflow_project(sender, instance, **kwargs):
+    if instance.pk is None:
+        WorkflowProject.objects.filter(workflow=instance.workflow).delete()
+        if instance.rank < 0:
+            instance.rank = 0
+        new_parent_count = WorkflowProject.objects.filter(
+            project=instance.project
+        ).count()
+        if instance.rank > new_parent_count:
+            instance.rank = new_parent_count
 
 
 @receiver(pre_save, sender=NodeWeek)

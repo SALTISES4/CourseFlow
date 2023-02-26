@@ -1,7 +1,8 @@
 import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {setUserPermission,getUsersForObject,getUserList} from "./PostFunctions";
+import {setUserPermission,getUsersForObject,getUserList,updateValueInstant} from "./PostFunctions";
+import {WorkflowTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
 
 export class ShareMenu extends React.Component{
@@ -16,7 +17,7 @@ export class ShareMenu extends React.Component{
         let owner = (
             <UserLabel user={this.state.owner} type={"owner"}/>
         );
-        let editors = this.state.edit.map((user)=>
+        let editors = this.state.edit.filter(user=>user.id!=this.state.owner.id).map((user)=>
             <UserLabel user={user} type={"edit"} permissionChange={this.setUserPermission.bind(this)}/>
         );
         let viewers = this.state.view.map((user)=>
@@ -29,28 +30,21 @@ export class ShareMenu extends React.Component{
             <UserLabel user={user} type={"student"} permissionChange={this.setUserPermission.bind(this)}/>
         );
 
-        let text = data.title;
-        if(text==null || text==""){
-            text=gettext("Untitled");
-        }
-
         let share_info;
         if(data.type=="project"){
             share_info=gettext("Note: You are sharing a project. Any added users will be granted the same permission for all workflows within the project.");
         }else{
             share_info=gettext("Note: You are sharing a workflow. Any added users will be granted view permissions for the whole project.");
         }
-        
-        
+        console.log(data);
 
         return(
             <div class="message-wrap user-text">
-                <h3>{gettext("Sharing")+":"}</h3>
                 <div class="workflow-title-bar">
-                    <div>
-                        {text}
-                    </div>
+                    {gettext("Share")+" "+gettext(data.type)}
+                    <WorkflowTitle no_hyperlink={true} data={this.props.data}/>
                 </div>
+                {this.getPublication()}
                 <h4>{gettext("Owned By")}:</h4>
                     <div>{owner}</div>
                 <div class="user-panel">
@@ -71,6 +65,44 @@ export class ShareMenu extends React.Component{
         );
         
     }
+
+    getPublication(){
+        let published=this.state.published;
+        let data=this.props.data;
+        if(data.type=="workflow")return null;
+        let public_class="big-button";
+        let private_class="big-button hover-shade";
+        if(published)public_class+=" active";
+        else private_class+=" active";
+        let public_disabled = !(data.disciplines.length>0 && data.title && data.title.length>0);
+        if(!public_disabled && !published)public_class+=" hover-shade";
+        if(public_disabled)public_class+=" disabled";
+        let public_text=gettext("Any CourseFlow teacher can view");
+        if(public_disabled)public_text+=gettext("\n\nA title and at least one discipline is required for publishing.")
+        return (
+            <div class="big-buttons-wrapper">
+                <div class={public_class} disabled={public_disabled} onClick={this.setPublication.bind(this,true && !public_disabled)}>
+                    <span class="material-symbols-rounded">public</span>
+                    <div class="big-button-title">{gettext("Public to CourseFlow")}</div>
+                    <div class="big-button-description">{public_text}</div>
+                </div>
+                <div class={private_class} onClick={this.setPublication.bind(this,false)}>
+                    <span class="material-symbols-rounded">visibility_off</span>
+                    <div class="big-button-title">{gettext("Private")}</div>
+                    <div class="big-button-description">{gettext("Only added collaborators can view")}</div>
+                </div>
+            </div>
+        )
+    }
+
+    setPublication(published){
+        console.log(published);
+        if(published==this.state.published)return;
+        let component=this;
+        if(!published || window.confirm(gettext("Are you sure you want to publish this project, making it fully visible to anyone with an account?"))){
+            updateValueInstant(component.props.data.id,component.props.data.type,{published:published},()=>component.setState({published:published}));
+        }
+    }
     
     setUserPermission(permission_type,user){
         this.tiny_loader.startLoad();
@@ -84,7 +116,7 @@ export class ShareMenu extends React.Component{
     
     componentDidMount(){
         getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
-            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students});
+            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students,published:response.published});
         });
     }
     
