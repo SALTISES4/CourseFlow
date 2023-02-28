@@ -936,6 +936,8 @@ button:hover{
     background:white;
     width: 100%;
     color: #444444;
+    padding-right: 50px;
+    box-sizing: border-box;
 }
 
 .project-header h4{
@@ -964,6 +966,7 @@ button:hover{
     margin-top: 20px;
     margin-bottom: 20px;
     border-top: 1px solid lightgrey;
+    max-width: 500px;
 }
 
 .title-text.collapsible-text{
@@ -1100,9 +1103,22 @@ button:hover{
     padding:3px 1em 3px .4em;
 }
 
+.message-box.share_menu{
+    width: 530px;
+    left: calc(50% - 265px);
+}
+
+.message-box.share_menu hr{
+    margin: 20px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .big-buttons-wrapper{
     display: flex;
     gap: 10px;
+    margin: 20px;
+    justify-content: center;
 }
 
 .big-button{
@@ -1133,6 +1149,32 @@ button:hover{
 
 .big-button.active{
     background: #EEFFF8;
+}
+
+.public-link-button{
+    border-radius: 10px;
+    background: #04BA74;
+    width: 100%;
+    color: white;
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+    align-items: center;
+}
+
+.public-link-icon{
+    width: fit-content;
+}
+
+.public-link-description{
+    font-size: 12px;
+}
+
+.public-link-button.public-link-remove{
+    margin-top: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .user-list{

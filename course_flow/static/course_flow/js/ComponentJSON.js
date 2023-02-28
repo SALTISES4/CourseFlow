@@ -201,10 +201,6 @@ export class EditableComponent extends Component{
                                 <input disabled={read_only} type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
                             </div>
                             }
-                            <div>
-                                <label for="public_view">{gettext("Create Public Page")}</label>
-                                <input disabled={read_only} type="checkbox" name="public_view" checked={data.public_view} onChange={this.checkboxChanged.bind(this,"public_view")}/>
-                            </div>
                         </div>
                     }
                     {type=="week" && data.week_type <2 &&
@@ -265,13 +261,6 @@ export class EditableComponent extends Component{
 
     checkboxChanged(field,evt){
         let do_change=true;
-        if(field=="public_view" && evt.target.checked){
-            if(window.confirm(gettext("Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."))){
-                
-            }else{
-                do_change=false;
-            }
-        }
         if(do_change)this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
     }
 

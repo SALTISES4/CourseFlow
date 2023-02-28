@@ -1952,7 +1952,13 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                 else:
                     # If user is the owner, don't override their ownership
                     if workflow.author == instance.user:
-                        pass
+                        if ObjectPermission.objects.filter(workflow=workflow,user=instance.user,permission_type=ObjectPermission.PERMISSION_EDIT).count()==0:
+                            #Just in case the user has somehow lost their permission
+                            ObjectPermission.objects.create(
+                                user=instance.user,
+                                content_object=workflow,
+                                permission_type=ObjectPermission.PERMISSION_EDIT,
+                            )
                     else:
                         ObjectPermission.objects.create(
                             user=instance.user,

@@ -4453,9 +4453,10 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     if object_type in ["activity", "course", "program"]:
         object_type = "workflow"
     content_type = ContentType.objects.get(model=object_type)
-    published = (
-        get_model_from_str(object_type).objects.get(id=object_id).published
-    )
+    this_object = get_model_from_str(object_type).objects.get(id=object_id)
+    published = this_object.published
+    public_view = False 
+    if object_type=="workflow": public_view = this_object.public_view
     try:
         editors = set()
         for object_permission in ObjectPermission.objects.filter(
@@ -4501,6 +4502,7 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
             "editors": UserSerializer(editors, many=True).data,
             "students": UserSerializer(students, many=True).data,
             "published": published,
+            "public_view": public_view,
         }
     )
 

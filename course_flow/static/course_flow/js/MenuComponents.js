@@ -30,7 +30,7 @@ export class MessageBox extends React.Component{
         );
         return(
             <div class="screen-barrier" onClick={(evt)=>evt.stopPropagation()}>
-                <div class="message-box">
+                <div class={"message-box "+this.props.message_type}>
                     {menu}
                 </div>
             </div>

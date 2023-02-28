@@ -40,7 +40,7 @@ export class LibraryMenu extends React.Component{
 }
 
 /*
-The main library menu
+The project library menu
 
 On mount, this will fetch the workflows for the project. When they have been
 retrieved it will display them in a workflowfilter.
@@ -224,8 +224,6 @@ export class ProjectMenu extends LibraryMenu{
                 {gettext("Modify")}
             </div>
         )
-        console.log("returning users");
-        console.log(users);
         return users;
 
     }
