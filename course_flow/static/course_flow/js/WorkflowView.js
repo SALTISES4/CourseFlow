@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {Component, EditableComponent, EditableComponentWithSorting, WorkflowTitle, CollapsibleText} from "./ComponentJSON";
+import {Component, EditableComponent, EditableComponentWithActions, EditableComponentWithSorting, WorkflowTitle, CollapsibleText} from "./ComponentJSON";
 import ColumnWorkflowView from "./ColumnWorkflowView";
 import WeekWorkflowView from "./WeekWorkflowView";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";
@@ -14,14 +14,14 @@ import StrategyView from "./Strategy";
 import WorkflowOutcomeView from "./WorkflowOutcomeView";
 import WorkflowLegend from "./WorkflowLegend";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend";
-import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport, toggleDrop, getUsersForObject} from "./PostFunctions";
+import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport, toggleDrop, getUsersForObject, getTargetProjectMenu, duplicateBaseItem} from "./PostFunctions";
 import OutcomeEditView from './OutcomeEditView';
 import AlignmentView from './AlignmentView';
 import CompetencyMatrixView from './CompetencyMatrixView';
 import GridView from './GridView';
 
 
-class WorkflowBaseViewUnconnected extends EditableComponent{
+class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
 
     constructor(props){
         super(props);
@@ -68,6 +68,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
                 {!data.is_strategy &&
                     <ViewBar data={data} renderer={this.props.renderer}/>
                 }
+                {this.getReturnLinks()}
+                {this.getParentWorkflowIndicator()}
             </div>
         )
 
@@ -108,7 +110,11 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
         }    
         return (
             <div class="project-header" style={style}>
-                <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
+                {this.getProjectLink()}
+                <div class="project-header-top-line">
+                    <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
+                    {this.getTypeIndicator()}
+                </div>
                 <div class="project-header-info">
                     <div class="project-info-section project-members">
                         <h4>{gettext("Workflow Members")}</h4>
@@ -122,6 +128,15 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
                     </div>
                 </div>
             </div>
+        );
+    }
+
+    getTypeIndicator(){
+        let data = this.props.data;
+        let type_text=gettext(data.type);
+        if(data.is_strategy)type_text+=gettext(" strategy");
+        return (
+            <div class={"workflow-type-indicator "+data.type}>{type_text}</div>
         );
     }
 
@@ -205,15 +220,18 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
         let liveproject;
 
         let overflow_links=[];
-        // overflow_links.push(this.getExportButton());
-        // overflow_links.push(this.getCopyButton());
+        overflow_links.push(this.getExportButton());
+        overflow_links.push(this.getCopyButton());
         overflow_links.push(<hr/>);
+        overflow_links.push(this.getImportButton());
         return overflow_links;
     }
 
     getExportButton(){
+        if(this.props.renderer.public_view && !user_id)return null;
+        if(this.props.renderer.is_student && !this.props.renderer.can_view)return null;
         let export_button = (
-            <div id="export-button" class="hover-shade" onClick={()=>renderMessageBox(this.state.data,"export",closeMessageBox)}>
+            <div id="export-button" class="hover-shade" onClick={()=>renderMessageBox({...this.props.data,object_sets:this.props.object_sets},"export",closeMessageBox)}>
                 <div>{gettext("Export")}</div>
             </div>
         );
@@ -221,19 +239,100 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
     }
 
     getCopyButton(){
+
         let export_button = (
             <div id="copy-button" class="hover-shade" onClick={()=>{ 
                 let loader = this.props.renderer.tiny_loader;
-                loader.startLoad();
-                // duplicateBaseItem(this.props.data.id,this.props.data.type,null,(response_data)=>{
-                //     loader.endLoad();
-                //     window.location = update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
-                // })
+                if(this.props.data.is_strategy){
+                    loader.startLoad();
+                    duplicateBaseItem(this.props.data.id,this.props.data.type,null,(response_data)=>{
+                        loader.endLoad();
+                        window.location = update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
+                    })
+                }else{
+                    getTargetProjectMenu(-1,(response_data)=>{
+                        if(response_data.parentID!=null){
+                            let loader = new Constants.Loader('body');
+                            duplicateBaseItem(this.props.data.id,this.props.data.type,response_data.parentID,(response_data)=>{
+                                loader.endLoad();
+                                window.location = update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
+                            })
+                        }
+                    });
+                }
             }}>
                 <div>{gettext("Copy to my library")}</div>
             </div>
         );
         return export_button;
+    }
+
+    getImportButton(){
+        if(this.props.renderer.read_only)return null;
+        let disabled;
+        if(this.props.data.importing)disabled=true;
+        let imports=[];
+        this.pushImport(imports,"outcomes",gettext("Import Outcomes"),disabled);
+        this.pushImport(imports,"nodes",gettext("Import Nodes"),disabled);
+        
+        return imports;
+    }
+                     
+    pushImport(imports,import_type,text,disabled){
+        let a_class = "hover-shade";
+        if(disabled)a_class=" disabled";
+        imports.push(
+            <a class={a_class} onClick={this.clickImport.bind(this,import_type)}>
+                {text}
+            </a>
+        )
+    }
+                     
+    clickImport(import_type,evt){
+        evt.preventDefault();
+        renderMessageBox({"object_id":this.props.data.id,"object_type":this.objectType,import_type:import_type},"import",()=>{closeMessageBox()});
+    }
+
+    getReturnLinks(){
+        let renderer = this.props.renderer;
+        let data = this.props.data;
+        let return_links = [];
+        if(renderer.project && !renderer.is_student && !renderer.public_view){
+            return_links.push(
+                <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+                    <span class="material-symbols-rounded">arrow_back_ios</span>
+                    <div>{gettext("Return to project")}</div>
+                </a>
+            );
+        }
+        if(renderer.public_view && renderer.can_view){
+            return_links.push(
+                <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+                    <span class="material-symbols-rounded">arrow_back_ios</span>
+                    <div>{gettext("Return to Editable Workflow")}</div>
+                </a>
+            )
+        }
+        if(renderer.project && (renderer.is_teacher || renderer.is_student)){
+            return_links.push(
+                <a class="hover-shade no-underline" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
+                    <span class="material-symbols-rounded">arrow_back_ios</span>
+                    <div>{gettext("Return to classroom (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
+                </a>
+            );
+        }
+        return reactDom.createPortal(
+            return_links,
+            $(".titlebar .title")[0]
+        )
+    }
+
+    getProjectLink(){
+        let renderer=this.props.renderer;
+        if(renderer.project && !renderer.is_student && !renderer.public_view)return(
+            <WorkflowTitle class_name={"project-title-in-workflow"} data={this.props.renderer.project}/>
+        );
+        else return null;
     }
 
     getWorkflowContent(){
@@ -308,10 +407,8 @@ class WorkflowBaseViewUnconnected extends EditableComponent{
     }
 
     getParentWorkflowIndicator(){
-
-        let parent_workflow_indicator;
-        parent_workflow_indicator = (
-            <ParentWorkflowIndicator renderer={renderer} workflow_id={data.id}/>
+        return (
+            <ParentWorkflowIndicator renderer={this.props.renderer} workflow_id={this.props.data.id}/>
         )
 
     }
@@ -739,7 +836,10 @@ class ViewBarUnconnected extends React.Component{
             let sort_type=(
                 <div class="node-bar-sort-block">
                     {this.props.renderer.outcome_sort_choices.map((choice)=>
-                        <div><input disabled={(table_type_value==1 || (data.type=="program" && choice.type>1))} type="radio" id={"sort_type_choice"+choice.type} name={"sort_type_choice"+choice.type} value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.changeSort.bind(this)}/><label for={"sort_type_choice"+choice.type}>{choice.name}</label></div>
+                        <div>
+                            <input disabled={(table_type_value==1 || (data.type=="program" && choice.type>1))} type="radio" id={"sort_type_choice"+choice.type} name={"sort_type_choice"+choice.type} value={choice.type} checked={(data.outcomes_sort==choice.type)} onChange={this.changeSort.bind(this)}/>
+                            <label for={"sort_type_choice"+choice.type}>{choice.name}</label>
+                        </div>
 
                     )}
                 </div>

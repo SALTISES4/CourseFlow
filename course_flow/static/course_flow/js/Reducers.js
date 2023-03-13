@@ -180,6 +180,10 @@ export function workflowReducer(state={},action){
                 ...state,
                 outcomeworkflow_set:new_outcomeworkflow_set
             }
+        case 'workflow/deleteSelfSoft':
+            return {...state,deleted:true}
+        case 'workflow/restoreSelf':
+            return {...state,deleted:false}
         case 'week/deleteSelf':
         case 'week/deleteSelfSoft':
             if(state.weekworkflow_set.indexOf(action.payload.parent_id)>=0){

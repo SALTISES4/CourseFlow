@@ -1271,6 +1271,12 @@ class InfoBoxSerializer(
     # can_edit = serializers.SerializerMethodField()
     object_permission = serializers.SerializerMethodField()
     has_liveproject = serializers.SerializerMethodField()
+    workflow_count = serializers.SerializerMethodField()
+
+    def get_workflow_count(self, instance):
+        if instance.type == "project":
+            return instance.workflows.all().count()
+        return None
 
     def get_url(self, instance):
         if instance.type in ["project", "liveproject"]:

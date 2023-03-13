@@ -730,12 +730,6 @@ export class ProjectEditMenu extends React.Component{
                     
                 </div>
                 <div>
-                    <h4>{gettext("Published")+":"}</h4>
-                    <div>{disabled_publish_text}</div>
-                    <input id="project-publish-input" disabled={!published_enabled} type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
-                    <label for="published">{gettext("Is Published (visible to all users)")}</label>
-                </div>
-                <div>
                     <h4>{gettext("View sets")+":"}</h4>
                     {sets_added}
                     <div class="nomenclature-row">

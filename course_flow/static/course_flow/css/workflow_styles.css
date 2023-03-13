@@ -8,7 +8,7 @@ p{
 }
 
 button, input[type="submit"]{
-    border:2px outset #1976bc;
+    border:2px outset #04ba74;
     background:white;
     padding:5px;
     border-radius:5px;
@@ -55,11 +55,23 @@ button, input[type="submit"]{
     white-space:nowrap;
     text-align:left;
     width: fit-content;
+    background: white;
+    padding: 50px;
+    padding-top: 35px;
+    min-width: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
 }
 
 .workflow-wrapper.printing{
     margin-top:0px;
     background:white;
+}
+
+.project-title-in-workflow{
+    font-size: 12px;
+    text-decoration: underline;
+    color: #444444;    
 }
 
 #content-container{
@@ -72,7 +84,6 @@ button, input[type="submit"]{
     background:white;
     overflow:visible;
     margin:10px;
-    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
     padding:0px;
     user-select:none;
 }
@@ -126,7 +137,7 @@ button, input[type="submit"]{
 }
 
 .workflow-view-select .active{
-    background:#1976bc;
+    background:#04ba74;
     color:white;
 }
 
@@ -163,7 +174,7 @@ button, input[type="submit"]{
 }
 
 .workflow-details{
-    padding:50px;
+    /*padding:50px;*/
 }
 /*
 .workflow-details .workflow-for-menu{
@@ -614,7 +625,7 @@ li.outcome-outcome::before{
     display:block;
     width:10px;
     height:0;
-    border-top:2px solid #1976bc;
+    border-top:2px solid #04ba74;
     margin-top:-2px;
     position:absolute;
     top:15px;
@@ -654,7 +665,7 @@ ol.children-block{
 .outcome-create-child{
     position:relative;
     font-size:12px;
-    color:#1976bc;
+    color:#04ba74;
     margin-left:40px;
     display:none;
     cursor:pointer;
@@ -665,8 +676,8 @@ ol.children-block{
     display:block;
     width:10px;
     height:6px;
-    border-bottom:2px solid #1976bc;
-    border-left:2px solid #1976bc;
+    border-bottom:2px solid #04ba74;
+    border-left:2px solid #04ba74;
     position:absolute;
     top:0px;
     left:-20px;
@@ -678,7 +689,7 @@ ol.children-block{
 }
 
 .children-block{
-    border-left:2px solid #1976bc;
+    border-left:2px solid #04ba74;
     margin-left:20px;
     margin-top:0px;
     margin-bottom:0px;
@@ -703,7 +714,7 @@ ol.children-block{
 
 .outcome-drop-text{
     font-size:10px;
-    color:#1976bc;
+    color:#04ba74;
     display:inline-block;
     margin-left:10px;
     vertical-align:top;
@@ -742,7 +753,7 @@ ol.children-block{
 }
 
 .restore-bar-item{
-    border:2px solid #1976bc;
+    border:2px solid #04ba74;
     border-radius:5px;
     padding:5px;
 }
@@ -758,7 +769,7 @@ ol.children-block{
 }
 
 .outcome-bar-outcome-block .outcome-outcome{
-    border:3px outset #1976bc;
+    border:3px outset #04ba74;
     margin-bottom:2px;
 }
 
@@ -768,7 +779,7 @@ ol.children-block{
 }
 
 .outcome-bar-outcome-block > .outcome, .outcome-bar-outcome-block > .parent-outcome-node{
-    border:3px outset #1976bc;
+    border:3px outset #04ba74;
 }
 
 .outcome-bar-outcome-block .outcome-drop{
@@ -1309,7 +1320,7 @@ ol.children-block{
 }
 
 .outcome-table.node-rows .outcome .outcome .outcome-head{
-    border-left:2px solid #1976bc;
+    border-left:2px solid #04ba74;
 }
 
 .outcome-row{
@@ -1487,7 +1498,7 @@ ol.children-block{
 
 
 input:checked + .slider{
-    background-color:#1976bc;
+    background-color:#04ba74;
 }
 
 input:checked +.slider::before{
@@ -1546,7 +1557,7 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     position:absolute;
     width:300px;
     max-height:400px;
-    border:1px solid #1976bc;
+    border:1px solid #04ba74;
     background:white;
     z-index:7;
     overflow:auto;
@@ -1933,19 +1944,19 @@ circle.mouseover{
 }
 
 .new-node-drop-over{
-    border-bottom:2px solid #1976bc;
+    border-bottom:2px solid #04ba74;
 }
 
 .outcome-drop-over{
-    border:2px solid #1976bc;
+    border:2px solid #04ba74;
 }
 
 .new-strategy-drop-over{
-    border-bottom:2px solid #1976bc;
+    border-bottom:2px solid #04ba74;
 }
 
 .valid-drop{
-    outline:2px solid #1976bc;
+    outline:2px solid #04ba74;
 }
 
 .node-bar-week{
@@ -1989,7 +2000,7 @@ circle.mouseover{
     display:block;
     margin:2px;
     font-size:14px;
-    border:3px outset #1976bc;
+    border:3px outset #04ba74;
     padding:10px;
     cursor:move;
     box-sizing:border-box;
@@ -2016,12 +2027,12 @@ circle.mouseover{
 }
 
 .workflow-wrapper .selected{
-    border-color:#1976bc;
+    border-color:#04ba74;
     border-style:solid;
 }
 
 .workflow-wrapper .nodelink.selected{
-    stroke:#1976bc;
+    stroke:#04ba74;
     opacity:1;
     stroke-width:5px;
 }
@@ -2032,7 +2043,7 @@ circle.mouseover{
 }
 
 .workflow-for-menu.selected{
-    border-color:#1976bc;
+    border-color:#04ba74;
 }
 
 .alignment-block{
@@ -2129,7 +2140,7 @@ circle.mouseover{
 }
 
 .alignment-show-all{
-    color:#1976bc;
+    color:#04ba74;
     cursor:pointer;
 }
 
@@ -2238,7 +2249,7 @@ circle.mouseover{
     background:white;
     z-index:5;
     padding:20px;
-    border:2px solid #1976bc;
+    border:2px solid #04ba74;
     left:calc(100% - 460px);
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
 }
@@ -2341,6 +2352,8 @@ circle.mouseover{
     margin:0px;
     width:260px;
     position: relative;
+    min-width: auto;
+    padding: 0;
 }
 
 .comparison-view .workflow-for-menu{
@@ -2373,7 +2386,7 @@ hr{
 }
 
 h1{
-    color:#1976bc;
+    color:#04ba74;
     
 }
 
@@ -2382,18 +2395,18 @@ h2{
 }
 
 h3{
-    color:#1976bc;
+    color:#04ba74;
 }
 
 h4{
     margin-top:10px;
     margin-bottom:5px;
-    color:#1976bc;
+    color:#04ba74;
 }
 h5{
     margin-top:8px;
     margin-bottom:8px;
-    color:#1976bc;
+    color:#04ba74;
 }
 h4.drag-and-drop::after{
     content:"\A Drag and drop to add";
@@ -2405,7 +2418,7 @@ h4.drag-and-drop::after{
 
 
 .workflow-legend *:is(h4, h5), .right-panel-container *:is(h3, h4, h5){
-    color:#1976bc;
+    color:#04ba74;
 }
 
 .selectable{
@@ -2431,8 +2444,8 @@ h4.drag-and-drop::after{
     content:"";
     border-radius:50%;
     border:16px solid #80808010;
-    border-top:16px solid #1976bc;
-    border-bottom:16px solid #1976bc;
+    border-top:16px solid #04ba74;
+    border-bottom:16px solid #04ba74;
     animation: spin 2s linear infinite;
     -webkit-animation: spin 2s linear infinite;
 }

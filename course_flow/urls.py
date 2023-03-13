@@ -27,6 +27,7 @@ def course_flow_patterns():
         path("logout/", views.logout_view, name="logout"),
         path("mylibrary/", views.mylibrary_view, name="my-library"),
         path("mylibrary/get-projects/", views.get_library, name="get-library"),
+        path("home/get-projects/", views.get_home, name="get-home"),
         path(
             "mylibrary/search-all-objects/",
             views.search_all_objects,

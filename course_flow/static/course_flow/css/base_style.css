@@ -1,5 +1,5 @@
 :root {
-  --mdc-theme-primary: #1976bc;
+  --mdc-theme-primary: #04ba74;
   --mdc-theme-secondary: #46c443;
 }
 
@@ -60,6 +60,10 @@ button:hover{
     box-shadow:inset 0 0 0 99999px rgba(0,0,0,0.1);
 }
 
+.material-symbols-rounded.green, .material-symbols-outlined.green{
+    color: #04ba74;
+}
+
 .main-wrapper{
     display: flex;
     height: 100%;
@@ -91,7 +95,7 @@ button:hover{
     padding-left: 10px;
 }
 
-
+/*
 .topnav::before{
     content:'';
     position:absolute;
@@ -101,13 +105,13 @@ button:hover{
     height:2px;
     background:linear-gradient(to left,#46c443 0,#1976bc 100%) left bottom #fff no-repeat;
 }
-
+*/
 
 .titlebar{
     height:36px;
     width:100%;
-    color:white;
-    background: #1976bc;
+    /*color:white;
+    background: #1976bc;*/
     position:relative;
     display:flex;
     justify-content: space-between;
@@ -134,15 +138,28 @@ button:hover{
     display: inline;
 }
 
-
 #update-notifications{
     position: relative;
+    background: #EEFFF8;
+    margin: 0px 15px 15px 15px;
+}
+
+#update-notifications .window-close-button{
+    top: 3px;
 }
 
 #notification-inner{
     height: 32px;
     box-sizing: border-box;
     padding: 5px;
+}
+
+#notification-inner > *{
+    vertical-align: middle;
+}
+
+#notification-inner > span{
+    padding-right: 10px;
 }
 
 .menubar{
@@ -176,6 +193,8 @@ button:hover{
     flex-shrink:99;
     display: flex;
     align-items: center;
+    gap: 10px;
+    padding: 5px;
 }
 
 .floatbardiv{
@@ -536,8 +555,16 @@ button:hover{
 }
 
 .home-menu-container{
-    padding:70px;
+    padding:40px;
     background:white;
+    min-height: 100%;
+    box-sizing: border-box;
+    padding-left: 100px;
+    padding-right: 100px;
+    flex-direction: column;
+    display: flex;
+    gap: 50px;
+    align-items: center;
 }
 
 .home-menu-container hr{
@@ -550,21 +577,24 @@ button:hover{
     flex-wrap:wrap;
 }
 
+
 .home-item{
     border-radius:10px;
     border:1px solid lightgrey;
     padding:10px;
     margin-right:10px;
-    width:300px;
+    width: fit-content;
+    max-width: 854px;
 }
 
-.home-item a{
-    display:block;
-    width:100%;
+.home-title-row{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
 }
 
-.home-item h4{
-    text-decoration: underline;
+.home-item .home-item-title{
+    font-size: 28px;
 }
 
 .home-item-icon-container{
@@ -606,7 +636,7 @@ button:hover{
 }
 
 .home-tabs .ui-tabs-active{
-    background:#1976bc;
+    background:#04ba74;
 }
 
 
@@ -632,7 +662,7 @@ button:hover{
 
 .menu-create{
     padding:8px;
-    background:#1976bc;
+    background:#04ba74;
     color:white;
     display:block;
     border-radius:5px;
@@ -693,12 +723,12 @@ button:hover{
 
 .menu-grid{
     display:flex;
+    gap: 10px;
     flex-wrap:wrap;
 }
 
 
 .menu-grid > .workflow-for-menu{
-    margin-right:10px;
     width:400px;
 }
 
@@ -707,7 +737,6 @@ button:hover{
     background-color:white;
     margin-bottom:8px;
     padding:10px;
-    color:#1976bc;
     border-radius:10px;
     border:1px solid lightgrey;
     max-width:600px;
@@ -722,6 +751,11 @@ button:hover{
 .workflow-buttons-row{
     display: flex;
     gap: 5px;
+}
+
+.workflow-buttons-row .workflow-created{
+    flex-grow: 2;
+    text-align: right;
 }
 
 .workflow-for-menu .workflow-toggle-favourite{
@@ -810,9 +844,9 @@ button:hover{
     font-size:16px;
     margin-bottom:6px;
     flex-grow:1;
-    color:#1976bc;
     white-space:normal;
     text-decoration: none;
+    color: #444444;
 }
 
 .workflow-buttons{
@@ -940,6 +974,12 @@ button:hover{
     box-sizing: border-box;
 }
 
+.project-header-top-line{
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
 .project-header h4{
     color: #444444;
 }
@@ -1016,7 +1056,7 @@ button:hover{
 
 .explore-menu input:checked+label.input{
     background:#e8f1f8;
-    border:1px solid #1976bc;
+    border:1px solid #04ba74;
 }
 
 .explore-menu .explore-preview{
@@ -1041,7 +1081,7 @@ button:hover{
 }
 
 .active-page-button{
-    background:#1976bc;
+    background:#04ba74;
     color:white;
 }
 
@@ -1408,7 +1448,7 @@ text {
 .splash-image-wrapper div{
     padding:10px;
     font-size:20px;
-    color:#1976bc;
+    color:#04ba74;
     white-space:nowrap;
 }
 

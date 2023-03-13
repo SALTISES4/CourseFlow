@@ -112,7 +112,7 @@
 
 
 
-  const user_id = {{ user.id |default:1}};
+  const user_id = {{ user.id |default:0}};
   const workflow_model_id = {{ object.id }};
   const workflow_type = "{{ object.type }}";
   const user_name = "{{ user.username |default:""}}";

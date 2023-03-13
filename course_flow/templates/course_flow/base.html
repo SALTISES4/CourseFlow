@@ -188,7 +188,7 @@
           <span class="material-symbols-rounded">calendar_month</span>
           <div>{% trans 'My Classrooms' %}</div>
         </a>
-        {% if user|has_group:"Teacher" %}
+        <!-- {% if user|has_group:"Teacher" %}
         <a id="panel-my-templates" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-templates' %}">
           <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
           <div>{% trans 'My Templates' %}</div>
@@ -197,7 +197,7 @@
           <span class="material-symbols-rounded">folder_shared</span>
           <div>{% trans 'Shared With Me' %}</div>
         </a>
-        {% endif %}
+        {% endif %} -->
 
         {% if user|has_group:"Teacher" %}
         <hr>
@@ -242,7 +242,7 @@
               {% if user|has_group:"Teacher" %}
               <div id="create-options">
                 <div class="hover-shade">
-                  <span class="material-symbols-rounded">add_circle</span>
+                  <span class="material-symbols-rounded filled">add_circle</span>
                 </div>
                 <div id="create-links" class="create-dropdown">
                   <a id="project-create" class="hover-shade" href="{% url 'course_flow:project-create' %}">{% trans 'Project' %}</a>
@@ -255,7 +255,7 @@
               {% if user.username %}
               <div id="account-options">
                 <div class="hover-shade">
-                  <span class="material-symbols-rounded">account_circle</span>
+                  <span class="material-symbols-rounded filled">account_circle</span>
                 </div>
                 <div id="account-links" class="create-dropdown">
                   <a id="profile" class="hover-shade" href="{% url 'course_flow:user-update' %}">{% trans 'Profile' %}</a>
@@ -375,6 +375,7 @@
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
       get_library: "{% url 'course_flow:get-library' %}",
+      get_home: "{% url 'course_flow:get-home' %}",
       import: "{% url 'course_flow:import' %}",
       get_public_workflow_data: "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
       get_public_workflow_parent_data: "{% url 'course_flow:get-public-workflow-parent-data' pk='0' %}",
@@ -398,6 +399,7 @@
         workflow:"{% url 'course_flow:workflow-public' pk='0'%}"
     };
     const home_path = "{% url 'course_flow:home' %}"
+    const my_library_path = "{% url 'course_flow:my-library' %}"
     const registration_path = "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}";
 
     $("#logout").on("click",()=>{
@@ -511,10 +513,11 @@
     if(update_notifications.title && update_notifications.id != localStorage.getItem("last_hidden_notification")){
       $("#update-notifications").html(
         "<div id='notification-inner'>"+
+          "<span class='material-symbols-rounded filled'>campaign</span>"+
           update_notifications.title+
         "</div>"+
         "<div id='close-notification' class='window-close-button'>"+
-          "<img src='{% static 'course_flow/img/images_svg/close.svg' %}'/>"+
+          "<span class='material-symbols-rounded green'>close</span>"+
         "</div>"
       );
     }

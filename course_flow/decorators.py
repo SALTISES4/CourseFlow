@@ -80,10 +80,7 @@ def is_owner(model):
 
             try:
                 object_type = get_model_from_str(model)
-                if hasattr(object_type.objects, "get_subclass"):
-                    object = object_type.objects.get_subclass(pk=pk)
-                else:
-                    object = object_type.objects.get(pk=pk)
+                object = object_type.objects.get(pk=pk)
             except ObjectDoesNotExist:
                 return HttpResponseNotFound()
 
@@ -99,8 +96,6 @@ def is_owner(model):
 
 
 def check_object_permission(instance, user, permission):
-    if hasattr(instance, "get_subclass"):
-        instance = instance.get_subclass()
     if instance.author == user:
         return True
     if permission == ObjectPermission.PERMISSION_VIEW:
@@ -157,8 +152,6 @@ def check_special_case_delete_permission(model_data, user):
     if model_data["model"] == "project":
         return instance.author == user
     else:
-        if hasattr(instance, "get_subclass"):
-            instance = instance.get_subclass()
         if instance.get_project() is None:
             return instance.author == user
         return instance.author == user or instance.get_project().author == user
@@ -578,8 +571,6 @@ def get_enrollment_objects(model, request, **kwargs):
 
 
 def check_object_enrollment(instance, user, role):
-    if hasattr(instance, "get_subclass"):
-        instance = instance.get_subclass()
     if instance.type == "liveproject":
         liveproject = instance
     elif instance.type == "project":

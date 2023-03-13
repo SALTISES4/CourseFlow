@@ -2258,18 +2258,42 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
 def get_library(request: HttpRequest) -> HttpResponse:
     user = request.user
     last_time = time.time()
-    all_projects = Project.objects.filter(user_permissions__user=user)
-    print(all_projects)
-    print(all_projects.count())
-    print(all_projects.distinct())
-    print(all_projects.distinct().count())
-    perms = Project.objects.get(id=1).user_permissions.filter(user=user)
-    print([perm.permission_type for perm in perms])
+    all_projects = list(Project.objects.filter(user_permissions__user=user))
+    all_projects += list(
+        Workflow.objects.filter(user_permissions__user=user, is_strategy=True)
+    )
     last_time = benchmark("got all the projects", last_time)
     projects_serialized = InfoBoxSerializer(
         all_projects, many=True, context={"user": user}
     ).data
     return JsonResponse({"data_package": projects_serialized})
+
+
+@login_required
+def get_home(request: HttpRequest) -> HttpResponse:
+    user = request.user
+    projects = [
+        op.content_object
+        for op in ObjectPermission.objects.filter(
+            project__deleted=False, user=user
+        ).order_by("-last_viewed")[:2]
+    ]
+    projects_serialized = InfoBoxSerializer(
+        projects, many=True, context={"user": user}
+    ).data
+    favourites = [
+        fav.content_object
+        for fav in Favourite.objects.filter(user=user).filter(
+            Q(workflow__deleted=False, workflow__project__deleted=False)
+            | Q(project__deleted=False)
+        )
+    ]
+    favourites_serialized = InfoBoxSerializer(
+        favourites, many=True, context={"user": user}
+    ).data
+    return JsonResponse(
+        {"projects": projects_serialized, "favourites": favourites_serialized}
+    )
 
 
 @user_can_view("projectPk")
@@ -3879,10 +3903,7 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=workflow_id)
     strategy = get_model_from_str(strategy_type).objects.get(pk=strategy_id)
     try:
-        if (
-            strategy.get_subclass().author == request.user
-            or strategy.published
-        ):
+        if strategy.author == request.user or strategy.published:
             # first, check compatibility between types (activity/course)
             if strategy.type != workflow.type:
                 raise ValidationError("Mismatch between types")
@@ -4455,8 +4476,9 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     content_type = ContentType.objects.get(model=object_type)
     this_object = get_model_from_str(object_type).objects.get(id=object_id)
     published = this_object.published
-    public_view = False 
-    if object_type=="workflow": public_view = this_object.public_view
+    public_view = False
+    if object_type == "workflow":
+        public_view = this_object.public_view
     try:
         editors = set()
         for object_permission in ObjectPermission.objects.filter(
@@ -5240,7 +5262,6 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                 Workflow.objects.filter(linked_nodes__week=model)
             )
         elif object_type in ["workflow", "activity", "course", "program"]:
-            workflow = None
             linked_workflows = list(
                 Workflow.objects.filter(
                     linked_nodes__week__workflow__id=model.id
@@ -5396,7 +5417,6 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                 Workflow.objects.filter(linked_nodes__week=model)
             )
         elif object_type in ["workflow", "activity", "course", "program"]:
-            workflow = None
             linked_workflows = list(
                 Workflow.objects.filter(
                     linked_nodes__week__workflow__id=model.id
@@ -5462,6 +5482,8 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
     except (ProtectedError, ObjectDoesNotExist):
         return JsonResponse({"action": "error"})
 
+    print("deleted object")
+    print(workflow)
     if workflow is not None:
         action = actions.deleteSelfSoftAction(
             object_id, object_type, parent_id, extra_data

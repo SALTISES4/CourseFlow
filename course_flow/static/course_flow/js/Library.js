@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {getLibrary, getWorkflowsForProject, searchAllObjects, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive} from "./PostFunctions";
+import {getLibrary, getHome, getWorkflowsForProject, searchAllObjects, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive} from "./PostFunctions";
 import * as Constants from "./Constants";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./ComponentJSON";
 import {MessageBox} from "./MenuComponents";
@@ -18,22 +18,89 @@ export class LibraryMenu extends React.Component{
     constructor(props){
         super(props);
         this.state={};
+        this.createDiv=React.createRef();
     }
 
     render(){
         return (
             <div class="project-menu">
+                {this.getCreate()}
                 <WorkflowFilter renderer={this.props.renderer} workflows={this.state.project_data} context="library"/>
             </div>
         );
     }
 
+    getCreate(){
+        let create;
+        if(!this.props.renderer.read_only)create = (
+            <div class="hover-shade" id="create-project-button" title={gettext("Create project or strategy")} ref={this.createDiv}>
+                <span class="material-symbols-rounded filled green">add_circle</span>
+                <div id="create-links-project" class="create-dropdown">
+                    <a id="project-create-library" href={create_path.project} class="hover-shade">{gettext("New project")}</a>
+                    <hr/>
+                    <a id="activity-strategy-create" href={create_path.activity_strategy} class="hover-shade">{gettext("New activity strategy")}</a>
+                    <a id="course-strategy-create-project" href={create_path.course_strategy} class="hover-shade">{gettext("New course strategy")}</a>
+                </div>
+            </div>
+        )
+        return create;
+    }
 
     componentDidMount(){
         let component = this;
         getLibrary(
             (data)=>{
                 component.setState({project_data:data.data_package});
+            }
+        );
+        makeDropdown(this.createDiv.current)
+    }
+}
+
+export class HomeMenu extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={projects:[],favourites:[]};
+    }
+
+    render(){
+        let projects = this.state.projects.map(project=>
+            <WorkflowForMenu workflow_data={project} renderer={this.props.renderer}/>
+        );
+        let favourites =  this.state.favourites.map(project=>
+            <WorkflowForMenu workflow_data={project} renderer={this.props.renderer}/>
+        );
+
+        return (
+            <div class="home-menu-container">
+                <div class="home-item">
+                    <div class="home-title-row">
+                        <div class="home-item-title">{gettext("Recent Projects")}</div>
+                        <a class="collapsed-text-show-more" href={my_library_path}>{gettext("see all")}</a>
+                    </div>
+                    <div class="menu-grid">
+                        {projects}
+                    </div>
+                </div>
+                <div class="home-item">
+                    <div class="home-title-row">
+                        <div class="home-item-title">{gettext("Favourites")}</div>
+                        <a class="collapsed-text-show-more" href={my_library_path+"?favourites=true"}>{gettext("see all")}</a>
+                    </div>
+                    <div class="menu-grid">
+                        {favourites}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    componentDidMount(){
+        let component = this;
+        getHome(
+            (data)=>{
+                console.log(data);
+                component.setState({projects:data.projects,favourites:data.favourites});
             }
         );
     }
@@ -50,7 +117,6 @@ export class ProjectMenu extends LibraryMenu{
     constructor(props){
         super(props);
         this.state={data:props.data};
-        this.createDiv = React.createRef();
     }
 
     render(){
@@ -117,6 +183,7 @@ export class ProjectMenu extends LibraryMenu{
     }
 
     getExportButton(){
+        if(!user_id)return null;
         let export_button = (
             <div id="export-button" class="hover-shade" onClick={()=>renderMessageBox(this.state.data,"export",closeMessageBox)}>
                 <div>{gettext("Export")}</div>
@@ -126,6 +193,7 @@ export class ProjectMenu extends LibraryMenu{
     }
 
     getCopyButton(){
+        if(!user_id)return null;
         let export_button = (
             <div id="copy-button" class="hover-shade" onClick={()=>{ 
                 let loader = this.props.renderer.tiny_loader;
@@ -219,7 +287,7 @@ export class ProjectMenu extends LibraryMenu{
                 </div>
             );
         }
-        users.push(
+        if(!this.props.renderer.read_only)users.push(
             <div class="user-name collapsed-text-show-more" onClick={this.openShareMenu.bind(this)}>
                 {gettext("Modify")}
             </div>
@@ -230,7 +298,7 @@ export class ProjectMenu extends LibraryMenu{
 
     getEdit(){
         let edit;
-        if(this.props.data.author_id==user_id)edit = <div class="hover-shade" id="edit-project-button" title={gettext("Edit Project")} onClick={this.openEditMenu.bind(this)}><span class="material-symbols-rounded filled">edit</span></div>
+        if(!this.props.renderer.read_only)edit = <div class="hover-shade" id="edit-project-button" title={gettext("Edit Project")} onClick={this.openEditMenu.bind(this)}><span class="material-symbols-rounded filled">edit</span></div>
         return edit;
     }
 
@@ -240,13 +308,14 @@ export class ProjectMenu extends LibraryMenu{
     }
 
     getCreate(){
+        if(this.props.read_only)return null;
         let create;
         if(!this.props.renderer.read_only)create = (
             <div class="hover-shade" id="create-project-button" title={gettext("Create workflow")} ref={this.createDiv}>
                 <span class="material-symbols-rounded filled">add_circle</span>
                 <div id="create-links-project" class="create-dropdown">
-                    <a id="activity-create-project" href={create_path.activity} class="hover-shade">{gettext("New activity")}</a>
-                    <a id="course-create-project" href={create_path.course} class="hover-shade">{gettext("New course")}</a>
+                    <a id="activity-create-project" href={create_path.activity_strategy} class="hover-shade">{gettext("New activity")}</a>
+                    <a id="course-create-project" href={create_path.course_strategy} class="hover-shade">{gettext("New course")}</a>
                     <a id="program-create-project" href={create_path.program} class="hover-shade">{gettext("New program")}</a>
                 </div>
             </div>
@@ -301,6 +370,11 @@ export class WorkflowFilter extends Component{
             {name:"created_on",display:gettext("Creation date")},
             {name:"type",display:gettext("Type")},
         ];
+        let url_params = new URL(window.location.href).searchParams;
+        console.log("url params")
+        console.log(url_params.get("favourites"))
+        console.log(this.filters.findIndex(elem=>elem.name=="favourite"));
+        if(url_params.get("favourites")=="true");this.state.active_filter=this.filters.findIndex(elem=>elem.name=="favourite");
         if(this.props.context=="library")this.search_without=true;
         this.filterDOM=React.createRef();
         this.searchDOM=React.createRef();
@@ -313,7 +387,7 @@ export class WorkflowFilter extends Component{
         else{
             workflows=this.sortWorkflows(this.filterWorkflows(this.state.workflows));
             workflows = workflows.map(workflow=>
-                <WorkflowForMenu workflow_data={workflow} context={this.props.context}/>
+                <WorkflowForMenu key={workflow.id} workflow_data={workflow} context={this.props.context}/>
             );
         } 
         let search_results=this.state.search_results.map(workflow=>
@@ -367,6 +441,7 @@ export class WorkflowFilter extends Component{
         if(sort=="last_viewed"){
             workflows = workflows.sort((a,b)=>(""+a.object_permission[sort]).localeCompare(b.object_permission[sort]));
             if(!this.state.reversed)return workflows.reverse();
+            return workflows;
         }
         else workflows = workflows.sort((a,b)=>(""+a[sort]).localeCompare(b[sort]));
         if(this.state.reversed)return workflows.reverse();
@@ -574,12 +649,17 @@ export class WorkflowForMenu extends Component{
             <a class="workflow-live-classroom unset" href={
                 update_path["liveproject"].replace("0",this.props.workflow_data.id)
             }>
-                <span class="material-symbols-rounded filled hover-shade" title={gettext("Live Classroom")}>bookmark_added</span>
+                <span class="material-symbols-rounded green filled hover-shade" title={gettext("Live Classroom")}>bookmark_added</span>
             </a>
+        )
+        let workflows;
+        if(this.props.workflow_data.type=="project")workflows = (
+            <div class="workflow-created">{this.props.workflow_data.workflow_count+" "+gettext("workflows")}</div>
         )
         return (
             <div class="workflow-buttons-row">
                 {buttons}
+                {workflows}
             </div>
         )
     }

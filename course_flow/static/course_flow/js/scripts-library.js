@@ -1,7 +1,7 @@
 import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as React from "react";
-import {LibraryMenu, ProjectMenu} from "./Library";
+import {LibraryMenu, ProjectMenu, HomeMenu} from "./Library";
 import * as Constants from "./Constants";
 
 
@@ -55,6 +55,27 @@ export class ProjectRenderer{
     }
 }
 
+
+export class HomeRenderer{
+    constructor(){
+    }
+    
+    render(container){
+        this.container=container;
+        this.tiny_loader = new renderers.TinyLoader($("body")[0]);
+        
+        reactDom.render(
+            this.getContents(),
+            container[0]
+        );
+    }
+
+    getContents(){
+        return (
+            <HomeMenu renderer={this}/>
+        )
+    }
+}
 
 
 

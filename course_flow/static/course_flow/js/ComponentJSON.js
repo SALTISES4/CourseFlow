@@ -4,7 +4,7 @@ import * as reactDom from "react-dom";
 import * as Constants from "./Constants";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 import {reloadCommentsAction} from "./Reducers";
-import {toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
+import {restoreSelf, toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -228,13 +228,24 @@ export class EditableComponent extends Component{
                         </div>
                     }
                     {sets}
-                    {(!read_only && !no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && 
-                        [<h4>{gettext("Delete")}:</h4>,
-                        this.addDeleteSelf(data)]
-                    }
+                    {this.getDeleteForSidebar(read_only,no_delete,type,data)}
                 </div>
             ,$("#edit-menu")[0])
         }
+    }
+
+    getDeleteForSidebar(read_only,no_delete,type,data){
+        if(!read_only && !no_delete && (type !="outcome" || data.depth>0)){
+            if(type == "workflow" && data.deleted) return[
+                <h4>{gettext("Restore")}:</h4>,
+                this.addRestoreSelf(data)
+            ]
+            else return[
+                <h4>{gettext("Delete")}:</h4>,
+                this.addDeleteSelf(data)
+            ]
+        }
+
     }
     
     inputChanged(field,evt){
@@ -317,6 +328,24 @@ export class EditableComponentWithComments extends EditableComponent{
 
 //Extends the react component to add a few features that are used in a large number of components
 export class EditableComponentWithActions extends EditableComponentWithComments{
+
+    //Adds a button that restores the item.
+    addRestoreSelf(data,alt_icon){
+        let icon=alt_icon || "restore.svg";
+        return (
+            <ActionButton button_icon={icon} button_class="delete-self-button" titletext={gettext("Restore")} handleClick={this.restoreSelf.bind(this,data)}/>
+        );
+    }
+    
+    restoreSelf(data){
+        var props = this.props;
+        props.renderer.tiny_loader.startLoad();
+        restoreSelf(data.id,Constants.object_dictionary[this.objectType],
+            (response_data)=>{
+                props.renderer.tiny_loader.endLoad();
+            }
+        );
+    }
 
     //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDeleteSelf(data,alt_icon){
