@@ -164,6 +164,9 @@ export class WorkflowRenderer{
         }catch(err){
             this.user_role=Constants.role_keys["none"];
         }
+        console.log("CREATING WORKFLOW RENDERER");
+        console.log(this.user_permission);
+        console.log(Constants.permission_keys["comment"])
         this.public_view=public_view;
         this.read_only=true;
         if(this.public_view)this.always_static=true;
@@ -300,12 +303,14 @@ export class WorkflowRenderer{
                 );
             },50);
         }else{
-            reactDom.render(
-                <Provider store = {this.store}>
-                    <WorkflowBaseView view_type={view_type} renderer={this}/>
-                </Provider>,
-                container[0]
-            );
+            setTimeout(()=>{
+                reactDom.render(
+                    <Provider store = {this.store}>
+                        <WorkflowBaseView view_type={view_type} renderer={this}/>
+                    </Provider>,
+                    container[0]
+                );
+            },50)
         }
         
     }

@@ -24,7 +24,14 @@ export class LibraryMenu extends React.Component{
     render(){
         return (
             <div class="project-menu">
-                {this.getCreate()}
+                {reactDom.createPortal(
+                    this.getCreate(),
+                    $("#visible-icons")[0]
+                )}
+                {reactDom.createPortal(
+                    this.getOverflowLinks(),
+                    $("#overflow-links")[0]
+                )}
                 <WorkflowFilter renderer={this.props.renderer} workflows={this.state.project_data} context="library"/>
             </div>
         );
@@ -44,6 +51,16 @@ export class LibraryMenu extends React.Component{
             </div>
         )
         return create;
+    }
+
+    getOverflowLinks(){
+        let overflow_links = [];
+        overflow_links.push(
+            <a id="import-old" class="hover-shade" href={get_paths.import}>
+                {gettext("Import from old CourseFlow")}
+            </a>
+        );
+        return overflow_links;
     }
 
     componentDidMount(){
@@ -161,7 +178,7 @@ export class ProjectMenu extends LibraryMenu{
         }
 
         let overflow_links=[liveproject];
-        overflow_links.push(<hr/>);
+        if(data.author_id==user_id)overflow_links.push(<hr/>);
         overflow_links.push(this.getExportButton());
         overflow_links.push(this.getCopyButton());
         overflow_links.push(<hr/>);
@@ -314,8 +331,8 @@ export class ProjectMenu extends LibraryMenu{
             <div class="hover-shade" id="create-project-button" title={gettext("Create workflow")} ref={this.createDiv}>
                 <span class="material-symbols-rounded filled">add_circle</span>
                 <div id="create-links-project" class="create-dropdown">
-                    <a id="activity-create-project" href={create_path.activity_strategy} class="hover-shade">{gettext("New activity")}</a>
-                    <a id="course-create-project" href={create_path.course_strategy} class="hover-shade">{gettext("New course")}</a>
+                    <a id="activity-create-project" href={create_path.activity} class="hover-shade">{gettext("New activity")}</a>
+                    <a id="course-create-project" href={create_path.course} class="hover-shade">{gettext("New course")}</a>
                     <a id="program-create-project" href={create_path.program} class="hover-shade">{gettext("New program")}</a>
                 </div>
             </div>
@@ -374,7 +391,7 @@ export class WorkflowFilter extends Component{
         console.log("url params")
         console.log(url_params.get("favourites"))
         console.log(this.filters.findIndex(elem=>elem.name=="favourite"));
-        if(url_params.get("favourites")=="true");this.state.active_filter=this.filters.findIndex(elem=>elem.name=="favourite");
+        if(url_params.get("favourites")=="true")this.state.active_filter=this.filters.findIndex(elem=>elem.name=="favourite");
         if(this.props.context=="library")this.search_without=true;
         this.filterDOM=React.createRef();
         this.searchDOM=React.createRef();

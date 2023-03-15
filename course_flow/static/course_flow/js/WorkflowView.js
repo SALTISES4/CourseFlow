@@ -53,7 +53,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 <div class = "workflow-container">
                     {this.getWorkflowContent()}
                 </div>
-                {!renderer.read_only &&
+                {
                     <NodeBar view_type={renderer.view_type} renderer={this.props.renderer}/>
                 }
                 {!data.is_strategy &&
@@ -77,13 +77,18 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
 
     componentDidMount(){
         this.getUserData();
+        this.updateTabs();
     }
 
     componentDidUpdate(prev_props){
-        if(prev_props.view_type!=this.props.view_type)this.updateTabs();
+        console.log("component updated");
+        console.log(prev_props.view_type);
+        console.log(this.props.view_type);
+        //this.updateTabs();
     }
                     
     updateTabs(){
+        console.log("updating tabs");
         //If the view type has changed, enable only appropriate tabs, and change the selection to none
         this.props.renderer.selection_manager.changeSelection(null,null);
         let disabled_tabs=[];
@@ -94,11 +99,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
             if(this.allowed_tabs.length==0)$("#sidebar").tabs({active:false});
             else $("#sidebar").tabs({active:this.allowed_tabs[0]});
         }
+        if(this.props.renderer.read_only)disabled_tabs.push(5);
         $("#sidebar").tabs({disabled:disabled_tabs});
     }
                      
     changeView(type){
-        this.props.renderer.selection_manager.changeSelection(null,null);
+        //this.props.renderer.selection_manager.changeSelection(null,null);
         this.props.renderer.render(this.props.renderer.container,type);
     }
 
@@ -146,11 +152,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let editors = this.state.users.editors;
         let commenters = this.state.users.commentors;
         let viewers = this.state.users.viewers;
-        if(!author)return null;
-        let users = [
+        let users = []
+        if(author)users.push(
             <div class="user-name">
                 {Constants.getUserDisplay(author)+" ("+gettext("owner")+")"}
-            </div>,
+            </div>
+        )
+        users.push([
             editors.filter(user=>user.id!=author.id).map(user=>
                 <div class="user-name">
                     {Constants.getUserDisplay(user)+" ("+gettext("edit")+")"}
@@ -166,7 +174,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                     {Constants.getUserDisplay(user)+" ("+gettext("view")+")"}
                 </div>
             ),
-        ]
+        ]);
         if(this.state.users.published){
             users.push(
                 <div class="user-name">
@@ -174,7 +182,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 </div>
             );
         }
-        users.push(
+        if(!this.props.renderer.read_only)users.push(
             <div class="user-name collapsed-text-show-more" onClick={this.openShareMenu.bind(this)}>
                 {gettext("Modify")}
             </div>
@@ -185,7 +193,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
 
     getEdit(){
         let edit;
-        if(this.props.data.author_id==user_id)edit = <div class="hover-shade" id="edit-project-button" title={gettext("Edit Workflow")} onClick={this.openEditMenu.bind(this)}><span class="material-symbols-rounded filled">edit</span></div>
+        if(!this.props.renderer.read_only)edit = <div class="hover-shade" id="edit-project-button" title={gettext("Edit Workflow")} onClick={this.openEditMenu.bind(this)}><span class="material-symbols-rounded filled">edit</span></div>
         return edit;
     }
 
@@ -222,7 +230,6 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let overflow_links=[];
         overflow_links.push(this.getExportButton());
         overflow_links.push(this.getCopyButton());
-        overflow_links.push(<hr/>);
         overflow_links.push(this.getImportButton());
         return overflow_links;
     }
@@ -271,7 +278,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         if(this.props.renderer.read_only)return null;
         let disabled;
         if(this.props.data.importing)disabled=true;
-        let imports=[];
+        let imports=[<hr/>];
         this.pushImport(imports,"outcomes",gettext("Import Outcomes"),disabled);
         this.pushImport(imports,"nodes",gettext("Import Nodes"),disabled);
         
@@ -297,10 +304,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let renderer = this.props.renderer;
         let data = this.props.data;
         let return_links = [];
+        console.log(renderer.project);
         if(renderer.project && !renderer.is_student && !renderer.public_view){
+            console.log("adding return to project")
             return_links.push(
                 <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
-                    <span class="material-symbols-rounded">arrow_back_ios</span>
+                    <span class="material-symbols-rounded green">arrow_back_ios</span>
                     <div>{gettext("Return to project")}</div>
                 </a>
             );
@@ -308,15 +317,15 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         if(renderer.public_view && renderer.can_view){
             return_links.push(
                 <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
-                    <span class="material-symbols-rounded">arrow_back_ios</span>
+                    <span class="material-symbols-rounded green">arrow_back_ios</span>
                     <div>{gettext("Return to Editable Workflow")}</div>
                 </a>
             )
         }
-        if(renderer.project && (renderer.is_teacher || renderer.is_student)){
+        if(!renderer.public_view && renderer.project && (renderer.is_teacher || renderer.is_student)){
             return_links.push(
                 <a class="hover-shade no-underline" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
-                    <span class="material-symbols-rounded">arrow_back_ios</span>
+                    <span class="material-symbols-rounded green">arrow_back_ios</span>
                     <div>{gettext("Return to classroom (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
                 </a>
             );
@@ -350,7 +359,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
             workflow_content=(
                 <OutcomeEditView renderer={renderer}/>
             );
-            if(data.type=="program")this.allowed_tabs=[];
+            if(data.type=="program")this.allowed_tabs=[4];
             else this.allowed_tabs=[2,4];
         }
         else if(renderer.view_type=="alignmentanalysis"){
@@ -935,18 +944,21 @@ class NodeBarUnconnected extends React.Component{
         if(this.props.renderer.view_type=="workflowview")nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
             <NodeBarWeekWorkflow key={weekworkflow} order={data.weekworkflow_set} renderer={this.props.renderer} objectID={weekworkflow}/>
         );
-        var sort_type;
         
+        let nodebar_nodes;
+        if(!this.props.renderer.read_only)nodebar_nodes= [
+            <h4 class="drag-and-drop">{gettext("Nodes")}:</h4>,
+            <div class="node-bar-column-block">
+                {nodebarcolumnworkflows}
+            </div>,
+            <hr/>
+        ];
         
         
         
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
-                <h4 class="drag-and-drop">{gettext("Nodes")}:</h4>
-                <div class="node-bar-column-block">
-                    {nodebarcolumnworkflows}
-                </div>
-                <hr/>
+                {nodebar_nodes}
                 <h4>{gettext("Jump To")}:</h4>
                 <div class="node-bar-week-block">
                     {nodebarweekworkflows}
@@ -958,7 +970,6 @@ class NodeBarUnconnected extends React.Component{
                         <img class="hover-shade" src={iconpath+"plus.svg"} onClick={this.expandAll.bind(this)}/><img class="hover-shade" src={iconpath+"minus.svg"} onClick={this.collapseAll.bind(this)}/>
                     </div>
                 </div>
-                {sort_type}
             </div>
         ,$("#node-bar")[0]);
     }

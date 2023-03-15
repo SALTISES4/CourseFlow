@@ -237,6 +237,9 @@ def get_classrooms_for_student(user):
 
 
 def get_user_permission(obj, user):
+    if obj.type in ["workflow", "course", "activity", "program"]:
+        obj = models.Workflow.objects.get(pk=obj.pk)
+
     if user is None or not user.is_authenticated:
         return models.ObjectPermission.PERMISSION_NONE
     if obj.author == user:

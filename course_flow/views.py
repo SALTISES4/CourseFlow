@@ -247,11 +247,12 @@ class UserEnrolledAsTeacherMixin(UserPassesTestMixin):
 
 class UserCanEditMixin(UserPassesTestMixin):
     def test_func(self):
+        view_object = self.get_object()
         if Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
             check_object_permission(
-                self.get_object(),
+                view_object,
                 self.request.user,
                 ObjectPermission.PERMISSION_EDIT,
             )
@@ -1786,10 +1787,6 @@ class WorkflowDetailView(
     def get_queryset(self):
         return self.model.objects.select_subclasses()
 
-    def get_object(self):
-        workflow = super().get_object()
-        return Workflow.objects.get_subclass(pk=workflow.pk)
-
     def get_success_url(self):
         return reverse(
             "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
@@ -1814,10 +1811,6 @@ class WorkflowPublicDetailView(ContentPublicViewMixin, DetailView):
 
     def get_queryset(self):
         return self.model.objects.select_subclasses()
-
-    def get_object(self):
-        workflow = super().get_object()
-        return Workflow.objects.get_subclass(pk=workflow.pk)
 
     def get_success_url(self):
         return reverse(
@@ -2396,7 +2389,6 @@ def get_project_data(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "data_package": data_package,
             "project_data": project_data,
         }
     )
@@ -4416,7 +4408,7 @@ def set_permission(request: HttpRequest) -> HttpResponse:
                         "error": _("This user's role cannot be changed."),
                     }
                 )
-                response.status_code = 403
+                # response.status_code = 403
                 return response
 
         # if permission_type == ObjectPermission.PERMISSION_STUDENT:
@@ -4467,7 +4459,7 @@ def set_permission(request: HttpRequest) -> HttpResponse:
     return JsonResponse(response)
 
 
-@user_can_edit(False)
+@user_can_view(False)
 def get_users_for_object(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
@@ -4480,6 +4472,15 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     if object_type == "workflow":
         public_view = this_object.public_view
     try:
+        this_object = get_model_from_str(object_type).objects.get(id=object_id)
+        cannot_change = []
+        if this_object.author is not None:
+            cannot_change = [this_object.author.id]
+            author = UserSerializer(this_object.author).data
+            if object_type == "workflow" and not this_object.is_strategy:
+                cannot_change.append(this_object.get_project().author.id)
+        else:
+            author = None
         editors = set()
         for object_permission in ObjectPermission.objects.filter(
             content_type=content_type,
@@ -4514,17 +4515,14 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "author": UserSerializer(
-                get_model_from_str(object_type)
-                .objects.get(id=object_id)
-                .author
-            ).data,
+            "author": author,
             "viewers": UserSerializer(viewers, many=True).data,
             "commentors": UserSerializer(commentors, many=True).data,
             "editors": UserSerializer(editors, many=True).data,
             "students": UserSerializer(students, many=True).data,
             "published": published,
             "public_view": public_view,
+            "cannot_change": cannot_change,
         }
     )
 
@@ -6367,7 +6365,7 @@ def set_liveproject_role(request: HttpRequest) -> HttpResponse:
                     "error": _("This user's role cannot be changed."),
                 }
             )
-            response.status_code = 403
+            # response.status_code = 403
             return response
         if (
             role_type == LiveProjectUser.ROLE_TEACHER
@@ -6382,7 +6380,7 @@ def set_liveproject_role(request: HttpRequest) -> HttpResponse:
                     ),
                 }
             )
-            response.status_code = 403
+            # response.status_code = 403
             return response
 
         LiveProjectUser.objects.create(

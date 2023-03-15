@@ -9,7 +9,7 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div class="home-menu-container">
+<div class="saltise-menu-container">
     <h1>CourseFlow Analytics</h1>
     <hr>
     <div id="tabs" class="home-tabs">
@@ -55,7 +55,7 @@
 
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
-  $(".home-menu-container").detach().appendTo("#container");
+  $(".saltise-menu-container").detach().appendTo("#container");
 
   $(window).on("load",()=>{
     console.log("hello");

@@ -30,6 +30,8 @@
       course_strategy:"{% url 'course_flow:course-strategy-create' %}",
       project:"{% url 'course_flow:project-create' %}"
   }
+  
+  $(".menubar").removeClass("hidden");
 
   var library_renderer;
   const user_id = {{ user.id }};

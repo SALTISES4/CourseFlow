@@ -110,8 +110,7 @@ button:hover{
 .titlebar{
     height:36px;
     width:100%;
-    /*color:white;
-    background: #1976bc;*/
+    color:#444444;
     position:relative;
     display:flex;
     justify-content: space-between;
@@ -144,6 +143,10 @@ button:hover{
     margin: 0px 15px 15px 15px;
 }
 
+#update-notifications:empty{
+    display: none;
+}
+
 #update-notifications .window-close-button{
     top: 3px;
 }
@@ -168,6 +171,7 @@ button:hover{
     width:100%;
     font-family:'Open Sans',sans-serif;
     align-items: center;
+    background: #EEFFF8;
 }
 
 .menubar.hidden{
@@ -233,6 +237,7 @@ button:hover{
     color: #04BA74;
     gap: 8px;
 }
+
 
 
 .users-box{
@@ -509,7 +514,8 @@ button:hover{
 
 .title-image{
     padding:8px;
-    margin-bottom:40px;
+    margin-bottom:16px;
+    margin-top: 16px;
     height:36px;
 }
 
@@ -586,6 +592,7 @@ button:hover{
     width: -moz-fit-content;
     width: fit-content;
     max-width: 854px;
+    min-width: 400px;
 }
 
 .home-title-row{
@@ -660,6 +667,14 @@ button:hover{
     overflow-y:auto;
 }
 
+.saltise-menu-container{
+    height: 100%;
+    width: 100%;
+    background: white;
+    padding: 50px;
+    box-sizing: border-box;
+    overflow: auto;
+}
 
 
 .menu-create{
@@ -1060,7 +1075,7 @@ button:hover{
 }
 
 .explore-menu input:checked+label.input{
-    background:#e8f1f8;
+    background:#eefff8;
     border:1px solid #04ba74;
 }
 
@@ -1710,6 +1725,8 @@ button, input[type="submit"]{
 
 .workflow-details{
     /*padding:50px;*/
+    width: -moz-fit-content;
+    width: fit-content;
 }
 /*
 .workflow-details .workflow-for-menu{

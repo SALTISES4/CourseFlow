@@ -175,6 +175,7 @@ button, input[type="submit"]{
 
 .workflow-details{
     /*padding:50px;*/
+    width: fit-content;
 }
 /*
 .workflow-details .workflow-for-menu{

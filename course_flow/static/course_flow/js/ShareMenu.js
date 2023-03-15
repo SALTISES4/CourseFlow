@@ -9,7 +9,7 @@ export class ShareMenu extends React.Component{
     constructor(props){
         super(props);
         this.tiny_loader = new renderers.TinyLoader($("body"));
-        this.state={owner:props.data.author,edit:[],view:[],comment:[],student:[],userlist:[]}
+        this.state={owner:props.data.author,edit:[],view:[],comment:[],student:[],userlist:[],cannot_change:[]}
     }
     
     render(){
@@ -18,16 +18,16 @@ export class ShareMenu extends React.Component{
             <UserLabel user={this.state.owner} type={"owner"}/>
         );
         let editors = this.state.edit.filter(user=>user.id!=this.state.owner.id).map((user)=>
-            <UserLabel user={user} type={"edit"} permissionChange={this.setUserPermission.bind(this)}/>
+            <UserLabel user={user} type={"edit"} cannot_change={this.state.cannot_change} permissionChange={this.setUserPermission.bind(this)}/>
         );
         let viewers = this.state.view.map((user)=>
-            <UserLabel user={user} type={"view"} permissionChange={this.setUserPermission.bind(this)}/>
+            <UserLabel user={user} type={"view"} cannot_change={this.state.cannot_change} permissionChange={this.setUserPermission.bind(this)}/>
         );
         let commentors = this.state.comment.map((user)=>
-            <UserLabel user={user} type={"comment"} permissionChange={this.setUserPermission.bind(this)}/>
+            <UserLabel user={user} type={"comment"} cannot_change={this.state.cannot_change} permissionChange={this.setUserPermission.bind(this)}/>
         );
         let students = this.state.student.map((user)=>
-            <UserLabel user={user} type={"student"} permissionChange={this.setUserPermission.bind(this)}/>
+            <UserLabel user={user} type={"student"} cannot_change={this.state.cannot_change} permissionChange={this.setUserPermission.bind(this)}/>
         );
 
         let share_info;
@@ -61,7 +61,7 @@ export class ShareMenu extends React.Component{
                     </ul>
                 </div>
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
-                    <span class="material-symbols-rounded">close</span>
+                    <span class="green material-symbols-rounded">close</span>
                 </div>
             </div>
         );
@@ -198,7 +198,7 @@ export class ShareMenu extends React.Component{
     
     componentDidMount(){
         getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
-            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students,published:response.published,public_view:response.public_view});
+            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students,published:response.published,public_view:response.public_view,cannot_change:response.cannot_change});
         });
     }
     
@@ -214,11 +214,16 @@ class UserLabel extends React.Component{
     
     render(){
         let permission_select;
+        let disabled=false;
+        console.log("checking cannot change");
+        console.log(this.props.user);
+        console.log(this.props.cannot_change)
+        if(this.props.cannot_change && this.props.cannot_change.indexOf(this.props.user.id)>=0)disabled=true;
         if(this.props.type!="owner"){
             if(this.props.type=="add"){
                 permission_select = (
                     <div class="permission-select">
-                        <select ref={this.select}>
+                        <select ref={this.select} disabled={disabled}>
                             <option value="edit">{gettext("Can edit")}</option>
                             <option value="comment">{gettext("Can comment")}</option>
                             <option value="view">{gettext("Can view")}</option>
@@ -230,7 +235,7 @@ class UserLabel extends React.Component{
             }else{
                 permission_select = (
                     <div class="permission-select">
-                        <select value={this.props.type} onChange={this.onChange.bind(this)}>
+                        <select value={this.props.type} disabled={disabled} onChange={this.onChange.bind(this)}>
                             <option value="edit">{gettext("Can edit")}</option>
                             <option value="comment">{gettext("Can comment")}</option>
                             <option value="view">{gettext("Can view")}</option>

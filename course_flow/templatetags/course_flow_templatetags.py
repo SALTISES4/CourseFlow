@@ -166,15 +166,20 @@ def get_saltise_admin_workflows():
 
 
 def get_annoted_users_for_objects_by_month(type, month, year):
-
-    return models.User.objects.filter(
-        **{
+    if type in ["activity", "course", "program"]:
+        my_filter = {
+            "authored_workflows__" + type + "__created_on__month": month,
+            "authored_workflows__" + type + "__created_on__year": year,
+        }
+        annotation = "authored_workflows__" + type
+    else:
+        my_filter = {
             "authored_" + type + "__created_on__month": month,
             "authored_" + type + "__created_on__year": year,
         }
-    ).annotate(
-        num_authored=Count("authored_" + type),
-    )
+        annotation = "authored_" + type
+    result = models.User.objects.filter(**my_filter)
+    return result.annotate(num_authored=Count(annotation))
 
 
 def get_users_for_object(queryset):
@@ -206,13 +211,13 @@ def get_saltise_admin_users():
             last_month = current_month
         for month in range(first_month, last_month + 1):
             annotated_activities = get_annoted_users_for_objects_by_month(
-                "activities", month, year
+                "activity", month, year
             )
             annotated_courses = get_annoted_users_for_objects_by_month(
-                "courses", month, year
+                "course", month, year
             )
             annotated_programs = get_annoted_users_for_objects_by_month(
-                "programs", month, year
+                "program", month, year
             )
             annotated_projects = get_annoted_users_for_objects_by_month(
                 "projects", month, year
@@ -258,17 +263,17 @@ def get_saltise_admin_users():
             ),
             get_users_for_object(
                 models.User.objects.all().annotate(
-                    num_authored=Count("authored_activities")
+                    num_authored=Count("authored_workflows__activity")
                 )
             ),
             get_users_for_object(
                 models.User.objects.all().annotate(
-                    num_authored=Count("authored_courses")
+                    num_authored=Count("authored_workflows__course")
                 )
             ),
             get_users_for_object(
                 models.User.objects.all().annotate(
-                    num_authored=Count("authored_programs")
+                    num_authored=Count("authored_workflows__program")
                 )
             ),
             get_users_for_object(

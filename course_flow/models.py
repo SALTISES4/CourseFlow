@@ -131,7 +131,7 @@ class WorkflowProject(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def get_permission_objects(self):
-        return [self.project, self.workflow.get_subclass()]
+        return [self.project, self.get_workflow().get_permission_objects()[0]]
 
     class Meta:
         verbose_name = "Workflow-Project Link"
@@ -225,7 +225,7 @@ class Column(models.Model):
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
         return self.workflow_set.first()
@@ -272,7 +272,7 @@ class NodeLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
         return self.source_node.get_workflow()
@@ -330,14 +330,14 @@ class Outcome(models.Model):
             return self
 
     def get_workflow(self):
-        return self.get_top_outcome().workflow_set.first().get_subclass()
+        return self.get_top_outcome().workflow_set.first()
 
     #
     #    def get_project(self):
     #        return self.project_set.first()
 
     def get_permission_objects(self):
-        return [self.get_workflow()]
+        return self.get_workflow().get_permission_objects()
 
     def __str__(self):
         return self.title
@@ -642,7 +642,7 @@ class Node(models.Model):
     )
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
         return self.week_set.first().get_workflow()
@@ -662,7 +662,7 @@ class OutcomeNode(models.Model):
     degree = models.PositiveIntegerField(default=1)
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
         return self.node.get_workflow()
@@ -809,7 +809,7 @@ class Week(models.Model):
         return self.get_week_type_display()
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
         return self.workflow_set.first()
@@ -969,7 +969,7 @@ class Workflow(models.Model):
         return self
 
     def get_permission_objects(self):
-        return [self.get_subclass()]
+        return [Workflow.objects.get(pk=self.pk)]
 
     def get_live_project(self):
         try:
@@ -1081,7 +1081,7 @@ class ColumnWorkflow(models.Model):
         return self.workflow
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     class Meta:
         verbose_name = "Column-Workflow Link"
@@ -1107,7 +1107,7 @@ class WeekWorkflow(models.Model):
         return self.workflow
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     class Meta:
         verbose_name = "Week-Workflow Link"
@@ -1952,8 +1952,15 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                 else:
                     # If user is the owner, don't override their ownership
                     if workflow.author == instance.user:
-                        if ObjectPermission.objects.filter(workflow=workflow,user=instance.user,permission_type=ObjectPermission.PERMISSION_EDIT).count()==0:
-                            #Just in case the user has somehow lost their permission
+                        if (
+                            ObjectPermission.objects.filter(
+                                workflow=workflow,
+                                user=instance.user,
+                                permission_type=ObjectPermission.PERMISSION_EDIT,
+                            ).count()
+                            == 0
+                        ):
+                            # Just in case the user has somehow lost their permission
                             ObjectPermission.objects.create(
                                 user=instance.user,
                                 content_object=workflow,

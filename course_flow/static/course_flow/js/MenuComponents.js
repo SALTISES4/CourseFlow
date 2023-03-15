@@ -743,10 +743,12 @@ export class ProjectEditMenu extends React.Component{
                         </button>
                     </div>
                 </div>
-                <div>
-                    <h4>{gettext("Delete/restore")}:</h4>
-                    {this.getDeleteProject()}
-                </div>
+                {this.state.author_id==user_id &&
+                    <div>
+                        <h4>{gettext("Delete/restore")}:</h4>
+                        {this.getDeleteProject()}
+                    </div>
+                }
                 <div class="action-bar">
                     {this.getActions()}
                 </div>

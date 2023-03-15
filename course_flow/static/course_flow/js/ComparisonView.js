@@ -104,7 +104,7 @@ export class ComparisonView extends React.Component{
                 <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
                 {reactDom.createPortal(
                     <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,data.id)}>
-                        <span class="material-symbols-rounded">arrow_back_ios</span>
+                        <span class="green material-symbols-rounded">arrow_back_ios</span>
                         <div>{gettext("Return to project")}</div>
                     </a>,
                     $(".titlebar .title")[0]
