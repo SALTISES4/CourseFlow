@@ -416,7 +416,7 @@ class NodeSerializerShallow(
 
     def get_has_assignment(self, instance):
         user = self.context.get("user", None)
-        if user is None:
+        if user is None or not user.is_authenticated:
             return False
         assignments = instance.liveassignment_set.all()
         if assignments.exists():

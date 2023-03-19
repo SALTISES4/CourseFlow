@@ -71,26 +71,33 @@ class ModelViewTest(TestCase):
         response = self.client.get(reverse("course_flow:user-update"))
         self.assertEqual(response.status_code, 200)
 
-    def test_myprojects_view(self):
-        response = self.client.get(reverse("course_flow:my-projects"))
+    def test_mylibrary_view(self):
+        response = self.client.get(reverse("course_flow:my-library"))
         self.assertEqual(response.status_code, 302)
         login(self)
-        response = self.client.get(reverse("course_flow:my-projects"))
+        response = self.client.get(reverse("course_flow:my-library"))
         self.assertEqual(response.status_code, 200)
 
-    def test_myfavourites_view(self):
-        response = self.client.get(reverse("course_flow:my-favourites"))
-        self.assertEqual(response.status_code, 302)
-        login(self)
-        response = self.client.get(reverse("course_flow:my-favourites"))
-        self.assertEqual(response.status_code, 200)
+    # def test_myprojects_view(self):
+    #     response = self.client.get(reverse("course_flow:my-projects"))
+    #     self.assertEqual(response.status_code, 302)
+    #     login(self)
+    #     response = self.client.get(reverse("course_flow:my-projects"))
+    #     self.assertEqual(response.status_code, 200)
 
-    def test_mytemplates_view(self):
-        response = self.client.get(reverse("course_flow:my-templates"))
-        self.assertEqual(response.status_code, 302)
-        login(self)
-        response = self.client.get(reverse("course_flow:my-templates"))
-        self.assertEqual(response.status_code, 200)
+    # def test_myfavourites_view(self):
+    #     response = self.client.get(reverse("course_flow:my-favourites"))
+    #     self.assertEqual(response.status_code, 302)
+    #     login(self)
+    #     response = self.client.get(reverse("course_flow:my-favourites"))
+    #     self.assertEqual(response.status_code, 200)
+
+    # def test_mytemplates_view(self):
+    #     response = self.client.get(reverse("course_flow:my-templates"))
+    #     self.assertEqual(response.status_code, 302)
+    #     login(self)
+    #     response = self.client.get(reverse("course_flow:my-templates"))
+    #     self.assertEqual(response.status_code, 200)
 
     def test_project_update_view(self):
         author = get_author()
@@ -214,13 +221,15 @@ class ModelViewTest(TestCase):
         project = Project.objects.create(author=author)
 
         for workflow_type in ["activity", "course", "program"]:
-            workflow = make_object(workflow_type, author)
+            workflow = Workflow.objects.get(
+                pk=make_object(workflow_type, author).pk
+            )
+            WorkflowProject.objects.create(workflow=workflow, project=project)
             ObjectPermission.objects.create(
                 user=user,
                 content_object=workflow,
                 permission_type=ObjectPermission.PERMISSION_VIEW,
             )
-            WorkflowProject.objects.create(workflow=workflow, project=project)
             response = self.client.get(
                 reverse("course_flow:workflow-update", args=[workflow.pk])
             )
@@ -2319,6 +2328,9 @@ class ModelViewTest(TestCase):
             "course",
             "program",
         ]:
+            model_str = "workflow"
+            if object_type == "project":
+                model_str = "project"
             item = get_model_from_str(object_type).objects.create(
                 author=author, published=True
             )
@@ -2337,7 +2349,7 @@ class ModelViewTest(TestCase):
                 Favourite.objects.filter(
                     user=user,
                     content_type=ContentType.objects.get_for_model(
-                        get_model_from_str(object_type)
+                        get_model_from_str(model_str)
                     ),
                 ).count(),
                 1,
@@ -2357,7 +2369,7 @@ class ModelViewTest(TestCase):
                 Favourite.objects.filter(
                     user=user,
                     content_type=ContentType.objects.get_for_model(
-                        get_model_from_str(object_type)
+                        get_model_from_str(model_str)
                     ),
                 ).count(),
                 0,

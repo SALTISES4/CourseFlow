@@ -173,7 +173,6 @@ class UserCanViewOrEnrolledMixin(UserPassesTestMixin):
                 ObjectPermission.PERMISSION_VIEW,
             )
         ):
-            print("here")
             ObjectPermission.update_last_viewed(self.request.user, view_object)
             return True
         else:
@@ -471,7 +470,6 @@ def get_my_projects(user, add, **kwargs):
             ),
         },
     }
-    last_time = benchmark("got shared", last_time)
     if not for_add:
         data_package["deleted_projects"] = {
             "title": _("Restore Projects"),
@@ -500,7 +498,6 @@ def get_my_projects(user, add, **kwargs):
                 "Projects you have deleted can be restored from here."
             ),
         }
-    last_time = benchmark("got my projects", last_time)
     return data_package
 
 
@@ -1204,34 +1201,34 @@ def mylibrary_view(request):
     return render(request, "course_flow/library.html")
 
 
-@login_required
-def myshared_view(request):
-    context = {
-        "project_data_package": JSONRenderer()
-        .render(get_my_shared(request.user))
-        .decode("utf-8")
-    }
-    return render(request, "course_flow/myshared.html", context)
+# @login_required
+# def myshared_view(request):
+#     context = {
+#         "project_data_package": JSONRenderer()
+#         .render(get_my_shared(request.user))
+#         .decode("utf-8")
+#     }
+#     return render(request, "course_flow/myshared.html", context)
 
 
-@login_required
-def mytemplates_view(request):
-    context = {
-        "project_data_package": JSONRenderer()
-        .render(get_my_templates(request.user))
-        .decode("utf-8")
-    }
-    return render(request, "course_flow/mytemplates.html", context)
+# @login_required
+# def mytemplates_view(request):
+#     context = {
+#         "project_data_package": JSONRenderer()
+#         .render(get_my_templates(request.user))
+#         .decode("utf-8")
+#     }
+#     return render(request, "course_flow/mytemplates.html", context)
 
 
-@login_required
-def myfavourites_view(request):
-    context = {
-        "project_data_package": JSONRenderer()
-        .render(get_my_favourites(request.user))
-        .decode("utf-8")
-    }
-    return render(request, "course_flow/mytemplates.html", context)
+# @login_required
+# def myfavourites_view(request):
+#     context = {
+#         "project_data_package": JSONRenderer()
+#         .render(get_my_favourites(request.user))
+#         .decode("utf-8")
+#     }
+#     return render(request, "course_flow/mytemplates.html", context)
 
 
 @login_required
@@ -1277,7 +1274,6 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         user = self.request.user
         courseflow_user = CourseFlowUser.objects.filter(user=user).first()
         if courseflow_user is None:
-            print("create the user")
             courseflow_user = CourseFlowUser.objects.create(
                 first_name=user.first_name, last_name=user.last_name, user=user
             )
@@ -2250,12 +2246,10 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
 @login_required
 def get_library(request: HttpRequest) -> HttpResponse:
     user = request.user
-    last_time = time.time()
     all_projects = list(Project.objects.filter(user_permissions__user=user))
     all_projects += list(
         Workflow.objects.filter(user_permissions__user=user, is_strategy=True)
     )
-    last_time = benchmark("got all the projects", last_time)
     projects_serialized = InfoBoxSerializer(
         all_projects, many=True, context={"user": user}
     ).data
@@ -2265,25 +2259,35 @@ def get_library(request: HttpRequest) -> HttpResponse:
 @login_required
 def get_home(request: HttpRequest) -> HttpResponse:
     user = request.user
-    projects = [
-        op.content_object
-        for op in ObjectPermission.objects.filter(
-            project__deleted=False, user=user
-        ).order_by("-last_viewed")[:2]
-    ]
-    projects_serialized = InfoBoxSerializer(
-        projects, many=True, context={"user": user}
-    ).data
-    favourites = [
-        fav.content_object
-        for fav in Favourite.objects.filter(user=user).filter(
-            Q(workflow__deleted=False, workflow__project__deleted=False)
-            | Q(project__deleted=False)
+    if Group.objects.get(name=settings.TEACHER_GROUP) not in user.groups.all():
+        projects = LiveProject.objects.filter(
+            project__deleted=False,
+            liveprojectuser__user=user,
         )
-    ]
-    favourites_serialized = InfoBoxSerializer(
-        favourites, many=True, context={"user": user}
-    ).data
+        projects_serialized = LiveProjectSerializer(
+            projects, many=True, context={"user": user}
+        ).data
+        favourites_serialized = []
+    else:
+        projects = [
+            op.content_object
+            for op in ObjectPermission.objects.filter(
+                project__deleted=False, user=user
+            ).order_by("-last_viewed")[:2]
+        ]
+        projects_serialized = InfoBoxSerializer(
+            projects, many=True, context={"user": user}
+        ).data
+        favourites = [
+            fav.content_object
+            for fav in Favourite.objects.filter(user=user).filter(
+                Q(workflow__deleted=False, workflow__project__deleted=False)
+                | Q(project__deleted=False)
+            )
+        ]
+        favourites_serialized = InfoBoxSerializer(
+            favourites, many=True, context={"user": user}
+        ).data
     return JsonResponse(
         {"projects": projects_serialized, "favourites": favourites_serialized}
     )
@@ -4351,6 +4355,8 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
     objectType = json.loads(request.POST.get("objectType"))
     favourite = json.loads(request.POST.get("favourite"))
     response = {}
+    if objectType in ["activity", "course", "program"]:
+        objectType = "workflow"
     try:
         item = get_model_from_str(objectType).objects.get(pk=object_id)
         Favourite.objects.filter(
@@ -4362,7 +4368,6 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
             fav = Favourite.objects.create(
                 user=request.user, content_object=item
             )
-            print(fav.content_type)
         response["action"] = "posted"
     except ValidationError:
         response["action"] = "error"
@@ -4375,6 +4380,8 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
 def set_permission(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     objectType = json.loads(request.POST.get("objectType"))
+    if objectType in ["activity", "course", "program"]:
+        objectType = "workflow"
     user_id = json.loads(request.POST.get("permission_user"))
     permission_type = json.loads(request.POST.get("permission_type"))
     response = {}
@@ -4579,13 +4586,10 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
 def search_all_objects(request: HttpRequest) -> HttpResponse:
     name_filter = json.loads(request.POST.get("filter"))
     max_count = json.loads(request.POST.get("max_count", "0"))
-    print(max_count)
-    print(name_filter)
     all_objects = ObjectPermission.objects.filter(user=request.user).filter(
         Q(project__title__istartswith=name_filter, project__deleted=False)
         | Q(workflow__title__istartswith=name_filter, workflow__deleted=False)
     )
-    print("c")
     # add ordering
 
     if max_count > 0:
@@ -4609,7 +4613,6 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
             extra_objects = extra_objects[: max_count - count]
         return_objects += [x.content_object for x in extra_objects]
 
-    print(return_objects)
     return JsonResponse(
         {
             "action": "posted",
@@ -5241,14 +5244,16 @@ def restore_self(request: HttpRequest) -> HttpResponse:
         throughparent_id = None
         throughparent_index = None
         # object_suffix = ""
+
+        # Restore the object
+        with transaction.atomic():
+            model.deleted = False
+            model.save()
+
         try:
             workflow = model.get_workflow()
         except AttributeError:
             pass
-        # Delete the object
-        with transaction.atomic():
-            model.deleted = False
-            model.save()
         # Check to see if we have any linked workflows that need to be updated
         linked_workflows = False
         if object_type == "node":
@@ -5399,10 +5404,6 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
         extra_data = None
         parent_id = None
         # object_suffix = ""
-        try:
-            workflow = model.get_workflow()
-        except AttributeError:
-            pass
 
         # Check to see if we have any linked workflows that need to be updated
         linked_workflows = False
@@ -5472,16 +5473,20 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
             ).data
         elif object_type == "column":
             extra_data = (
-                workflow.columnworkflow_set.filter(column__deleted=False)
+                model.get_workflow()
+                .columnworkflow_set.filter(column__deleted=False)
                 .order_by("rank")
                 .first()
                 .column.id
             )
     except (ProtectedError, ObjectDoesNotExist):
+        print("ERRORS")
         return JsonResponse({"action": "error"})
 
-    print("deleted object")
-    print(workflow)
+    try:
+        workflow = model.get_workflow()
+    except AttributeError:
+        pass
     if workflow is not None:
         action = actions.deleteSelfSoftAction(
             object_id, object_type, parent_id, extra_data

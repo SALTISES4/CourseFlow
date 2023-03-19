@@ -966,10 +966,10 @@ class Workflow(models.Model):
         return self.project_set.first()
 
     def get_workflow(self):
-        return self
+        return Workflow.objects.get(pk=self.pk)
 
     def get_permission_objects(self):
-        return [Workflow.objects.get(pk=self.pk)]
+        return [self.get_workflow()]
 
     def get_live_project(self):
         try:
@@ -1017,9 +1017,6 @@ class Activity(Workflow):
     def type(self):
         return "activity"
 
-    def get_permission_objects(self):
-        return [self]
-
     def __str__(self):
         if self.title is not None and self.title != "":
             return self.title
@@ -1041,9 +1038,6 @@ class Course(Workflow):
     def type(self):
         return "course"
 
-    def get_permission_objects(self):
-        return [self]
-
     def __str__(self):
         if self.title is not None and self.title != "":
             return self.title
@@ -1060,9 +1054,6 @@ class Program(Workflow):
     @property
     def type(self):
         return "program"
-
-    def get_permission_objects(self):
-        return [self]
 
     def __str__(self):
         if self.title is not None and self.title != "":
@@ -1515,8 +1506,6 @@ def delete_project_objects(sender, instance, **kwargs):
     courses._raw_delete(courses.db)
     programs = Program.objects.filter(pk__in=workflows)
     programs._raw_delete(programs.db)
-    print(instance.disciplines.all())
-    print(Discipline.objects.filter(workflow__in=workflows))
     workflows = Workflow.objects.filter(pk__in=workflows)
     workflows.delete()
     # raw delete was presenting issues with the disciplines for some reason
@@ -1981,6 +1970,12 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
 #                ObjectPermission.objects.create(content_object=project, user=instance.user,permission_type=ObjectPermission.PERMISSION_VIEW)
 
 
+@receiver(post_save, sender=ObjectPermission)
+def delete_permission_none(sender, instance, **kwargs):
+    if instance.permission_type == instance.PERMISSION_NONE:
+        instance.delete()
+
+
 @receiver(pre_save, sender=ObjectPermission)
 def delete_existing_permission(sender, instance, **kwargs):
     ObjectPermission.objects.filter(
@@ -2152,6 +2147,19 @@ def add_default_editor_workflow(sender, instance, created, **kwargs):
         )
 
 
+@receiver(post_save, sender=Activity)
+@receiver(post_save, sender=Course)
+@receiver(post_save, sender=Program)
+def add_default_editor_other_workflow(sender, instance, created, **kwargs):
+    instance = Workflow.objects.get(pk=instance.pk)
+    if created and instance.author is not None:
+        ObjectPermission.objects.create(
+            content_object=instance,
+            user=instance.author,
+            permission_type=ObjectPermission.PERMISSION_EDIT,
+        )
+
+
 @receiver(post_save, sender=WorkflowProject)
 def set_publication_workflow(sender, instance, created, **kwargs):
     if created:
@@ -2267,7 +2275,6 @@ def add_user_to_assignments(sender, instance, created, **kwargs):
         for assignment in LiveAssignment.objects.filter(
             liveproject=instance.liveproject,
         ).exclude(userassignment__user=instance.user):
-            print("auto-creating a userassignment")
             UserAssignment.objects.create(
                 user=instance.user, assignment=assignment
             )

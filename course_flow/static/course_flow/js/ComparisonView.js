@@ -216,9 +216,7 @@ class WorkflowComparisonRendererComponent extends Component{
         let loader = new Constants.Loader('body');
         getWorkflowContext(
             this.props.workflowID,(context_response_data)=>{
-                console.log(context_response_data);
                 let context_data = context_response_data.data_package;
-                console.log(context_data);
                 this.renderer = new renderers.WorkflowComparisonRenderer(
                     this.props.workflowID,
                     JSON.parse(context_data.data_package),

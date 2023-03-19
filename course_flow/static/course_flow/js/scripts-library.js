@@ -57,7 +57,8 @@ export class ProjectRenderer{
 
 
 export class HomeRenderer{
-    constructor(){
+    constructor(is_teacher){
+        this.is_teacher=is_teacher
     }
     
     render(container){

@@ -72,8 +72,8 @@ export class ShareMenu extends React.Component{
         let published=this.state.published;
         let data=this.props.data;
         if(data.type=="project" || data.is_strategy){
-            let public_class="big-button";
-            let private_class="big-button hover-shade";
+            let public_class="big-button make-public";
+            let private_class="big-button hover-shade make-private";
             if(published)public_class+=" active";
             else private_class+=" active";
             let public_disabled = !(data.disciplines.length>0 && data.title && data.title.length>0);
@@ -121,8 +121,6 @@ export class ShareMenu extends React.Component{
 
     getPublicLink(){
         let data=this.props.data;
-        console.log("location");
-        console.log(window.location);
         let public_link = window.location.host+public_update_path["workflow"].replace("0",data.id);
         if(data.type!="project"){
             let public_view = this.state.public_view;
@@ -178,7 +176,6 @@ export class ShareMenu extends React.Component{
     }
 
     setPublication(published){
-        console.log(published);
         if(published==this.state.published)return;
         let component=this;
         if(!published || window.confirm(gettext("Are you sure you want to publish this project, making it fully visible to anyone with an account?"))){
@@ -215,9 +212,6 @@ class UserLabel extends React.Component{
     render(){
         let permission_select;
         let disabled=false;
-        console.log("checking cannot change");
-        console.log(this.props.user);
-        console.log(this.props.cannot_change)
         if(this.props.cannot_change && this.props.cannot_change.indexOf(this.props.user.id)>=0)disabled=true;
         if(this.props.type!="owner"){
             if(this.props.type=="add"){

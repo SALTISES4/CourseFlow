@@ -14,7 +14,12 @@ from django.http import (
 from django.views.decorators.http import require_GET, require_POST
 from ratelimit.decorators import ratelimit
 
-from course_flow.models import LiveProjectUser, ObjectPermission, User
+from course_flow.models import (
+    LiveProjectUser,
+    ObjectPermission,
+    User,
+    Workflow,
+)
 from course_flow.utils import get_model_from_str
 
 
@@ -96,7 +101,20 @@ def is_owner(model):
 
 
 def check_object_permission(instance, user, permission):
+    if isinstance(instance, Workflow):
+        instance = Workflow.objects.get(pk=instance.pk)
+    object_permission = ObjectPermission.objects.filter(
+        user=user,
+        object_id=instance.pk,
+        content_type=ContentType.objects.get_for_model(instance),
+    )
     if instance.author == user:
+        if object_permission.count() == 0:
+            ObjectPermission.objects.create(
+                user=user,
+                content_object=instance,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+            )
         return True
     if permission == ObjectPermission.PERMISSION_VIEW:
         if instance.published:
@@ -112,16 +130,7 @@ def check_object_permission(instance, user, permission):
         ) | Q(permission_type=ObjectPermission.PERMISSION_COMMENT)
     else:
         permission_check = Q(permission_type=permission)
-    if (
-        ObjectPermission.objects.filter(
-            user=user,
-            object_id=instance.pk,
-            content_type=ContentType.objects.get_for_model(instance),
-        )
-        .filter(permission_check)
-        .count()
-        > 0
-    ):
+    if object_permission.filter(permission_check).count() > 0:
         return True
 
 

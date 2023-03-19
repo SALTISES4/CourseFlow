@@ -188,16 +188,6 @@
           <span class="material-symbols-rounded">calendar_month</span>
           <div>{% trans 'My Classrooms' %}</div>
         </a>
-        <!-- {% if user|has_group:"Teacher" %}
-        <a id="panel-my-templates" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-templates' %}">
-          <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
-          <div>{% trans 'My Templates' %}</div>
-        </a>
-        <a id="panel-my-shared" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-shared' %}">
-          <span class="material-symbols-rounded">folder_shared</span>
-          <div>{% trans 'Shared With Me' %}</div>
-        </a>
-        {% endif %} -->
 
         {% if user|has_group:"Teacher" %}
         <hr>
@@ -397,6 +387,7 @@
     };
     const home_path = "{% url 'course_flow:home' %}"
     const my_library_path = "{% url 'course_flow:my-library' %}"
+    const my_liveprojects_path = "{% url 'course_flow:my-live-projects' %}"
     const registration_path = "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}";
 
     $("#logout").on("click",()=>{
@@ -413,10 +404,7 @@
 
     const makeDropdown = (click_element)=>{
       $(click_element).on("click",(evt)=>{
-        console.log("hi")
-        console.log(click_element);
         $(click_element).children(".create-dropdown").toggleClass("active");
-        console.log($(click_element).children(".create-dropdown"));
       });
       document.addEventListener("click",(evt)=>{
         if(! $(evt.target).closest(click_element)[0])$(click_element).children(".create-dropdown").removeClass("active");

@@ -81,14 +81,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
     }
 
     componentDidUpdate(prev_props){
-        console.log("component updated");
-        console.log(prev_props.view_type);
-        console.log(this.props.view_type);
-        //this.updateTabs();
     }
                     
     updateTabs(){
-        console.log("updating tabs");
         //If the view type has changed, enable only appropriate tabs, and change the selection to none
         this.props.renderer.selection_manager.changeSelection(null,null);
         let disabled_tabs=[];
@@ -217,6 +212,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
     }
 
     getUserData(){
+        if(this.props.renderer.public_view || this.props.renderer.is_student)return null;
         let component = this;
         getUsersForObject(this.props.data.id,this.props.data.type,(data)=>{
             component.setState({users:data});
@@ -246,8 +242,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
     }
 
     getCopyButton(){
-
-        let export_button = (
+        if(!user_id) return null;
+        let export_button = [
             <div id="copy-button" class="hover-shade" onClick={()=>{ 
                 let loader = this.props.renderer.tiny_loader;
                 if(this.props.data.is_strategy){
@@ -269,6 +265,17 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 }
             }}>
                 <div>{gettext("Copy to my library")}</div>
+            </div>
+        ];
+        if(!this.props.data.is_strategy && this.props.renderer.project_permission==Constants.permission_keys.edit)export_button.unshift(
+            <div id="copy-to-project-button" class="hover-shade" onClick={()=>{ 
+                let loader = this.props.renderer.tiny_loader;
+                duplicateBaseItem(this.props.data.id,this.props.data.type,this.props.renderer.project.id,(response_data)=>{
+                    loader.endLoad();
+                    window.location = update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
+                });
+            }}>
+                <div>{gettext("Copy into current project")}</div>
             </div>
         );
         return export_button;
@@ -304,9 +311,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let renderer = this.props.renderer;
         let data = this.props.data;
         let return_links = [];
-        console.log(renderer.project);
         if(renderer.project && !renderer.is_student && !renderer.public_view){
-            console.log("adding return to project")
             return_links.push(
                 <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
                     <span class="material-symbols-rounded green">arrow_back_ios</span>
