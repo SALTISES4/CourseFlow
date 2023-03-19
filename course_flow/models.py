@@ -1121,14 +1121,14 @@ class Discipline(models.Model):
         verbose_name_plural = _("disciplines")
 
 
-workflow_choices = [
-    ContentType.objects.get_for_model(Activity),
-    ContentType.objects.get_for_model(Course),
-    ContentType.objects.get_for_model(Program),
-]
 
 
 class Favourite(models.Model):
+    workflow_choices = [
+        ContentType.objects.get_for_model(Activity),
+        ContentType.objects.get_for_model(Course),
+        ContentType.objects.get_for_model(Program),
+    ]
     content_choices = {"model__in": ["project", "workflow"]}
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content_type = models.ForeignKey(
@@ -1152,6 +1152,11 @@ class Comment(models.Model):
 
 
 class ObjectPermission(models.Model):
+    workflow_choices = [
+        ContentType.objects.get_for_model(Activity),
+        ContentType.objects.get_for_model(Course),
+        ContentType.objects.get_for_model(Program),
+    ]
     content_choices = {"model__in": ["project", "workflow"]}
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content_type = models.ForeignKey(
