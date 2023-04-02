@@ -343,6 +343,11 @@ def course_flow_patterns():
             name="import-data",
         ),
         path(
+            "downloads/saltise/get/",
+            views.get_saltise_download,
+            name="get-saltise-download",
+        ),
+        path(
             "downloads/exports/get/",
             views.get_export_download,
             name="get-export-download",

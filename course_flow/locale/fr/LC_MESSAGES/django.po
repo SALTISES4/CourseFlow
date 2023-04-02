@@ -36,7 +36,7 @@ msgstr "Code de cours"
 
 #: export_functions.py:147
 msgid "Hours"
-msgstr "Heurs"
+msgstr "Heures"
 
 #: export_functions.py:151 models.py:898
 msgid "Time"
@@ -60,11 +60,11 @@ msgstr "Session"
 
 #: export_functions.py:207
 msgid "Prerequisites"
-msgstr "Rrérequis"
+msgstr "Prérequis"
 
 #: export_functions.py:222
 msgid "Required For"
-msgstr "Requis par"
+msgstr "Requis pour"
 
 #: export_functions.py:235
 msgid "Course Outcome"
@@ -84,11 +84,11 @@ msgstr "Éducation specifique"
 
 #: export_functions.py:677
 msgid "General Education"
-msgstr "Éducation generale"
+msgstr "Éducation générale"
 
 #: export_functions.py:685
 msgid "Total Hours"
-msgstr "Heurs totale"
+msgstr "Heures totale"
 
 #: export_functions.py:697
 msgid "Theory"
@@ -100,7 +100,7 @@ msgstr "Pratique"
 
 #: export_functions.py:721
 msgid "Total"
-msgstr "Totale"
+msgstr "Total"
 
 #: export_functions.py:736
 msgid "Credits"
@@ -120,11 +120,11 @@ msgstr "Hors classe (étudiants)"
 
 #: models.py:200
 msgid "In Class (Instructor)"
-msgstr "En classe (Instructeur)"
+msgstr "En classe (instructeur)"
 
 #: models.py:201
 msgid "In Class (Students)"
-msgstr "En classe (Étudiants)"
+msgstr "En classe (étudiants)"
 
 #: models.py:202
 msgid "Custom Course Column"
@@ -176,7 +176,7 @@ msgstr "Sommatif"
 
 #: models.py:512
 msgid "Comprehensive"
-msgstr "Exhaustif"
+msgstr "De synthèse"
 
 #: models.py:547
 msgid "Gather Information"
@@ -196,7 +196,7 @@ msgstr "Analyser"
 
 #: models.py:551
 msgid "Assess/Review Peers"
-msgstr "Assess/Review Peers"
+msgstr "Évaluation des pairs"
 
 #: models.py:552
 msgid "Debate"
@@ -224,7 +224,7 @@ msgstr "Écrire"
 
 #: models.py:558
 msgid "Present"
-msgstr "Présentation"
+msgstr "Présenter"
 
 #: models.py:559
 msgid "Experiment/Inquiry"
@@ -236,7 +236,7 @@ msgstr "Quiz/Test"
 
 #: models.py:561
 msgid "Instructor Resource Curation"
-msgstr "Préparation des ressources (instructeur)"
+msgstr "Sélection des ressources (instructeur)"
 
 #: models.py:562
 msgid "Instructor Orchestration"
@@ -272,19 +272,19 @@ msgstr "Écriture réflexive"
 
 #: models.py:570 models.py:786
 msgid "Two-Stage Exam"
-msgstr "Test en deux phases"
+msgstr "Test en deux étapes"
 
 #: models.py:571 models.py:787
 msgid "Toolkit"
-msgstr "Boite à outils"
+msgstr "Boîte à outils"
 
 #: models.py:572 models.py:788
 msgid "One Minute Paper"
-msgstr "Papier-minute"
+msgstr "Rédaction-minute"
 
 #: models.py:573 models.py:789
 msgid "Distributed Problem Solving"
-msgstr "Résolution distribué de problèmes"
+msgstr "Résolution distribuée de problèmes"
 
 #: models.py:574 models.py:790
 msgid "Peer Assessment"
@@ -312,7 +312,7 @@ msgstr "minutes"
 
 #: models.py:602 models.py:920
 msgid "hours"
-msgstr "heurs"
+msgstr "heures"
 
 #: models.py:603 models.py:921
 msgid "days"
@@ -389,7 +389,7 @@ msgstr "Modifier"
 
 #: models.py:1201
 msgid "Comment"
-msgstr "Commentaire"
+msgstr "Commenter"
 
 #: models.py:1202 models.py:1279
 msgid "Student"
@@ -455,20 +455,14 @@ msgid "Help and support"
 msgstr "Aide"
 
 #: templates/course_flow/base.html:234
-#, fuzzy
-#| msgid "Projects"
 msgid "Project"
-msgstr "Projets"
+msgstr "Projet"
 
 #: templates/course_flow/base.html:235
-#, fuzzy
-#| msgid "Activities"
 msgid "Activity"
-msgstr "Activités"
+msgstr "Activité"
 
 #: templates/course_flow/base.html:236
-#, fuzzy
-#| msgid "Courses"
 msgid "Course"
 msgstr "Cours"
 
@@ -490,19 +484,19 @@ msgstr "Paramètres de notification"
 
 #: templates/course_flow/base.html:254
 msgid "Sign out"
-msgstr "Déconnecter"
+msgstr "Se déconnecter"
 
 #: templates/course_flow/base.html:431
 msgid ""
 "Hi there! Would you like to receive emails about updates to CourseFlow? You "
 "can always change your mind by viewing your profile."
-msgstr "Bonjour à tous! Souhaitez-vous recevoir des e-mails sur les mises à jour de CourseFlow? Vous pouvez toujours changer en consultant votre profil."
+msgstr "Bonjour! Souhaitez-vous recevoir des e-mails sur les mises à jour de CourseFlow? Vous pouvez toujours changer d'avis en consultant votre profil."
 
 #: templates/course_flow/base.html:489
 msgid ""
 "Your device is not supported. Please use a laptop or desktop for the best "
 "experience."
-msgstr "Votre appareil n'est pas compatible. Veuillez utiliser un ordinateur portable ou de bureau pour la meilleure expérience"
+msgstr "Votre appareil n'est pas compatible. Veuillez utiliser un ordinateur portable ou de bureau pour une meilleure expérience"
 
 #: templates/course_flow/comparison.html:25
 #: templates/course_flow/workflow_update.html:25
@@ -528,25 +522,23 @@ msgstr "Options de vue"
 #: templates/course_flow/workflow_update.html:46 views.py:687 views.py:940
 #: views.py:943
 msgid "Restore Deleted"
-msgstr "Restaurer supprimée"
+msgstr "Restaurer supprimé"
 
 #: templates/course_flow/course_create.html:15
 msgid "Create a course:"
 msgstr "Créer un cours:"
 
 #: templates/course_flow/courseflowuser_update.html:15
-#, fuzzy
-#| msgid "Edit"
 msgid "Edit User"
-msgstr "Modifier"
+msgstr "Modifier l'utilisateur"
 
 #: templates/course_flow/home.html:15
 msgid ""
 "Welcome to CourseFlow, a course, curriculum, and activity planning tool by "
 "SALTISE."
 msgstr ""
-"Bienvenue dans CourseFlow, un outil de planification de cours, de programmes "
-"et d'activités de SALTISE."
+"Bienvenue dans CourseFlow, un outil de SALTISE de planification de cours, de programmes "
+"et d'activités."
 
 #: templates/course_flow/home.html:16
 msgid "Quick Links:"
@@ -554,7 +546,7 @@ msgstr "Liens rapides:"
 
 #: templates/course_flow/home.html:21
 msgid "Explore and create your projects"
-msgstr "Explorez et créez vos projets"
+msgstr "Explorer et créer vos projets"
 
 #: templates/course_flow/home.html:29
 msgid "+Create new project"
@@ -562,7 +554,7 @@ msgstr "+Créer un projet."
 
 #: templates/course_flow/home.html:33
 msgid "Your favourited items"
-msgstr "Vos favoris"
+msgstr "Vos items favoris"
 
 #: templates/course_flow/home.html:47
 msgid "Explore"
@@ -598,11 +590,11 @@ msgstr "Gérer les notifications de mise à jour"
 
 #: templates/course_flow/saltise_admin.html:22
 msgid "CourseFlow Analytics"
-msgstr "Analyse de CourseFlow"
+msgstr "Données CourseFlow"
 
 #: templates/course_flow/saltise_analytics.html:15
 msgid "Analytics on CourseFlow usage"
-msgstr "Analyse"
+msgstr "Donnée d'utilisation de CourseFlow"
 
 #: templates/course_flow/saltise_analytics.html:16
 msgid "Workflow Information:"
@@ -652,12 +644,12 @@ msgid ""
 "Projects shared with you by others (for which you have either view or edit "
 "permissions) will appear here."
 msgstr ""
-"Les projets partagés avec vous par d'autres (pour lesquels vous disposez "
-"d'autorisations d'affichage ou de modification) apparaîtront ici."
+"Les projets partagés avec vous par d'autres utilisateurs apparaîtront ici si vous disposez "
+"des autorisations d'affichage ou de modification."
 
 #: views.py:460 views.py:463
 msgid "Restore Projects"
-msgstr "Restaurer projets"
+msgstr "Restaurer un projet"
 
 #: views.py:483
 msgid "Projects you have deleted can be restored from here."
@@ -666,43 +658,43 @@ msgstr ""
 
 #: views.py:492 views.py:495
 msgid "Shared Projects"
-msgstr "Projets partagé"
+msgstr "Projets partagés"
 
 #: views.py:519 views.py:522
 msgid "Shared Programs"
-msgstr "Programmes partagé"
+msgstr "Programmes partagés"
 
 #: views.py:543
 msgid ""
 "Programs shared with you by others (for which you have either view or edit "
 "permissions) will appear here."
 msgstr ""
-"Les programmes partagés avec vous par d'autres (pour lesquels vous disposez "
-"d'autorisations d'affichage ou de modification) apparaîtront ici."
+"Les programmes partagés avec vous par d'autres utilisateurs apparaîtront ici si vous disposez "
+"des autorisations d'affichage ou de modification."
 
 #: views.py:547 views.py:550
 msgid "Shared Courses"
-msgstr "Cours partagé"
+msgstr "Cours partagés"
 
 #: views.py:571
 msgid ""
 "Courses shared with you by others (for which you have either view or edit "
 "permissions) will appear here."
 msgstr ""
-"Les cours partagés avec vous par d'autres (pour lesquels vous disposez "
-"d'autorisations d'affichage ou de modification) apparaîtront ici."
+"Les cours partagés avec vous par d'autres utilisateurs apparaîtront ici si vous disposez "
+"des autorisations d'affichage ou de modification."
 
 #: views.py:575 views.py:578
 msgid "Shared Activities"
-msgstr "Activités partagé"
+msgstr "Activités partagés"
 
 #: views.py:599
 msgid ""
 "Activities shared with you by others (for which you have either view or edit "
 "permissions) will appear here."
 msgstr ""
-"Les activités partagés avec vous par d'autres (pour lesquels vous disposez "
-"d'autorisations d'affichage ou de modification) apparaîtront ici."
+"Les activités partagées avec vous par d'autres utilisateurs apparaîtront ici si vous disposez"
+"des autorisations d'affichage ou de modification."
 
 #: views.py:609
 msgid "My Activity Templates"
@@ -745,7 +737,7 @@ msgstr ""
 
 #: views.py:690
 msgid "Restore deleted"
-msgstr "Restaurer supprimée"
+msgstr "Restaurer supprimé(e)"
 
 #: views.py:752
 msgid ""
@@ -753,10 +745,10 @@ msgid ""
 "here. You can find published content from other users using the Explore "
 "feature in the top toolbar."
 msgstr ""
-"Vos projets, plan de travail ou modèles favoris d'autres utilisateurs "
+"Vos projets, plan de travail ou modèles favoris créés par d'autres utilisateurs "
 "apparaîtront ici. Vous pouvez trouver du contenu publié par d'autres "
 "utilisateurs à l'aide de la fonction Explorer dans la barre d'outils "
-"supérieure."
+"au haut de la page."
 
 #: views.py:756
 msgid "Projects"
@@ -768,9 +760,10 @@ msgid ""
 "published content from other users using the Explore feature in the top "
 "toolbar."
 msgstr ""
-"Vos activités favoris d'autres utilisateurs apparaîtront ici. Vous pouvez "
-"trouver du contenu publié par d'autres utilisateurs à l'aide de la fonction "
-"Explorer dans la barre d'outils supérieure."
+"Vos activités favoris créés par d'autres utilisateurs "
+"apparaîtront ici. Vous pouvez trouver du contenu publié par d'autres "
+"utilisateurs à l'aide de la fonction Explorer dans la barre d'outils "
+"au haut de la page."
 
 #: views.py:778 views.py:881
 msgid "Activities"
@@ -786,9 +779,10 @@ msgid ""
 "published content from other users using the Explore feature in the top "
 "toolbar."
 msgstr ""
-"Vos cours favoris d'autres utilisateurs apparaîtront ici. Vous pouvez "
-"trouver du contenu publié par d'autres utilisateurs à l'aide de la fonction "
-"Explorer dans la barre d'outils supérieure."
+"Vos cours favoris créés par d'autres utilisateurs "
+"apparaîtront ici. Vous pouvez trouver du contenu publié par d'autres "
+"utilisateurs à l'aide de la fonction Explorer dans la barre d'outils "
+"au haut de la page."
 
 #: views.py:840
 msgid ""
@@ -796,13 +790,14 @@ msgid ""
 "published content from other users using the Explore feature in the top "
 "toolbar."
 msgstr ""
-"Vos programmes favoris d'autres utilisateurs apparaîtront ici. Vous pouvez "
-"trouver du contenu publié par d'autres utilisateurs à l'aide de la fonction "
-"Explorer dans la barre d'outils supérieure."
+"Vos programmes favoris créés par d'autres utilisateurs "
+"apparaîtront ici. Vous pouvez trouver du contenu publié par d'autres "
+"utilisateurs à l'aide de la fonction Explorer dans la barre d'outils "
+"au haut de la page."
 
 #: views.py:850
 msgid "All Workflows"
-msgstr "Tous plan de travail"
+msgstr "Plans de travail"
 
 #: views.py:877
 msgid ""
@@ -811,10 +806,10 @@ msgid ""
 "shown here. Click the button above to create a or import a workflow to get "
 "started."
 msgstr ""
-"Les plan de travail sont l'objet de contenu de base de CourseFlow, "
-"représentant soit un programme, un cours ou une activité. Les plan de "
+"Les plans de travail sont l'objet de contenu de base de CourseFlow, "
+"représentant soit un programme, un cours ou une activité. Les plasn de "
 "travail que vous ajoutez à ce projet seront affichés ici. Cliquez sur le "
-"bouton ci-dessus pour créer ou importer un plan de travail pour commencer."
+"bouton ci-dessus pour créer ou importer un plan de travail."
 
 #: views.py:898
 msgid ""
@@ -850,11 +845,11 @@ msgstr ""
 
 #: views.py:962
 msgid "Deleted workflows can be restored here"
-msgstr "Les plan de travail supprimée peuve etre restaurer ici."
+msgstr "Les plans de travail supprimés peuvent être restaurer ici."
 
 #: views.py:1134
 msgid "This Project"
-msgstr "Ce Projet"
+msgstr "Ce projet"
 
 #: views.py:1135
 msgid "There are no applicable workflows in this project."
@@ -862,7 +857,7 @@ msgstr "Il n'y a pas de plans de travails applicables dans ce projet."
 
 #: views.py:1137
 msgid "Owned By You"
-msgstr "T'appartenant"
+msgstr "Vos créations"
 
 #: views.py:1138
 msgid "You do not own any projects. Create a project first."
@@ -874,7 +869,7 @@ msgstr "De vos autres projets"
 
 #: views.py:1155
 msgid "There are no applicable workflows outside this project."
-msgstr "Il n'y a pas de plans de travails applicables en dehors de ce projet."
+msgstr "Il n'y a pas de plan de travail applicable en dehors de ce projet."
 
 #: views.py:1159
 msgid "Your Favourites"
@@ -894,28 +889,28 @@ msgstr "Votre export"
 
 #: views.py:2090
 msgid "Hi there! Here are the results of your recent export."
-msgstr "Bonjour! Voici les résultats de votre récente exportation."
+msgstr "Bonjour! Voici les résultats de votre dernière exportation."
 
 #: views.py:3522 views.py:3559 views.py:3666 views.py:4112 views.py:4151
 #: views.py:4181 views.py:4196
 msgid "(copy)"
-msgstr " (copie)"
+msgstr "(copie)"
 
 #: views.py:4319
 msgid "User is not a teacher."
-msgstr "L'utilisateur n'est pas un instructeur"
+msgstr "L'utilisateur n'est pas un instructeur."
 
 #: views.py:4332 views.py:4352
 msgid "Cannot add a student to a non-live project."
-msgstr "Impossible d'ajouter un étudiant à un projet sans classe"
+msgstr "Impossible d'ajouter un étudiant à un projet sans classe."
 
 #: views.py:4343
 msgid "Cannot add a student to this workflow type."
-msgstr "Impossible d'ajouter un étudiant à ce type de plan de travail"
+msgstr "Impossible d'ajouter un étudiant à ce type de plan de travail."
 
 #: views.py:5687
 msgid "My Owned Classrooms"
-msgstr "Mes propres classes"
+msgstr "Mes classes"
 
 #: views.py:5702
 msgid ""
@@ -927,16 +922,16 @@ msgstr ""
 
 #: views.py:5721
 msgid "You aren't registered for any classrooms right now."
-msgstr "Vous n'êtes inscrit à aucune classes pour le moment"
+msgstr "Vous n'êtes inscrit à aucune classe pour le moment."
 
 #: views.py:6218
 msgid "This user's role cannot be changed."
-msgstr "Le rôle de cet utilisateur ne peut pas être modifié"
+msgstr "Le rôle de cet utilisateur ne peut pas être modifié."
 
 #: views.py:6232
 msgid "This user has a student account, and cannot be made a teacher."
 msgstr ""
-"Cet utilisateur a un compte étudiant et ne peut pas être nommé instructeur"
+"Cet utilisateur a un compte étudiant et ne peut pas être nommé instructeur."
 
 #~ msgid "logout"
 #~ msgstr "déconnecter"

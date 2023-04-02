@@ -4,6 +4,8 @@ import pandas as pd
 from django.db.models import Q
 from django.utils.translation import gettext as _
 
+from course_flow import analytics
+
 from .models import (
     Course,
     Node,
@@ -762,3 +764,28 @@ def get_workflow_nodes_table(workflow, allowed_sets):
     )
     pd.set_option("display.max_colwidth", None)
     return df
+
+
+def get_saltise_analytics():
+
+    df = analytics.get_base_dataframe()
+
+    with BytesIO() as b:
+        writer = pd.ExcelWriter(b, engine="openpyxl")
+        analytics.get_workflow_table(df).to_excel(
+            writer,
+            sheet_name="Workflow Overview",
+        )
+        writer.save()
+        analytics.get_user_table(df).to_excel(
+            writer,
+            sheet_name="User Overview",
+        )
+        writer.save()
+        analytics.get_user_details_table(df).to_excel(
+            writer,
+            sheet_name="User Details",
+        )
+        writer.save()
+
+        return b.getvalue()

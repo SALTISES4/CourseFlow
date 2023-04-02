@@ -34,7 +34,7 @@ msgstr "Sections"
 #: static/course_flow/js/AlignmentView.js:404
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Associated "
-msgstr ""
+msgstr "Lié "
 
 #: static/course_flow/js/AlignmentView.js:404
 #: static/course_flow/js/AlignmentView.js:433
@@ -47,14 +47,14 @@ msgstr " acquis"
 msgid ""
 "No outcomes have been added to the linked workflow. When added, they will "
 "appear here."
-msgstr ""
+msgstr "Aucun acquis a été ajouté au plan de travail lié. Une fois ajoutés, ils seront visible ici."
 
 #: static/course_flow/js/AlignmentView.js:411
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid ""
 "No workflow has been linked to this node. If you link a workflow, its "
 "outcomes will appear here."
-msgstr ""
+msgstr "Aucun plan de travial a été lié à ce noeud. Si vous liez un plan de travail, ses acquis seront visible ici."
 
 #: static/course_flow/js/AlignmentView.js:433
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -76,7 +76,7 @@ msgstr "Masquer"
 #: static/course_flow/js/AlignmentView.js:458
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Show All"
-msgstr "Montrer tous"
+msgstr "Montrer tout"
 
 #: static/course_flow/js/AlignmentView.js:544
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -109,7 +109,7 @@ msgstr "Ajouter un plan de travail"
 #: static/course_flow/js/WorkflowView.js:473
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Object Sets"
-msgstr "Categorie d'objets"
+msgstr "Categories d'objets"
 
 #: static/course_flow/js/CompetencyMatrixView.js:32
 #: static/course_flow/js/WorkflowOutcomeView.js:35
@@ -119,7 +119,7 @@ msgid ""
 "outcomes. Add outcomes and nodes to the workflow to get started."
 msgstr ""
 "Cette vue affiche un tableau montrant les relations entre les noeuds et "
-"acquis. Ajoutez des acquis et des noeuds au flux de travail pour commencer."
+"les acquis. Ajoutez des acquis et des noeuds au flux de travail pour commencer."
 
 #: static/course_flow/js/CompetencyMatrixView.js:33
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -130,16 +130,16 @@ msgid ""
 "nodes to course workflows) and ensure that those child workflows have their "
 "own sets of outcomes."
 msgstr ""
-"Cette vue affiche un tableau montrant les relations entre les acquis et les "
-"acquis de leurs plan de travail liés. Pour utiliser cette fonctionnalité, "
+"Cette vue affiche un tableau montrant les relations entre les acquis du plan de travail et les "
+"acquis des plan de travail liés. Pour utiliser cette fonctionnalité, "
 "vous devez lier les noeuds de ce plan de travail aux plans de travails "
-"enfants (ex. noeuds au niveau programme vers cours) et assurez-vous que ces "
-"plans de travails enfants ont leur  propres ensembles d'acquis."
+"descendants (ex. noeuds au niveau programme vers cours) et assurez-vous que ces "
+"plans de travails descendants ont leur propre ensemble d'acquis."
 
 #: static/course_flow/js/CompetencyMatrixView.js:90
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Hours"
-msgstr "Heurs"
+msgstr "Heures"
 
 #: static/course_flow/js/CompetencyMatrixView.js:95
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -225,7 +225,7 @@ msgid ""
 "be able to edit your workflow."
 msgstr ""
 "Attention: cela créera un lien accessible au public vers votre plan de "
-"travail. Celui-ci sera accessible à ceux qui n'ont pas de compte."
+"travail. Celui-ci sera accessible à ceux qui n'ont pas de compte mais ne sera pas modifiable."
 
 #: static/course_flow/js/ComponentJSON.js:299
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -248,7 +248,7 @@ msgstr "Commentaires"
 #: static/course_flow/js/LiveAssignmentView.js:543
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: static/course_flow/js/ComponentJSON.js:918
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -260,12 +260,12 @@ msgstr "Effacer tous les commentaires"
 #, fuzzy
 #| msgid "Can comment"
 msgid "Add a comment"
-msgstr "Peut commenter"
+msgstr "Ajouter un commentaire"
 
 #: static/course_flow/js/ComponentJSON.js:924
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Reply"
-msgstr ""
+msgstr "Répondre"
 
 #: static/course_flow/js/ComponentJSON.js:939
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -294,7 +294,7 @@ msgstr "caractères"
 #: static/course_flow/js/ConnectedUsers.js:42
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Not Connected"
-msgstr "Pas connecté"
+msgstr "Non-connecté"
 
 #: static/course_flow/js/Constants.js:181
 #: static/course_flow/js/scripts-live.min.js:28
@@ -352,7 +352,7 @@ msgstr "projet"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Object Set Visibility"
-msgstr "Visibilité des catégorie d'objets"
+msgstr "Visibilité des catégories d'objets"
 
 #: static/course_flow/js/ExportMenu.js:29
 #: static/course_flow/js/scripts-live.min.js:28
@@ -364,14 +364,14 @@ msgstr "Exporter des fichiers"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Export Format"
-msgstr "Format d'export"
+msgstr "Format du fichier"
 
 #: static/course_flow/js/ExportMenu.js:92
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Your file is being generated and will be emailed to you shortly."
 msgstr ""
-"Votre fichier est en cours de génération et vous sera envoyé par e-mail sous "
+"Votre fichier est en cours de génération et vous sera envoyé par courriel sous ""
 "peu."
 
 #: static/course_flow/js/FindState.js:262
@@ -403,14 +403,14 @@ msgstr "Retourner à la classe"
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Warning: the linked workflow is not visible to those in the classroom"
 msgstr ""
-"Avertissement: le plan de travail lié n'est pas visible pour les personnes "
+"Avertissement: le plan de travail lié n'est pas visible par les personnes "
 "présentes dans la classe"
 
 #: static/course_flow/js/LiveAssignmentView.js:115
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Linked Workflow"
-msgstr "Plan de travail en lien"
+msgstr "Plan de travail lié"
 
 #: static/course_flow/js/LiveAssignmentView.js:125
 #: static/course_flow/js/scripts-live.min.js:28
@@ -419,7 +419,7 @@ msgid ""
 "classroom"
 msgstr ""
 "Avertissement: le plan de travail dans lequel la tâche apparaît n'est pas "
-"visible par les personnes présentes dans la classe"
+"visible par les personnes présentes dans la classe."
 
 #: static/course_flow/js/LiveAssignmentView.js:127
 #: static/course_flow/js/scripts-live.min.js:28
@@ -456,7 +456,7 @@ msgstr "Date de début"
 msgid ""
 "Whether to mark the assignment as complete if any user has completed it."
 msgstr ""
-"S'il faut marquer le devoir comme terminé si un seul utilisateur l'a terminé"
+"Marquer le devoir comme terminé si un seul utilisateur l'a terminé."
 
 #: static/course_flow/js/LiveAssignmentView.js:142
 #: static/course_flow/js/scripts-live.min.js:28
@@ -465,14 +465,14 @@ msgstr ""
 #| "Whether to mark the assignment as complete if any user has completed it."
 msgid "Mark assignment as complete when a single user has completed it:"
 msgstr ""
-"S'il faut marquer le devoir comme terminé si un seul utilisateur l'a terminé"
+"Marquer le devoir comme terminé si un seul utilisateur l'a terminé."
 
 #: static/course_flow/js/LiveAssignmentView.js:145
 #: static/course_flow/js/LiveProjectView.js:613
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Whether students can mark their own assignments as complete."
 msgstr ""
-"Indique si les étudiants peuvent marquer leurs propres devoirs comme "
+"Indique si les étudiants peuvent marquer leurs devoirs comme "
 "terminés."
 
 #: static/course_flow/js/LiveAssignmentView.js:145
@@ -481,7 +481,7 @@ msgstr ""
 #| msgid "Whether students can mark their own assignments as complete."
 msgid "Let students self-report their assignment completion:"
 msgstr ""
-"Indique si les étudiants peuvent marquer leurs propres devoirs comme "
+"Indique si les étudiants peuvent marquer leurs devoirs comme "
 "terminés."
 
 #: static/course_flow/js/LiveAssignmentView.js:148
@@ -524,14 +524,14 @@ msgstr "Ajouter"
 #: static/course_flow/js/LiveProjectView.js:535
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Workflows"
-msgstr "Plans de travails"
+msgstr "Plans de travail"
 
 #: static/course_flow/js/LiveAssignmentView.js:200
 #: static/course_flow/js/MenuComponents.js:768
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Are you sure you want to delete this "
-msgstr "Êtes-vous sûr de vouloir supprimer ce "
+msgstr "Êtes-vous certain de vouloir supprimer ce "
 
 #: static/course_flow/js/LiveAssignmentView.js:200
 #: static/course_flow/js/scripts-live.min.js:28
@@ -554,7 +554,7 @@ msgstr "<Plan supprimé>"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Visit containing workflow"
-msgstr "Visitez le plan contenant"
+msgstr "Visitez le plan parent"
 
 #: static/course_flow/js/LiveAssignmentView.js:346
 #: static/course_flow/js/LiveAssignmentView.js:656
@@ -585,7 +585,7 @@ msgstr "Achèvement"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "No description given"
-msgstr "Pas de description"
+msgstr "Aucune description"
 
 #: static/course_flow/js/LiveAssignmentView.js:549
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -597,7 +597,7 @@ msgstr "Créer un nouveau "
 #: static/course_flow/js/LiveAssignmentView.js:555
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Not yet assigned"
-msgstr ""
+msgstr "Non-assigné"
 
 #: static/course_flow/js/LiveAssignmentView.js:561
 #: static/course_flow/js/LiveProjectView.js:116
@@ -629,13 +629,13 @@ msgstr "Aperçu de la classe"
 #: static/course_flow/js/LiveProjectView.js:117
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "My Workflows"
-msgstr "Mes plans de travails"
+msgstr "Mes plans de travail"
 
 #: static/course_flow/js/LiveProjectView.js:180
 #: static/course_flow/js/LiveProjectView.js:251
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "No workflows have been made visible to students."
-msgstr ""
+msgstr "Aucun plan de travail est visible pour les étudiants."
 
 #: static/course_flow/js/LiveProjectView.js:218
 #: static/course_flow/js/StudentManagement.js:41
@@ -657,7 +657,7 @@ msgstr "Utilisateurs"
 #, fuzzy
 #| msgid "Assignments"
 msgid "Assignments Complete"
-msgstr "Devoirs"
+msgstr "Devoirs terminés"
 
 #: static/course_flow/js/LiveProjectView.js:223
 #: static/course_flow/js/scripts-live.min.js:28
@@ -689,7 +689,7 @@ msgstr "Devoirs"
 #, fuzzy
 #| msgid "Create Assignment"
 msgid "Your Incomplete Assignments"
-msgstr "Créer un devoir"
+msgstr "Devoirs à compléter"
 
 #: static/course_flow/js/LiveProjectView.js:311
 #: static/course_flow/js/scripts-live.min.js:28
@@ -709,7 +709,7 @@ msgstr "Créer un devoir"
 #: static/course_flow/js/LiveProjectView.js:461
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Your Tasks"
-msgstr "Vos tâches"
+msgstr "Tâches assignées"
 
 #: static/course_flow/js/LiveProjectView.js:462
 #: static/course_flow/js/scripts-live.min.js:28
@@ -724,7 +724,7 @@ msgstr "Tâches précédentes"
 #: static/course_flow/js/LiveProjectView.js:492
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Other Workflows"
-msgstr "Autres plans de travails"
+msgstr "Autres plans de travail"
 
 #: static/course_flow/js/LiveProjectView.js:558
 #: static/course_flow/js/scripts-live.min.js:28
@@ -745,17 +745,18 @@ msgid ""
 "By default, mark assignments as complete when a single user has completed "
 "them:"
 msgstr ""
-"S'il faut marquer le devoir comme terminé si un seul utilisateur l'a terminé"
+"Par défaut, marquer le devoir comme terminé si un seul utilisateur l'a terminé:"
 
 #: static/course_flow/js/LiveProjectView.js:610
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Whether creating an assignment automatically adds all students to it."
-msgstr ""
+msgstr "Détermine si tous les étudiants sont ajoutés automatiquement lorsqu'un devoir est créé."
 
 #: static/course_flow/js/LiveProjectView.js:610
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Assign new assignments to all students by default:"
-msgstr ""
+msgstr "Assigner les nouveaux devoirs à tous les étudiants par défaut:"
+
 
 #: static/course_flow/js/LiveProjectView.js:613
 #: static/course_flow/js/scripts-live.min.js:28
@@ -763,21 +764,20 @@ msgstr ""
 #| msgid "Whether students can mark their own assignments as complete."
 msgid "Let students self-report their assignment completion by default:"
 msgstr ""
-"Indique si les étudiants peuvent marquer leurs propres devoirs comme "
-"terminés."
+"Par défaut, permet aux étudiants de marquer leurs devoirs comme terminés."
 
 #: static/course_flow/js/LiveProjectView.js:616
 #: static/course_flow/js/scripts-live.min.js:28
 msgid ""
 "Whether all workflows in the project will be visible to students by default."
-msgstr ""
+msgstr "Par défaut, permet aux étudiants de consulter tous les plans de travail."
 
 #: static/course_flow/js/LiveProjectView.js:616
 #: static/course_flow/js/scripts-live.min.js:28
 #, fuzzy
 #| msgid "Workflow Visibility"
 msgid "All Workflows Visible To Students:"
-msgstr "Visibilité du plan de travail"
+msgstr "Plans de travail toujour visibles:"
 
 #: static/course_flow/js/LiveProjectView.js:656
 #: static/course_flow/js/scripts-live.min.js:28
@@ -794,7 +794,7 @@ msgstr "par"
 #: static/course_flow/js/LiveProjectView.js:686
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Not Visible"
-msgstr "Pas visible"
+msgstr "Non-visible"
 
 #: static/course_flow/js/LiveProjectView.js:687
 #: static/course_flow/js/scripts-live.min.js:28
@@ -811,7 +811,7 @@ msgstr "Tableau"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "link to node"
-msgstr "faire lien au noeud"
+msgstr "lier au noeud"
 
 #: static/course_flow/js/MenuComponents.js:89
 #: static/course_flow/js/scripts-live.min.js:28
@@ -831,13 +831,13 @@ msgstr "annuler"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Favourite"
-msgstr "Mettre en favori"
+msgstr "Ajouter en favori"
 
 #: static/course_flow/js/MenuComponents.js:238
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Are you sure you want to delete this?"
-msgstr "Êtes-vous sûr de vouloir supprimer ceci?"
+msgstr "Êtes-vous certain de vouloir supprimer ceci?"
 
 #: static/course_flow/js/MenuComponents.js:259
 #: static/course_flow/js/WorkflowView.js:652
@@ -965,7 +965,7 @@ msgstr "Sélectionnez un type"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Set Name"
-msgstr "Nome de catégorie"
+msgstr "Nom de la catégorie"
 
 #: static/course_flow/js/MenuComponents.js:768
 #: static/course_flow/js/scripts-live.min.js:28
@@ -980,8 +980,8 @@ msgid ""
 "Are you sure you want to publish this project, making it fully visible to "
 "anyone with an account?"
 msgstr ""
-"Êtes-vous sûr de vouloir publier ce projet, le rendant entièrement visible "
-"pour n'importe qui avec un compte ?"
+"Êtes-vous certain de vouloir publier ce projet, le rendant entièrement visible "
+"pour n'importe qui avec un compte?"
 
 #: static/course_flow/js/MenuComponents.js:847
 #: static/course_flow/js/scripts-live.min.js:28
@@ -990,8 +990,8 @@ msgid ""
 "Are you sure you want to unpublish this project, rendering it hidden to all "
 "other users?"
 msgstr ""
-"Êtes-vous sûr de vouloir dépublier ce projet, en le rendant caché à tous "
-"autres utilisateurs ?"
+"Êtes-vous certain de vouloir dépublier ce projet, il cessera d'être visible "
+"pour les autres utilisateurs?"
 
 #: static/course_flow/js/MenuComponents.js:907
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1036,7 +1036,7 @@ msgstr "Projet"
 #: static/course_flow/js/MenuComponents.js:927
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Disciplines (leave blank for all):"
-msgstr "Disciplines (laisser vide pour tous) :"
+msgstr "Disciplines (laisser vide pour tous sélectionner) :"
 
 #: static/course_flow/js/MenuComponents.js:935
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1070,7 +1070,7 @@ msgid ""
 "at least one allowed type selected."
 msgstr ""
 "Aucun resultat n'a été trouvé. Ajustez vos paramètres de recherche et "
-"assurez-vous d'avoir au moins un type autorisé sélectionné."
+"assurez-vous d'avoir sélectionné au moins un type autorisé."
 
 #: static/course_flow/js/NodeView.js:152
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1085,7 +1085,7 @@ msgid ""
 "at different levels (ex. program to course), called 'alignment'. Link this "
 "workflow to a node in another to do so."
 msgstr ""
-"Vous pouvez trouver ici les résultats des plan de travails qui contiennent "
+"Vous pouvez trouver ici les résultats des plans de travail qui contiennent "
 "un noeud lié à ce plan de travail. Cela vous permet de créer des relations "
 "entre les résultats à différents niveaux (ex. programme à cours), appelé "
 "'alignement'. Reliez ce plan de travail vers un noeud dans un autre pour le "
@@ -1122,7 +1122,7 @@ msgstr[1] "descendants"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Something went wrong. Please reload the page."
-msgstr "Il y avait un problème. Veuillez recharger la page."
+msgstr "Il y a un problème. Veuillez recharger la page."
 
 #: static/course_flow/js/PostFunctions.js:10
 #: static/course_flow/js/scripts-live.min.js:28
@@ -1137,7 +1137,7 @@ msgstr ""
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "error at "
-msgstr "erreur: "
+msgstr "erreur à "
 
 #: static/course_flow/js/Reducers.js:452 static/course_flow/js/Reducers.js:714
 #: static/course_flow/js/Reducers.js:921 static/course_flow/js/Reducers.js:1126
@@ -1188,7 +1188,7 @@ msgstr "Étudiant(e)"
 #: static/course_flow/js/StudentManagement.js:100
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Teacher"
-msgstr "Instructeurs"
+msgstr "Instructeur"
 
 #: static/course_flow/js/StudentManagement.js:161
 #: static/course_flow/js/scripts-live.min.js:28
@@ -1211,12 +1211,12 @@ msgstr "Page modifiable"
 #: static/course_flow/js/WorkflowView.js:142
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Public Page"
-msgstr "Page Publique"
+msgstr "Page publique"
 
 #: static/course_flow/js/WorkflowView.js:152
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Return to project ("
-msgstr "Retour au projet ("
+msgstr "Retourner au projet ("
 
 #: static/course_flow/js/WorkflowView.js:160
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1230,7 +1230,7 @@ msgstr "Modifier le plan de travail"
 #, fuzzy
 #| msgid "Competency Matrix"
 msgid "Competency Matrix Style"
-msgstr "Matrice de compétence"
+msgstr "Matrice de compétences"
 
 #: static/course_flow/js/WorkflowView.js:449
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1248,22 +1248,22 @@ msgstr "Noeuds"
 #: static/course_flow/js/WorkflowView.js:542
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Jump To"
-msgstr ""
+msgstr "Aller vers"
 
 #: static/course_flow/js/WorkflowView.js:548
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Expand/Collapse All"
-msgstr ""
+msgstr "Vue détaillé ou non"
 
 #: static/course_flow/js/WorkflowView.js:777
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Quick Navigation"
-msgstr "Navigation Rapide"
+msgstr "Navigation rapide"
 
 #: static/course_flow/js/WorkflowView.js:784
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Workflows Used:"
-msgstr "Plan de travail utilisé:"
+msgstr "Plans de travail utilisés:"
 
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1271,8 +1271,8 @@ msgid ""
 "Note: You are sharing a project. Any added users will be granted the same "
 "permission for all workflows within the project."
 msgstr ""
-"Vous partagez un projet. Tous les utilisateurs ajoutés serront accorder les "
-"memes autorisations pour tout les plan de travail."
+"Vous partagez un projet. Les utilisateurs ajoutés auront des "
+"autorisations pour tout les plans de travail du projet."
 
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1280,8 +1280,8 @@ msgid ""
 "Note: You are sharing a workflow. Any added users will be granted view "
 "permissions for the whole project."
 msgstr ""
-"Vous partagez un plan de travail. Tous les utilisateurs ajoutés serront "
-"accorder des autorisations de vue pour tout le projet."
+"Vous partagez un plan de travail. Tous les utilisateurs ajoutés auront "
+"des autorisations de vue pour tout le projet."
 
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1291,7 +1291,7 @@ msgstr "Peut modifier"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Can view"
-msgstr "Peur voire"
+msgstr "Peut voire"
 
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1314,7 +1314,7 @@ msgid ""
 "editing until it is complete."
 msgstr ""
 "Le processus de téléchargement peut prendre un certain temps. Il n'est pas "
-"recommandé de poursuivre l'édition tant qu'elle n'est pas terminée."
+"recommandé de poursuivre l'édition tant qu'il n'est pas terminée."
 
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1333,7 +1333,7 @@ msgstr "Utilisez ce menu pour exporter des fichiers"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Export Type"
-msgstr "Type d'export"
+msgstr "Type d'exportation"
 
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1348,7 +1348,7 @@ msgstr "Structure de cours"
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Competency Matrix"
-msgstr "Matrice de compétence"
+msgstr "Matrice de compétences"
 
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1420,7 +1420,7 @@ msgstr "Visibilité du plan de travail"
 #, fuzzy
 #| msgid "Completion"
 msgid "Completion Table"
-msgstr "Achèvement"
+msgstr "Tableau d'achèvement"
 
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Classroom Settings"
@@ -1500,7 +1500,7 @@ msgstr "Emplacement du texte"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Outcomes Style"
-msgstr "Style D'Acquis"
+msgstr "Style d'Acquis"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Condensed View"
@@ -1516,15 +1516,15 @@ msgstr "Stratégie"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "You cannot delete the last "
-msgstr "Vous ne pouvez pas supprimer la derniere "
+msgstr "Vous ne pouvez pas supprimer la dernière "
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Insert Child"
-msgstr "Insérer enfant"
+msgstr "Insérer descendant"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Are you sure you want to permanently clear this comment?"
-msgstr "Voulez-vous vraiment effacer définitivement ce commentaire ?"
+msgstr "Voulez-vous vraiment effacer ce commentaire définitivement?"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid ""
@@ -1560,7 +1560,7 @@ msgid ""
 "sidebar."
 msgstr ""
 "Ici, vous pouvez ajouter et modifier des acquis pour le plan de travail. Ils "
-"seront ensuite disponibles dans la vue Plan de Travail pour baliser les "
+"seront ensuite disponibles dans la vue Plan de travail pour étiqueter les "
 "noeuds dans l'onglet acquis de la barre latérale."
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1584,7 +1584,7 @@ msgstr " acquis"
 #, fuzzy
 #| msgid "Linked Workflow"
 msgid " From Linked Workflow"
-msgstr "Plan de travail en lien"
+msgstr " du plan de travail en lien"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "General Education"
@@ -1600,7 +1600,7 @@ msgstr "Heures totales"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Times in hours shown in format"
-msgstr "Heures en heures affichées au format"
+msgstr "Temps en heures affichés au format"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Individual"
@@ -1616,7 +1616,7 @@ msgstr "Vue grille "
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Return to classroom ("
-msgstr "Retour au projet ("
+msgstr "Retour a la classe ("
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Edit Workflow"
@@ -1640,7 +1640,7 @@ msgstr "Style"
 #, fuzzy
 #| msgid "Import Nodes"
 msgid "Sort Nodes"
-msgstr "Importer noeds"
+msgstr "Trier les noeds"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Weeks"
@@ -1664,7 +1664,7 @@ msgstr "Supprimé définitivement"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Are you sure you want to permanently delete this object?"
-msgstr "Voulez-vous vraiment effacer définitivement ce objet?"
+msgstr "Voulez-vous vraiment supprimer définitivement cet objet?"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "My Strategies"
@@ -1718,13 +1718,13 @@ msgstr ""
 #~ msgstr "fallbackFocus"
 
 #~ msgid "program outcomes"
-#~ msgstr "acquis de programmes"
+#~ msgstr "acquis de programme"
 
 #~ msgid "course outcomes"
 #~ msgstr "acquis de cours"
 
 #~ msgid "activity outcomes"
-#~ msgstr "acquis d'activités"
+#~ msgstr "acquis d'activité"
 
 #~ msgid "Outcomes to .xls"
 #~ msgstr "Acquis (.xls)"
@@ -1757,10 +1757,10 @@ msgstr ""
 #~ msgstr "Matrice de compétences (.csv)"
 
 #~ msgid "Nodes to .csv"
-#~ msgstr "Noeds (.csv)"
+#~ msgstr "Noeuds (.csv)"
 
 #~ msgid "Nodes to .xls"
-#~ msgstr "Noeds (.xls)"
+#~ msgstr "Noeuds (.xls)"
 
 #~ msgid "custom value"
 #~ msgstr "valeur personnalisée"
@@ -1773,7 +1773,7 @@ msgstr ""
 
 #~ msgid "Data has been output to csv in your downloads folder."
 #~ msgstr ""
-#~ "Les données ont été sorties au format csv dans votre dossier de "
+#~ "Les données ont été exportées au format csv dans votre dossier de "
 #~ "téléchargement."
 
 #~ msgid ""
@@ -1781,7 +1781,7 @@ msgstr ""
 #~ "this action cannot be undone."
 #~ msgstr ""
 #~ "Êtes-vous sûr de vouloir supprimer cela ? Tous les contenus seront "
-#~ "supprimés, et cetteaction ne peut pas être annulée."
+#~ "supprimés, et cette action ne peut pas être annulée."
 
 #~ msgid "Output CSV"
-#~ msgstr "Imprimer au format CSV"
+#~ msgstr "Exporter au format CSV"

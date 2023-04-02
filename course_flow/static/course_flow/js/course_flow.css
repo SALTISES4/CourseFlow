@@ -1484,6 +1484,19 @@ text {
     border:0px;
 }
 
+table tr.domain-row{
+    background: #EEFFEE;
+}
+table tr.month-row{
+    background: #99EE99;
+}
+table tr.year-row{
+    background: #77CC77;
+}
+table tr.total-row{
+    background: #55BB55;
+}
+
 #user-feedback{
     margin-top: auto;
 }

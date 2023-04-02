@@ -2127,6 +2127,28 @@ def get_export(request: HttpRequest) -> HttpResponse:
 
 
 # enable for testing/download
+@ajax_login_required
+def get_saltise_download(request: HttpRequest) -> HttpResponse:
+
+    if (
+        Group.objects.get(name="SALTISE_Staff")
+        not in request.user.groups.all()
+    ):
+        return JsonResponse({"action": "error"})
+
+    file_ext = "xlsx"
+
+    filename = "saltise-analytics-data" + "." + file_ext
+    file = export_functions.get_saltise_analytics()
+    file_data = (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response = HttpResponse(file, content_type=file_data)
+    response["Content-Disposition"] = "attachment; filename=%s" % filename
+    return response
+
+
+# enable for testing/download
 @user_can_view(False)
 def get_export_download(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
