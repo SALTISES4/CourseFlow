@@ -50,7 +50,8 @@ def get_base_dataframe():
     return df
 
 
-def get_workflow_table(df=get_base_dataframe()):
+def get_workflow_table(df=None):
+    if df is None:df=get_base_dataframe()
 
     pt = pd.pivot_table(
         df,
@@ -68,7 +69,8 @@ def get_workflow_table(df=get_base_dataframe()):
     return pt
 
 
-def get_user_table(df=get_base_dataframe()):
+def get_user_table(df=None):
+    if df is None:df=get_base_dataframe()
     df3 = df.groupby(["Year", "Month", "type"])
 
     user_counts = df3["User"].nunique()
@@ -80,7 +82,8 @@ def get_user_table(df=get_base_dataframe()):
     return user_counts
 
 
-def get_user_details_table(df=get_base_dataframe()):
+def get_user_details_table(df=None):
+    if df is None:df=get_base_dataframe():
     df = get_base_dataframe()
 
     df_sum = (
