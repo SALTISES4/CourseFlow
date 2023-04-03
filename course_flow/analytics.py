@@ -83,7 +83,7 @@ def get_user_table(df=None):
 
 
 def get_user_details_table(df=None):
-    if df is None:df=get_base_dataframe():
+    if df is None:df=get_base_dataframe()
     df = get_base_dataframe()
 
     df_sum = (

@@ -500,7 +500,7 @@ msgstr "Exporter"
 #, fuzzy
 #| msgid "Copy to clipboard"
 msgid "Copy to my library"
-msgstr "Copier a ma"
+msgstr "Copier a bibliothèque"
 
 #: static/course_flow/js/Library.js:282
 #: static/course_flow/js/scripts-library.min.js:27

@@ -417,7 +417,7 @@ msgstr "Accueil"
 
 #: templates/course_flow/base.html:180
 msgid "Your Library"
-msgstr ""
+msgstr "Votre Bibliothèque"
 
 #: templates/course_flow/base.html:184
 msgid "Explore"
