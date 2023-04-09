@@ -71,15 +71,24 @@ def get_workflow_table(df=None):
 
 def get_user_table(df=None):
     if df is None:df=get_base_dataframe()
-    df3 = df.groupby(["Year", "Month", "type"])
+    df1 = df.copy()
+    df1["is_active"] = df1["User"].str.contains("(active)")
+    df2 = df1.groupby(["Year", "Month"])
+    df3 = df1.groupby(["Year", "Month", "type"])
 
-    user_counts = df3["User"].nunique()
+    user_counts = df2["User"].nunique()
+    active_counts = df1.loc[df1["is_active"]].groupby(["Year","Month"])["User"].nunique()
 
-    user_counts = user_counts.unstack()
+    type_counts = df3["User"].nunique()
+    type_counts = type_counts.unstack()
+    type_counts["Total Unique Users"] = user_counts
+    type_counts["Total Active Users"] = active_counts
 
-    fix_months(user_counts)
+    type_counts.fillna(0,inplace=True)
 
-    return user_counts
+    fix_months(type_counts)
+
+    return type_counts
 
 
 def get_user_details_table(df=None):
