@@ -182,6 +182,9 @@ class Column(models.Model):
         max_length=title_max_length, null=True, blank=True
     )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    icon = models.CharField(
+        max_length=50, null=True, blank=True
+    )
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     visible = models.BooleanField(default=True)

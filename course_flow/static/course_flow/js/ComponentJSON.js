@@ -74,6 +74,13 @@ export class EditableComponent extends Component{
                             <QuillDiv  disabled={override || read_only} text={description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
                         </div>
                     }
+                    {type=="column" &&
+                        <div>
+                            <h4>{gettext("Custom Icon")}:</h4>
+                            <p>Browse options <a href="https://fonts.google.com/icons?icon.style=Rounded&icon.platform=android&icon.category=Activities">here</a>.</p>
+                            <input disabled={override || read_only} autocomplete="off" id="column-icon-editor" type="text" value={data.icon} maxlength={50} onChange={this.inputChanged.bind(this,"icon")}/>
+                        </div>
+                    }
                     {((type=="outcome" && data.depth==0)||(type=="workflow" && data.type=="course")) &&
                         <div>
                             <h4>{gettext("Code (Optional)")}:</h4>

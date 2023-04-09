@@ -537,6 +537,7 @@ class ColumnSerializerShallow(
             "deleted_on",
             "id",
             "title",
+            "icon",
             "column_type",
             "column_type_display",
             "colour",
@@ -555,6 +556,7 @@ class ColumnSerializerShallow(
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.colour = validated_data.get("colour", instance.colour)
+        instance.icon = validated_data.get("icon", instance.icon)
         instance.save()
         return instance
 

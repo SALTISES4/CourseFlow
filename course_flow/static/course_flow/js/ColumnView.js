@@ -36,7 +36,7 @@ class ColumnView extends EditableComponentWithActions{
         return (
             <div ref={this.maindiv} style={style} class={css_class} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 <div class="column-line">
-                    <img src={this.getIcon()}/>
+                    {this.getIcon()}
                     <div dangerouslySetInnerHTML={{ __html: title }}></div>
                 </div>
                 {this.addEditable(data)}
@@ -48,7 +48,15 @@ class ColumnView extends EditableComponentWithActions{
     }
 
     getIcon(){
-        return iconpath+Constants.default_column_settings[this.props.data.column_type].icon+".svg";
+        if(this.props.data.icon && this.props.data.icon != ""){
+            return <span class="material-symbols-rounded">{this.props.data.icon}</span>
+        }
+        console.log(iconpath)
+        console.log(Constants.default_column_settings[this.props.data.column_type].icon)
+        console.log(iconpath+Constants.default_column_settings[this.props.data.column_type].icon+".svg")
+        return (
+            <img src={iconpath+Constants.default_column_settings[this.props.data.column_type].icon+".svg"}/>
+        );
     }
 }
 const mapColumnStateToProps = (state,own_props)=>(
