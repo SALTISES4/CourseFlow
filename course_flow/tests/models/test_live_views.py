@@ -890,12 +890,12 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
         liveproject.visible_workflows.add(workflow)
-        # Add the user to the assignment - not needed because happens by default
-        # UserAssignment.objects.create(
-        #     user=user,
-        #     assignment=assignment,
-        # )
-        time.sleep(5)
+        # Add the user to the assignment - not needed always because happens by default
+        if UserAssignment.objects.filter(user=user).count() == 0:
+            UserAssignment.objects.create(
+                user=user,
+                assignment=assignment,
+            )
         self.assertEqual(len(UserAssignment.objects.filter(user=user)),1)
         response = self.client.post(
             reverse("course_flow:get-assignments-for-node"),
