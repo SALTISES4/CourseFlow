@@ -1,9 +1,12 @@
 import calendar
+import time
 
 import pandas as pd
+from django.core.cache import cache
 
-from .models import Project, Workflow
-from .serializers import AnalyticsSerializer
+from course_flow.models import Project, Workflow
+from course_flow.serializers import AnalyticsSerializer
+from course_flow.utils import benchmark
 
 
 def month_replace(x):
@@ -19,6 +22,11 @@ def fix_months(df):
 
 
 def get_base_dataframe():
+
+    df = cache.get("COURSEFLOW_ANALYTICS_DATAFRAME", None)
+    if df is not None:
+        return df
+
     projects = AnalyticsSerializer(
         Project.objects.exclude(author=None), many=True
     ).data
@@ -47,11 +55,14 @@ def get_base_dataframe():
 
     # df["Month"] = df["Month"].apply(lambda x: calendar.month_abbr[int(x)])
 
+    cache.set("COURSEFLOW_ANALYTICS_DATAFRAME", df, 600)
+
     return df
 
 
 def get_workflow_table(df=None):
-    if df is None:df=get_base_dataframe()
+    if df is None:
+        df = get_base_dataframe()
 
     pt = pd.pivot_table(
         df,
@@ -64,27 +75,55 @@ def get_workflow_table(df=None):
     )
 
     pt.fillna(0, inplace=True)
+    pt["All"] = pt["All"].astype("int")
     fix_months(pt)
-
     return pt
 
 
 def get_user_table(df=None):
-    if df is None:df=get_base_dataframe()
+    if df is None:
+        df = get_base_dataframe()
     df1 = df.copy()
     df1["is_active"] = df1["User"].str.contains("(active)")
     df2 = df1.groupby(["Year", "Month"])
     df3 = df1.groupby(["Year", "Month", "type"])
 
     user_counts = df2["User"].nunique()
-    active_counts = df1.loc[df1["is_active"]].groupby(["Year","Month"])["User"].nunique()
+    active_counts = (
+        df1.loc[df1["is_active"]].groupby(["Year", "Month"])["User"].nunique()
+    )
 
     type_counts = df3["User"].nunique()
     type_counts = type_counts.unstack()
     type_counts["Total Unique Users"] = user_counts
     type_counts["Total Active Users"] = active_counts
 
-    type_counts.fillna(0,inplace=True)
+    year_counts = df1.groupby(["Year", "type"])["User"].nunique()
+    year_counts_user = df1.groupby(["Year"])["User"].nunique()
+    year_counts_active = (
+        df1.loc[df1["is_active"]].groupby(["Year"])["User"].nunique()
+    )
+    year_counts = (
+        year_counts.reindex(
+            pd.MultiIndex.from_product(
+                [level for level in year_counts.index.levels]
+                + [["Year Total"]]
+            )
+        )
+        .unstack(1)
+        .unstack()
+    )
+    year_counts["Total Unique Users", "Year Total"] = year_counts_user
+    year_counts["Total Active Users", "Year Total"] = year_counts_active
+
+    type_counts = pd.concat([type_counts, year_counts.stack()]).sort_index()
+    type_counts.fillna(0, inplace=True)
+    type_counts["Total Unique Users"] = type_counts[
+        "Total Unique Users"
+    ].astype("int")
+    type_counts["Total Active Users"] = type_counts[
+        "Total Active Users"
+    ].astype("int")
 
     fix_months(type_counts)
 
@@ -92,7 +131,8 @@ def get_user_table(df=None):
 
 
 def get_user_details_table(df=None):
-    if df is None:df=get_base_dataframe()
+    if df is None:
+        df = get_base_dataframe()
     df = get_base_dataframe()
 
     df_sum = (
@@ -120,7 +160,6 @@ def get_user_details_table(df=None):
         )
     ).unstack(1)
     df5 = df4.sum()
-    df5
 
     df_totals = pd.concat([df_sum, df2, df3, df4])
 
@@ -134,6 +173,11 @@ def get_user_details_table(df=None):
     df_totals = df_totals.sort_index(key=sort_key)
 
     df_totals.loc["Grand Total", :] = df5.values
+
+    df_totals["activity"] = df_totals["activity"].astype("int")
+    df_totals["course"] = df_totals["course"].astype("int")
+    df_totals["program"] = df_totals["program"].astype("int")
+    df_totals["project"] = df_totals["project"].astype("int")
 
     fix_months(df_totals)
 
