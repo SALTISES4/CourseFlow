@@ -121,26 +121,26 @@ export class HomeRenderer{
     }
 }
 
-export class ProjectRenderer{
-    constructor(data_package,project_data){
-        this.initial_project_data = data_package;
-        this.project_data = project_data;
-        this.store = createStore(Reducers.projectMenuReducer,data_package);
-        this.read_only = data_package.read_only;
-    }
+// export class ProjectRenderer{
+//     constructor(data_package,project_data){
+//         this.initial_project_data = data_package;
+//         this.project_data = project_data;
+//         this.store = createStore(Reducers.projectMenuReducer,data_package);
+//         this.read_only = data_package.read_only;
+//     }
     
-    render(container){
-        this.container=container;
+//     render(container){
+//         this.container=container;
         
-        reactDom.render(
-        <Provider store = {this.store}>
-            <ProjectMenu project={this.project_data} renderer={this}/>
-        </Provider>,
-        container[0]
-    );
+//         reactDom.render(
+//         <Provider store = {this.store}>
+//             <ProjectMenu project={this.project_data} renderer={this}/>
+//         </Provider>,
+//         container[0]
+//     );
         
-    }
-}
+//     }
+// }
 
 
 export class WorkflowRenderer{
@@ -159,6 +159,7 @@ export class WorkflowRenderer{
         this.project = data_package.project;
         this.column_colours = {}
         this.user_permission=user_permission;
+        if(!this.is_strategy && this.project.object_permission)this.project_permission=this.project.object_permission.permission_type;
         try{
             this.user_role=user_role;
         }catch(err){
@@ -251,7 +252,6 @@ export class WorkflowRenderer{
     
     
     render(container,view_type="workflowview"){
-        console.log(this.store.getState());
         this.view_type=view_type;
         reactDom.render(<WorkflowLoader/>,container[0]);
         let store = this.store;
@@ -300,21 +300,21 @@ export class WorkflowRenderer{
                 );
             },50);
         }else{
-            reactDom.render(
-                <Provider store = {this.store}>
-                    <WorkflowBaseView view_type={view_type} renderer={this}/>
-                </Provider>,
-                container[0]
-            );
+            setTimeout(()=>{
+                reactDom.render(
+                    <Provider store = {this.store}>
+                        <WorkflowBaseView view_type={view_type} renderer={this}/>
+                    </Provider>,
+                    container[0]
+                );
+            },50)
         }
         
     }
     
     connection_opened(reconnect=false){
-        console.log("Getting workflow data");
         this.getWorkflowData(this.workflowID,(response)=>{
             let data_flat = response.data_package;
-            console.log(data_flat);
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
             this.render($("#container"));
             if(!this.always_static)this.create_connection_bar();
@@ -367,7 +367,6 @@ export class WorkflowRenderer{
         this.messages_queued=true;
         let renderer = this;
         this.getWorkflowParentData(this.workflowID,(response)=>{
-            console.log("Got parent data");
             //remove all the parent node and parent workflow data
             renderer.store.dispatch(Reducers.replaceStoreData({parent_node:[],parent_workflow:[]}));
             renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
@@ -379,7 +378,6 @@ export class WorkflowRenderer{
         this.messages_queued=true;
         let renderer = this;
         this.getWorkflowChildData(this.workflowID,(response)=>{
-            console.log("Got child data");
             //remove all the child workflow data
             renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
             renderer.clear_queue(0);
@@ -532,7 +530,6 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer{
         let loader = new Constants.Loader(this.container[0]);
         this.getWorkflowData(this.workflowID,(response)=>{
             let data_flat = response.data_package;
-            console.log(data_flat);
             if(this.initial_object_sets)data_flat={...data_flat,objectset:this.initial_object_sets};
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
             this.render(this.view_type);

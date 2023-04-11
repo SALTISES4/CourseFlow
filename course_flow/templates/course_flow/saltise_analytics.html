@@ -9,10 +9,11 @@
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-<div class="home-menu-container">
+<div class="saltise-menu-container">
     <h1>CourseFlow Analytics</h1>
     <hr>
     <div id="tabs" class="home-tabs">
+      <button><a href="{% url 'course_flow:get-saltise-download' %}">Download</a></button>
       <ul>
         <li class="tab-header"><a href="#analytics">{% trans "Overview" %}</a></li>
         <li class="tab-header"><a href="#user-data">{% trans "User Info" %}</a></li>
@@ -21,15 +22,15 @@
       <div id="analytics">
         <p>{% trans "Analytics on CourseFlow usage" %}</p>
         <h3>{% trans "Workflow Information:" %}</h3>
-        <p>{% trans "Total workflows, projects, and nodes created by month. Bracketed numbers show content-rich objects (three or more nodes)." %}</p>
+        <p>Total content created by month. Only content-rich objects are shown (bracketed numbers)</p>
         {% get_saltise_admin_workflows %}
         <h3>{% trans "User Information:" %}</h3>
-        <p>{% trans "Number of users who have created at least one of each the given objects (workflows, projects, or nodes) within the given month." %}</p>
+        <p>Number of users who have created at least one of each the given objects within the given month.</p>
         {% get_saltise_admin_users %}
       </div>
       <div id="user-data">
         <h3>{% trans "User Details:" %}</h3>
-        <p>{% trans "Details on the content created by users." %}</p>
+        <p>Details on the content created by users.</p>
         {% get_saltise_admin_user_details %}
       </div>
       <div id="notified-users">
@@ -55,11 +56,15 @@
 
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
-  $(".home-menu-container").detach().appendTo("#container");
+  $(".saltise-menu-container").detach().appendTo("#container");
 
   $(window).on("load",()=>{
-    console.log("hello");
     $("#tabs").tabs({active:0});
+
+    $("table.analytics-details tr th:contains('Month Total')").parent().addClass("month-row");
+    $("table.analytics-details tr th:contains('Year Total')").parent().addClass("year-row");
+    $("table.analytics-details tr th:contains('Domain Total')").parent().addClass("domain-row");
+    $("table.analytics-details tr th:contains('Grand Total')").parent().addClass("total-row");
   });
 </script>
 {% endblock %}

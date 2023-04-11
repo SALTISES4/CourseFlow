@@ -1,4 +1,5 @@
-import json, time
+import json
+import time
 
 from django.contrib.auth.models import Group
 from django.test import TestCase
@@ -164,6 +165,7 @@ class ModelViewTest(TestCase):
             liveproject=liveproject,
             role_type=LiveProjectUser.ROLE_STUDENT,
         )
+        # As a student, try to change your own role
         response = self.client.post(
             reverse("course_flow:set-liveproject-role"),
             {
@@ -186,6 +188,7 @@ class ModelViewTest(TestCase):
             liveproject=liveproject,
             role_type=LiveProjectUser.ROLE_TEACHER,
         )
+        # As a teacher, try to set your own role
         response = self.client.post(
             reverse("course_flow:set-liveproject-role"),
             {
@@ -204,6 +207,7 @@ class ModelViewTest(TestCase):
             1,
         )
         user2 = User.objects.create()
+        # As a teacher, try to change another user who has a student account's role to teacher
         response = self.client.post(
             reverse("course_flow:set-liveproject-role"),
             {
@@ -220,7 +224,8 @@ class ModelViewTest(TestCase):
             ).count(),
             0,
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(json.loads(response.content).get("action"), "error")
+        # Try to change the author's permission
         response = self.client.post(
             reverse("course_flow:set-liveproject-role"),
             {
@@ -237,7 +242,7 @@ class ModelViewTest(TestCase):
             ).count(),
             0,
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(json.loads(response.content).get("action"), "error")
 
     def test_get_live_project_data(self):
         author = get_author()
@@ -839,15 +844,18 @@ class ModelViewTest(TestCase):
         node.column = column
         node.save()
 
+        # Create a liveproject with an assignment
         liveproject = LiveProject.objects.create(project=project)
         assignment = LiveAssignment.objects.create(
             liveproject=liveproject, task=node
         )
+        # Add the author as a liveprojectuser teacher
         LiveProjectUser.objects.create(
             user=author,
             liveproject=liveproject,
             role_type=LiveProjectUser.ROLE_TEACHER,
         )
+        # Assign the assignment to the author
         userassignment = UserAssignment.objects.create(
             user=author,
             assignment=assignment,
@@ -867,6 +875,7 @@ class ModelViewTest(TestCase):
             },
         )
         self.assertEqual(response.status_code, 403)
+        # Add the user to the project
         lpu = LiveProjectUser.objects.create(
             user=user,
             liveproject=liveproject,
@@ -881,10 +890,13 @@ class ModelViewTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
         liveproject.visible_workflows.add(workflow)
-        UserAssignment.objects.create(
-            user=user,
-            assignment=assignment,
-        )
+        # Add the user to the assignment - not needed always because happens by default
+        if UserAssignment.objects.filter(user=user).count() == 0:
+            UserAssignment.objects.create(
+                user=user,
+                assignment=assignment,
+            )
+        self.assertEqual(len(UserAssignment.objects.filter(user=user)),1)
         response = self.client.post(
             reverse("course_flow:get-assignments-for-node"),
             {

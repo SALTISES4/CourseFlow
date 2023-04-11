@@ -30,7 +30,7 @@ export class MessageBox extends React.Component{
         );
         return(
             <div class="screen-barrier" onClick={(evt)=>evt.stopPropagation()}>
-                <div class="message-box">
+                <div class={"message-box "+this.props.message_type}>
                     {menu}
                 </div>
             </div>
@@ -48,7 +48,6 @@ export class WorkflowsMenu extends React.Component{
     render(){
         var data_package = this.props.data.data_package;
         let no_hyperlink = false;
-        console.log(this.props.type);
         if(this.props.type=="linked_workflow_menu" || this.props.type=="added_workflow_menu" || this.props.type=="target_project_menu" || this.props.type=="workflow_select_menu")no_hyperlink=true;
         var tabs = [];
         var tab_li = [];
@@ -392,17 +391,15 @@ export class MenuSection extends React.Component{
                 );
             }
             add_button=(
-                [
-                    <div class="menu-create hover-shade" onClick={this.clickAdd.bind(this)}>
-                        <img
-                          class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title={gettext("Add New")}
-                          src={iconpath+"add_new_white.svg"}
-                        /><div>{this.props.section_data.title}</div>
-                    </div>,
-                    <div class="create-dropdown" ref={this.dropdownDiv}>
+                <div class="menu-create hover-shade" ref={this.dropdownDiv}>
+                    <img
+                      class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title={gettext("Add New")}
+                      src={iconpath+"add_new_white.svg"}
+                    /><div>{this.props.section_data.title}</div>
+                    <div class="create-dropdown">
                         {adds}
                     </div>
-                ]
+                </div>
             )
             
         }
@@ -417,18 +414,12 @@ export class MenuSection extends React.Component{
         );
         
     }
-    
-    clickAdd(evt){
-        $(this.dropdownDiv.current)[0].classList.toggle("active");
-    }
 
     componentDidMount(){
-        window.addEventListener("click",(evt)=>{
-            if($(evt.target).closest(".menu-create").length==0){
-                $(".create-dropdown").removeClass("active");
-            }
-        });
+        makeDropdown(this.dropdownDiv.current);
     }
+
+    
 }
 
 export class MenuTab extends React.Component{
@@ -738,12 +729,6 @@ export class ProjectEditMenu extends React.Component{
                     
                 </div>
                 <div>
-                    <h4>{gettext("Published")+":"}</h4>
-                    <div>{disabled_publish_text}</div>
-                    <input id="project-publish-input" disabled={!published_enabled} type="checkbox" name="published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
-                    <label for="published">{gettext("Is Published (visible to all users)")}</label>
-                </div>
-                <div>
                     <h4>{gettext("View sets")+":"}</h4>
                     {sets_added}
                     <div class="nomenclature-row">
@@ -757,11 +742,57 @@ export class ProjectEditMenu extends React.Component{
                         </button>
                     </div>
                 </div>
+                {this.state.author_id==user_id &&
+                    <div>
+                        <h4>{gettext("Delete/restore")}:</h4>
+                        {this.getDeleteProject()}
+                    </div>
+                }
                 <div class="action-bar">
                     {this.getActions()}
                 </div>
             </div>
         );
+    }
+
+    getDeleteProject(){
+        if(!this.state.deleted)return (
+            <div title={gettext("Delete")} class="hover-shade" onClick={this.deleteProject.bind(this)}>
+                {gettext("Delete: ")}<span class="material-symbols-rounded">delete</span>
+            </div>
+        )
+        else return([
+            <div title={gettext("Restore")} class="hover-shade" onClick={this.restoreProject.bind(this)}>
+                {gettext("Restore: ")}<span class="material-symbols-rounded">restore_from_trash</span>
+            </div>,
+            <div title={gettext("Permanently delete")} class="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
+                {gettext("Permanently delete: ")}<span class="material-symbols-rounded">delete_forever</span>
+            </div>
+        ])
+    }
+
+    deleteProject(){
+        let component=this;
+        if(window.confirm(gettext("Are you sure you want to delete this project?"))){
+            deleteSelf(this.props.data.id,"project",true,()=>{
+                component.setState({deleted:true})
+            });
+        }
+    }
+
+    deleteProjectHard(){
+        let component=this;
+        if(window.confirm(gettext("Are you sure you want to permanently delete this project?"))){
+            deleteSelf(this.props.data.id,"project",false,()=>{
+                window.location=home_path;
+            });
+        }
+    }
+
+    restoreProject(){
+        restoreSelf(this.props.data.id,"project",()=>{
+            this.setState({deleted:false})
+        });
     }
     
     deleteTerm(id){

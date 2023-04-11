@@ -152,6 +152,7 @@ class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
         assert courseflow_user.first_name == "new first"
         assert courseflow_user.last_name == "new last"
 
+
 class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
@@ -185,7 +186,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:project-update", args=[project.pk])
         )
         time.sleep(1)
-        selenium.find_element_by_id("overflow-options-icon").click()
+        selenium.find_element_by_id("overflow-options").click()
         selenium.find_element_by_id("live-project").click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
@@ -213,21 +214,16 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             "new title"
             in selenium.find_element_by_css_selector(".workflow-title").text
         )
-        selenium.get(self.live_server_url + "/course-flow/home/")
+        selenium.get(self.live_server_url + "/course-flow/mylibrary/")
+        time.sleep(0.5)
         selenium.find_element_by_css_selector(
-            "#home-liveprojects a:first-child"
+            ".workflow-for-menu .workflow-live-classroom"
         ).click()
-        selenium.find_element_by_css_selector(".workflow-top-row a").click()
+        time.sleep(0.5)
         # windows = selenium.window_handles
         # selenium.switch_to_window(windows[0])
         # selenium.close()
         # selenium.switch_to_window(windows[1])
-        assert (
-            "new title"
-            in selenium.find_element_by_css_selector(".workflow-title").text
-        )
-        selenium.get(self.live_server_url + "/course-flow/home/")
-        selenium.find_element_by_css_selector("#home-liveprojects a+a").click()
         assert (
             "new title"
             in selenium.find_element_by_css_selector(".workflow-title").text
@@ -251,6 +247,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             len(selenium.find_elements_by_css_selector("#panel-my-projects"))
             == 0
         )
+        time.sleep(0.5)
         selenium.find_element_by_css_selector(
             "#panel-my-live-projects"
         ).click()
@@ -265,7 +262,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
         selenium.get(self.live_server_url + "/course-flow/home/")
         selenium.find_element_by_css_selector(
-            "#home-liveprojects a:first-child"
+            ".home-item .home-title-row a"
         ).click()
         selenium.find_element_by_css_selector(".workflow-top-row a").click()
         # windows = selenium.window_handles
@@ -277,7 +274,8 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
             in selenium.find_element_by_css_selector(".workflow-title").text
         )
         selenium.get(self.live_server_url + "/course-flow/home/")
-        selenium.find_element_by_css_selector("#home-liveprojects a+a").click()
+        time.sleep(0.5)
+        selenium.find_element_by_css_selector(".workflow-top-row a").click()
         assert (
             "new title"
             in selenium.find_element_by_css_selector(".workflow-title").text
@@ -519,7 +517,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(1)
         assert (
             "new workflow"
-            in selenium.find_element_by_css_selector(".workflow-title").text
+            in selenium.find_element_by_css_selector(".project-title").text
         )
 
     def test_create_assignment(self):
@@ -692,7 +690,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
 
         self.assertEqual(
             "new workflow",
-            selenium.find_element_by_css_selector(".workflow-title").text,
+            selenium.find_element_by_css_selector(".project-title").text,
         )
 
         selenium.close()
@@ -721,7 +719,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium.switch_to_window(windows[1])
         self.assertEqual(
             "linked workflow",
-            selenium.find_element_by_css_selector(".workflow-title").text,
+            selenium.find_element_by_css_selector(".project-title").text,
         )
 
     def test_create_assignment_from_workflow(self):
@@ -865,12 +863,11 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         home = selenium.current_url
 
         # Create a project
-        selenium.get(self.live_server_url + "/course-flow/myprojects/")
+        selenium.get(self.live_server_url + "/course-flow/mylibrary/")
+
+        selenium.find_element_by_css_selector("#create-project-button").click()
         selenium.find_element_by_css_selector(
-            ".section-project .menu-create"
-        ).click()
-        selenium.find_element_by_css_selector(
-            ".section-project .create-dropdown.active a:first-child"
+            "#project-create-library"
         ).click()
         title = selenium.find_element_by_id("id_title")
         description = selenium.find_element_by_id("id_description")
@@ -879,34 +876,29 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         title.send_keys(project_title)
         description.send_keys(project_description)
         selenium.find_element_by_id("save-button").click()
+
         assert (
             project_title
-            in selenium.find_element_by_css_selector(".workflow-title").text
+            in selenium.find_element_by_css_selector(".project-title").text
         )
         assert (
             project_description
             in selenium.find_element_by_css_selector(
-                ".project-header .workflow-description"
+                ".project-description"
             ).text
         )
         project_url = selenium.current_url
 
         # Create templates
-        selenium.get(self.live_server_url + "/course-flow/mytemplates/")
+        selenium.get(self.live_server_url + "/course-flow/mylibrary/")
         templates = selenium.current_url
 
         for template_type in ["activity", "course"]:
-            if template_type == "course":
-                selenium.find_element_by_css_selector(
-                    'a[href="#tabs-1"]'
-                ).click()
             selenium.find_element_by_css_selector(
-                ".section-" + template_type + " .menu-create"
+                "#create-project-button"
             ).click()
             selenium.find_element_by_css_selector(
-                ".section-"
-                + template_type
-                + " .create-dropdown.active a:first-child"
+                "#" + template_type + "-strategy-create"
             ).click()
             title = selenium.find_element_by_id("id_title")
             description = selenium.find_element_by_id("id_description")
@@ -918,32 +910,25 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             assert (
                 project_title
-                in selenium.find_element_by_css_selector(
-                    ".workflow-title"
-                ).text
+                in selenium.find_element_by_css_selector(".project-title").text
             )
             assert (
                 project_description
                 in selenium.find_element_by_css_selector(
-                    ".workflow-header .workflow-description"
+                    ".project-description"
                 ).text
             )
 
             selenium.get(templates)
-        selenium.get(project_url)
 
         for i, workflow_type in enumerate(["activity", "course", "program"]):
+            selenium.get(project_url)
             # Create the workflow
             selenium.find_element_by_css_selector(
-                'a[href="#tabs-' + str(i + 1) + '"]'
+                "#create-project-button"
             ).click()
             selenium.find_element_by_css_selector(
-                ".section-" + workflow_type + " .menu-create"
-            ).click()
-            selenium.find_element_by_css_selector(
-                ".section-"
-                + workflow_type
-                + " .create-dropdown.active a:first-child"
+                "#" + workflow_type + "-create-project"
             ).click()
             title = selenium.find_element_by_id("id_title")
             description = selenium.find_element_by_id("id_description")
@@ -955,16 +940,17 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             assert (
                 project_title
-                in selenium.find_element_by_class_name("workflow-title").text
+                in selenium.find_element_by_css_selector(".project-title").text
             )
             assert (
                 project_description
                 in selenium.find_element_by_css_selector(
-                    ".workflow-header .workflow-description"
+                    ".project-description"
                 ).text
             )
             selenium.get(project_url)
             # edit link
+            time.sleep(1)
             selenium.find_element_by_css_selector(
                 ".workflow-for-menu." + workflow_type + " .workflow-title"
             ).click()
@@ -978,29 +964,18 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             assert (
                 project_title
-                in selenium.find_element_by_css_selector(
-                    ".workflow-title"
-                ).text
+                in selenium.find_element_by_css_selector(".project-title").text
             )
-            selenium.get(project_url)
+
+            # selenium.get(project_url)
+            selenium.find_element_by_css_selector("#overflow-options").click()
             selenium.find_element_by_css_selector(
-                ".workflow-for-menu."
-                + workflow_type
-                + " .workflow-duplicate-button"
+                "#copy-to-project-button"
             ).click()
-            wait.until(
-                lambda driver: len(
-                    driver.find_elements_by_css_selector(
-                        ".section-" + workflow_type + " .workflow-title"
-                    )
-                )
-                > 1
-            )
+            time.sleep(5)
             assert (
                 project_title
-                in selenium.find_elements_by_css_selector(
-                    ".section-workflow .workflow-title"
-                )[1].text
+                in selenium.find_element_by_css_selector(".project-title").text
             )
             self.assertEqual(
                 get_model_from_str(workflow_type)
@@ -1008,11 +983,16 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 .count(),
                 1,
             )
-            selenium.find_elements_by_css_selector(
-                ".section-workflow ."
-                + workflow_type
-                + " .workflow-delete-button"
-            )[0].click()
+            selenium.find_element_by_css_selector(
+                "#edit-project-button"
+            ).click()
+            time.sleep(1)
+            selenium.execute_script(
+                "$('.right-panel-inner')[0].scrollTo(0, 500)"
+            )
+            selenium.find_element_by_css_selector(
+                "#sidebar .delete-self-button"
+            ).click()
             alert = wait.until(expected_conditions.alert_is_present())
             selenium.switch_to.alert.accept()
             time.sleep(2)
@@ -1052,26 +1032,21 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             0
         ].click()
         selenium.find_element_by_css_selector("#add-discipline").click()
-        selenium.find_element_by_id("project-publish-input").click()
-        alert = wait.until(expected_conditions.alert_is_present())
-        selenium.switch_to.alert.accept()
-        time.sleep(2)
         selenium.find_element_by_id("save-changes").click()
         assert (
             "new title"
-            in selenium.find_element_by_css_selector(".workflow-title").text
+            in selenium.find_element_by_css_selector(".project-title").text
         )
         assert (
             "new description"
             in selenium.find_element_by_css_selector(
-                ".project-header .workflow-description"
+                ".project-description"
             ).text
         )
         time.sleep(2)
         project = Project.objects.first()
         self.assertEqual(project.title, "new title")
         self.assertEqual(project.description, "new description")
-        self.assertEqual(project.published, True)
         self.assertEqual(project.disciplines.first(), discipline)
 
     def test_import_favourite(self):
@@ -1093,67 +1068,59 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             workflow=Program.objects.create(author=author, published=True),
             project=project,
         )
+        ObjectPermission.objects.create(
+            user=self.user,
+            content_object=project,
+            permission_type=ObjectPermission.PERMISSION_VIEW,
+        )
         Favourite.objects.create(user=self.user, content_object=project)
         Favourite.objects.create(
-            user=self.user, content_object=Activity.objects.first()
+            user=self.user,
+            content_object=Workflow.objects.get(
+                pk=Activity.objects.first().pk
+            ),
         )
         Favourite.objects.create(
-            user=self.user, content_object=Course.objects.first()
+            user=self.user,
+            content_object=Workflow.objects.get(pk=Course.objects.first().pk),
         )
         Favourite.objects.create(
-            user=self.user, content_object=Program.objects.first()
+            user=self.user,
+            content_object=Workflow.objects.get(pk=Program.objects.first().pk),
         )
 
         # View the favourites
         selenium.get(
-            self.live_server_url + reverse("course_flow:my-favourites")
+            self.live_server_url
+            + reverse("course_flow:my-library")
+            + "?favourites=true"
         )
+        time.sleep(2)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".workflow-for-menu .workflow-toggle-favourite .filled"
+                )
+            ),
+            1,
+        )
+        selenium.find_element_by_css_selector(
+            ".workflow-for-menu .workflow-title"
+        ).click()
         favourites = selenium.current_url
-
-        assert (
+        time.sleep(2)
+        self.assertEqual(
             len(
                 selenium.find_elements_by_css_selector(
-                    "#tabs-0 .workflow-title"
+                    ".workflow-for-menu .workflow-toggle-favourite .filled"
                 )
-            )
-            == 4
-        )
-        assert (
-            len(
-                selenium.find_elements_by_css_selector(
-                    "#tabs-1 .workflow-title"
-                )
-            )
-            == 1
-        )
-        assert (
-            len(
-                selenium.find_elements_by_css_selector(
-                    "#tabs-2 .workflow-title"
-                )
-            )
-            == 1
-        )
-        assert (
-            len(
-                selenium.find_elements_by_css_selector(
-                    "#tabs-3 .workflow-title"
-                )
-            )
-            == 1
-        )
-        assert (
-            len(
-                selenium.find_elements_by_css_selector(
-                    "#tabs-4 .workflow-title"
-                )
-            )
-            == 1
+            ),
+            3,
         )
         # Import the project
-        selenium.find_element_by_css_selector(
-            "#tabs-0 .project .workflow-duplicate-button"
-        ).click()
+        selenium.find_element_by_css_selector("#overflow-options").click()
+        selenium.find_element_by_css_selector("#copy-button").click()
+
         time.sleep(2)
         new_project = Project.objects.get(parent_project=project)
         for workflow_type in ["activity", "course", "program"]:
@@ -1169,36 +1136,51 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
         # Create a project, then import the favourites one at a time
         my_project1 = Project.objects.create(author=self.user)
-        selenium.find_element_by_css_selector("a[href='#tabs-2']").click()
+        selenium.get(favourites)
+        time.sleep(1)
         selenium.find_element_by_css_selector(
-            "#tabs-2 .workflow-duplicate-button"
+            ".workflow-for-menu.activity .workflow-title"
         ).click()
+        time.sleep(0.5)
+        selenium.find_element_by_css_selector("#overflow-options").click()
+        selenium.find_element_by_css_selector("#copy-button").click()
         time.sleep(0.5)
         selenium.find_elements_by_css_selector(
             "#popup-container #tabs-0 .workflow-for-menu"
         )[1].click()
         selenium.find_element_by_css_selector("#set-linked-workflow").click()
         time.sleep(1)
-        selenium.find_element_by_css_selector("a[href='#tabs-3']").click()
+
+        selenium.get(favourites)
+        time.sleep(1)
         selenium.find_element_by_css_selector(
-            "#tabs-3 .workflow-duplicate-button"
+            ".workflow-for-menu.course .workflow-title"
         ).click()
+        time.sleep(0.5)
+        selenium.find_element_by_css_selector("#overflow-options").click()
+        selenium.find_element_by_css_selector("#copy-button").click()
         time.sleep(0.5)
         selenium.find_elements_by_css_selector(
             "#popup-container #tabs-0 .workflow-for-menu"
         )[1].click()
         selenium.find_element_by_css_selector("#set-linked-workflow").click()
         time.sleep(1)
-        selenium.find_element_by_css_selector("a[href='#tabs-4']").click()
+
+        selenium.get(favourites)
+        time.sleep(1)
         selenium.find_element_by_css_selector(
-            "#tabs-4 .workflow-duplicate-button"
+            ".workflow-for-menu.program .workflow-title"
         ).click()
+        time.sleep(0.5)
+        selenium.find_element_by_css_selector("#overflow-options").click()
+        selenium.find_element_by_css_selector("#copy-button").click()
         time.sleep(0.5)
         selenium.find_elements_by_css_selector(
             "#popup-container #tabs-0 .workflow-for-menu"
         )[1].click()
         selenium.find_element_by_css_selector("#set-linked-workflow").click()
         time.sleep(1)
+
         for workflow_type in ["activity", "course", "program"]:
             assert WorkflowProject.objects.get(
                 workflow=get_model_from_str(workflow_type)
@@ -1210,97 +1192,6 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 )
                 .last(),
                 project=my_project1,
-            )
-
-        # Import the workflows from a project rather than from the favourites menu
-        my_project = Project.objects.create(author=self.user)
-        selenium.get(
-            self.live_server_url
-            + reverse("course_flow:project-update", args=[my_project.pk])
-        )
-        selenium.find_element_by_css_selector("#tabs-0 .menu-create").click()
-        selenium.find_element_by_css_selector(
-            ".create-dropdown.active a:last-child"
-        ).click()
-        time.sleep(0.5)
-        selenium.find_element_by_css_selector(
-            "#popup-container a[href='#tabs-2']"
-        ).click()
-        selenium.find_elements_by_css_selector(
-            "#popup-container #tabs-2 .workflow-for-menu"
-        )[0].click()
-        selenium.find_element_by_css_selector("#set-linked-workflow").click()
-        time.sleep(1)
-        selenium.find_element_by_css_selector("#tabs-0 .menu-create").click()
-        selenium.find_element_by_css_selector(
-            ".create-dropdown.active a:last-child"
-        ).click()
-        time.sleep(0.5)
-        selenium.find_element_by_css_selector(
-            "#popup-container a[href='#tabs-2']"
-        ).click()
-        selenium.find_elements_by_css_selector(
-            "#popup-container #tabs-2 .workflow-for-menu"
-        )[1].click()
-        selenium.find_element_by_css_selector("#set-linked-workflow").click()
-        time.sleep(1)
-        selenium.find_element_by_css_selector("#tabs-0 .menu-create").click()
-        selenium.find_element_by_css_selector(
-            ".create-dropdown.active a:last-child"
-        ).click()
-        time.sleep(0.5)
-        selenium.find_element_by_css_selector(
-            "#popup-container a[href='#tabs-2']"
-        ).click()
-        selenium.find_elements_by_css_selector(
-            "#popup-container #tabs-2 .workflow-for-menu"
-        )[2].click()
-        selenium.find_element_by_css_selector("#set-linked-workflow").click()
-        time.sleep(1)
-        assert (
-            len(
-                selenium.find_elements_by_css_selector(
-                    "#tabs-0 .workflow-title"
-                )
-            )
-            == 3
-        )
-        assert (
-            len(
-                selenium.find_elements_by_css_selector(
-                    "#tabs-1 .workflow-title"
-                )
-            )
-            == 1
-        )
-        assert (
-            len(
-                selenium.find_elements_by_css_selector(
-                    "#tabs-2 .workflow-title"
-                )
-            )
-            == 1
-        )
-        assert (
-            len(
-                selenium.find_elements_by_css_selector(
-                    "#tabs-3 .workflow-title"
-                )
-            )
-            == 1
-        )
-
-        for workflow_type in ["activity", "course", "program"]:
-            assert WorkflowProject.objects.get(
-                workflow=get_model_from_str(workflow_type)
-                .objects.filter(
-                    author=self.user,
-                    parent_workflow=get_model_from_str(
-                        workflow_type
-                    ).objects.get(author=author),
-                )
-                .last(),
-                project=my_project,
             )
 
     def test_workflow_read_only(self):
@@ -1864,9 +1755,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             selenium.find_element_by_id("project-return").click()
             assert (
                 "project title"
-                in selenium.find_element_by_css_selector(
-                    ".workflow-title"
-                ).text
+                in selenium.find_element_by_css_selector(".project-title").text
             )
 
     def test_strategy_convert(self):
@@ -1912,12 +1801,12 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 ).text
             )
             selenium.get(
-                self.live_server_url + reverse("course_flow:my-templates")
+                self.live_server_url + reverse("course_flow:my-library")
             )
+            time.sleep(1)
             selenium.find_element_by_css_selector(
-                "a[href='#tabs-" + str(i) + "']"
+                "." + workflow_type + " .workflow-title"
             ).click()
-            selenium.find_element_by_css_selector(".workflow-title").click()
             time.sleep(2)
 
             # windows = selenium.window_handles
@@ -1927,9 +1816,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
             assert (
                 "new strategy"
-                in selenium.find_element_by_css_selector(
-                    ".workflow-title"
-                ).text
+                in selenium.find_element_by_css_selector(".project-title").text
             )
             self.assertEqual(
                 Workflow.objects.filter(is_strategy=True).count(), 1
@@ -2675,9 +2562,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(10)
             assert (
                 workflow_types[i - 1]
-                in selenium.find_element_by_css_selector(
-                    ".workflow-title"
-                ).text
+                in selenium.find_element_by_css_selector(".project-title").text
             )
             selenium.get(this_url)
             time.sleep(2)
@@ -2707,9 +2592,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             ).double_click().perform()
             assert (
                 workflow_type
-                in selenium.find_element_by_css_selector(
-                    ".workflow-title"
-                ).text
+                in selenium.find_element_by_css_selector(".project-title").text
             )
 
     def create_many_items(self, author, published, disciplines):
@@ -2844,23 +2727,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(
             Favourite.objects.filter(
                 user=self.user,
-                content_type=ContentType.objects.get_for_model(Activity),
+                content_type=ContentType.objects.get_for_model(Workflow),
             ).count(),
-            1,
-        )
-        self.assertEqual(
-            Favourite.objects.filter(
-                user=self.user,
-                content_type=ContentType.objects.get_for_model(Course),
-            ).count(),
-            1,
-        )
-        self.assertEqual(
-            Favourite.objects.filter(
-                user=self.user,
-                content_type=ContentType.objects.get_for_model(Program),
-            ).count(),
-            1,
+            3,
         )
         selenium.find_element_by_css_selector("select[name='results']").click()
         selenium.find_elements_by_css_selector(
@@ -2963,6 +2832,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         wait = WebDriverWait(selenium, timeout=10)
         user2 = get_author()
         project = Project.objects.create(author=self.user)
+        project.title = "Title"
+        project.save()
+        discipline = Discipline.objects.create(title="discipline")
+        project.disciplines.add(discipline)
         selenium.get(
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
@@ -3049,6 +2922,12 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             ).count(),
             0,
         )
+        selenium.find_element_by_css_selector(".make-public").click()
+        alert = wait.until(expected_conditions.alert_is_present())
+        selenium.switch_to.alert.accept()
+        time.sleep(2)
+        project = Project.objects.get(pk=project.pk)
+        self.assertEqual(project.published, True)
 
         selenium.find_element_by_css_selector(
             ".message-wrap > .window-close-button"
@@ -3314,6 +3193,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 author=self.user, column=workflow.columns.first()
             )
             outcome = workflow.outcomes.create(author=self.user)
+            outcome2 = workflow.outcomes.create(author=self.user)
+
             child1 = workflow.outcomes.first().children.create(
                 author=self.user, depth=1
             )
@@ -3321,7 +3202,9 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                 author=self.user, depth=1
             )
             OutcomeNode.objects.create(node=node1, outcome=child1)
+            OutcomeNode.objects.create(node=node1, outcome=outcome2)
             OutcomeNode.objects.create(node=node2, outcome=outcome)
+            OutcomeNode.objects.create(node=node2, outcome=outcome2)
             selenium.get(
                 self.live_server_url
                 + reverse("course_flow:workflow-update", args=[workflow.pk])
@@ -3374,6 +3257,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             ).click()
 
             # Make sure the outcomenodes have vanished
+            time.sleep(1)
             ActionChains(selenium).move_to_element(
                 selenium.find_elements_by_css_selector(".node .side-actions")[
                     1
@@ -3515,7 +3399,9 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         program.weeks.first().nodes.create(
             author=self.user, column=program.columns.first(), node_type=2
         )
-        Favourite.objects.create(user=self.user, content_object=course)
+        Favourite.objects.create(
+            user=self.user, content_object=course.get_workflow()
+        )
         selenium.get(
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
@@ -3527,24 +3413,34 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
 
         # delete a workflow
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[course.pk])
+        )
         time.sleep(2)
+        selenium.find_element_by_css_selector("#edit-project-button").click()
+        selenium.execute_script("$('.right-panel-inner')[0].scrollTo(0, 500)")
         selenium.find_element_by_css_selector(
-            ".course .workflow-delete-button"
+            "#sidebar .delete-self-button"
         ).click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
         time.sleep(2)
+        self.assertEqual(Course.objects.get(pk=course.pk).deleted, True)
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:project-update", args=[project.pk])
+        )
 
         # make sure it doesn't show up in favourites
-
+        time.sleep(1)
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".panel-favourite")),
             1,
         )
-        selenium.find_element_by_css_selector("#my-favourites").click()
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-for-menu")),
-            0,
+            1,
         )
 
         # make sure it doesn't show up in linked wf
@@ -3577,22 +3473,27 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         # Restore
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:project-update", args=[project.pk])
+            + reverse("course_flow:workflow-update", args=[course.pk])
         )
         time.sleep(1)
-        selenium.find_element_by_css_selector("a[href='#tabs-4']").click()
+        time.sleep(2)
+        selenium.find_element_by_css_selector("#edit-project-button").click()
+        selenium.execute_script("$('.right-panel-inner')[0].scrollTo(0, 500)")
         selenium.find_element_by_css_selector(
-            ".course .workflow-delete-button"
+            "#sidebar .delete-self-button"
         ).click()
         time.sleep(2)
         # make sure shows up in favourites
 
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:project-update", args=[project.pk])
+        )
+        time.sleep(1)
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".panel-favourite")),
             2,
         )
-        selenium.find_element_by_css_selector("#my-favourites").click()
-        time.sleep(10)
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-for-menu")),
             2,
@@ -3945,7 +3846,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(3)
 
-        selenium.find_element_by_id("overflow-options-icon").click()
+        selenium.find_element_by_id("overflow-options").click()
         selenium.find_element_by_id("comparison-view").click()
         time.sleep(3)
         selenium.find_element_by_id("load-workflow").click()
@@ -4033,7 +3934,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         else:
             self.selenium = webdriver.Chrome()
 
-        super(WebsocketTestCase, self).setUp()
+        super(ChannelsStaticLiveServerTestCase, self).setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -4047,59 +3948,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(WebsocketTestCase, self).tearDown()
-
-    def test_connection_bar(self):
-        selenium = self.selenium
-        wait = WebDriverWait(selenium, timeout=10)
-
-        author = get_author()
-        user = self.user
-        workflow_edit = Course.objects.create(author=author)
-        workflow_published = Course.objects.create(author=author)
-        project = Project.objects.create(author=author)
-        WorkflowProject.objects.create(project=project, workflow=workflow_edit)
-        WorkflowProject.objects.create(
-            project=project, workflow=workflow_published
-        )
-        ObjectPermission.objects.create(
-            user=user,
-            content_object=workflow_edit,
-            permission_type=ObjectPermission.PERMISSION_EDIT,
-        )
-
-        selenium.get(
-            self.live_server_url
-            + reverse("course_flow:workflow-update", args=[workflow_edit.pk])
-        )
-        time.sleep(3)
-        self.assertEqual(
-            len(
-                selenium.find_elements_by_css_selector(
-                    ".users-box .users-small .user-indicator"
-                )
-            ),
-            1,
-        )
-        workflow_published.published = True
-        workflow_published.save()
-        project.published = True
-        project.save()
-        selenium.get(
-            self.live_server_url
-            + reverse(
-                "course_flow:workflow-update", args=[workflow_published.pk]
-            )
-        )
-        time.sleep(3)
-        self.assertEqual(
-            len(
-                selenium.find_elements_by_css_selector(
-                    ".users-box .users-small .user-indicator"
-                )
-            ),
-            0,
-        )
+        super(ChannelsStaticLiveServerTestCase, self).tearDown()
 
     def test_permissions_connect_to_workflow_update_consumer(self):
         author = get_author()
@@ -4147,6 +3996,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         communicator = WebsocketCommunicator(application, url, headers)
         communicator.scope["user"] = user
         connected, subprotocol = async_to_sync_connect(communicator)
+        print(connected)
         assert connected
         my_input = async_to_sync_send_input(
             communicator, {"type": "micro_update", "action": "my_action"}
@@ -4185,3 +4035,57 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         connected, subprotocol = async_to_sync_connect(communicator)
         assert not connected
 
+    def test_connection_bar(self):
+        selenium = self.selenium
+        wait = WebDriverWait(selenium, timeout=10)
+
+        author = get_author()
+        user = self.user
+        workflow_edit = Course.objects.create(author=author).get_workflow()
+        workflow_published = Course.objects.create(
+            author=author
+        ).get_workflow()
+        project = Project.objects.create(author=author)
+        WorkflowProject.objects.create(project=project, workflow=workflow_edit)
+        WorkflowProject.objects.create(
+            project=project, workflow=workflow_published
+        )
+        ObjectPermission.objects.create(
+            user=user,
+            content_object=workflow_edit,
+            permission_type=ObjectPermission.PERMISSION_EDIT,
+        )
+
+        selenium.get(
+            self.live_server_url
+            + reverse("course_flow:workflow-update", args=[workflow_edit.pk])
+        )
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".users-box .users-small .user-indicator"
+                )
+            ),
+            1,
+        )
+        workflow_published.published = True
+        workflow_published.save()
+        project.published = True
+        project.save()
+        selenium.get(
+            self.live_server_url
+            + reverse(
+                "course_flow:workflow-update", args=[workflow_published.pk]
+            )
+        )
+        time.sleep(3)
+        self.assertEqual(
+            len(
+                selenium.find_elements_by_css_selector(
+                    ".users-box .users-small .user-indicator"
+                )
+            ),
+            0,
+        )
+        selenium.close()

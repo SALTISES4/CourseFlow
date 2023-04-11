@@ -1,8 +1,10 @@
+import datetime
 import re
 
 import bleach
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from html2text import html2text
 from rest_framework import serializers
@@ -416,7 +418,7 @@ class NodeSerializerShallow(
 
     def get_has_assignment(self, instance):
         user = self.context.get("user", None)
-        if user is None:
+        if user is None or not user.is_authenticated:
             return False
         assignments = instance.liveassignment_set.all()
         if assignments.exists():
@@ -535,6 +537,7 @@ class ColumnSerializerShallow(
             "deleted_on",
             "id",
             "title",
+            "icon",
             "column_type",
             "column_type_display",
             "colour",
@@ -553,6 +556,7 @@ class ColumnSerializerShallow(
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
         instance.colour = validated_data.get("colour", instance.colour)
+        instance.icon = validated_data.get("icon", instance.icon)
         instance.save()
         return instance
 
@@ -687,6 +691,7 @@ class ProjectSerializerShallow(
             "object_sets",
             "favourite",
             "liveproject",
+            "object_permission",
         ]
 
     created_on = serializers.DateTimeField(format=dateTimeFormat())
@@ -696,6 +701,7 @@ class ProjectSerializerShallow(
     favourite = serializers.SerializerMethodField()
     deleted_on = serializers.DateTimeField(format=dateTimeFormat())
     author = serializers.SerializerMethodField()
+    object_permission = serializers.SerializerMethodField()
 
     def get_favourite(self, instance):
         user = self.context.get("user")
@@ -726,6 +732,22 @@ class ProjectSerializerShallow(
             workflow__deleted=False
         ).order_by("rank")
         return list(map(linkIDMap, links))
+
+    def get_object_permission(self, instance):
+        user = self.context.get("user")
+        if user is None or not user.is_authenticated:
+            return 0
+        object_permission = ObjectPermission.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(instance),
+            object_id=instance.id,
+        ).first()
+        if object_permission is None:
+            return None
+        return {
+            "permission_type": object_permission.permission_type,
+            "last_viewed": object_permission.last_viewed,
+        }
 
     def update(self, instance, validated_data):
         instance.title = validated_data.get("title", instance.title)
@@ -1241,17 +1263,24 @@ class InfoBoxSerializer(
     last_modified = serializers.DateTimeField(format=dateTimeFormat())
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
-    code = serializers.SerializerMethodField()
-    type = serializers.SerializerMethodField()
+    type = serializers.ReadOnlyField()
     favourite = serializers.SerializerMethodField()
     is_owned = serializers.SerializerMethodField()
-    is_strategy = serializers.SerializerMethodField()
+    is_strategy = serializers.ReadOnlyField()
     published = serializers.ReadOnlyField()
     author = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
-    url = serializers.SerializerMethodField()
-    can_edit = serializers.SerializerMethodField()
+    # url = serializers.SerializerMethodField()
+    # can_edit = serializers.SerializerMethodField()
+    object_permission = serializers.SerializerMethodField()
+    has_liveproject = serializers.SerializerMethodField()
+    workflow_count = serializers.SerializerMethodField()
+
+    def get_workflow_count(self, instance):
+        if instance.type == "project":
+            return instance.workflows.all().count()
+        return None
 
     def get_url(self, instance):
         if instance.type in ["project", "liveproject"]:
@@ -1279,35 +1308,64 @@ class InfoBoxSerializer(
         else:
             return False
 
-    def get_code(self, instance):
-        if hasattr(instance, "code"):
-            return instance.code
-        else:
-            return None
-
-    def get_type(self, instance):
-        return instance.type
-
-    def get_is_strategy(self, instance):
-        if hasattr(instance, "is_strategy"):
-            return instance.is_strategy
-        else:
-            return False
-
-    def get_can_edit(self, instance):
+    def get_object_permission(self, instance):
         user = self.context.get("user")
-        if instance.type in [
-            "project",
-            "activity",
-            "course",
-            "program",
-            "workflow",
-        ]:
-            return (
-                get_user_permission(instance, user)
-                == ObjectPermission.PERMISSION_EDIT
-            )
+        if user is None or not user.is_authenticated:
+            return 0
+        object_permission = ObjectPermission.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(instance),
+            object_id=instance.id,
+        ).first()
+        if object_permission is None:
+            return None
+        return {
+            "permission_type": object_permission.permission_type,
+            "last_viewed": object_permission.last_viewed,
+        }
+
+    def get_has_liveproject(self, instance):
+        if instance.type == "project":
+            if LiveProject.objects.filter(project=instance).count() > 0:
+                return True
         return False
+
+
+def analyticsDateTimeFormat():
+    return "%Y %m"
+
+
+class AnalyticsSerializer(
+    serializers.Serializer,
+):
+    created_on = serializers.DateTimeField(format=analyticsDateTimeFormat())
+    type = serializers.ReadOnlyField()
+    User = serializers.SerializerMethodField()
+    nodes = serializers.SerializerMethodField()
+    email = serializers.SerializerMethodField()
+
+    def get_nodes(self, instance):
+        if instance.type == "project":
+            return Node.objects.filter(
+                week__workflow__project__id=instance.id
+            ).count()
+        else:
+            return Node.objects.filter(week__workflow=instance.id).count()
+        return 0
+
+    def get_User(self, instance):
+        if instance.author is not None:
+            active = " (active)"
+            if (
+                timezone.now() - instance.author.last_login
+                > datetime.timedelta(days=31)
+            ):
+                active = " (inactive)"
+            return str(instance.author.pk) + active
+
+    def get_email(self, instance):
+        if instance.author is not None:
+            return instance.author.email
 
 
 # class RefreshSerializerWeek(serializers.Serializer):

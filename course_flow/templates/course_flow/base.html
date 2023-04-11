@@ -71,14 +71,20 @@
       crossorigin="anonymous"
     ></script>
     <!-- fonts -->
-    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,300,600,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <!-- * Icons -->
     <link rel="icon" type="image/x-icon" href="{% static 'course_flow/img/courseflow-favicon.png' %}";>
     <!-- ** Preloads -->
     <link
       rel="preload"
       href="https://fonts.googleapis.com/icon?family=Material+Icons+Rounded&display=swap"
+      as="style"
+    />
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined&display=swap"
       as="style"
     />
     <!-- ** Loads -->
@@ -122,6 +128,14 @@
       charset="utf-8"
     ></script>
     {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script
+      src="{% static 'course_flow/js/scripts-library.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
     <script nonce="{{ request.csp_nonce }}"
       src="{% url 'course_flow:javascript-catalog' %}"
       defer="true"
@@ -155,42 +169,32 @@
             menu
           </span>
         </div>
-        <img class="title-image" src="{% static 'course_flow/img/images_svg/logo-courseflow-beta.svg' %}"/>
+        <img class="title-image" src="{% static 'course_flow/img/logo-courseflow.svg' %}"/>
         <a class="panel-item hover-shade no-underline" href="{% url 'course_flow:home' %}">
           <span class="material-symbols-rounded">home</span>
           <div>{% trans 'Home' %}</div>
         </a>
         {% if user|has_group:"Teacher" %}
-        <a id="panel-my-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project">
-          <span class="material-symbols-rounded">search</span>
-          <div>{% trans 'Search' %}</div>
+        <a id="panel-my-library" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-library' %}">
+          <span class="material-symbols-rounded">collections_bookmark</span>
+          <div>{% trans 'Your Library' %}</div>
         </a>
-        <a id="panel-my-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-projects' %}">
-          <span class="material-symbols-rounded">folder</span>
-          <div>{% trans 'My Projects' %}</div>
+        <a id="panel-my-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project">
+          <span class="material-symbols-rounded">manage_search</span>
+          <div>{% trans 'Explore' %}</div>
         </a>
         {% endif %}
         <a id="panel-my-live-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-live-projects' %}">
           <span class="material-symbols-rounded">calendar_month</span>
           <div>{% trans 'My Classrooms' %}</div>
         </a>
-        {% if user|has_group:"Teacher" %}
-        <a id="panel-my-templates" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-templates' %}">
-          <img src="{% static 'course_flow/img/images_svg/strategy.svg' %}"/>
-          <div>{% trans 'My Templates' %}</div>
-        </a>
-        <a id="panel-my-shared" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-shared' %}">
-          <span class="material-symbols-rounded">folder_shared</span>
-          <div>{% trans 'Shared With Me' %}</div>
-        </a>
-        {% endif %}
 
         {% if user|has_group:"Teacher" %}
         <hr>
         {% endif %}
         <div class="left-panel-extra">
           {% if user|has_group:"Teacher" %}
-            <a id="my-favourites" class="panel-item hover-shade" href="{% url 'course_flow:my-favourites' %}">
+            <a id="my-favourites" class="panel-item hover-shade" href="{% url 'course_flow:my-library' %}?favourites=true">
               {% trans 'My Favourites' %}
             </a>
               {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
@@ -204,7 +208,7 @@
                   {{ favourite.content_object | safe }}
                 </a>
               {% endfor %}
-            <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
+            <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-library' %}?favourites=true">... {% trans 'see all' %}</a>
           {% endif %}
         </div>
         {% if user|has_group:"Teacher" %}
@@ -213,7 +217,7 @@
         {% endif %}
         <hr>
         <a id="user-feedback" target="_blank" class="panel-item hover-shade no-underline" href="https://courseflow.freshdesk.com/support/home">
-          <span class="material-symbols-rounded">help</span>
+          <span class="green filled material-symbols-rounded">help</span>
           <div>
             {% trans "Help and support" %}
           </div>
@@ -228,7 +232,7 @@
               {% if user|has_group:"Teacher" %}
               <div id="create-options">
                 <div class="hover-shade">
-                  <span class="material-symbols-rounded">add_circle</span>
+                  <span class="material-symbols-rounded filled">add_circle</span>
                 </div>
                 <div id="create-links" class="create-dropdown">
                   <a id="project-create" class="hover-shade" href="{% url 'course_flow:project-create' %}">{% trans 'Project' %}</a>
@@ -241,7 +245,7 @@
               {% if user.username %}
               <div id="account-options">
                 <div class="hover-shade">
-                  <span class="material-symbols-rounded">account_circle</span>
+                  <span class="material-symbols-rounded filled">account_circle</span>
                 </div>
                 <div id="account-links" class="create-dropdown">
                   <a id="profile" class="hover-shade" href="{% url 'course_flow:user-update' %}">{% trans 'Profile' %}</a>
@@ -257,15 +261,12 @@
               {% endif %}
             </div>
           </div>
-            <div id="update-notifications">
-            </div>
+            <div id="update-notifications"></div>
             <div class="menubar hidden">
                 <div id="floatbar" class="floatbar">
                   <div id="visible-icons"></div>
                   <div id="overflow-options">
-                    <img id="overflow-options-icon" class="hover-shade"
-                      src="{% static 'course_flow/img/images_svg/more_options.svg' %}"
-                    />
+                    <span class="hover-shade green material-symbols-rounded">more_horiz</span>
                     <div id="overflow-links" class="create-dropdown">
                       
                     </div>
@@ -331,6 +332,7 @@
       get_users_for_object: "{% url 'course_flow:get-users-for-object' %}",
       get_users_for_liveproject: "{% url 'course_flow:get-users-for-liveproject' %}",
       get_user_list: "{% url 'course_flow:get-user-list' %}",
+      search_all_objects: "{% url 'course_flow:search-all-objects' %}",
       set_permission: "{% url 'course_flow:set-permission' %}",
       set_liveproject_role: "{% url 'course_flow:set-liveproject-role' %}",
       get_comments_for_object: "{% url 'course_flow:get-comments-for-object' %}",
@@ -355,9 +357,12 @@
       update_liveproject_value: "{% url 'course_flow:update-liveproject-value' %}",
       set_assignment_completion: "{% url 'course_flow:set-assignment-completion' %}",
       get_assignments_for_node: "{% url 'course_flow:get-assignments-for-node' %}",
+      get_workflows_for_project: "{% url 'course_flow:get-workflows-for-project' %}",
     };
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
+      get_library: "{% url 'course_flow:get-library' %}",
+      get_home: "{% url 'course_flow:get-home' %}",
       import: "{% url 'course_flow:import' %}",
       get_public_workflow_data: "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
       get_public_workflow_parent_data: "{% url 'course_flow:get-public-workflow-parent-data' pk='0' %}",
@@ -380,35 +385,34 @@
         program:"{% url 'course_flow:workflow-public' pk='0'%}",
         workflow:"{% url 'course_flow:workflow-public' pk='0'%}"
     };
+    const home_path = "{% url 'course_flow:home' %}"
+    const my_library_path = "{% url 'course_flow:my-library' %}"
+    const my_liveprojects_path = "{% url 'course_flow:my-live-projects' %}"
     const registration_path = "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}";
 
     $("#logout").on("click",()=>{
         window.location.replace("{% url 'course_flow:logout' %}");
     });
 
-    $("#overflow-options").on("click",(evt)=>{
-      evt.stopPropagation();
-      $("#overflow-links").toggleClass("active");
-    });
-    document.addEventListener("click",()=>{
-      $("#overflow-links").removeClass("active");
-    });
+    const debounce = (func,timeout=300)=>{
+      let timer;
+      return(...args)=>{
+        clearTimeout(timer);
+        timer = setTimeout(()=>{func.apply(this,args);},timeout);
+      };
+    }
 
-    $("#account-options").on("click",(evt)=>{
-      evt.stopPropagation();
-      $("#account-links").toggleClass("active");
-    });
-    document.addEventListener("click",()=>{
-      $("#account-links").removeClass("active");
-    });
-
-    $("#create-options").on("click",(evt)=>{
-      evt.stopPropagation();
-      $("#create-links").toggleClass("active");
-    });
-    document.addEventListener("click",()=>{
-      $("#create-links").removeClass("active");
-    });
+    const makeDropdown = (click_element)=>{
+      $(click_element).on("click",(evt)=>{
+        $(click_element).children(".create-dropdown").toggleClass("active");
+      });
+      document.addEventListener("click",(evt)=>{
+        if(! $(evt.target).closest(click_element)[0])$(click_element).children(".create-dropdown").removeClass("active");
+      });
+    }
+    makeDropdown("#overflow-options","#overflow-links");
+    makeDropdown("#account-options","#account-links");
+    makeDropdown("#create-options","#create-links");
 
     //reload if we got here using forward or back button
     if (
@@ -494,10 +498,11 @@
     if(update_notifications.title && update_notifications.id != localStorage.getItem("last_hidden_notification")){
       $("#update-notifications").html(
         "<div id='notification-inner'>"+
+          "<span class='material-symbols-rounded filled'>campaign</span>"+
           update_notifications.title+
         "</div>"+
         "<div id='close-notification' class='window-close-button'>"+
-          "<img src='{% static 'course_flow/img/images_svg/close.svg' %}'/>"+
+          "<span class='material-symbols-rounded green'>close</span>"+
         "</div>"
       );
     }
@@ -505,6 +510,7 @@
       localStorage.setItem("last_hidden_notification",update_notifications.id);
       $("#update-notifications").css({display:"none"})
     });
+
     $(".left-panel-toggle").on("click",()=>{
       $(".left-panel").toggleClass("collapsed");
       if($(".left-panel").hasClass("collapsed"))sessionStorage.setItem("collapsed_sidebar",true);

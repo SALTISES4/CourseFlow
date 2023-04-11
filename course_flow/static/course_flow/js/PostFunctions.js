@@ -665,6 +665,7 @@ export function setLiveProjectRole(user_id,liveprojectPk,permission_type,callBac
 
 //Get the list of users for a project
 export function getUsersForObject(objectID,objectType,callBackFunction=()=>console.log("success")){
+    if(["program","course","activity"].indexOf(objectType)>=0)objectType="workflow"
     try{
         $.post(post_paths.get_users_for_object,{
             objectID:JSON.stringify(objectID),
@@ -998,6 +999,56 @@ export function getAssignmentsForNode(nodePk,callBackFunction=()=>console.log("s
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else fail_function(data.action);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+
+//Get the library projects
+export function getLibrary(callBackFunction=()=>console.log("success")){
+    try{
+        $.get(get_paths.get_library).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the home projects
+export function getHome(callBackFunction=()=>console.log("success")){
+    try{
+        $.get(get_paths.get_home).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Get the workflows for a project
+export function getWorkflowsForProject(projectPk,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.get_workflows_for_project,{
+            projectPk:projectPk
+        }).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
+//Search entire library
+export function searchAllObjects(filter,max_count,callBackFunction=()=>console.log("success")){
+    try{
+        $.post(post_paths.search_all_objects,{
+            filter:JSON.stringify(filter),
+            max_count:JSON.stringify(max_count)
+        }).done(function(data){
+            callBackFunction(data);
         });
     }catch(err){
         fail_function();

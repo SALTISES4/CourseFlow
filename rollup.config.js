@@ -84,4 +84,14 @@ export default [
     },
     plugins: plugins
   },
+  {
+    input: "course_flow/static/course_flow/js/scripts-library.js",
+    output: {
+      file: "course_flow/static/course_flow/js/scripts-library.min.js",
+      name: "library_renderers",
+      format: "iife",
+      sourceMap: "inline"
+    },
+    plugins: plugins
+  },
 ];

@@ -1,14 +1,15 @@
 import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {setUserPermission,getUsersForObject,getUserList} from "./PostFunctions";
+import {setUserPermission,getUsersForObject,getUserList,updateValueInstant} from "./PostFunctions";
+import {WorkflowTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
 
 export class ShareMenu extends React.Component{
     constructor(props){
         super(props);
         this.tiny_loader = new renderers.TinyLoader($("body"));
-        this.state={owner:props.data.author,edit:[],view:[],comment:[],student:[],userlist:[]}
+        this.state={owner:props.data.author,edit:[],view:[],comment:[],student:[],userlist:[],cannot_change:[]}
     }
     
     render(){
@@ -16,45 +17,42 @@ export class ShareMenu extends React.Component{
         let owner = (
             <UserLabel user={this.state.owner} type={"owner"}/>
         );
-        let editors = this.state.edit.map((user)=>
-            <UserLabel user={user} type={"edit"} permissionChange={this.setUserPermission.bind(this)}/>
+        let editors = this.state.edit.filter(user=>user.id!=this.state.owner.id).map((user)=>
+            <UserLabel user={user} type={"edit"} cannot_change={this.state.cannot_change} permissionChange={this.setUserPermission.bind(this)}/>
         );
         let viewers = this.state.view.map((user)=>
-            <UserLabel user={user} type={"view"} permissionChange={this.setUserPermission.bind(this)}/>
+            <UserLabel user={user} type={"view"} cannot_change={this.state.cannot_change} permissionChange={this.setUserPermission.bind(this)}/>
         );
         let commentors = this.state.comment.map((user)=>
-            <UserLabel user={user} type={"comment"} permissionChange={this.setUserPermission.bind(this)}/>
+            <UserLabel user={user} type={"comment"} cannot_change={this.state.cannot_change} permissionChange={this.setUserPermission.bind(this)}/>
         );
         let students = this.state.student.map((user)=>
-            <UserLabel user={user} type={"student"} permissionChange={this.setUserPermission.bind(this)}/>
+            <UserLabel user={user} type={"student"} cannot_change={this.state.cannot_change} permissionChange={this.setUserPermission.bind(this)}/>
         );
-
-        let text = data.title;
-        if(text==null || text==""){
-            text=gettext("Untitled");
-        }
 
         let share_info;
         if(data.type=="project"){
-            share_info=gettext("Note: You are sharing a project. Any added users will be granted the same permission for all workflows within the project.");
+            share_info=gettext("Invite collaborators to project and its workflows");
         }else{
-            share_info=gettext("Note: You are sharing a workflow. Any added users will be granted view permissions for the whole project.");
+            share_info=gettext("Invite collaborators to workflow and grant view permissions to the project");
         }
-        
-        
+        console.log(data);
 
         return(
             <div class="message-wrap user-text">
-                <h3>{gettext("Sharing")+":"}</h3>
                 <div class="workflow-title-bar">
-                    <div>
-                        {text}
-                    </div>
+                    {gettext("Share")+" "+gettext(data.type)}
+                    <WorkflowTitle no_hyperlink={true} data={this.props.data}/>
                 </div>
-                <h4>{gettext("Owned By")}:</h4>
-                    <div>{owner}</div>
+                {this.getPublication()}
+                <hr/>
+                <p>{gettext("Owned By")}:</p>
+                <div>{owner}</div>
+                <hr/>
+                <UserAdd permissionChange={this.setUserPermission.bind(this)} share_info={share_info}/>
+                <hr/>
                 <div class="user-panel">
-                    <h4>{gettext("Shared With")}:</h4>
+                    <p>{gettext("Shared With")}:</p>
                     <ul class="user-list">
                         {editors}
                         {commentors}
@@ -62,14 +60,127 @@ export class ShareMenu extends React.Component{
                         {students}
                     </ul>
                 </div>
-                <UserAdd permissionChange={this.setUserPermission.bind(this)}/>
-                {share_info}
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
-                    <img src = {iconpath+"close.svg"}/>
+                    <span class="green material-symbols-rounded">close</span>
                 </div>
             </div>
         );
         
+    }
+
+    getPublication(){
+        let published=this.state.published;
+        let data=this.props.data;
+        if(data.type=="project" || data.is_strategy){
+            let public_class="big-button make-public";
+            let private_class="big-button hover-shade make-private";
+            if(published)public_class+=" active";
+            else private_class+=" active";
+            let public_disabled = !(data.disciplines.length>0 && data.title && data.title.length>0);
+            if(!public_disabled && !published)public_class+=" hover-shade";
+            if(public_disabled)public_class+=" disabled";
+            let public_text=gettext("Any CourseFlow teacher can view");
+            if(public_disabled)public_text+=gettext("\n\nA title and at least one discipline is required for publishing.")
+            return (
+                <div class="big-buttons-wrapper">
+                    <div class={public_class} disabled={public_disabled} onClick={this.setPublication.bind(this,true && !public_disabled)}>
+                        <span class="material-symbols-rounded">public</span>
+                        <div class="big-button-title">{gettext("Public to CourseFlow")}</div>
+                        <div class="big-button-description">{public_text}</div>
+                    </div>
+                    <div class={private_class} onClick={this.setPublication.bind(this,false)}>
+                        <span class="material-symbols-rounded filled">visibility_off</span>
+                        <div class="big-button-title">{gettext("Private")}</div>
+                        <div class="big-button-description">{gettext("Only added collaborators can view")}</div>
+                    </div>
+                </div>
+            )
+        }else{
+            let published_icon;
+            if(published)published_icon = (
+                <div class="big-buttons-wrapper">
+                    <div class="big-button active">
+                        <span class="material-symbols-rounded">public</span>
+                        <div class="big-button-title">{gettext("Project public to CourseFlow")}</div>
+                        <div class="big-button-description">{gettext("Any CourseFlow teacher can view")}</div>
+                    </div>
+                </div>
+            );
+            else published_icon = (
+                <div class="big-buttons-wrapper">
+                    <div class="big-button active">
+                        <span class="material-symbols-rounded filled">visibility_off</span>
+                        <div class="big-button-title">{gettext("Project is private")}</div>
+                        <div class="big-button-description">{gettext("Only added collaborators can view")}</div>
+                    </div>
+                </div>
+            );
+            return [published_icon,this.getPublicLink()]
+        }
+    }
+
+    getPublicLink(){
+        let data=this.props.data;
+        let public_link = window.location.host+public_update_path["workflow"].replace("0",data.id);
+        if(data.type!="project"){
+            let public_view = this.state.public_view;
+            if(!public_view)return (
+                <div class="public-link-button  hover-shade" onClick = {this.togglePublicView.bind(this,!public_view)}>
+                    <div class="public-link-icon"><span class="material-symbols-rounded">add_link</span></div>
+                    <div>
+                        <div class="public-link-text">{gettext("Generate a public link")}</div>
+                        <div class="public-link-description">{gettext("Anyone with the link will be able to view the workflow")}}</div>
+                    </div>
+                </div>
+            );
+            else return [
+                <div class="public-link-button  hover-shade" onClick = {()=>{
+                    navigator.clipboard.writeText(public_link);
+                    let copy_icon_text = $(".copy-link-icon .material-symbols-rounded").text();
+                    let copy_description_text = $(".copy-link-text").text();
+                    $(".copy-link-icon .material-symbols-rounded").text("done");
+                    $(".copy-link-text").text("Copied to Clipboard");
+                    setTimeout(()=>{
+                        $(".copy-link-icon .material-symbols-rounded").text(copy_icon_text);
+                        $(".copy-link-text").text(copy_description_text);
+                    },1000)
+                }}>
+                    <div class="copy-link-icon"><span class="material-symbols-rounded">link</span></div>
+                    <div>
+                        <div class="copy-link-text">{gettext("Copy public link")}</div>
+                        <div class="public-link-description">{gettext("Anyone with the link can view the workflow")}}</div>
+                    </div>
+                </div>,
+                <div class="public-link-button public-link-remove  hover-shade" onClick = {this.togglePublicView.bind(this,!public_view)}>
+                    <div class="public-link-icon"><span class="material-symbols-rounded">link_off</span></div>
+                    <div>
+                        <div class="public-link-text">{gettext("Remove public link")}</div>
+                    </div>
+                </div>
+            ];
+        }
+    }
+
+    togglePublicView(public_view){
+        if(public_view){
+            if(window.confirm(gettext("Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."))){
+                updateValueInstant(this.props.data.id,"workflow",{public_view:public_view},()=>{
+                    this.setState({public_view:public_view})
+                });
+            }
+        }else{
+            updateValueInstant(this.props.data.id,"workflow",{public_view:public_view},()=>{
+                this.setState({public_view:public_view})
+            });
+        }
+    }
+
+    setPublication(published){
+        if(published==this.state.published)return;
+        let component=this;
+        if(!published || window.confirm(gettext("Are you sure you want to publish this project, making it fully visible to anyone with an account?"))){
+            updateValueInstant(component.props.data.id,component.props.data.type,{published:published},()=>component.setState({published:published}));
+        }
     }
     
     setUserPermission(permission_type,user){
@@ -84,7 +195,7 @@ export class ShareMenu extends React.Component{
     
     componentDidMount(){
         getUsersForObject(this.props.data.id,this.props.data.type,(response)=>{
-            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students});
+            this.setState({owner:response.author,view:response.viewers,comment:response.commentors,edit:response.editors,student:response.students,published:response.published,public_view:response.public_view,cannot_change:response.cannot_change});
         });
     }
     
@@ -100,11 +211,13 @@ class UserLabel extends React.Component{
     
     render(){
         let permission_select;
+        let disabled=false;
+        if(this.props.cannot_change && this.props.cannot_change.indexOf(this.props.user.id)>=0)disabled=true;
         if(this.props.type!="owner"){
             if(this.props.type=="add"){
                 permission_select = (
                     <div class="permission-select">
-                        <select ref={this.select}>
+                        <select ref={this.select} disabled={disabled}>
                             <option value="edit">{gettext("Can edit")}</option>
                             <option value="comment">{gettext("Can comment")}</option>
                             <option value="view">{gettext("Can view")}</option>
@@ -116,7 +229,7 @@ class UserLabel extends React.Component{
             }else{
                 permission_select = (
                     <div class="permission-select">
-                        <select value={this.props.type} onChange={this.onChange.bind(this)}>
+                        <select value={this.props.type} disabled={disabled} onChange={this.onChange.bind(this)}>
                             <option value="edit">{gettext("Can edit")}</option>
                             <option value="comment">{gettext("Can comment")}</option>
                             <option value="view">{gettext("Can view")}</option>
@@ -180,9 +293,8 @@ class UserAdd extends React.Component{
         
         return (
             <div class="user-add">
-                <h4>{gettext("Add A User")}:</h4>
-                <div>{gettext("Begin typing to search users. Select the desired user then click Share.")}</div>
-                <input ref={this.input}/>
+                <p>{this.props.share_info}</p>
+                <input ref={this.input} placeholder={gettext("Begin typing to search users")}/>
                 {user}
             </div>
         );

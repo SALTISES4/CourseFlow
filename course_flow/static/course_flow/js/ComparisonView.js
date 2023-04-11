@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {Component, EditableComponent, EditableComponentWithSorting} from "./ComponentJSON";
+import {Component, EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {renderMessageBox,closeMessageBox, WorkflowForMenu} from "./MenuComponents";
 import {getWorkflowSelectMenu,getWorkflowContext,insertedAt} from "./PostFunctions";
@@ -75,9 +75,7 @@ export class ComparisonView extends React.Component{
             
         return(
             <div id="workflow-wrapper" class="workflow-wrapper">
-                <div class="workflow-header" style={style}>
-                    <WorkflowForMenu workflow_data={data} selectAction={this.openEdit.bind(this)}/>
-                </div>
+                {this.getHeader()}
                 <div class="workflow-view-select hide-print">
                     {view_buttons_sorted}
                 </div>
@@ -95,6 +93,23 @@ export class ComparisonView extends React.Component{
                 </div>
             </div>
         
+        );
+    }
+
+    getHeader(){
+        let data = this.props.data;
+        return(
+            <div class="project-header">
+                <div>{gettext("Comparing workflows for:")}</div>
+                <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
+                {reactDom.createPortal(
+                    <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,data.id)}>
+                        <span class="green material-symbols-rounded">arrow_back_ios</span>
+                        <div>{gettext("Return to project")}</div>
+                    </a>,
+                    $(".titlebar .title")[0]
+                )}
+            </div>
         );
     }
 
@@ -201,9 +216,7 @@ class WorkflowComparisonRendererComponent extends Component{
         let loader = new Constants.Loader('body');
         getWorkflowContext(
             this.props.workflowID,(context_response_data)=>{
-                console.log(context_response_data);
                 let context_data = context_response_data.data_package;
-                console.log(context_data);
                 this.renderer = new renderers.WorkflowComparisonRenderer(
                     this.props.workflowID,
                     JSON.parse(context_data.data_package),

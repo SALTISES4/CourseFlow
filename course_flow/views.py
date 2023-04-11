@@ -1,5 +1,6 @@
 import json
 import math
+import time
 
 # import time
 from functools import reduce
@@ -122,7 +123,8 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     bleach_sanitizer,
     serializer_lookups_shallow,
 )
-from .utils import (  # benchmark,; dateTimeFormat,; get_parent_model,; get_parent_model_str,; get_unique_outcomehorizontallinks,; get_unique_outcomenodes,
+from .utils import (  # dateTimeFormat,; get_parent_model,; get_parent_model_str,; get_unique_outcomehorizontallinks,; get_unique_outcomenodes,
+    benchmark,
     check_possible_parent,
     dateTimeFormatNoSpace,
     get_all_outcomes_for_outcome,
@@ -144,38 +146,46 @@ class ContentPublicViewMixin(UserPassesTestMixin):
 
 class UserCanViewMixin(UserPassesTestMixin):
     def test_func(self):
+        view_object = self.get_object()
         if Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
             check_object_permission(
-                self.get_object(),
+                view_object,
                 self.request.user,
                 ObjectPermission.PERMISSION_VIEW,
             )
         ):
+            ObjectPermission.update_last_viewed(self.request.user, view_object)
             return True
         return False
 
 
 class UserCanViewOrEnrolledMixin(UserPassesTestMixin):
     def test_func(self):
+        view_object = self.get_object()
         if Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
             check_object_permission(
-                self.get_object(),
+                view_object,
                 self.request.user,
                 ObjectPermission.PERMISSION_VIEW,
             )
         ):
+            ObjectPermission.update_last_viewed(self.request.user, view_object)
             return True
         else:
             try:
-                return check_object_enrollment(
-                    self.get_object(),
+                if check_object_enrollment(
+                    view_object,
                     self.request.user,
                     LiveProjectUser.ROLE_STUDENT,
-                )
+                ):
+                    ObjectPermission.update_last_viewed(
+                        self.request.user, view_object
+                    )
+                    return True
             except AttributeError:
                 return False
         return False
@@ -236,15 +246,19 @@ class UserEnrolledAsTeacherMixin(UserPassesTestMixin):
 
 class UserCanEditMixin(UserPassesTestMixin):
     def test_func(self):
-        return Group.objects.get(
+        view_object = self.get_object()
+        if Group.objects.get(
             name=settings.TEACHER_GROUP
         ) in self.request.user.groups.all() and (
             check_object_permission(
-                self.get_object(),
+                view_object,
                 self.request.user,
                 ObjectPermission.PERMISSION_EDIT,
             )
-        )
+        ):
+            ObjectPermission.update_last_viewed(self.request.user, view_object)
+            return True
+        return False
 
 
 class UserCanEditProjectMixin(UserPassesTestMixin):
@@ -401,6 +415,7 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
 
 def get_my_projects(user, add, **kwargs):
+    last_time = time.time()
     for_add = kwargs.get("for_add", False)
     permission_filter = {}
     if for_add:
@@ -1182,33 +1197,38 @@ def myprojects_view(request):
 
 
 @login_required
-def myshared_view(request):
-    context = {
-        "project_data_package": JSONRenderer()
-        .render(get_my_shared(request.user))
-        .decode("utf-8")
-    }
-    return render(request, "course_flow/myshared.html", context)
+def mylibrary_view(request):
+    return render(request, "course_flow/library.html")
 
 
-@login_required
-def mytemplates_view(request):
-    context = {
-        "project_data_package": JSONRenderer()
-        .render(get_my_templates(request.user))
-        .decode("utf-8")
-    }
-    return render(request, "course_flow/mytemplates.html", context)
+# @login_required
+# def myshared_view(request):
+#     context = {
+#         "project_data_package": JSONRenderer()
+#         .render(get_my_shared(request.user))
+#         .decode("utf-8")
+#     }
+#     return render(request, "course_flow/myshared.html", context)
 
 
-@login_required
-def myfavourites_view(request):
-    context = {
-        "project_data_package": JSONRenderer()
-        .render(get_my_favourites(request.user))
-        .decode("utf-8")
-    }
-    return render(request, "course_flow/mytemplates.html", context)
+# @login_required
+# def mytemplates_view(request):
+#     context = {
+#         "project_data_package": JSONRenderer()
+#         .render(get_my_templates(request.user))
+#         .decode("utf-8")
+#     }
+#     return render(request, "course_flow/mytemplates.html", context)
+
+
+# @login_required
+# def myfavourites_view(request):
+#     context = {
+#         "project_data_package": JSONRenderer()
+#         .render(get_my_favourites(request.user))
+#         .decode("utf-8")
+#     }
+#     return render(request, "course_flow/mytemplates.html", context)
 
 
 @login_required
@@ -1254,7 +1274,6 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         user = self.request.user
         courseflow_user = CourseFlowUser.objects.filter(user=user).first()
         if courseflow_user is None:
-            print("create the user")
             courseflow_user = CourseFlowUser.objects.create(
                 first_name=user.first_name, last_name=user.last_name, user=user
             )
@@ -1313,11 +1332,6 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         project = self.object
-        context["workflow_data_package"] = (
-            JSONRenderer()
-            .render(get_data_package_for_project(self.request.user, project))
-            .decode("utf-8")
-        )
         context["project_data"] = (
             JSONRenderer()
             .render(
@@ -1327,28 +1341,37 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             )
             .decode("utf-8")
         )
-        context["read_only"] = JSONRenderer().render(True).decode("utf-8")
-        context["comment"] = JSONRenderer().render(False).decode("utf-8")
-        editor = (
-            project.author == self.request.user
-            or ObjectPermission.objects.filter(
-                user=self.request.user,
-                project=project,
-                permission_type=ObjectPermission.PERMISSION_EDIT,
-            ).count()
-            > 0
+        context["disciplines"] = (
+            JSONRenderer()
+            .render(
+                DisciplineSerializer(
+                    Discipline.objects.order_by("title"), many=True
+                ).data
+            )
+            .decode("utf-8")
         )
-        if editor:
-            context["read_only"] = JSONRenderer().render(False).decode("utf-8")
-        elif (
-            ObjectPermission.objects.filter(
-                user=self.request.user,
-                permission_type=ObjectPermission.PERMISSION_COMMENT,
-                project=project,
-            ).count()
-            > 0
-        ):
-            context["comment"] = JSONRenderer().render(True).decode("utf-8")
+        # context["read_only"] = JSONRenderer().render(True).decode("utf-8")
+        # context["comment"] = JSONRenderer().render(False).decode("utf-8")
+        # editor = (
+        #     project.author == self.request.user
+        #     or ObjectPermission.objects.filter(
+        #         user=self.request.user,
+        #         project=project,
+        #         permission_type=ObjectPermission.PERMISSION_EDIT,
+        #     ).count()
+        #     > 0
+        # )
+        # if editor:
+        #     context["read_only"] = JSONRenderer().render(False).decode("utf-8")
+        # elif (
+        #     ObjectPermission.objects.filter(
+        #         user=self.request.user,
+        #         permission_type=ObjectPermission.PERMISSION_COMMENT,
+        #         project=project,
+        #     ).count()
+        #     > 0
+        # ):
+        #     context["comment"] = JSONRenderer().render(True).decode("utf-8")
 
         return context
 
@@ -1760,10 +1783,6 @@ class WorkflowDetailView(
     def get_queryset(self):
         return self.model.objects.select_subclasses()
 
-    def get_object(self):
-        workflow = super().get_object()
-        return Workflow.objects.get_subclass(pk=workflow.pk)
-
     def get_success_url(self):
         return reverse(
             "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
@@ -1788,10 +1807,6 @@ class WorkflowPublicDetailView(ContentPublicViewMixin, DetailView):
 
     def get_queryset(self):
         return self.model.objects.select_subclasses()
-
-    def get_object(self):
-        workflow = super().get_object()
-        return Workflow.objects.get_subclass(pk=workflow.pk)
 
     def get_success_url(self):
         return reverse(
@@ -2112,6 +2127,28 @@ def get_export(request: HttpRequest) -> HttpResponse:
 
 
 # enable for testing/download
+@ajax_login_required
+def get_saltise_download(request: HttpRequest) -> HttpResponse:
+
+    if (
+        Group.objects.get(name="SALTISE_Staff")
+        not in request.user.groups.all()
+    ):
+        return JsonResponse({"action": "error"})
+
+    file_ext = "xlsx"
+
+    filename = "saltise-analytics-data" + "." + file_ext
+    file = export_functions.get_saltise_analytics()
+    file_data = (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response = HttpResponse(file, content_type=file_data)
+    response["Content-Disposition"] = "attachment; filename=%s" % filename
+    return response
+
+
+# enable for testing/download
 @user_can_view(False)
 def get_export_download(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -2228,6 +2265,66 @@ class DisciplineListView(LoginRequiredMixin, ListAPIView):
     serializer_class = DisciplineSerializer
 
 
+@login_required
+def get_library(request: HttpRequest) -> HttpResponse:
+    user = request.user
+    all_projects = list(Project.objects.filter(user_permissions__user=user))
+    all_projects += list(
+        Workflow.objects.filter(user_permissions__user=user, is_strategy=True)
+    )
+    projects_serialized = InfoBoxSerializer(
+        all_projects, many=True, context={"user": user}
+    ).data
+    return JsonResponse({"data_package": projects_serialized})
+
+
+@login_required
+def get_home(request: HttpRequest) -> HttpResponse:
+    user = request.user
+    if Group.objects.get(name=settings.TEACHER_GROUP) not in user.groups.all():
+        projects = LiveProject.objects.filter(
+            project__deleted=False,
+            liveprojectuser__user=user,
+        )
+        projects_serialized = LiveProjectSerializer(
+            projects, many=True, context={"user": user}
+        ).data
+        favourites_serialized = []
+    else:
+        projects = [
+            op.content_object
+            for op in ObjectPermission.objects.filter(
+                project__deleted=False, user=user
+            ).order_by("-last_viewed")[:2]
+        ]
+        projects_serialized = InfoBoxSerializer(
+            projects, many=True, context={"user": user}
+        ).data
+        favourites = [
+            fav.content_object
+            for fav in Favourite.objects.filter(user=user).filter(
+                Q(workflow__deleted=False, workflow__project__deleted=False)
+                | Q(project__deleted=False)
+            )
+        ]
+        favourites_serialized = InfoBoxSerializer(
+            favourites, many=True, context={"user": user}
+        ).data
+    return JsonResponse(
+        {"projects": projects_serialized, "favourites": favourites_serialized}
+    )
+
+
+@user_can_view("projectPk")
+def get_workflows_for_project(request: HttpRequest) -> HttpResponse:
+    user = request.user
+    project = Project.objects.get(pk=request.POST.get("projectPk"))
+    workflows_serialized = InfoBoxSerializer(
+        project.workflows.all(), many=True, context={"user": user}
+    ).data
+    return JsonResponse({"data_package": workflows_serialized})
+
+
 @user_can_view_or_enrolled_as_student("workflowPk")
 def get_workflow_parent_data(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
@@ -2304,9 +2401,6 @@ def get_public_workflow_parent_data(request: HttpRequest, pk) -> HttpResponse:
 def get_project_data(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
-        data_package = get_workflow_data_package(
-            request.user, project, self_only=True
-        )
         project_data = (
             JSONRenderer()
             .render(
@@ -2321,7 +2415,6 @@ def get_project_data(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "data_package": data_package,
             "project_data": project_data,
         }
     )
@@ -3318,17 +3411,18 @@ def fast_duplicate_project(project: Project, author: User) -> Project:
             for i, object_set in enumerate(new_object_sets)
         }
 
-        # Link everything up
-        WorkflowProject.objects.bulk_create(
-            [
-                WorkflowProject(
-                    rank=workflowproject.rank,
-                    workflow=id_dict["workflow"][workflowproject.workflow.id],
-                    project=new_project,
-                )
-                for workflowproject in workflowprojects
-            ]
-        )
+        # Link everything up.
+
+        # DO NOT bulk create workflowprojects, as then the
+        # necessary permissions won't be created for the author
+        [
+            WorkflowProject.objects.create(
+                rank=workflowproject.rank,
+                workflow=id_dict["workflow"][workflowproject.workflow.id],
+                project=new_project,
+            )
+            for workflowproject in workflowprojects
+        ]
 
         ColumnWorkflow.objects.bulk_create(
             [
@@ -3827,10 +3921,7 @@ def add_strategy(request: HttpRequest) -> HttpResponse:
     workflow = Workflow.objects.get(pk=workflow_id)
     strategy = get_model_from_str(strategy_type).objects.get(pk=strategy_id)
     try:
-        if (
-            strategy.get_subclass().author == request.user
-            or strategy.published
-        ):
+        if strategy.author == request.user or strategy.published:
             # first, check compatibility between types (activity/course)
             if strategy.type != workflow.type:
                 raise ValidationError("Mismatch between types")
@@ -4286,6 +4377,8 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
     objectType = json.loads(request.POST.get("objectType"))
     favourite = json.loads(request.POST.get("favourite"))
     response = {}
+    if objectType in ["activity", "course", "program"]:
+        objectType = "workflow"
     try:
         item = get_model_from_str(objectType).objects.get(pk=object_id)
         Favourite.objects.filter(
@@ -4294,7 +4387,9 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
             object_id=object_id,
         ).delete()
         if favourite:
-            Favourite.objects.create(user=request.user, content_object=item)
+            fav = Favourite.objects.create(
+                user=request.user, content_object=item
+            )
         response["action"] = "posted"
     except ValidationError:
         response["action"] = "error"
@@ -4307,6 +4402,8 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
 def set_permission(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     objectType = json.loads(request.POST.get("objectType"))
+    if objectType in ["activity", "course", "program"]:
+        objectType = "workflow"
     user_id = json.loads(request.POST.get("permission_user"))
     permission_type = json.loads(request.POST.get("permission_type"))
     response = {}
@@ -4326,40 +4423,54 @@ def set_permission(request: HttpRequest) -> HttpResponse:
                 {"action": "error", "error": _("User is not a teacher.")}
             )
         item = get_model_from_str(objectType).objects.get(id=object_id)
-        if hasattr(item, "get_subclass"):
-            item = item.get_subclass()
+        # if hasattr(item, "get_subclass"):
+        #     item = item.get_subclass()
 
-        if permission_type == ObjectPermission.PERMISSION_STUDENT:
-            if objectType == "project":
-                if item.liveproject is None:
-                    return JsonResponse(
-                        {
-                            "action": "error",
-                            "error": _(
-                                "Cannot add a student to a non-live project."
-                            ),
-                        }
-                    )
-            else:
-                project = item.get_project()
-                if project is None:
-                    return JsonResponse(
-                        {
-                            "action": "error",
-                            "error": _(
-                                "Cannot add a student to this workflow type."
-                            ),
-                        }
-                    )
-                elif project.liveproject is None:
-                    return JsonResponse(
-                        {
-                            "action": "error",
-                            "error": _(
-                                "Cannot add a student to a non-live project."
-                            ),
-                        }
-                    )
+        project = item.get_project()
+        if permission_type != ObjectPermission.PERMISSION_EDIT:
+            if item.author == user or (
+                project is not None and project.author == user
+            ):
+                response = JsonResponse(
+                    {
+                        "action": "error",
+                        "error": _("This user's role cannot be changed."),
+                    }
+                )
+                # response.status_code = 403
+                return response
+
+        # if permission_type == ObjectPermission.PERMISSION_STUDENT:
+        #     if objectType == "project":
+        #         if item.liveproject is None:
+        #             return JsonResponse(
+        #                 {
+        #                     "action": "error",
+        #                     "error": _(
+        #                         "Cannot add a student to a non-live project."
+        #                     ),
+        #                 }
+        #             )
+        #     else:
+        #         project = item.get_project()
+        #         if project is None:
+        #             return JsonResponse(
+        #                 {
+        #                     "action": "error",
+        #                     "error": _(
+        #                         "Cannot add a student to this workflow type."
+        #                     ),
+        #                 }
+        #             )
+        #         elif project.liveproject is None:
+        #             return JsonResponse(
+        #                 {
+        #                     "action": "error",
+        #                     "error": _(
+        #                         "Cannot add a student to a non-live project."
+        #                     ),
+        #                 }
+        #             )
 
         ObjectPermission.objects.filter(
             user=user,
@@ -4377,12 +4488,28 @@ def set_permission(request: HttpRequest) -> HttpResponse:
     return JsonResponse(response)
 
 
-@user_can_edit(False)
+@user_can_view(False)
 def get_users_for_object(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
+    if object_type in ["activity", "course", "program"]:
+        object_type = "workflow"
     content_type = ContentType.objects.get(model=object_type)
+    this_object = get_model_from_str(object_type).objects.get(id=object_id)
+    published = this_object.published
+    public_view = False
+    if object_type == "workflow":
+        public_view = this_object.public_view
     try:
+        this_object = get_model_from_str(object_type).objects.get(id=object_id)
+        cannot_change = []
+        if this_object.author is not None:
+            cannot_change = [this_object.author.id]
+            author = UserSerializer(this_object.author).data
+            if object_type == "workflow" and not this_object.is_strategy:
+                cannot_change.append(this_object.get_project().author.id)
+        else:
+            author = None
         editors = set()
         for object_permission in ObjectPermission.objects.filter(
             content_type=content_type,
@@ -4417,15 +4544,14 @@ def get_users_for_object(request: HttpRequest) -> HttpResponse:
     return JsonResponse(
         {
             "action": "posted",
-            "author": UserSerializer(
-                get_model_from_str(object_type)
-                .objects.get(id=object_id)
-                .author
-            ).data,
+            "author": author,
             "viewers": UserSerializer(viewers, many=True).data,
             "commentors": UserSerializer(commentors, many=True).data,
             "editors": UserSerializer(editors, many=True).data,
             "students": UserSerializer(students, many=True).data,
+            "published": published,
+            "public_view": public_view,
+            "cannot_change": cannot_change,
         }
     )
 
@@ -4474,6 +4600,47 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
         {
             "action": "posted",
             "user_list": UserSerializer(user_list, many=True).data,
+        }
+    )
+
+
+@user_is_teacher()
+def search_all_objects(request: HttpRequest) -> HttpResponse:
+    name_filter = json.loads(request.POST.get("filter"))
+    max_count = json.loads(request.POST.get("max_count", "0"))
+    all_objects = ObjectPermission.objects.filter(user=request.user).filter(
+        Q(project__title__istartswith=name_filter, project__deleted=False)
+        | Q(workflow__title__istartswith=name_filter, workflow__deleted=False)
+    )
+    # add ordering
+
+    if max_count > 0:
+        all_objects = all_objects[:max_count]
+    return_objects = [x.content_object for x in all_objects]
+    count = len(return_objects)
+    if max_count == 0 or count < max_count:
+        extra_objects = ObjectPermission.objects.filter(
+            user=request.user
+        ).filter(
+            Q(
+                project__title__icontains=" " + name_filter,
+                project__deleted=False,
+            )
+            | Q(
+                workflow__title__icontains=" " + name_filter,
+                workflow__deleted=False,
+            )
+        )
+        if max_count > 0:
+            extra_objects = extra_objects[: max_count - count]
+        return_objects += [x.content_object for x in extra_objects]
+
+    return JsonResponse(
+        {
+            "action": "posted",
+            "workflow_list": InfoBoxSerializer(
+                return_objects, context={"user": request.user}, many=True
+            ).data,
         }
     )
 
@@ -4982,7 +5149,6 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             workflow = model.get_workflow()
         except AttributeError:
             pass
-
         # Check to see if we have any linked workflows that need to be updated
         linked_workflows = False
         if object_type == "node":
@@ -5045,7 +5211,6 @@ def delete_self(request: HttpRequest) -> HttpResponse:
         # Delete the object
         with transaction.atomic():
             model.delete()
-
         if object_type == "outcome" or object_type == "outcome_base":
             extra_data = RefreshSerializerNode(
                 Node.objects.filter(pk__in=affected_nodes),
@@ -5101,14 +5266,16 @@ def restore_self(request: HttpRequest) -> HttpResponse:
         throughparent_id = None
         throughparent_index = None
         # object_suffix = ""
+
+        # Restore the object
+        with transaction.atomic():
+            model.deleted = False
+            model.save()
+
         try:
             workflow = model.get_workflow()
         except AttributeError:
             pass
-        # Delete the object
-        with transaction.atomic():
-            model.deleted = False
-            model.save()
         # Check to see if we have any linked workflows that need to be updated
         linked_workflows = False
         if object_type == "node":
@@ -5120,7 +5287,6 @@ def restore_self(request: HttpRequest) -> HttpResponse:
                 Workflow.objects.filter(linked_nodes__week=model)
             )
         elif object_type in ["workflow", "activity", "course", "program"]:
-            workflow = None
             linked_workflows = list(
                 Workflow.objects.filter(
                     linked_nodes__week__workflow__id=model.id
@@ -5260,10 +5426,6 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
         extra_data = None
         parent_id = None
         # object_suffix = ""
-        try:
-            workflow = model.get_workflow()
-        except AttributeError:
-            pass
 
         # Check to see if we have any linked workflows that need to be updated
         linked_workflows = False
@@ -5276,7 +5438,6 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                 Workflow.objects.filter(linked_nodes__week=model)
             )
         elif object_type in ["workflow", "activity", "course", "program"]:
-            workflow = None
             linked_workflows = list(
                 Workflow.objects.filter(
                     linked_nodes__week__workflow__id=model.id
@@ -5334,14 +5495,20 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
             ).data
         elif object_type == "column":
             extra_data = (
-                workflow.columnworkflow_set.filter(column__deleted=False)
+                model.get_workflow()
+                .columnworkflow_set.filter(column__deleted=False)
                 .order_by("rank")
                 .first()
                 .column.id
             )
     except (ProtectedError, ObjectDoesNotExist):
+        print("ERRORS")
         return JsonResponse({"action": "error"})
 
+    try:
+        workflow = model.get_workflow()
+    except AttributeError:
+        pass
     if workflow is not None:
         action = actions.deleteSelfSoftAction(
             object_id, object_type, parent_id, extra_data
@@ -6225,7 +6392,7 @@ def set_liveproject_role(request: HttpRequest) -> HttpResponse:
                     "error": _("This user's role cannot be changed."),
                 }
             )
-            response.status_code = 403
+            # response.status_code = 403
             return response
         if (
             role_type == LiveProjectUser.ROLE_TEACHER
@@ -6240,7 +6407,7 @@ def set_liveproject_role(request: HttpRequest) -> HttpResponse:
                     ),
                 }
             )
-            response.status_code = 403
+            # response.status_code = 403
             return response
 
         LiveProjectUser.objects.create(

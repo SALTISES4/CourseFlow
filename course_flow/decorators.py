@@ -14,7 +14,12 @@ from django.http import (
 from django.views.decorators.http import require_GET, require_POST
 from ratelimit.decorators import ratelimit
 
-from course_flow.models import LiveProjectUser, ObjectPermission, User
+from course_flow.models import (
+    LiveProjectUser,
+    ObjectPermission,
+    User,
+    Workflow,
+)
 from course_flow.utils import get_model_from_str
 
 
@@ -80,10 +85,7 @@ def is_owner(model):
 
             try:
                 object_type = get_model_from_str(model)
-                if hasattr(object_type.objects, "get_subclass"):
-                    object = object_type.objects.get_subclass(pk=pk)
-                else:
-                    object = object_type.objects.get(pk=pk)
+                object = object_type.objects.get(pk=pk)
             except ObjectDoesNotExist:
                 return HttpResponseNotFound()
 
@@ -99,9 +101,20 @@ def is_owner(model):
 
 
 def check_object_permission(instance, user, permission):
-    if hasattr(instance, "get_subclass"):
-        instance = instance.get_subclass()
+    if isinstance(instance, Workflow):
+        instance = Workflow.objects.get(pk=instance.pk)
+    object_permission = ObjectPermission.objects.filter(
+        user=user,
+        object_id=instance.pk,
+        content_type=ContentType.objects.get_for_model(instance),
+    )
     if instance.author == user:
+        if object_permission.count() == 0:
+            ObjectPermission.objects.create(
+                user=user,
+                content_object=instance,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+            )
         return True
     if permission == ObjectPermission.PERMISSION_VIEW:
         if instance.published:
@@ -117,16 +130,7 @@ def check_object_permission(instance, user, permission):
         ) | Q(permission_type=ObjectPermission.PERMISSION_COMMENT)
     else:
         permission_check = Q(permission_type=permission)
-    if (
-        ObjectPermission.objects.filter(
-            user=user,
-            object_id=instance.pk,
-            content_type=ContentType.objects.get_for_model(instance),
-        )
-        .filter(permission_check)
-        .count()
-        > 0
-    ):
+    if object_permission.filter(permission_check).count() > 0:
         return True
 
 
@@ -157,8 +161,6 @@ def check_special_case_delete_permission(model_data, user):
     if model_data["model"] == "project":
         return instance.author == user
     else:
-        if hasattr(instance, "get_subclass"):
-            instance = instance.get_subclass()
         if instance.get_project() is None:
             return instance.author == user
         return instance.author == user or instance.get_project().author == user
@@ -578,8 +580,6 @@ def get_enrollment_objects(model, request, **kwargs):
 
 
 def check_object_enrollment(instance, user, role):
-    if hasattr(instance, "get_subclass"):
-        instance = instance.get_subclass()
     if instance.type == "liveproject":
         liveproject = instance
     elif instance.type == "project":

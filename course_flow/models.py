@@ -44,6 +44,8 @@ class Project(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
 
+    is_strategy = models.BooleanField(default=False)
+
     workflows = models.ManyToManyField(
         "Workflow", through="WorkflowProject", blank=True
     )
@@ -87,6 +89,9 @@ class Project(models.Model):
     def type(self):
         return "project"
 
+    def get_project(self):
+        return self
+
     def get_live_project(self):
         try:
             liveproject = self.liveproject
@@ -126,7 +131,7 @@ class WorkflowProject(models.Model):
     rank = models.PositiveIntegerField(default=0)
 
     def get_permission_objects(self):
-        return [self.project, self.workflow.get_subclass()]
+        return [self.project, self.get_workflow().get_permission_objects()[0]]
 
     class Meta:
         verbose_name = "Workflow-Project Link"
@@ -177,6 +182,9 @@ class Column(models.Model):
         max_length=title_max_length, null=True, blank=True
     )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    icon = models.CharField(
+        max_length=50, null=True, blank=True
+    )
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     visible = models.BooleanField(default=True)
@@ -220,7 +228,7 @@ class Column(models.Model):
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
         return self.workflow_set.first()
@@ -267,7 +275,7 @@ class NodeLink(models.Model):
     is_original = models.BooleanField(default=True)
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
         return self.source_node.get_workflow()
@@ -325,14 +333,14 @@ class Outcome(models.Model):
             return self
 
     def get_workflow(self):
-        return self.get_top_outcome().workflow_set.first().get_subclass()
+        return self.get_top_outcome().workflow_set.first()
 
     #
     #    def get_project(self):
     #        return self.project_set.first()
 
     def get_permission_objects(self):
-        return [self.get_workflow()]
+        return self.get_workflow().get_permission_objects()
 
     def __str__(self):
         return self.title
@@ -637,7 +645,7 @@ class Node(models.Model):
     )
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
         return self.week_set.first().get_workflow()
@@ -657,7 +665,7 @@ class OutcomeNode(models.Model):
     degree = models.PositiveIntegerField(default=1)
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
         return self.node.get_workflow()
@@ -804,7 +812,7 @@ class Week(models.Model):
         return self.get_week_type_display()
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     def get_workflow(self):
         return self.workflow_set.first()
@@ -831,9 +839,12 @@ class NodeWeek(models.Model):
 class Workflow(models.Model):
     objects = InheritanceManager()
 
-    @property
-    def author(self):
-        return self.get_subclass().author
+    author = models.ForeignKey(
+        User,
+        related_name="authored_workflows",
+        on_delete=models.SET_NULL,
+        null=True,
+    )
 
     @property
     def importing(self):
@@ -861,6 +872,11 @@ class Workflow(models.Model):
     from_saltise = models.BooleanField(default=False)
 
     condensed = models.BooleanField(default=False)
+
+    user_permissions = GenericRelation(
+        "ObjectPermission", related_query_name="workflow"
+    )
+    favourited_by = GenericRelation("Favourite", related_query_name="workflow")
 
     parent_workflow = models.ForeignKey(
         "Workflow", on_delete=models.SET_NULL, null=True
@@ -953,10 +969,10 @@ class Workflow(models.Model):
         return self.project_set.first()
 
     def get_workflow(self):
-        return self
+        return Workflow.objects.get(pk=self.pk)
 
     def get_permission_objects(self):
-        return [self.get_subclass()]
+        return [self.get_workflow()]
 
     def get_live_project(self):
         try:
@@ -995,21 +1011,6 @@ class Workflow(models.Model):
 
 
 class Activity(Workflow):
-    author = models.ForeignKey(
-        User,
-        related_name="authored_activities",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
-
-    students = models.ManyToManyField(
-        User, related_name="assigned_activities", blank=True
-    )
-
-    favourited_by = GenericRelation("Favourite", related_query_name="activity")
-    user_permissions = GenericRelation(
-        "ObjectPermission", related_query_name="activity"
-    )
 
     DEFAULT_CUSTOM_COLUMN = 0
     DEFAULT_COLUMNS = [1, 2, 3, 4]
@@ -1018,9 +1019,6 @@ class Activity(Workflow):
     @property
     def type(self):
         return "activity"
-
-    def get_permission_objects(self):
-        return [self]
 
     def __str__(self):
         if self.title is not None and self.title != "":
@@ -1034,21 +1032,6 @@ class Activity(Workflow):
 
 
 class Course(Workflow):
-    author = models.ForeignKey(
-        User,
-        related_name="authored_courses",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
-
-    students = models.ManyToManyField(
-        User, related_name="assigned_courses", blank=True
-    )
-
-    favourited_by = GenericRelation("Favourite", related_query_name="course")
-    user_permissions = GenericRelation(
-        "ObjectPermission", related_query_name="course"
-    )
 
     DEFAULT_CUSTOM_COLUMN = 10
     DEFAULT_COLUMNS = [11, 12, 13, 14]
@@ -1058,9 +1041,6 @@ class Course(Workflow):
     def type(self):
         return "course"
 
-    def get_permission_objects(self):
-        return [self]
-
     def __str__(self):
         if self.title is not None and self.title != "":
             return self.title
@@ -1069,28 +1049,14 @@ class Course(Workflow):
 
 
 class Program(Workflow):
-    author = models.ForeignKey(
-        User,
-        related_name="authored_programs",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
 
     DEFAULT_CUSTOM_COLUMN = 20
     DEFAULT_COLUMNS = [20, 20, 20]
     WORKFLOW_TYPE = 2
 
-    favourited_by = GenericRelation("Favourite", related_query_name="program")
-    user_permissions = GenericRelation(
-        "ObjectPermission", related_query_name="program"
-    )
-
     @property
     def type(self):
         return "program"
-
-    def get_permission_objects(self):
-        return [self]
 
     def __str__(self):
         if self.title is not None and self.title != "":
@@ -1109,7 +1075,7 @@ class ColumnWorkflow(models.Model):
         return self.workflow
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     class Meta:
         verbose_name = "Column-Workflow Link"
@@ -1135,7 +1101,7 @@ class WeekWorkflow(models.Model):
         return self.workflow
 
     def get_permission_objects(self):
-        return [self.get_workflow().get_subclass()]
+        return self.get_workflow().get_permission_objects()
 
     class Meta:
         verbose_name = "Week-Workflow Link"
@@ -1158,16 +1124,26 @@ class Discipline(models.Model):
         verbose_name_plural = _("disciplines")
 
 
+workflow_choices = [
+    "activity",
+    "course",
+    "program",
+]
+
+
 class Favourite(models.Model):
-    content_choices = {
-        "model__in": ["project", "activity", "course", "program"]
-    }
+    content_choices = {"model__in": ["project", "workflow"]}
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, limit_choices_to=content_choices
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+
+    def save(self, *args, **kwargs):
+        if self.content_object.type in workflow_choices:
+            self.content_type = ContentType.objects.get_for_model(Workflow)
+        super().save(*args, **kwargs)
 
 
 class Comment(models.Model):
@@ -1179,9 +1155,7 @@ class Comment(models.Model):
 
 
 class ObjectPermission(models.Model):
-    content_choices = {
-        "model__in": ["project", "activity", "course", "program"]
-    }
+    content_choices = {"model__in": ["project", "workflow"]}
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content_type = models.ForeignKey(
         ContentType, on_delete=models.CASCADE, limit_choices_to=content_choices
@@ -1204,6 +1178,20 @@ class ObjectPermission(models.Model):
     permission_type = models.PositiveIntegerField(
         choices=PERMISSION_CHOICES, default=PERMISSION_NONE
     )
+
+    last_viewed = models.DateTimeField(default=timezone.now)
+
+    def update_last_viewed(user, view_object):
+        ObjectPermission.objects.filter(
+            user=user,
+            content_type=ContentType.objects.get_for_model(view_object),
+            object_id=view_object.id,
+        ).update(last_viewed=timezone.now())
+
+    def save(self, *args, **kwargs):
+        if self.content_object.type in workflow_choices:
+            self.content_type = ContentType.objects.get_for_model(Workflow)
+        super().save(*args, **kwargs)
 
 
 class UpdateNotification(models.Model):
@@ -1483,14 +1471,10 @@ def delete_project_objects(sender, instance, **kwargs):
     #    courses = filter(lambda x: x.type == "course", workflow_subclasses)
     #    programs = filter(lambda x: x.type == "program", workflow_subclasses)
     objectpermissions = ObjectPermission.objects.filter(
-        Q(activity__in=workflows)
-        | Q(course__in=workflows)
-        | Q(program__in=workflows)
+        Q(workflow__in=workflows) | Q(project=instance)
     )
     favourites = Favourite.objects.filter(
-        Q(activity__in=workflows)
-        | Q(course__in=workflows)
-        | Q(program__in=workflows)
+        Q(workflow__in=workflows) | Q(project=instance)
     )
     Node.objects.filter(parent_node__in=nodes).update(parent_node=None)
     Node.objects.filter(linked_workflow__in=workflows).update(
@@ -1526,7 +1510,10 @@ def delete_project_objects(sender, instance, **kwargs):
     programs = Program.objects.filter(pk__in=workflows)
     programs._raw_delete(programs.db)
     workflows = Workflow.objects.filter(pk__in=workflows)
-    workflows._raw_delete(workflows.db)
+    workflows.delete()
+    # raw delete was presenting issues with the disciplines for some reason
+    # Given that most usage is soft delete, might as well just .delete()
+    # workflows._raw_delete(workflows.db)
 
 
 @receiver(pre_delete, sender=Workflow)
@@ -1718,6 +1705,19 @@ def reorder_for_deleted_outcome_outcome(sender, instance, **kwargs):
 #    ):
 #        out_of_order_link.rank -= 1
 #        out_of_order_link.save()
+
+
+@receiver(pre_save, sender=WorkflowProject)
+def delete_existing_workflow_project(sender, instance, **kwargs):
+    if instance.pk is None:
+        WorkflowProject.objects.filter(workflow=instance.workflow).delete()
+        if instance.rank < 0:
+            instance.rank = 0
+        new_parent_count = WorkflowProject.objects.filter(
+            project=instance.project
+        ).count()
+        if instance.rank > new_parent_count:
+            instance.rank = new_parent_count
 
 
 @receiver(pre_save, sender=NodeWeek)
@@ -1916,7 +1916,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                     and ObjectPermission.objects.filter(
                         user=instance.user,
                         content_type=ContentType.objects.get_for_model(
-                            workflow.get_subclass()
+                            workflow
                         ),
                         object_id=workflow.id,
                         permission_type__in=[
@@ -1933,7 +1933,7 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                     and ObjectPermission.objects.filter(
                         user=instance.user,
                         content_type=ContentType.objects.get_for_model(
-                            workflow.get_subclass()
+                            workflow
                         ),
                         object_id=workflow.id,
                         permission_type__in=[ObjectPermission.PERMISSION_EDIT],
@@ -1942,11 +1942,28 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
                 ):
                     pass
                 else:
-                    ObjectPermission.objects.create(
-                        user=instance.user,
-                        content_object=workflow.get_subclass(),
-                        permission_type=instance.permission_type,
-                    )
+                    # If user is the owner, don't override their ownership
+                    if workflow.author == instance.user:
+                        if (
+                            ObjectPermission.objects.filter(
+                                workflow=workflow,
+                                user=instance.user,
+                                permission_type=ObjectPermission.PERMISSION_EDIT,
+                            ).count()
+                            == 0
+                        ):
+                            # Just in case the user has somehow lost their permission
+                            ObjectPermission.objects.create(
+                                user=instance.user,
+                                content_object=workflow,
+                                permission_type=ObjectPermission.PERMISSION_EDIT,
+                            )
+                    else:
+                        ObjectPermission.objects.create(
+                            user=instance.user,
+                            content_object=workflow,
+                            permission_type=instance.permission_type,
+                        )
 
 
 #        elif instance.content_type == ContentType.objects.get_for_model(Workflow):
@@ -1954,6 +1971,12 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
 #            if not workflow.is_strategy:
 #                project = workflow.project
 #                ObjectPermission.objects.create(content_object=project, user=instance.user,permission_type=ObjectPermission.PERMISSION_VIEW)
+
+
+@receiver(post_save, sender=ObjectPermission)
+def delete_permission_none(sender, instance, **kwargs):
+    if instance.permission_type == instance.PERMISSION_NONE:
+        instance.delete()
 
 
 @receiver(pre_save, sender=ObjectPermission)
@@ -1985,9 +2008,7 @@ def remove_permissions_to_project_objects(sender, instance, **kwargs):
         for workflow in instance.content_object.workflows.all():
             ObjectPermission.objects.filter(
                 user=instance.user,
-                content_type=ContentType.objects.get_for_model(
-                    workflow.get_subclass()
-                ),
+                content_type=ContentType.objects.get_for_model(workflow),
                 object_id=workflow.get_subclass().id,
             ).delete()
 
@@ -2118,6 +2139,30 @@ def create_default_program_content(sender, instance, created, **kwargs):
         instance.save()
 
 
+@receiver(post_save, sender=Project)
+@receiver(post_save, sender=Workflow)
+def add_default_editor_workflow(sender, instance, created, **kwargs):
+    if created and instance.author is not None:
+        ObjectPermission.objects.create(
+            content_object=instance,
+            user=instance.author,
+            permission_type=ObjectPermission.PERMISSION_EDIT,
+        )
+
+
+@receiver(post_save, sender=Activity)
+@receiver(post_save, sender=Course)
+@receiver(post_save, sender=Program)
+def add_default_editor_other_workflow(sender, instance, created, **kwargs):
+    instance = Workflow.objects.get(pk=instance.pk)
+    if created and instance.author is not None:
+        ObjectPermission.objects.create(
+            content_object=instance,
+            user=instance.author,
+            permission_type=ObjectPermission.PERMISSION_EDIT,
+        )
+
+
 @receiver(post_save, sender=WorkflowProject)
 def set_publication_workflow(sender, instance, created, **kwargs):
     if created:
@@ -2136,7 +2181,7 @@ def set_publication_workflow(sender, instance, created, **kwargs):
             object_id=instance.project.id,
         ):
             ObjectPermission.objects.create(
-                content_object=workflow.get_subclass(),
+                content_object=workflow,
                 user=op.user,
                 permission_type=op.permission_type,
             )
@@ -2226,9 +2271,6 @@ def add_or_remove_visible_workflow_on_delete_restore(
 
 @receiver(post_save, sender=LiveProjectUser)
 def add_user_to_assignments(sender, instance, created, **kwargs):
-    print("Live project user post_save")
-    print(instance.role_type)
-    print(instance.liveproject.default_assign_to_all)
     if (
         instance.role_type == LiveProjectUser.ROLE_STUDENT
         and instance.liveproject.default_assign_to_all
@@ -2236,7 +2278,6 @@ def add_user_to_assignments(sender, instance, created, **kwargs):
         for assignment in LiveAssignment.objects.filter(
             liveproject=instance.liveproject,
         ).exclude(userassignment__user=instance.user):
-            print("auto-creating a userassignment")
             UserAssignment.objects.create(
                 user=instance.user, assignment=assignment
             )

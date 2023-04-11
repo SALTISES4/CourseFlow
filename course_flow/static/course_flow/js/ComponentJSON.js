@@ -4,7 +4,7 @@ import * as reactDom from "react-dom";
 import * as Constants from "./Constants";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 import {reloadCommentsAction} from "./Reducers";
-import {toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
+import {restoreSelf, toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -72,6 +72,13 @@ export class EditableComponent extends Component{
                         <div>
                             <h4>{gettext("Description")}:</h4>
                             <QuillDiv  disabled={override || read_only} text={description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
+                        </div>
+                    }
+                    {type=="column" &&
+                        <div>
+                            <h4>{gettext("Custom Icon")}:</h4>
+                            <p>Browse options <a href="https://fonts.google.com/icons?icon.style=Rounded&icon.platform=android&icon.category=Activities">here</a>.</p>
+                            <input disabled={override || read_only} autocomplete="off" id="column-icon-editor" type="text" value={data.icon} maxlength={50} onChange={this.inputChanged.bind(this,"icon")}/>
                         </div>
                     }
                     {((type=="outcome" && data.depth==0)||(type=="workflow" && data.type=="course")) &&
@@ -201,10 +208,6 @@ export class EditableComponent extends Component{
                                 <input disabled={read_only} type="checkbox" name="is_published" checked={data.published} onChange={this.checkboxChanged.bind(this,"published")}/>
                             </div>
                             }
-                            <div>
-                                <label for="public_view">{gettext("Create Public Page")}</label>
-                                <input disabled={read_only} type="checkbox" name="public_view" checked={data.public_view} onChange={this.checkboxChanged.bind(this,"public_view")}/>
-                            </div>
                         </div>
                     }
                     {type=="week" && data.week_type <2 &&
@@ -232,13 +235,24 @@ export class EditableComponent extends Component{
                         </div>
                     }
                     {sets}
-                    {(!read_only && !no_delete && type!="workflow" && (type !="outcome" || data.depth>0)) && 
-                        [<h4>{gettext("Delete")}:</h4>,
-                        this.addDeleteSelf(data)]
-                    }
+                    {this.getDeleteForSidebar(read_only,no_delete,type,data)}
                 </div>
             ,$("#edit-menu")[0])
         }
+    }
+
+    getDeleteForSidebar(read_only,no_delete,type,data){
+        if(!read_only && !no_delete && (type !="outcome" || data.depth>0)){
+            if(type == "workflow" && data.deleted) return[
+                <h4>{gettext("Restore")}:</h4>,
+                this.addRestoreSelf(data)
+            ]
+            else return[
+                <h4>{gettext("Delete")}:</h4>,
+                this.addDeleteSelf(data)
+            ]
+        }
+
     }
     
     inputChanged(field,evt){
@@ -265,13 +279,6 @@ export class EditableComponent extends Component{
 
     checkboxChanged(field,evt){
         let do_change=true;
-        if(field=="public_view" && evt.target.checked){
-            if(window.confirm(gettext("Please note: this will make a publicly accessible link to your workflow, which can be accessed even by those without an account. They will still not be able to edit your workflow."))){
-                
-            }else{
-                do_change=false;
-            }
-        }
         if(do_change)this.props.renderer.change_field(this.props.data.id,Constants.object_dictionary[this.objectType],field,evt.target.checked);
     }
 
@@ -328,6 +335,24 @@ export class EditableComponentWithComments extends EditableComponent{
 
 //Extends the react component to add a few features that are used in a large number of components
 export class EditableComponentWithActions extends EditableComponentWithComments{
+
+    //Adds a button that restores the item.
+    addRestoreSelf(data,alt_icon){
+        let icon=alt_icon || "restore.svg";
+        return (
+            <ActionButton button_icon={icon} button_class="delete-self-button" titletext={gettext("Restore")} handleClick={this.restoreSelf.bind(this,data)}/>
+        );
+    }
+    
+    restoreSelf(data){
+        var props = this.props;
+        props.renderer.tiny_loader.startLoad();
+        restoreSelf(data.id,Constants.object_dictionary[this.objectType],
+            (response_data)=>{
+                props.renderer.tiny_loader.endLoad();
+            }
+        );
+    }
 
     //Adds a button that deletes the item (with a confirmation). The callback function is called after the object is removed from the DOM
     addDeleteSelf(data,alt_icon){
@@ -1003,7 +1028,49 @@ export class TitleText extends React.Component{
             <div class="title-text" title={text} dangerouslySetInnerHTML={{ __html: text }}></div>
         )
     }
+}
 
+export class CollapsibleText extends Component{
+
+    render(){
+        let css_class = "title-text collapsible-text";
+        let drop_text = gettext("show more");
+        if(this.state.is_dropped){
+            css_class+=" dropped";
+            drop_text = gettext("show less");
+        }
+        let overflow;
+        if(this.state.overflow)overflow=(
+            <div onClick={()=>this.setState({is_dropped:!this.state.is_dropped})} class="collapsed-text-show-more">{drop_text}</div>
+        );
+
+        var text = this.props.text;
+        if((this.props.text==null || this.props.text=="") && this.props.defaultText!=null){
+            text=this.props.defaultText;
+        }
+        return (
+            [
+                <div ref={this.maindiv} class={css_class} title={text} dangerouslySetInnerHTML={{ __html: text }}></div>,
+                overflow,
+            ]
+        )
+    }
+    componentDidMount(){
+        this.checkSize();
+    }
+
+    componentDidUpdate(){
+        this.checkSize();
+    }
+
+    checkSize(){
+        if(this.state.is_dropped)return;
+        if(this.maindiv.current.scrollHeight>this.maindiv.current.clientHeight){
+            if(!this.state.overflow)this.setState({overflow:true});
+        }else{
+            if(this.state.overflow)this.setState({overflow:false})
+        }
+    }
 }
 
 export class SimpleWorkflow extends React.Component{

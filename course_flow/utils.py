@@ -237,8 +237,9 @@ def get_classrooms_for_student(user):
 
 
 def get_user_permission(obj, user):
-    if hasattr(obj, "get_subclass"):
-        obj = obj.get_subclass()
+    if obj.type in ["workflow", "course", "activity", "program"]:
+        obj = models.Workflow.objects.get(pk=obj.pk)
+
     if user is None or not user.is_authenticated:
         return models.ObjectPermission.PERMISSION_NONE
     if obj.author == user:
@@ -254,8 +255,6 @@ def get_user_permission(obj, user):
 
 
 def get_user_role(obj, user):
-    if hasattr(obj, "get_subclass"):
-        obj = obj.get_subclass()
     if user is None or not user.is_authenticated:
         return models.LiveProjectUser.ROLE_NONE
     if obj.type == "liveproject":
