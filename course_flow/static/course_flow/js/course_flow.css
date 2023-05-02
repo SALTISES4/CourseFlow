@@ -64,6 +64,10 @@ button:hover{
     color: #04ba74;
 }
 
+.material-symbols-rounded.red, .material-symbols-outlined.red{
+    color: red;
+}
+
 .main-wrapper{
     display: flex;
     height: 100%;
@@ -531,6 +535,13 @@ button:hover{
     font-size: 14px;
 }
 
+.panel-item.active{
+    background: #EEFFF8;
+}
+.panel-favourite.active{
+    background: #EEFFF8;
+}
+
 .panel-item > img, .panel-item .material-symbols-rounded{
     margin-right:10px;
 }
@@ -718,6 +729,8 @@ button:hover{
 
 #account-links, #create-links {
     right: 0px;
+    width: max-content;
+    max-width: 250px;
 }
 
 .create-dropdown > a, .create-dropdown > div{
@@ -1188,6 +1201,20 @@ button:hover{
     padding: 20px;
     text-align: center;
     width: 220px;
+    position: relative;
+}
+
+.big-button.disabled{
+    box-shadow: unset;
+    background: lightgrey;
+    pointer: default;
+    pointer-events: unset;
+}
+
+.big-button.disabled > .material-symbols-rounded{
+    display: block;
+    font-size: 36px;
+    color: grey;
 }
 
 .big-button > .material-symbols-rounded{
@@ -1209,6 +1236,7 @@ button:hover{
 
 .big-button.active{
     background: #EEFFF8;
+    border: 1px solid #04BA74;
 }
 
 .public-link-button{

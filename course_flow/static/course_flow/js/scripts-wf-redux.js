@@ -146,6 +146,7 @@ export class HomeRenderer{
 export class WorkflowRenderer{
     constructor(workflowID,data_package){
         this.workflowID=workflowID;
+        makeActiveSidebar("#workflow"+this.workflowID);
         this.message_queue=[];
         this.messages_queued=true;
         this.column_choices = data_package.column_choices;
@@ -439,6 +440,7 @@ export class WorkflowRenderer{
 export class ComparisonRenderer{
     constructor(project_data){
         this.project_data=project_data;
+        makeActiveSidebar("#project"+this.project_data.id);
     }
     
     render(container,view_type="workflowview"){
@@ -470,7 +472,6 @@ export class ComparisonRenderer{
                 <ComparisonView view_type={view_type} renderer={this} data={this.project_data} selection_manager={this.selection_manager} tiny_loader={this.tiny_loader}/>,
                 container[0]
             );
-            
         }
         
     }

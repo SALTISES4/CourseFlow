@@ -170,7 +170,7 @@
           </span>
         </div>
         <img class="title-image" src="{% static 'course_flow/img/logo-courseflow.svg' %}"/>
-        <a class="panel-item hover-shade no-underline" href="{% url 'course_flow:home' %}">
+        <a id="panel-home" class="panel-item hover-shade no-underline" href="{% url 'course_flow:home' %}">
           <span class="material-symbols-rounded">home</span>
           <div>{% trans 'Home' %}</div>
         </a>
@@ -179,7 +179,7 @@
           <span class="material-symbols-rounded">collections_bookmark</span>
           <div>{% trans 'Your Library' %}</div>
         </a>
-        <a id="panel-my-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project">
+        <a id="panel-explore" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project">
           <span class="material-symbols-rounded">manage_search</span>
           <div>{% trans 'Explore' %}</div>
         </a>
@@ -200,9 +200,9 @@
               {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
                 <a class="panel-favourite hover-shade"
                    {% if favourite.content_object.type == "project" %}
-                      href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
+                      id="project{{favourite.object_id}}" href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
                    {% else %}
-                      href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
+                      id="workflow{{favourite.object_id}}" href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
                    {% endif %}
                    >
                   {{ favourite.content_object | safe }}
@@ -400,6 +400,10 @@
         clearTimeout(timer);
         timer = setTimeout(()=>{func.apply(this,args);},timeout);
       };
+    }
+
+    const makeActiveSidebar = function(id){
+      $(id).addClass("active");
     }
 
     const makeDropdown = (click_element)=>{

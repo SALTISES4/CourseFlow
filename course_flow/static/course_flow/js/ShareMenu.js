@@ -36,6 +36,22 @@ export class ShareMenu extends React.Component{
         }else{
             share_info=gettext("Invite collaborators to workflow and grant view permissions to the project");
         }
+        let shared_with;
+        if(editors.length || commentors.length || viewers.length || students.length){
+            shared_with=[
+                <hr/>,
+                <div class="user-panel">
+                    <p>{gettext("Shared With")}:</p>
+                    <ul class="user-list">
+                        {editors}
+                        {commentors}
+                        {viewers}
+                        {students}
+                    </ul>
+                </div>
+            ]
+        }
+
         console.log(data);
 
         return(
@@ -50,16 +66,7 @@ export class ShareMenu extends React.Component{
                 <div>{owner}</div>
                 <hr/>
                 <UserAdd permissionChange={this.setUserPermission.bind(this)} share_info={share_info}/>
-                <hr/>
-                <div class="user-panel">
-                    <p>{gettext("Shared With")}:</p>
-                    <ul class="user-list">
-                        {editors}
-                        {commentors}
-                        {viewers}
-                        {students}
-                    </ul>
-                </div>
+                {shared_with}
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
                     <span class="green material-symbols-rounded">close</span>
                 </div>
@@ -80,13 +87,19 @@ export class ShareMenu extends React.Component{
             if(!public_disabled && !published)public_class+=" hover-shade";
             if(public_disabled)public_class+=" disabled";
             let public_text=gettext("Any CourseFlow teacher can view");
-            if(public_disabled)public_text+=gettext("\n\nA title and at least one discipline is required for publishing.")
+            let disabled_indicator;
+            if(public_disabled)disabled_indicator=(
+                <div title={gettext("A title and at least one discipline is required for publishing.")} class="window-close-button">
+                    <span class = "material-symbols-rounded red filled">error</span>
+                </div>
+            )
             return (
                 <div class="big-buttons-wrapper">
                     <div class={public_class} disabled={public_disabled} onClick={this.setPublication.bind(this,true && !public_disabled)}>
                         <span class="material-symbols-rounded">public</span>
                         <div class="big-button-title">{gettext("Public to CourseFlow")}</div>
                         <div class="big-button-description">{public_text}</div>
+                        {disabled_indicator}
                     </div>
                     <div class={private_class} onClick={this.setPublication.bind(this,false)}>
                         <span class="material-symbols-rounded filled">visibility_off</span>

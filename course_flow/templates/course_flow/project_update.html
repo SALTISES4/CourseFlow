@@ -43,6 +43,7 @@
       library_renderer = new library_renderers.ProjectRenderer(project_data,disciplines);
       $(document).ajaxError(renderers.fail_function);
       library_renderer.render($("#container"));
+        makeActiveSidebar("#project"+project_data.id);
   });
 </script>
 {% endblock %}
