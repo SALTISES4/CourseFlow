@@ -1091,9 +1091,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
         # View the favourites
         selenium.get(
-            self.live_server_url
-            + reverse("course_flow:my-library")
-            + "?favourites=true"
+            self.live_server_url + reverse("course_flow:my-favourites")
         )
         time.sleep(2)
         self.assertEqual(

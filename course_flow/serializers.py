@@ -46,6 +46,7 @@ from .utils import (
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
     get_user_permission,
+    get_user_role,
     linkIDMap,
     user_workflow_url,
 )
@@ -1301,7 +1302,9 @@ class InfoBoxSerializer(
             return False
         if Favourite.objects.filter(
             user=user,
-            content_type=ContentType.objects.get_for_model(instance),
+            content_type=ContentType.objects.get_for_model(
+                instance.get_permission_objects()[0]
+            ),
             object_id=instance.id,
         ):
             return True
@@ -1314,14 +1317,22 @@ class InfoBoxSerializer(
             return 0
         object_permission = ObjectPermission.objects.filter(
             user=user,
-            content_type=ContentType.objects.get_for_model(instance),
+            content_type=ContentType.objects.get_for_model(
+                instance.get_permission_objects()[0]
+            ),
             object_id=instance.id,
         ).first()
+        object_role = get_user_role(instance, user)
         if object_permission is None:
-            return None
+            return {
+                "permission_type": ObjectPermission.PERMISSION_VIEW,
+                "last_viewed": None,
+                "role_type": object_role,
+            }
         return {
             "permission_type": object_permission.permission_type,
             "last_viewed": object_permission.last_viewed,
+            "role_type": object_role,
         }
 
     def get_has_liveproject(self, instance):

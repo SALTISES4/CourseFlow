@@ -3,12 +3,13 @@ import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {Component, EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
-import {renderMessageBox,closeMessageBox, WorkflowForMenu} from "./MenuComponents";
+import {renderMessageBox,closeMessageBox} from "./MenuComponents";
 import {getWorkflowSelectMenu,getWorkflowContext,insertedAt} from "./PostFunctions";
 import {WeekWorkflowComparisonView} from "./WeekWorkflowView";
 import {getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
 import {OutcomeEditViewUnconnected} from "./OutcomeEditView";
 import {toggleObjectSet,moveWeekWorkflow} from "./Reducers";
+import {WorkflowForMenu} from "./Library"
 
 
 

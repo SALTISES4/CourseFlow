@@ -68,6 +68,11 @@ button:hover{
     color: red;
 }
 
+.material-symbols-rounded.small-inline{
+    font-size: 14px;
+    vertical-align: bottom;
+}
+
 .main-wrapper{
     display: flex;
     height: 100%;
@@ -96,7 +101,7 @@ button:hover{
 }
 
 .topnav > div{
-    padding-left: 10px;
+    padding-left: 40px;
 }
 
 /*
@@ -463,7 +468,7 @@ button:hover{
     background:white;
     min-width: 180px;
     width:200px;
-    border-right:1px solid lightgray;
+    border-right:1px solid #E9EBF2;
     height:100%;
     box-sizing:border-box;
     color:#444444;
@@ -597,7 +602,7 @@ button:hover{
 
 .home-item{
     border-radius:10px;
-    border:1px solid lightgrey;
+    border:1px solid #E9EBF2;
     padding:10px;
     margin-right:10px;
     width: fit-content;
@@ -650,7 +655,7 @@ button:hover{
     white-space:nowrap;
     background:white;
     border-radius:3px;
-    border:1px solid lightgray;
+    border:1px solid #E9EBF2;
 }
 
 .home-tabs .ui-tabs-active{
@@ -766,7 +771,7 @@ button:hover{
     margin-bottom:8px;
     padding:10px;
     border-radius:10px;
-    border:1px solid lightgrey;
+    border:1px solid #E9EBF2;
     max-width:600px;
 }
 
@@ -779,11 +784,25 @@ button:hover{
 .workflow-buttons-row{
     display: flex;
     gap: 5px;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
+.workflow-buttons-row > div{
+    display: flex;
+    gap: 5px;
 }
 
 .workflow-buttons-row .workflow-created{
-    flex-grow: 2;
-    text-align: right;
+    background: #E9EBF2;
+    padding: 5px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #444444;
+
+
 }
 
 .workflow-for-menu .workflow-toggle-favourite{
@@ -822,7 +841,7 @@ button:hover{
 .workflow-created{
     font-size:12px;
     margin-bottom:6px;
-    color:gray;
+    color:grey;
 }
 
 .warning{
@@ -842,23 +861,28 @@ button:hover{
 }
 
 .workflow-type-indicator.activity{
-    background-color:#11b3d4;
+    /*background-color:#11b3d4;*/
+    background-color: #0E5BB6;
 }
 
 .workflow-type-indicator.course{
-    background-color:#ff5f3d;
+    /*background-color:#ff5f3d;*/
+    background-color:#C54A30;
 }
 
 .workflow-type-indicator.program{
-    background-color:#04ba74;
+    /*background-color:#04ba74;*/
+    background-color:#327B77;
 }
 
 .workflow-type-indicator.project{
-    background-color:#d6bb30;
+    /*background-color:#d6bb30;*/
+    background-color:#B59C1B;
 }
 
 .workflow-type-indicator.liveproject{
-    background-color:#8a38d1;
+    /*background-color:#8a38d1;*/
+    background-color:#B59C1B;
 }
 
 .workflow-top-row{
@@ -993,12 +1017,11 @@ button:hover{
 }
 
 .project-header{
-    padding:20px;
     border-radius:10px;
     background:white;
     width: 100%;
     color: #444444;
-    padding-right: 50px;
+    padding-bottom: 10px;
     box-sizing: border-box;
 }
 
@@ -1033,7 +1056,7 @@ button:hover{
 .project-info-section{
     margin-top: 20px;
     margin-bottom: 20px;
-    border-top: 1px solid lightgrey;
+    border-top: 1px solid #E9EBF2;
     max-width: 500px;
 }
 
@@ -1192,7 +1215,7 @@ button:hover{
 .big-button{
     border-radius: 10px;
     box-sizing: border-box;
-    border: 1px solid lightgrey;
+    border: 1px solid #E9EBF2;
     padding: 20px;
     text-align: center;
     width: 220px;
@@ -1201,7 +1224,7 @@ button:hover{
 
 .big-button.disabled{
     box-shadow: unset;
-    background: lightgrey;
+    background: #E9EBF2;
     pointer: default;
     pointer-events: unset;
 }
@@ -1271,7 +1294,7 @@ button:hover{
 
 .user-label{
     padding:5px;
-    border:1px solid lightgrey;
+    border:1px solid #E9EBF2;
     position:relative;
     width:400px;
     display:flex;

@@ -194,8 +194,9 @@
         {% endif %}
         <div class="left-panel-extra">
           {% if user|has_group:"Teacher" %}
-            <a id="my-favourites" class="panel-item hover-shade" href="{% url 'course_flow:my-library' %}?favourites=true">
-              {% trans 'My Favourites' %}
+            <a id="my-favourites" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-favourites' %}">
+              <span class="material-symbols-rounded">star</span>
+              <div>{% trans 'My Favourites' %}</div>
             </a>
               {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
                 <a class="panel-favourite hover-shade"
@@ -208,7 +209,7 @@
                   {{ favourite.content_object | safe }}
                 </a>
               {% endfor %}
-            <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-library' %}?favourites=true">... {% trans 'see all' %}</a>
+            <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
           {% endif %}
         </div>
         {% if user|has_group:"Teacher" %}
@@ -362,6 +363,7 @@
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
       get_library: "{% url 'course_flow:get-library' %}",
+      get_favourites: "{% url 'course_flow:get-favourites' %}",
       get_home: "{% url 'course_flow:get-home' %}",
       import: "{% url 'course_flow:import' %}",
       get_public_workflow_data: "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
@@ -387,6 +389,7 @@
     };
     const home_path = "{% url 'course_flow:home' %}"
     const my_library_path = "{% url 'course_flow:my-library' %}"
+    const my_favourites_path = "{% url 'course_flow:my-favourites' %}"
     const my_liveprojects_path = "{% url 'course_flow:my-live-projects' %}"
     const registration_path = "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}";
 

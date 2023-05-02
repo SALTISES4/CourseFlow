@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {WorkflowTitle, AssignmentTitle, TitleText, ActionButton, DatePicker} from "./ComponentJSON";
-import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
+import {renderMessageBox,closeMessageBox} from "./MenuComponents";
 import {getAssignmentsForNode, deleteSelfLive, setAssignmentCompletion, addUsersToAssignment, updateLiveProjectValue,createAssignment, getAssignmentData, getAssignmentDataStudent, setWorkflowVisibility, getWorkflowNodes} from "./PostFunctions";
 import {StudentManagement} from "./StudentManagement";
 import {WorkflowVisibility} from "./LiveProjectView";

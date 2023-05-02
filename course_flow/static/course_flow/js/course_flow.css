@@ -68,6 +68,11 @@ button:hover{
     color: red;
 }
 
+.material-symbols-rounded.small-inline{
+    font-size: 14px;
+    vertical-align: bottom;
+}
+
 .main-wrapper{
     display: flex;
     height: 100%;
@@ -96,7 +101,7 @@ button:hover{
 }
 
 .topnav > div{
-    padding-left: 10px;
+    padding-left: 40px;
 }
 
 /*
@@ -463,7 +468,7 @@ button:hover{
     background:white;
     min-width: 180px;
     width:200px;
-    border-right:1px solid lightgray;
+    border-right:1px solid #E9EBF2;
     height:100%;
     box-sizing:border-box;
     color:#444444;
@@ -597,7 +602,7 @@ button:hover{
 
 .home-item{
     border-radius:10px;
-    border:1px solid lightgrey;
+    border:1px solid #E9EBF2;
     padding:10px;
     margin-right:10px;
     width: -moz-fit-content;
@@ -652,7 +657,7 @@ button:hover{
     white-space:nowrap;
     background:white;
     border-radius:3px;
-    border:1px solid lightgray;
+    border:1px solid #E9EBF2;
 }
 
 .home-tabs .ui-tabs-active{
@@ -769,7 +774,7 @@ button:hover{
     margin-bottom:8px;
     padding:10px;
     border-radius:10px;
-    border:1px solid lightgrey;
+    border:1px solid #E9EBF2;
     max-width:600px;
 }
 
@@ -782,11 +787,25 @@ button:hover{
 .workflow-buttons-row{
     display: flex;
     gap: 5px;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
+.workflow-buttons-row > div{
+    display: flex;
+    gap: 5px;
 }
 
 .workflow-buttons-row .workflow-created{
-    flex-grow: 2;
-    text-align: right;
+    background: #E9EBF2;
+    padding: 5px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #444444;
+
+
 }
 
 .workflow-for-menu .workflow-toggle-favourite{
@@ -825,7 +844,7 @@ button:hover{
 .workflow-created{
     font-size:12px;
     margin-bottom:6px;
-    color:gray;
+    color:grey;
 }
 
 .warning{
@@ -846,23 +865,28 @@ button:hover{
 }
 
 .workflow-type-indicator.activity{
-    background-color:#11b3d4;
+    /*background-color:#11b3d4;*/
+    background-color: #0E5BB6;
 }
 
 .workflow-type-indicator.course{
-    background-color:#ff5f3d;
+    /*background-color:#ff5f3d;*/
+    background-color:#C54A30;
 }
 
 .workflow-type-indicator.program{
-    background-color:#04ba74;
+    /*background-color:#04ba74;*/
+    background-color:#327B77;
 }
 
 .workflow-type-indicator.project{
-    background-color:#d6bb30;
+    /*background-color:#d6bb30;*/
+    background-color:#B59C1B;
 }
 
 .workflow-type-indicator.liveproject{
-    background-color:#8a38d1;
+    /*background-color:#8a38d1;*/
+    background-color:#B59C1B;
 }
 
 .workflow-top-row{
@@ -998,12 +1022,11 @@ button:hover{
 }
 
 .project-header{
-    padding:20px;
     border-radius:10px;
     background:white;
     width: 100%;
     color: #444444;
-    padding-right: 50px;
+    padding-bottom: 10px;
     box-sizing: border-box;
 }
 
@@ -1038,7 +1061,7 @@ button:hover{
 .project-info-section{
     margin-top: 20px;
     margin-bottom: 20px;
-    border-top: 1px solid lightgrey;
+    border-top: 1px solid #E9EBF2;
     max-width: 500px;
 }
 
@@ -1197,7 +1220,7 @@ button:hover{
 .big-button{
     border-radius: 10px;
     box-sizing: border-box;
-    border: 1px solid lightgrey;
+    border: 1px solid #E9EBF2;
     padding: 20px;
     text-align: center;
     width: 220px;
@@ -1206,7 +1229,7 @@ button:hover{
 
 .big-button.disabled{
     box-shadow: unset;
-    background: lightgrey;
+    background: #E9EBF2;
     pointer: default;
     pointer-events: unset;
 }
@@ -1277,7 +1300,7 @@ button:hover{
 
 .user-label{
     padding:5px;
-    border:1px solid lightgrey;
+    border:1px solid #E9EBF2;
     position:relative;
     width:400px;
     display:flex;
@@ -1724,7 +1747,7 @@ button, input[type="submit"]{
     font-weight:600;
     border-radius:3px;
     background:white;
-    border:1px solid lightgray;
+    border:1px solid #E9EBF2;
 }
 
 .workflow-view-select .active{
@@ -1733,7 +1756,7 @@ button, input[type="submit"]{
 }
 
 .workflow-view-select .disabled{
-    background:lightgrey;
+    background:#E9EBF2;
     color:darkgrey;
     pointer-events: none;    
 }
@@ -1900,6 +1923,7 @@ button, input[type="submit"]{
     width:calc(100% - 32px);
     padding:2px;
     box-sizing:border-box;
+    white-space: normal;
 }
 
 .column-line img{
@@ -2913,7 +2937,7 @@ ol.children-block{
     background:white;
     z-index:1;
     box-sizing:border-box;
-    border-right:2px solid lightgray;
+    border-right:2px solid #E9EBF2;
 }
 
 .outcome-table .outcome-head.empty{
@@ -2941,8 +2965,8 @@ ol.children-block{
 
 
 .outcome-table .outcome-row.outcome-category{
-    border-bottom:2px solid lightgrey;
-    border-top:2px solid lightgrey;
+    border-bottom:2px solid #E9EBF2;
+    border-top:2px solid #E9EBF2;
 }
 
 .outcome-row.outcome-category h4{
@@ -3249,7 +3273,7 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
 }
 
 .comment:hover{
-    border:1px solid lightgrey;
+    border:1px solid #E9EBF2;
     
 }
 
@@ -3396,7 +3420,7 @@ circle.mouseover{
     height:38px;
     background:white;
     border-radius:3px;
-    border:1px solid lightgray;
+    border:1px solid #E9EBF2;
 }
 
 .side-bar .ui-tabs-tab.ui-state-disabled{
@@ -3408,7 +3432,7 @@ circle.mouseover{
     margin-right:4px;
     display:block;
     text-decoration:none;
-    color:lightgray;
+    color:#E9EBF2;
     filter:grayscale(100%) brightness(1.5);
     box-sizing:border-box;
     height:100%;
@@ -3428,7 +3452,7 @@ circle.mouseover{
     width:100%;
     box-sizing:border-box;
     padding:5px;
-    border:1px solid lightgray;
+    border:1px solid lightgrey;
     margin-top:2px;
     margin-bottom:2px;
 }
@@ -3685,7 +3709,7 @@ circle.mouseover{
 .alignment-block .node-drop-row{
     height:auto;
     padding-left:20px;
-    border-top:2px solid lightgrey;
+    border-top:2px solid #E9EBF2;
     box-sizing:border-box;
 }
 
@@ -3753,7 +3777,7 @@ circle.mouseover{
 
 .alignment-block .child-outcome{
     padding-bottom:5px;
-    border-top:2px solid lightgrey;
+    border-top:2px solid #E9EBF2;
 }
 
 .alignment-block .child-outcome.child-outcome-header{

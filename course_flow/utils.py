@@ -206,14 +206,22 @@ def get_parent_nodes_for_workflow(workflow):
 
 
 def get_nondeleted_favourites(user):
-    return models.Favourite.objects.filter(user=user).exclude(
-        Q(
-            object_id__in=models.Workflow.objects.filter(
-                Q(deleted=True) | Q(project__deleted=True)
-            )
-        )
-        | Q(object_id__in=models.Project.objects.filter(deleted=True))
-    )
+    return list(
+        models.Project.objects.filter(favourited_by__user=user)
+    ) + list(models.Workflow.objects.filter(favourited_by__user=user))
+
+    # return models.Favourite.objects.filter(user=user).exclude(
+    #     Q(
+    #         object_id__in=models.Workflow.objects.filter(
+    #             Q(deleted=True) | Q(project__deleted=True)
+    #         ),
+    #         content_type=ContentType.objects.get_for_model(models.Workflow)
+    #     )
+    #     | Q(
+    #         object_id__in=models.Project.objects.filter(deleted=True),
+    #         content_type=ContentType.objects.get_for_model(models.Project)
+    #     )
+    # )
 
 
 def check_possible_parent(workflow, parent_workflow, same_project):

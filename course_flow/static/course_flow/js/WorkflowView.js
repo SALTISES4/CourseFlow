@@ -6,7 +6,7 @@ import ColumnWorkflowView from "./ColumnWorkflowView";
 import WeekWorkflowView from "./WeekWorkflowView";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";
 import {NodeBarWeekWorkflow} from "./WeekWorkflowView";
-import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
+import {renderMessageBox,closeMessageBox} from "./MenuComponents";
 import * as Constants from "./Constants";
 import {changeField, moveColumnWorkflow, moveWeekWorkflow, toggleObjectSet} from "./Reducers";
 import {OutcomeBar} from "./OutcomeEditView";

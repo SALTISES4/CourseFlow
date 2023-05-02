@@ -7,7 +7,7 @@ import {OutcomeBarOutcomeView, OutcomeBarOutcomeViewUnconnected} from "./Outcome
 import OutcomeView from "./OutcomeView";
 import {getParentWorkflowByID,getOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getSortedOutcomesFromOutcomeWorkflowSet,getSortedOutcomeNodesFromNodes} from "./FindState";
 import {moveOutcomeWorkflow} from "./Reducers";
-import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents';
+import {renderMessageBox, closeMessageBox} from './MenuComponents';
 import {newOutcome, insertedAt} from "./PostFunctions";
 import * as Constants from "./Constants";
 
