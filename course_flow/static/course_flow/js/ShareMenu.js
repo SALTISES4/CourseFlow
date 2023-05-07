@@ -52,7 +52,6 @@ export class ShareMenu extends React.Component{
             ]
         }
 
-        console.log(data);
 
         return(
             <div class="message-wrap user-text">

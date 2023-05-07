@@ -1100,10 +1100,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                     ".workflow-for-menu .workflow-toggle-favourite .filled"
                 )
             ),
-            1,
+            4,
         )
         selenium.find_element_by_css_selector(
-            ".workflow-for-menu .workflow-title"
+            ".workflow-for-menu.project .workflow-title"
         ).click()
         favourites = selenium.current_url
         time.sleep(2)

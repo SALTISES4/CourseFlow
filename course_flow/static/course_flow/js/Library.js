@@ -739,8 +739,6 @@ export class WorkflowForMenu extends React.Component{
     }
 
     clickAction(){
-        console.log("CLICK");
-        console.log(this.props.selectAction);
         if(this.props.selectAction){
             this.props.selectAction(this.props.workflow_data.id);
         }else{
