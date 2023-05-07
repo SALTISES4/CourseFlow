@@ -25,7 +25,7 @@
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
   
-  const create_path = {
+  const create_path_this_project = {
       activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
       course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
       program:"{% url 'course_flow:program-create' projectPk=object.pk %}"

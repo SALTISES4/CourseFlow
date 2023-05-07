@@ -306,7 +306,7 @@ export class ProjectMenu extends LibraryMenu{
                 <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
                 <div class="project-header-info">
                     <div class="project-info-section project-members">
-                        <h4>{gettext("Project Members")}</h4>
+                        <h4>{gettext("Project Contributors")}</h4>
                         {this.getUsers()}
                     </div>
                     <div class="project-other">
@@ -385,9 +385,9 @@ export class ProjectMenu extends LibraryMenu{
             <div class="hover-shade" id="create-project-button" title={gettext("Create workflow")} ref={this.createDiv}>
                 <span class="material-symbols-rounded filled">add_circle</span>
                 <div id="create-links-project" class="create-dropdown">
-                    <a id="activity-create-project" href={create_path.activity} class="hover-shade">{gettext("New activity")}</a>
-                    <a id="course-create-project" href={create_path.course} class="hover-shade">{gettext("New course")}</a>
-                    <a id="program-create-project" href={create_path.program} class="hover-shade">{gettext("New program")}</a>
+                    <a id="activity-create-project" href={create_path_this_project.activity} class="hover-shade">{gettext("New activity")}</a>
+                    <a id="course-create-project" href={create_path_this_project.course} class="hover-shade">{gettext("New course")}</a>
+                    <a id="program-create-project" href={create_path_this_project.program} class="hover-shade">{gettext("New program")}</a>
                 </div>
             </div>
         )
@@ -487,6 +487,7 @@ export class WorkflowFilter extends Component{
                             placeholder={gettext("Search")}
                             onChange={debounce(this.searchChange.bind(this))}
                             id="workflow-search-input"
+                            class="search-input"
                         />
                         <span class="material-symbols-rounded">search</span>
                         <div class="create-dropdown">{search_results}</div>
@@ -738,8 +739,10 @@ export class WorkflowForMenu extends React.Component{
     }
 
     clickAction(){
-        if(this.props.clickAction){
-            this.props.clickAction(this.props.workflow_data.id);
+        console.log("CLICK");
+        console.log(this.props.selectAction);
+        if(this.props.selectAction){
+            this.props.selectAction(this.props.workflow_data.id);
         }else{
             window.location.href=update_path[this.props.workflow_data.type].replace("0",this.props.workflow_data.id);
         }

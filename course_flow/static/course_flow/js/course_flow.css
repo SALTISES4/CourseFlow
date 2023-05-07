@@ -15,7 +15,32 @@ body.printing{
     height: unset;
 }
 
-.left-panel a, .workflow-title-bar a, .home-tabs .ui-tabs-tab a, .home-item a{
+::-webkit-scrollbar:hover {
+  width: 8px;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888888;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6E6E6E;
+}
+
+::-webkit-scrollbar-button{
+    height: 0px;
+}
+
+.left-panel a, .workflow-title-bar a, .home-item a{
     color:#444444;
 }
 
@@ -43,6 +68,38 @@ body{
 
 button{
     cursor:pointer;
+}
+
+.primary-button{
+    background: #04BA74;
+    color: white;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 0;
+}
+
+.secondary-button{
+    color: #444444;
+    background: #E9EBF2;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 0;
+}
+
+.primary-button.disabled, .primary-button:disabled, .secondary-button.disabled, .secondary-button:disabled{
+    background: #04BA74;
+    color: grey;
+    background: #E9EBF2;
+}
+
+.flex-middle{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.relative{
+    position: relative;
 }
 
 [contentEditable=true]:empty:not(:focus):before {
@@ -518,7 +575,7 @@ button:hover{
 }
 
 .left-panel-extra{
-    overflow-y:auto;
+    overflow-y:overlay;
 }
 
 .title-image{
@@ -633,43 +690,32 @@ button:hover{
     width:48px;
 }
 
-.home-tabs{
-
-}
-
 .home-tabs .ui-tabs-nav{
     padding:0px;
-    margin:10px;
+    margin:5px;
     overflow:hidden;
     box-sizing:border-box;
     z-index:1;
     min-width:250px;
     display:flex;
-    margin-left:20px;
+    gap: 5px;
+    margin-bottom: 20px;
 }
 
 .home-tabs .ui-tabs-tab{
-    margin:3px 2px 2px 2px;
-    line-height:1.3;
-    font-size:20px;
-    font-weight:600;
+    font-size:16px;
     list-style:none;
     white-space:nowrap;
     background:white;
-    border-radius:3px;
+    padding: 8px;
+    border-radius:20px;
     border:1px solid #E9EBF2;
 }
 
 .home-tabs .ui-tabs-active{
     background:#04ba74;
-}
-
-
-.home-tabs .ui-tabs-tab a{
-    width:100%;
-    padding:10px;
-    font-size:18px;
-    display:block;
+    border:1px solid #04ba74;
+    color:white;
 }
 
 .home-tabs .ui-tabs-active a{
@@ -678,9 +724,8 @@ button:hover{
 
 .home-tabs>div{
     width:100%;
-    padding:20px;
     box-sizing: border-box;
-    overflow-y:auto;
+    overflow-y:overlay;
 }
 
 .saltise-menu-container{
@@ -689,7 +734,7 @@ button:hover{
     background: white;
     padding: 50px;
     box-sizing: border-box;
-    overflow: auto;
+    overflow: overlay;
 }
 
 
@@ -818,7 +863,7 @@ button:hover{
     margin-bottom:2px;
     white-space:pre-wrap;
     max-height: 140px;
-    overflow-y: auto;
+    overflow-y: overlay;
 }
 
 .menu-grid .workflow-description{
@@ -957,7 +1002,7 @@ button:hover{
     position: relative;
 }
 
-#workflow-search .material-symbols-rounded{
+.search-input + .material-symbols-rounded{
     position: absolute;
     font-size: 20px;
     left: 4px;
@@ -979,16 +1024,12 @@ button:hover{
     background: #EEFFF8;
 }
 
-#workflow-search-input{
+.search-input{
     border-radius: 12px;
     border: 1px solid lightgrey;
     padding:  4px;
     padding-left: 28px;
     padding-right: 10px;
-}
-
-#workflow-search-input{
-    content: "<span class='material-symbols-rounded'>search</span>";
 }
 
 .search-filter-lock{
@@ -1116,7 +1157,7 @@ button:hover{
 }
 
 .explore-menu .explore-preview{
-    overflow-x:auto;
+    overflow-x: overlay;
 }
 
 .explore-menu .explore-main{
@@ -1327,13 +1368,6 @@ button:hover{
     width:100%;
 }
 
-.user-add button{
-    padding:0;
-    margin:0;
-    border:0;
-    vertical-align:middle;
-}
-
 .user-label .window-close-button{
     top:2px;
     right:2px;
@@ -1359,7 +1393,30 @@ button:hover{
     
 }
 
+.message-box{
+    background:white;
+    left:10%;
+    top:10%;
+    width:80%;
+    height:80%;
+    position:absolute;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+}
+
+.message-wrap .home-tabs{
+    height: calc(100% - 100px);
+    overflow-y: overlay;
+}
+
+
 .message-wrap{
+    width:100%;
+    height:100%;
+    overflow-y: overlay;
+    padding:20px;
+    padding-left: 30px;
+    padding-right: 30px;
+    box-sizing:border-box;
     color:#444444;
 }
 
@@ -1369,6 +1426,7 @@ button:hover{
 
 .permission-select select{
     border:none;
+    text-align: right;
 }
 
 .action-icon{
@@ -1482,7 +1540,7 @@ text {
 
 
 .body-wrapper{
-    overflow:auto;
+    overflow: overlay;
     flex-grow: 1;
     height: 100%;
     position: relative;
@@ -1731,6 +1789,7 @@ button, input[type="submit"]{
 
 .workflow-view-select{
     display:flex;
+    gap: 5px;
     max-width:1000px;
     flex-wrap:wrap;
     margin:10px 10px 0px 10px;
@@ -1739,13 +1798,9 @@ button, input[type="submit"]{
 .workflow-view-select > *{
     max-width:200px;
     overflow:hidden;
-    display:inline-block;
-    padding:4px; 
-    font-size:14px;
-    margin:3px 2px 2px 2px;
-    line-height:1.3;
-    font-weight:600;
-    border-radius:3px;
+    padding:8px; 
+    font-size:16px;
+    border-radius:20px;
     background:white;
     border:1px solid #E9EBF2;
 }
@@ -1753,6 +1808,7 @@ button, input[type="submit"]{
 .workflow-view-select .active{
     background:#04ba74;
     color:white;
+    border:1px solid #04ba74;
 }
 
 .workflow-view-select .disabled{
@@ -3184,7 +3240,7 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     border:1px solid #04ba74;
     background:white;
     z-index:7;
-    overflow:auto;
+    overflow: overlay;
     padding: 5px;
     font-size: 12px;
     box-sizing: border-box;
@@ -3518,7 +3574,7 @@ circle.mouseover{
 }
 
 .right-panel-inner{
-    overflow-y:auto;
+    overflow-y: overlay;
     display:inline-block;
     padding:20px;
     box-sizing:border-box;
@@ -3818,24 +3874,6 @@ circle.mouseover{
     pointer-events:all;
 }
 
-.message-box{
-    background:white;
-    left:10%;
-    top:10%;
-    width:80%;
-    height:80%;
-    position:absolute;
-    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
-}
-
-
-.message-wrap{
-    width:100%;
-    height:100%;
-    overflow-y:auto;
-    padding:20px;
-    box-sizing:border-box;
-}
 
 .multi-select{
     display:inline-block;
@@ -3859,14 +3897,15 @@ circle.mouseover{
     background:white;
     height:100%;
     padding:20px;
-    overflow:auto;
+    overflow: overlay;
     vertical-align:top;
 }
 
 .action-bar{
-    display:inline-block;
-    right:0%;
-    bottom:0%;
+    display:flex;
+    gap: 10px;
+    right:15px;
+    bottom:15px;
     position:absolute;
 }
 

@@ -118,7 +118,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 </div>
                 <div class="project-header-info">
                     <div class="project-info-section project-members">
-                        <h4>{gettext("Workflow Members")}</h4>
+                        <h4>{gettext("Workflow contributors")}</h4>
                         {this.getUsers()}
                     </div>
                     <div class="project-other">
@@ -1190,6 +1190,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
     
     render(){
         if(this.state.has_loaded){
+            if(this.state.parent_workflows.length==0 && this.props.child_workflows.length==0)return null;
             let parent_workflows = this.state.parent_workflows.map(parent_workflow=>
                 <WorkflowTitle data={parent_workflow} class_name={"panel-favourite"}/>
             );

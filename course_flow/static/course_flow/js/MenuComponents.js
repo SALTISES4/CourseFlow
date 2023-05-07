@@ -64,6 +64,7 @@ export class WorkflowsMenu extends React.Component{
         }
         return(
             <div class="message-wrap">
+                {this.getTitle()}
                 <div class="home-tabs" id="workflow-tabs">
                     <ul>
                         {tab_li}
@@ -77,6 +78,25 @@ export class WorkflowsMenu extends React.Component{
         );
         
     }
+
+    getTitle(){
+        switch(this.props.type){
+            case "linked_workflow_menu":
+            case "added_workflow_menu":
+            case "workflow_select_menu":
+                return(
+                    <h2>{gettext("Select a workflow")+":"}</h2>
+                );
+            case "target_project_menu":
+                return(
+                    <h2>{gettext("Select a project")+":"}</h2>
+                );
+        }
+        return null;
+
+
+    }
+
     
     workflowSelected(selected_id,selected_type){
         this.setState({selected:selected_id,selected_type:selected_type});
@@ -86,38 +106,43 @@ export class WorkflowsMenu extends React.Component{
         var actions = [];
         if(this.props.type=="linked_workflow_menu"){
             var text=gettext("link to node");
-            if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text=gettext("copy to current project and ")+text;
+            if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text=gettext("Copy to Current Project and ")+text;
             actions.push(
-                <button id="set-linked-workflow" disabled={!this.state.selected} onClick={()=>{
+                <button id="set-linked-workflow-cancel" class="secondary-button" onClick={closeMessageBox}>
+                    {gettext("Cancel")}
+                </button>
+            );
+            actions.push(
+                <button id="set-linked-workflow-none" class="secondary-button" onClick={()=>{
+                    setLinkedWorkflow(this.props.data.node_id,-1,this.props.actionFunction)
+                    closeMessageBox();
+                }}>
+                    {gettext("Set to None")}
+                </button>
+            );
+            actions.push(
+                <button id="set-linked-workflow" disabled={!this.state.selected} class="primary-button" onClick={()=>{
                     setLinkedWorkflow(this.props.data.node_id,this.state.selected,this.props.actionFunction)
                     closeMessageBox();
                 }}>
                     {text}
                 </button>
             );
-            actions.push(
-                <button id="set-linked-workflow-none" onClick={()=>{
-                    setLinkedWorkflow(this.props.data.node_id,-1,this.props.actionFunction)
-                    closeMessageBox();
-                }}>
-                    {gettext("set to none")}
-                </button>
-            );
-            actions.push(
-                <button id="set-linked-workflow-cancel" onClick={closeMessageBox}>
-                    {gettext("cancel")}
-                </button>
-            );
         }else if(this.props.type=="added_workflow_menu" || this.props.type=="workflow_select_menu"){
             var text;
             if(this.props.type=="added_workflow_menu"){
-                text=gettext("select");
-                if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text=gettext("copy to current project");
+                text=gettext("Select");
+                if(this.state.selected && this.project_workflows.indexOf(this.state.selected)<0)text=gettext("Copy to Current Project");
             }else{
-                text=gettext("select");
+                text=gettext("Select");
             }
             actions.push(
-                <button id="set-linked-workflow" disabled={!this.state.selected} onClick={()=>{
+                <button id="set-linked-workflow-cancel" class="secondary-button" onClick={closeMessageBox}>
+                    {gettext("Cancel")}
+                </button>
+            );
+            actions.push(
+                <button id="set-linked-workflow" class="primary-button" disabled={!this.state.selected} onClick={()=>{
                     
                     this.props.actionFunction({workflowID:this.state.selected});
                     closeMessageBox();
@@ -125,23 +150,18 @@ export class WorkflowsMenu extends React.Component{
                     {text}
                 </button>
             );
-            actions.push(
-                <button id="set-linked-workflow-cancel" onClick={closeMessageBox}>
-                    {gettext("cancel")}
-                </button>
-            );
         }else if(this.props.type=="target_project_menu"){
             actions.push(
-                <button id="set-linked-workflow" disabled={!this.state.selected} onClick={()=>{
+                <button id="set-linked-workflow-cancel" class="secondary-button" onClick={closeMessageBox}>
+                    {gettext("Cancel")}
+                </button>
+            );
+            actions.push(
+                <button id="set-linked-workflow" class="primary-button" disabled={!this.state.selected} onClick={()=>{
                     this.props.actionFunction({parentID:this.state.selected});
                     closeMessageBox();
                 }}>
-                    {gettext("add to project")}
-                </button>
-            );
-            actions.push(
-                <button id="set-linked-workflow-cancel" onClick={closeMessageBox}>
-                    {gettext("cancel")}
+                    {gettext("Select Project")}
                 </button>
             );
         }

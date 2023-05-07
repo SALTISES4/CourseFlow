@@ -229,14 +229,16 @@ class UserLabel extends React.Component{
         if(this.props.type!="owner"){
             if(this.props.type=="add"){
                 permission_select = (
-                    <div class="permission-select">
-                        <select ref={this.select} disabled={disabled}>
-                            <option value="edit">{gettext("Can edit")}</option>
-                            <option value="comment">{gettext("Can comment")}</option>
-                            <option value="view">{gettext("Can view")}</option>
-                            {/*<option value="student">{gettext("Student")}</option>*/}
-                        </select>
-                        <button onClick={()=>this.props.addFunction($(this.select.current).val())}>{gettext("Share")}</button>
+                    <div class="flex-middle">
+                        <div class="permission-select">
+                            <select ref={this.select} disabled={disabled}>
+                                <option value="edit">{gettext("Can edit")}</option>
+                                <option value="comment">{gettext("Can comment")}</option>
+                                <option value="view">{gettext("Can view")}</option>
+                                {/*<option value="student">{gettext("Student")}</option>*/}
+                            </select>
+                        </div>
+                        <button class="primary-button" onClick={()=>this.props.addFunction($(this.select.current).val())}>{gettext("Share")}</button>
                     </div>
                 )
             }else{
@@ -307,7 +309,10 @@ class UserAdd extends React.Component{
         return (
             <div class="user-add">
                 <p>{this.props.share_info}</p>
-                <input ref={this.input} placeholder={gettext("Begin typing to search users")}/>
+                <div class="relative">
+                    <input class="search-input" ref={this.input} placeholder={gettext("Begin typing to search users")}/>
+                    <span class="material-symbols-rounded">search</span>
+                </div>
                 {user}
             </div>
         );

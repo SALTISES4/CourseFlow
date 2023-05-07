@@ -2002,8 +2002,8 @@ msgid "Individual"
 msgstr "Individuel"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Workflow Members"
-msgstr "Plans de travail"
+msgid "Workflow Contributers"
+msgstr "Contributeurs"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Edit Workflow"

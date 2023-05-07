@@ -371,6 +371,14 @@
       get_public_workflow_child_data: "{% url 'course_flow:get-public-workflow-child-data' pk='0' %}",
       get_public_parent_workflow_info: "{% url 'course_flow:get-public-parent-workflow-info' pk='0' %}",
     };
+    const create_path = {
+        activity_strategy:"{% url 'course_flow:activity-strategy-create' %}",
+        course_strategy:"{% url 'course_flow:course-strategy-create' %}",
+        project:"{% url 'course_flow:project-create' %}",
+        activity:"{% url 'course_flow:activity-create' projectPk='0' %}",
+        course:"{% url 'course_flow:course-create' projectPk='0' %}",
+        program:"{% url 'course_flow:program-create' projectPk='0' %}"
+    }
 
     const update_path = {
         project:"{% url 'course_flow:project-update' pk='0'%}",
@@ -434,8 +442,8 @@
 
     $(window).on("load",()=>{
       $("#create-links #activity-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:activity-create' projectPk='0' %}"));
-      $("#create-links #course-create").on("click",()=>renderers.CreateNew("course"));
-      $("#create-links #program-create").on("click",()=>renderers.CreateNew("program"));
+      $("#create-links #course-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:course-create' projectPk='0' %}"));
+      $("#create-links #program-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:program-create' projectPk='0' %}"));
 
       if(show_notification_request){
         if(window.confirm(

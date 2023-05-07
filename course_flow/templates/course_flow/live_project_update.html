@@ -24,11 +24,6 @@
 <script nonce="{{request.csp_nonce}}">
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-  const create_path = {
-      activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
-      course:"{% url 'course_flow:course-create' projectPk=object.pk %}",
-      program:"{% url 'course_flow:program-create' projectPk=object.pk %}"
-  }
   
   
   const project_data= {{project_data|safe}};
