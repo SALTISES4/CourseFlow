@@ -415,7 +415,6 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
 
 def get_my_projects(user, add, **kwargs):
-    last_time = time.time()
     for_add = kwargs.get("for_add", False)
     permission_filter = {}
     if for_add:
@@ -2081,6 +2080,8 @@ def import_data(request: HttpRequest) -> JsonResponse:
     try:
         if file.size < 1024 * 1024:
             file_type = file.content_type
+            if file.name.endswith(".csv"):
+                file_type = "text/csv"
             if (
                 file_type
                 == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -4403,7 +4404,7 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
             object_id=object_id,
         ).delete()
         if favourite:
-            fav = Favourite.objects.create(
+            Favourite.objects.create(
                 user=request.user, content_object=item
             )
         response["action"] = "posted"

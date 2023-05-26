@@ -110,7 +110,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
             style.border="2px solid "+data.lock.user_colour;
         }    
         return (
-            <div class="project-header" style={style}>
+            <div class="project-header" style={style} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 {this.getProjectLink()}
                 <div class="project-header-top-line">
                     <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
@@ -118,7 +118,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 </div>
                 <div class="project-header-info">
                     <div class="project-info-section project-members">
-                        <h4>{gettext("Workflow contributors")}</h4>
+                        <h4>{gettext("Permissions")}</h4>
                         {this.getUsers()}
                     </div>
                     <div class="project-other">
@@ -150,30 +150,30 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let users = []
         if(author)users.push(
             <div class="user-name">
-                {Constants.getUserDisplay(author)+" ("+gettext("owner")+")"}
+                {Constants.getUserTag("author")}{Constants.getUserDisplay(author)}
             </div>
         )
         users.push([
             editors.filter(user=>user.id!=author.id).map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("edit")+")"}
+                    {Constants.getUserTag("edit")}{Constants.getUserDisplay(user)}
                 </div>
             ),
             commenters.map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("comment")+")"}
+                    {Constants.getUserTag("comment")}{Constants.getUserDisplay(user)}
                 </div>
             ),
             viewers.map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("view")+")"}
+                    {Constants.getUserTag("view")}{Constants.getUserDisplay(user)}
                 </div>
             ),
         ]);
         if(this.state.users.published){
             users.push(
                 <div class="user-name">
-                    <span class="material-symbols-rounded">public</span> {gettext("All CourseFlow (view)")}
+                    {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
                 </div>
             );
         }

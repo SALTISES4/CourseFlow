@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-07 12:57-0400\n"
+"POT-Creation-Date: 2023-05-26 09:19-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -423,8 +423,8 @@ msgstr "Votre Bibliothèque"
 msgid "Explore"
 msgstr "Explorer"
 
-#: templates/course_flow/base.html:189 views.py:5880 views.py:5896
-#: views.py:5899
+#: templates/course_flow/base.html:189 views.py:5881 views.py:5897
+#: views.py:5900
 msgid "My Classrooms"
 msgstr "Mes classes"
 
@@ -805,32 +805,32 @@ msgstr ""
 "Vous n'avez pas de favoris pertinents. Utilisez le menu Explorer pour "
 "rechercher et mettre en favori le contenu d'autres utilisateurs."
 
-#: views.py:2116
+#: views.py:2117
 msgid "Your CourseFlow Export"
 msgstr "Votre export"
 
-#: views.py:2117
+#: views.py:2118
 msgid "Hi there! Here are the results of your recent export."
 msgstr "Bonjour! Voici les résultats de votre dernière exportation."
 
-#: views.py:3639 views.py:3676 views.py:3783 views.py:4226 views.py:4265
-#: views.py:4295 views.py:4310
+#: views.py:3640 views.py:3677 views.py:3784 views.py:4227 views.py:4266
+#: views.py:4296 views.py:4311
 msgid "(copy)"
 msgstr "(copie)"
 
-#: views.py:4439
+#: views.py:4440
 msgid "User is not a teacher."
 msgstr "L'utilisateur n'est pas un instructeur."
 
-#: views.py:4453 views.py:6408
+#: views.py:4454 views.py:6409
 msgid "This user's role cannot be changed."
 msgstr "Le rôle de cet utilisateur ne peut pas être modifié."
 
-#: views.py:5877
+#: views.py:5878
 msgid "My Owned Classrooms"
 msgstr "Mes classes"
 
-#: views.py:5892
+#: views.py:5893
 msgid ""
 "You haven't created any classrooms yet. Create a project, then choose "
 "'Create Classroom' to create a live classroom."
@@ -838,11 +838,11 @@ msgstr ""
 "Vous n'avez pas encore créé de classes. Créez un projet, puis choisissez "
 "'créer une classe' pour créer une classe."
 
-#: views.py:5911
+#: views.py:5912
 msgid "You aren't registered for any classrooms right now."
 msgstr "Vous n'êtes inscrit à aucune classe pour le moment."
 
-#: views.py:6422
+#: views.py:6423
 msgid "This user has a student account, and cannot be made a teacher."
 msgstr ""
 "Cet utilisateur a un compte étudiant et ne peut pas être nommé instructeur."

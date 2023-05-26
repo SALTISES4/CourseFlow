@@ -17,10 +17,12 @@ body.printing{
 
 ::-webkit-scrollbar:hover {
   width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar {
   width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
@@ -238,6 +240,7 @@ button:hover{
     font-family:'Open Sans',sans-serif;
     align-items: center;
     background: #EEFFF8;
+    box-sizing: border-box;
 }
 
 .menubar.hidden{
@@ -523,7 +526,7 @@ button:hover{
 
 .left-panel{
     background:white;
-    min-width: 180px;
+    min-width: 200px;
     width:200px;
     border-right:1px solid #E9EBF2;
     height:100%;
@@ -558,6 +561,14 @@ button:hover{
     right: -10px;
     top: 100px;
     z-index: 10;
+}
+
+.left-panel:not(.collapsed) .left-panel-toggle{
+    display: none;
+}
+
+.left-panel:not(.collapsed):hover .left-panel-toggle{
+    display: block;
 }
 
 .left-panel-toggle .material-symbols-rounded{
@@ -807,7 +818,7 @@ button:hover{
 
 
 .menu-grid > .workflow-for-menu{
-    width:400px;
+    width:350px;
 }
 
 .workflow-for-menu{
@@ -863,9 +874,21 @@ button:hover{
     overflow-y: overlay;
 }
 
-.menu-grid .workflow-description{
-    overflow:hidden;
-    height:36px;
+
+.workflow-for-menu .workflow-description.collapsible-text{
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.workflow-for-menu .workflow-description p, .menu-grid .workflow-description ul{
+    margin: 0;
+}
+
+.workflow-for-menu .workflow-title{
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .workflow-publication{
@@ -903,6 +926,7 @@ button:hover{
     padding-right:12px;
     margin-left:8px;
     height:fit-content;
+    white-space: nowrap;
 }
 
 .workflow-type-indicator.activity{
@@ -1369,6 +1393,8 @@ button:hover{
 
 .user-name{
     font-size:14px;
+    display: flex;
+    align-items: center;
 }
 
 .user-name .material-symbols-rounded{
@@ -1383,6 +1409,35 @@ button:hover{
     margin-left:8px;
 }
 
+.user-tag{
+    padding: 3px;
+    font-size: 12px;
+    height: fit-content;
+    white-space: nowrap;
+    padding-right: 6px;
+    padding-left: 6px;
+    border-radius: 4px;
+    margin: 2px;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.user-tag.permission-author{
+    background-color: #3f4041;
+    color: white;
+}
+
+.user-tag.permission-edit{
+    background-color: #d3dae6;
+}
+
+.user-tag.permission-view{
+    background-color: #e5eff8;
+}
+
+.user-tag.permission-comment{
+    background-color: #e7ebf1;
+}
 .permission-select{
     
 }

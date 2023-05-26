@@ -306,7 +306,7 @@ export class ProjectMenu extends LibraryMenu{
                 <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
                 <div class="project-header-info">
                     <div class="project-info-section project-members">
-                        <h4>{gettext("Project Contributors")}</h4>
+                        <h4>{gettext("Permissions")}</h4>
                         {this.getUsers()}
                     </div>
                     <div class="project-other">
@@ -333,28 +333,28 @@ export class ProjectMenu extends LibraryMenu{
         if(!author)return null;
         let users = [
             <div class="user-name">
-                {Constants.getUserDisplay(author)+" ("+gettext("owner")+")"}
+                {Constants.getUserTag("author")}{Constants.getUserDisplay(author)}
             </div>,
             editors.filter(user=>user.id!=author.id).map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("edit")+")"}
+                    {Constants.getUserTag("edit")}{Constants.getUserDisplay(user)}
                 </div>
             ),
             commenters.map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("comment")+")"}
+                    {Constants.getUserTag("comment")}{Constants.getUserDisplay(user)}
                 </div>
             ),
             viewers.map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("view")+")"}
+                    {Constants.getUserTag("view")}{Constants.getUserDisplay(user)}
                 </div>
             ),
         ]
         if(this.state.users.published){
             users.push(
                 <div class="user-name">
-                    <span class="material-symbols-rounded">public</span> {gettext("All CourseFlow (view)")}
+                    {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
                 </div>
             );
         }
@@ -682,7 +682,8 @@ export class WorkflowForMenu extends React.Component{
                 <div class="workflow-created">
                     { creation_text}
                 </div>
-                <div class="workflow-description" dangerouslySetInnerHTML={{ __html: data.description }}>
+                {/*<CollapsibleText css_class="workflow-description" text={data.description} defaultText={gettext("No description")}/>*/}
+                <div class="workflow-description collapsible-text" dangerouslySetInnerHTML={{ __html: data.description }}>
                 </div>
                 {this.getButtons()}
             </div>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-07 12:57-0400\n"
+"POT-Creation-Date: 2023-05-26 09:19-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -288,35 +288,35 @@ msgstr "Répondre"
 msgid "Submit"
 msgstr "Soumettre"
 
-#: static/course_flow/js/ComponentJSON.js:1037
+#: static/course_flow/js/ComponentJSON.js:1039
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "show more"
 msgstr "montrer plus"
 
-#: static/course_flow/js/ComponentJSON.js:1040
+#: static/course_flow/js/ComponentJSON.js:1042
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "show less"
 msgstr "montrer moins"
 
-#: static/course_flow/js/ComponentJSON.js:1127
-#: static/course_flow/js/ComponentJSON.js:1197
-#: static/course_flow/js/ComponentJSON.js:1217
+#: static/course_flow/js/ComponentJSON.js:1132
+#: static/course_flow/js/ComponentJSON.js:1202
+#: static/course_flow/js/ComponentJSON.js:1222
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Untitled"
 msgstr "Sans titre"
 
-#: static/course_flow/js/ComponentJSON.js:1130
+#: static/course_flow/js/ComponentJSON.js:1135
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid " (no access)"
 msgstr " (pas d'accès)"
 
-#: static/course_flow/js/ComponentJSON.js:1257
+#: static/course_flow/js/ComponentJSON.js:1262
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "characters"
 msgstr "caractères"
@@ -383,6 +383,30 @@ msgstr "programme"
 #: static/course_flow/js/Constants.js:199
 msgid "project"
 msgstr "projet"
+
+#: static/course_flow/js/Constants.js:416
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-wf-redux.min.js:27
+msgid "Owner"
+msgstr "Propriétaire"
+
+#: static/course_flow/js/Constants.js:417
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-wf-redux.min.js:27
+msgid "Editor"
+msgstr "Peur modifier"
+
+#: static/course_flow/js/Constants.js:418
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-wf-redux.min.js:27
+msgid "Commenter"
+msgstr "Peut commenter"
+
+#: static/course_flow/js/Constants.js:419
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-wf-redux.min.js:27
+msgid "Viewer"
+msgstr "Peut voir"
 
 #: static/course_flow/js/ExportMenu.js:17
 #: static/course_flow/js/scripts-library.min.js:27
@@ -497,8 +521,9 @@ msgstr "Copier a bibliothèque"
 
 #: static/course_flow/js/Library.js:309
 #: static/course_flow/js/scripts-library.min.js:27
-msgid "Project Contributors"
-msgstr "Contributeurs"
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid "Permissions"
+msgstr ""
 
 #: static/course_flow/js/Library.js:315
 #: static/course_flow/js/WorkflowView.js:127
@@ -523,37 +548,11 @@ msgstr "Disciplines"
 msgid "None"
 msgstr "Vide"
 
-#: static/course_flow/js/Library.js:336
-#: static/course_flow/js/WorkflowView.js:153
-#: static/course_flow/js/scripts-library.min.js:27
-#: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "owner"
-msgstr "propriétaire"
-
-#: static/course_flow/js/Library.js:340
-#: static/course_flow/js/scripts-library.min.js:27
-#: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "edit"
-msgstr "modifier"
-
-#: static/course_flow/js/Library.js:345
-#: static/course_flow/js/WorkflowView.js:164
-#: static/course_flow/js/scripts-library.min.js:27
-#: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "comment"
-msgstr "commentaire"
-
-#: static/course_flow/js/Library.js:350
-#: static/course_flow/js/scripts-library.min.js:27
-#: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "view"
-msgstr "voir"
-
 #: static/course_flow/js/Library.js:357
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "All CourseFlow (view)"
-msgstr "Tout CourseFlow (voir)"
+msgid "All CourseFlow"
+msgstr "Tout CourseFlow"
 
 #: static/course_flow/js/Library.js:363
 #: static/course_flow/js/WorkflowView.js:182
@@ -687,14 +686,14 @@ msgstr "par"
 msgid " on "
 msgstr " à "
 
-#: static/course_flow/js/Library.js:697
+#: static/course_flow/js/Library.js:698
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "classroom"
 msgstr "classe"
 
-#: static/course_flow/js/Library.js:698
+#: static/course_flow/js/Library.js:699
 #: static/course_flow/js/MenuComponents.js:393
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
@@ -702,21 +701,21 @@ msgstr "classe"
 msgid " strategy"
 msgstr " stratégie"
 
-#: static/course_flow/js/Library.js:715
+#: static/course_flow/js/Library.js:716
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Favourite"
 msgstr "Ajouter en favori"
 
-#: static/course_flow/js/Library.js:720
+#: static/course_flow/js/Library.js:721
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "workflows"
 msgstr "plans de travail"
 
-#: static/course_flow/js/Library.js:726
+#: static/course_flow/js/Library.js:727
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1978,10 +1977,6 @@ msgid "Individual"
 msgstr "Individuel"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Workflow contributors"
-msgstr "Contributeurs"
-
-#: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Edit Workflow"
 msgstr "Modifier le plan de travail"
 
@@ -2044,6 +2039,21 @@ msgstr "Stratégies SALTISE"
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Used in:"
 msgstr "Utilisé dans:"
+
+#~ msgid "Project Contributors"
+#~ msgstr "Contributeurs"
+
+#~ msgid "edit"
+#~ msgstr "modifier"
+
+#~ msgid "comment"
+#~ msgstr "commentaire"
+
+#~ msgid "view"
+#~ msgstr "voir"
+
+#~ msgid "Workflow contributors"
+#~ msgstr "Contributeurs"
 
 #~ msgid "Project Members"
 #~ msgstr "Membres du projet"
