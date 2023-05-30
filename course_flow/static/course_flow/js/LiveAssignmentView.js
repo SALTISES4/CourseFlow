@@ -281,7 +281,7 @@ export class AssignmentView extends React.Component{
         let data = this.props.data;
         let node_data = data.task;
         let data_override;
-        if(node_data.represents_workflow) data_override = {...node_data,...node_data.linked_workflow_data};
+        if(node_data.represents_workflow) data_override = {...node_data,...node_data.linked_workflow_data,id:data.id};
         else data_override={...node_data};
         let lefticon;
         let righticon;
@@ -423,7 +423,7 @@ export class AssignmentViewSmall extends React.Component{
         let data = this.props.data;
         let node_data = data.task;
         let data_override;
-        if(node_data.represents_workflow) data_override = {...node_data,...node_data.linked_workflow_data};
+        if(node_data.represents_workflow) data_override = {...node_data,...node_data.linked_workflow_data,id:data.id};
         else data_override={...node_data};
         
         let css_class = "node assignment";
@@ -641,7 +641,7 @@ export class AssignmentViewForNode extends AssignmentView{
         let data = this.props.data;
         let node_data = data.task;
         let data_override;
-        if(node_data.represents_workflow) data_override = {...node_data,...node_data.linked_workflow_data};
+        if(node_data.represents_workflow) data_override = {...node_data,...node_data.linked_workflow_data,id:data.id};
         else data_override={...node_data};
         let css_class = "assignment-in-node";
         let completion_data;
