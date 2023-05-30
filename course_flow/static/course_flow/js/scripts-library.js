@@ -1,7 +1,7 @@
 import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as React from "react";
-import {LibraryMenu, ProjectMenu, HomeMenu, FavouritesMenu} from "./Library";
+import {ExploreMenu, LibraryMenu, ProjectMenu, HomeMenu, FavouritesMenu} from "./Library";
 import * as Constants from "./Constants";
 
 
@@ -31,6 +31,14 @@ export class FavouritesRenderer extends LibraryRenderer{
     getContents(){
         return (
             <FavouritesMenu renderer={this}/>
+        )
+    }
+}
+
+export class ExploreRenderer extends LibraryRenderer{
+    getContents(){
+        return (
+            <ExploreMenu renderer={this}/>
         )
     }
 }

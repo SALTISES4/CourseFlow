@@ -74,12 +74,18 @@ export class LibraryMenu extends React.Component{
     }
 }
 
-export class FavouritesMenu extends React.Component{
-    constructor(props){
-        super(props);
-        this.state={};
-        this.createDiv=React.createRef();
+export class ExploreMenu extends LibraryMenu{
+
+    render(){
+        return (
+            <div class="project-menu">
+                <ExploreFilter renderer={this.props.renderer} workflows={[]} context="library"/>
+            </div>
+        );
     }
+}
+
+export class FavouritesMenu extends LibraryMenu{
 
     render(){
         return (
@@ -644,6 +650,181 @@ export class WorkflowFilter extends Component{
     defaultRender(){
         return (<renderers.WorkflowLoader/>);
     }
+}
+
+/*
+As the workflow filter, but for the explore menu. There are several critical differences.
+First, the data must be retrieved on every update to the filters/sort methods, as it will be paginated.
+Second, the workflow type becomes its own filter. 
+Third, a new discipline-based filter is added.
+*/
+export class ExploreFilter extends Component{
+    constructor(props){
+        super(props);
+        this.state={workflows:props.workflows,active_sort:0,reversed:false}
+        this.filters = [
+            {name:"activity",display:gettext("Activity"),active:"true"},
+            {name:"course",display:gettext("Course"),active:"true"},
+            {name:"program",display:gettext("Program"),active:"true"},
+            {name:"project",display:gettext("Project"),active:"true"},
+        ];
+        this.sorts = [
+            {name:"last_viewed",display:gettext("Recent")},
+            {name:"title",display:gettext("A-Z")},
+            {name:"created_on",display:gettext("Creation date")},
+        ];
+        this.filterDOM=React.createRef();
+        this.searchDOM=React.createRef();
+        this.sortDOM=React.createRef();
+    }
+
+    render(){
+        let workflows=this.state.workflows.map(workflow=>
+            <WorkflowForMenu key={workflow.id} workflow_data={workflow} context={this.props.context}/>
+        );
+        let search_filter_lock;
+        if(this.state.search_filter_lock){
+            search_filter_lock=(
+                <div class="search-filter-lock">
+                    <span onClick={this.clearSearchLock.bind(this)} class="material-symbols-rounded hover-shade">close</span>
+                    {gettext("Search: "+this.state.search_filter_lock)}
+                </div>
+            );
+        }
+        return (
+            [
+                <div class="workflow-filter-top">
+                    <div id="workflow-search" ref={this.searchDOM}>
+                        <input
+                            placeholder={gettext("Search")}
+                            onChange={debounce(this.searchChange.bind(this))}
+                            id="workflow-search-input"
+                            class="search-input"
+                        />
+                        <span class="material-symbols-rounded">search</span>
+                        {search_filter_lock}
+                    </div>
+                    <div class="workflow-filter-sort">
+                        {this.getFilter()}
+                        {this.getSort()}
+                    </div>
+                </div>,
+                <div class="menu-grid">
+                    {workflows}
+                </div>
+            ]
+        );
+    }
+
+    getFilter(){
+        let active_filter = 0;
+        return (
+            <div id="workflow-filter" ref={this.filterDOM} class="hover-shade">
+                <div class={"workflow-sort-indicator hover-shade item-"+this.state.active_filter}>
+                    <span class="material-symbols-rounded">filter_alt</span>
+                    <div>{active_filter.display}</div>
+                </div>
+                <div class="create-dropdown">
+                    {this.filters.map((filter,i)=>{
+                        let css_class="filter-option";
+                        if(this.state.active_filter==i)css_class+=" active";
+                        return(
+                            <div class={css_class} onClick={()=>this.setState({active_filter:i})}>
+                                {filter.display}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    }
+
+    getSort(){
+        let active_sort = this.sorts[this.state.active_sort];
+        return (
+            <div id="workflow-sort" ref={this.sortDOM} class="hover-shade">
+                <div class={"workflow-sort-indicator hover-shade item-"+this.state.active_sort}>
+                    <span class="material-symbols-rounded">sort</span>
+                    <div>{active_sort.display}</div>
+                </div>
+                <div class="create-dropdown">
+                    {this.sorts.map((sort,i)=>{
+                        let sort_dir;
+                        let css_class="filter-option";
+                        if(this.state.active_sort==i){
+                            css_class+=" active";
+                            if(this.state.reversed)sort_dir=<span class="material-symbols-rounded">north</span>;
+                            else sort_dir=<span class="material-symbols-rounded">south</span>
+                        }
+                        return (<div class={css_class} onClick={(evt)=>{
+                            evt.stopPropagation();
+                            this.sortChange(i);
+                            //This is very hacky, but if we're updating we need to re-open the sort dropdown
+                            $(this.sortDOM.current).children(".create-dropdown").addClass("active");
+                        }}>
+                            {sort_dir}
+                            {sort.display}
+                        </div>);
+                    })}
+                </div>
+            </div>
+        );
+    }
+
+    sortChange(index){
+        if(this.state.active_sort==index)this.setState({reversed:!this.state.reversed});
+        else this.setState({active_sort:index,reversed:false});
+    }
+
+    searchChange(evt){
+        console.log("search term changed")
+        /*let component=this;
+        if(evt.target.value && evt.target.value!=""){
+            let filter = evt.target.value.toLowerCase();
+            if(this.search_without)component.searchWithout(filter,(response)=>{
+                component.setState({search_results:response,search_filter:filter});
+                $(this.searchDOM.current).addClass("active");
+            });
+            else component.searchWithin(filter,(response)=>{
+                component.setState({search_results:response,search_filter:filter});
+                $(this.searchDOM.current).addClass("active");
+            });
+        }else{
+            component.setState({search_results:[],search_filter:""});
+            $(this.searchDOM.current).removeClass("active");
+        }*/
+    }
+
+    componentDidMount(){
+        makeDropdown(this.filterDOM.current);
+        makeDropdown(this.sortDOM.current);
+        makeDropdown(this.searchDOM.current);
+    }
+
+    searchWithout(request,response_function){
+        searchAllObjects(request,10,(response_data)=>{
+            response_function(response_data.workflow_list);
+        });
+    }
+
+    // seeAll(){
+    //     this.props.renderer.tiny_loader.startLoad();
+    //     let search_filter = this.state.search_filter;
+    //     searchAllObjects(search_filter,0,(response_data)=>{
+    //         this.setState({workflows:response_data.workflow_list,search_filter_lock:search_filter});
+    //         this.props.renderer.tiny_loader.endLoad();
+    //         $("#workflow-search").removeClass("active");
+    //     });
+    // }
+
+    clearSearchLock(evt){
+        this.setState({workflows:this.props.workflows,search_filter_lock:null})
+        evt.stopPropagation();
+    }
+
+    // defaultRender(){
+    //     return (<renderers.WorkflowLoader/>);
+    // }
 }
 
 

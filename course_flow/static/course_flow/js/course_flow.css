@@ -3382,6 +3382,8 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     width: 100%;
     overflow-x: hidden;
     color: #222222;
+    -webkit-user-select: text;
+            user-select: text;
 }
 
 .comment:hover{
