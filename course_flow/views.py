@@ -5,6 +5,7 @@ import time
 # import time
 from functools import reduce
 from itertools import chain
+from operator import attrgetter
 
 import pandas as pd
 from django.conf import settings
@@ -15,7 +16,7 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
-from django.db.models import ProtectedError, Q
+from django.db.models import Count, ProtectedError, Q
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -133,6 +134,7 @@ from .utils import (  # dateTimeFormat,; get_parent_model,; get_parent_model_str
     get_model_from_str,
     get_nondeleted_favourites,
     get_parent_nodes_for_workflow,
+    get_relevance,
     get_user_permission,
     get_user_role,
     save_serializer,
@@ -326,86 +328,86 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "course_flow/explore.html"
 
     def get_context_data(self):
-        types = self.request.GET.getlist("types[]", None)
+        # types = self.request.GET.getlist("types[]", None)
 
-        keywords = self.request.GET.get("keyword", "").split(" ")
-        q_objects = Q()
-        for keyword in keywords:
-            q_objects &= (
-                Q(author__first_name__icontains=keyword)
-                | Q(author__username__icontains=keyword)
-                | Q(author__last_name__icontains=keyword)
-                | Q(title__icontains=keyword)
-                | Q(description__icontains=keyword)
-            )
+        # keywords = self.request.GET.get("keyword", "").split(" ")
+        # q_objects = Q()
+        # for keyword in keywords:
+        #     q_objects &= (
+        #         Q(author__first_name__icontains=keyword)
+        #         | Q(author__username__icontains=keyword)
+        #         | Q(author__last_name__icontains=keyword)
+        #         | Q(title__icontains=keyword)
+        #         | Q(description__icontains=keyword)
+        #     )
 
-        disciplines = self.request.GET.getlist("disc[]", None)
-        sort = self.request.GET.get("sort", None)  # noqa F841
-        page = self.request.GET.get("page", 1)
-        results = self.request.GET.get("results", 20)
-        filter_kwargs = {}
-        if page:
-            page = int(page)
-        else:
-            page = 1
-        if results:
-            results = int(results)
-        else:
-            results = 10
-        disciplines = Discipline.objects.filter(id__in=disciplines)
-        if len(disciplines) > 0:
-            filter_kwargs["disciplines__in"] = disciplines
-        try:
-            queryset = reduce(
-                lambda x, y: chain(x, y),
-                [
-                    get_model_from_str(model_type)
-                    .objects.filter(published=True)
-                    .filter(**filter_kwargs)
-                    .filter(q_objects)
-                    .exclude(deleted=True)
-                    .distinct()
-                    if model_type == "project"
-                    else get_model_from_str(model_type)
-                    .objects.filter(published=True)
-                    .filter(**filter_kwargs)
-                    .filter(q_objects)
-                    .exclude(Q(deleted=True) | Q(project__deleted=True))
-                    .distinct()
-                    for model_type in types
-                ],
-            )
-        except TypeError:
-            queryset = Project.objects.none()
-        total_results = 0
-        queryset = list(queryset)
-        total_results = len(queryset)
-        subqueryset = queryset[
-            max((page - 1) * results, 0) : min(page * results, total_results)
-        ]
+        # disciplines = self.request.GET.getlist("disc[]", None)
+        # sort = self.request.GET.get("sort", None)  # noqa F841
+        # page = self.request.GET.get("page", 1)
+        # results = self.request.GET.get("results", 20)
+        # filter_kwargs = {}
+        # if page:
+        #     page = int(page)
+        # else:
+        #     page = 1
+        # if results:
+        #     results = int(results)
+        # else:
+        #     results = 10
+        # disciplines = Discipline.objects.filter(id__in=disciplines)
+        # if len(disciplines) > 0:
+        #     filter_kwargs["disciplines__in"] = disciplines
+        # try:
+        #     queryset = reduce(
+        #         lambda x, y: chain(x, y),
+        #         [
+        #             get_model_from_str(model_type)
+        #             .objects.filter(published=True)
+        #             .filter(**filter_kwargs)
+        #             .filter(q_objects)
+        #             .exclude(deleted=True)
+        #             .distinct()
+        #             if model_type == "project"
+        #             else get_model_from_str(model_type)
+        #             .objects.filter(published=True)
+        #             .filter(**filter_kwargs)
+        #             .filter(q_objects)
+        #             .exclude(Q(deleted=True) | Q(project__deleted=True))
+        #             .distinct()
+        #             for model_type in types
+        #         ],
+        #     )
+        # except TypeError:
+        #     queryset = Project.objects.none()
+        # total_results = 0
+        # queryset = list(queryset)
+        # total_results = len(queryset)
+        # subqueryset = queryset[
+        #     max((page - 1) * results, 0) : min(page * results, total_results)
+        # ]
 
-        page_number = math.ceil(float(total_results) / results)
-        object_list = (
-            JSONRenderer()
-            .render(
-                InfoBoxSerializer(
-                    subqueryset, many=True, context={"user": self.request.user}
-                ).data
-            )
-            .decode("utf-8")
-        )
+        # page_number = math.ceil(float(total_results) / results)
+        # object_list = (
+        #     JSONRenderer()
+        #     .render(
+        #         InfoBoxSerializer(
+        #             subqueryset, many=True, context={"user": self.request.user}
+        #         ).data
+        #     )
+        #     .decode("utf-8")
+        # )
         return {
-            "object_list": object_list,
-            "pages": JSONRenderer()
-            .render(
-                {
-                    "total_results": total_results,
-                    "page_count": page_number,
-                    "current_page": page,
-                    "results_per_page": results,
-                }
-            )
-            .decode("utf-8"),
+            # "object_list": object_list,
+            # "pages": JSONRenderer()
+            # .render(
+            #     {
+            #         "total_results": total_results,
+            #         "page_count": page_number,
+            #         "current_page": page,
+            #         "results_per_page": results,
+            #     }
+            # )
+            # .decode("utf-8"),
             "disciplines": JSONRenderer()
             .render(
                 DisciplineSerializer(Discipline.objects.all(), many=True).data
@@ -4404,9 +4406,7 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
             object_id=object_id,
         ).delete()
         if favourite:
-            Favourite.objects.create(
-                user=request.user, content_object=item
-            )
+            Favourite.objects.create(user=request.user, content_object=item)
         response["action"] = "posted"
     except ValidationError:
         response["action"] = "error"
@@ -4623,34 +4623,126 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
 
 @user_is_teacher()
 def search_all_objects(request: HttpRequest) -> HttpResponse:
-    name_filter = json.loads(request.POST.get("filter"))
-    max_count = json.loads(request.POST.get("max_count", "0"))
-    all_objects = ObjectPermission.objects.filter(user=request.user).filter(
-        Q(project__title__istartswith=name_filter, project__deleted=False)
-        | Q(workflow__title__istartswith=name_filter, workflow__deleted=False)
-    )
-    # add ordering
+    name_filter = json.loads(request.POST.get("filter")).lower()
+    data = json.loads(request.POST.get("additional_data", "{}"))
+    print(data)
+    nresults = data.get("nresults", 10)
+    full_search = data.get("full_search", False)
+    published = data.get("published", False)
+    # A full search of all objects, paginated
+    if full_search:
+        # Check only published material
+        keywords = name_filter.split(" ")
+        types = data.get("types", [])
+        disciplines = data.get("disciplines", [])
+        sort = data.get("sort", None)  # noqa F841
+        from_saltise = data.get("from_saltise", False)
+        content_rich = data.get("content_rich", False)
+        sort_reversed = data.get("sort_reversed", False)  # noqa F841
+        page = data.get("page", 1)
 
-    if max_count > 0:
-        all_objects = all_objects[:max_count]
-    return_objects = [x.content_object for x in all_objects]
-    count = len(return_objects)
-    if max_count == 0 or count < max_count:
-        extra_objects = ObjectPermission.objects.filter(
+        filter_kwargs = {}
+        # Create filters for each keyword
+        q_objects = Q()
+        for keyword in keywords:
+            q_objects &= (
+                Q(author__first_name__icontains=keyword)
+                | Q(author__username__icontains=keyword)
+                | Q(author__last_name__icontains=keyword)
+                | Q(title__icontains=keyword)
+                | Q(description__icontains=keyword)
+            )
+        # Choose which types to search
+        if len(types) == 0:
+            types = ("project", "workflow")
+        # Create disciplines filter
+        if len(disciplines) > 0:
+            filter_kwargs["disciplines__in"] = disciplines
+        if content_rich:
+            filter_kwargs["num_nodes__gte"] = 3
+        if from_saltise:
+            filter_kwargs["from_saltise"] = True
+
+        if published:
+            print("published")
+            try:
+                queryset = reduce(
+                    lambda x, y: chain(x, y),
+                    [
+                        get_model_from_str(model_type)
+                        .objects.filter(published=True)
+                        .annotate(num_nodes=Count("workflows__weeks__nodes"))
+                        .filter(**filter_kwargs)
+                        .filter(q_objects)
+                        .exclude(deleted=True)
+                        .distinct()
+                        if model_type == "project"
+                        else get_model_from_str(model_type)
+                        .objects.filter(published=True)
+                        .annotate(num_nodes=Count("weeks__nodes"))
+                        .filter(**filter_kwargs)
+                        .filter(q_objects)
+                        .exclude(Q(deleted=True) | Q(project__deleted=True))
+                        .distinct()
+                        for model_type in types
+                    ],
+                )
+                print(queryset)
+                if sort is not None:
+                    if sort == "created_on" or sort == "title":
+                        sort_key = attrgetter(sort)
+                    elif sort == "relevance":
+                        sort_key = lambda x: get_relevance(
+                            x, name_filter, keywords
+                        )
+                    queryset = sorted(
+                        queryset, key=sort_key, reverse=sort_reversed
+                    )
+                queryset = list(queryset)
+
+                total_results = len(queryset)
+                return_objects = queryset[
+                    max((page - 1) * nresults, 0) : min(
+                        page * nresults, total_results
+                    )
+                ]
+                page_number = math.ceil(float(total_results) / nresults)
+            except TypeError:
+                return_objects = Project.objects.none()
+    # Small search for library
+    else:
+        all_objects = ObjectPermission.objects.filter(
             user=request.user
         ).filter(
-            Q(
-                project__title__icontains=" " + name_filter,
-                project__deleted=False,
-            )
+            Q(project__title__istartswith=name_filter, project__deleted=False)
             | Q(
-                workflow__title__icontains=" " + name_filter,
+                workflow__title__istartswith=name_filter,
                 workflow__deleted=False,
             )
         )
-        if max_count > 0:
-            extra_objects = extra_objects[: max_count - count]
-        return_objects += [x.content_object for x in extra_objects]
+        # add ordering
+
+        if nresults > 0:
+            all_objects = all_objects[:nresults]
+        return_objects = [x.content_object for x in all_objects]
+        count = len(return_objects)
+        if nresults == 0 or count < nresults:
+            extra_objects = ObjectPermission.objects.filter(
+                user=request.user
+            ).filter(
+                Q(
+                    project__title__icontains=" " + name_filter,
+                    project__deleted=False,
+                )
+                | Q(
+                    workflow__title__icontains=" " + name_filter,
+                    workflow__deleted=False,
+                )
+            )
+            if nresults > 0:
+                extra_objects = extra_objects[: nresults - count]
+            return_objects += [x.content_object for x in extra_objects]
+    print(return_objects)
 
     return JsonResponse(
         {
@@ -4658,6 +4750,12 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
             "workflow_list": InfoBoxSerializer(
                 return_objects, context={"user": request.user}, many=True
             ).data,
+            "pages": {
+                "total_results": total_results,
+                "page_count": page_number,
+                "current_page": page,
+                "results_per_page": nresults,
+            },
         }
     )
 

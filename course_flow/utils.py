@@ -331,6 +331,48 @@ def save_serializer(serializer) -> HttpResponse:
         return JsonResponse({"action": "error"})
 
 
+def get_relevance(obj, name_filter, keywords):
+    if obj.title is None:
+        title = ""
+    else:
+        title = obj.title.lower()
+    if obj.description is None:
+        description = ""
+    else:
+        description = obj.description.lower()
+    if obj.author is None:
+        first = ""
+        last = ""
+        username = ""
+    else:
+        if obj.author.first_name is None:
+            first = ""
+        else:
+            first = obj.author.first_name
+        if obj.author.last_name is None:
+            last = ""
+        else:
+            last = obj.author.last_name
+        if obj.author.username is None:
+            username = ""
+        else:
+            username = obj.author.username
+    relevance = ""
+    to_check = [name_filter] + keywords
+    keys = [title, last, first, username, description]
+    for key in keys:
+        for keyword in to_check:
+            if keyword == "":
+                continue
+            if key.startswith(keyword):
+                relevance += "0"
+            elif key.find(" " + keyword) >= 0:
+                relevance += "1"
+            else:
+                relevance += "2"
+    return relevance
+
+
 def benchmark(identifier, last_time):
     current_time = time.time()
     print("Completed " + identifier + " in " + str(current_time - last_time))

@@ -22,15 +22,15 @@
 <script nonce="{{request.csp_nonce}}">
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-  
-  
-  $(".menubar").removeClass("hidden");
 
   var library_renderer;
   const user_id = {{ user.id }};
 
+  const disciplines_list = {{disciplines|safe}};
+  console.log(disciplines_list)
+
   window.addEventListener("load",function(){
-      explore_renderer = new library_renderers.ExploreRenderer();
+      explore_renderer = new library_renderers.ExploreRenderer(disciplines_list);
       $(document).ajaxError(renderers.fail_function);
       explore_renderer.render($("#container"));
       makeActiveSidebar("#panel-explore");

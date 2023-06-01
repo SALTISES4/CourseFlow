@@ -1053,11 +1053,11 @@ export function getWorkflowsForProject(projectPk,callBackFunction=()=>console.lo
 }
 
 //Search entire library
-export function searchAllObjects(filter,max_count,callBackFunction=()=>console.log("success")){
+export function searchAllObjects(filter,data,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.search_all_objects,{
             filter:JSON.stringify(filter),
-            max_count:JSON.stringify(max_count)
+            additional_data:JSON.stringify(data)
         }).done(function(data){
             callBackFunction(data);
         });

@@ -15,6 +15,10 @@ body.printing{
     height: unset;
 }
 
+input[type="checkbox"], input[type="radio"]{
+    filter: hue-rotate(300deg) brightness(117%)
+}
+
 ::-webkit-scrollbar:hover {
   width: 8px;
   height: 8px;
@@ -777,6 +781,12 @@ button:hover{
     border-radius:10px;
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
     color: #444444;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.create-dropdown .flex-middle {
+    display: flex;
 }
 
 .floatbar .create-dropdown{
@@ -1001,13 +1011,19 @@ button:hover{
 }
 
 .project-menu{
-    min-height:100%;
+    height:100%;
     width: -moz-fit-content;
     width: fit-content;
     background: white;
     padding: 50px;
     box-sizing: border-box;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.project-menu .menu-grid{
+    overflow-y: auto;
 }
 
 .workflow-filter-top{
@@ -1188,6 +1204,31 @@ button:hover{
     white-space: nowrap;
 }
 
+.explore-page-buttons{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.explore-page-buttons button{
+    width: 42px;
+    height: 42px;
+    border-radius: 100px;
+    border: 1px solid black;
+}
+
+.explore-page-buttons button:disabled{
+    border: 1px solid;
+}
+
+.explore-page-buttons .active-page-button{
+    background:#04ba74;
+    color:white;
+    border: 1px solid #04ba74;
+}
+
 .flex-wrap{
     display:flex;
     flex-wrap:wrap;
@@ -1197,14 +1238,6 @@ button:hover{
 
 }
 
-.page-button{
-    border-radius:0;
-}
-
-.active-page-button{
-    background:#04ba74;
-    color:white;
-}
 
 #search-parameters > div{
     display:flex;

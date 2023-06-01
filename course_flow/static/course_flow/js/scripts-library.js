@@ -36,9 +36,15 @@ export class FavouritesRenderer extends LibraryRenderer{
 }
 
 export class ExploreRenderer extends LibraryRenderer{
+    constructor(disciplines){
+        super();
+        this.disciplines = disciplines;
+    }
+
     getContents(){
+        console.log(this.disciplines);
         return (
-            <ExploreMenu renderer={this}/>
+            <ExploreMenu disciplines={this.disciplines} renderer={this}/>
         )
     }
 }
