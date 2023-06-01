@@ -5,7 +5,8 @@ import {EditableComponent} from "./ComponentJSON";
 import OutcomeView from "./OutcomeView";
 import {OutcomeBarOutcomeView} from "./OutcomeView";
 import {getOutcomeByID} from "./FindState";
-import {WorkflowForMenu, renderMessageBox, closeMessageBox} from './MenuComponents'
+import {renderMessageBox, closeMessageBox} from './MenuComponents'
+import {WorkflowForMenu} from "./Library"
 
 //Basic component representing the outcome view
 class OutcomeTopView extends EditableComponent{

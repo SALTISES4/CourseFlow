@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {getLibrary, getHome, getWorkflowsForProject, searchAllObjects, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive} from "./PostFunctions";
+import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive} from "./PostFunctions";
 import * as Constants from "./Constants";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./ComponentJSON";
 import {MessageBox} from "./MenuComponents";
@@ -74,6 +74,33 @@ export class LibraryMenu extends React.Component{
     }
 }
 
+export class FavouritesMenu extends React.Component{
+    constructor(props){
+        super(props);
+        this.state={};
+        this.createDiv=React.createRef();
+    }
+
+    render(){
+        return (
+            <div class="project-menu">
+                <WorkflowFilter renderer={this.props.renderer} workflows={this.state.project_data} context="library"/>
+            </div>
+        );
+    }
+
+    componentDidMount(){
+        let component = this;
+        getFavourites(
+            (data)=>{
+                component.setState({project_data:data.data_package});
+            }
+        );
+        makeDropdown(this.createDiv.current)
+    }
+
+}
+
 export class HomeMenu extends React.Component{
     constructor(props){
         super(props);
@@ -124,7 +151,7 @@ export class HomeMenu extends React.Component{
                 <div class="home-item">
                     <div class="home-title-row">
                         <div class="home-item-title">{gettext("Favourites")}</div>
-                        <a class="collapsed-text-show-more" href={library_path+"?favourites=true"}>{gettext("see all")}</a>
+                        <a class="collapsed-text-show-more" href={my_favourites_path}>{gettext("see all")}</a>
                     </div>
                     <div class="menu-grid">
                         {favourites}
@@ -279,7 +306,7 @@ export class ProjectMenu extends LibraryMenu{
                 <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
                 <div class="project-header-info">
                     <div class="project-info-section project-members">
-                        <h4>{gettext("Project Members")}</h4>
+                        <h4>{gettext("Permissions")}</h4>
                         {this.getUsers()}
                     </div>
                     <div class="project-other">
@@ -306,28 +333,28 @@ export class ProjectMenu extends LibraryMenu{
         if(!author)return null;
         let users = [
             <div class="user-name">
-                {Constants.getUserDisplay(author)+" ("+gettext("owner")+")"}
+                {Constants.getUserTag("author")}{Constants.getUserDisplay(author)}
             </div>,
             editors.filter(user=>user.id!=author.id).map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("edit")+")"}
+                    {Constants.getUserTag("edit")}{Constants.getUserDisplay(user)}
                 </div>
             ),
             commenters.map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("comment")+")"}
+                    {Constants.getUserTag("comment")}{Constants.getUserDisplay(user)}
                 </div>
             ),
             viewers.map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("view")+")"}
+                    {Constants.getUserTag("view")}{Constants.getUserDisplay(user)}
                 </div>
             ),
         ]
         if(this.state.users.published){
             users.push(
                 <div class="user-name">
-                    <span class="material-symbols-rounded">public</span> {gettext("All CourseFlow (view)")}
+                    {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
                 </div>
             );
         }
@@ -358,9 +385,9 @@ export class ProjectMenu extends LibraryMenu{
             <div class="hover-shade" id="create-project-button" title={gettext("Create workflow")} ref={this.createDiv}>
                 <span class="material-symbols-rounded filled">add_circle</span>
                 <div id="create-links-project" class="create-dropdown">
-                    <a id="activity-create-project" href={create_path.activity} class="hover-shade">{gettext("New activity")}</a>
-                    <a id="course-create-project" href={create_path.course} class="hover-shade">{gettext("New course")}</a>
-                    <a id="program-create-project" href={create_path.program} class="hover-shade">{gettext("New program")}</a>
+                    <a id="activity-create-project" href={create_path_this_project.activity} class="hover-shade">{gettext("New activity")}</a>
+                    <a id="course-create-project" href={create_path_this_project.course} class="hover-shade">{gettext("New course")}</a>
+                    <a id="program-create-project" href={create_path_this_project.program} class="hover-shade">{gettext("New program")}</a>
                 </div>
             </div>
         )
@@ -460,6 +487,7 @@ export class WorkflowFilter extends Component{
                             placeholder={gettext("Search")}
                             onChange={debounce(this.searchChange.bind(this))}
                             id="workflow-search-input"
+                            class="search-input"
                         />
                         <span class="material-symbols-rounded">search</span>
                         <div class="create-dropdown">{search_results}</div>
@@ -629,10 +657,11 @@ Can also optionally receive a clickAction prop to override the behaviour
 on click, and "selected" to give it the selected css class.
 
 */
-export class WorkflowForMenu extends Component{
+export class WorkflowForMenu extends React.Component{
     constructor(props){
         super(props);
         this.state={favourite:props.workflow_data.favourite};
+        this.maindiv = React.createRef();
     }
 
     render(){
@@ -642,7 +671,7 @@ export class WorkflowForMenu extends Component{
 
         let creation_text = gettext("Created");
         if(data.author && data.author !="None")creation_text+=" "+gettext("by")+" "+data.author;
-        creation_text+=" "+data.created_on;
+        creation_text+=gettext(" on ")+data.created_on;
 
         return(
             <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
@@ -653,7 +682,8 @@ export class WorkflowForMenu extends Component{
                 <div class="workflow-created">
                     { creation_text}
                 </div>
-                <div class="workflow-description" dangerouslySetInnerHTML={{ __html: data.description }}>
+                {/*<CollapsibleText css_class="workflow-description" text={data.description} defaultText={gettext("No description")}/>*/}
+                <div class="workflow-description collapsible-text" dangerouslySetInnerHTML={{ __html: data.description }}>
                 </div>
                 {this.getButtons()}
             </div>
@@ -668,7 +698,7 @@ export class WorkflowForMenu extends Component{
         if(type=="liveproject")type_text=gettext("classroom");
         if(data.is_strategy)type_text+=gettext(" strategy");
         return (
-            <div class={"workflow-type-indicator "+type}>{type_text}</div>
+            <div class={"workflow-type-indicator "+type}>{Constants.capWords(type_text)}</div>
         );
     }
 
@@ -685,29 +715,33 @@ export class WorkflowForMenu extends Component{
             }}>
                 <span class={"material-symbols-outlined"+fav_class} title={gettext("Favourite")}>star</span>
             </div>
-        )
-        if(this.props.workflow_data.type=="project" && this.props.workflow_data.has_liveproject)buttons.push(
-            <a class="workflow-live-classroom unset" href={
+        );
+        let workflows=[];
+        if(this.props.workflow_data.type=="project")workflows.push(
+            <div class="workflow-created">{this.props.workflow_data.workflow_count+" "+gettext("workflows")}</div>
+        );
+        if(this.props.workflow_data.type=="project" && this.props.workflow_data.has_liveproject && this.props.workflow_data.object_permission.role_type != Constants.role_keys["none"])workflows.push(
+            <a class="workflow-created workflow-live-classroom hover-shade" href={
                 update_path["liveproject"].replace("0",this.props.workflow_data.id)
             }>
-                <span class="material-symbols-rounded green filled hover-shade" title={gettext("Live Classroom")}>bookmark_added</span>
+                <span class="material-symbols-rounded small-inline" title={gettext("Live Classroom")}>group</span>{" "+gettext("Live Classroom")}
             </a>
-        )
-        let workflows;
-        if(this.props.workflow_data.type=="project")workflows = (
-            <div class="workflow-created">{this.props.workflow_data.workflow_count+" "+gettext("workflows")}</div>
-        )
+        );
         return (
             <div class="workflow-buttons-row">
-                {buttons}
-                {workflows}
+                <div>
+                    {buttons}
+                </div>
+                <div>
+                    {workflows}
+                </div>
             </div>
-        )
+        );
     }
 
     clickAction(){
-        if(this.props.clickAction){
-            this.props.clickAction(this.props.workflow_data.id);
+        if(this.props.selectAction){
+            this.props.selectAction(this.props.workflow_data.id);
         }else{
             window.location.href=update_path[this.props.workflow_data.type].replace("0",this.props.workflow_data.id);
         }

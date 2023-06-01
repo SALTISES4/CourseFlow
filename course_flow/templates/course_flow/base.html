@@ -170,7 +170,7 @@
           </span>
         </div>
         <img class="title-image" src="{% static 'course_flow/img/logo-courseflow.svg' %}"/>
-        <a class="panel-item hover-shade no-underline" href="{% url 'course_flow:home' %}">
+        <a id="panel-home" class="panel-item hover-shade no-underline" href="{% url 'course_flow:home' %}">
           <span class="material-symbols-rounded">home</span>
           <div>{% trans 'Home' %}</div>
         </a>
@@ -179,7 +179,7 @@
           <span class="material-symbols-rounded">collections_bookmark</span>
           <div>{% trans 'Your Library' %}</div>
         </a>
-        <a id="panel-my-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project">
+        <a id="panel-explore" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project">
           <span class="material-symbols-rounded">manage_search</span>
           <div>{% trans 'Explore' %}</div>
         </a>
@@ -194,26 +194,27 @@
         {% endif %}
         <div class="left-panel-extra">
           {% if user|has_group:"Teacher" %}
-            <a id="my-favourites" class="panel-item hover-shade" href="{% url 'course_flow:my-library' %}?favourites=true">
-              {% trans 'My Favourites' %}
+            <a id="my-favourites" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-favourites' %}">
+              <span class="material-symbols-rounded">star</span>
+              <div>{% trans 'My Favourites' %}</div>
             </a>
               {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
                 <a class="panel-favourite hover-shade"
                    {% if favourite.content_object.type == "project" %}
-                      href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
+                      id="project{{favourite.object_id}}" href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
                    {% else %}
-                      href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
+                      id="workflow{{favourite.object_id}}" href="{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}"
                    {% endif %}
                    >
                   {{ favourite.content_object | safe }}
                 </a>
               {% endfor %}
-            <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-library' %}?favourites=true">... {% trans 'see all' %}</a>
+            <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
           {% endif %}
         </div>
         {% if user|has_group:"Teacher" %}
-        <hr>
-        <a class="panel-item hover-shade" href="{% url 'course_flow:import' %}">{% trans "Import from old CourseFlow" %}</a>
+        <!-- <hr>
+        <a class="panel-item hover-shade" href="{% url 'course_flow:import' %}">{% trans "Import from old CourseFlow" %}</a> -->
         {% endif %}
         <hr>
         <a id="user-feedback" target="_blank" class="panel-item hover-shade no-underline" href="https://courseflow.freshdesk.com/support/home">
@@ -362,6 +363,7 @@
     const get_paths = {
       get_disciplines: "{% url 'course_flow:get-disciplines' %}",
       get_library: "{% url 'course_flow:get-library' %}",
+      get_favourites: "{% url 'course_flow:get-favourites' %}",
       get_home: "{% url 'course_flow:get-home' %}",
       import: "{% url 'course_flow:import' %}",
       get_public_workflow_data: "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
@@ -369,6 +371,14 @@
       get_public_workflow_child_data: "{% url 'course_flow:get-public-workflow-child-data' pk='0' %}",
       get_public_parent_workflow_info: "{% url 'course_flow:get-public-parent-workflow-info' pk='0' %}",
     };
+    const create_path = {
+        activity_strategy:"{% url 'course_flow:activity-strategy-create' %}",
+        course_strategy:"{% url 'course_flow:course-strategy-create' %}",
+        project:"{% url 'course_flow:project-create' %}",
+        activity:"{% url 'course_flow:activity-create' projectPk='0' %}",
+        course:"{% url 'course_flow:course-create' projectPk='0' %}",
+        program:"{% url 'course_flow:program-create' projectPk='0' %}"
+    }
 
     const update_path = {
         project:"{% url 'course_flow:project-update' pk='0'%}",
@@ -387,6 +397,7 @@
     };
     const home_path = "{% url 'course_flow:home' %}"
     const my_library_path = "{% url 'course_flow:my-library' %}"
+    const my_favourites_path = "{% url 'course_flow:my-favourites' %}"
     const my_liveprojects_path = "{% url 'course_flow:my-live-projects' %}"
     const registration_path = "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}";
 
@@ -400,6 +411,10 @@
         clearTimeout(timer);
         timer = setTimeout(()=>{func.apply(this,args);},timeout);
       };
+    }
+
+    const makeActiveSidebar = function(id){
+      $(id).addClass("active");
     }
 
     const makeDropdown = (click_element)=>{
@@ -427,8 +442,8 @@
 
     $(window).on("load",()=>{
       $("#create-links #activity-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:activity-create' projectPk='0' %}"));
-      $("#create-links #course-create").on("click",()=>renderers.CreateNew("course"));
-      $("#create-links #program-create").on("click",()=>renderers.CreateNew("program"));
+      $("#create-links #course-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:course-create' projectPk='0' %}"));
+      $("#create-links #program-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:program-create' projectPk='0' %}"));
 
       if(show_notification_request){
         if(window.confirm(

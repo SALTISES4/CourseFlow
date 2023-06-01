@@ -1033,7 +1033,9 @@ export class TitleText extends React.Component{
 export class CollapsibleText extends Component{
 
     render(){
-        let css_class = "title-text collapsible-text";
+        let css_class="";
+        if(this.props.css_class)css_class=this.props.css_class+" ";
+        css_class += "title-text collapsible-text";
         let drop_text = gettext("show more");
         if(this.state.is_dropped){
             css_class+=" dropped";
@@ -1041,7 +1043,10 @@ export class CollapsibleText extends Component{
         }
         let overflow;
         if(this.state.overflow)overflow=(
-            <div onClick={()=>this.setState({is_dropped:!this.state.is_dropped})} class="collapsed-text-show-more">{drop_text}</div>
+            <div onClick={(evt)=>{
+                this.setState({is_dropped:!this.state.is_dropped});
+                evt.stopPropagation();
+            }} class="collapsed-text-show-more">{drop_text}</div>
         );
 
         var text = this.props.text;

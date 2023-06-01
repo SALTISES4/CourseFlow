@@ -27,6 +27,11 @@ def course_flow_patterns():
         path("logout/", views.logout_view, name="logout"),
         path("mylibrary/", views.mylibrary_view, name="my-library"),
         path("mylibrary/get-projects/", views.get_library, name="get-library"),
+        path(
+            "favourites/get-projects/",
+            views.get_favourites,
+            name="get-favourites",
+        ),
         path("home/get-projects/", views.get_home, name="get-home"),
         path(
             "mylibrary/search-all-objects/",
@@ -46,7 +51,7 @@ def course_flow_patterns():
         ),
         # path("mytemplates/", views.mytemplates_view, name="my-templates"),
         # path("myshared/", views.myshared_view, name="my-shared"),
-        # path("myfavourites/", views.myfavourites_view, name="my-favourites"),
+        path("myfavourites/", views.myfavourites_view, name="my-favourites"),
         path("explore/", views.ExploreView.as_view(), name="explore"),
         path("import/", views.import_view, name="import"),
         path(

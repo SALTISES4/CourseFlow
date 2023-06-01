@@ -1017,6 +1017,17 @@ export function getLibrary(callBackFunction=()=>console.log("success")){
     }
 }
 
+//Get the library projects
+export function getFavourites(callBackFunction=()=>console.log("success")){
+    try{
+        $.get(get_paths.get_favourites).done(function(data){
+            callBackFunction(data);
+        });
+    }catch(err){
+        fail_function();
+    }
+}
+
 //Get the home projects
 export function getHome(callBackFunction=()=>console.log("success")){
     try{

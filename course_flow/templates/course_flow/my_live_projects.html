@@ -20,9 +20,6 @@
 <script nonce="{{request.csp_nonce}}">
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-  const create_path = {
-      liveproject:"",
-  };
 
   const data_package = {{project_data_package|safe}}
   
@@ -33,6 +30,7 @@
       home_renderer = new renderers.HomeRenderer(data_package);
       $(document).ajaxError(renderers.fail_function);
       home_renderer.render($("#container"));
+      makeActiveSidebar("#panel-my-live-projects");
   });
 
 

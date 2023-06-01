@@ -20,10 +20,6 @@
 <script nonce="{{request.csp_nonce}}">
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-  const create_path = {
-      activity:"{% url 'course_flow:activity-strategy-create' %}",
-      course:"{% url 'course_flow:course-strategy-create' %}"
-  };
   const data_package = {{project_data_package|safe}}
   var home_renderer;
   const user_id = {{ user.id }};

@@ -1091,9 +1091,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
         # View the favourites
         selenium.get(
-            self.live_server_url
-            + reverse("course_flow:my-library")
-            + "?favourites=true"
+            self.live_server_url + reverse("course_flow:my-favourites")
         )
         time.sleep(2)
         self.assertEqual(
@@ -1102,10 +1100,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                     ".workflow-for-menu .workflow-toggle-favourite .filled"
                 )
             ),
-            1,
+            4,
         )
         selenium.find_element_by_css_selector(
-            ".workflow-for-menu .workflow-title"
+            ".workflow-for-menu.project .workflow-title"
         ).click()
         favourites = selenium.current_url
         time.sleep(2)

@@ -415,7 +415,6 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
 
 
 def get_my_projects(user, add, **kwargs):
-    last_time = time.time()
     for_add = kwargs.get("for_add", False)
     permission_filter = {}
     if for_add:
@@ -742,121 +741,121 @@ def get_my_templates(user):
     return data_package
 
 
-def get_my_favourites(user):
-    favourites = get_nondeleted_favourites(user)
+# def get_my_favourites(user):
+#     favourites = get_nondeleted_favourites(user)
 
-    def get_content_objects(favourite_list):
-        return list(map(lambda x: x.content_object, favourite_list))
+#     def get_content_objects(favourite_list):
+#         return list(map(lambda x: x.content_object, favourite_list))
 
-    data_package = {
-        "favourites_all": {
-            "title": _("My Favourites"),
-            "sections": [
-                {
-                    "title": "",
-                    "object_type": "project",
-                    "objects": InfoBoxSerializer(
-                        get_content_objects(favourites),
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            ],
-            "duplicate": "import",
-            "emptytext": _(
-                "Your favourite projects, workflows, or templates by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
-            ),
-        },
-        "favourites_project": {
-            "title": _("Projects"),
-            "sections": [
-                {
-                    "title": "",
-                    "object_type": "project",
-                    "objects": InfoBoxSerializer(
-                        get_content_objects(
-                            favourites.filter(
-                                project__pk__gt=0, project__deleted=False
-                            )
-                        ),
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            ],
-            "duplicate": "import",
-            "emptytext": _(
-                "Your favourite activities by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
-            ),
-        },
-        "favourites_activity": {
-            "title": _("Activities"),
-            "sections": [
-                {
-                    "title": "",
-                    "object_type": "activity",
-                    "objects": InfoBoxSerializer(
-                        get_content_objects(
-                            favourites.filter(
-                                activity__pk__gt=0, activity__deleted=False
-                            )
-                        ),
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            ],
-            "duplicate": "import",
-            "emptytext": _(
-                "Your favourite activities by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
-            ),
-        },
-        "favourites_course": {
-            "title": _("Courses"),
-            "sections": [
-                {
-                    "title": "",
-                    "object_type": "course",
-                    "objects": InfoBoxSerializer(
-                        get_content_objects(
-                            favourites.filter(
-                                course__pk__gt=0, course__deleted=False
-                            )
-                        ),
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            ],
-            "duplicate": "import",
-            "emptytext": _(
-                "Your favourite courses by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
-            ),
-        },
-        "favourites_program": {
-            "title": _("Program"),
-            "sections": [
-                {
-                    "title": "",
-                    "object_type": "program",
-                    "objects": InfoBoxSerializer(
-                        get_content_objects(
-                            favourites.filter(
-                                program__pk__gt=0, program__deleted=False
-                            )
-                        ),
-                        many=True,
-                        context={"user": user},
-                    ).data,
-                }
-            ],
-            "duplicate": "import",
-            "emptytext": _(
-                "Your favourite programs by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
-            ),
-        },
-    }
-    return data_package
+#     data_package = {
+#         "favourites_all": {
+#             "title": _("My Favourites"),
+#             "sections": [
+#                 {
+#                     "title": "",
+#                     "object_type": "project",
+#                     "objects": InfoBoxSerializer(
+#                         get_content_objects(favourites),
+#                         many=True,
+#                         context={"user": user},
+#                     ).data,
+#                 }
+#             ],
+#             "duplicate": "import",
+#             "emptytext": _(
+#                 "Your favourite projects, workflows, or templates by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
+#             ),
+#         },
+#         "favourites_project": {
+#             "title": _("Projects"),
+#             "sections": [
+#                 {
+#                     "title": "",
+#                     "object_type": "project",
+#                     "objects": InfoBoxSerializer(
+#                         get_content_objects(
+#                             favourites.filter(
+#                                 project__pk__gt=0, project__deleted=False
+#                             )
+#                         ),
+#                         many=True,
+#                         context={"user": user},
+#                     ).data,
+#                 }
+#             ],
+#             "duplicate": "import",
+#             "emptytext": _(
+#                 "Your favourite activities by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
+#             ),
+#         },
+#         "favourites_activity": {
+#             "title": _("Activities"),
+#             "sections": [
+#                 {
+#                     "title": "",
+#                     "object_type": "activity",
+#                     "objects": InfoBoxSerializer(
+#                         get_content_objects(
+#                             favourites.filter(
+#                                 activity__pk__gt=0, activity__deleted=False
+#                             )
+#                         ),
+#                         many=True,
+#                         context={"user": user},
+#                     ).data,
+#                 }
+#             ],
+#             "duplicate": "import",
+#             "emptytext": _(
+#                 "Your favourite activities by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
+#             ),
+#         },
+#         "favourites_course": {
+#             "title": _("Courses"),
+#             "sections": [
+#                 {
+#                     "title": "",
+#                     "object_type": "course",
+#                     "objects": InfoBoxSerializer(
+#                         get_content_objects(
+#                             favourites.filter(
+#                                 course__pk__gt=0, course__deleted=False
+#                             )
+#                         ),
+#                         many=True,
+#                         context={"user": user},
+#                     ).data,
+#                 }
+#             ],
+#             "duplicate": "import",
+#             "emptytext": _(
+#                 "Your favourite courses by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
+#             ),
+#         },
+#         "favourites_program": {
+#             "title": _("Program"),
+#             "sections": [
+#                 {
+#                     "title": "",
+#                     "object_type": "program",
+#                     "objects": InfoBoxSerializer(
+#                         get_content_objects(
+#                             favourites.filter(
+#                                 program__pk__gt=0, program__deleted=False
+#                             )
+#                         ),
+#                         many=True,
+#                         context={"user": user},
+#                     ).data,
+#                 }
+#             ],
+#             "duplicate": "import",
+#             "emptytext": _(
+#                 "Your favourite programs by other users will appear here. You can find published content from other users using the Explore feature in the top toolbar."
+#             ),
+#         },
+#     }
+#     return data_package
 
 
 def get_data_package_for_project(user, project):
@@ -1199,6 +1198,11 @@ def myprojects_view(request):
 @login_required
 def mylibrary_view(request):
     return render(request, "course_flow/library.html")
+
+
+@login_required
+def myfavourites_view(request):
+    return render(request, "course_flow/favourites.html")
 
 
 # @login_required
@@ -2076,6 +2080,8 @@ def import_data(request: HttpRequest) -> JsonResponse:
     try:
         if file.size < 1024 * 1024:
             file_type = file.content_type
+            if file.name.endswith(".csv"):
+                file_type = "text/csv"
             if (
                 file_type
                 == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2279,6 +2285,16 @@ def get_library(request: HttpRequest) -> HttpResponse:
 
 
 @login_required
+def get_favourites(request: HttpRequest) -> HttpResponse:
+    projects_serialized = InfoBoxSerializer(
+        get_nondeleted_favourites(request.user),
+        many=True,
+        context={"user": request.user},
+    ).data
+    return JsonResponse({"data_package": projects_serialized})
+
+
+@login_required
 def get_home(request: HttpRequest) -> HttpResponse:
     user = request.user
     if Group.objects.get(name=settings.TEACHER_GROUP) not in user.groups.all():
@@ -2305,6 +2321,7 @@ def get_home(request: HttpRequest) -> HttpResponse:
             for fav in Favourite.objects.filter(user=user).filter(
                 Q(workflow__deleted=False, workflow__project__deleted=False)
                 | Q(project__deleted=False)
+                | Q(workflow__deleted=False, workflow__is_strategy=True)
             )
         ]
         favourites_serialized = InfoBoxSerializer(
@@ -4387,7 +4404,7 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
             object_id=object_id,
         ).delete()
         if favourite:
-            fav = Favourite.objects.create(
+            Favourite.objects.create(
                 user=request.user, content_object=item
             )
         response["action"] = "posted"

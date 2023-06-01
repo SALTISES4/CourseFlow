@@ -6,7 +6,7 @@ import ColumnWorkflowView from "./ColumnWorkflowView";
 import WeekWorkflowView from "./WeekWorkflowView";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";
 import {NodeBarWeekWorkflow} from "./WeekWorkflowView";
-import {WorkflowForMenu,renderMessageBox,closeMessageBox} from "./MenuComponents";
+import {renderMessageBox,closeMessageBox} from "./MenuComponents";
 import * as Constants from "./Constants";
 import {changeField, moveColumnWorkflow, moveWeekWorkflow, toggleObjectSet} from "./Reducers";
 import {OutcomeBar} from "./OutcomeEditView";
@@ -110,7 +110,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
             style.border="2px solid "+data.lock.user_colour;
         }    
         return (
-            <div class="project-header" style={style}>
+            <div class="project-header" style={style} onClick={(evt)=>this.props.renderer.selection_manager.changeSelection(evt,this)}>
                 {this.getProjectLink()}
                 <div class="project-header-top-line">
                     <WorkflowTitle data={data} no_hyperlink={true} class_name="project-title"/>
@@ -118,7 +118,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 </div>
                 <div class="project-header-info">
                     <div class="project-info-section project-members">
-                        <h4>{gettext("Workflow Members")}</h4>
+                        <h4>{gettext("Permissions")}</h4>
                         {this.getUsers()}
                     </div>
                     <div class="project-other">
@@ -150,30 +150,30 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let users = []
         if(author)users.push(
             <div class="user-name">
-                {Constants.getUserDisplay(author)+" ("+gettext("owner")+")"}
+                {Constants.getUserTag("author")}{Constants.getUserDisplay(author)}
             </div>
         )
         users.push([
             editors.filter(user=>user.id!=author.id).map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("edit")+")"}
+                    {Constants.getUserTag("edit")}{Constants.getUserDisplay(user)}
                 </div>
             ),
             commenters.map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("comment")+")"}
+                    {Constants.getUserTag("comment")}{Constants.getUserDisplay(user)}
                 </div>
             ),
             viewers.map(user=>
                 <div class="user-name">
-                    {Constants.getUserDisplay(user)+" ("+gettext("view")+")"}
+                    {Constants.getUserTag("view")}{Constants.getUserDisplay(user)}
                 </div>
             ),
         ]);
         if(this.state.users.published){
             users.push(
                 <div class="user-name">
-                    <span class="material-symbols-rounded">public</span> {gettext("All CourseFlow (view)")}
+                    {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
                 </div>
             );
         }
@@ -1081,7 +1081,7 @@ class RestoreBarItem extends Component{
 
     getTitle(){
         if(this.props.data.title && this.props.data.title !== "")return this.props.data.title;
-        if(this.props.objectType=="node" && (this.props.data.represents_workflow && this.props.data.linked_workflow_data.title && this.props.data.linked_workflow_data.title !== ""))return this.props.data.linked_workflow_data.title;
+        if(this.props.objectType=="node" && (this.props.data.represents_workflow && this.props.linked_workflow_data && this.props.data.linked_workflow_data.title && this.props.data.linked_workflow_data.title !== ""))return this.props.data.linked_workflow_data.title;
         return gettext("Untitled");
     }
     
@@ -1190,6 +1190,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component{
     
     render(){
         if(this.state.has_loaded){
+            if(this.state.parent_workflows.length==0 && this.props.child_workflows.length==0)return null;
             let parent_workflows = this.state.parent_workflows.map(parent_workflow=>
                 <WorkflowTitle data={parent_workflow} class_name={"panel-favourite"}/>
             );

@@ -411,6 +411,21 @@ export function getUserDisplay(user){
 
 }
 
+export function permission_translate(){
+    return {
+        "author":gettext("Owner"),
+        "edit":gettext("Editor"),
+        "comment":gettext("Commenter"),
+        "view":gettext("Viewer"),
+    };
+};
+
+export function getUserTag(user_type){
+    return (
+        <span class={"user-tag permission-"+user_type}>{permission_translate()[user_type]}</span>
+    );
+
+}
 export class Loader{
     constructor(identifier){
         this.load_screen = $('<div></div>').appendTo(identifier).addClass('load-screen').on('click',(evt)=>{evt.preventDefault();});

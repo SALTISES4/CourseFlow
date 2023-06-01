@@ -1,15 +1,14 @@
 {% extends "course_flow/base.html" %}
 <!-- -->
-{% load static i18n %} {% load course_flow_templatetags %}
+{% load static i18n %}
 <!-- -->
-{% block header %} {% endblock %}
+{% block header %}{% endblock %}
 <!-- -->
 {% block title %}{% endblock %}
 <!-- -->
 {% block metadescription %} {% endblock %}
 <!-- -->
 {% block body %}
-
 <!-- -->
 {% endblock %}
 <!-- -->
@@ -17,25 +16,26 @@
 <!-- -->
 {% csrf_token %}
 <!-- -->
+{% block read_only_scripts %}
+
+{% endblock %}
+<!-- -->
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
 
   const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+  
+  
+  $(".menubar").removeClass("hidden");
 
-  var home_renderer;
+  var library_renderer;
   const user_id = {{ user.id }};
-  {% if user|has_group:"Teacher" %}
-    const is_teacher = true;
-  {% else %}
-    const is_teacher = false;
-  {% endif %}
-
 
   window.addEventListener("load",function(){
-      home_renderer = new library_renderers.HomeRenderer(is_teacher);
+      favourites_renderer = new library_renderers.FavouritesRenderer();
       $(document).ajaxError(renderers.fail_function);
-      home_renderer.render($("#container"));
-      makeActiveSidebar("#panel-home");
+      favourites_renderer.render($("#container"));
+      makeActiveSidebar("#my-favourites");
   });
 </script>
 {% endblock %}

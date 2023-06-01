@@ -51,9 +51,6 @@ class ColumnView extends EditableComponentWithActions{
         if(this.props.data.icon && this.props.data.icon != ""){
             return <span class="material-symbols-rounded">{this.props.data.icon}</span>
         }
-        console.log(iconpath)
-        console.log(Constants.default_column_settings[this.props.data.column_type].icon)
-        console.log(iconpath+Constants.default_column_settings[this.props.data.column_type].icon+".svg")
         return (
             <img src={iconpath+Constants.default_column_settings[this.props.data.column_type].icon+".svg"}/>
         );

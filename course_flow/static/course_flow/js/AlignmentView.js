@@ -391,7 +391,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
     render(){
         let data = this.props.data;
         let data_override;
-        if(data.represents_workflow) data_override = {...data,...data.linked_workflow_data};
+        if(data.represents_workflow) data_override = {...data,...data.linked_workflow_data,id:data.id};
         else data_override={...data};
         let selection_manager = this.props.renderer.selection_manager;
         let child_outcomes_header;

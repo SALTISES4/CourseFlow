@@ -15,7 +15,34 @@ body.printing{
     height: unset;
 }
 
-.left-panel a, .workflow-title-bar a, .home-tabs .ui-tabs-tab a, .home-item a{
+::-webkit-scrollbar:hover {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888888;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6E6E6E;
+}
+
+::-webkit-scrollbar-button{
+    height: 0px;
+}
+
+.left-panel a, .workflow-title-bar a, .home-item a{
     color:#444444;
 }
 
@@ -45,6 +72,38 @@ button{
     cursor:pointer;
 }
 
+.primary-button{
+    background: #04BA74;
+    color: white;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 0;
+}
+
+.secondary-button{
+    color: #444444;
+    background: #E9EBF2;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 0;
+}
+
+.primary-button.disabled, .primary-button:disabled, .secondary-button.disabled, .secondary-button:disabled{
+    background: #04BA74;
+    color: grey;
+    background: #E9EBF2;
+}
+
+.flex-middle{
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.relative{
+    position: relative;
+}
+
 [contentEditable=true]:empty:not(:focus):before {
   content: attr(data-text);
   color: grey;
@@ -62,6 +121,15 @@ button:hover{
 
 .material-symbols-rounded.green, .material-symbols-outlined.green{
     color: #04ba74;
+}
+
+.material-symbols-rounded.red, .material-symbols-outlined.red{
+    color: red;
+}
+
+.material-symbols-rounded.small-inline{
+    font-size: 14px;
+    vertical-align: bottom;
 }
 
 .main-wrapper{
@@ -92,7 +160,7 @@ button:hover{
 }
 
 .topnav > div{
-    padding-left: 10px;
+    padding-left: 40px;
 }
 
 /*
@@ -172,6 +240,7 @@ button:hover{
     font-family:'Open Sans',sans-serif;
     align-items: center;
     background: #EEFFF8;
+    box-sizing: border-box;
 }
 
 .menubar.hidden{
@@ -457,9 +526,9 @@ button:hover{
 
 .left-panel{
     background:white;
-    min-width: 180px;
+    min-width: 200px;
     width:200px;
-    border-right:1px solid lightgray;
+    border-right:1px solid #E9EBF2;
     height:100%;
     box-sizing:border-box;
     color:#444444;
@@ -494,6 +563,14 @@ button:hover{
     z-index: 10;
 }
 
+.left-panel:not(.collapsed) .left-panel-toggle{
+    display: none;
+}
+
+.left-panel:not(.collapsed):hover .left-panel-toggle{
+    display: block;
+}
+
 .left-panel-toggle .material-symbols-rounded{
     font-size: 20px;
     padding: 2px;
@@ -509,7 +586,7 @@ button:hover{
 }
 
 .left-panel-extra{
-    overflow-y:auto;
+    overflow-y:overlay;
 }
 
 .title-image{
@@ -529,6 +606,13 @@ button:hover{
     display:flex;
     align-items: center;
     font-size: 14px;
+}
+
+.panel-item.active{
+    background: #EEFFF8;
+}
+.panel-favourite.active{
+    background: #EEFFF8;
 }
 
 .panel-item > img, .panel-item .material-symbols-rounded{
@@ -586,7 +670,7 @@ button:hover{
 
 .home-item{
     border-radius:10px;
-    border:1px solid lightgrey;
+    border:1px solid #E9EBF2;
     padding:10px;
     margin-right:10px;
     width: fit-content;
@@ -615,43 +699,32 @@ button:hover{
     width:48px;
 }
 
-.home-tabs{
-
-}
-
 .home-tabs .ui-tabs-nav{
     padding:0px;
-    margin:10px;
+    margin:5px;
     overflow:hidden;
     box-sizing:border-box;
     z-index:1;
     min-width:250px;
     display:flex;
-    margin-left:20px;
+    gap: 5px;
+    margin-bottom: 20px;
 }
 
 .home-tabs .ui-tabs-tab{
-    margin:3px 2px 2px 2px;
-    line-height:1.3;
-    font-size:20px;
-    font-weight:600;
+    font-size:16px;
     list-style:none;
     white-space:nowrap;
     background:white;
-    border-radius:3px;
-    border:1px solid lightgray;
+    padding: 8px;
+    border-radius:20px;
+    border:1px solid #E9EBF2;
 }
 
 .home-tabs .ui-tabs-active{
     background:#04ba74;
-}
-
-
-.home-tabs .ui-tabs-tab a{
-    width:100%;
-    padding:10px;
-    font-size:18px;
-    display:block;
+    border:1px solid #04ba74;
+    color:white;
 }
 
 .home-tabs .ui-tabs-active a{
@@ -660,9 +733,8 @@ button:hover{
 
 .home-tabs>div{
     width:100%;
-    padding:20px;
     box-sizing: border-box;
-    overflow-y:auto;
+    overflow-y:overlay;
 }
 
 .saltise-menu-container{
@@ -671,7 +743,7 @@ button:hover{
     background: white;
     padding: 50px;
     box-sizing: border-box;
-    overflow: auto;
+    overflow: overlay;
 }
 
 
@@ -715,6 +787,8 @@ button:hover{
 
 #account-links, #create-links {
     right: 0px;
+    width: max-content;
+    max-width: 250px;
 }
 
 .create-dropdown > a, .create-dropdown > div{
@@ -744,7 +818,7 @@ button:hover{
 
 
 .menu-grid > .workflow-for-menu{
-    width:400px;
+    width:350px;
 }
 
 .workflow-for-menu{
@@ -753,7 +827,7 @@ button:hover{
     margin-bottom:8px;
     padding:10px;
     border-radius:10px;
-    border:1px solid lightgrey;
+    border:1px solid #E9EBF2;
     max-width:600px;
 }
 
@@ -766,11 +840,25 @@ button:hover{
 .workflow-buttons-row{
     display: flex;
     gap: 5px;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
+.workflow-buttons-row > div{
+    display: flex;
+    gap: 5px;
 }
 
 .workflow-buttons-row .workflow-created{
-    flex-grow: 2;
-    text-align: right;
+    background: #E9EBF2;
+    padding: 5px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #444444;
+
+
 }
 
 .workflow-for-menu .workflow-toggle-favourite{
@@ -783,12 +871,24 @@ button:hover{
     margin-bottom:2px;
     white-space:pre-wrap;
     max-height: 140px;
-    overflow-y: auto;
+    overflow-y: overlay;
 }
 
-.menu-grid .workflow-description{
-    overflow:hidden;
-    height:36px;
+
+.workflow-for-menu .workflow-description.collapsible-text{
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.workflow-for-menu .workflow-description p, .menu-grid .workflow-description ul{
+    margin: 0;
+}
+
+.workflow-for-menu .workflow-title{
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .workflow-publication{
@@ -809,7 +909,7 @@ button:hover{
 .workflow-created{
     font-size:12px;
     margin-bottom:6px;
-    color:gray;
+    color:grey;
 }
 
 .warning{
@@ -826,26 +926,32 @@ button:hover{
     padding-right:12px;
     margin-left:8px;
     height:fit-content;
+    white-space: nowrap;
 }
 
 .workflow-type-indicator.activity{
-    background-color:#11b3d4;
+    /*background-color:#11b3d4;*/
+    background-color: #0E5BB6;
 }
 
 .workflow-type-indicator.course{
-    background-color:#ff5f3d;
+    /*background-color:#ff5f3d;*/
+    background-color:#C54A30;
 }
 
 .workflow-type-indicator.program{
-    background-color:#04ba74;
+    /*background-color:#04ba74;*/
+    background-color:#327B77;
 }
 
 .workflow-type-indicator.project{
-    background-color:#d6bb30;
+    /*background-color:#d6bb30;*/
+    background-color:#B59C1B;
 }
 
 .workflow-type-indicator.liveproject{
-    background-color:#8a38d1;
+    /*background-color:#8a38d1;*/
+    background-color:#B59C1B;
 }
 
 .workflow-top-row{
@@ -915,7 +1021,7 @@ button:hover{
     position: relative;
 }
 
-#workflow-search .material-symbols-rounded{
+.search-input + .material-symbols-rounded{
     position: absolute;
     font-size: 20px;
     left: 4px;
@@ -937,16 +1043,12 @@ button:hover{
     background: #EEFFF8;
 }
 
-#workflow-search-input{
+.search-input{
     border-radius: 12px;
     border: 1px solid lightgrey;
     padding:  4px;
     padding-left: 28px;
     padding-right: 10px;
-}
-
-#workflow-search-input{
-    content: "<span class='material-symbols-rounded'>search</span>";
 }
 
 .search-filter-lock{
@@ -980,12 +1082,11 @@ button:hover{
 }
 
 .project-header{
-    padding:20px;
     border-radius:10px;
     background:white;
     width: 100%;
     color: #444444;
-    padding-right: 50px;
+    padding-bottom: 10px;
     box-sizing: border-box;
 }
 
@@ -1020,7 +1121,7 @@ button:hover{
 .project-info-section{
     margin-top: 20px;
     margin-bottom: 20px;
-    border-top: 1px solid lightgrey;
+    border-top: 1px solid #E9EBF2;
     max-width: 500px;
 }
 
@@ -1075,7 +1176,7 @@ button:hover{
 }
 
 .explore-menu .explore-preview{
-    overflow-x:auto;
+    overflow-x: overlay;
 }
 
 .explore-menu .explore-main{
@@ -1179,10 +1280,24 @@ button:hover{
 .big-button{
     border-radius: 10px;
     box-sizing: border-box;
-    border: 1px solid lightgrey;
+    border: 1px solid #E9EBF2;
     padding: 20px;
     text-align: center;
     width: 220px;
+    position: relative;
+}
+
+.big-button.disabled{
+    box-shadow: unset;
+    background: #E9EBF2;
+    pointer: default;
+    pointer-events: unset;
+}
+
+.big-button.disabled > .material-symbols-rounded{
+    display: block;
+    font-size: 36px;
+    color: grey;
 }
 
 .big-button > .material-symbols-rounded{
@@ -1204,6 +1319,7 @@ button:hover{
 
 .big-button.active{
     background: #EEFFF8;
+    border: 1px solid #04BA74;
 }
 
 .public-link-button{
@@ -1243,7 +1359,7 @@ button:hover{
 
 .user-label{
     padding:5px;
-    border:1px solid lightgrey;
+    border:1px solid #E9EBF2;
     position:relative;
     width:400px;
     display:flex;
@@ -1270,13 +1386,6 @@ button:hover{
     width:100%;
 }
 
-.user-add button{
-    padding:0;
-    margin:0;
-    border:0;
-    vertical-align:middle;
-}
-
 .user-label .window-close-button{
     top:2px;
     right:2px;
@@ -1284,6 +1393,8 @@ button:hover{
 
 .user-name{
     font-size:14px;
+    display: flex;
+    align-items: center;
 }
 
 .user-name .material-symbols-rounded{
@@ -1298,11 +1409,63 @@ button:hover{
     margin-left:8px;
 }
 
+.user-tag{
+    padding: 3px;
+    font-size: 12px;
+    height: fit-content;
+    white-space: nowrap;
+    padding-right: 6px;
+    padding-left: 6px;
+    border-radius: 4px;
+    margin: 2px;
+    display: inline-block;
+    box-sizing: border-box;
+}
+
+.user-tag.permission-author{
+    background-color: #3f4041;
+    color: white;
+}
+
+.user-tag.permission-edit{
+    background-color: #d3dae6;
+}
+
+.user-tag.permission-view{
+    background-color: #e5eff8;
+}
+
+.user-tag.permission-comment{
+    background-color: #e7ebf1;
+}
 .permission-select{
     
 }
 
+.message-box{
+    background:white;
+    left:10%;
+    top:10%;
+    width:80%;
+    height:80%;
+    position:absolute;
+    box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
+}
+
+.message-wrap .home-tabs{
+    height: calc(100% - 100px);
+    overflow-y: overlay;
+}
+
+
 .message-wrap{
+    width:100%;
+    height:100%;
+    overflow-y: overlay;
+    padding:20px;
+    padding-left: 30px;
+    padding-right: 30px;
+    box-sizing:border-box;
     color:#444444;
 }
 
@@ -1312,6 +1475,7 @@ button:hover{
 
 .permission-select select{
     border:none;
+    text-align: right;
 }
 
 .action-icon{
@@ -1425,7 +1589,7 @@ text {
 
 
 .body-wrapper{
-    overflow:auto;
+    overflow: overlay;
     flex-grow: 1;
     height: 100%;
     position: relative;
