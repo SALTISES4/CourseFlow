@@ -789,6 +789,24 @@ button:hover{
     display: flex;
 }
 
+.dropdown-number-indicator{
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    height: 16px;
+    width: 16px;
+    border-radius: 12px;
+    background-color: #04BA74;
+    color: white;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+}
+
+.dropdown-number-indicator[attr_number="0"] {
+    display: none;
+}
+
 .floatbar .create-dropdown{
     margin-left:-6px;
     z-index: 5;
@@ -1088,6 +1106,7 @@ button:hover{
     height: 24px;
     padding: 2px;
     box-sizing: border-box;
+    position: relative;
 }
 
 .workflow-filter-sort span{
@@ -1879,7 +1898,6 @@ button, input[type="submit"]{
 .workflow-view-select{
     display:flex;
     gap: 5px;
-    max-width:1000px;
     flex-wrap:wrap;
     margin:0px 0px 10px 0px;
 }
@@ -1892,6 +1910,10 @@ button, input[type="submit"]{
     border-radius:20px;
     background:white;
     border:1px solid #E9EBF2;
+}
+
+.workflow-view-select .title-text{
+    white-space: nowrap;
 }
 
 .workflow-view-select .active{
@@ -3821,7 +3843,7 @@ circle.mouseover{
 }
 
 .alignment-block{
-    max-width:1000px;
+
 }
 
 .alignment-block > .outcome > .mouseover-actions{

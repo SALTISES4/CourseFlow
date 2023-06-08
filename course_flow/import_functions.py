@@ -52,6 +52,8 @@ def import_outcomes(df, workflow, user):
             depth = 0
         if last_outcome is None:
             depth = 0
+        elif depth > 2:
+            depth = last_outcome.depth
         elif last_outcome.depth + 1 < depth:
             depth = last_outcome.depth + 1
 

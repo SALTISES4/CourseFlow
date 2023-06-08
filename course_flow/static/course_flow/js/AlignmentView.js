@@ -199,6 +199,7 @@ class AlignmentOutcomesBlock extends React.Component{
 //    
 //}   
 const getDescendantOutcomes = (state,outcome,outcomes)=>{
+    if(outcome.depth>=2)return;
     let children = outcome.child_outcome_links.map(id=>getOutcomeOutcomeByID(state,id)).map(outcomeoutcome=>getOutcomeByID(state,outcomeoutcome.data.child).data);
     for(let i=0;i<children.length;i++){
         outcomes.push(children[i].id);
@@ -505,7 +506,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
     }
     
     addNewChildOutcome(){
-        newOutcome(this.props.data.linked_workflow);
+        newOutcome(this.props.data.linked_workflow,null);
     }
 }
 const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{

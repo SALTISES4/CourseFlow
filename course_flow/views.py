@@ -1613,6 +1613,7 @@ def get_child_outcome_data(workflow, user):
 
 
 def get_workflow_data_flat(workflow, user):
+
     SerializerClass = serializer_lookups_shallow[workflow.type]
     columnworkflows = workflow.columnworkflow_set.all()
     weekworkflows = workflow.weekworkflow_set.all()
@@ -1620,9 +1621,11 @@ def get_workflow_data_flat(workflow, user):
     weeks = workflow.weeks.all()
     nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
     nodes = Node.objects.filter(week__workflow=workflow).prefetch_related(
-        "outcomenode_set", "liveassignment_set"
+        "outcomenode_set",
+        "liveassignment_set",
     )
     nodelinks = NodeLink.objects.filter(source_node__in=nodes)
+
     if not workflow.is_strategy:
         outcomeworkflows = workflow.outcomeworkflow_set.all()
         outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
@@ -1631,6 +1634,22 @@ def get_workflow_data_flat(workflow, user):
         )
         objectsets = ObjectSet.objects.filter(project__workflows=workflow)
 
+    # data_flat = {
+    #     "workflow": SerializerClass(workflow, context={"user": user}).data,
+    #     "columnworkflow": ColumnWorkflowSerializerShallow(
+    #         columnworkflows, many=True
+    #     ).data,
+    #     "column": ColumnSerializerShallow(columns, many=True).data,
+    #     "weekworkflow": WeekWorkflowSerializerShallow(
+    #         weekworkflows, many=True
+    #     ).data,
+    #     "week": WeekSerializerShallow(weeks, many=True).data,
+    #     "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
+    #     "node": NodeSerializerShallow(
+    #         nodes, many=True, context={"user": user}
+    #     ).data,
+    #     "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
+    # }
     data_flat = {
         "workflow": SerializerClass(workflow, context={"user": user}).data,
         "columnworkflow": ColumnWorkflowSerializerShallow(
@@ -1642,11 +1661,12 @@ def get_workflow_data_flat(workflow, user):
         ).data,
         "week": WeekSerializerShallow(weeks, many=True).data,
         "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
-        "node": NodeSerializerShallow(
-            nodes, many=True, context={"user": user}
-        ).data,
         "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
     }
+
+    data_flat["node"] = NodeSerializerShallow(
+        nodes, many=True, context={"user": user}
+    ).data
 
     if not workflow.is_strategy:
         data_flat["outcomeworkflow"] = OutcomeWorkflowSerializerShallow(
@@ -3909,8 +3929,17 @@ def new_node(request: HttpRequest) -> HttpResponse:
 def new_outcome_for_workflow(request: HttpRequest) -> HttpResponse:
     workflow_id = json.loads(request.POST.get("workflowPk"))
     workflow = Workflow.objects.get(pk=workflow_id)
+    objectset_id_json = request.POST.get("objectsetPk")
+    if objectset_id_json is not None:
+        objectset_id = json.loads(objectset_id_json)
+    else:
+        objectset_id = None
     try:
         outcome = Outcome.objects.create(author=request.user)
+        if objectset_id is not None:
+            print(objectset_id)
+            objectset = ObjectSet.objects.get(id=objectset_id)
+            outcome.sets.add(objectset)
         outcome_workflow = OutcomeWorkflow.objects.create(
             workflow=workflow, outcome=outcome, rank=workflow.outcomes.count()
         )

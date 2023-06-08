@@ -133,17 +133,14 @@ def get_all_outcomes_ordered_filtered(workflow, extra_filter):
 
 
 def get_unique_outcomenodes(node):
-    exclude_outcomes = models.Outcome.objects.filter(
-        Q(parent_outcomes__node=node)
-        | Q(parent_outcomes__parent_outcomes__node=node)
-    )
     return (
         node.outcomenode_set.exclude(
             Q(outcome__deleted=True)
             | Q(outcome__parent_outcomes__deleted=True)
             | Q(outcome__parent_outcomes__parent_outcomes__deleted=True)
         )
-        .exclude(outcome__in=exclude_outcomes)
+        .exclude(outcome__parent_outcomes__node=node)
+        .exclude(outcome__parent_outcomes__parent_outcomes__node=node)
         .order_by(
             "outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
             "outcome__parent_outcome_links__parent__outcomeworkflow__rank",
@@ -169,19 +166,18 @@ def get_outcomenodes(node):
 
 
 def get_unique_outcomehorizontallinks(outcome):
-    exclude_outcomes = models.Outcome.objects.filter(
-        Q(parent_outcomes__reverse_horizontal_outcomes=outcome)
-        | Q(
-            parent_outcomes__parent_outcomes__reverse_horizontal_outcomes=outcome
-        )
-    )
     return (
         outcome.outcome_horizontal_links.exclude(
             Q(parent_outcome__deleted=True)
             | Q(parent_outcome__parent_outcomes__deleted=True)
             | Q(parent_outcome__parent_outcomes__parent_outcomes__deleted=True)
         )
-        .exclude(parent_outcome__in=exclude_outcomes)
+        .exclude(
+            parent_outcome__parent_outcomes__reverse_horizontal_outcomes=outcome
+        )
+        .exclude(
+            parent_outcome__parent_outcomes__parent_outcomes__reverse_horizontal_outcomes=outcome
+        )
         .order_by(
             "parent_outcome__parent_outcome_links__parent__parent_outcome_links__parent__outcomeworkflow__rank",
             "parent_outcome__parent_outcome_links__parent__outcomeworkflow__rank",

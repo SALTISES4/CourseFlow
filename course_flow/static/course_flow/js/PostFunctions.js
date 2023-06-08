@@ -185,10 +185,11 @@ export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunc
 
     
 //Add a new outcome to a workflow
-export function newOutcome(workflowPk,callBackFunction=()=>console.log("success")){
+export function newOutcome(workflowPk,object_set_id,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.new_outcome, {
             workflowPk:JSON.stringify(workflowPk),
+            objectsetPk:JSON.stringify(object_set_id),
         }).done(function(data){
             if(data.action == "posted") callBackFunction(data);
             else fail_function(data.action);

@@ -1,5 +1,7 @@
 import datetime
 import re
+import time
+from functools import wraps
 
 import bleach
 from django.contrib.contenttypes.models import ContentType
@@ -42,6 +44,7 @@ from .models import (
     title_max_length,
 )
 from .utils import (
+    benchmark,
     dateTimeFormat,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
@@ -78,6 +81,23 @@ bleach_allowed_tags_title = [
     "em",
     "i",
 ]
+
+
+# timing_results = {}
+# def timing(f):
+#     @wraps(f)
+#     def wrap(*args, **kw):
+#         ts = time.time()
+#         result = f(*args, **kw)
+#         te = time.time()
+#         #print(f'Function {f.__name__} took {te-ts:2.4f} seconds')
+#         if timing_results.get(f.__name__) is None:
+#             timing_results[f.__name__] = te - ts
+#         else:
+#             timing_results[f.__name__] = timing_results[f.__name__] + te - ts
+#         print(f'Function {f.__name__} has taken {timing_results[f.__name__]:2.4f} seconds')
+#         return result
+#     return wrap
 
 
 def bleach_sanitizer(value, **kwargs):

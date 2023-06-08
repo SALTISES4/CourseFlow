@@ -33,29 +33,34 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting{
                             <OutcomeView key={outcome.id} objectID={outcome.id} parentID={this.props.workflow.id} renderer={this.props.renderer} show_horizontal={true}/>
                         </div>);
                     })}
+                    {this.getAddNew(category.objectset)}
                 </div>
             </div>
         );
         if(outcomes.length==0)outcomes=(
-            <div class="emptytext">{gettext("Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.")}</div>
+            [<div class="emptytext">{gettext("Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.")}</div>,
+            this.getAddNew({})]
         );
-        let add_new_outcome;
-        if(!this.props.renderer.read_only)add_new_outcome=(
-            <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNew.bind(this)}>
-                <img class="create-button" src={iconpath+"add_new_white.svg"}/>
-                <div>{gettext("Add new")}</div>
-            </div>
-        )
         
         return(
             <div id={"#workflow-"+this.props.workflow.id} class="workflow-details">
                 <div class="outcome-edit" ref={this.maindiv}>
                     {outcomes}
-                    {add_new_outcome}
                     {this.getParentOutcomeBar()}
                 </div>
             </div>
         );
+    }
+
+    getAddNew(objectset){
+        let add_new_outcome;
+        if(!this.props.renderer.read_only)add_new_outcome=(
+            <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNew.bind(this,objectset)}>
+                <img class="create-button" src={iconpath+"add_new_white.svg"}/>
+                <div>{gettext("Add new")}</div>
+            </div>
+        );
+        return add_new_outcome;
     }
 
     getParentOutcomeBar(){
@@ -81,8 +86,8 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting{
         insertedAt(this.props.renderer,child_id,"outcome",this.props.workflow.id,"workflow",new_position,"outcomeworkflow");
     }
     
-    addNew(){
-        newOutcome(this.props.workflow.id);
+    addNew(objectset){
+        newOutcome(this.props.workflow.id,objectset.id);
     }
     
 }
@@ -174,7 +179,7 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected{
                     <OutcomeTitle data={this.props.data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
                 <input class="outcome-toggle-checkbox" type="checkbox" title="Toggle highlighting" onChange={this.clickFunction.bind(this)}/>
-                {data.child_outcome_links.length>0 && 
+                {data.depth < 2 && data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>

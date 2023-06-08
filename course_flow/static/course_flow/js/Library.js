@@ -812,6 +812,7 @@ export class ExploreFilter extends WorkflowFilter{
                         );
                     })}
                 </div>
+                <div attr_number={this.state.active_filters.length} class="dropdown-number-indicator">{this.state.active_filters.length}</div>
             </div>
         );
     }
@@ -873,22 +874,23 @@ export class ExploreFilter extends WorkflowFilter{
                         );
                     })}
                 </div>
+                <div attr_number={this.state.active_disciplines.length} class="dropdown-number-indicator">{this.state.active_disciplines.length}</div>
             </div>
         );
     }
 
     getContentRich(){
-        let component=this;
-        return (
-            <div title={gettext("Restrict results to workflows with three or more nodes")} id="content-rich" class="hover-shade" onClick={
-                ()=>{
-                    component.setState({content_rich:!component.state.content_rich,has_searched:false})
-                }
-            }>
-                <input type="checkbox" checked={this.state.content_rich}/>
-                <label>{gettext("Exclude empty")}</label>
-            </div>
-        );
+        // let component=this;
+        // return (
+        //     <div title={gettext("Restrict results to workflows with three or more nodes")} id="content-rich" class="hover-shade" onClick={
+        //         ()=>{
+        //             component.setState({content_rich:!component.state.content_rich,has_searched:false})
+        //         }
+        //     }>
+        //         <input type="checkbox" checked={this.state.content_rich}/>
+        //         <label>{gettext("Exclude empty")}</label>
+        //     </div>
+        // );
     }
 
     getFromSaltise(){

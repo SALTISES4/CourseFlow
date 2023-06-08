@@ -786,6 +786,24 @@ button:hover{
     display: flex;
 }
 
+.dropdown-number-indicator{
+    position: absolute;
+    left: -4px;
+    top: -4px;
+    height: 16px;
+    width: 16px;
+    border-radius: 12px;
+    background-color: #04BA74;
+    color: white;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+}
+
+.dropdown-number-indicator[attr_number="0"] {
+    display: none;
+}
+
 .floatbar .create-dropdown{
     margin-left:-6px;
     z-index: 5;
@@ -1083,6 +1101,7 @@ button:hover{
     height: 24px;
     padding: 2px;
     box-sizing: border-box;
+    position: relative;
 }
 
 .workflow-filter-sort span{

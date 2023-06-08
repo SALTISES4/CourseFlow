@@ -86,7 +86,7 @@ class OutcomeView extends EditableComponentWithSorting{
                 <div class="outcome-title">
                     <OutcomeTitle data={this.props.data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
-                {data.child_outcome_links.length>0 && 
+                {data.depth < 2 && data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>
@@ -96,9 +96,11 @@ class OutcomeView extends EditableComponentWithSorting{
                         </div>
                     </div>
                 }
-                <ol class={"children-block children-block-"+this.props.data.depth} id={this.props.objectID+"-children-block"} ref={this.children_block}>
-                    {children}
-                </ol>
+                {data.depth < 2 && 
+                    <ol class={"children-block children-block-"+this.props.data.depth} id={this.props.objectID+"-children-block"} ref={this.children_block}>
+                        {children}
+                    </ol>
+                }
                 {(!this.props.renderer.read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>{gettext("+ Add New")}</div>
                 }
                 <div class="mouseover-actions">
@@ -248,7 +250,7 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
                     <OutcomeTitle data={this.props.data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
                 <input class="outcome-toggle-checkbox" type="checkbox" title="Toggle highlighting" onChange={this.clickFunction.bind(this)}/>
-                {data.child_outcome_links.length>0 && 
+                {data.depth < 2 && data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>
@@ -258,9 +260,11 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
                         </div>
                     </div>
                 }
-                <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
-                    {children}
-                </div>
+                {data.depth < 2 && 
+                    <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
+                        {children}
+                    </div>
+                }
             </div>
             
         );
@@ -387,7 +391,7 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments{
                 <div class="outcome-title">
                     <OutcomeTitle data={data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
-                {data.child_outcome_links.length>0 && 
+                {data.depth < 2 && data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>
@@ -397,9 +401,11 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments{
                         </div>
                     </div>
                 }
-                <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
-                    {children}
-                </div>
+                {data.depth < 2 && 
+                    <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
+                        {children}
+                    </div>
+                }
                 <div class="mouseover-actions">
                     {comments}
                 </div>
