@@ -4693,7 +4693,6 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
             filter_kwargs["from_saltise"] = True
 
         if published:
-            print("published")
             try:
                 queryset = reduce(
                     lambda x, y: chain(x, y),
@@ -4716,7 +4715,6 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
                         for model_type in types
                     ],
                 )
-                print(queryset)
                 if sort is not None:
                     if sort == "created_on" or sort == "title":
                         sort_key = attrgetter(sort)
@@ -4736,10 +4734,17 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
                     )
                 ]
                 page_number = math.ceil(float(total_results) / nresults)
+                pages ={
+                    "total_results": total_results,
+                    "page_count": page_number,
+                    "current_page": page,
+                    "results_per_page": nresults,
+                }
             except TypeError:
                 return_objects = Project.objects.none()
     # Small search for library
     else:
+        print("else")
         all_objects = ObjectPermission.objects.filter(
             user=request.user
         ).filter(
@@ -4771,6 +4776,8 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
             if nresults > 0:
                 extra_objects = extra_objects[: nresults - count]
             return_objects += [x.content_object for x in extra_objects]
+        print("here")
+        pages={}
     print(return_objects)
 
     return JsonResponse(
@@ -4779,12 +4786,7 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
             "workflow_list": InfoBoxSerializer(
                 return_objects, context={"user": request.user}, many=True
             ).data,
-            "pages": {
-                "total_results": total_results,
-                "page_count": page_number,
-                "current_page": page,
-                "results_per_page": nresults,
-            },
+            "pages": pages,
         }
     )
 

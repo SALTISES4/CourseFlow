@@ -236,6 +236,7 @@ export class WorkflowRenderer{
             if(updateSocket.readyState==1)openfunction.bind(this)();
             
             updateSocket.onclose = function(e){
+                if(e.code==1000)return;
                 if(!renderer.has_rendered)renderer.connection_opened(true);
                 else{
                     renderer.create_connection_bar();

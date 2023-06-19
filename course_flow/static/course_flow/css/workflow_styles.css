@@ -1709,11 +1709,12 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     width:fit-content;
     padding:8px;
     padding-right:32px;
+    display: flex;
+    gap: 20px;
+    text-transform: capitalize;
+    align-items: center;
 }
 
-.nomenclature-row > *{
-    display:inline-block;
-}
 
 .workflow-canvas{
     position:absolute;
@@ -2198,13 +2199,6 @@ circle.mouseover{
     left: 0;
 }
 
-.screen-barrier{
-    width:100%;
-    height:100%;
-    background:rgba(100,100,100,0.5);
-    pointer-events:all;
-}
-
 
 .multi-select{
     display:inline-block;
@@ -2272,17 +2266,6 @@ circle.mouseover{
     margin-left:8px;
     font-weight:600;
     font-size:12px;
-}
-
-.window-close-button{
-    right:8px;
-    top:8px;
-    position:absolute;
-    cursor:pointer;
-}
-
-.window-close-button img{
-    width:16px;
 }
 
 /*ComparisonView stuff*/
@@ -2376,42 +2359,6 @@ circle.mouseover{
     z-index: 2;
 }
 
-hr{
-    margin:4px;
-    margin-left:10%;
-    margin-right:10%;
-}
-
-h1{
-    color:#04ba74;
-    
-}
-
-h2{
-    font-size:20px;
-}
-
-h3{
-    color:#04ba74;
-}
-
-h4{
-    margin-top:10px;
-    margin-bottom:5px;
-    color:#04ba74;
-}
-h5{
-    margin-top:8px;
-    margin-bottom:8px;
-    color:#04ba74;
-}
-h4.drag-and-drop::after{
-    content:"\A Drag and drop to add";
-    font-size:10px;
-    color:grey;
-    white-space:pre;
-    
-}
 
 
 .workflow-legend *:is(h4, h5), .right-panel-container *:is(h3, h4, h5){

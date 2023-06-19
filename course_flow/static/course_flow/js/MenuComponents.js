@@ -689,11 +689,19 @@ export class ProjectEditMenu extends React.Component{
         let all_disciplines;
         let disciplines;
         if(data.all_disciplines){
-            all_disciplines = data.all_disciplines.filter(discipline=>data.disciplines.indexOf(discipline.id)==-1).map((discipline)=>
-                <option value={discipline.id}>{discipline.title}</option>
-            );
+            // all_disciplines = data.all_disciplines.filter(discipline=>data.disciplines.indexOf(discipline.id)==-1).map((discipline)=>
+            //     <option value={discipline.id}>{discipline.title}</option>
+            // );
+            // disciplines = data.all_disciplines.filter(discipline=>data.disciplines.indexOf(discipline.id)>=0).map((discipline)=>
+            //     <option value={discipline.id}>{discipline.title}</option>
+            // );
             disciplines = data.all_disciplines.filter(discipline=>data.disciplines.indexOf(discipline.id)>=0).map((discipline)=>
-                <option value={discipline.id}>{discipline.title}</option>
+                <div class="flex-middle discipline-tag">
+                    {discipline.title}
+                    <span class="material-symbols-rounded green" onClick={this.removeDiscipline.bind(this,discipline.id)}>
+                        close
+                    </span>
+                </div>
             );
         }
         let title=Constants.unescapeCharacters(data.title || "");
@@ -710,8 +718,8 @@ export class ProjectEditMenu extends React.Component{
             <div class="nomenclature-row">
                 <div>{object_sets[item.term]+": "}</div>
                 <input value={item.title} onChange={this.termChanged.bind(this,item.id)}/>
-                <div class="window-close-button" onClick={this.deleteTerm.bind(this,item.id)}>
-                    <img src={iconpath+"close.svg"}/>
+                <div onClick={this.deleteTerm.bind(this,item.id)}>
+                    <span class="material-symbols-rounded">delete</span>
                 </div>
             </div>
         );
@@ -722,35 +730,25 @@ export class ProjectEditMenu extends React.Component{
         if(!published_enabled)disabled_publish_text = gettext("A title and at least one discipline is required for publishing.");
         return(
             <div class="message-wrap">
-                <h3>{gettext("Edit Project")+":"}</h3>
+                <div class="project-title">{gettext("Edit Project")}</div>
                 <div>
-                    <h4>{gettext("Title")+":"}</h4>
+                    <h4>{gettext("Title")}</h4>
                     <textarea autocomplete="off" id="project-title-input" value={title} onChange={this.inputChanged.bind(this,"title")}/>
                 </div>
                 <div>
-                    <h4>{gettext("Description")+":"}</h4>
+                    <h4>{gettext("Description")}</h4>
                     <textarea autocomplete="off" id="project-description-input" value={description} onChange={this.inputChanged.bind(this,"description")}/>
                 </div>
                 <div>
-                    <h4>{gettext("Disciplines")+":"}</h4>
-                    <div class="multi-select">
-                        <h5>{gettext("This Project")+":"}</h5>
-                        <select id="disciplines_chosen" multiple>
-                            {disciplines}
-                        </select>
-                        <button id="remove-discipline" onClick={this.removeDiscipline.bind(this)}> {gettext("Remove")} </button>
+                    <h4>{gettext("Disciplines")}</h4>
+                    <div class="flex-middle disciplines-div">
+                        {disciplines}
                     </div>
-                    <div class="multi-select">
-                        <h5>{gettext("All")+":"}</h5>
-                        <select id="disciplines_all" multiple>
-                            {all_disciplines}
-                        </select>
-                        <button id="add-discipline" onClick={this.addDiscipline.bind(this)}> {gettext("Add")} </button>
-                    </div>
-                    
+                    <input autocomplete="off" id="project-discipline-input" placeholder="Search"/>
                 </div>
                 <div>
-                    <h4>{gettext("View sets")+":"}</h4>
+                    <h4>{gettext("Object sets")}</h4>
+                    <div class="workflow-created">{"Define categories for outcomes or nodes"}</div>
                     {sets_added}
                     <div class="nomenclature-row">
                         <select id="nomenclature-select" value={this.state.selected_set} onChange={this.inputChanged.bind(this,"selected_set")}>
@@ -758,62 +756,19 @@ export class ProjectEditMenu extends React.Component{
                             {set_options}
                         </select>
                         <input placeholder={gettext("Set Name")} type="text" id="term-singular" maxlength="50" value={this.state.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_set==null)}/>
-                        <button onClick={this.addTerm.bind(this)} disabled={this.addTermDisabled(selected_set)}>
+                        <button class="primary-button" onClick={this.addTerm.bind(this)} disabled={this.addTermDisabled(selected_set)}>
                             {gettext("Add")}
                         </button>
                     </div>
                 </div>
-                {this.state.author_id==user_id &&
-                    <div>
-                        <h4>{gettext("Delete/restore")}:</h4>
-                        {this.getDeleteProject()}
-                    </div>
-                }
                 <div class="action-bar">
                     {this.getActions()}
                 </div>
+                <div class="window-close-button" onClick={closeMessageBox}>
+                    <span class="material-symbols-rounded green">close</span>
+                </div>
             </div>
         );
-    }
-
-    getDeleteProject(){
-        if(!this.state.deleted)return (
-            <div title={gettext("Delete")} class="hover-shade" onClick={this.deleteProject.bind(this)}>
-                {gettext("Delete: ")}<span class="material-symbols-rounded">delete</span>
-            </div>
-        )
-        else return([
-            <div title={gettext("Restore")} class="hover-shade" onClick={this.restoreProject.bind(this)}>
-                {gettext("Restore: ")}<span class="material-symbols-rounded">restore_from_trash</span>
-            </div>,
-            <div title={gettext("Permanently delete")} class="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
-                {gettext("Permanently delete: ")}<span class="material-symbols-rounded">delete_forever</span>
-            </div>
-        ])
-    }
-
-    deleteProject(){
-        let component=this;
-        if(window.confirm(gettext("Are you sure you want to delete this project?"))){
-            deleteSelf(this.props.data.id,"project",true,()=>{
-                component.setState({deleted:true})
-            });
-        }
-    }
-
-    deleteProjectHard(){
-        let component=this;
-        if(window.confirm(gettext("Are you sure you want to permanently delete this project?"))){
-            deleteSelf(this.props.data.id,"project",false,()=>{
-                window.location=home_path;
-            });
-        }
-    }
-
-    restoreProject(){
-        restoreSelf(this.props.data.id,"project",()=>{
-            this.setState({deleted:false})
-        });
     }
     
     deleteTerm(id){
@@ -846,7 +801,7 @@ export class ProjectEditMenu extends React.Component{
                 this.object_set_updates[id]={title:evt.target.value};
             }
         }
-        this.setState({object_sets:new_sets});
+        this.setState({object_sets:new_sets,changed:true});
     }
 
     updateTerms(){
@@ -861,33 +816,50 @@ export class ProjectEditMenu extends React.Component{
         return false;
     }
 
-    addDiscipline(evt){
-        let selected = $("#disciplines_all").val()
-        $("#disciplines_all").val([]);
+    // addDiscipline(evt){
+    //     let selected = $("#disciplines_all").val()
+    //     $("#disciplines_all").val([]);
+    //     this.setState(
+    //         (state,props)=>{
+    //             return {disciplines:[...state.disciplines,...selected.map(val=>parseInt(val))]};
+    //         }
+    //     )
+    // }
+
+    addDiscipline(id){
         this.setState(
             (state,props)=>{
-                return {disciplines:[...state.disciplines,...selected.map(val=>parseInt(val))]};
+                return {disciplines:[...state.disciplines,id],changed:true};
             }
-        )
+        );
     }
 
-    removeDiscipline(evt){
-        let selected = $("#disciplines_chosen").val()
-        $("#disciplines_chosen").val([]);
+    removeDiscipline(id){
+        console.log("removed"+id)
         this.setState(
             (state,props)=>{
-                return {
-                    disciplines:state.disciplines.filter(value=>selected.map(val=>parseInt(val)).indexOf(value)==-1)
-                };
+                return {disciplines:state.disciplines.filter(value=>value!=id),changed:true};
             }
-        )
+        );
     }
+
+    // removeDiscipline(evt){
+    //     let selected = $("#disciplines_chosen").val()
+    //     $("#disciplines_chosen").val([]);
+    //     this.setState(
+    //         (state,props)=>{
+    //             return {
+    //                 disciplines:state.disciplines.filter(value=>selected.map(val=>parseInt(val)).indexOf(value)==-1)
+    //             };
+    //         }
+    //     )
+    // }
     
     
     inputChanged(field,evt){
-        var new_state={}
+        var new_state={changed:true}
         new_state[field]=evt.target.value;
-        if(field=="selected_set"){new_state["termsingular"]="";}
+        if(field=="selected_set")new_state["termsingular"]="";
         this.setState(new_state);
     }
 
@@ -900,7 +872,7 @@ export class ProjectEditMenu extends React.Component{
                 return;
             }
         }
-        var new_state={}
+        var new_state={changed:true}
         new_state[field]=evt.target.checked;
         this.setState(new_state);
     }
@@ -908,21 +880,49 @@ export class ProjectEditMenu extends React.Component{
     getActions(){
         var actions = [];
         actions.push(
-            <button id="save-changes" onClick={()=>{
+            <button class="secondary-button" onClick={closeMessageBox}>
+                cancel
+            </button>
+        );
+        actions.push(
+            <button id="save-changes" class="primary-button" disabled={!this.state.changed} onClick={()=>{
                 updateValueInstant(this.state.id,"project",{title:this.state.title,description:this.state.description,published:this.state.published,disciplines:this.state.disciplines});
                 this.updateTerms();
-                this.props.actionFunction(this.state);
+                this.props.actionFunction({...this.state,changed:false});
                 closeMessageBox();
             }}>
                 Save Changes
             </button>
         );
-        actions.push(
-            <button onClick={closeMessageBox}>
-                cancel
-            </button>
-        );
         return actions;
+    }
+
+    componentDidMount(){
+        if(this.state.all_disciplines)this.autocompleteDiscipline();
+    }
+
+    componentDidUpdate(){
+        if(this.state.all_disciplines)this.autocompleteDiscipline();
+    }
+
+    autocompleteDiscipline(){
+        let choices = this.state.all_disciplines.filter(discipline=>this.state.disciplines.indexOf(discipline.id)<0).map(discipline=>({
+            value:discipline.title,
+            label:discipline.title,
+            id:discipline.id,
+        }));
+        $("#project-discipline-input").autocomplete({
+            source:choices,
+            minLength:0,
+            focus:null,
+            select:(evt,ui)=>{
+                this.addDiscipline(ui.item.id);
+                $("#project-discipline-input").val("");
+                return false;
+            },
+        }).focus(function() {
+            $("#project-discipline-input").autocomplete("search", $("#project-discipline-input").val());
+        });
     }
 }
 

@@ -161,7 +161,7 @@ def get_course_framework(workflow, allowed_sets):
     df = df.append({"0": _("Competency"), "1": _("Title")}, ignore_index=True)
     nodes = get_parent_nodes_for_workflow(workflow).filter(
         allowed_sets_Q(allowed_sets)
-    )
+    ).distinct()
     parent_outcomes = []
     for node in nodes:
         outcomenodes = get_outcomenodes(node)
@@ -175,7 +175,11 @@ def get_course_framework(workflow, allowed_sets):
         ).data
     a = [get_str(outcome, "code") for outcome in parent_outcomes]
     b = [get_str(outcome, "title") for outcome in parent_outcomes]
-    df = pd.concat([df, pd.DataFrame({"0": a, "1": b})])
+    df = pd.concat([df, 
+        pd.DataFrame({"0": a, "1": b}).sort_values(
+            by="0",
+        )
+    ])
     if len(nodes) > 0:
         df = df.append(
             {

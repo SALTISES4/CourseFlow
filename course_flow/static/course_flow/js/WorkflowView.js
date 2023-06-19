@@ -224,10 +224,48 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let liveproject;
 
         let overflow_links=[];
+        overflow_links.push(this.getDeleteWorkflow());
         overflow_links.push(this.getExportButton());
         overflow_links.push(this.getCopyButton());
         overflow_links.push(this.getImportButton());
         return overflow_links;
+    }
+
+    getDeleteWorkflow(){
+        if(this.props.renderer.read_only)return null;
+        if(!this.props.data.deleted)return (
+            <div class="hover-shade" onClick={this.deleteWorkflow.bind(this)}>
+                <div>{gettext("Delete Workflow")}</div>
+            </div>
+        )
+        else return([
+            <div class="hover-shade" onClick={this.restoreWorkflow.bind(this)}>
+                <div>{gettext("Restore Workflow")}</div>
+            </div>,
+            <div class="hover-shade" onClick={this.deleteWorkflowHard.bind(this)}>
+                <div>{gettext("Permanently Delete Workflow")}</div>
+            </div>
+        ])
+    }
+
+    deleteWorkflow(){
+        if(window.confirm(gettext("Are you sure you want to delete this workflow?"))){
+            deleteSelf(this.props.data.id,"workflow",true,()=>{
+            });
+        }
+    }
+
+    deleteWorkflowHard(){
+        if(window.confirm(gettext("Are you sure you want to permanently delete this workflow?"))){
+            deleteSelf(this.props.data.id,"workflow",false,()=>{
+                window.location=update_path["project"].replace(0,renderer.project.id);
+            });
+        }
+    }
+
+    restoreWorkflow(){
+        restoreSelf(this.props.data.id,"workflow",()=>{
+        });
     }
 
     getExportButton(){

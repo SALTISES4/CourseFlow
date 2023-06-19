@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive} from "./PostFunctions";
+import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf} from "./PostFunctions";
 import * as Constants from "./Constants";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./ComponentJSON";
 import {MessageBox} from "./MenuComponents";
@@ -238,7 +238,10 @@ export class ProjectMenu extends LibraryMenu{
         }
 
         let overflow_links=[liveproject];
-        if(data.author_id==user_id)overflow_links.push(<hr/>);
+        if(data.author_id==user_id){
+            overflow_links.push(<hr/>);
+            overflow_links.push(this.getDeleteProject());
+        }
         overflow_links.push(this.getExportButton());
         overflow_links.push(this.getCopyButton());
         overflow_links.push(<hr/>);
@@ -248,6 +251,47 @@ export class ProjectMenu extends LibraryMenu{
             </a>
         );
         return overflow_links;
+    }
+
+    getDeleteProject(){
+        if(!this.state.data.deleted)return (
+            <div class="hover-shade" onClick={this.deleteProject.bind(this)}>
+                <div>{gettext("Delete Project")}</div>
+            </div>
+        )
+        else return([
+            <div class="hover-shade" onClick={this.restoreProject.bind(this)}>
+                <div>{gettext("Restore Project")}</div>
+            </div>,
+            <div class="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
+                <div>{gettext("Permanently Delete Project")}</div>
+            </div>
+        ])
+    }
+
+    deleteProject(){
+        let component=this;
+        if(window.confirm(gettext("Are you sure you want to delete this project?"))){
+            deleteSelf(this.props.data.id,"project",true,()=>{
+                component.setState({data:{...this.props.data,deleted:true}})
+            });
+        }
+    }
+
+    deleteProjectHard(){
+        let component=this;
+        if(window.confirm(gettext("Are you sure you want to permanently delete this project?"))){
+            deleteSelf(this.props.data.id,"project",false,()=>{
+                window.location=home_path;
+            });
+        }
+    }
+
+    restoreProject(){
+        let component=this;
+        restoreSelf(this.props.data.id,"project",()=>{
+                component.setState({data:{...this.props.data,deleted:false}})
+        });
     }
 
     makeLive(){
@@ -494,6 +538,7 @@ export class WorkflowFilter extends Component{
                             onChange={debounce(this.searchChange.bind(this))}
                             id="workflow-search-input"
                             class="search-input"
+                            autocomplete="off"
                         />
                         <span class="material-symbols-rounded">search</span>
                         <div class="create-dropdown">{search_results}</div>
@@ -619,6 +664,9 @@ export class WorkflowFilter extends Component{
         makeDropdown(this.filterDOM.current);
         makeDropdown(this.sortDOM.current);
         makeDropdown(this.searchDOM.current);
+        // let searchDOM = $(this.searchDOM.current)
+        // searchDOM.children("#workflow-search-input").on("focus",(evt)=>searchDOM.children(".create-dropdown").addClass("active"))
+        // searchDOM.children("#workflow-search-input").on("blur",(evt)=>searchDOM.children(".create-dropdown").removeClass("active"))
     }
 
     searchWithin(request,response_function){
@@ -637,15 +685,19 @@ export class WorkflowFilter extends Component{
     seeAll(){
         this.props.renderer.tiny_loader.startLoad();
         let search_filter = this.state.search_filter;
-        searchAllObjects(search_filter,0,(response_data)=>{
+        searchAllObjects(search_filter,{nresults:0},(response_data)=>{
             this.setState({workflows:response_data.workflow_list,search_filter_lock:search_filter});
             this.props.renderer.tiny_loader.endLoad();
-            $("#workflow-search").removeClass("active");
+            $("#workflow-search .create-dropdown").removeClass("active");
+            $("#workflow-search").attr("disabled",true);
+            $("#workflow-search-input").attr("disabled",true);
         });
     }
 
     clearSearchLock(evt){
         this.setState({workflows:this.props.workflows,search_filter_lock:null})
+        $("#workflow-search").attr("disabled",false);
+        $("#workflow-search-input").attr("disabled",false);
         evt.stopPropagation();
     }
 

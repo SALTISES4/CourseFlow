@@ -253,9 +253,7 @@
                   <a id="reset-password" class="hover-shade" href={% course_flow_password_change_url %}>{% trans 'Reset my password' %}</a>
                   <a id="notification-settings" class="hover-shade" href="{% url 'course_flow:user-update' %}">{% trans 'Notification settings' %}</a>
                   <hr>
-                  <a id="return-my-dalite" class="hover-shade" href={% course_flow_return_url %}>
-                    {% course_flow_return_title %}
-                  </a>
+                  <a id="return-my-dalite" class="hover-shade" href={% course_flow_return_url %}>{% course_flow_return_title %}</a>
                   <a id="logout" class="hover-shade">{% trans 'Sign out' %}</a>
                 </div>
               </div>
@@ -419,7 +417,7 @@
 
     const makeDropdown = (click_element)=>{
       $(click_element).on("click",(evt)=>{
-        $(click_element).children(".create-dropdown").toggleClass("active");
+        if($(click_element).attr("disabled")!="disabled")$(click_element).children(".create-dropdown").toggleClass("active");
       });
       document.addEventListener("click",(evt)=>{
         if(! $(evt.target).closest(click_element)[0])$(click_element).children(".create-dropdown").removeClass("active");
