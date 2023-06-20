@@ -74,7 +74,7 @@ class NodeBarColumnUnconnected extends Component{
         if(data)title = data.title;
         if(!title)title=data.column_type_display;
         return(
-            <div dangerouslySetInnerHTML={{ __html: title }} class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{borderColor:Constants.getColumnColour(data)}}>
+            <div dangerouslySetInnerHTML={{ __html: title }} class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{backgroundColor:Constants.getColumnColour(data)}}>
             </div>
         );
     }

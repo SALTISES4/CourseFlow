@@ -59,9 +59,6 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 {!data.is_strategy &&
                     <OutcomeBar renderer={this.props.renderer}/>
                 }
-                {!renderer.read_only && !data.is_strategy && data.type != "program" &&
-                    <StrategyBar/>
-                }
                 {!renderer.read_only && 
                     <RestoreBar renderer={this.props.renderer}/>
                 }
@@ -927,10 +924,28 @@ class ViewBarUnconnected extends React.Component{
                 )}
             </div>
         );
+
+        var nodebarweekworkflows;
+        if(this.props.renderer.view_type=="workflowview")nodebarweekworkflows= [
+            <h4>{gettext("Jump To")}</h4>,
+            <div class="node-bar-week-block">
+                {data.weekworkflow_set.map((weekworkflow)=>
+                    <NodeBarWeekWorkflow key={weekworkflow} order={data.weekworkflow_set} renderer={this.props.renderer} objectID={weekworkflow}/>
+                )}
+            </div>,
+            <hr/>
+        ];
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
+                {nodebarweekworkflows}
+                <div id="expand-collapse-all">
+                    <div>{gettext("Expand/Collapse All")}</div>
+                    <div>
+                        <img class="hover-shade" src={iconpath+"plus.svg"} onClick={this.expandAll.bind(this)}/><img class="hover-shade" src={iconpath+"minus.svg"} onClick={this.collapseAll.bind(this)}/>
+                    </div>
+                </div>
                 {sort_block}
-                <h4>{gettext("Object Sets")+":"}</h4>
+                <h4>{gettext("Object Sets")}</h4>
                 {sets}
             </div>
         ,$("#view-bar")[0]);
@@ -940,6 +955,13 @@ class ViewBarUnconnected extends React.Component{
         this.props.dispatch(toggleObjectSet(id,hidden));
     }
 
+    expandAll(){
+        this.props.weeks.forEach(week=>toggleDrop(week.id,"week",true,this.props.dispatch));
+    }
+
+    collapseAll(){
+        this.props.weeks.forEach(week=>toggleDrop(week.id,"week",false,this.props.dispatch));
+    }
 
     changeSort(evt){
         this.props.dispatch(changeField(this.props.data.id,"workflow",{"outcomes_sort":evt.target.value}));
@@ -949,7 +971,10 @@ class ViewBarUnconnected extends React.Component{
     }
 }
 export const ViewBar =  connect(
-    (state)=>({object_sets:state.objectset}),
+    (state)=>({
+        object_sets:state.objectset,
+        weeks:state.week,
+    }),
     null
 )(ViewBarUnconnected)
 
@@ -983,54 +1008,50 @@ class NodeBarUnconnected extends React.Component{
         )
         
         
-        var nodebarweekworkflows;
-        if(this.props.renderer.view_type=="workflowview")nodebarweekworkflows= data.weekworkflow_set.map((weekworkflow)=>
-            <NodeBarWeekWorkflow key={weekworkflow} order={data.weekworkflow_set} renderer={this.props.renderer} objectID={weekworkflow}/>
-        );
         
         let nodebar_nodes;
         if(!this.props.renderer.read_only)nodebar_nodes= [
-            <h4 class="drag-and-drop">{gettext("Nodes")}:</h4>,
+            <h4 class="drag-and-drop">{gettext("Nodes")}</h4>,
             <div class="node-bar-column-block">
                 {nodebarcolumnworkflows}
             </div>,
-            <hr/>
         ];
         
+        var strategies = this.props.available_strategies.map((strategy)=>
+            <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
+        );
+        var saltise_strategies = this.props.saltise_strategies.map((strategy)=>
+            <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
+        );
         
         
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
                 {nodebar_nodes}
-                <h4>{gettext("Jump To")}:</h4>
-                <div class="node-bar-week-block">
-                    {nodebarweekworkflows}
-                </div>
                 <hr/>
-                <div id="expand-collapse-all">
-                    <div>{gettext("Expand/Collapse All")}</div>
-                    <div>
-                        <img class="hover-shade" src={iconpath+"plus.svg"} onClick={this.expandAll.bind(this)}/><img class="hover-shade" src={iconpath+"minus.svg"} onClick={this.collapseAll.bind(this)}/>
-                    </div>
+                <h4 class="drag-and-drop">{gettext("My Strategies")}</h4>
+                <div class="strategy-bar-strategy-block">
+                    {strategies}
                 </div>
+                {(saltise_strategies.length>0) &&
+                    [<h4 class="drag-and-drop">{gettext("SALTISE Strategies")}</h4>,
+                    <div class="strategy-bar-strategy-block">
+                        {saltise_strategies}
+                    </div>
+                     ]
+                }
             </div>
         ,$("#node-bar")[0]);
     }
 
-    expandAll(){
-        this.props.weeks.forEach(week=>toggleDrop(week.id,"week",true,this.props.dispatch));
-    }
-
-    collapseAll(){
-        this.props.weeks.forEach(week=>toggleDrop(week.id,"week",false,this.props.dispatch));
-    }
 
     
 }
 const mapNodeBarStateToProps = state=>({
     data:state.workflow,
     columns:state.column,
-    weeks:state.week,
+    available_strategies:state.strategy,
+    saltise_strategies:state.saltise_strategy,
 })
 export const NodeBar = connect(
     mapNodeBarStateToProps,
@@ -1142,52 +1163,54 @@ class RestoreBarItem extends Component{
     }
 }
 
-class StrategyBarUnconnected extends React.Component{
+// class StrategyBarUnconnected extends React.Component{
     
-    constructor(props){
-        super(props);
-        this.objectType="workflow";
-    }
+//     constructor(props){
+//         super(props);
+//         this.objectType="workflow";
+//     }
     
     
-    render(){
+//     render(){
         
-        var strategies = this.props.available_strategies.map((strategy)=>
-            <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
-        );
-        var saltise_strategies = this.props.saltise_strategies.map((strategy)=>
-            <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
-        );
+//         var strategies = this.props.available_strategies.map((strategy)=>
+//             <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
+//         );
+//         console.log("saltise strats")
+//         console.log(this.props.saltise_strategies)
+//         var saltise_strategies = this.props.saltise_strategies.map((strategy)=>
+//             <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
+//         );
         
         
         
-        return reactDom.createPortal(
-            <div id="strategy-bar-workflow" class="right-panel-inner">
-                <h4 class="drag-and-drop">{gettext("My Strategies")}:</h4>
-                <div class="strategy-bar-strategy-block">
-                    {strategies}
-                </div>
-                {(saltise_strategies.length>0) &&
-                    [<h4 class="drag-and-drop">{gettext("SALTISE Strategies")}:</h4>,
-                    <div class="strategy-bar-strategy-block">
-                        {saltise_strategies}
-                    </div>
-                     ]
-                }
-            </div>
-        ,$("#strategy-bar")[0]);
-    }
+//         return reactDom.createPortal(
+//             <div id="strategy-bar-workflow" class="right-panel-inner">
+//                 <h4 class="drag-and-drop">{gettext("My Strategies")}:</h4>
+//                 <div class="strategy-bar-strategy-block">
+//                     {strategies}
+//                 </div>
+//                 {(saltise_strategies.length>0) &&
+//                     [<h4 class="drag-and-drop">{gettext("SALTISE Strategies")}:</h4>,
+//                     <div class="strategy-bar-strategy-block">
+//                         {saltise_strategies}
+//                     </div>
+//                      ]
+//                 }
+//             </div>
+//         ,$("#strategy-bar")[0]);
+//     }
     
-}
-const mapStrategyBarStateToProps = state=>({
-    data:state.workflow,
-    available_strategies:state.strategy,
-    saltise_strategies:state.saltise_strategy,
-})
-export const StrategyBar = connect(
-    mapStrategyBarStateToProps,
-    null
-)(StrategyBarUnconnected)
+// }
+// const mapStrategyBarStateToProps = state=>({
+//     data:state.workflow,
+//     available_strategies:state.strategy,
+//     saltise_strategies:state.saltise_strategy,
+// })
+// export const StrategyBar = connect(
+//     mapStrategyBarStateToProps,
+//     null
+// )(StrategyBarUnconnected)
 
 
 //Basic component representing the workflow
