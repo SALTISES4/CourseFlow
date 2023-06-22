@@ -53,7 +53,7 @@ export class EditableComponent extends Component{
                         </div>
                     );
                     sets = (
-                        [<h4>{gettext("Sets")}:</h4>,
+                        [<h4>{gettext("Sets")}</h4>,
                         set_options]
                     );
                 }
@@ -61,35 +61,35 @@ export class EditableComponent extends Component{
             
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
-                    <h3>{gettext("Edit ")+type+":"}</h3>
+                    <h3>{gettext("Edit ")+type}</h3>
                     {["node","week","column","workflow","outcome","nodelink"].indexOf(type)>=0 &&
                         <div>
-                            <h4>{gettext("Title")}:</h4>
-                            <textarea disabled={override || read_only} autocomplete="off" id="title-editor" type="text" value={title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
+                            <h4>{gettext("Title")}</h4>
+                            <textarea resize="none" disabled={override || read_only} autocomplete="off" id="title-editor" type="text" value={title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
                         </div>
                     }
                     {["node","workflow","outcome"].indexOf(type)>=0 &&
                         <div>
-                            <h4>{gettext("Description")}:</h4>
+                            <h4>{gettext("Description")}</h4>
                             <QuillDiv  disabled={override || read_only} text={description} maxlength="500" textChangeFunction={this.valueChanged.bind(this,"description")} placholder="Insert description here"/>
                         </div>
                     }
                     {type=="column" &&
                         <div>
-                            <h4>{gettext("Custom Icon")}:</h4>
+                            <h4>{gettext("Custom Icon")}</h4>
                             <p>Browse options <a href="https://fonts.google.com/icons?icon.style=Rounded&icon.platform=android&icon.category=Activities">here</a>.</p>
                             <input disabled={override || read_only} autocomplete="off" id="column-icon-editor" type="text" value={data.icon} maxlength={50} onChange={this.inputChanged.bind(this,"icon")}/>
                         </div>
                     }
                     {((type=="outcome" && data.depth==0)||(type=="workflow" && data.type=="course")) &&
                         <div>
-                            <h4>{gettext("Code (Optional)")}:</h4>
+                            <h4>{gettext("Code (Optional)")}</h4>
                             <input autocomplete="off" disabled={read_only} id="code-editor" type="text" value={data.code} maxlength="50" onChange={this.inputChanged.bind(this,"code")}/>
                         </div>
                     }
                     {type=="node" && data.node_type<2 &&
                         <div>
-                            <h4>{gettext("Context")}:</h4>
+                            <h4>{gettext("Context")}</h4>
                             <select  id="context-editor" disabled={read_only} value={data.context_classification} onChange={this.inputChanged.bind(this,"context_classification")}>
                                 {this.props.renderer.context_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -99,7 +99,7 @@ export class EditableComponent extends Component{
                     }
                     {type=="node" && data.node_type<2 &&
                         <div>
-                            <h4>{gettext("Task")}:</h4>
+                            <h4>{gettext("Task")}</h4>
                             <select id="task-editor" disabled={read_only} value={data.task_classification} onChange={this.inputChanged.bind(this,"task_classification")}>
                                 {this.props.renderer.task_choices.filter(choice=>(Math.floor(choice.type/100)==data.node_type||choice.type==0)).map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -109,7 +109,7 @@ export class EditableComponent extends Component{
                     }
                     {(type=="node" || type=="workflow") &&
                         <div>
-                            <h4>{gettext("Time")}:</h4>
+                            <h4>{gettext("Time")}</h4>
                             <div>
                                 <input disabled={override || read_only} autocomplete="off" id="time-editor" class="half-width" type="text" value={data.time_required} maxlength="30" onChange={this.inputChanged.bind(this,"time_required")}/>
                                 <select disabled={override || read_only} id="time-units-editor" class="half-width" value={data.time_units} onChange={this.inputChanged.bind(this,"time_units")}>
@@ -122,7 +122,7 @@ export class EditableComponent extends Component{
                     }
                     {(type=="column") &&
                         <div>
-                            <h4>{gettext("Colour")}:</h4>
+                            <h4>{gettext("Colour")}</h4>
                             <div>
                                 <input disabled={read_only} autocomplete="off" id="colour-editor" class="half-width" type="color" value={"#"+data.colour?.toString(16)} maxlength="30" onChange={this.inputChanged.bind(this,"colour")}/>
                             </div>
@@ -130,7 +130,7 @@ export class EditableComponent extends Component{
                     }
                     {((type=="workflow" && data.type=="course")||(type=="node" && data.node_type==2)) &&
                         <div>
-                            <h4>{gettext("Ponderation")}:</h4>
+                            <h4>{gettext("Ponderation")}</h4>
                             <input disabled={override || read_only} autocomplete="off" class="half-width" id="ponderation-theory" type="number" value={data.ponderation_theory} onChange={this.inputChanged.bind(this,"ponderation_theory")}/>
                             <div class="half-width">{gettext("hrs. Theory")}</div>
                             <input disabled={override || read_only} autocomplete="off" class="half-width" id="ponderation-practical" type="number" value={data.ponderation_practical} onChange={this.inputChanged.bind(this,"ponderation_practical")}/>
@@ -145,9 +145,9 @@ export class EditableComponent extends Component{
                     }
                     {type=="node" && data.node_type!=0 &&
                         <div>
-                            <h4>{gettext("Linked Workflow")}:</h4>
+                            <h4>{gettext("Linked Workflow")}</h4>
                             <div>{data.linked_workflow && data.linked_workflow_data.title}</div>
-                            <button  disabled={read_only} id="linked-workflow-editor" onClick={()=>{
+                            <button  class="primary-button" disabled={read_only} id="linked-workflow-editor" onClick={()=>{
                                 props.renderer.tiny_loader.startLoad();
                                 getLinkedWorkflowMenu(
                                     data,
@@ -167,14 +167,14 @@ export class EditableComponent extends Component{
                     }
                     {type=="node" && data.node_type!=2 &&
                         <div>
-                            <h4>{gettext("Other")}:</h4>
+                            <h4>{gettext("Other")}</h4>
                             <input disabled={read_only} type="checkbox" name="has_autolink" checked={data.has_autolink} onChange={this.checkboxChanged.bind(this,"has_autolink")}/>
                             <label for="has_autolink">{gettext("Draw arrow to next node")}</label>
                         </div>
                     }
                     {type=="nodelink" &&
                         <div>
-                            <h4>{gettext("Style")}:</h4>
+                            <h4>{gettext("Style")}</h4>
                             <div>
                                 <input disabled={read_only} type="checkbox" name="dashed" checked={data.dashed} onChange={this.checkboxChanged.bind(this,"dashed")}/>
                                 <label for="dashed">{gettext("Dashed Line")}</label>
@@ -189,7 +189,7 @@ export class EditableComponent extends Component{
                     }
                     {type=="workflow" &&
                         <div>
-                            <h4>{gettext("Settings")}:</h4>
+                            <h4>{gettext("Settings")}</h4>
                             <div>
                                 <label for="outcomes_type">{gettext("Outcomes Style")}</label>
                                 <select disabled={read_only} name="outcomes_type" value={data.outcomes_type} onChange={this.inputChanged.bind(this,"outcomes_type")}>
@@ -212,7 +212,7 @@ export class EditableComponent extends Component{
                     }
                     {type=="week" && data.week_type <2 &&
                         <div>
-                            <h4>{gettext("Strategy")}:</h4>
+                            <h4>{gettext("Strategy")}</h4>
                             <select disabled={read_only} value={data.strategy_classification} onChange={this.inputChanged.bind(this,"strategy_classification")}>
                                 {this.props.renderer.strategy_classification_choices.map((choice)=>
                                     <option value={choice.type}>{choice.name}</option>
@@ -244,11 +244,11 @@ export class EditableComponent extends Component{
     getDeleteForSidebar(read_only,no_delete,type,data){
         if(!read_only && !no_delete && (type !="outcome" || data.depth>0)){
             if(type == "workflow" && data.deleted) return[
-                <h4>{gettext("Restore")}:</h4>,
+                <h4>{gettext("Restore")}</h4>,
                 this.addRestoreSelf(data)
             ]
             else return[
-                <h4>{gettext("Delete")}:</h4>,
+                <h4>{gettext("Delete")}</h4>,
                 this.addDeleteSelf(data)
             ]
         }

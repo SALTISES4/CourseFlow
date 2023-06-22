@@ -790,7 +790,6 @@ ol.children-block{
 }
 
 .outcome-bar-outcome-block .outcome-outcome{
-    border:3px outset #04ba74;
     margin-bottom:2px;
 }
 
@@ -799,8 +798,10 @@ ol.children-block{
     border:0px;
 }
 
-.outcome-bar-outcome-block > .outcome, .outcome-bar-outcome-block > .parent-outcome-node{
-    border:3px outset #04ba74;
+.outcome-bar-outcome-block > div > .outcome, .outcome-bar-outcome-block .parent-outcome-node > .outcome{
+    border: 1px solid #04ba74;
+    border-radius: 5px;
+    margin-bottom: 2px;
 }
 
 .outcome-bar-outcome-block .outcome-drop{
@@ -1791,7 +1792,7 @@ circle.mouseover{
 
 .right-panel-container{
     float:right;
-    box-shadow: -1px 0px 3px -1px;
+    box-shadow: -1px 0px 1px -1px;
     background:white;
     text-align:left;
     font-family:sans-serif;
@@ -1813,43 +1814,52 @@ circle.mouseover{
 .side-bar .ui-tabs-nav{
     margin:5px -2px 5px 5px; 
     padding:0px;
-    left:-48px;
+    left:-40px;
+    top: 36px;
     position:absolute;
 }
 
 .side-bar .ui-tabs-tab{
     text-align:center;
     display:block;
-    height:38px;
     background:white;
     border-radius:3px;
-    border:1px solid #E9EBF2;
+    margin: 1px;
+    padding: 6px;
+    box-sizing: border-box;
+    box-shadow: -1px 1px 2px -1px black;
+    color: #04ba74;
 }
 
 .side-bar .ui-tabs-tab.ui-state-disabled{
     background-color:#DDDDDD;
     cursor:default;
+    color: grey;
+}
+
+
+.side-bar .ui-tabs-tab a span{
+    font-size: 20px;
+    margin-top: 2px;
+    margin-left: 1px;
 }
 
 .side-bar .ui-tabs-tab a{
     margin-right:4px;
     display:block;
     text-decoration:none;
-    color:#E9EBF2;
-    filter:grayscale(100%) brightness(1.5);
     box-sizing:border-box;
-    height:100%;
-}
-
-.side-bar .ui-tabs-tab a img{
-    width:32px;
-    padding:4px;
+    height:24px;
+    color: inherit;
 }
 
 
-.ui-tabs-tab.ui-tabs-active a{
-    filter:none;
+.side-bar .ui-tabs-tab.ui-tabs-active{
+    color: white;
+    background: #04ba74;
 }
+
+
 
 .side-bar select, .side-bar input[type=text], .side-bar textarea, .side-bar input[type=number]{
     width:100%;
@@ -1995,39 +2005,9 @@ circle.mouseover{
 }
 
 .node-bar-week{
-    padding: 10px;
-    border-radius: 5px;
+    padding: 2px;
     font-weight: 600;
     margin-bottom: 2px;
-}
-
-.node-bar-week:nth-child(2n){
-    background: #f5f5f5;
-}
-
-.node-bar-week:nth-child(2n+1){
-    background: #e0e0e0e0;
-}
-
-.node-bar-week > div{
-    display: flex;
-    justify-content: space-between;
-}
-
-.node-bar-week img{
-    width: 16px;
-}
-
-#expand-collapse-all{
-    display: flex;
-    justify-content: space-between;
-    font-weight: 600;
-    padding: 10px;
-}
-
-#expand-collapse-all img{
-    width: 16px;
-    margin-left: 4px;
 }
 
 .strategy-bar-strategy{

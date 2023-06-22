@@ -43,12 +43,11 @@ h5{
     color:#04ba74;
 }
 
-h4.drag-and-drop::after{
+h4.drag-and-drop::after, h3.drag-and-drop::after{
     content:"\A Drag and drop to add";
     font-size:10px;
     color:grey;
     white-space:pre;
-    
 }
 
 body.printing{
@@ -343,12 +342,13 @@ button:hover{
     vertical-align: middle;
     padding-left:6px;
     padding-right:6px;
+    position: relative;
 }
 
 #visible-icons{
     display: flex;
     color: #04BA74;
-    gap: 8px;
+    gap: 20px;
 }
 
 
@@ -580,7 +580,7 @@ button:hover{
     flex-direction:column;
     position: relative;
     z-index: 1;
-    box-shadow: 0px 0px 10px grey;
+    box-shadow: 0px 0px 10px #e6e6e6;
 }
 
 .left-panel.collapsed{
@@ -603,7 +603,7 @@ button:hover{
     border-radius: 50%;
     position: absolute;
     right: -10px;
-    top: 100px;
+    top: 6px;
     z-index: 10;
 }
 
@@ -821,6 +821,8 @@ button:hover{
     max-height: 400px;
     overflow-y: auto;
     overflow-x: hidden;
+    width: max-content;
+    max-width: 300px;
 }
 
 .create-dropdown .flex-middle {
@@ -850,15 +852,19 @@ button:hover{
     z-index: 5;
 }
 
+.create-dropdown.position-right{
+    right: 0px;
+}
+
 #account-options, #create-options{
     position: relative;
 }
 
-#account-links, #create-links {
+/*#account-links, #create-links {
     right: 0px;
     width: max-content;
     max-width: 250px;
-}
+}*/
 
 .create-dropdown > a, .create-dropdown > div{
     display:block;
@@ -1068,13 +1074,13 @@ button:hover{
 }
 
 .project-menu{
-    height:100%;
+    min-height:100%;
     width: fit-content;
     background: white;
     padding: 50px;
     box-sizing: border-box;
     width: 100%;
-    display: flex;
+    /*display: flex;*/
     flex-direction: column;
 }
 

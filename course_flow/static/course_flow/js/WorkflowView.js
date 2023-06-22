@@ -26,7 +26,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
     constructor(props){
         super(props);
         this.objectType="workflow";
-        this.allowed_tabs=[0,1,2,3];
+        this.allowed_tabs=[0,1,2,3,4];
     }
 
     render(){
@@ -47,6 +47,10 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 {reactDom.createPortal(
                     this.getShare(),
                     $("#visible-icons")[0]
+                )}
+                {reactDom.createPortal(
+                    [this.getJump(),this.getExpand()],
+                    $("#viewbar")[0]
                 )}
                 {this.addEditable(data)}
 
@@ -75,6 +79,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
     componentDidMount(){
         this.getUserData();
         this.updateTabs();
+        makeDropdown("#jump-to");
+        makeDropdown("#expand-collapse-all");
     }
 
     componentDidUpdate(prev_props){
@@ -84,7 +90,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         //If the view type has changed, enable only appropriate tabs, and change the selection to none
         this.props.renderer.selection_manager.changeSelection(null,null);
         let disabled_tabs=[];
-        for(let i=0;i<4;i++)if(this.allowed_tabs.indexOf(i)<0)disabled_tabs.push(i);
+        for(let i=0;i<=4;i++)if(this.allowed_tabs.indexOf(i)<0)disabled_tabs.push(i);
         $("#sidebar").tabs({disabled:false});
         let current_tab = $("#sidebar").tabs("option","active");
         if(this.allowed_tabs.indexOf(current_tab)<0){
@@ -393,26 +399,26 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
             workflow_content=(
                 <WorkflowTableView data={data} renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[4];
+            this.allowed_tabs=[3];
         }
         else if(renderer.view_type=="outcomeedit"){
             workflow_content=(
                 <OutcomeEditView renderer={renderer}/>
             );
-            if(data.type=="program")this.allowed_tabs=[4];
-            else this.allowed_tabs=[2,4];
+            if(data.type=="program")this.allowed_tabs=[3];
+            else this.allowed_tabs=[2,3];
         }
         else if(renderer.view_type=="alignmentanalysis"){
             workflow_content=(
                 <AlignmentView renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[4];
+            this.allowed_tabs=[3];
         }
         else if(renderer.view_type=="grid"){
             workflow_content=(
                 <GridView renderer={renderer} view_type={renderer.view_type}/>
             );
-            this.allowed_tabs=[4];
+            this.allowed_tabs=[3];
         }
         else{
             workflow_content = (
@@ -462,10 +468,61 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
 
     }
 
+    getJump(){
+        if(this.props.renderer.view_type!="workflowview")return null;
+        let data = this.props.data;
+        let nodebarweekworkflows = data.weekworkflow_set.map((weekworkflow)=>
+            <NodeBarWeekWorkflow key={weekworkflow} order={data.weekworkflow_set} renderer={this.props.renderer} objectID={weekworkflow}/>
+        );
+        return (
+            <div id="jump-to">
+                <div class="hover-shade flex-middle">
+                    <span class="green material-symbols-rounded">keyboard_double_arrow_down</span>
+                    <div>{gettext("Jump to")}</div>
+                </div>
+                <div class="create-dropdown">
+                    {nodebarweekworkflows}
+                </div>
+            </div>
+        )
+    }
+
+    getExpand(){
+        return(
+            <div id="expand-collapse-all">
+                <div class="hover-shade flex-middle">
+                    <span class="green material-symbols-rounded">zoom_out_map</span>
+                    <div>{gettext("Expand/Collapse")}</div>
+                </div>
+                <div class="create-dropdown">
+                    <div class="flex-middle hover-shade" onClick={this.expandAll.bind(this,"week")}><span class="green material-symbols-rounded">zoom_out_map</span><div>{gettext("Expand all weeks")}</div></div>
+                    <div class="flex-middle hover-shade" onClick={this.collapseAll.bind(this,"week")}><span class="green material-symbols-rounded">zoom_in_map</span><div>{gettext("Collapse all weeks")}</div></div>
+                    <hr/>
+                    <div class="flex-middle hover-shade" onClick={this.expandAll.bind(this,"node")}><span class="green material-symbols-rounded">zoom_out_map</span><div>{gettext("Expand all nodes")}</div></div>
+                    <div class="flex-middle hover-shade" onClick={this.collapseAll.bind(this,"node")}><span class="green material-symbols-rounded">zoom_in_map</span><div>{gettext("Collapse all nodes")}</div></div>
+                    <hr/>
+                    <div class="flex-middle hover-shade" onClick={this.expandAll.bind(this,"outcome")}><span class="green material-symbols-rounded">zoom_out_map</span><div>{gettext("Expand all outcomes")}</div></div>
+                    <div class="flex-middle hover-shade" onClick={this.collapseAll.bind(this,"outcome")}><span class="green material-symbols-rounded">zoom_in_map</span><div>{gettext("Collapse all outcomes")}</div></div>
+                </div>
+            </div>
+        );
+    }
+
+    expandAll(type){
+        this.props[type].forEach(week=>toggleDrop(week.id,type,true,this.props.dispatch));
+    }
+
+    collapseAll(type){
+        this.props[type].forEach(week=>toggleDrop(week.id,type,false,this.props.dispatch));
+    }
+
 }
 const mapWorkflowStateToProps = state=>({
     data:state.workflow,
     object_sets:state.objectset,
+    week:state.week,
+    node:state.node,
+    outcome:state.outcome,
 })
 const mapWorkflowDispatchToProps = {};
 export const WorkflowBaseView = connect(
@@ -925,25 +982,10 @@ class ViewBarUnconnected extends React.Component{
             </div>
         );
 
-        var nodebarweekworkflows;
-        if(this.props.renderer.view_type=="workflowview")nodebarweekworkflows= [
-            <h4>{gettext("Jump To")}</h4>,
-            <div class="node-bar-week-block">
-                {data.weekworkflow_set.map((weekworkflow)=>
-                    <NodeBarWeekWorkflow key={weekworkflow} order={data.weekworkflow_set} renderer={this.props.renderer} objectID={weekworkflow}/>
-                )}
-            </div>,
-            <hr/>
-        ];
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
-                {nodebarweekworkflows}
-                <div id="expand-collapse-all">
-                    <div>{gettext("Expand/Collapse All")}</div>
-                    <div>
-                        <img class="hover-shade" src={iconpath+"plus.svg"} onClick={this.expandAll.bind(this)}/><img class="hover-shade" src={iconpath+"minus.svg"} onClick={this.collapseAll.bind(this)}/>
-                    </div>
-                </div>
+                <h3>{gettext("View options")}</h3>
+                <hr/>
                 {sort_block}
                 <h4>{gettext("Object Sets")}</h4>
                 {sets}
@@ -953,14 +995,6 @@ class ViewBarUnconnected extends React.Component{
     
     toggleHidden(id,hidden){
         this.props.dispatch(toggleObjectSet(id,hidden));
-    }
-
-    expandAll(){
-        this.props.weeks.forEach(week=>toggleDrop(week.id,"week",true,this.props.dispatch));
-    }
-
-    collapseAll(){
-        this.props.weeks.forEach(week=>toggleDrop(week.id,"week",false,this.props.dispatch));
     }
 
     changeSort(evt){
@@ -973,7 +1007,6 @@ class ViewBarUnconnected extends React.Component{
 export const ViewBar =  connect(
     (state)=>({
         object_sets:state.objectset,
-        weeks:state.week,
     }),
     null
 )(ViewBarUnconnected)
@@ -1011,7 +1044,7 @@ class NodeBarUnconnected extends React.Component{
         
         let nodebar_nodes;
         if(!this.props.renderer.read_only)nodebar_nodes= [
-            <h4 class="drag-and-drop">{gettext("Nodes")}</h4>,
+            <h4>{gettext("Nodes")}</h4>,
             <div class="node-bar-column-block">
                 {nodebarcolumnworkflows}
             </div>,
@@ -1027,14 +1060,16 @@ class NodeBarUnconnected extends React.Component{
         
         return reactDom.createPortal(
             <div id="node-bar-workflow" class="right-panel-inner">
+                <h3 class="drag-and-drop">{gettext("Add to workflow")}</h3>
+                <hr/>
                 {nodebar_nodes}
                 <hr/>
-                <h4 class="drag-and-drop">{gettext("My Strategies")}</h4>
+                <h4>{gettext("My strategies")}</h4>
                 <div class="strategy-bar-strategy-block">
                     {strategies}
                 </div>
                 {(saltise_strategies.length>0) &&
-                    [<h4 class="drag-and-drop">{gettext("SALTISE Strategies")}</h4>,
+                    [<h4>{gettext("SALTISE strategies")}</h4>,
                     <div class="strategy-bar-strategy-block">
                         {saltise_strategies}
                     </div>
@@ -1087,23 +1122,29 @@ class RestoreBarUnconnected extends React.Component{
         
         return reactDom.createPortal(
             <div id="restore-bar-workflow" class="right-panel-inner">
-                <h4>{gettext("Nodes")}:</h4>
+                <h3>{gettext("Restore items")}</h3>
+                <hr/>
+                <h4>{gettext("Nodes")}</h4>
                 <div class="node-bar-column-block">
                     {nodes}
                 </div>
-                <h4>{gettext("Weeks")}:</h4>
+                <hr/>
+                <h4>{gettext("Weeks")}</h4>
                 <div class="node-bar-column-block">
                     {weeks}
                 </div>
-                <h4>{gettext("Columns")}:</h4>
+                <hr/>
+                <h4>{gettext("Columns")}</h4>
                 <div class="node-bar-column-block">
                     {columns}
                 </div>
-                <h4>{gettext("Outcomes")}:</h4>
+                <hr/>
+                <h4>{gettext("Outcomes")}</h4>
                 <div class="node-bar-column-block">
                     {outcomes}
                 </div>
-                <h4>{gettext("Node Links")}:</h4>
+                <hr/>
+                <h4>{gettext("Node Links")}</h4>
                 <div class="node-bar-column-block">
                     {nodelinks}
                 </div>

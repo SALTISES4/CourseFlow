@@ -312,12 +312,12 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
     toggleCSS(is_toggled,type){
         if(is_toggled){
             $(".outcome-"+this.props.data.id).addClass("outcome-"+type);
-            $(".outcome-"+this.props.data.id).parents(".node").addClass("outcome-"+type);
-            $(".outcome-"+this.props.data.id).parents(".workflow-details .outcome").addClass("outcome-"+type);
+            if(this.props.nodes.length)$(this.props.nodes.map(node=>".node#"+node).join(", ")).addClass("outcome-"+type);
+            if(this.props.horizontaloutcomes.length)$(this.props.horizontaloutcomes.map(oc=>".outcome-"+oc).join(", ")).addClass("outcome-"+type);
         }else{
             $(".outcome-"+this.props.data.id).removeClass("outcome-"+type);
-            $(".outcome-"+this.props.data.id).parents(".node").removeClass("outcome-"+type);
-            $(".outcome-"+this.props.data.id).parents(".workflow-details .outcome").removeClass("outcome-"+type);
+            if(this.props.nodes.length)$(this.props.nodes.map(node=>".node#"+node).join(", ")).removeClass("outcome-"+type);
+            if(this.props.horizontaloutcomes.length)$(this.props.horizontaloutcomes.map(oc=>".outcome-"+oc).join(", ")).removeClass("outcome-"+type);
         }
     }
     
@@ -339,8 +339,15 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
     }
 
 }
+const mapOutcomeBarOutcomeStateToProps = (state,own_props)=>(
+    {
+        ...getOutcomeByID(state,own_props.objectID),
+        nodes:state.outcomenode.filter(outcomenode=>outcomenode.outcome==own_props.objectID).map((outcomenode)=>outcomenode.node),
+        horizontaloutcomes:state.outcomehorizontallink.filter(ochl=>ochl.parent_outcome==own_props.objectID).map((ochl)=>ochl.outcome)
+    }
+)
 export const OutcomeBarOutcomeView = connect(
-    mapOutcomeStateToProps,
+    mapOutcomeBarOutcomeStateToProps,
     null
 )(OutcomeBarOutcomeViewUnconnected)
 

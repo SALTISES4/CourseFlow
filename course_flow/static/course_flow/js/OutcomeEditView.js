@@ -198,11 +198,15 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected{
     
     
 }
-const mapParentOutcomeStateToProps = (state,own_props)=>(
-    getOutcomeByID(state,own_props.objectID)
+const mapOutcomeBarOutcomeStateToProps = (state,own_props)=>(
+    {
+        ...getOutcomeByID(state,own_props.objectID),
+        nodes:state.outcomenode.filter(outcomenode=>outcomenode.outcome==own_props.objectID).map((outcomenode)=>outcomenode.node),
+        horizontaloutcomes:state.outcomehorizontallink.filter(ochl=>ochl.parent_outcome==own_props.objectID).map((ochl)=>ochl.outcome)
+    }
 )
 export const ParentOutcomeView = connect(
-    mapParentOutcomeStateToProps,
+    mapOutcomeBarOutcomeStateToProps,
     null
 )(ParentOutcomeViewUnconnected)
 
@@ -232,13 +236,15 @@ export const ParentOutcomeOutcomeView = connect(
 class OutcomeBarUnconnected extends React.Component{
     render(){
         let data = this.props.data;
-        var outcomebaroutcomes = data.map((category)=>
+        var outcomebaroutcomes = data.map((category)=>[
+            <hr/>,
             <div>
-                <h4 class="drag-and-drop">{category.objectset.title+":"}</h4>
+                <h4>{category.objectset.title}</h4>
                 {category.outcomes.map(outcome=>
                     <OutcomeBarOutcomeView key={outcome.id} objectID={outcome.id} renderer={this.props.renderer}/>
                 )}
             </div>
+            ]
         );
         
         if(outcomebaroutcomes.length==0){
@@ -247,12 +253,14 @@ class OutcomeBarUnconnected extends React.Component{
         let edittext=Constants.capWords(gettext("Edit")+" "+gettext(this.props.workflow_type+" outcomes"));
         return reactDom.createPortal(
             <div id="outcome-bar-workflow" class="right-panel-inner">
+                <h3 class="drag-and-drop">{gettext("Outcomes")}</h3>
                 <div class="outcome-bar-outcome-block">
                     {outcomebaroutcomes}
                 </div>
                 {!this.props.renderer.read_only &&
-                    <button class="menu-create" id="edit-outcomes-button" onClick={this.editOutcomesClick.bind(this)}>{edittext}</button>
+                    <button class="primary-button" id="edit-outcomes-button" onClick={this.editOutcomesClick.bind(this)}>{edittext}</button>
                 }
+                <hr/>
             </div>
         ,$("#outcome-bar")[0]);
     }
@@ -275,15 +283,16 @@ class ParentOutcomeBarUnconnected extends React.Component{
     render(){
         let data = this.props.data;
         var outcomebaroutcomes = data.map((category)=>
+            [<hr/>,
             <div>
-                <h4 class="drag-and-drop">{category.objectset.title+":"}</h4>
+                <h4>{category.objectset.title}</h4>
                 {category.outcomes.map(outcome=>
                     <div class="parent-outcome-node">
                         {Constants.getCompletionImg(outcome.degree,1)}
                         <ParentOutcomeView key={outcome.id} objectID={outcome.id} renderer={this.props.renderer}/>
                     </div>
                 )}
-            </div>
+            </div>]
         );
         
         
@@ -293,6 +302,7 @@ class ParentOutcomeBarUnconnected extends React.Component{
         
         return reactDom.createPortal(
             <div id="outcome-bar-workflow" class="right-panel-inner">
+                <h3 class="drag-and-drop">{gettext("Outcomes from Parent Workflow")}</h3>
                 <div class="outcome-bar-outcome-block">
                     {outcomebaroutcomes}
                 </div>

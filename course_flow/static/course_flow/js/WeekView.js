@@ -308,7 +308,7 @@ export class NodeBarWeekViewUnconnected extends React.Component{
         if(data.is_dropped)src=iconpath+"minus.svg";
         return (
             <div class="node-bar-week hover-shade" onClick={this.jumpTo.bind(this)}>
-                <div><TitleText text={data.title} defaultText={default_text}/><img onClick={this.toggleDrop.bind(this)} src={src}/></div>
+                <TitleText text={data.title} defaultText={default_text}/>
             </div>
         );
     }
@@ -325,10 +325,6 @@ export class NodeBarWeekViewUnconnected extends React.Component{
         }
     }
 
-    toggleDrop(evt){
-        // evt.stopPropagation();
-        toggleDrop(this.props.objectID,this.objectType,!this.props.data.is_dropped,this.props.dispatch)
-    }
 }
 export const NodeBarWeekView = connect(
     mapWeekStateToProps,

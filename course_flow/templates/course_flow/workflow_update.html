@@ -16,48 +16,41 @@
   <ul>
     <li class="hover-shade">
       <a href="#edit-menu"
-        ><img title='{% trans "Edit" %}'
-          src="{% static 'course_flow/img/images_svg/edit_pencil_blue.svg' %}"
-      /></a>
+        ><span class="material-symbols-rounded filled" title='{% trans "Edit" %}'
+      >edit</span></a>
     </li>
     <li class="hover-shade">
       <a href="#node-bar"
-        ><img title='{% trans "Nodes" %}' src="{% static 'course_flow/img/images_svg/add_new_blue.svg' %}"
-      /></a>
+        ><span class="material-symbols-rounded filled" title='{% trans "Add" %}'
+      >add_circle</span></a>
     </li>
     {% if is_strategy == "false" %}
     <li class="hover-shade">
       <a href="#outcome-bar"
-        ><img title='{% trans "Outcomes" %}' src="{% static 'course_flow/img/images_svg/outcomes_blue.svg' %}"
-      /></a>
-    </li>
-    <li class="hover-shade">
-      <a href="#strategy-bar"
-        ><img title='{% trans "Strategies" %}' src="{% static 'course_flow/img/images_svg/strategy_blue.svg' %}"
-      /></a>
+        ><span class="material-symbols-rounded filled" title='{% trans "Outcomes" %}'
+      >spoke</span></a>
     </li>
     <li class="hover-shade">
       <a href="#view-bar"
-        ><img title='{% trans "View Options" %}' src="{% static 'course_flow/img/images_svg/view.svg' %}"
-      /></a>
-    </li>
-    <li class="hover-shade">
-      <a href="#restore-bar"
-        ><img title='{% trans "Restore Deleted" %}' src="{% static 'course_flow/img/images_svg/restore_blue.svg' %}"
-      /></a>
+        ><span class="material-symbols-rounded filled" title='{% trans "View Options" %}'
+      >remove_red_eye</span></a>
     </li>
     {% endif %}
+    <li class="hover-shade">
+      <a href="#restore-bar"
+        ><span class="material-symbols-rounded filled" title='{% trans "Restore Deleted" %}'
+      >restore_from_trash</span></a>
+    </li>
   </ul>
     <div id="edit-menu" class="right-panel-container"></div>
     <div id="node-bar" class="right-panel-container"></div>
     {% if is_strategy == "false" %}
         <div id="outcome-bar" class="right-panel-container"></div>
         <div id="view-bar" class="right-panel-container"></div>
-        <div id="strategy-bar" class="right-panel-container"></div>
     {% endif %}
     <div id="restore-bar" class="right-panel-container"></div>
-  <div class="window-close-button" id="side-bar-close-button">
-    <img src="{% static 'course_flow/img/images_svg/close.svg' %}" />
+    <div class="window-close-button" id="side-bar-close-button">
+     <span class="material-symbols-rounded green">arrow_forward</span>
   </div>
 </div>
 
