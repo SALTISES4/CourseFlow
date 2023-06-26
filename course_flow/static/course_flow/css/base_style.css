@@ -351,7 +351,9 @@ button:hover{
     gap: 20px;
 }
 
-
+#overflow-options.hidden{
+    display: none;
+}
 
 .users-box{
     position:relative;
@@ -676,7 +678,7 @@ button:hover{
 }
 
 .panel-favourite{
-    padding:2px;
+    padding:3px;
     font-size:13px;
     display:block;
     margin-left:22px;
@@ -1080,8 +1082,6 @@ button:hover{
     padding: 50px;
     box-sizing: border-box;
     width: 100%;
-    /*display: flex;*/
-    flex-direction: column;
 }
 
 .project-menu .menu-grid{
@@ -1221,7 +1221,7 @@ button:hover{
 }
 
 .collapsed-text-show-more{
-    text-decoration: underline;
+    text-decoration: underline !important;
     cursor: pointer;
 }
 

@@ -82,13 +82,17 @@ export class ShareMenu extends React.Component{
             let private_class="big-button hover-shade make-private";
             if(published)public_class+=" active";
             else private_class+=" active";
-            let public_disabled = !(data.disciplines.length>0 && data.title && data.title.length>0);
+            let public_disabled = !(data.title && data.title.length > 0);
+            console.log(data.title);
+            console.log(public_disabled);
+            if(data.type=="project")public_disabled &= (data.disciplines.length==0);
+            console.log(public_disabled);
             if(!public_disabled && !published)public_class+=" hover-shade";
             if(public_disabled)public_class+=" disabled";
             let public_text=gettext("Any CourseFlow teacher can view");
             let disabled_indicator;
             if(public_disabled)disabled_indicator=(
-                <div title={gettext("A title and at least one discipline is required for publishing.")} class="window-close-button">
+                <div title={gettext("A title and at least one discipline (for projects) is required for publishing.")} class="window-close-button">
                     <span class = "material-symbols-rounded red filled">error</span>
                 </div>
             )

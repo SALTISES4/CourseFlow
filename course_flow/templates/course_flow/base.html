@@ -184,10 +184,12 @@
           <div>{% trans 'Explore' %}</div>
         </a>
         {% endif %}
+        {% if not user.is_anonymous %}
         <a id="panel-my-live-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-live-projects' %}">
           <span class="material-symbols-rounded">calendar_month</span>
           <div>{% trans 'My Classrooms' %}</div>
         </a>
+        {% endif %}
 
         {% if user|has_group:"Teacher" %}
         <hr>
@@ -209,7 +211,7 @@
                   {{ favourite.content_object | safe }}
                 </a>
               {% endfor %}
-            <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
+            <a class="panel-favourite hover-shade collapsed-text-show-more" href="{% url 'course_flow:my-favourites' %}">{% trans 'See all' %}</a>
           {% endif %}
         </div>
         {% if user|has_group:"Teacher" %}

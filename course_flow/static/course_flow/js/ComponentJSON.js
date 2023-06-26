@@ -29,7 +29,7 @@ export class EditableComponent extends Component{
         let read_only = this.props.renderer.read_only;
         if(this.state.selected){
             var type=Constants.object_dictionary[this.objectType];
-            let title_length="50";
+            let title_length="100";
             if(type=="outcome")title_length="500";
             var props = this.props;
             let override = false;
@@ -66,6 +66,9 @@ export class EditableComponent extends Component{
                         <div>
                             <h4>{gettext("Title")}</h4>
                             <textarea resize="none" disabled={override || read_only} autocomplete="off" id="title-editor" type="text" value={title} maxlength={title_length} onChange={this.inputChanged.bind(this,"title")}/>
+                              <div class="character-length">
+                                {title.length}/{title_length} {gettext("characters")}
+                              </div>
                         </div>
                     }
                     {["node","workflow","outcome"].indexOf(type)>=0 &&

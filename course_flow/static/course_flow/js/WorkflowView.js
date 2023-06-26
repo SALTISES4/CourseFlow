@@ -231,6 +231,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         overflow_links.push(this.getExportButton());
         overflow_links.push(this.getCopyButton());
         overflow_links.push(this.getImportButton());
+        if(overflow_links.filter(x=>x!=null).length==0)$("#overflow-options").addClass("hidden")
         return overflow_links;
     }
 
@@ -844,10 +845,11 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting{
             <WeekWorkflowView condensed={data.condensed} key={weekworkflow} objectID={weekworkflow} parentID={data.id} renderer={renderer}/>
         );
         
-        
+        let css_class="workflow-details";
+        if(data.condensed)css_class+=" condensed"
         
         return(
-            <div class="workflow-details">
+            <div class={css_class}>
                 <WorkflowLegend renderer={renderer}/>
                 <div class="column-row" id={data.id+"-column-block"}>
                     {columnworkflows}

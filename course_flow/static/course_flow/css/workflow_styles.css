@@ -351,6 +351,13 @@ button, input[type="submit"]{
     z-index:2;
     font-size:16px;
     border:2px solid white;
+    display: flex;
+}
+
+.condensed .column-row{
+    gap: 60px;
+    padding-left: 50px;
+    padding-right: 50px;
 }
 
 .node-week:first-child {
@@ -379,14 +386,15 @@ button, input[type="submit"]{
 }
 
 .node-block.term{
-    width:160px;
+    /*width:160px;*/
+    width: 220px;
     display:inline-block;
     vertical-align: top;
 }
 
 .term .node{
     left:10px !important;
-    width:120px;
+    width:180px;
 }
 
 
@@ -1892,6 +1900,7 @@ circle.mouseover{
     padding-bottom:6px;
 }
 
+
 .side-bar .quill-div{
     min-height:140px;
     position:unset;
@@ -1904,6 +1913,7 @@ circle.mouseover{
 .side-bar .character-length{
     font-size:10px;
     color:grey;
+    float: right;
 }
 
 .side-bar .character-length.overflow{
