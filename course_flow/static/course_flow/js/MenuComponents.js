@@ -835,7 +835,6 @@ export class ProjectEditMenu extends React.Component{
     }
 
     removeDiscipline(id){
-        console.log("removed"+id)
         this.setState(
             (state,props)=>{
                 return {disciplines:state.disciplines.filter(value=>value!=id),changed:true};
@@ -881,7 +880,7 @@ export class ProjectEditMenu extends React.Component{
         var actions = [];
         actions.push(
             <button class="secondary-button" onClick={closeMessageBox}>
-                cancel
+                {gettext("Cancel")}
             </button>
         );
         actions.push(
@@ -891,7 +890,7 @@ export class ProjectEditMenu extends React.Component{
                 this.props.actionFunction({...this.state,changed:false});
                 closeMessageBox();
             }}>
-                Save Changes
+                {gettext("Save Changes")}
             </button>
         );
         return actions;
@@ -1094,6 +1093,10 @@ export class ExploreMenu extends React.Component{
 }
 
 export function renderMessageBox(data,type,updateFunction){
+    console.log("RENDERING message box");
+    console.log(data);
+    console.log(type);
+    console.log(updateFunction);
     reactDom.render(
         <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
         $("#popup-container")[0]
@@ -1103,6 +1106,7 @@ export function renderMessageBox(data,type,updateFunction){
 
 
 export function closeMessageBox(){
-    reactDom.render(null,$("#popup-container")[0]);
+    // reactDom.render(null,$("#popup-container")[0]);
+    reactDom.unmountComponentAtNode($("#popup-container")[0]);
 }
 

@@ -1363,8 +1363,7 @@ button:hover{
 }
 
 .message-box.share_menu{
-    width: 530px;
-    left: calc(50% - 265px);
+    width: 580px;
 }
 
 .message-box.share_menu hr{
@@ -1395,12 +1394,13 @@ button:hover{
     background: #E9EBF2;
     pointer: default;
     pointer-events: unset;
+    color: #959699;
 }
 
 .big-button.disabled > .material-symbols-rounded{
     display: block;
     font-size: 36px;
-    color: grey;
+    color: #959699;
 }
 
 .big-button > .material-symbols-rounded{
@@ -1451,6 +1451,19 @@ button:hover{
     padding-bottom: 10px;
 }
 
+.message-wrap.user-text .warning{
+    font-size: 10px;
+    gap: 4px;
+    width: 220px;
+    margin-left: 20px;
+    text-align: center;
+    justify-content: center;
+}
+
+.warning span{
+    font-size: 10px;
+}
+
 .user-list{
     list-style:none;
     padding:0;
@@ -1498,6 +1511,12 @@ button:hover{
     font-size:14px;
     display: flex;
     align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.user-name.collapsed-text-show-more{
+    margin-top: 8px;
 }
 
 .user-name .material-symbols-rounded{
@@ -1561,10 +1580,12 @@ button:hover{
     height:100%;
     background:rgba(100,100,100,0.5);
     pointer-events:all;
-    padding: 10%;
     box-sizing: border-box;
     overflow: hidden;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .message-box{
@@ -1574,6 +1595,9 @@ button:hover{
     border-radius:  15px;
     overflow: hidden;
     height: 100%;
+    max-width: 1100px;
+    width: 80%;
+    height: 80%;
 }
 
 .message-wrap .home-tabs{

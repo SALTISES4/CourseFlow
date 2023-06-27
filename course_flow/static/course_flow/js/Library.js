@@ -5,7 +5,7 @@ import {Provider, connect} from "react-redux";
 import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf} from "./PostFunctions";
 import * as Constants from "./Constants";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./ComponentJSON";
-import {MessageBox} from "./MenuComponents";
+import {MessageBox, renderMessageBox, closeMessageBox} from "./MenuComponents";
 
 /*
 The main library menu
@@ -1131,6 +1131,8 @@ export class WorkflowForMenu extends React.Component{
     }
 
     clickAction(){
+        console.log("CLICK");
+        console.log(this.props.selectAction);
         if(this.props.selectAction){
             this.props.selectAction(this.props.workflow_data.id);
         }else{
@@ -1165,15 +1167,19 @@ export class WorkflowForMenuCondensed extends WorkflowForMenu{
     }
 }
 
-export function renderMessageBox(data,type,updateFunction){
-    reactDom.render(
-        <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
-        $("#popup-container")[0]
-    );
-}
+// export function renderMessageBox(data,type,updateFunction){
+//     console.log("RENDERING message box");
+//     console.log(data);
+//     console.log(type);
+//     console.log(updateFunction);
+//     reactDom.render(
+//         <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
+//         $("#popup-container")[0]
+//     );
+// }
 
 
 
-export function closeMessageBox(){
-    reactDom.render(null,$("#popup-container")[0]);
-}
+// export function closeMessageBox(){
+//     reactDom.render(null,$("#popup-container")[0]);
+// }
