@@ -2884,12 +2884,12 @@ class PermissionsTests(TestCase):
                 },
             )
             self.assertEqual(response.status_code, 403)
-            p = ObjectPermission.objects.create(
+            p1 = ObjectPermission.objects.create(
                 user=user,
-                content_object=workflow.get_subclass(),
+                content_object=workflow,
                 permission_type=ObjectPermission.PERMISSION_EDIT,
             )
-            p.save()
+            p1.save()
             response = self.client.post(
                 reverse("course_flow:delete-self"),
                 {
@@ -2920,8 +2920,12 @@ class PermissionsTests(TestCase):
                 },
             )
             self.assertEqual(response.status_code, 403)
-            project.author = user
-            project.save()
+            p2 = ObjectPermission.objects.create(
+                user=user,
+                content_object=project,
+                permission_type=ObjectPermission.PERMISSION_EDIT,
+            )
+            p2.save()
             response = self.client.post(
                 reverse("course_flow:delete-self"),
                 {
@@ -2932,8 +2936,12 @@ class PermissionsTests(TestCase):
                 },
             )
             self.assertEqual(response.status_code, 200)
-            project.author = author
-            project.save()
+            p2 = ObjectPermission.objects.create(
+                user=user,
+                content_object=project,
+                permission_type=ObjectPermission.PERMISSION_NONE,
+            )
+            p2.save()
 
     def test_permissions_delete_self_outcome(self):
         author = get_author()
