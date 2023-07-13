@@ -85,11 +85,11 @@ export class WorkflowsMenu extends React.Component{
             case "added_workflow_menu":
             case "workflow_select_menu":
                 return(
-                    <h2>{gettext("Select a workflow")+":"}</h2>
+                    <h2>{gettext("Select a workflow")}</h2>
                 );
             case "target_project_menu":
                 return(
-                    <h2>{gettext("Select a project")+":"}</h2>
+                    <h2>{gettext("Select a project")}</h2>
                 );
         }
         return null;
@@ -161,7 +161,7 @@ export class WorkflowsMenu extends React.Component{
                     this.props.actionFunction({parentID:this.state.selected});
                     closeMessageBox();
                 }}>
-                    {gettext("Select Project")}
+                    {gettext("Select project")}
                 </button>
             );
         }
@@ -730,7 +730,7 @@ export class ProjectEditMenu extends React.Component{
         if(!published_enabled)disabled_publish_text = gettext("A title and at least one discipline is required for publishing.");
         return(
             <div class="message-wrap">
-                <div class="project-title">{gettext("Edit Project")}</div>
+                <h2>{gettext("Edit project")}</h2>
                 <div>
                     <h4>{gettext("Title")}</h4>
                     <textarea autocomplete="off" id="project-title-input" value={title} onChange={this.inputChanged.bind(this,"title")}/>
@@ -755,7 +755,7 @@ export class ProjectEditMenu extends React.Component{
                             <option value="none">{gettext("Select a type")}</option>
                             {set_options}
                         </select>
-                        <input placeholder={gettext("Set Name")} type="text" id="term-singular" maxlength="50" value={this.state.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_set==null)}/>
+                        <input placeholder={gettext("Set name")} type="text" id="term-singular" maxlength="50" value={this.state.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_set==null)}/>
                         <button class="primary-button" onClick={this.addTerm.bind(this)} disabled={this.addTermDisabled(selected_set)}>
                             {gettext("Add")}
                         </button>
@@ -1093,10 +1093,6 @@ export class ExploreMenu extends React.Component{
 }
 
 export function renderMessageBox(data,type,updateFunction){
-    console.log("RENDERING message box");
-    console.log(data);
-    console.log(type);
-    console.log(updateFunction);
     reactDom.render(
         <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
         $("#popup-container")[0]

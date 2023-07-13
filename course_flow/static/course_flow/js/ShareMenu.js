@@ -55,10 +55,10 @@ export class ShareMenu extends React.Component{
 
         return(
             <div class="message-wrap user-text">
-                <div class="workflow-title-bar">
+                <h2>
                     {gettext("Share")+" "+gettext(data.type)}
                     <WorkflowTitle no_hyperlink={true} data={this.props.data}/>
-                </div>
+                </h2>
                 {this.getPublication()}
                 <hr/>
                 <p>{gettext("Owned By")}:</p>

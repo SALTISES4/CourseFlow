@@ -129,7 +129,7 @@ export class HomeMenu extends React.Component{
                 <div class="home-item">
                     <div class="home-title-row">
                         <div class="home-item-title">{gettext("Recent Projects")}</div>
-                        <a class="collapsed-text-show-more" href={library_path}>{gettext("see all")}</a>
+                        <a class="collapsed-text-show-more" href={library_path}>{gettext("See all")}</a>
                     </div>
                     <div class="menu-grid">
                         {projects}
@@ -142,7 +142,7 @@ export class HomeMenu extends React.Component{
                 <div class="home-item">
                     <div class="home-title-row">
                         <div class="home-item-title">{gettext("Recent Classrooms")}</div>
-                        <a class="collapsed-text-show-more" href={library_path}>{gettext("see all")}</a>
+                        <a class="collapsed-text-show-more" href={library_path}>{gettext("See all")}</a>
                     </div>
                     <div class="menu-grid">
                         {projects}

@@ -13,7 +13,7 @@ export class ImportMenu extends React.Component{
         
         return(
             <div class="message-wrap">
-                <h3>{gettext("Import Files")+":"}</h3>
+                <h2>{gettext("Import Files")}</h2>
                 <p>{gettext("Use this menu to upload content in either .xls or .csv format. Ensure you have the correct format.")}</p>
                 <form  enctype="multipart/form-data" action={post_paths.import_data} method="POST" id="upload-form" target="redirect-iframe" onSubmit={this.submit.bind(this)}>
                     <input type="hidden" name="csrfmiddlewaretoken" value={root.getCsrfToken()}/>

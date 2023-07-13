@@ -18,12 +18,6 @@ button, input[type="submit"]{
     outline:none;
 }
 
-.hover-shade:not(.ui-state-disabled){
-    cursor:pointer;
-}
-.hover-shade:not(.ui-state-disabled):hover{
-    box-shadow: inset 0 0 0 9999px rgba(0,0,0,0.04);
-}
 
 .workflow-create-wrapper{
     font-family:sans-serif;

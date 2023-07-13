@@ -23,7 +23,8 @@ h1{
 }
 
 h2{
-    font-size:20px;
+    font-size:28px;
+    font-weight: 500;
 }
 
 h3{
@@ -56,6 +57,22 @@ body.printing{
 
 input[type="checkbox"], input[type="radio"]{
     filter: hue-rotate(300deg) brightness(117%)
+}
+
+button.disabled, button:disabled{
+    pointer-events: none;
+    cursor: default;
+}
+
+.ui-state-disabled, .disabled, *:disabled .ui-state-disabled *, .disabled *, *:disabled *{
+    cursor: default !important;
+}
+
+.hover-shade:not(.ui-state-disabled):not(.disabled):not([disabled]){
+    cursor:pointer;
+}
+.hover-shade:not(.ui-state-disabled):not(.disabled):not([disabled]):hover{
+    box-shadow: inset 0 0 0 9999px rgba(0,0,0,0.04);
 }
 
 ::-webkit-scrollbar:hover {
@@ -717,12 +734,12 @@ button:hover{
 .home-item{
     border-radius:10px;
     border:1px solid #E9EBF2;
-    padding:10px;
-    margin-right:10px;
     width: -moz-fit-content;
     width: fit-content;
-    max-width: 854px;
-    min-width: 400px;
+    max-width: 776px;
+    min-width: 410px;
+    padding: 30px;
+    box-sizing: border-box;
 }
 
 .home-title-row{
@@ -893,7 +910,7 @@ button:hover{
 
 .menu-grid{
     display:flex;
-    gap: 10px;
+    gap: 18px 14px;
     flex-wrap:wrap;
 }
 
@@ -905,11 +922,11 @@ button:hover{
 .workflow-for-menu{
     position:relative;
     background-color:white;
-    margin-bottom:8px;
     padding:10px;
     border-radius:10px;
     border:1px solid #E9EBF2;
     max-width:600px;
+    box-sizing: border-box;
 }
 
 .workflow-for-menu.simple-workflow{
@@ -1923,12 +1940,6 @@ button, input[type="submit"]{
     outline:none;
 }
 
-.hover-shade:not(.ui-state-disabled){
-    cursor:pointer;
-}
-.hover-shade:not(.ui-state-disabled):hover{
-    box-shadow: inset 0 0 0 9999px rgba(0,0,0,0.04);
-}
 
 .workflow-create-wrapper{
     font-family:sans-serif;
