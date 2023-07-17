@@ -2154,7 +2154,6 @@ def get_export(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-# enable for testing/download
 @ajax_login_required
 def get_saltise_download(request: HttpRequest) -> HttpResponse:
 
@@ -4734,7 +4733,7 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
                     )
                 ]
                 page_number = math.ceil(float(total_results) / nresults)
-                pages ={
+                pages = {
                     "total_results": total_results,
                     "page_count": page_number,
                     "current_page": page,
@@ -4777,7 +4776,7 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
                 extra_objects = extra_objects[: nresults - count]
             return_objects += [x.content_object for x in extra_objects]
         print("here")
-        pages={}
+        pages = {}
     print(return_objects)
 
     return JsonResponse(

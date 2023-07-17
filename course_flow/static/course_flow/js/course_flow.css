@@ -15,6 +15,8 @@ hr{
     margin:4px;
     margin-left:10%;
     margin-right:10%;
+    border-top: 1px solid #E9EBF2;
+    border-left: 0px;
 }
 
 h1{
@@ -115,10 +117,10 @@ a.unset{
     color: unset;
     text-decoration: none;
 }
-
+/*
 a.hover-shade:hover{
     text-decoration:underline;
-}
+}*/
 
 .material-symbols-rounded.filled, .material-symbols-outlined.filled{
     font-variation-settings: 'FILL' 1;
@@ -686,9 +688,9 @@ button:hover{
     text-decoration: none;
 }
 
-.no-underline.hover-shade:hover > *:not(.material-symbols-rounded){
+/*.no-underline.hover-shade:hover > *:not(.material-symbols-rounded){
     text-decoration: underline;
-}
+}*/
 
 .panel-item img{
     width:24px;
@@ -750,6 +752,7 @@ button:hover{
 
 .home-item .home-item-title{
     font-size: 28px;
+    color: #444444;
 }
 
 .home-item-icon-container{
