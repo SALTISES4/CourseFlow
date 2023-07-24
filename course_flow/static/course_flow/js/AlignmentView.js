@@ -392,7 +392,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
     render(){
         let data = this.props.data;
         let data_override;
-        if(data.represents_workflow) data_override = {...data,...data.linked_workflow_data};
+        if(data.represents_workflow) data_override = {...data,...data.linked_workflow_data,id:data.id};
         else data_override={...data};
         let selection_manager = this.props.renderer.selection_manager;
         let child_outcomes_header;
@@ -407,8 +407,16 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
             </div>
         }else{
             if(data.linked_workflow){
-                if(this.props.child_outcomes == -1)child_outcomes_header = <div class="child-outcome child-outcome-header">{gettext("... LOADING")}</div>;
-                else child_outcomes_header=<div class="child-outcome child-outcome-header">{gettext("No outcomes have been added to the linked workflow. When added, they will appear here.")}</div>;
+                if(this.props.child_outcomes == -1){
+                    child_outcomes_header = <div class="child-outcome child-outcome-header">{gettext("... LOADING")}</div>;
+                    this.props.renderer.childWorkflowDataNeeded(this.props.data.id);
+                }else {
+                    if(data.linked_workflow_data.deleted){
+                        child_outcomes_header = <div class="child-outcome child-outcome-header">{gettext("The linked workflow has been deleted.")}</div>;
+                    }else{
+                        child_outcomes_header=<div class="child-outcome child-outcome-header">{gettext("No outcomes have been added to the linked workflow. When added, they will appear here.")}</div>;
+                    }
+                }
             }else{
                 child_outcomes_header=<div class="child-outcome child-outcome-header">{gettext("No workflow has been linked to this node. If you link a workflow, its outcomes will appear here.")}</div>;
             }

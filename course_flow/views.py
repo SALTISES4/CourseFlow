@@ -1556,10 +1556,11 @@ def get_parent_outcome_data(workflow, user):
     }
 
 
-def get_child_outcome_data(node, user):
+def get_child_outcome_data(workflow, user, parent_workflow):
     last_time = time.time()
+    nodes = Node.objects.filter(week__workflow=parent_workflow,linked_workflow=workflow)
     linked_workflows = [
-        node.linked_workflow
+        workflow
     ]
     last_time = benchmark("got linked workflows", last_time)
     child_workflow_outcomeworkflows = []
@@ -1590,6 +1591,9 @@ def get_child_outcome_data(node, user):
     last_time = benchmark("database hits", last_time)
 
     response_data = {
+        "node": NodeSerializerShallow(
+            nodes, many=True, context={"user": user}
+        ).data,
         "child_workflow": WorkflowSerializerShallow(
             linked_workflows, many=True, context={"user": user}
         ).data,
@@ -2382,7 +2386,7 @@ def get_workflow_child_data(request: HttpRequest) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
         data_package = get_child_outcome_data(
-            node, request.user
+            node.linked_workflow, request.user, node.get_workflow()
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -2418,7 +2422,7 @@ def get_public_workflow_child_data(request: HttpRequest, pk) -> HttpResponse:
     node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
         data_package = get_child_outcome_data(
-            node, request.user
+            node.linked_workflow, request.user, node.get_workflow()
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -5551,7 +5555,7 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             actions.dispatch_parent_updated(wf)
     if object_type in ["workflow", "activity", "course", "program"]:
         for parent_workflow in parent_workflows:
-            actions.dispatch_child_updated(parent_workflow)
+            actions.dispatch_child_updated(parent_workflow,model.get_workflow())
     return JsonResponse({"action": "posted"})
 
 
@@ -5713,7 +5717,7 @@ def restore_self(request: HttpRequest) -> HttpResponse:
             actions.dispatch_parent_updated(wf)
     if object_type in ["workflow", "activity", "course", "program"]:
         for parent_workflow in parent_workflows:
-            actions.dispatch_child_updated(parent_workflow)
+            actions.dispatch_child_updated(parent_workflow,model.get_workflow())
     return JsonResponse({"action": "posted"})
 
 
@@ -5841,7 +5845,7 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
             actions.dispatch_parent_updated(wf)
     if object_type in ["workflow", "activity", "course", "program"]:
         for parent_workflow in parent_workflows:
-            actions.dispatch_child_updated(parent_workflow)
+            actions.dispatch_child_updated(parent_workflow,model.get_workflow())
     return JsonResponse({"action": "posted"})
 
 

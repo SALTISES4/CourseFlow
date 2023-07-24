@@ -254,10 +254,10 @@ export class WorkflowRenderer{
     
     
     render(container,view_type="workflowview"){
-        //Create a random id for the render, allows us to tell if
-        //we are still in the same render process (useful for async renders)
-        let render_id = Math.random()
-        this.render_id = render_id;
+        //In case we need to get child workflows
+        this.child_data_needed=[];
+        this.child_data_completed=-1;
+        this.fetching_child_data=false;
 
         this.view_type=view_type;
         reactDom.render(<WorkflowLoader/>,container[0]);
@@ -294,19 +294,6 @@ export class WorkflowRenderer{
                     </Provider>,
                     container[0]
                 );
-                let getDataForNode = (i)=>{
-                    console.log("Getting node id "+node_ids[i]);
-                    this.getWorkflowChildData(node_ids[i],(response)=>{
-                        console.log("got response");
-                        console.log(response);
-                        if(renderer.render_id!=render_id)return;
-                        store.dispatch(Reducers.refreshStoreData(response.data_package));
-                        i++;
-                        console.log("dispatched");
-                        if(i<node_ids.length)setTimeout(()=>getDataForNode(i),50);
-                    });
-                }
-                setTimeout(()=>getDataForNode(0),50);
             },50)
         }else if(view_type=="outcometable") {
             setTimeout(()=>{
@@ -330,8 +317,33 @@ export class WorkflowRenderer{
         
     }
 
-    childWorkflowDataNeeded(workflow_id){
-        
+    //Fetches the data for the given child workflow
+    getDataForChildWorkflow(){
+        if(this.child_data_completed==this.child_data_needed.length-1){
+            this.fetching_child_data=false;
+            return;
+        }
+        this.fetching_child_data = true;
+        this.child_data_completed++;
+        this.getWorkflowChildData(this.child_data_needed[this.child_data_completed],(response)=>{
+            console.log("got response");
+            console.log(response);
+            this.store.dispatch(Reducers.refreshStoreData(response.data_package));
+            console.log("dispatched");
+            setTimeout(()=>this.getDataForChildWorkflow(),50);
+        });
+    }
+
+    //Lets the renderer know that it must load the child data for that workflow
+    childWorkflowDataNeeded(node_id){
+        console.log("I need data "+node_id);
+        console.log(this.child_data_needed);
+        if(this.child_data_needed.indexOf(node_id)<0){
+            this.child_data_needed.push(node_id);
+            if(!this.fetching_child_data){
+                setTimeout(()=>this.getDataForChildWorkflow(),50);
+            }
+        }
     }
     
     connection_opened(reconnect=false){
@@ -377,7 +389,7 @@ export class WorkflowRenderer{
         }else if(data.type=="workflow_parent_updated"){
             this.parent_workflow_updated(data.edit_count);
         }else if(data.type=="workflow_child_updated"){
-            this.child_workflow_updated(data.edit_count);
+            this.child_workflow_updated(data.edit_count,data.child_workflow_id);
         }
     }
 
@@ -396,11 +408,16 @@ export class WorkflowRenderer{
         });
     }
 
-    child_workflow_updated(edit_count){
+    child_workflow_updated(edit_count,child_workflow_id){
+        console.log("child workflow updated");
+        console.log(child_workflow_id);
         this.messages_queued=true;
         let renderer = this;
-        this.getWorkflowChildData(this.workflowID,(response)=>{
-            //remove all the child workflow data
+        let state=this.store.getState();
+        let node = state.node.find(node=>node.linked_workflow==child_workflow_id);
+        if(!node)return;
+        this.getWorkflowChildData(node.id,(response)=>{
+            console.log("getting child workflow data");
             renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
             renderer.clear_queue(0);
         });

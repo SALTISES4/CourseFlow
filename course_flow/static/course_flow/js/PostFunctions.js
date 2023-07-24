@@ -52,6 +52,8 @@ export function getWorkflowSelectMenu(projectPk,type_filter,get_strategies,self_
 }
 
 export function getLinkedWorkflowMenu(nodeData,updateFunction,callBackFunction=()=>console.log("success")){
+    console.log("getting linked wf menu");
+    console.log(nodeData);
     $.post(post_paths.get_possible_linked_workflows,
     {
         nodePk:JSON.stringify(nodeData.id),

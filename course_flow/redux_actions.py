@@ -48,13 +48,14 @@ def dispatch_parent_updated(workflow):
     )
 
 
-def dispatch_child_updated(workflow):
+def dispatch_child_updated(workflow,child_workflow):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         "workflow_" + str(workflow.pk),
         {
             "type": "workflow_child_updated",
             "edit_count": workflow.edit_count,
+            "child_workflow_id":child_workflow.pk
         },
     )
 
