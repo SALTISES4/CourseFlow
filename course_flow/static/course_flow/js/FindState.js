@@ -213,6 +213,7 @@ export const getChildWorkflowByID = (state,id)=>{
         if(workflow.id==id)return {data:workflow};
     }
     console.log("failed to find child workflow");
+    return -1;
 }
 export const getOutcomeOutcomeByID = (state,id)=>{
     let state_section=state.outcomeoutcome;

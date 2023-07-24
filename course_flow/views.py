@@ -1556,17 +1556,11 @@ def get_parent_outcome_data(workflow, user):
     }
 
 
-def get_child_outcome_data(workflow, user):
+def get_child_outcome_data(node, user):
     last_time = time.time()
-    nodes = Node.objects.filter(week__workflow=workflow).exclude(
-        Q(deleted=True) | Q(week__deleted=True)
-    )
-    linked_workflows = (
-        Workflow.objects.filter(linked_nodes__in=nodes)
-        .exclude(deleted=True)
-        .distinct()
-        .prefetch_related("outcomeworkflow_set")
-    )
+    linked_workflows = [
+        node.linked_workflow
+    ]
     last_time = benchmark("got linked workflows", last_time)
     child_workflow_outcomeworkflows = []
     child_workflow_outcomes = []
@@ -2383,12 +2377,12 @@ def get_workflow_parent_data(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
-@user_can_view_or_enrolled_as_student("workflowPk")
+@user_can_view_or_enrolled_as_student("nodePk")
 def get_workflow_child_data(request: HttpRequest) -> HttpResponse:
-    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
         data_package = get_child_outcome_data(
-            workflow.get_subclass(), request.user
+            node, request.user
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -2419,12 +2413,12 @@ def get_public_workflow_data(request: HttpRequest, pk) -> HttpResponse:
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
-@public_model_access("workflow")
+@user_can_view_or_enrolled_as_student("nodePk")
 def get_public_workflow_child_data(request: HttpRequest, pk) -> HttpResponse:
-    workflow = Workflow.objects.get(pk=pk)
+    node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
         data_package = get_child_outcome_data(
-            workflow.get_subclass(), request.user
+            node, request.user
         )
     except AttributeError:
         return JsonResponse({"action": "error"})

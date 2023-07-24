@@ -254,6 +254,11 @@ export class WorkflowRenderer{
     
     
     render(container,view_type="workflowview"){
+        //Create a random id for the render, allows us to tell if
+        //we are still in the same render process (useful for async renders)
+        let render_id = Math.random()
+        this.render_id = render_id;
+
         this.view_type=view_type;
         reactDom.render(<WorkflowLoader/>,container[0]);
         let store = this.store;
@@ -264,8 +269,6 @@ export class WorkflowRenderer{
         this.locks={}
         let weeks = initial_workflow_data.week.filter(x=>!x.deleted);
         
-
-    
         this.selection_manager = new SelectionManager(this.read_only); 
         this.selection_manager.renderer = renderer;
         this.tiny_loader = new TinyLoader($("body")[0]);
@@ -282,16 +285,29 @@ export class WorkflowRenderer{
             });
             
         }else if(view_type=="horizontaloutcometable" || view_type=="alignmentanalysis"){
-            //get additional data about child workflows prior to render
-            this.getWorkflowChildData(this.workflowID,(response)=>{
-                store.dispatch(Reducers.refreshStoreData(response.data_package));
+            //get additional data about child workflows to render in later
+            let node_ids = [... new Set(initial_workflow_data.node.filter(x=>(!x.deleted && x.linked_workflow)).map(node=>node.id))];
+            setTimeout(()=>{
                 reactDom.render(
                     <Provider store = {store}>
                         <WorkflowBaseView view_type={view_type} renderer={this}/>
                     </Provider>,
                     container[0]
                 );
-            });
+                let getDataForNode = (i)=>{
+                    console.log("Getting node id "+node_ids[i]);
+                    this.getWorkflowChildData(node_ids[i],(response)=>{
+                        console.log("got response");
+                        console.log(response);
+                        if(renderer.render_id!=render_id)return;
+                        store.dispatch(Reducers.refreshStoreData(response.data_package));
+                        i++;
+                        console.log("dispatched");
+                        if(i<node_ids.length)setTimeout(()=>getDataForNode(i),50);
+                    });
+                }
+                setTimeout(()=>getDataForNode(0),50);
+            },50)
         }else if(view_type=="outcometable") {
             setTimeout(()=>{
                 reactDom.render(
@@ -311,6 +327,10 @@ export class WorkflowRenderer{
                 );
             },50)
         }
+        
+    }
+
+    childWorkflowDataNeeded(workflow_id){
         
     }
     

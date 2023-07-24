@@ -592,10 +592,10 @@ export function getWorkflowParentData(workflowPk,callBackFunction=()=>console.lo
 }
 
 //Get the data from all child workflows
-export function getWorkflowChildData(workflowPk,callBackFunction=()=>console.log("success")){
+export function getWorkflowChildData(nodePk,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.get_workflow_child_data,{
-            workflowPk:JSON.stringify(workflowPk)
+            nodePk:JSON.stringify(nodePk)
         }).done(function(data){
             if(data.action=="posted")callBackFunction(data);
             else fail_function(data.action)
