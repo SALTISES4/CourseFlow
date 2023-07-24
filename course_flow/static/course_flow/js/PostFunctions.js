@@ -432,7 +432,8 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
         inserted:JSON.stringify(true),
     }
     $(document).off(throughType+"-dropped");
-    $(document).on(throughType+"-dropped",()=>{
+    if(objectID)$(document).on(throughType+"-dropped",()=>{
+        console.log("Dropped dragged item");
         dragAction(renderer,renderer.dragAction[throughType]);
         renderer.dragAction[throughType]=null;
         $(document).off(throughType+"-dropped");
@@ -460,6 +461,32 @@ export function dragAction(renderer,action_data,callBackFunction=()=>console.log
 }
 
 
+//Called when an object in a list is reordered
+export function insertedAtInstant(renderer,objectID,objectType,parentID,parentType,newPosition,throughType,callBackFunction=()=>console.log("success")){
+    try{
+        renderer.tiny_loader.startLoad();
+        $(".ui-draggable").draggable("disable");
+        $.post(post_paths.inserted_at,{ 
+                objectID:JSON.stringify(objectID),
+                objectType:JSON.stringify(objectType),
+                parentID:JSON.stringify(parentID),
+                parentType:JSON.stringify(parentType),
+                newPosition:JSON.stringify(newPosition),
+                throughType:JSON.stringify(throughType),
+                inserted:JSON.stringify(true),
+                allowDifferent:JSON.stringify(true),
+            }).done(function(data){
+            if(data.action == "posted") callBackFunction(data);
+            else fail_function(data.action);
+            $(".ui-draggable").draggable("enable");
+            renderer.tiny_loader.endLoad();
+        });
+    }catch(err){
+        fail_function("The item failed to be inserted.");
+        console.log(err);
+    }
+
+}
 //Add an outcome from the parent workflow to an outcome from the current one
 export function updateOutcomehorizontallinkDegree(outcomePk,outcome2Pk,degree,callBackFunction=()=>console.log("success")){
     try{

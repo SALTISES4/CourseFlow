@@ -485,6 +485,12 @@ def from_same_workflow(model1, model2, **outer_kwargs):
                 model_data2 = get_model_from_request(
                     model2, request, **outer_kwargs
                 )
+                if json.loads(
+                    request.POST.get("allowDifferent", "false")
+                ) and not json.loads(
+                    request.POST.get("columnChange", "false")
+                ):
+                    return fct(request, *args, **kwargs)
                 if model_data2["pk"] is None or model_data2["pk"] == -1:
                     return fct(request, *args, **kwargs)
                 instance1 = get_model_from_str(

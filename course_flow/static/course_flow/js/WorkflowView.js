@@ -517,6 +517,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         this.props[type].forEach(week=>toggleDrop(week.id,type,false,this.props.dispatch));
     }
 
+
 }
 const mapWorkflowStateToProps = state=>({
     data:state.workflow,

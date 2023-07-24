@@ -1091,21 +1091,21 @@ def get_workflow_data_package(user, project, **kwargs):
                     ),
                 }
             )
-            if not self_only:
-                other_project_sections.append(
-                    {
-                        "title": "",
-                        "object_type": this_type,
-                        "is_strategy": get_strategies,
-                        "objects": get_workflow_info_boxes(
-                            user,
-                            this_type,
-                            project=project,
-                            this_project=False,
-                            get_strategies=get_strategies,
-                        ),
-                    }
-                )
+            # if not self_only:
+            #     other_project_sections.append(
+            #         {
+            #             "title": "",
+            #             "object_type": this_type,
+            #             "is_strategy": get_strategies,
+            #             "objects": get_workflow_info_boxes(
+            #                 user,
+            #                 this_type,
+            #                 project=project,
+            #                 this_project=False,
+            #                 get_strategies=get_strategies,
+            #             ),
+            #         }
+            #     )
             if not self_only:
                 all_published_sections.append(
                     {
@@ -1162,15 +1162,15 @@ def get_workflow_data_package(user, project, **kwargs):
         },
     }
     if not self_only:
-        if project is not None:
-            data_package["other_projects"] = {
-                "title": _("From Your Other Projects"),
-                "sections": other_project_sections,
-                #            "duplicate": other_copy_type,
-                "emptytext": _(
-                    "There are no applicable workflows outside this project."
-                ),
-            }
+        # if project is not None:
+        #     data_package["other_projects"] = {
+        #         "title": _("From Your Other Projects"),
+        #         "sections": other_project_sections,
+        #         #            "duplicate": other_copy_type,
+        #         "emptytext": _(
+        #             "There are no applicable workflows outside this project."
+        #         ),
+        #     }
         data_package["all_published"] = {
             "title": _("Your Favourites"),
             "sections": all_published_sections,
@@ -1557,14 +1557,17 @@ def get_parent_outcome_data(workflow, user):
 
 
 def get_child_outcome_data(workflow, user):
+    last_time = time.time()
     nodes = Node.objects.filter(week__workflow=workflow).exclude(
         Q(deleted=True) | Q(week__deleted=True)
     )
     linked_workflows = (
-        Workflow.objects.filter(linked_nodes__week__workflow=workflow)
+        Workflow.objects.filter(linked_nodes__in=nodes)
         .exclude(deleted=True)
+        .distinct()
         .prefetch_related("outcomeworkflow_set")
     )
+    last_time = benchmark("got linked workflows", last_time)
     child_workflow_outcomeworkflows = []
     child_workflow_outcomes = []
     child_workflow_outcomeoutcomes = []
@@ -1579,6 +1582,8 @@ def get_child_outcome_data(workflow, user):
         child_workflow_outcomes += new_child_workflow_outcomes
         child_workflow_outcomeoutcomes += new_child_workflow_outcomeoutcomes
 
+    last_time = benchmark("iterated linked workflows", last_time)
+
     outcomehorizontallinks = []
     for child_outcome in child_workflow_outcomes:
         outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
@@ -1588,10 +1593,9 @@ def get_child_outcome_data(workflow, user):
     else:
         outcome_type = workflow.type + " outcome"
 
-    return {
-        "node": NodeSerializerShallow(
-            nodes, many=True, context={"user": user}
-        ).data,
+    last_time = benchmark("database hits", last_time)
+
+    response_data = {
         "child_workflow": WorkflowSerializerShallow(
             linked_workflows, many=True, context={"user": user}
         ).data,
@@ -1610,6 +1614,10 @@ def get_child_outcome_data(workflow, user):
             outcomehorizontallinks, many=True
         ).data,
     }
+
+    benchmark("Sent", last_time)
+
+    return response_data
 
 
 def get_workflow_data_flat(workflow, user):
@@ -4802,10 +4810,13 @@ Reorder methods
 @from_same_workflow(False, False, get_parent=True)
 @from_same_workflow(False, "columnPk")
 def inserted_at(request: HttpRequest) -> HttpResponse:
+    print("IN INSERTED AT")
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
     inserted = json.loads(request.POST.get("inserted", "false"))
     column_change = json.loads(request.POST.get("columnChange", "false"))
+    changing_workflow = False
+    print("A")
     try:
         with transaction.atomic():
             if column_change:
@@ -4817,16 +4828,83 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 model.column = new_column
                 model.save()
             if inserted:
+                print("inserted")
+                print(object_type)
+                print(inserted)
+                print(column_change)
                 parent_id = json.loads(request.POST.get("parentID"))
                 parent_type = json.loads(request.POST.get("parentType"))
                 new_position = json.loads(request.POST.get("newPosition"))
                 through_type = json.loads(request.POST.get("throughType"))
+                print(parent_id)
+                print(parent_type)
+                print(new_position)
+                print(through_type)
                 model = get_model_from_str(object_type).objects.get(
                     id=object_id
                 )
                 parent = get_model_from_str(parent_type).objects.get(
                     id=parent_id
                 )
+                workflow1 = model.get_workflow()
+                workflow2 = parent.get_workflow()
+                if workflow1.pk != workflow2.pk:
+                    changing_workflow = True
+                    if (
+                        workflow1.get_project().pk
+                        == workflow2.get_project().pk
+                    ):
+                        print("Different workflows, allowed")
+                        if object_type == "node":
+                            print("we have a node")
+                            model.outcomenode_set.all().delete()
+                            print("deleted outcomenodes")
+                            same_type_columns = workflow2.columns.filter(
+                                column_type=model.column.column_type
+                            )
+                            if same_type_columns.count() > 0:
+                                new_column = same_type_columns.first()
+                                print("found a same type column")
+                            else:
+                                new_column = workflow2.columns.all().first()
+                                print("took first column")
+                            print("found a new column: ")
+                            print(new_column)
+                            model.column = new_column
+                            model.save()
+                            linked_workflows = Workflow.objects.filter(
+                                linked_nodes=model
+                            )
+                        elif (
+                            object_type == "outcome"
+                            or object_type == "outcome_base"
+                        ):
+                            OutcomeNode.objects.filter()
+                            print("we have an outcome")
+                            outcomes_list = [object_id] + list(
+                                get_descendant_outcomes(model).values_list(
+                                    "pk", flat=True
+                                )
+                            )
+                            print("here are all the outcomes involved:")
+                            print(outcomes_list)
+                            affected_nodes = (
+                                Node.objects.filter(
+                                    outcomes__in=outcomes_list
+                                ).values_list("pk", flat=True),
+                            )
+                            print("here are all the affected nodes")
+                            print(affected_nodes)
+                            linked_workflows = Workflow.objects.filter(
+                                linked_nodes__outcomes__in=outcomes_list
+                            )
+                            print("here are all the linked workflows")
+                            print(linked_workflows)
+                            OutcomeNode.objects.filter(
+                                outcome__in=outcomes_list
+                            ).delete()
+                        else:
+                            return JsonResponse({"action": "posted"})
                 if object_type == parent_type:
                     creation_kwargs = {"child": model, "parent": parent}
                     search_kwargs = {"child": model}
@@ -4873,19 +4951,103 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
     workflow = model.get_workflow()
     if inserted:
-        actions.dispatch_wf(
-            workflow,
-            actions.changeThroughID(
-                through_type, old_through_id, new_through.id
-            ),
-        )
-        if object_type == "outcome":
-            actions.dispatch_to_parent_wf(
+        if changing_workflow:
+            print("we changed the object's workflow")
+            object_type_sent = object_type
+            if object_type == "outcome" and through_type == "outcomeworkflow":
+                object_type_sent = "outcome_base"
+            # Send a signal to delete the object from its original workflow
+            extra_data = {}
+            new_children_serialized = None
+            if object_type == "outcome" or object_type == "outcome_base":
+                print("object was an outcome, refreshing the nodes")
+                extra_data = RefreshSerializerNode(
+                    Node.objects.filter(pk__in=affected_nodes),
+                    many=True,
+                ).data
+                outcomes_to_update = RefreshSerializerOutcome(
+                    Outcome.objects.filter(
+                        horizontal_outcomes__in=outcomes_list
+                    ),
+                    many=True,
+                ).data
+                outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(model)
+                new_children_serialized = {
+                    "outcome": OutcomeSerializerShallow(
+                        outcomes, many=True
+                    ).data,
+                    "outcomeoutcome": OutcomeOutcomeSerializerShallow(
+                        outcomeoutcomes, many=True
+                    ).data,
+                }
+
+            print("making the delete action")
+            delete_action = actions.deleteSelfAction(
+                object_id, object_type_sent, old_through_id, extra_data
+            )
+            print("dispatching the delete action")
+            actions.dispatch_wf(
+                workflow1,
+                delete_action,
+            )
+            # Send a signal to add it to the new workflow
+            new_model_serialized = serializer_lookups_shallow[object_type](
+                model
+            ).data
+            new_through_serialized = serializer_lookups_shallow[through_type](
+                new_through
+            ).data
+            response_data = {
+                "new_model": new_model_serialized,
+                "new_through": new_through_serialized,
+                "parentID": parent_id,
+                "children": new_children_serialized,
+            }
+
+            print("dispatching the insertion")
+            actions.dispatch_wf(
+                workflow2,
+                actions.insertBelowAction(response_data, object_type_sent),
+            )
+            # Send the relevant signals to parent and child workflows
+            if object_type == "outcome" or object_type == "outcome_base":
+                print("this was an outcome, dispatching to parent workflow")
+                actions.dispatch_to_parent_wf(
+                    workflow1,
+                    delete_action,
+                )
+                print("dispatching to linked workflows (if any")
+                if linked_workflows:
+                    for wf in linked_workflows:
+                        actions.dispatch_wf(wf, delete_action)
+                        actions.dispatch_wf(
+                            wf,
+                            actions.updateHorizontalLinks(
+                                {"data": outcomes_to_update}
+                            ),
+                        )
+            if (
+                object_type != "outcome"
+                and object_type != "outcome_base"
+                and linked_workflows
+            ):
+                print("not an outcome, dispatching to child workflows")
+                for wf in linked_workflows:
+                    actions.dispatch_parent_updated(wf)
+        else:
+            actions.dispatch_wf(
                 workflow,
                 actions.changeThroughID(
                     through_type, old_through_id, new_through.id
                 ),
             )
+            if object_type == "outcome":
+                actions.dispatch_to_parent_wf(
+                    workflow,
+                    actions.changeThroughID(
+                        through_type, old_through_id, new_through.id
+                    ),
+                )
     actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
     return JsonResponse({"action": "posted"})
 

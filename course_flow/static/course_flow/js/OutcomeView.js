@@ -7,7 +7,7 @@ import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOut
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode";
 import {getOutcomeByID, getOutcomeHorizontalLinkByID} from "./FindState";
 import {moveOutcomeOutcome} from "./Reducers";
-import {updateOutcomenodeDegree, updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant} from "./PostFunctions";
+import {updateOutcomenodeDegree, updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant, insertedAtInstant} from "./PostFunctions";
 import * as Constants from "./Constants";
 
 //Basic component representing an outcome
@@ -152,9 +152,10 @@ class OutcomeView extends EditableComponentWithSorting{
     }
 
     sortableMovedOutFunction(id,new_position,type,new_parent,child_id){
-        console.log("you've moved a "+type+" out to another workflow, ignoring");
-        // this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
-        // insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
+        if(confirm(gettext("You've moved an outcome to another workflow. Nodes tagged with this outcome will have it removed. Do you want to continue?"))){
+            insertedAt(this.props.renderer,null,"outcome",new_parent,"outcome",new_position,"outcomeoutcome");
+            insertedAtInstant(this.props.renderer,child_id,"outcome",new_parent,"outcome",new_position,"outcomeoutcome");
+        }
     }
 
     makeDroppable(){

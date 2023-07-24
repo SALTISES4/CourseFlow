@@ -809,16 +809,16 @@ class OutcomeSerializerShallow(
             "sets",
         ]
 
-        read_only_fields = [
-            "id",
-            "child_outcome_links",
-            "outcome_horizontal_links",
-            "outcome_horizontal_links_unique",
-            "depth",
-            "type",
-            "comments",
-            "sets",
-        ]
+        # read_only_fields = [
+        #     "id",
+        #     "child_outcome_links",
+        #     "outcome_horizontal_links",
+        #     "outcome_horizontal_links_unique",
+        #     "depth",
+        #     "type",
+        #     "comments",
+        #     "sets",
+        # ]
 
     child_outcome_links = serializers.SerializerMethodField()
     outcome_horizontal_links = serializers.SerializerMethodField()

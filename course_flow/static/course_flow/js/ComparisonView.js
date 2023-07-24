@@ -4,7 +4,7 @@ import {Provider, connect} from "react-redux";
 import {Component, EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "./ComponentJSON";
 import * as Constants from "./Constants";
 import {renderMessageBox,closeMessageBox} from "./MenuComponents";
-import {getWorkflowSelectMenu,getWorkflowContext,insertedAt} from "./PostFunctions";
+import {getWorkflowSelectMenu,getWorkflowContext,insertedAt,insertedAtInstant} from "./PostFunctions";
 import {WeekWorkflowComparisonView} from "./WeekWorkflowView";
 import {getSortedOutcomesFromOutcomeWorkflowSet} from "./FindState";
 import {OutcomeEditViewUnconnected} from "./OutcomeEditView";
@@ -19,7 +19,7 @@ export class ComparisonView extends React.Component{
     constructor(props){
         super(props);
         this.objectType="workflow";
-        this.allowed_tabs=[0,4];
+        this.allowed_tabs=[0,3];
         this.state = {workflows:[],object_sets:props.data.object_sets};
     }
     
@@ -32,11 +32,6 @@ export class ComparisonView extends React.Component{
 
         let share;
         if(!this.props.renderer.read_only)share = <div id="share-button" class="hover-shade" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/></div>
-        if(renderer.view_type=="outcomeedit"){
-            this.allowed_tabs=[];
-        }else{
-            this.allowed_tabs=[4];
-        }
         
         
         let view_buttons = [
@@ -255,11 +250,11 @@ class WorkflowComparisonBaseViewUnconnected extends EditableComponent{
         let workflow_content;
         if(renderer.view_type=="outcomeedit"){
             workflow_content=(
-                <OutcomeComparisonView renderer={renderer}/>
+                <OutcomeComparisonView renderer={renderer} objectID={data.id}/>
             );
         }else{
             workflow_content = (
-                <WorkflowComparisonView renderer={renderer}/>
+                <WorkflowComparisonView renderer={renderer} objectID={data.id}/>
             );
         }
         
@@ -392,11 +387,6 @@ class WorkflowComparisonViewUnconnected extends EditableComponentWithSorting{
     }
 
 
-    sortableMovedOutFunction(id,new_position,type,new_parent,child_id){
-        console.log("you've moved a "+type+" out to another workflow, ignoring");
-        // this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
-        // insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
-    }
 
 }
 export const WorkflowComparisonView =  connect(
@@ -421,6 +411,14 @@ class OutcomeComparisonViewUnconnected extends OutcomeEditViewUnconnected{
             "#workflow-"+this.props.workflow.id,
         );
         if(this.props.data.depth==0)this.makeDroppable();
+    }
+
+    sortableMovedOutFunction(id,new_position,type,new_parent,child_id){
+        console.log(type)
+        if(type=="outcomeworkflow" && confirm(gettext("You've moved an outcome to another workflow. Nodes tagged with this outcome will have it removed. Do you want to continue?"))){
+            insertedAt(this.props.renderer,null,"outcome",this.props.workflow.id,"workflow",new_position,"outcomeworkflow");
+            insertedAtInstant(this.props.renderer,child_id,"outcome",this.props.workflow.id,"workflow",new_position,"outcomeworkflow");
+        }
     }
     
 }

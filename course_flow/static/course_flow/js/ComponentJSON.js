@@ -529,6 +529,9 @@ export class EditableComponentWithSorting extends EditableComponentWithActions{
                 var drag_helper = ui.helper;
                 var new_index = drop_item.prevAll().length;
                 var new_parent_id = parseInt(drop_item.parent().attr("id")); 
+                console.log("tried to get new parent id");
+                console.log(new_parent_id);
+                console.log(drop_item.parent())
                 if(draggable_type=="nodeweek" && drag_item.hasClass("new-node")){
                     drag_helper.addClass("valid-drop");
                     drop_item.addClass("new-node-drop-over");
