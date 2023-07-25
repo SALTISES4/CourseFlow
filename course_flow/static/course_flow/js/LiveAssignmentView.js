@@ -31,7 +31,7 @@ export class LiveAssignmentMenu extends React.Component{
             <div class="project-menu">
                 <div class="project-header">
                     {reactDom.createPortal(
-                        <a id='live-project-return' href={update_path["liveproject"].replace(0,liveproject.pk)} class='floatbardiv hover-shade no-underline'>
+                        <a id='live-project-return' href={update_path["liveproject"].replace(0,liveproject.pk)} class='hover-shade no-underline'>
                             <span class="material-symbols-rounded">arrow_back_ios</span>
                             <div>{gettext("Return to Classroom")}</div>
                         </a>,

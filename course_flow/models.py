@@ -1282,6 +1282,11 @@ class LiveAssignment(models.Model):
     end_date = models.DateTimeField(default=default_due_date)
     created_on = models.DateTimeField(default=timezone.now)
 
+    @property
+    def title(self):
+        if self.task is not None:
+            return self.task.title
+
     def get_live_project(self):
         return self.liveproject
 

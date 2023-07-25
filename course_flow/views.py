@@ -1810,7 +1810,7 @@ class WorkflowDetailView(
     LoginRequiredMixin, UserCanViewOrEnrolledMixin, DetailView
 ):
     model = Workflow
-    fields = ["id", "title", "description"]
+    fields = ["id", "title", "description", "type"]
     template_name = "course_flow/workflow_update.html"
 
     def get_success_url(self):
@@ -6240,6 +6240,7 @@ class AssignmentDetailView(
     LoginRequiredMixin, UserEnrolledAsTeacherMixin, DetailView
 ):
     model = LiveAssignment
+    fields = ["task__title"]
     template_name = "course_flow/live_assignment_update.html"
 
     def get_context_data(self, **kwargs):

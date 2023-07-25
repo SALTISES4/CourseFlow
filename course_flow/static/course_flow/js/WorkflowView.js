@@ -427,6 +427,8 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
             );
             this.allowed_tabs=[1,2,3,4];
         }
+
+        if(data.is_strategy)return workflow_content;
         
         
         let view_buttons = [

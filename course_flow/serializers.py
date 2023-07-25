@@ -1736,7 +1736,7 @@ class LiveAssignmentSerializer(
     def get_task(self, instance):
         node = instance.task
         if node is not None:
-            return NodeSerializerForAssignments(node).data
+            return NodeSerializerForAssignments(node,context={"user":self.context.get("user",None)}).data
 
     def get_workflow_access(self, instance):
         try:
