@@ -433,10 +433,8 @@ msgid "My Favourites"
 msgstr "Mes favoris"
 
 #: templates/course_flow/base.html:214
-#, fuzzy
-#| msgid "see all"
 msgid "See all"
-msgstr "voir tout"
+msgstr "Voir tout"
 
 #: templates/course_flow/base.html:219
 msgid "Import from old CourseFlow"
@@ -496,8 +494,6 @@ msgstr ""
 
 #: templates/course_flow/comparison.html:24
 #: templates/course_flow/workflow_update.html:24
-#, fuzzy
-#| msgid "Add new"
 msgid "Add"
 msgstr "Ajouter"
 
