@@ -42,7 +42,6 @@ export class ExploreRenderer extends LibraryRenderer{
     }
 
     getContents(){
-        console.log(this.disciplines);
         return (
             <ExploreMenu disciplines={this.disciplines} renderer={this}/>
         )

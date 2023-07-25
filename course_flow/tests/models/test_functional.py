@@ -3980,7 +3980,6 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
         communicator = WebsocketCommunicator(application, url, headers)
         communicator.scope["user"] = user
         connected, subprotocol = async_to_sync_connect(communicator)
-        print(connected)
         assert connected
         my_input = async_to_sync_send_input(
             communicator, {"type": "micro_update", "action": "my_action"}

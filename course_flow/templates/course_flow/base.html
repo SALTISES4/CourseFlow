@@ -420,9 +420,6 @@
       let checkPosition = ()=>{
         let width = $(click_element).children(".create-dropdown").outerWidth(true);
         let left = $(click_element).offset().left;
-        console.log(width);
-        console.log(left);
-        console.log($(window).width())
         if(left+width > $(window).width())$(click_element).children(".create-dropdown").addClass("position-right");
         else $(click_element).children(".create-dropdown").removeClass("position-right");
       }

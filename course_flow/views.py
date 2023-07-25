@@ -175,6 +175,7 @@ class UserCanViewOrEnrolledMixin(UserPassesTestMixin):
                 ObjectPermission.PERMISSION_VIEW,
             )
         ):
+            print("updating last viewed")
             ObjectPermission.update_last_viewed(self.request.user, view_object)
             return True
         else:
@@ -1811,9 +1812,6 @@ class WorkflowDetailView(
     model = Workflow
     fields = ["id", "title", "description"]
     template_name = "course_flow/workflow_update.html"
-
-    def get_queryset(self):
-        return self.model.objects.select_subclasses()
 
     def get_success_url(self):
         return reverse(
@@ -3942,7 +3940,6 @@ def new_outcome_for_workflow(request: HttpRequest) -> HttpResponse:
     try:
         outcome = Outcome.objects.create(author=request.user)
         if objectset_id is not None:
-            print(objectset_id)
             objectset = ObjectSet.objects.get(id=objectset_id)
             outcome.sets.add(objectset)
         outcome_workflow = OutcomeWorkflow.objects.create(
@@ -4659,7 +4656,6 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
 def search_all_objects(request: HttpRequest) -> HttpResponse:
     name_filter = json.loads(request.POST.get("filter")).lower()
     data = json.loads(request.POST.get("additional_data", "{}"))
-    print(data)
     nresults = data.get("nresults", 10)
     full_search = data.get("full_search", False)
     published = data.get("published", False)
@@ -4749,7 +4745,6 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
                 return_objects = Project.objects.none()
     # Small search for library
     else:
-        print("else")
         all_objects = ObjectPermission.objects.filter(
             user=request.user
         ).filter(
@@ -4781,9 +4776,7 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
             if nresults > 0:
                 extra_objects = extra_objects[: nresults - count]
             return_objects += [x.content_object for x in extra_objects]
-        print("here")
         pages = {}
-    print(return_objects)
 
     return JsonResponse(
         {
@@ -4808,13 +4801,11 @@ Reorder methods
 @from_same_workflow(False, False, get_parent=True)
 @from_same_workflow(False, "columnPk")
 def inserted_at(request: HttpRequest) -> HttpResponse:
-    print("IN INSERTED AT")
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
     inserted = json.loads(request.POST.get("inserted", "false"))
     column_change = json.loads(request.POST.get("columnChange", "false"))
     changing_workflow = False
-    print("A")
     try:
         with transaction.atomic():
             if column_change:
@@ -4826,18 +4817,10 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 model.column = new_column
                 model.save()
             if inserted:
-                print("inserted")
-                print(object_type)
-                print(inserted)
-                print(column_change)
                 parent_id = json.loads(request.POST.get("parentID"))
                 parent_type = json.loads(request.POST.get("parentType"))
                 new_position = json.loads(request.POST.get("newPosition"))
                 through_type = json.loads(request.POST.get("throughType"))
-                print(parent_id)
-                print(parent_type)
-                print(new_position)
-                print(through_type)
                 model = get_model_from_str(object_type).objects.get(
                     id=object_id
                 )
@@ -4852,22 +4835,15 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                         workflow1.get_project().pk
                         == workflow2.get_project().pk
                     ):
-                        print("Different workflows, allowed")
                         if object_type == "node":
-                            print("we have a node")
                             model.outcomenode_set.all().delete()
-                            print("deleted outcomenodes")
                             same_type_columns = workflow2.columns.filter(
                                 column_type=model.column.column_type
                             )
                             if same_type_columns.count() > 0:
                                 new_column = same_type_columns.first()
-                                print("found a same type column")
                             else:
                                 new_column = workflow2.columns.all().first()
-                                print("took first column")
-                            print("found a new column: ")
-                            print(new_column)
                             model.column = new_column
                             model.save()
                             linked_workflows = Workflow.objects.filter(
@@ -4878,26 +4854,19 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                             or object_type == "outcome_base"
                         ):
                             OutcomeNode.objects.filter()
-                            print("we have an outcome")
                             outcomes_list = [object_id] + list(
                                 get_descendant_outcomes(model).values_list(
                                     "pk", flat=True
                                 )
                             )
-                            print("here are all the outcomes involved:")
-                            print(outcomes_list)
                             affected_nodes = (
                                 Node.objects.filter(
                                     outcomes__in=outcomes_list
                                 ).values_list("pk", flat=True),
                             )
-                            print("here are all the affected nodes")
-                            print(affected_nodes)
                             linked_workflows = Workflow.objects.filter(
                                 linked_nodes__outcomes__in=outcomes_list
                             )
-                            print("here are all the linked workflows")
-                            print(linked_workflows)
                             OutcomeNode.objects.filter(
                                 outcome__in=outcomes_list
                             ).delete()
@@ -4950,7 +4919,6 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     workflow = model.get_workflow()
     if inserted:
         if changing_workflow:
-            print("we changed the object's workflow")
             object_type_sent = object_type
             if object_type == "outcome" and through_type == "outcomeworkflow":
                 object_type_sent = "outcome_base"
@@ -4958,7 +4926,6 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
             extra_data = {}
             new_children_serialized = None
             if object_type == "outcome" or object_type == "outcome_base":
-                print("object was an outcome, refreshing the nodes")
                 extra_data = RefreshSerializerNode(
                     Node.objects.filter(pk__in=affected_nodes),
                     many=True,
@@ -4979,11 +4946,9 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                     ).data,
                 }
 
-            print("making the delete action")
             delete_action = actions.deleteSelfAction(
                 object_id, object_type_sent, old_through_id, extra_data
             )
-            print("dispatching the delete action")
             actions.dispatch_wf(
                 workflow1,
                 delete_action,
@@ -5002,19 +4967,16 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 "children": new_children_serialized,
             }
 
-            print("dispatching the insertion")
             actions.dispatch_wf(
                 workflow2,
                 actions.insertBelowAction(response_data, object_type_sent),
             )
             # Send the relevant signals to parent and child workflows
             if object_type == "outcome" or object_type == "outcome_base":
-                print("this was an outcome, dispatching to parent workflow")
                 actions.dispatch_to_parent_wf(
                     workflow1,
                     delete_action,
                 )
-                print("dispatching to linked workflows (if any")
                 if linked_workflows:
                     for wf in linked_workflows:
                         actions.dispatch_wf(wf, delete_action)
@@ -5029,7 +4991,6 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 and object_type != "outcome_base"
                 and linked_workflows
             ):
-                print("not an outcome, dispatching to child workflows")
                 for wf in linked_workflows:
                     actions.dispatch_parent_updated(wf)
         else:
@@ -5811,7 +5772,6 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                 .column.id
             )
     except (ProtectedError, ObjectDoesNotExist):
-        print("ERRORS")
         return JsonResponse({"action": "error"})
 
     try:

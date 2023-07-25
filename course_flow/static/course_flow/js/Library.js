@@ -960,24 +960,19 @@ export class ExploreFilter extends WorkflowFilter{
     }
 
     componentDidMount(){
-        console.log("mounted")
         makeDropdown(this.disciplineDOM.current)
         super.componentDidMount()
     }
 
     searchResults(response_data,pages){
-        console.log("searched, here's your data");
-        console.log(pages);
         this.setState({workflows:response_data,pages:pages});
     }
 
     filterChange(filter,evt){
-        console.log("filter change");
         let name = filter.name;
         let new_filter = this.state.active_filters.slice();
         if(new_filter.indexOf(name)>=0)new_filter.splice(new_filter.indexOf(name),1);
         else new_filter.push(name);
-        console.log(new_filter);
         this.setState({active_filters:new_filter,has_searched:false});
     }
 
@@ -995,7 +990,6 @@ export class ExploreFilter extends WorkflowFilter{
     }
 
     searchChange(evt){
-        console.log("search term changed")
         this.setState({has_searched:false})
         /*let component=this;
         if(evt.target.value && evt.target.value!=""){
@@ -1131,8 +1125,6 @@ export class WorkflowForMenu extends React.Component{
     }
 
     clickAction(){
-        console.log("CLICK");
-        console.log(this.props.selectAction);
         if(this.props.selectAction){
             this.props.selectAction(this.props.workflow_data.id);
         }else{
@@ -1167,19 +1159,3 @@ export class WorkflowForMenuCondensed extends WorkflowForMenu{
     }
 }
 
-// export function renderMessageBox(data,type,updateFunction){
-//     console.log("RENDERING message box");
-//     console.log(data);
-//     console.log(type);
-//     console.log(updateFunction);
-//     reactDom.render(
-//         <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
-//         $("#popup-container")[0]
-//     );
-// }
-
-
-
-// export function closeMessageBox(){
-//     reactDom.render(null,$("#popup-container")[0]);
-// }

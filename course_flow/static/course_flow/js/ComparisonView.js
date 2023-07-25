@@ -414,7 +414,6 @@ class OutcomeComparisonViewUnconnected extends OutcomeEditViewUnconnected{
     }
 
     sortableMovedOutFunction(id,new_position,type,new_parent,child_id){
-        console.log(type)
         if(type=="outcomeworkflow" && confirm(gettext("You've moved an outcome to another workflow. Nodes tagged with this outcome will have it removed. Do you want to continue?"))){
             insertedAt(this.props.renderer,null,"outcome",this.props.workflow.id,"workflow",new_position,"outcomeworkflow");
             insertedAtInstant(this.props.renderer,child_id,"outcome",this.props.workflow.id,"workflow",new_position,"outcomeworkflow");

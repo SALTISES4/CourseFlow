@@ -52,8 +52,6 @@ export function getWorkflowSelectMenu(projectPk,type_filter,get_strategies,self_
 }
 
 export function getLinkedWorkflowMenu(nodeData,updateFunction,callBackFunction=()=>console.log("success")){
-    console.log("getting linked wf menu");
-    console.log(nodeData);
     $.post(post_paths.get_possible_linked_workflows,
     {
         nodePk:JSON.stringify(nodeData.id),
@@ -158,8 +156,6 @@ export function toggleDrop(objectID,objectType,is_dropped,dispatch,depth=1){
         if(is_dropped!=default_drop)window.localStorage.setItem(objectType+objectID,is_dropped);
         else window.localStorage.removeItem(objectType+objectID);
     }catch(err){
-        console.log("couldn't set local storage");
-        console.log(err);
         if(err.name=="QuotaExceededError"||err.name=="NS_ERROR_DOM_QUOTA_REACHED"){
             window.localStorage.clear();
         }
@@ -435,7 +431,6 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
     }
     $(document).off(throughType+"-dropped");
     if(objectID)$(document).on(throughType+"-dropped",()=>{
-        console.log("Dropped dragged item");
         dragAction(renderer,renderer.dragAction[throughType]);
         renderer.dragAction[throughType]=null;
         $(document).off(throughType+"-dropped");

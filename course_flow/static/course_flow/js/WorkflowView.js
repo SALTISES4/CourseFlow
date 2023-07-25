@@ -1220,8 +1220,6 @@ class RestoreBarItem extends Component{
 //         var strategies = this.props.available_strategies.map((strategy)=>
 //             <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
 //         );
-//         console.log("saltise strats")
-//         console.log(this.props.saltise_strategies)
 //         var saltise_strategies = this.props.saltise_strategies.map((strategy)=>
 //             <StrategyView key={strategy.id} objectID={strategy.id} data={strategy}/>
 //         );

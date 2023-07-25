@@ -328,7 +328,6 @@ def get_course_frameworks_export(
         workflows = [model_object]
     with BytesIO() as b:
         if export_format == "excel":
-            print("creating writer")
             writer = pd.ExcelWriter(b, engine="xlsxwriter")
             workbook = writer.book
             header_format = workbook.add_format({"bg_color": "#b5fbbb"})
@@ -351,7 +350,6 @@ def get_course_frameworks_export(
                     sheet_name=sheet_name,
                     index=False,
                 )
-                print("adding formatting")
                 worksheet = writer.sheets[sheet_name]
                 worksheet.set_column(0, 0, 20, wrap_format)
                 worksheet.set_column(1, 1, 40, wrap_format)
@@ -404,7 +402,6 @@ def get_course_frameworks_export(
                 )
                 df = df.append({"0": ""}, ignore_index=True)
             df.to_csv(path_or_buf=b, sep=",", index=False)
-        print("returning file")
         return b.getvalue()
 
 

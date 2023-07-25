@@ -326,18 +326,13 @@ export class WorkflowRenderer{
         this.fetching_child_data = true;
         this.child_data_completed++;
         this.getWorkflowChildData(this.child_data_needed[this.child_data_completed],(response)=>{
-            console.log("got response");
-            console.log(response);
             this.store.dispatch(Reducers.refreshStoreData(response.data_package));
-            console.log("dispatched");
             setTimeout(()=>this.getDataForChildWorkflow(),50);
         });
     }
 
     //Lets the renderer know that it must load the child data for that workflow
     childWorkflowDataNeeded(node_id){
-        console.log("I need data "+node_id);
-        console.log(this.child_data_needed);
         if(this.child_data_needed.indexOf(node_id)<0){
             this.child_data_needed.push(node_id);
             if(!this.fetching_child_data){
@@ -409,15 +404,12 @@ export class WorkflowRenderer{
     }
 
     child_workflow_updated(edit_count,child_workflow_id){
-        console.log("child workflow updated");
-        console.log(child_workflow_id);
         this.messages_queued=true;
         let renderer = this;
         let state=this.store.getState();
         let node = state.node.find(node=>node.linked_workflow==child_workflow_id);
         if(!node)return;
         this.getWorkflowChildData(node.id,(response)=>{
-            console.log("getting child workflow data");
             renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
             renderer.clear_queue(0);
         });
