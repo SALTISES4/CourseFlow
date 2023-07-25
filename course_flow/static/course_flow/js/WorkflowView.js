@@ -239,7 +239,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         if(this.props.renderer.read_only)return null;
         if(!this.props.data.deleted)return (
             <div class="hover-shade" onClick={this.deleteWorkflow.bind(this)}>
-                <div>{gettext("Delete Workflow")}</div>
+                <div>{gettext("Archive Workflow")}</div>
             </div>
         )
         else return([

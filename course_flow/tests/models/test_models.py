@@ -2856,6 +2856,7 @@ class PermissionsTests(TestCase):
         author = get_author()
         project = Project.objects.create(author=author)
         workflow = Course.objects.create(author=author)
+        node = workflow.weeks.first().nodes.create(author=author)
         WorkflowProject.objects.create(project=project, workflow=workflow)
 
         response = self.client.get(
@@ -2872,7 +2873,7 @@ class PermissionsTests(TestCase):
         response = self.client.get(
             reverse(
                 "course_flow:get-public-workflow-child-data",
-                args=[workflow.pk],
+                args=[node.pk],
             ),
             REMOTE_ADDR="127.0.0.1",
         )
@@ -2911,7 +2912,7 @@ class PermissionsTests(TestCase):
             else:
                 self.assertEqual(response.status_code, 429)
 
-        for i in range(6):
+        for i in range(51):
             response = self.client.get(
                 reverse(
                     "course_flow:get-public-workflow-child-data",
@@ -2919,7 +2920,7 @@ class PermissionsTests(TestCase):
                 ),
                 REMOTE_ADDR="127.0.0.1",
             )
-            if i < 4:
+            if i < 49:
                 self.assertEqual(response.status_code, 200)
             else:
                 self.assertEqual(response.status_code, 429)

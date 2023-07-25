@@ -540,9 +540,11 @@ def user_is_teacher():
 
 
 def public_model_access(model, **outer_kwargs):
+    rate_per_min = outer_kwargs.get("rate", 5)
+
     def wrapped_view(fct):
         @require_GET
-        @ratelimit(key="ip", rate="5/m", method=["GET"])
+        @ratelimit(key="ip", rate=str(rate_per_min) + "/m", method=["GET"])
         @wraps(fct)
         def _wrapped_view(
             request, model=model, outer_kwargs=outer_kwargs, *args, **kwargs

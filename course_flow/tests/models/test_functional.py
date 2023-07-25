@@ -1028,10 +1028,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element_by_id("project-description-input").send_keys(
             "new description"
         )
-        selenium.find_elements_by_css_selector("#disciplines_all option")[
+        selenium.find_element_by_id("project-discipline-input").click()
+        selenium.find_elements_by_css_selector(".ui-autocomplete li")[
             0
         ].click()
-        selenium.find_element_by_css_selector("#add-discipline").click()
         selenium.find_element_by_id("save-changes").click()
         assert (
             "new title"
@@ -1790,7 +1790,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             selenium.find_element_by_id("toggle-strategy-editor").click()
             time.sleep(4)
             selenium.find_element_by_css_selector(
-                "a[href='#strategy-bar']"
+                "a[href='#node-bar']"
             ).click()
             assert (
                 "new strategy"
@@ -2595,10 +2595,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
     def create_many_items(self, author, published, disciplines):
         for object_type in [
-            "project",
             "activity",
             "course",
             "program",
+            "project",
         ]:
             for i in range(10):
                 item = get_model_from_str(object_type).objects.create(
@@ -2606,7 +2606,24 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                     published=published,
                     title=object_type + str(i),
                 )
-                item.disciplines.set(disciplines)
+                if object_type in ["activity", "course", "program"]:
+                    item.weeks.first().nodes.create(author=author)
+                    item.weeks.first().nodes.create(author=author)
+                    item.weeks.first().nodes.create(author=author)
+                else:
+                    item.disciplines.set(disciplines)
+                    WorkflowProject.objects.create(
+                        workflow=Activity.objects.filter(project=None).first(),
+                        project=item,
+                    )
+                    WorkflowProject.objects.create(
+                        workflow=Course.objects.filter(project=None).first(),
+                        project=item,
+                    )
+                    WorkflowProject.objects.create(
+                        workflow=Program.objects.filter(project=None).first(),
+                        project=item,
+                    )
 
     def test_explore(self):
         selenium = self.selenium
@@ -2614,22 +2631,22 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         author = get_author()
         discipline = Discipline.objects.create(title="Discipline1")
         self.create_many_items(author, True, disciplines=[discipline])
-        selenium.get(
-            self.live_server_url
-            + reverse("course_flow:explore")
-            + "?results=10"
-        )
+        self.create_many_items(author, True, disciplines=[discipline])
+        selenium.get(self.live_server_url + reverse("course_flow:explore"))
+        selenium.find_element_by_id("workflow-filter").click()
         for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type li .input"
+            "#workflow-filter input"
         ):
             checkbox.click()
-        selenium.find_element_by_id("submit").click()
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         time.sleep(1)
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".page-button")), 4
         )
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
         )
         selenium.find_elements_by_css_selector(".page-button")[2].click()
         time.sleep(1)
@@ -2637,7 +2654,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             len(selenium.find_elements_by_css_selector(".page-button")), 4
         )
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
         )
         assert "active" in selenium.find_elements_by_css_selector(
             ".page-button"
@@ -2648,7 +2665,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             len(selenium.find_elements_by_css_selector(".page-button")), 4
         )
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
         )
         assert "active" in selenium.find_elements_by_css_selector(
             ".page-button"
@@ -2659,53 +2676,32 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             len(selenium.find_elements_by_css_selector(".page-button")), 4
         )
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
         )
         assert "active" in selenium.find_elements_by_css_selector(
             ".page-button"
         )[2].get_attribute("class")
+        selenium.find_element_by_id("workflow-disciplines").click()
         for checkbox in selenium.find_elements_by_css_selector(
-            "#search-discipline .input"
+            "#workflow-disciplines input"
         ):
             checkbox.click()
-        selenium.find_element_by_id("submit").click()
-        self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
-        )
-        self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".page-button")), 4
-        )
-        selenium.find_element_by_css_selector("select[name='results']").click()
-        time.sleep(0.5)
-        selenium.find_elements_by_css_selector(
-            "select[name='results'] option"
-        )[1].click()
-        time.sleep(0.5)
-        selenium.find_element_by_id("submit").click()
-        time.sleep(1)
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".workflow-title")), 20
         )
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".page-button")), 2
+            len(selenium.find_elements_by_css_selector(".page-button")), 4
         )
-        selenium.find_element_by_css_selector("select[name='results']").click()
-        selenium.find_elements_by_css_selector(
-            "select[name='results'] option"
-        )[2].click()
-        selenium.find_element_by_id("submit").click()
+        selenium.find_element_by_id("workflow-search-input").send_keys("1")
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 40
-        )
-        self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".page-button")), 1
-        )
-        selenium.find_element_by_id("search-keyword").send_keys("1")
-        selenium.find_element_by_id("submit").click()
-        time.sleep(1)
-        self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 4
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 8
         )
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".page-button")), 1
@@ -2720,25 +2716,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 user=self.user,
                 content_type=ContentType.objects.get_for_model(Project),
             ).count(),
-            1,
+            2,
         )
         self.assertEqual(
             Favourite.objects.filter(
                 user=self.user,
                 content_type=ContentType.objects.get_for_model(Workflow),
             ).count(),
-            3,
-        )
-        selenium.find_element_by_css_selector("select[name='results']").click()
-        selenium.find_elements_by_css_selector(
-            "select[name='results'] option"
-        )[0].click()
-        selenium.find_element_by_id("submit").click()
-        self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 4
-        )
-        self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".page-button")), 1
+            6,
         )
 
     def test_explore_no_publish(self):
@@ -2748,11 +2733,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         discipline = Discipline.objects.create(title="Discipline1")
         self.create_many_items(author, False, disciplines=[discipline])
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
-        for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type li .input"
-        ):
-            checkbox.click()
-        selenium.find_element_by_id("submit").click()
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".page-button")), 0
         )
@@ -2771,58 +2754,61 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         self.create_many_items(
             author, True, disciplines=[discipline1, discipline2]
         )
-        selenium.get(
-            self.live_server_url
-            + reverse("course_flow:explore")
-            + "?results=10"
-        )
-        for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type li .input"
-        ):
-            checkbox.click()
-        selenium.find_element_by_id("submit").click()
+        selenium.get(self.live_server_url + reverse("course_flow:explore"))
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".page-button")), 12
+            selenium.find_elements_by_css_selector(".page-button")[4].text, "6"
         )
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
         )
-        selenium.find_elements_by_css_selector("#search-discipline li .input")[
+        selenium.find_element_by_id("workflow-disciplines").click()
+        selenium.find_elements_by_css_selector("#workflow-disciplines input")[
             0
         ].click()
-        selenium.find_element_by_id("submit").click()
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".page-button")), 8
+            len(selenium.find_elements_by_css_selector(".page-button")), 4
         )
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
         )
-        selenium.find_elements_by_css_selector("#search-discipline li .input")[
+        selenium.find_element_by_id("workflow-disciplines").click()
+        selenium.find_elements_by_css_selector("#workflow-disciplines input")[
             0
         ].click()
-        selenium.find_elements_by_css_selector("#search-discipline li .input")[
+        selenium.find_elements_by_css_selector("#workflow-disciplines input")[
             1
         ].click()
-        selenium.find_element_by_id("submit").click()
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".page-button")), 8
+            len(selenium.find_elements_by_css_selector(".page-button")), 4
         )
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
         )
-        selenium.find_elements_by_css_selector("#search-discipline li .input")[
+        selenium.find_element_by_id("workflow-disciplines").click()
+        selenium.find_elements_by_css_selector("#workflow-disciplines input")[
             0
         ].click()
-        selenium.find_element_by_id("submit").click()
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         time.sleep(1)
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".page-button")), 12
+            selenium.find_elements_by_css_selector(".page-button")[4].text, "6"
         )
         self.assertEqual(
-            len(selenium.find_elements_by_css_selector(".workflow-title")), 10
+            len(selenium.find_elements_by_css_selector(".workflow-title")), 20
         )
 
     def test_share_edit_view(self):
@@ -3044,7 +3030,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
 
             # Restore the column
             selenium.find_element_by_css_selector(
-                "a[href='#restore-bar'] img"
+                "a[href='#restore-bar'] span"
             ).click()
             selenium.find_element_by_css_selector(
                 "#restore-bar-workflow .node-bar-column-block button"
@@ -3143,7 +3129,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
 
             # Restore the node
             selenium.find_element_by_css_selector(
-                "a[href='#restore-bar'] img"
+                "a[href='#restore-bar'] span"
             ).click()
             selenium.find_element_by_css_selector(
                 "#restore-bar-workflow .node-bar-column-block button"
@@ -3318,7 +3304,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
 
             # Restore the outcome
             selenium.find_element_by_css_selector(
-                "a[href='#restore-bar'] img"
+                "a[href='#restore-bar'] span"
             ).click()
             selenium.find_element_by_css_selector(
                 "#restore-bar-workflow .node-bar-column-block button"

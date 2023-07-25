@@ -256,7 +256,7 @@ export class ProjectMenu extends LibraryMenu{
     getDeleteProject(){
         if(!this.state.data.deleted)return (
             <div class="hover-shade" onClick={this.deleteProject.bind(this)}>
-                <div>{gettext("Delete Project")}</div>
+                <div>{gettext("Archive Project")}</div>
             </div>
         )
         else return([

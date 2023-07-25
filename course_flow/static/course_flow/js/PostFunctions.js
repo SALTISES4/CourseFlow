@@ -636,10 +636,10 @@ export function getPublicWorkflowParentData(workflowPk,callBackFunction=()=>cons
 }
 
 //Get the public data from all child workflows
-export function getPublicWorkflowChildData(workflowPk,callBackFunction=()=>console.log("success")){
+export function getPublicWorkflowChildData(nodePk,callBackFunction=()=>console.log("success")){
     try{
         $.get(
-                get_paths.get_public_workflow_child_data.replace("0",workflowPk)
+                get_paths.get_public_workflow_child_data.replace("0",nodePk)
         ).done(function(data){
             if(data.action=="posted")callBackFunction(data);
             else fail_function(data.action)
