@@ -2945,12 +2945,13 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         self.selenium.quit()
         super(SeleniumDeleteRestoreTestCase, self).tearDown()
 
+    
     def create_many_items(self, author, published, disciplines):
         for object_type in [
-            "project",
             "activity",
             "course",
             "program",
+            "project",
         ]:
             for i in range(10):
                 item = get_model_from_str(object_type).objects.create(
@@ -2958,7 +2959,24 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
                     published=published,
                     title=object_type + str(i),
                 )
-                item.disciplines.set(disciplines)
+                if object_type in ["activity", "course", "program"]:
+                    item.weeks.first().nodes.create(author=author)
+                    item.weeks.first().nodes.create(author=author)
+                    item.weeks.first().nodes.create(author=author)
+                else:
+                    item.disciplines.set(disciplines)
+                    WorkflowProject.objects.create(
+                        workflow=Activity.objects.filter(project=None).first(),
+                        project=item,
+                    )
+                    WorkflowProject.objects.create(
+                        workflow=Course.objects.filter(project=None).first(),
+                        project=item,
+                    )
+                    WorkflowProject.objects.create(
+                        workflow=Program.objects.filter(project=None).first(),
+                        project=item,
+                    )
 
     def test_delete_restore_column(self):
         selenium = self.selenium
@@ -3516,34 +3534,14 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         author = get_author()
         discipline = Discipline.objects.create(title="Discipline1")
         self.create_many_items(author, True, disciplines=[discipline])
-        project_list = list(Project.objects.all().values_list("pk", flat=True))
-        activity_list = list(
-            Activity.objects.all().values_list("pk", flat=True)
-        )
-        course_list = list(Course.objects.all().values_list("pk", flat=True))
-        program_list = list(Program.objects.all().values_list("pk", flat=True))
-        for i, project in enumerate(project_list):
-            WorkflowProject.objects.create(
-                project=Project.objects.get(id=project_list[i]),
-                workflow=Workflow.objects.get(id=activity_list[i]),
-            )
-            WorkflowProject.objects.create(
-                project=Project.objects.get(id=project_list[i]),
-                workflow=Workflow.objects.get(id=course_list[i]),
-            )
-            WorkflowProject.objects.create(
-                project=Project.objects.get(id=project_list[i]),
-                workflow=Workflow.objects.get(id=program_list[i]),
-            )
+
         Workflow.objects.all().update(deleted=True)
         # make deleted workflows don't show up in explore
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
 
-        for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type li .input"
-        ):
-            checkbox.click()
-        selenium.find_element_by_id("submit").click()
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         time.sleep(1)
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".page-button")), 1
@@ -3554,11 +3552,9 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         Project.objects.all().update(deleted=True)
         # make deleted projects don't show up in explore
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
-        for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type li .input"
-        ):
-            checkbox.click()
-        selenium.find_element_by_id("submit").click()
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         time.sleep(1)
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".page-button")), 0
@@ -3569,11 +3565,9 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         Workflow.objects.all().update(deleted=False)
         # make workflows from deleted projects don't show up in explore
         selenium.get(self.live_server_url + reverse("course_flow:explore"))
-        for checkbox in selenium.find_elements_by_css_selector(
-            "#search-type li .input"
-        ):
-            checkbox.click()
-        selenium.find_element_by_id("submit").click()
+        selenium.find_element_by_css_selector(
+            "#workflow-search+button"
+        ).click()
         time.sleep(1)
         self.assertEqual(
             len(selenium.find_elements_by_css_selector(".page-button")), 0
@@ -3630,7 +3624,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         ).click()
         time.sleep(1)
         self.assertEqual(project.object_sets.count(), 1)
-        selenium.find_element_by_css_selector(".nomenclature-row img").click()
+        selenium.find_element_by_css_selector(".nomenclature-row .material-symbols-rounded").click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
         time.sleep(2)
