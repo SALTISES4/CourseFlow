@@ -56,8 +56,8 @@ export class ShareMenu extends React.Component{
         return(
             <div class="message-wrap user-text">
                 <h2>
-                    {gettext("Share")+" "+gettext(data.type)}
-                    <WorkflowTitle no_hyperlink={true} data={this.props.data}/>
+                    {gettext("Share")+" "+gettext(data.type)+" "}
+                    <WorkflowTitle no_hyperlink={true} data={this.props.data} class_name={"inline"}/>
                 </h2>
                 {this.getPublication()}
                 <hr/>
@@ -69,6 +69,7 @@ export class ShareMenu extends React.Component{
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
                     <span class="green material-symbols-rounded">close</span>
                 </div>
+                <div class="action-bar"><button class="secondary-button" onClick={this.props.actionFunction}>{gettext("Close")}</button></div>
             </div>
         );
         

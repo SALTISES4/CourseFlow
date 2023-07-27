@@ -43,6 +43,11 @@ export class WorkflowsMenu extends React.Component{
     constructor(props){
         super(props);
         this.state={};
+        if(this.props.type=="target_project_menu"){
+            try{this.current_project = project_data}catch(err){}
+            try{this.current_project = workflow_data_package.project}catch(err){}
+            if(this.current_project)this.state.selected=this.current_project.id;
+        }
         if(this.props.type=="linked_workflow_menu"||this.props.type=="added_workflow_menu")this.project_workflows = props.data.data_package.current_project.sections.map(section=>section.objects.map((object)=>object.id)).flat();
     }
     
@@ -62,9 +67,21 @@ export class WorkflowsMenu extends React.Component{
             )
             i++;
         }
+        let current_project;
+        if(this.current_project){
+            current_project = [
+                <h4 class={"big-space"}>{gettext("Current project")}</h4>,
+                <div class="menu-grid">
+                    <WorkflowForMenu workflow_data={this.current_project} selected={(this.state.selected==this.current_project.id)} no_hyperlink={no_hyperlink} type={this.props.type} dispatch={this.props.dispatch} selectAction={this.workflowSelected.bind(this)}/>
+                </div>,
+                <hr class={"big-space"}/>,
+                <h4 class={"big-space"}>{gettext("Or select from your projects")}</h4>,
+            ]
+        }
         return(
             <div class="message-wrap">
                 {this.getTitle()}
+                {current_project}
                 <div class="home-tabs" id="workflow-tabs">
                     <ul>
                         {tab_li}

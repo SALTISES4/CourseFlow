@@ -614,12 +614,14 @@ export class WorkflowLoader extends React.Component{
 }
 
 export function CreateNew(create_url){
+    let tiny_loader = new TinyLoader($('body')[0]);
+    tiny_loader.startLoad();
     getTargetProjectMenu(-1,(response_data)=>{
         if(response_data.parentID!=null){
             let loader = new Constants.Loader('body');
             window.location=create_url.replace("/0/","/"+response_data.parentID+"/");
         }
-    });
+    },()=>{tiny_loader.endLoad();});
 }
 
 

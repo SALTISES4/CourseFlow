@@ -1102,7 +1102,7 @@ export class WorkflowForMenu extends React.Component{
             </div>
         );
         let workflows=[];
-        if(this.props.workflow_data.type=="project")workflows.push(
+        if(this.props.workflow_data.type=="project" && !(this.props.workflow_data.workflow_count ==null))workflows.push(
             <div class="workflow-created">{this.props.workflow_data.workflow_count+" "+gettext("workflows")}</div>
         );
         if(this.props.workflow_data.type=="project" && this.props.workflow_data.has_liveproject && this.props.workflow_data.object_permission.role_type != Constants.role_keys["none"])workflows.push(

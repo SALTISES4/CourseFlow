@@ -166,6 +166,21 @@ button{
     position: relative;
 }
 
+.inline{
+    display: inline;
+}
+
+hr.big-space{
+    margin-top: 30px;
+    margin-bottom: 30px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+h4.big-space, h3.big-space{
+    margin-bottom: 20px;
+}
+
 [contentEditable=true]:empty:not(:focus):before {
   content: attr(data-text);
   color: grey;
@@ -914,6 +929,9 @@ button:hover{
     flex-wrap:wrap;
 }
 
+.message-wrap .menu-grid{
+    margin-bottom: 10px;
+}
 
 .menu-grid > .workflow-for-menu{
     width:350px;
@@ -1146,12 +1164,17 @@ button:hover{
     background: #EEFFF8;
 }
 
+.user-add .search-input{
+    width: 100%;
+}
+
 .search-input{
     border-radius: 12px;
     border: 1px solid lightgrey;
     padding:  4px;
     padding-left: 28px;
     padding-right: 10px;
+    box-sizing: border-box;
 }
 
 .search-filter-lock{
@@ -1614,10 +1637,12 @@ button:hover{
     box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.3);
     border-radius:  15px;
     overflow: hidden;
-    height: 100%;
     max-width: 1100px;
     width: 80%;
     height: 80%;
+    max-height: fit-content;
+    box-sizing: border-box;
+    padding-bottom: 50px;
 }
 
 .message-wrap .home-tabs{

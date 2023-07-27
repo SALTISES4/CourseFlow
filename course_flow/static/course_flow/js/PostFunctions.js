@@ -63,10 +63,13 @@ export function getLinkedWorkflowMenu(nodeData,updateFunction,callBackFunction=(
     );
 }
 
-export function getTargetProjectMenu(workflowPk,updateFunction){
+export function getTargetProjectMenu(workflowPk,updateFunction,callBackFunction=()=>console.log("success")){
     $.post(post_paths.get_target_projects,{
         workflowPk:JSON.stringify(workflowPk)
-    },(data)=>openTargetProjectMenu(data,updateFunction));
+    },(data)=>{
+        callBackFunction();
+        openTargetProjectMenu(data,updateFunction);
+    });
 }
 
 export function openLinkedWorkflowMenu(response,updateFunction){
