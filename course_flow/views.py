@@ -175,7 +175,6 @@ class UserCanViewOrEnrolledMixin(UserPassesTestMixin):
                 ObjectPermission.PERMISSION_VIEW,
             )
         ):
-            print("updating last viewed")
             ObjectPermission.update_last_viewed(self.request.user, view_object)
             return True
         else:
@@ -1463,12 +1462,10 @@ def get_parent_outcome_data(workflow, user):
 
 
 def get_child_outcome_data(workflow, user, parent_workflow):
-    last_time = time.time()
     nodes = Node.objects.filter(
         week__workflow=parent_workflow, linked_workflow=workflow
     )
     linked_workflows = [workflow]
-    last_time = benchmark("got linked workflows", last_time)
     child_workflow_outcomeworkflows = []
     child_workflow_outcomes = []
     child_workflow_outcomeoutcomes = []
@@ -1483,7 +1480,6 @@ def get_child_outcome_data(workflow, user, parent_workflow):
         child_workflow_outcomes += new_child_workflow_outcomes
         child_workflow_outcomeoutcomes += new_child_workflow_outcomeoutcomes
 
-    last_time = benchmark("iterated linked workflows", last_time)
 
     outcomehorizontallinks = []
     for child_outcome in child_workflow_outcomes:
@@ -1493,8 +1489,6 @@ def get_child_outcome_data(workflow, user, parent_workflow):
         outcome_type = linked_workflows[0].type + " outcome"
     else:
         outcome_type = workflow.type + " outcome"
-
-    last_time = benchmark("database hits", last_time)
 
     response_data = {
         "node": NodeSerializerShallow(
@@ -1519,7 +1513,6 @@ def get_child_outcome_data(workflow, user, parent_workflow):
         ).data,
     }
 
-    benchmark("Sent", last_time)
 
     return response_data
 
