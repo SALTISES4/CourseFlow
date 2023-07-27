@@ -973,8 +973,14 @@ button:hover{
     border-radius: 4px;
     text-decoration: none;
     color: #444444;
+}
 
+.workflow-buttons-row .linked-workflow-warning{
+    display: none;
+}
 
+.linked_workflow_menu .linked-workflow-warning{
+    display: block;
 }
 
 .workflow-for-menu .workflow-toggle-favourite{

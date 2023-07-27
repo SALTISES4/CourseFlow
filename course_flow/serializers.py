@@ -1297,6 +1297,7 @@ class InfoBoxSerializer(
     object_permission = serializers.SerializerMethodField()
     has_liveproject = serializers.SerializerMethodField()
     workflow_count = serializers.SerializerMethodField()
+    is_linked = serializers.SerializerMethodField()
 
     def get_workflow_count(self, instance):
         if instance.type == "project":
@@ -1359,6 +1360,11 @@ class InfoBoxSerializer(
         if instance.type == "project":
             if LiveProject.objects.filter(project=instance).count() > 0:
                 return True
+        return False
+
+    def get_is_linked(self, instance):
+        if instance.type not in ["project", "liveproject"]:
+            return len(Node.objects.filter(linked_workflow=instance)) > 0
         return False
 
 
@@ -1736,7 +1742,9 @@ class LiveAssignmentSerializer(
     def get_task(self, instance):
         node = instance.task
         if node is not None:
-            return NodeSerializerForAssignments(node,context={"user":self.context.get("user",None)}).data
+            return NodeSerializerForAssignments(
+                node, context={"user": self.context.get("user", None)}
+            ).data
 
     def get_workflow_access(self, instance):
         try:

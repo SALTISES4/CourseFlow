@@ -214,6 +214,7 @@ button, input[type="submit"]{
     font-weight:600;
     font-size:14px;
     white-space: normal;
+    overflow: hidden;
 }
 
 .week-workflow.dragging{
@@ -2332,6 +2333,8 @@ circle.mouseover{
 
 .comparison-view .workflow-details{
     padding:5px;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .comparison-view .workflow-wrapper{

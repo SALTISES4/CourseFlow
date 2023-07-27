@@ -273,7 +273,6 @@ class WorkflowComparisonBaseViewUnconnected extends EditableComponent{
                 </div>,
                 <div class = "workflow-container">
                     {this.addEditable(data,true)}
-                    
                     {workflow_content}
                     
                 </div>

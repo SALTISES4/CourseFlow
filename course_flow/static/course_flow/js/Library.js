@@ -1112,6 +1112,9 @@ export class WorkflowForMenu extends React.Component{
                 <span class="material-symbols-rounded small-inline" title={gettext("Live Classroom")}>group</span>{" "+gettext("Live Classroom")}
             </a>
         );
+        if(this.props.workflow_data.is_linked)workflows.push(
+            <div class="workflow-created linked-workflow-warning" title={gettext("Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.")}><span class="material-symbols-rounded red filled small-inline">error</span>{" "+gettext("Already in use")}</div>
+        )
         return (
             <div class="workflow-buttons-row">
                 <div>
