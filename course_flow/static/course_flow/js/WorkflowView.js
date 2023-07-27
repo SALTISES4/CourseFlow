@@ -1186,7 +1186,7 @@ class RestoreBarItem extends Component{
 
     getTitle(){
         if(this.props.data.title && this.props.data.title !== "")return this.props.data.title;
-        if(this.props.objectType=="node" && (this.props.data.represents_workflow && this.props.data.linked_workflow_data.title && this.props.data.linked_workflow_data.title !== ""))return this.props.data.linked_workflow_data.title;
+        if(this.props.objectType=="node" && (this.props.data.represents_workflow && this.props.linked_workflow_data && this.props.data.linked_workflow_data.title && this.props.data.linked_workflow_data.title !== ""))return this.props.data.linked_workflow_data.title;
         return gettext("Untitled");
     }
     

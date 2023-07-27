@@ -272,7 +272,7 @@ class WorkflowComparisonBaseViewUnconnected extends EditableComponent{
                     <WorkflowForMenu workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
                 </div>,
                 <div class = "workflow-container">
-                    {this.addEditable(data)}
+                    {this.addEditable(data,true)}
                     
                     {workflow_content}
                     
