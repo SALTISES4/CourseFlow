@@ -11,6 +11,7 @@ safety
 selenium
 tox
 twine
+xlsxwriter
 
 daphne >= 4
 twisted[tls] == 22.8.0

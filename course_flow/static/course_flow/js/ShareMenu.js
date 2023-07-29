@@ -55,10 +55,10 @@ export class ShareMenu extends React.Component{
 
         return(
             <div class="message-wrap user-text">
-                <div class="workflow-title-bar">
-                    {gettext("Share")+" "+gettext(data.type)}
-                    <WorkflowTitle no_hyperlink={true} data={this.props.data}/>
-                </div>
+                <h2>
+                    {gettext("Share")+" "+gettext(data.type)+" "}
+                    <WorkflowTitle no_hyperlink={true} data={this.props.data} class_name={"inline"}/>
+                </h2>
                 {this.getPublication()}
                 <hr/>
                 <p>{gettext("Owned By")}:</p>
@@ -69,6 +69,7 @@ export class ShareMenu extends React.Component{
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
                     <span class="green material-symbols-rounded">close</span>
                 </div>
+                <div class="action-bar"><button class="secondary-button" onClick={this.props.actionFunction}>{gettext("Close")}</button></div>
             </div>
         );
         
@@ -82,30 +83,36 @@ export class ShareMenu extends React.Component{
             let private_class="big-button hover-shade make-private";
             if(published)public_class+=" active";
             else private_class+=" active";
-            let public_disabled = !(data.disciplines.length>0 && data.title && data.title.length>0);
+            let public_disabled = !(data.title && data.title.length > 0);
+            if(data.type=="project")public_disabled |= (data.disciplines.length==0);
             if(!public_disabled && !published)public_class+=" hover-shade";
             if(public_disabled)public_class+=" disabled";
             let public_text=gettext("Any CourseFlow teacher can view");
             let disabled_indicator;
-            if(public_disabled)disabled_indicator=(
-                <div title={gettext("A title and at least one discipline is required for publishing.")} class="window-close-button">
-                    <span class = "material-symbols-rounded red filled">error</span>
-                </div>
-            )
+            if(public_disabled){
+                let disabled_text;
+                if(data.type=="project")disabled_text=gettext("Title and disciplines are required to publish.");
+                else disabled_text=gettext("Title is required to publish.");
+                disabled_indicator=(
+                    <div class="warning flex-middle">
+                        <span class = "material-symbols-rounded red">block</span><div>{disabled_text}</div>
+                    </div>
+                )
+            }
             return (
-                <div class="big-buttons-wrapper">
+                [<div class="big-buttons-wrapper">
                     <div class={public_class} disabled={public_disabled} onClick={this.setPublication.bind(this,true && !public_disabled)}>
                         <span class="material-symbols-rounded">public</span>
                         <div class="big-button-title">{gettext("Public to CourseFlow")}</div>
                         <div class="big-button-description">{public_text}</div>
-                        {disabled_indicator}
                     </div>
                     <div class={private_class} onClick={this.setPublication.bind(this,false)}>
                         <span class="material-symbols-rounded filled">visibility_off</span>
                         <div class="big-button-title">{gettext("Private")}</div>
                         <div class="big-button-description">{gettext("Only added collaborators can view")}</div>
                     </div>
-                </div>
+                </div>,
+                disabled_indicator]
             )
         }else{
             let published_icon;

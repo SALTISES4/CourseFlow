@@ -2,10 +2,10 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive} from "./PostFunctions";
+import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf} from "./PostFunctions";
 import * as Constants from "./Constants";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./ComponentJSON";
-import {MessageBox} from "./MenuComponents";
+import {MessageBox, renderMessageBox, closeMessageBox} from "./MenuComponents";
 
 /*
 The main library menu
@@ -74,12 +74,18 @@ export class LibraryMenu extends React.Component{
     }
 }
 
-export class FavouritesMenu extends React.Component{
-    constructor(props){
-        super(props);
-        this.state={};
-        this.createDiv=React.createRef();
+export class ExploreMenu extends LibraryMenu{
+
+    render(){
+        return (
+            <div class="project-menu">
+                <ExploreFilter disciplines={this.props.disciplines} renderer={this.props.renderer} workflows={[]} context="library"/>
+            </div>
+        );
     }
+}
+
+export class FavouritesMenu extends LibraryMenu{
 
     render(){
         return (
@@ -123,7 +129,7 @@ export class HomeMenu extends React.Component{
                 <div class="home-item">
                     <div class="home-title-row">
                         <div class="home-item-title">{gettext("Recent Projects")}</div>
-                        <a class="collapsed-text-show-more" href={library_path}>{gettext("see all")}</a>
+                        <a class="collapsed-text-show-more" href={library_path}>{gettext("See all")}</a>
                     </div>
                     <div class="menu-grid">
                         {projects}
@@ -136,7 +142,7 @@ export class HomeMenu extends React.Component{
                 <div class="home-item">
                     <div class="home-title-row">
                         <div class="home-item-title">{gettext("Recent Classrooms")}</div>
-                        <a class="collapsed-text-show-more" href={library_path}>{gettext("see all")}</a>
+                        <a class="collapsed-text-show-more" href={library_path}>{gettext("See all")}</a>
                     </div>
                     <div class="menu-grid">
                         {projects}
@@ -232,7 +238,10 @@ export class ProjectMenu extends LibraryMenu{
         }
 
         let overflow_links=[liveproject];
-        if(data.author_id==user_id)overflow_links.push(<hr/>);
+        if(data.author_id==user_id){
+            overflow_links.push(<hr/>);
+            overflow_links.push(this.getDeleteProject());
+        }
         overflow_links.push(this.getExportButton());
         overflow_links.push(this.getCopyButton());
         overflow_links.push(<hr/>);
@@ -242,6 +251,47 @@ export class ProjectMenu extends LibraryMenu{
             </a>
         );
         return overflow_links;
+    }
+
+    getDeleteProject(){
+        if(!this.state.data.deleted)return (
+            <div class="hover-shade" onClick={this.deleteProject.bind(this)}>
+                <div>{gettext("Archive Project")}</div>
+            </div>
+        )
+        else return([
+            <div class="hover-shade" onClick={this.restoreProject.bind(this)}>
+                <div>{gettext("Restore Project")}</div>
+            </div>,
+            <div class="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
+                <div>{gettext("Permanently Delete Project")}</div>
+            </div>
+        ])
+    }
+
+    deleteProject(){
+        let component=this;
+        if(window.confirm(gettext("Are you sure you want to delete this project?"))){
+            deleteSelf(this.props.data.id,"project",true,()=>{
+                component.setState({data:{...this.props.data,deleted:true}})
+            });
+        }
+    }
+
+    deleteProjectHard(){
+        let component=this;
+        if(window.confirm(gettext("Are you sure you want to permanently delete this project?"))){
+            deleteSelf(this.props.data.id,"project",false,()=>{
+                window.location=home_path;
+            });
+        }
+    }
+
+    restoreProject(){
+        let component=this;
+        restoreSelf(this.props.data.id,"project",()=>{
+                component.setState({data:{...this.props.data,deleted:false}})
+        });
     }
 
     makeLive(){
@@ -455,11 +505,11 @@ export class WorkflowFilter extends Component{
         else{
             workflows=this.sortWorkflows(this.filterWorkflows(this.state.workflows));
             workflows = workflows.map(workflow=>
-                <WorkflowForMenu key={workflow.id} workflow_data={workflow} context={this.props.context}/>
+                <WorkflowForMenu key={workflow.type+workflow.id} workflow_data={workflow} context={this.props.context}/>
             );
         } 
         let search_results=this.state.search_results.map(workflow=>
-            <WorkflowForMenuCondensed workflow_data={workflow} context={this.props.context}/>
+            <WorkflowForMenuCondensed key={workflow.type+workflow.id} workflow_data={workflow} context={this.props.context}/>
         );
         if(this.state.search_filter && this.state.search_filter.length>0 && this.state.search_results.length==0){
             search_results.push(
@@ -488,6 +538,7 @@ export class WorkflowFilter extends Component{
                             onChange={debounce(this.searchChange.bind(this))}
                             id="workflow-search-input"
                             class="search-input"
+                            autocomplete="off"
                         />
                         <span class="material-symbols-rounded">search</span>
                         <div class="create-dropdown">{search_results}</div>
@@ -613,6 +664,9 @@ export class WorkflowFilter extends Component{
         makeDropdown(this.filterDOM.current);
         makeDropdown(this.sortDOM.current);
         makeDropdown(this.searchDOM.current);
+        // let searchDOM = $(this.searchDOM.current)
+        // searchDOM.children("#workflow-search-input").on("focus",(evt)=>searchDOM.children(".create-dropdown").addClass("active"))
+        // searchDOM.children("#workflow-search-input").on("blur",(evt)=>searchDOM.children(".create-dropdown").removeClass("active"))
     }
 
     searchWithin(request,response_function){
@@ -621,7 +675,9 @@ export class WorkflowFilter extends Component{
     }
 
     searchWithout(request,response_function){
-        searchAllObjects(request,10,(response_data)=>{
+        searchAllObjects(request,{
+                nresults:10
+            },(response_data)=>{
             response_function(response_data.workflow_list);
         });
     }
@@ -629,21 +685,350 @@ export class WorkflowFilter extends Component{
     seeAll(){
         this.props.renderer.tiny_loader.startLoad();
         let search_filter = this.state.search_filter;
-        searchAllObjects(search_filter,0,(response_data)=>{
+        searchAllObjects(search_filter,{nresults:0},(response_data)=>{
             this.setState({workflows:response_data.workflow_list,search_filter_lock:search_filter});
             this.props.renderer.tiny_loader.endLoad();
-            $("#workflow-search").removeClass("active");
+            $("#workflow-search .create-dropdown").removeClass("active");
+            $("#workflow-search").attr("disabled",true);
+            $("#workflow-search-input").attr("disabled",true);
         });
     }
 
     clearSearchLock(evt){
         this.setState({workflows:this.props.workflows,search_filter_lock:null})
+        $("#workflow-search").attr("disabled",false);
+        $("#workflow-search-input").attr("disabled",false);
         evt.stopPropagation();
     }
 
     defaultRender(){
         return (<renderers.WorkflowLoader/>);
     }
+}
+
+/*
+As the workflow filter, but for the explore menu. There are several critical differences.
+First, the data must be retrieved on every update to the filters/sort methods, as it will be paginated.
+Second, the workflow type becomes its own filter. 
+Third, a new discipline-based filter is added.
+*/
+export class ExploreFilter extends WorkflowFilter{
+    constructor(props){
+        super(props);
+        this.filters = [
+            {name:"activity",display:gettext("Activity")},
+            {name:"course",display:gettext("Course")},
+            {name:"program",display:gettext("Program")},
+            {name:"project",display:gettext("Project")},
+        ];
+        this.sorts = [
+            {name:"relevance",display:gettext("Relevance")},
+            {name:"title",display:gettext("A-Z")},
+            {name:"created_on",display:gettext("Creation date")},
+        ];
+        this.state={workflows:props.workflows,has_searched:false,active_sort:0,active_filters:[],active_disciplines:[],reversed:false,from_saltise:false,content_rich:true}
+        this.filterDOM=React.createRef();
+        this.searchDOM=React.createRef();
+        this.sortDOM=React.createRef();
+        this.disciplineDOM=React.createRef();
+    }
+
+    render(){
+        let workflows=this.state.workflows.map(workflow=>
+            <WorkflowForMenu key={workflow.type+workflow.id} workflow_data={workflow} context={this.props.context}/>
+        );
+        return (
+            [
+                <div class="workflow-filter-top">
+                    <div class="flex-middle">
+                        <div id="workflow-search" ref={this.searchDOM}>
+                            <input
+                                placeholder={gettext("Search")}
+                                onChange={debounce(this.searchChange.bind(this))}
+                                id="workflow-search-input"
+                                class="search-input"
+                            />
+                            <span class="material-symbols-rounded">search</span>
+                        </div>
+                        <button class="primary-button" disabled={this.state.has_searched} onClick={()=>this.searchWithout($(this.searchDOM.current).children("#workflow-search-input")[0].value,this.searchResults.bind(this))}>{gettext("Search")}</button>
+                    </div>
+                    <div class="workflow-filter-sort">
+                        {this.getFromSaltise()}
+                        {this.getContentRich()}
+                        {this.getFilter()}
+                        {this.getDisciplines()}
+                        {this.getSort()}
+                    </div>
+                </div>,
+                <div class="menu-grid">
+                    {workflows}
+                </div>,
+                this.getPages()
+            ]
+        );
+    }
+
+    getPages(){
+        if(this.state.pages){
+            if(this.state.workflows.length>0){
+                let page_buttons = [
+                    <button id="prev-page-button" disabled={(this.state.pages.current_page==1)} onClick={
+                        this.toPage.bind(this,this.state.pages.current_page-1)
+                    }><span class="material-symbols-rounded">arrow_left</span></button>
+                ];
+                if(this.state.pages.current_page>3){
+                    page_buttons.push(
+                        <button class="page-button" onClick = {this.toPage.bind(this,1)}>{1}</button>
+                    );
+                    if(this.state.pages.current_page>4){
+                        page_buttons.push(
+                            <div class="page-button no-button">...</div>
+                        );
+                    }
+                }
+
+                for(let i=Math.max(this.state.pages.current_page-2,1);i<=Math.min(this.state.pages.current_page+2,this.state.pages.page_count);i++){
+                    let button_class="page-button";
+                    if(i==this.state.pages.current_page)button_class+=" active-page-button"
+                    page_buttons.push(
+                        <button class={button_class} onClick = {this.toPage.bind(this,i)}>{i}</button>
+                    )
+                }
+
+                if(this.state.pages.current_page<this.state.pages.page_count-2){
+                    if(this.state.pages.current_page < this.state.pages.page_count-3){
+                        page_buttons.push(
+                            <div class="page-button no-button">...</div>
+                        );
+                    }
+                    page_buttons.push(
+                        <button class="page-button" onClick = {this.toPage.bind(this,this.state.pages.page_count)}>{this.state.pages.page_count}</button>
+                    );
+                }
+
+                page_buttons.push(
+                    <button id="next-page-button" disabled={(this.state.pages.current_page==this.state.pages.page_count)} onClick={
+                        this.toPage.bind(this,this.state.pages.current_page+1)
+                    }><span class="material-symbols-rounded">arrow_right</span></button>
+                )
+
+
+                return [
+                    <p>
+                        {gettext("Showing results")} {this.state.pages.results_per_page*(this.state.pages.current_page-1)+1}-{(this.state.pages.results_per_page*this.state.pages.current_page)} ({this.state.pages.total_results} {gettext("total results")})
+
+                    </p>,
+                    <div class="explore-page-buttons">
+                        
+                            {page_buttons}
+                        
+                    </div>
+                ]
+            }else{
+                return (
+                    <p>{gettext("No results were found.")}</p>
+                );
+            }
+        }else{
+            return (
+                <p>{gettext("Enter a search term or filter then click 'search' to get started.")}</p>
+            );
+        }
+    }
+
+    toPage(number){
+        this.searchWithout($(this.searchDOM.current).children("#workflow-search-input")[0].value,this.searchResults.bind(this),number)
+    }
+
+    getFilter(){
+        return (
+            <div id="workflow-filter" ref={this.filterDOM} class="hover-shade">
+                <div class={"workflow-sort-indicator hover-shade item-"+this.state.active_filters.length}>
+                    <span class="material-symbols-rounded">filter_alt</span>
+                    <div>{gettext("Type")}</div>
+                </div>
+                <div class="create-dropdown">
+                    {this.filters.map((filter,i)=>{
+                        let css_class="filter-option flex-middle";
+                        if(this.state.active_filters.indexOf(filter.name)>=0)css_class+=" active";
+                        return(
+                            <div class={css_class} onClick={(evt)=>{
+                            evt.stopPropagation();
+                            this.filterChange(filter);
+                            //This is very hacky, but if we're updating we need to re-open the sort dropdown
+                            $(this.filterDOM.current).children(".create-dropdown").addClass("active");
+                        }}>
+                                <input type="checkbox" checked={this.state.active_filters.indexOf(filter.name)>=0}/>
+                                {filter.display}
+                            </div>
+                        );
+                    })}
+                </div>
+                <div attr_number={this.state.active_filters.length} class="dropdown-number-indicator">{this.state.active_filters.length}</div>
+            </div>
+        );
+    }
+
+    getSort(){
+        let active_sort = this.sorts[this.state.active_sort];
+        return (
+            <div id="workflow-sort" ref={this.sortDOM} class="hover-shade">
+                <div class={"workflow-sort-indicator hover-shade item-"+this.state.active_sort}>
+                    <span class="material-symbols-rounded">sort</span>
+                    <div>{active_sort.display}</div>
+                </div>
+                <div class="create-dropdown">
+                    {this.sorts.map((sort,i)=>{
+                        let sort_dir;
+                        let css_class="filter-option filter-checkbox";
+                        if(this.state.active_sort==i){
+                            css_class+=" active";
+                            if(this.state.reversed)sort_dir=<span class="material-symbols-rounded">north</span>;
+                            else sort_dir=<span class="material-symbols-rounded">south</span>
+                        }
+                        return (<div class={css_class} onClick={(evt)=>{
+                            evt.stopPropagation();
+                            this.sortChange(i);
+                            //This is very hacky, but if we're updating we need to re-open the sort dropdown
+                            $(this.sortDOM.current).children(".create-dropdown").addClass("active");
+                        }}>
+                            {sort_dir}
+                            {sort.display}
+                        </div>);
+                    })}
+                </div>
+            </div>
+        );
+    }
+
+    getDisciplines(){
+        let component = this;
+        return (
+            <div id="workflow-disciplines" ref={this.disciplineDOM} class="hover-shade">
+                <div class={"workflow-sort-indicator hover-shade item-"+this.state.active_disciplines.length}>
+                    <span class="material-symbols-rounded">science</span>
+                    <div>{gettext("Discipline")}</div>
+                </div>
+                <div class="create-dropdown">
+                    {this.props.disciplines.map((discipline,i)=>{
+                        let css_class="filter-option flex-middle";
+                        if(this.state.active_disciplines.indexOf(discipline.id)>=0)css_class+=" active";
+                        return(
+                            <div class={css_class} onClick={(evt)=>{
+                            evt.stopPropagation();
+                            this.disciplineChange(discipline);
+                            //This is very hacky, but if we're updating we need to re-open the sort dropdown
+                            $(this.disciplineDOM.current).children(".create-dropdown").addClass("active");
+                        }}>
+                                <input type="checkbox" checked={this.state.active_disciplines.indexOf(discipline.id)>=0}/>
+                                {discipline.title}
+                            </div>
+                        );
+                    })}
+                </div>
+                <div attr_number={this.state.active_disciplines.length} class="dropdown-number-indicator">{this.state.active_disciplines.length}</div>
+            </div>
+        );
+    }
+
+    getContentRich(){
+        // let component=this;
+        // return (
+        //     <div title={gettext("Restrict results to workflows with three or more nodes")} id="content-rich" class="hover-shade" onClick={
+        //         ()=>{
+        //             component.setState({content_rich:!component.state.content_rich,has_searched:false})
+        //         }
+        //     }>
+        //         <input type="checkbox" checked={this.state.content_rich}/>
+        //         <label>{gettext("Exclude empty")}</label>
+        //     </div>
+        // );
+    }
+
+    getFromSaltise(){
+        let component=this;
+        return (
+            <div title={gettext("Restrict results to content provided by SALTISE")} id="content-rich" class="hover-shade" onClick={
+                ()=>{
+                    component.setState({from_saltise:!component.state.from_saltise,has_searched:false})
+                }
+            }>
+                <input type="checkbox" checked={this.state.from_saltise}/>
+                <label>{gettext("SALTISE content")}</label>
+            </div>
+        );
+    }
+
+    componentDidMount(){
+        makeDropdown(this.disciplineDOM.current)
+        super.componentDidMount()
+    }
+
+    searchResults(response_data,pages){
+        this.setState({workflows:response_data,pages:pages});
+    }
+
+    filterChange(filter,evt){
+        let name = filter.name;
+        let new_filter = this.state.active_filters.slice();
+        if(new_filter.indexOf(name)>=0)new_filter.splice(new_filter.indexOf(name),1);
+        else new_filter.push(name);
+        this.setState({active_filters:new_filter,has_searched:false});
+    }
+
+    sortChange(index){
+        if(this.state.active_sort==index)this.setState({reversed:!this.state.reversed,has_searched:false});
+        else this.setState({active_sort:index,reversed:false,has_searched:false});
+    }
+
+    disciplineChange(discipline){
+        let name = discipline.id;
+        let new_filter = this.state.active_disciplines.slice();
+        if(new_filter.indexOf(name)>=0)new_filter.splice(new_filter.indexOf(name),1);
+        else new_filter.push(name);
+        this.setState({active_disciplines:new_filter,has_searched:false});
+    }
+
+    searchChange(evt){
+        this.setState({has_searched:false})
+        /*let component=this;
+        if(evt.target.value && evt.target.value!=""){
+            let filter = evt.target.value.toLowerCase();
+            if(this.search_without)component.searchWithout(filter,(response)=>{
+                component.setState({search_results:response,search_filter:filter});
+                $(this.searchDOM.current).addClass("active");
+            });
+            else component.searchWithin(filter,(response)=>{
+                component.setState({search_results:response,search_filter:filter});
+                $(this.searchDOM.current).addClass("active");
+            });
+        }else{
+            component.setState({search_results:[],search_filter:""});
+            $(this.searchDOM.current).removeClass("active");
+        }*/
+    }
+
+
+    searchWithout(request,response_function,page_number=1){
+        this.setState({has_searched:true})
+        searchAllObjects(request,
+            {
+                nresults:20,
+                published:true,
+                full_search:true,
+                disciplines:this.state.active_disciplines,
+                types:this.state.active_filters,
+                sort:this.sorts[this.state.active_sort].name,
+                sort_reversed:this.state.reversed,
+                page:page_number,
+                from_saltise:this.state.from_saltise,
+                content_rich:this.state.content_rich,
+            },(response_data)=>{
+            response_function(response_data.workflow_list,response_data.pages);
+        });
+    }
+
+
 }
 
 
@@ -717,7 +1102,7 @@ export class WorkflowForMenu extends React.Component{
             </div>
         );
         let workflows=[];
-        if(this.props.workflow_data.type=="project")workflows.push(
+        if(this.props.workflow_data.type=="project" && !(this.props.workflow_data.workflow_count ==null))workflows.push(
             <div class="workflow-created">{this.props.workflow_data.workflow_count+" "+gettext("workflows")}</div>
         );
         if(this.props.workflow_data.type=="project" && this.props.workflow_data.has_liveproject && this.props.workflow_data.object_permission.role_type != Constants.role_keys["none"])workflows.push(
@@ -727,6 +1112,9 @@ export class WorkflowForMenu extends React.Component{
                 <span class="material-symbols-rounded small-inline" title={gettext("Live Classroom")}>group</span>{" "+gettext("Live Classroom")}
             </a>
         );
+        if(this.props.workflow_data.is_linked)workflows.push(
+            <div class="workflow-created linked-workflow-warning" title={gettext("Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.")}><span class="material-symbols-rounded red filled small-inline">error</span>{" "+gettext("Already in use")}</div>
+        )
         return (
             <div class="workflow-buttons-row">
                 <div>
@@ -774,15 +1162,3 @@ export class WorkflowForMenuCondensed extends WorkflowForMenu{
     }
 }
 
-export function renderMessageBox(data,type,updateFunction){
-    reactDom.render(
-        <MessageBox message_data={data} message_type={type} actionFunction={updateFunction}/>,
-        $("#popup-container")[0]
-    );
-}
-
-
-
-export function closeMessageBox(){
-    reactDom.render(null,$("#popup-container")[0]);
-}

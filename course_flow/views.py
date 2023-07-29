@@ -5,6 +5,7 @@ import time
 # import time
 from functools import reduce
 from itertools import chain
+from operator import attrgetter
 
 import pandas as pd
 from django.conf import settings
@@ -15,7 +16,7 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import transaction
-from django.db.models import ProtectedError, Q
+from django.db.models import Count, ProtectedError, Q
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -133,6 +134,7 @@ from .utils import (  # dateTimeFormat,; get_parent_model,; get_parent_model_str
     get_model_from_str,
     get_nondeleted_favourites,
     get_parent_nodes_for_workflow,
+    get_relevance,
     get_user_permission,
     get_user_role,
     save_serializer,
@@ -326,86 +328,86 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "course_flow/explore.html"
 
     def get_context_data(self):
-        types = self.request.GET.getlist("types[]", None)
+        # types = self.request.GET.getlist("types[]", None)
 
-        keywords = self.request.GET.get("keyword", "").split(" ")
-        q_objects = Q()
-        for keyword in keywords:
-            q_objects &= (
-                Q(author__first_name__icontains=keyword)
-                | Q(author__username__icontains=keyword)
-                | Q(author__last_name__icontains=keyword)
-                | Q(title__icontains=keyword)
-                | Q(description__icontains=keyword)
-            )
+        # keywords = self.request.GET.get("keyword", "").split(" ")
+        # q_objects = Q()
+        # for keyword in keywords:
+        #     q_objects &= (
+        #         Q(author__first_name__icontains=keyword)
+        #         | Q(author__username__icontains=keyword)
+        #         | Q(author__last_name__icontains=keyword)
+        #         | Q(title__icontains=keyword)
+        #         | Q(description__icontains=keyword)
+        #     )
 
-        disciplines = self.request.GET.getlist("disc[]", None)
-        sort = self.request.GET.get("sort", None)  # noqa F841
-        page = self.request.GET.get("page", 1)
-        results = self.request.GET.get("results", 20)
-        filter_kwargs = {}
-        if page:
-            page = int(page)
-        else:
-            page = 1
-        if results:
-            results = int(results)
-        else:
-            results = 10
-        disciplines = Discipline.objects.filter(id__in=disciplines)
-        if len(disciplines) > 0:
-            filter_kwargs["disciplines__in"] = disciplines
-        try:
-            queryset = reduce(
-                lambda x, y: chain(x, y),
-                [
-                    get_model_from_str(model_type)
-                    .objects.filter(published=True)
-                    .filter(**filter_kwargs)
-                    .filter(q_objects)
-                    .exclude(deleted=True)
-                    .distinct()
-                    if model_type == "project"
-                    else get_model_from_str(model_type)
-                    .objects.filter(published=True)
-                    .filter(**filter_kwargs)
-                    .filter(q_objects)
-                    .exclude(Q(deleted=True) | Q(project__deleted=True))
-                    .distinct()
-                    for model_type in types
-                ],
-            )
-        except TypeError:
-            queryset = Project.objects.none()
-        total_results = 0
-        queryset = list(queryset)
-        total_results = len(queryset)
-        subqueryset = queryset[
-            max((page - 1) * results, 0) : min(page * results, total_results)
-        ]
+        # disciplines = self.request.GET.getlist("disc[]", None)
+        # sort = self.request.GET.get("sort", None)  # noqa F841
+        # page = self.request.GET.get("page", 1)
+        # results = self.request.GET.get("results", 20)
+        # filter_kwargs = {}
+        # if page:
+        #     page = int(page)
+        # else:
+        #     page = 1
+        # if results:
+        #     results = int(results)
+        # else:
+        #     results = 10
+        # disciplines = Discipline.objects.filter(id__in=disciplines)
+        # if len(disciplines) > 0:
+        #     filter_kwargs["disciplines__in"] = disciplines
+        # try:
+        #     queryset = reduce(
+        #         lambda x, y: chain(x, y),
+        #         [
+        #             get_model_from_str(model_type)
+        #             .objects.filter(published=True)
+        #             .filter(**filter_kwargs)
+        #             .filter(q_objects)
+        #             .exclude(deleted=True)
+        #             .distinct()
+        #             if model_type == "project"
+        #             else get_model_from_str(model_type)
+        #             .objects.filter(published=True)
+        #             .filter(**filter_kwargs)
+        #             .filter(q_objects)
+        #             .exclude(Q(deleted=True) | Q(project__deleted=True))
+        #             .distinct()
+        #             for model_type in types
+        #         ],
+        #     )
+        # except TypeError:
+        #     queryset = Project.objects.none()
+        # total_results = 0
+        # queryset = list(queryset)
+        # total_results = len(queryset)
+        # subqueryset = queryset[
+        #     max((page - 1) * results, 0) : min(page * results, total_results)
+        # ]
 
-        page_number = math.ceil(float(total_results) / results)
-        object_list = (
-            JSONRenderer()
-            .render(
-                InfoBoxSerializer(
-                    subqueryset, many=True, context={"user": self.request.user}
-                ).data
-            )
-            .decode("utf-8")
-        )
+        # page_number = math.ceil(float(total_results) / results)
+        # object_list = (
+        #     JSONRenderer()
+        #     .render(
+        #         InfoBoxSerializer(
+        #             subqueryset, many=True, context={"user": self.request.user}
+        #         ).data
+        #     )
+        #     .decode("utf-8")
+        # )
         return {
-            "object_list": object_list,
-            "pages": JSONRenderer()
-            .render(
-                {
-                    "total_results": total_results,
-                    "page_count": page_number,
-                    "current_page": page,
-                    "results_per_page": results,
-                }
-            )
-            .decode("utf-8"),
+            # "object_list": object_list,
+            # "pages": JSONRenderer()
+            # .render(
+            #     {
+            #         "total_results": total_results,
+            #         "page_count": page_number,
+            #         "current_page": page,
+            #         "results_per_page": results,
+            #     }
+            # )
+            # .decode("utf-8"),
             "disciplines": JSONRenderer()
             .render(
                 DisciplineSerializer(Discipline.objects.all(), many=True).data
@@ -1089,21 +1091,21 @@ def get_workflow_data_package(user, project, **kwargs):
                     ),
                 }
             )
-            if not self_only:
-                other_project_sections.append(
-                    {
-                        "title": "",
-                        "object_type": this_type,
-                        "is_strategy": get_strategies,
-                        "objects": get_workflow_info_boxes(
-                            user,
-                            this_type,
-                            project=project,
-                            this_project=False,
-                            get_strategies=get_strategies,
-                        ),
-                    }
-                )
+            # if not self_only:
+            #     other_project_sections.append(
+            #         {
+            #             "title": "",
+            #             "object_type": this_type,
+            #             "is_strategy": get_strategies,
+            #             "objects": get_workflow_info_boxes(
+            #                 user,
+            #                 this_type,
+            #                 project=project,
+            #                 this_project=False,
+            #                 get_strategies=get_strategies,
+            #             ),
+            #         }
+            #     )
             if not self_only:
                 all_published_sections.append(
                     {
@@ -1160,15 +1162,15 @@ def get_workflow_data_package(user, project, **kwargs):
         },
     }
     if not self_only:
-        if project is not None:
-            data_package["other_projects"] = {
-                "title": _("From Your Other Projects"),
-                "sections": other_project_sections,
-                #            "duplicate": other_copy_type,
-                "emptytext": _(
-                    "There are no applicable workflows outside this project."
-                ),
-            }
+        # if project is not None:
+        #     data_package["other_projects"] = {
+        #         "title": _("From Your Other Projects"),
+        #         "sections": other_project_sections,
+        #         #            "duplicate": other_copy_type,
+        #         "emptytext": _(
+        #             "There are no applicable workflows outside this project."
+        #         ),
+        #     }
         data_package["all_published"] = {
             "title": _("Your Favourites"),
             "sections": all_published_sections,
@@ -1408,101 +1410,6 @@ class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         return context
 
 
-#
-# class OutcomeCreateView(
-#    LoginRequiredMixin, UserCanEditProjectMixin, CreateView
-# ):
-#    model = Outcome
-#    fields = ["title"]
-#    template_name = "course_flow/outcome_create.html"
-#
-#    def test_func(self):
-#        project = Project.objects.get(pk=self.kwargs["projectPk"])
-#        return (
-#            Group.objects.get(name=settings.TEACHER_GROUP)
-#            in self.request.user.groups.all()
-#            and project.author == self.request.user
-#        )
-#
-#    def form_valid(self, form):
-#        form.instance.author = self.request.user
-#        project = Project.objects.get(pk=self.kwargs["projectPk"])
-#        response = super(CreateView, self).form_valid(form)
-#        OutcomeProject.objects.create(project=project, outcome=form.instance)
-#        return response
-#
-#    def get_success_url(self):
-#        return reverse(
-#            "course_flow:outcome-update", kwargs={"pk": self.object.pk}
-#        )
-#
-#
-#
-#
-# def get_outcome_context_data(outcome, context, user):
-#    outcomes = get_all_outcomes(outcome, 0)
-#    outcomeoutcomes = []
-#    for oc in outcomes:
-#        outcomeoutcomes += list(oc.child_outcome_links.all())
-#
-#    parent_project_pk = OutcomeProject.objects.get(outcome=outcome).project.pk
-#
-#    data_flat = {
-#        "outcome": OutcomeSerializerShallow(outcomes, many=True).data,
-#        "outcomeoutcome": OutcomeOutcomeSerializerShallow(
-#            outcomeoutcomes, many=True
-#        ).data,
-#    }
-#    context["data_flat"] = JSONRenderer().render(data_flat).decode("utf-8")
-#    context["parent_project_pk"] = (
-#        JSONRenderer().render(parent_project_pk).decode("utf-8")
-#    )
-#    return context
-#
-#
-#
-#
-# class OutcomeDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-#    model = Outcome
-#    fields = ["title", "description"]
-#    template_name = "course_flow/outcome_alignment.html"
-#
-#    def get_context_data(self, **kwargs):
-#        context = super(DetailView, self).get_context_data(**kwargs)
-#        context = get_outcome_context_data(
-#            self.object, context, self.request.user
-#        )
-#
-#        return context
-
-#
-# class WorkflowDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
-#    model = Workflow
-#    fields = ["title", "description"]
-#    template_name = "course_flow/workflow_update.html"
-#
-#    def get_queryset(self):
-#        return self.model.objects.select_subclasses()
-#
-#    def get_object(self):
-#        workflow = super().get_object()
-#        return Workflow.objects.get_subclass(pk=workflow.pk)
-#
-#    def get_success_url(self):
-#        return reverse(
-#            "course_flow:workflow-detail", kwargs={"pk": self.object.pk}
-#        )
-#
-#    def get_context_data(self, **kwargs):
-#        context = super(DetailView, self).get_context_data(**kwargs)
-#        workflow = self.get_object()
-#
-#        context = get_workflow_context_data(
-#            workflow, context, self.request.user
-#        )
-#
-#        return context
-
 
 def get_parent_outcome_data(workflow, user):
     outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
@@ -1554,15 +1461,11 @@ def get_parent_outcome_data(workflow, user):
     }
 
 
-def get_child_outcome_data(workflow, user):
-    nodes = Node.objects.filter(week__workflow=workflow).exclude(
-        Q(deleted=True) | Q(week__deleted=True)
+def get_child_outcome_data(workflow, user, parent_workflow):
+    nodes = Node.objects.filter(
+        week__workflow=parent_workflow, linked_workflow=workflow
     )
-    linked_workflows = (
-        Workflow.objects.filter(linked_nodes__week__workflow=workflow)
-        .exclude(deleted=True)
-        .prefetch_related("outcomeworkflow_set")
-    )
+    linked_workflows = [workflow]
     child_workflow_outcomeworkflows = []
     child_workflow_outcomes = []
     child_workflow_outcomeoutcomes = []
@@ -1577,6 +1480,7 @@ def get_child_outcome_data(workflow, user):
         child_workflow_outcomes += new_child_workflow_outcomes
         child_workflow_outcomeoutcomes += new_child_workflow_outcomeoutcomes
 
+
     outcomehorizontallinks = []
     for child_outcome in child_workflow_outcomes:
         outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
@@ -1586,7 +1490,7 @@ def get_child_outcome_data(workflow, user):
     else:
         outcome_type = workflow.type + " outcome"
 
-    return {
+    response_data = {
         "node": NodeSerializerShallow(
             nodes, many=True, context={"user": user}
         ).data,
@@ -1610,7 +1514,11 @@ def get_child_outcome_data(workflow, user):
     }
 
 
+    return response_data
+
+
 def get_workflow_data_flat(workflow, user):
+
     SerializerClass = serializer_lookups_shallow[workflow.type]
     columnworkflows = workflow.columnworkflow_set.all()
     weekworkflows = workflow.weekworkflow_set.all()
@@ -1618,9 +1526,11 @@ def get_workflow_data_flat(workflow, user):
     weeks = workflow.weeks.all()
     nodeweeks = NodeWeek.objects.filter(week__workflow=workflow)
     nodes = Node.objects.filter(week__workflow=workflow).prefetch_related(
-        "outcomenode_set", "liveassignment_set"
+        "outcomenode_set",
+        "liveassignment_set",
     )
     nodelinks = NodeLink.objects.filter(source_node__in=nodes)
+
     if not workflow.is_strategy:
         outcomeworkflows = workflow.outcomeworkflow_set.all()
         outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
@@ -1629,6 +1539,22 @@ def get_workflow_data_flat(workflow, user):
         )
         objectsets = ObjectSet.objects.filter(project__workflows=workflow)
 
+    # data_flat = {
+    #     "workflow": SerializerClass(workflow, context={"user": user}).data,
+    #     "columnworkflow": ColumnWorkflowSerializerShallow(
+    #         columnworkflows, many=True
+    #     ).data,
+    #     "column": ColumnSerializerShallow(columns, many=True).data,
+    #     "weekworkflow": WeekWorkflowSerializerShallow(
+    #         weekworkflows, many=True
+    #     ).data,
+    #     "week": WeekSerializerShallow(weeks, many=True).data,
+    #     "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
+    #     "node": NodeSerializerShallow(
+    #         nodes, many=True, context={"user": user}
+    #     ).data,
+    #     "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
+    # }
     data_flat = {
         "workflow": SerializerClass(workflow, context={"user": user}).data,
         "columnworkflow": ColumnWorkflowSerializerShallow(
@@ -1640,11 +1566,12 @@ def get_workflow_data_flat(workflow, user):
         ).data,
         "week": WeekSerializerShallow(weeks, many=True).data,
         "nodeweek": NodeWeekSerializerShallow(nodeweeks, many=True).data,
-        "node": NodeSerializerShallow(
-            nodes, many=True, context={"user": user}
-        ).data,
         "nodelink": NodeLinkSerializerShallow(nodelinks, many=True).data,
     }
+
+    data_flat["node"] = NodeSerializerShallow(
+        nodes, many=True, context={"user": user}
+    ).data
 
     if not workflow.is_strategy:
         data_flat["outcomeworkflow"] = OutcomeWorkflowSerializerShallow(
@@ -1781,11 +1708,8 @@ class WorkflowDetailView(
     LoginRequiredMixin, UserCanViewOrEnrolledMixin, DetailView
 ):
     model = Workflow
-    fields = ["id", "title", "description"]
+    fields = ["id", "title", "description", "type"]
     template_name = "course_flow/workflow_update.html"
-
-    def get_queryset(self):
-        return self.model.objects.select_subclasses()
 
     def get_success_url(self):
         return reverse(
@@ -2132,7 +2056,6 @@ def get_export(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-# enable for testing/download
 @ajax_login_required
 def get_saltise_download(request: HttpRequest) -> HttpResponse:
 
@@ -2354,12 +2277,12 @@ def get_workflow_parent_data(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
-@user_can_view_or_enrolled_as_student("workflowPk")
+@user_can_view_or_enrolled_as_student("nodePk")
 def get_workflow_child_data(request: HttpRequest) -> HttpResponse:
-    workflow = Workflow.objects.get(pk=request.POST.get("workflowPk"))
+    node = Node.objects.get(pk=request.POST.get("nodePk"))
     try:
         data_package = get_child_outcome_data(
-            workflow.get_subclass(), request.user
+            node.linked_workflow, request.user, node.get_workflow()
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -2390,12 +2313,12 @@ def get_public_workflow_data(request: HttpRequest, pk) -> HttpResponse:
     return JsonResponse({"action": "posted", "data_package": data_package})
 
 
-@public_model_access("workflow")
+@public_model_access("node", rate=50)
 def get_public_workflow_child_data(request: HttpRequest, pk) -> HttpResponse:
-    workflow = Workflow.objects.get(pk=pk)
+    node = Node.objects.get(pk=pk)
     try:
         data_package = get_child_outcome_data(
-            workflow.get_subclass(), request.user
+            node.linked_workflow, request.user, node.get_workflow()
         )
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -3907,8 +3830,16 @@ def new_node(request: HttpRequest) -> HttpResponse:
 def new_outcome_for_workflow(request: HttpRequest) -> HttpResponse:
     workflow_id = json.loads(request.POST.get("workflowPk"))
     workflow = Workflow.objects.get(pk=workflow_id)
+    objectset_id_json = request.POST.get("objectsetPk")
+    if objectset_id_json is not None:
+        objectset_id = json.loads(objectset_id_json)
+    else:
+        objectset_id = None
     try:
         outcome = Outcome.objects.create(author=request.user)
+        if objectset_id is not None:
+            objectset = ObjectSet.objects.get(id=objectset_id)
+            outcome.sets.add(objectset)
         outcome_workflow = OutcomeWorkflow.objects.create(
             workflow=workflow, outcome=outcome, rank=workflow.outcomes.count()
         )
@@ -4404,9 +4335,7 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
             object_id=object_id,
         ).delete()
         if favourite:
-            Favourite.objects.create(
-                user=request.user, content_object=item
-            )
+            Favourite.objects.create(user=request.user, content_object=item)
         response["action"] = "posted"
     except ValidationError:
         response["action"] = "error"
@@ -4623,34 +4552,129 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
 
 @user_is_teacher()
 def search_all_objects(request: HttpRequest) -> HttpResponse:
-    name_filter = json.loads(request.POST.get("filter"))
-    max_count = json.loads(request.POST.get("max_count", "0"))
-    all_objects = ObjectPermission.objects.filter(user=request.user).filter(
-        Q(project__title__istartswith=name_filter, project__deleted=False)
-        | Q(workflow__title__istartswith=name_filter, workflow__deleted=False)
-    )
-    # add ordering
+    name_filter = json.loads(request.POST.get("filter")).lower()
+    data = json.loads(request.POST.get("additional_data", "{}"))
+    nresults = data.get("nresults", 10)
+    full_search = data.get("full_search", False)
+    published = data.get("published", False)
+    # A full search of all objects, paginated
+    if full_search:
+        # Check only published material
+        keywords = name_filter.split(" ")
+        types = data.get("types", [])
+        disciplines = data.get("disciplines", [])
+        sort = data.get("sort", None)  # noqa F841
+        from_saltise = data.get("from_saltise", False)
+        content_rich = data.get("content_rich", False)
+        sort_reversed = data.get("sort_reversed", False)  # noqa F841
+        page = data.get("page", 1)
 
-    if max_count > 0:
-        all_objects = all_objects[:max_count]
-    return_objects = [x.content_object for x in all_objects]
-    count = len(return_objects)
-    if max_count == 0 or count < max_count:
-        extra_objects = ObjectPermission.objects.filter(
+        filter_kwargs = {}
+        # Create filters for each keyword
+        q_objects = Q()
+        for keyword in keywords:
+            q_objects &= (
+                Q(author__first_name__icontains=keyword)
+                | Q(author__username__icontains=keyword)
+                | Q(author__last_name__icontains=keyword)
+                | Q(title__icontains=keyword)
+                | Q(description__icontains=keyword)
+            )
+        # Choose which types to search
+        if len(types) == 0:
+            types = ("project", "workflow")
+        # Create disciplines filter
+        if len(disciplines) > 0:
+            filter_kwargs["disciplines__in"] = disciplines
+        if content_rich:
+            filter_kwargs["num_nodes__gte"] = 3
+        if from_saltise:
+            filter_kwargs["from_saltise"] = True
+
+        if published:
+            try:
+                queryset = reduce(
+                    lambda x, y: chain(x, y),
+                    [
+                        get_model_from_str(model_type)
+                        .objects.filter(published=True)
+                        .annotate(num_nodes=Count("workflows__weeks__nodes"))
+                        .filter(**filter_kwargs)
+                        .filter(q_objects)
+                        .exclude(deleted=True)
+                        .distinct()
+                        if model_type == "project"
+                        else get_model_from_str(model_type)
+                        .objects.filter(published=True)
+                        .annotate(num_nodes=Count("weeks__nodes"))
+                        .filter(**filter_kwargs)
+                        .filter(q_objects)
+                        .exclude(Q(deleted=True) | Q(project__deleted=True))
+                        .distinct()
+                        for model_type in types
+                    ],
+                )
+                if sort is not None:
+                    if sort == "created_on" or sort == "title":
+                        sort_key = attrgetter(sort)
+                    elif sort == "relevance":
+                        sort_key = lambda x: get_relevance(
+                            x, name_filter, keywords
+                        )
+                    queryset = sorted(
+                        queryset, key=sort_key, reverse=sort_reversed
+                    )
+                queryset = list(queryset)
+
+                total_results = len(queryset)
+                return_objects = queryset[
+                    max((page - 1) * nresults, 0) : min(
+                        page * nresults, total_results
+                    )
+                ]
+                page_number = math.ceil(float(total_results) / nresults)
+                pages = {
+                    "total_results": total_results,
+                    "page_count": page_number,
+                    "current_page": page,
+                    "results_per_page": nresults,
+                }
+            except TypeError:
+                return_objects = Project.objects.none()
+    # Small search for library
+    else:
+        all_objects = ObjectPermission.objects.filter(
             user=request.user
         ).filter(
-            Q(
-                project__title__icontains=" " + name_filter,
-                project__deleted=False,
-            )
+            Q(project__title__istartswith=name_filter, project__deleted=False)
             | Q(
-                workflow__title__icontains=" " + name_filter,
+                workflow__title__istartswith=name_filter,
                 workflow__deleted=False,
             )
         )
-        if max_count > 0:
-            extra_objects = extra_objects[: max_count - count]
-        return_objects += [x.content_object for x in extra_objects]
+        # add ordering
+
+        if nresults > 0:
+            all_objects = all_objects[:nresults]
+        return_objects = [x.content_object for x in all_objects]
+        count = len(return_objects)
+        if nresults == 0 or count < nresults:
+            extra_objects = ObjectPermission.objects.filter(
+                user=request.user
+            ).filter(
+                Q(
+                    project__title__icontains=" " + name_filter,
+                    project__deleted=False,
+                )
+                | Q(
+                    workflow__title__icontains=" " + name_filter,
+                    workflow__deleted=False,
+                )
+            )
+            if nresults > 0:
+                extra_objects = extra_objects[: nresults - count]
+            return_objects += [x.content_object for x in extra_objects]
+        pages = {}
 
     return JsonResponse(
         {
@@ -4658,6 +4682,7 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
             "workflow_list": InfoBoxSerializer(
                 return_objects, context={"user": request.user}, many=True
             ).data,
+            "pages": pages,
         }
     )
 
@@ -4678,6 +4703,7 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
     object_type = json.loads(request.POST.get("objectType"))
     inserted = json.loads(request.POST.get("inserted", "false"))
     column_change = json.loads(request.POST.get("columnChange", "false"))
+    changing_workflow = False
     try:
         with transaction.atomic():
             if column_change:
@@ -4699,6 +4725,51 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 parent = get_model_from_str(parent_type).objects.get(
                     id=parent_id
                 )
+                workflow1 = model.get_workflow()
+                workflow2 = parent.get_workflow()
+                if workflow1.pk != workflow2.pk:
+                    changing_workflow = True
+                    if (
+                        workflow1.get_project().pk
+                        == workflow2.get_project().pk
+                    ):
+                        if object_type == "node":
+                            model.outcomenode_set.all().delete()
+                            same_type_columns = workflow2.columns.filter(
+                                column_type=model.column.column_type
+                            )
+                            if same_type_columns.count() > 0:
+                                new_column = same_type_columns.first()
+                            else:
+                                new_column = workflow2.columns.all().first()
+                            model.column = new_column
+                            model.save()
+                            linked_workflows = Workflow.objects.filter(
+                                linked_nodes=model
+                            )
+                        elif (
+                            object_type == "outcome"
+                            or object_type == "outcome_base"
+                        ):
+                            OutcomeNode.objects.filter()
+                            outcomes_list = [object_id] + list(
+                                get_descendant_outcomes(model).values_list(
+                                    "pk", flat=True
+                                )
+                            )
+                            affected_nodes = (
+                                Node.objects.filter(
+                                    outcomes__in=outcomes_list
+                                ).values_list("pk", flat=True),
+                            )
+                            linked_workflows = Workflow.objects.filter(
+                                linked_nodes__outcomes__in=outcomes_list
+                            )
+                            OutcomeNode.objects.filter(
+                                outcome__in=outcomes_list
+                            ).delete()
+                        else:
+                            return JsonResponse({"action": "posted"})
                 if object_type == parent_type:
                     creation_kwargs = {"child": model, "parent": parent}
                     search_kwargs = {"child": model}
@@ -4745,19 +4816,95 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"action": "error"})
     workflow = model.get_workflow()
     if inserted:
-        actions.dispatch_wf(
-            workflow,
-            actions.changeThroughID(
-                through_type, old_through_id, new_through.id
-            ),
-        )
-        if object_type == "outcome":
-            actions.dispatch_to_parent_wf(
+        if changing_workflow:
+            object_type_sent = object_type
+            if object_type == "outcome" and through_type == "outcomeworkflow":
+                object_type_sent = "outcome_base"
+            # Send a signal to delete the object from its original workflow
+            extra_data = {}
+            new_children_serialized = None
+            if object_type == "outcome" or object_type == "outcome_base":
+                extra_data = RefreshSerializerNode(
+                    Node.objects.filter(pk__in=affected_nodes),
+                    many=True,
+                ).data
+                outcomes_to_update = RefreshSerializerOutcome(
+                    Outcome.objects.filter(
+                        horizontal_outcomes__in=outcomes_list
+                    ),
+                    many=True,
+                ).data
+                outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(model)
+                new_children_serialized = {
+                    "outcome": OutcomeSerializerShallow(
+                        outcomes, many=True
+                    ).data,
+                    "outcomeoutcome": OutcomeOutcomeSerializerShallow(
+                        outcomeoutcomes, many=True
+                    ).data,
+                }
+
+            delete_action = actions.deleteSelfAction(
+                object_id, object_type_sent, old_through_id, extra_data
+            )
+            actions.dispatch_wf(
+                workflow1,
+                delete_action,
+            )
+            # Send a signal to add it to the new workflow
+            new_model_serialized = serializer_lookups_shallow[object_type](
+                model
+            ).data
+            new_through_serialized = serializer_lookups_shallow[through_type](
+                new_through
+            ).data
+            response_data = {
+                "new_model": new_model_serialized,
+                "new_through": new_through_serialized,
+                "parentID": parent_id,
+                "children": new_children_serialized,
+            }
+
+            actions.dispatch_wf(
+                workflow2,
+                actions.insertBelowAction(response_data, object_type_sent),
+            )
+            # Send the relevant signals to parent and child workflows
+            if object_type == "outcome" or object_type == "outcome_base":
+                actions.dispatch_to_parent_wf(
+                    workflow1,
+                    delete_action,
+                )
+                if linked_workflows:
+                    for wf in linked_workflows:
+                        actions.dispatch_wf(wf, delete_action)
+                        actions.dispatch_wf(
+                            wf,
+                            actions.updateHorizontalLinks(
+                                {"data": outcomes_to_update}
+                            ),
+                        )
+            if (
+                object_type != "outcome"
+                and object_type != "outcome_base"
+                and linked_workflows
+            ):
+                for wf in linked_workflows:
+                    actions.dispatch_parent_updated(wf)
+        else:
+            actions.dispatch_wf(
                 workflow,
                 actions.changeThroughID(
                     through_type, old_through_id, new_through.id
                 ),
             )
+            if object_type == "outcome":
+                actions.dispatch_to_parent_wf(
+                    workflow,
+                    actions.changeThroughID(
+                        through_type, old_through_id, new_through.id
+                    ),
+                )
     actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
     return JsonResponse({"action": "posted"})
 
@@ -5267,7 +5414,9 @@ def delete_self(request: HttpRequest) -> HttpResponse:
             actions.dispatch_parent_updated(wf)
     if object_type in ["workflow", "activity", "course", "program"]:
         for parent_workflow in parent_workflows:
-            actions.dispatch_child_updated(parent_workflow)
+            actions.dispatch_child_updated(
+                parent_workflow, model.get_workflow()
+            )
     return JsonResponse({"action": "posted"})
 
 
@@ -5429,7 +5578,9 @@ def restore_self(request: HttpRequest) -> HttpResponse:
             actions.dispatch_parent_updated(wf)
     if object_type in ["workflow", "activity", "course", "program"]:
         for parent_workflow in parent_workflows:
-            actions.dispatch_child_updated(parent_workflow)
+            actions.dispatch_child_updated(
+                parent_workflow, model.get_workflow()
+            )
     return JsonResponse({"action": "posted"})
 
 
@@ -5519,7 +5670,6 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
                 .column.id
             )
     except (ProtectedError, ObjectDoesNotExist):
-        print("ERRORS")
         return JsonResponse({"action": "error"})
 
     try:
@@ -5557,7 +5707,9 @@ def delete_self_soft(request: HttpRequest) -> HttpResponse:
             actions.dispatch_parent_updated(wf)
     if object_type in ["workflow", "activity", "course", "program"]:
         for parent_workflow in parent_workflows:
-            actions.dispatch_child_updated(parent_workflow)
+            actions.dispatch_child_updated(
+                parent_workflow, model.get_workflow()
+            )
     return JsonResponse({"action": "posted"})
 
 
@@ -5986,6 +6138,7 @@ class AssignmentDetailView(
     LoginRequiredMixin, UserEnrolledAsTeacherMixin, DetailView
 ):
     model = LiveAssignment
+    fields = ["task__title"]
     template_name = "course_flow/live_assignment_update.html"
 
     def get_context_data(self, **kwargs):

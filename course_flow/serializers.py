@@ -1,5 +1,7 @@
 import datetime
 import re
+import time
+from functools import wraps
 
 import bleach
 from django.contrib.contenttypes.models import ContentType
@@ -42,6 +44,7 @@ from .models import (
     title_max_length,
 )
 from .utils import (
+    benchmark,
     dateTimeFormat,
     get_unique_outcomehorizontallinks,
     get_unique_outcomenodes,
@@ -78,6 +81,23 @@ bleach_allowed_tags_title = [
     "em",
     "i",
 ]
+
+
+# timing_results = {}
+# def timing(f):
+#     @wraps(f)
+#     def wrap(*args, **kw):
+#         ts = time.time()
+#         result = f(*args, **kw)
+#         te = time.time()
+#         #print(f'Function {f.__name__} took {te-ts:2.4f} seconds')
+#         if timing_results.get(f.__name__) is None:
+#             timing_results[f.__name__] = te - ts
+#         else:
+#             timing_results[f.__name__] = timing_results[f.__name__] + te - ts
+#         print(f'Function {f.__name__} has taken {timing_results[f.__name__]:2.4f} seconds')
+#         return result
+#     return wrap
 
 
 def bleach_sanitizer(value, **kwargs):
@@ -789,16 +809,16 @@ class OutcomeSerializerShallow(
             "sets",
         ]
 
-        read_only_fields = [
-            "id",
-            "child_outcome_links",
-            "outcome_horizontal_links",
-            "outcome_horizontal_links_unique",
-            "depth",
-            "type",
-            "comments",
-            "sets",
-        ]
+        # read_only_fields = [
+        #     "id",
+        #     "child_outcome_links",
+        #     "outcome_horizontal_links",
+        #     "outcome_horizontal_links_unique",
+        #     "depth",
+        #     "type",
+        #     "comments",
+        #     "sets",
+        # ]
 
     child_outcome_links = serializers.SerializerMethodField()
     outcome_horizontal_links = serializers.SerializerMethodField()
@@ -1277,6 +1297,7 @@ class InfoBoxSerializer(
     object_permission = serializers.SerializerMethodField()
     has_liveproject = serializers.SerializerMethodField()
     workflow_count = serializers.SerializerMethodField()
+    is_linked = serializers.SerializerMethodField()
 
     def get_workflow_count(self, instance):
         if instance.type == "project":
@@ -1339,6 +1360,11 @@ class InfoBoxSerializer(
         if instance.type == "project":
             if LiveProject.objects.filter(project=instance).count() > 0:
                 return True
+        return False
+
+    def get_is_linked(self, instance):
+        if instance.type not in ["project", "liveproject"]:
+            return len(Node.objects.filter(linked_workflow=instance)) > 0
         return False
 
 
@@ -1716,7 +1742,9 @@ class LiveAssignmentSerializer(
     def get_task(self, instance):
         node = instance.task
         if node is not None:
-            return NodeSerializerForAssignments(node).data
+            return NodeSerializerForAssignments(
+                node, context={"user": self.context.get("user", None)}
+            ).data
 
     def get_workflow_access(self, instance):
         try:

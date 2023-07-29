@@ -1061,6 +1061,98 @@ class ModelViewTest(TestCase):
         self.assertEqual(week.is_strategy, False)
         self.assertEqual(week.original_strategy, None)
 
+    def test_inserted_at_cross_workflow(self):
+        author = login(self)
+        project = make_object("project", author)
+        workflow1 = make_object("course", author)
+        WorkflowProject.objects.create(workflow=workflow1, project=project)
+        workflow2 = make_object("course", author)
+        WorkflowProject.objects.create(workflow=workflow2, project=project)
+        node1 = make_object("node", author)
+        node1.column = workflow1.columns.first()
+        node1.save()
+        node2 = make_object("node", author)
+        node2.column = workflow2.columns.first()
+        node2.save()
+        NodeWeek.objects.create(node=node1, week=workflow1.weeks.first())
+        NodeWeek.objects.create(node=node2, week=workflow1.weeks.first())
+        outcome1 = make_object("outcome", author)
+        outcome2 = make_object("outcome", author)
+        outcome11 = make_object("outcome", author)
+        outcome12 = make_object("outcome", author)
+        outcome13 = make_object("outcome", author)
+        OutcomeWorkflow.objects.create(outcome=outcome1, workflow=workflow1)
+        OutcomeWorkflow.objects.create(outcome=outcome2, workflow=workflow2)
+        OutcomeOutcome.objects.create(parent=outcome1, child=outcome11)
+        OutcomeOutcome.objects.create(parent=outcome1, child=outcome12)
+        OutcomeOutcome.objects.create(parent=outcome1, child=outcome13)
+        OutcomeNode.objects.create(outcome=outcome12, node=node1)
+        OutcomeNode.objects.create(outcome=outcome11, node=node2)
+        OutcomeNode.objects.create(outcome=outcome12, node=node2)
+        # Move a node from one workflow to the other. Ensure outcomenodes are cleared.
+        self.assertEqual(len(node1.outcomes.all()), 1)
+        response = self.client.post(
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID": node1.id,
+                "objectType": JSONRenderer().render("node").decode("utf-8"),
+                "parentID": workflow2.weeks.first().id,
+                "newPosition": 0,
+                "inserted": "true",
+                "allowDifferent": "true",
+                "throughType": JSONRenderer()
+                .render("nodeweek")
+                .decode("utf-8"),
+                "parentType": JSONRenderer().render("week").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(node1.outcomes.all()), 0)
+        self.assertEqual(len(workflow1.weeks.first().nodes.all()), 1)
+        self.assertEqual(len(workflow2.weeks.first().nodes.all()), 1)
+        # move a sub-outcome from one workflow to the other. Ensure that outcomenodes are cleared.
+        self.assertEqual(len(node2.outcomes.all()), 2)
+        response = self.client.post(
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID": outcome11.id,
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),
+                "parentID": outcome2.id,
+                "newPosition": 0,
+                "inserted": "true",
+                "allowDifferent": "true",
+                "throughType": JSONRenderer()
+                .render("outcomeoutcome")
+                .decode("utf-8"),
+                "parentType": JSONRenderer().render("outcome").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(node2.outcomes.all()), 1)
+        self.assertEqual(len(outcome2.children.all()), 1)
+
+        # move a base outcome from one workflow to the other. Ensure that outcomenodes to the sub-outcomes are cleared.
+        response = self.client.post(
+            reverse("course_flow:inserted-at"),
+            {
+                "objectID": outcome1.id,
+                "objectType": JSONRenderer().render("outcome").decode("utf-8"),
+                "parentID": workflow2.id,
+                "newPosition": 0,
+                "inserted": "true",
+                "allowDifferent": "true",
+                "throughType": JSONRenderer()
+                .render("outcomeworkflow")
+                .decode("utf-8"),
+                "parentType": JSONRenderer()
+                .render("workflow")
+                .decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(workflow2.outcomes.all()), 2)
+        self.assertEqual(len(node2.outcomes.all()), 0)
+
     def test_delete_self_no_login_no_authorship(self):
         author = get_author()
         type_list = [
@@ -2764,6 +2856,7 @@ class PermissionsTests(TestCase):
         author = get_author()
         project = Project.objects.create(author=author)
         workflow = Course.objects.create(author=author)
+        node = workflow.weeks.first().nodes.create(author=author)
         WorkflowProject.objects.create(project=project, workflow=workflow)
 
         response = self.client.get(
@@ -2780,7 +2873,7 @@ class PermissionsTests(TestCase):
         response = self.client.get(
             reverse(
                 "course_flow:get-public-workflow-child-data",
-                args=[workflow.pk],
+                args=[node.pk],
             ),
             REMOTE_ADDR="127.0.0.1",
         )
@@ -2819,7 +2912,7 @@ class PermissionsTests(TestCase):
             else:
                 self.assertEqual(response.status_code, 429)
 
-        for i in range(6):
+        for i in range(51):
             response = self.client.get(
                 reverse(
                     "course_flow:get-public-workflow-child-data",
@@ -2827,7 +2920,7 @@ class PermissionsTests(TestCase):
                 ),
                 REMOTE_ADDR="127.0.0.1",
             )
-            if i < 4:
+            if i < 49:
                 self.assertEqual(response.status_code, 200)
             else:
                 self.assertEqual(response.status_code, 429)

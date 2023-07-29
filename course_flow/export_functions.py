@@ -159,8 +159,10 @@ def get_course_framework(workflow, allowed_sets):
     )
     df = df.append({"0": _("Ministerial Competencies")}, ignore_index=True)
     df = df.append({"0": _("Competency"), "1": _("Title")}, ignore_index=True)
-    nodes = get_parent_nodes_for_workflow(workflow).filter(
-        allowed_sets_Q(allowed_sets)
+    nodes = (
+        get_parent_nodes_for_workflow(workflow)
+        .filter(allowed_sets_Q(allowed_sets))
+        .distinct()
     )
     parent_outcomes = []
     for node in nodes:
@@ -175,7 +177,15 @@ def get_course_framework(workflow, allowed_sets):
         ).data
     a = [get_str(outcome, "code") for outcome in parent_outcomes]
     b = [get_str(outcome, "title") for outcome in parent_outcomes]
-    df = pd.concat([df, pd.DataFrame({"0": a, "1": b})])
+    df = pd.concat(
+        [
+            df,
+            pd.DataFrame({"0": a, "1": b}).sort_values(
+                by="0",
+            ),
+        ]
+    )
+    parent_outcome_length = len(parent_outcomes)
     if len(nodes) > 0:
         df = df.append(
             {
@@ -252,7 +262,7 @@ def get_course_framework(workflow, allowed_sets):
             get_framework_line_for_outcome(outcome, columns, allowed_sets),
             ignore_index=True,
         )
-    return df
+    return df, parent_outcome_length
 
 
 def get_workflow_outcomes_table(workflow, allowed_sets):
@@ -276,7 +286,7 @@ def get_outcomes_export(
         workflows = [model_object]
     with BytesIO() as b:
         if export_format == "excel":
-            writer = pd.ExcelWriter(b, engine="openpyxl")
+            writer = pd.ExcelWriter(b, engine="xlsxwriter")
             for workflow in workflows:
                 df = get_workflow_outcomes_table(workflow, allowed_sets)
                 df.to_excel(
@@ -318,17 +328,66 @@ def get_course_frameworks_export(
         workflows = [model_object]
     with BytesIO() as b:
         if export_format == "excel":
-            writer = pd.ExcelWriter(b, engine="openpyxl")
+            writer = pd.ExcelWriter(b, engine="xlsxwriter")
+            workbook = writer.book
+            header_format = workbook.add_format({"bg_color": "#b5fbbb"})
+            bold_format = workbook.add_format(
+                {"bold": True, "bg_color": "#04BA74", "color": "white"}
+            )
+            wrap_format = workbook.add_format()
+            wrap_format.set_text_wrap()
+            wrap_format.set_align("top")
+
             for workflow in workflows:
-                df = get_course_framework(workflow, allowed_sets)
+                df, parent_outcome_length = get_course_framework(
+                    workflow, allowed_sets
+                )
+                sheet_name = (
+                    get_alphanum(workflow.title) + "_" + str(workflow.pk)
+                )
                 df.to_excel(
                     writer,
-                    sheet_name=get_alphanum(workflow.title)
-                    + "_"
-                    + str(workflow.pk),
+                    sheet_name=sheet_name,
                     index=False,
                 )
+                worksheet = writer.sheets[sheet_name]
+                worksheet.set_column(0, 0, 20, wrap_format)
+                worksheet.set_column(1, 1, 40, wrap_format)
+                worksheet.set_column(2, 99, 25, wrap_format)
+
+                worksheet.set_row(
+                    5 + parent_outcome_length + 4, None, bold_format
+                )
+                bold_cells = [
+                    [1, 0],
+                    [1, 2],
+                    [2, 0],
+                    [3, 0],
+                    [3, 2],
+                    [3, 4],
+                    [4, 0],
+                    [5, 0],
+                    [5, 1],
+                    [5 + parent_outcome_length + 1, 0],
+                    [5 + parent_outcome_length + 2, 0],
+                    [5 + parent_outcome_length + 3, 0],
+                ]
+                for cell in bold_cells:
+                    worksheet.conditional_format(
+                        cell[0],
+                        cell[1],
+                        cell[0],
+                        cell[1],
+                        {"type": "no_errors", "format": bold_format},
+                    )
+
+                worksheet.merge_range(2, 1, 2, 5, None)
                 writer.save()
+                # try:
+                #     parent_outcome_length = df.get("parent_outcome_length",0)
+                #     for i in range(parent_outcome_length):
+                #         worksheet.merge_range(6+i,2,6+i,5)
+                #         worksheet.write()
         elif export_format == "csv":
             df = pd.DataFrame({})
             workflows_serialized = WorkflowExportSerializer(
@@ -339,7 +398,7 @@ def get_course_frameworks_export(
                     {"0": workflows_serialized[i]["title"]}, ignore_index=True
                 )
                 df = pd.concat(
-                    [df, get_course_framework(workflow, allowed_sets)]
+                    [df, get_course_framework(workflow, allowed_sets)[0]]
                 )
                 df = df.append({"0": ""}, ignore_index=True)
             df.to_csv(path_or_buf=b, sep=",", index=False)
@@ -357,7 +416,7 @@ def get_program_matrix_export(
         workflows = [model_object]
     with BytesIO() as b:
         if export_format == "excel":
-            writer = pd.ExcelWriter(b, engine="openpyxl")
+            writer = pd.ExcelWriter(b, engine="xlsxwriter")
             for workflow in workflows:
                 df = get_program_matrix(workflow, True, allowed_sets)
                 df.to_excel(
@@ -392,7 +451,7 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
         workflows = [model_object]
     with BytesIO() as b:
         if export_format == "excel":
-            writer = pd.ExcelWriter(b, engine="openpyxl")
+            writer = pd.ExcelWriter(b, engine="xlsxwriter")
             for workflow in workflows:
                 df = get_workflow_nodes_table(workflow, allowed_sets)
                 df.to_excel(
@@ -428,7 +487,7 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
 #
 # def get_nodes_excel(model_object, object_type):
 #    with BytesIO() as b:
-#        writer = pd.ExcelWriter(b, engine="openpyxl")
+#        writer = pd.ExcelWriter(b, engine="xlsxwriter")
 #        if object_type == "workflow":
 #            workflows = [model_object]
 #        elif object_type == "project":
@@ -466,7 +525,7 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
 #
 # def get_program_matrix_excel(model_object, object_type):
 #    with BytesIO() as b:
-#        writer = pd.ExcelWriter(b, engine="openpyxl")
+#        writer = pd.ExcelWriter(b, engine="xlsxwriter")
 #        if object_type == "workflow":
 #            workflows = [model_object]
 #        elif object_type == "project":
@@ -506,7 +565,7 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
 
 # def get_course_frameworks_excel(model_object, object_type):
 #    with BytesIO() as b:
-#        writer = pd.ExcelWriter(b, engine="openpyxl")
+#        writer = pd.ExcelWriter(b, engine="xlsxwriter")
 #        if object_type == "workflow":
 #            workflows = [model_object]
 #        elif object_type == "project":
@@ -526,7 +585,7 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
 
 # def get_outcomes_excel(model_object, object_type):
 #    with BytesIO() as b:
-#        writer = pd.ExcelWriter(b, engine="openpyxl")
+#        writer = pd.ExcelWriter(b, engine="xlsxwriter")
 #        if object_type == "workflow":
 #            workflows = [model_object]
 #        elif object_type == "project":
@@ -771,7 +830,7 @@ def get_saltise_analytics():
     df = analytics.get_base_dataframe()
 
     with BytesIO() as b:
-        writer = pd.ExcelWriter(b, engine="openpyxl")
+        writer = pd.ExcelWriter(b, engine="xlsxwriter")
         analytics.get_workflow_table(df).to_excel(
             writer,
             sheet_name="Workflow Overview",

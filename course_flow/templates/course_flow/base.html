@@ -11,7 +11,7 @@
       content="{% block metadescription %}{% endblock %}"
     />
     <meta name="theme-color" content="#1976BC" />
-
+    
     <!-- External resources -->
     <!-- * Fonts and icons -->
 
@@ -179,15 +179,17 @@
           <span class="material-symbols-rounded">collections_bookmark</span>
           <div>{% trans 'Your Library' %}</div>
         </a>
-        <a id="panel-explore" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}?types[]=activity&types[]=course&types[]=program&types[]=project">
+        <a id="panel-explore" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}">
           <span class="material-symbols-rounded">manage_search</span>
           <div>{% trans 'Explore' %}</div>
         </a>
         {% endif %}
+        {% if not user.is_anonymous %}
         <a id="panel-my-live-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-live-projects' %}">
           <span class="material-symbols-rounded">calendar_month</span>
           <div>{% trans 'My Classrooms' %}</div>
         </a>
+        {% endif %}
 
         {% if user|has_group:"Teacher" %}
         <hr>
@@ -209,14 +211,13 @@
                   {{ favourite.content_object | safe }}
                 </a>
               {% endfor %}
-            <a class="panel-favourite hover-shade" href="{% url 'course_flow:my-favourites' %}">... {% trans 'see all' %}</a>
+            <a class="panel-favourite hover-shade collapsed-text-show-more" href="{% url 'course_flow:my-favourites' %}">{% trans 'See all' %}</a>
           {% endif %}
         </div>
         {% if user|has_group:"Teacher" %}
         <!-- <hr>
         <a class="panel-item hover-shade" href="{% url 'course_flow:import' %}">{% trans "Import from old CourseFlow" %}</a> -->
         {% endif %}
-        <hr>
         <a id="user-feedback" target="_blank" class="panel-item hover-shade no-underline" href="https://courseflow.freshdesk.com/support/home">
           <span class="green filled material-symbols-rounded">help</span>
           <div>
@@ -253,9 +254,7 @@
                   <a id="reset-password" class="hover-shade" href={% course_flow_password_change_url %}>{% trans 'Reset my password' %}</a>
                   <a id="notification-settings" class="hover-shade" href="{% url 'course_flow:user-update' %}">{% trans 'Notification settings' %}</a>
                   <hr>
-                  <a id="return-my-dalite" class="hover-shade" href={% course_flow_return_url %}>
-                    {% course_flow_return_title %}
-                  </a>
+                  <a id="return-my-dalite" class="hover-shade" href={% course_flow_return_url %}>{% course_flow_return_title %}</a>
                   <a id="logout" class="hover-shade">{% trans 'Sign out' %}</a>
                 </div>
               </div>
@@ -418,12 +417,25 @@
     }
 
     const makeDropdown = (click_element)=>{
+      let checkPosition = ()=>{
+        let width = $(click_element).children(".create-dropdown").outerWidth(true);
+        let left = $(click_element).offset().left;
+        if(left+width > $(window).width())$(click_element).children(".create-dropdown").addClass("position-right");
+        else $(click_element).children(".create-dropdown").removeClass("position-right");
+      }
+
       $(click_element).on("click",(evt)=>{
-        $(click_element).children(".create-dropdown").toggleClass("active");
+        if($(click_element).attr("disabled")!="disabled"){
+          $(click_element).children(".create-dropdown").toggleClass("active");
+          checkPosition();
+        }
       });
       document.addEventListener("click",(evt)=>{
         if(! $(evt.target).closest(click_element)[0])$(click_element).children(".create-dropdown").removeClass("active");
       });
+
+      // check_position();
+      // window.addEventListener("resize",check_position);
     }
     makeDropdown("#overflow-options","#overflow-links");
     makeDropdown("#account-options","#account-links");

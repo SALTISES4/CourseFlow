@@ -236,6 +236,7 @@ export class WorkflowRenderer{
             if(updateSocket.readyState==1)openfunction.bind(this)();
             
             updateSocket.onclose = function(e){
+                if(e.code==1000)return;
                 if(!renderer.has_rendered)renderer.connection_opened(true);
                 else{
                     renderer.create_connection_bar();
@@ -253,6 +254,11 @@ export class WorkflowRenderer{
     
     
     render(container,view_type="workflowview"){
+        //In case we need to get child workflows
+        this.child_data_needed=[];
+        this.child_data_completed=-1;
+        this.fetching_child_data=false;
+
         this.view_type=view_type;
         reactDom.render(<WorkflowLoader/>,container[0]);
         let store = this.store;
@@ -263,8 +269,6 @@ export class WorkflowRenderer{
         this.locks={}
         let weeks = initial_workflow_data.week.filter(x=>!x.deleted);
         
-
-    
         this.selection_manager = new SelectionManager(this.read_only); 
         this.selection_manager.renderer = renderer;
         this.tiny_loader = new TinyLoader($("body")[0]);
@@ -281,16 +285,16 @@ export class WorkflowRenderer{
             });
             
         }else if(view_type=="horizontaloutcometable" || view_type=="alignmentanalysis"){
-            //get additional data about child workflows prior to render
-            this.getWorkflowChildData(this.workflowID,(response)=>{
-                store.dispatch(Reducers.refreshStoreData(response.data_package));
+            //get additional data about child workflows to render in later
+            let node_ids = [... new Set(initial_workflow_data.node.filter(x=>(!x.deleted && x.linked_workflow)).map(node=>node.id))];
+            setTimeout(()=>{
                 reactDom.render(
                     <Provider store = {store}>
                         <WorkflowBaseView view_type={view_type} renderer={this}/>
                     </Provider>,
                     container[0]
                 );
-            });
+            },50)
         }else if(view_type=="outcometable") {
             setTimeout(()=>{
                 reactDom.render(
@@ -311,6 +315,30 @@ export class WorkflowRenderer{
             },50)
         }
         
+    }
+
+    //Fetches the data for the given child workflow
+    getDataForChildWorkflow(){
+        if(this.child_data_completed==this.child_data_needed.length-1){
+            this.fetching_child_data=false;
+            return;
+        }
+        this.fetching_child_data = true;
+        this.child_data_completed++;
+        this.getWorkflowChildData(this.child_data_needed[this.child_data_completed],(response)=>{
+            this.store.dispatch(Reducers.refreshStoreData(response.data_package));
+            setTimeout(()=>this.getDataForChildWorkflow(),50);
+        });
+    }
+
+    //Lets the renderer know that it must load the child data for that workflow
+    childWorkflowDataNeeded(node_id){
+        if(this.child_data_needed.indexOf(node_id)<0){
+            this.child_data_needed.push(node_id);
+            if(!this.fetching_child_data){
+                setTimeout(()=>this.getDataForChildWorkflow(),50);
+            }
+        }
     }
     
     connection_opened(reconnect=false){
@@ -356,7 +384,7 @@ export class WorkflowRenderer{
         }else if(data.type=="workflow_parent_updated"){
             this.parent_workflow_updated(data.edit_count);
         }else if(data.type=="workflow_child_updated"){
-            this.child_workflow_updated(data.edit_count);
+            this.child_workflow_updated(data.edit_count,data.child_workflow_id);
         }
     }
 
@@ -375,11 +403,13 @@ export class WorkflowRenderer{
         });
     }
 
-    child_workflow_updated(edit_count){
+    child_workflow_updated(edit_count,child_workflow_id){
         this.messages_queued=true;
         let renderer = this;
-        this.getWorkflowChildData(this.workflowID,(response)=>{
-            //remove all the child workflow data
+        let state=this.store.getState();
+        let node = state.node.find(node=>node.linked_workflow==child_workflow_id);
+        if(!node)return;
+        this.getWorkflowChildData(node.id,(response)=>{
             renderer.store.dispatch(Reducers.refreshStoreData(response.data_package));
             renderer.clear_queue(0);
         });
@@ -584,12 +614,14 @@ export class WorkflowLoader extends React.Component{
 }
 
 export function CreateNew(create_url){
+    let tiny_loader = new TinyLoader($('body')[0]);
+    tiny_loader.startLoad();
     getTargetProjectMenu(-1,(response_data)=>{
         if(response_data.parentID!=null){
             let loader = new Constants.Loader('body');
             window.location=create_url.replace("/0/","/"+response_data.parentID+"/");
         }
-    });
+    },()=>{tiny_loader.endLoad();});
 }
 
 

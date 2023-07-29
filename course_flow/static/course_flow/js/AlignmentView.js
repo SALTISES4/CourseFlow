@@ -199,6 +199,7 @@ class AlignmentOutcomesBlock extends React.Component{
 //    
 //}   
 const getDescendantOutcomes = (state,outcome,outcomes)=>{
+    if(outcome.depth>=2)return;
     let children = outcome.child_outcome_links.map(id=>getOutcomeOutcomeByID(state,id)).map(outcomeoutcome=>getOutcomeByID(state,outcomeoutcome.data.child).data);
     for(let i=0;i<children.length;i++){
         outcomes.push(children[i].id);
@@ -406,13 +407,22 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
             </div>
         }else{
             if(data.linked_workflow){
-                child_outcomes_header=<div class="child-outcome child-outcome-header">{gettext("No outcomes have been added to the linked workflow. When added, they will appear here.")}</div>;
+                if(this.props.child_outcomes == -1){
+                    child_outcomes_header = <div class="child-outcome child-outcome-header">{gettext("... LOADING")}</div>;
+                    this.props.renderer.childWorkflowDataNeeded(this.props.data.id);
+                }else {
+                    if(data.linked_workflow_data.deleted){
+                        child_outcomes_header = <div class="child-outcome child-outcome-header">{gettext("The linked workflow has been deleted.")}</div>;
+                    }else{
+                        child_outcomes_header=<div class="child-outcome child-outcome-header">{gettext("No outcomes have been added to the linked workflow. When added, they will appear here.")}</div>;
+                    }
+                }
             }else{
                 child_outcomes_header=<div class="child-outcome child-outcome-header">{gettext("No workflow has been linked to this node. If you link a workflow, its outcomes will appear here.")}</div>;
             }
         }
-        let child_outcomes = this.props.child_outcomes.map(child_outcome=>{
-            
+        let child_outcomes;
+        if(this.props.child_outcomes!=-1)child_outcomes = this.props.child_outcomes.map(child_outcome=>{
             if(!this.state.show_all && this.props.restriction_set && this.props.restriction_set.child_outcomes && this.props.restriction_set.child_outcomes.indexOf(child_outcome)==-1)return null;
             return(
                 <AlignmentHorizontalReverseChildOutcome objectID={child_outcome} node_data={data} renderer={this.props.renderer} restriction_set={this.props.restriction_set}/>
@@ -505,7 +515,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
     }
     
     addNewChildOutcome(){
-        newOutcome(this.props.data.linked_workflow);
+        newOutcome(this.props.data.linked_workflow,null);
     }
 }
 const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
@@ -522,7 +532,9 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
                 return {workflow:state.workflow,data:node,column:column,child_outcomes:[],outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
             }
             let child_workflow = getChildWorkflowByID(state,node.linked_workflow);
-            let child_outcomes = Constants.filterThenSortByID(state.outcomeworkflow,child_workflow.data.outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
+            let child_outcomes;
+            if(child_workflow!=-1)child_outcomes = Constants.filterThenSortByID(state.outcomeworkflow,child_workflow.data.outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
+            else child_outcomes=-1;
             return {workflow:state.workflow,data:node,column:column,child_outcomes:child_outcomes,outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
             
         }

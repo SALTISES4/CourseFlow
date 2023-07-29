@@ -7,7 +7,7 @@ import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOut
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode";
 import {getOutcomeByID, getOutcomeHorizontalLinkByID} from "./FindState";
 import {moveOutcomeOutcome} from "./Reducers";
-import {updateOutcomenodeDegree, updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant} from "./PostFunctions";
+import {updateOutcomenodeDegree, updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant, insertedAtInstant} from "./PostFunctions";
 import * as Constants from "./Constants";
 
 //Basic component representing an outcome
@@ -86,7 +86,7 @@ class OutcomeView extends EditableComponentWithSorting{
                 <div class="outcome-title">
                     <OutcomeTitle data={this.props.data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
-                {data.child_outcome_links.length>0 && 
+                {data.depth < 2 && data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>
@@ -96,9 +96,11 @@ class OutcomeView extends EditableComponentWithSorting{
                         </div>
                     </div>
                 }
-                <ol class={"children-block children-block-"+this.props.data.depth} id={this.props.objectID+"-children-block"} ref={this.children_block}>
-                    {children}
-                </ol>
+                {data.depth < 2 && 
+                    <ol class={"children-block children-block-"+this.props.data.depth} id={this.props.objectID+"-children-block"} ref={this.children_block}>
+                        {children}
+                    </ol>
+                }
                 {(!this.props.renderer.read_only && data.depth < 2) && <div class="outcome-create-child" onClick = {this.insertChild.bind(this,data)}>{gettext("+ Add New")}</div>
                 }
                 <div class="mouseover-actions">
@@ -150,9 +152,10 @@ class OutcomeView extends EditableComponentWithSorting{
     }
 
     sortableMovedOutFunction(id,new_position,type,new_parent,child_id){
-        console.log("you've moved a "+type+" out to another workflow, ignoring");
-        // this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
-        // insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
+        if(confirm(gettext("You've moved an outcome to another workflow. Nodes tagged with this outcome will have it removed. Do you want to continue?"))){
+            insertedAt(this.props.renderer,null,"outcome",new_parent,"outcome",new_position,"outcomeoutcome");
+            insertedAtInstant(this.props.renderer,child_id,"outcome",new_parent,"outcome",new_position,"outcomeoutcome");
+        }
     }
 
     makeDroppable(){
@@ -248,7 +251,7 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
                     <OutcomeTitle data={this.props.data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
                 <input class="outcome-toggle-checkbox" type="checkbox" title="Toggle highlighting" onChange={this.clickFunction.bind(this)}/>
-                {data.child_outcome_links.length>0 && 
+                {data.depth < 2 && data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>
@@ -258,9 +261,11 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
                         </div>
                     </div>
                 }
-                <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
-                    {children}
-                </div>
+                {data.depth < 2 && 
+                    <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
+                        {children}
+                    </div>
+                }
             </div>
             
         );
@@ -308,12 +313,12 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
     toggleCSS(is_toggled,type){
         if(is_toggled){
             $(".outcome-"+this.props.data.id).addClass("outcome-"+type);
-            $(".outcome-"+this.props.data.id).parents(".node").addClass("outcome-"+type);
-            $(".outcome-"+this.props.data.id).parents(".workflow-details .outcome").addClass("outcome-"+type);
+            if(this.props.nodes.length)$(this.props.nodes.map(node=>".node#"+node).join(", ")).addClass("outcome-"+type);
+            if(this.props.horizontaloutcomes.length)$(this.props.horizontaloutcomes.map(oc=>".outcome-"+oc).join(", ")).addClass("outcome-"+type);
         }else{
             $(".outcome-"+this.props.data.id).removeClass("outcome-"+type);
-            $(".outcome-"+this.props.data.id).parents(".node").removeClass("outcome-"+type);
-            $(".outcome-"+this.props.data.id).parents(".workflow-details .outcome").removeClass("outcome-"+type);
+            if(this.props.nodes.length)$(this.props.nodes.map(node=>".node#"+node).join(", ")).removeClass("outcome-"+type);
+            if(this.props.horizontaloutcomes.length)$(this.props.horizontaloutcomes.map(oc=>".outcome-"+oc).join(", ")).removeClass("outcome-"+type);
         }
     }
     
@@ -335,8 +340,15 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
     }
 
 }
+const mapOutcomeBarOutcomeStateToProps = (state,own_props)=>(
+    {
+        ...getOutcomeByID(state,own_props.objectID),
+        nodes:state.outcomenode.filter(outcomenode=>outcomenode.outcome==own_props.objectID).map((outcomenode)=>outcomenode.node),
+        horizontaloutcomes:state.outcomehorizontallink.filter(ochl=>ochl.parent_outcome==own_props.objectID).map((ochl)=>ochl.outcome)
+    }
+)
 export const OutcomeBarOutcomeView = connect(
-    mapOutcomeStateToProps,
+    mapOutcomeBarOutcomeStateToProps,
     null
 )(OutcomeBarOutcomeViewUnconnected)
 
@@ -387,7 +399,7 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments{
                 <div class="outcome-title">
                     <OutcomeTitle data={data} prefix={this.props.prefix} hovertext={this.props.hovertext}/>
                 </div>
-                {data.child_outcome_links.length>0 && 
+                {data.depth < 2 && data.child_outcome_links.length>0 && 
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
                             <img src={iconpath+dropIcon+".svg"}/>
@@ -397,9 +409,11 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments{
                         </div>
                     </div>
                 }
-                <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
-                    {children}
-                </div>
+                {data.depth < 2 && 
+                    <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
+                        {children}
+                    </div>
+                }
                 <div class="mouseover-actions">
                     {comments}
                 </div>

@@ -4,6 +4,7 @@ import pandas as pd
 from celery import shared_task
 from django.conf import settings
 from django.core.cache import cache
+from django.core.files.storage import default_storage
 from django.core.mail import EmailMessage
 from django.utils import timezone
 
@@ -79,6 +80,9 @@ def async_send_export_email(
         file_data = (
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+    if settings.DEBUG:
+        with open("last_export." + file_ext, "wb") as out_file:
+            out_file.write(file)
 
     email.attach(
         filename,
@@ -91,7 +95,9 @@ def async_send_export_email(
             f"Email - {email_subject} - {filename} - sent to {user_email}"
         )
     except SMTPException:
-        print("Email could not be sent")
+        logger.info(
+            f"Email - {email_subject} - {filename} - could NOT be sent to {user_email}"
+        )
 
 
 @try_async

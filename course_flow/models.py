@@ -44,6 +44,8 @@ class Project(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     published = models.BooleanField(default=False)
 
+    from_saltise = models.BooleanField(default=False)
+
     is_strategy = models.BooleanField(default=False)
 
     workflows = models.ManyToManyField(
@@ -182,9 +184,7 @@ class Column(models.Model):
         max_length=title_max_length, null=True, blank=True
     )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    icon = models.CharField(
-        max_length=50, null=True, blank=True
-    )
+    icon = models.CharField(max_length=50, null=True, blank=True)
     created_on = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
     visible = models.BooleanField(default=True)
@@ -1281,6 +1281,11 @@ class LiveAssignment(models.Model):
     start_date = models.DateTimeField(default=default_start_date)
     end_date = models.DateTimeField(default=default_due_date)
     created_on = models.DateTimeField(default=timezone.now)
+
+    @property
+    def title(self):
+        if self.task is not None:
+            return self.task.title
 
     def get_live_project(self):
         return self.liveproject

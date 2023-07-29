@@ -6,7 +6,7 @@ import {NodeWeekComparisonView} from "./NodeWeekView";
 import {getWeekByID, getNodeWeekByID} from "./FindState";
 import * as Constants from "./Constants";
 import {columnChangeNode, moveNodeWeek} from "./Reducers";
-import {toggleDrop, insertedAt,columnChanged,addStrategy,updateValueInstant} from "./PostFunctions";
+import {toggleDrop, insertedAt, insertedAtInstant, columnChanged,addStrategy,updateValueInstant} from "./PostFunctions";
 import {Loader} from "./Constants";
 
 //Basic component to represent a Week
@@ -229,9 +229,10 @@ export class WeekComparisonViewUnconnected extends WeekViewUnconnected{
 
 
     sortableMovedOutFunction(id,new_position,type,new_parent,child_id){
-        console.log("you've moved a "+type+" out to another workflow, ignoring");
-        // this.props.renderer.micro_update(moveNodeWeek(id,new_position,new_parent,child_id));
-        // insertedAt(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
+        if(confirm(gettext("You've moved a node to another workflow. Nodes lose all tagged outcomes when transferred between workflows. Do you want to continue?"))){
+            insertedAt(this.props.renderer,null,"node",new_parent,"week",new_position,"nodeweek");
+            insertedAtInstant(this.props.renderer,child_id,"node",new_parent,"week",new_position,"nodeweek");
+        }
     }
 
     makeDroppable(){
@@ -308,7 +309,7 @@ export class NodeBarWeekViewUnconnected extends React.Component{
         if(data.is_dropped)src=iconpath+"minus.svg";
         return (
             <div class="node-bar-week hover-shade" onClick={this.jumpTo.bind(this)}>
-                <div><TitleText text={data.title} defaultText={default_text}/><img onClick={this.toggleDrop.bind(this)} src={src}/></div>
+                <TitleText text={data.title} defaultText={default_text}/>
             </div>
         );
     }
@@ -325,10 +326,6 @@ export class NodeBarWeekViewUnconnected extends React.Component{
         }
     }
 
-    toggleDrop(evt){
-        // evt.stopPropagation();
-        toggleDrop(this.props.objectID,this.objectType,!this.props.data.is_dropped,this.props.dispatch)
-    }
 }
 export const NodeBarWeekView = connect(
     mapWeekStateToProps,

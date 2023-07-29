@@ -4,7 +4,14 @@
 <!-- -->
 {% block header %}{% endblock %}
 <!-- -->
-{% block title %}{% endblock %}
+{% block title %}
+  {%if object.title != "" %}
+    {{ object.title }}
+  {% else %}
+    {% trans "Untitled" %}
+  {% endif %}
+  - CourseFlow
+{% endblock %}
 <!-- -->
 {% block metadescription %} {% endblock %}
 <!-- -->
