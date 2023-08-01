@@ -3893,7 +3893,7 @@ circle.mouseover{
 
 .right-panel-container textarea{
     font-family:sans-serif;
-    resize:vertical;
+    resize:none;
 }
 
 .right-panel-inner{
