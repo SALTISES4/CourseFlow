@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-07-25 07:25-0400\n"
+"POT-Creation-Date: 2023-08-09 15:19-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -119,27 +119,29 @@ msgstr "Vue"
 msgid "Load new workflow"
 msgstr "Ajouter un plan de travail"
 
-#: static/course_flow/js/ComparisonView.js:99
+#: static/course_flow/js/ComparisonView.js:105
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Comparing workflows for:"
 msgstr "Comparaison des plans de travail pour:"
 
-#: static/course_flow/js/ComparisonView.js:104
+#: static/course_flow/js/ComparisonView.js:110
 #: static/course_flow/js/WorkflowView.js:360
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Return to project"
 msgstr "Retourner au projet ("
 
-#: static/course_flow/js/ComparisonView.js:417
+#: static/course_flow/js/ComparisonView.js:422
 #: static/course_flow/js/OutcomeView.js:155
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid ""
 "You've moved an outcome to another workflow. Nodes tagged with this outcome "
 "will have it removed. Do you want to continue?"
-msgstr "Vous avez déplacé un acquis vers un autre plan de travail. Les noeuds marqués avec ce acquis le verront supprimé. Voulez-vous continuer?"
+msgstr ""
+"Vous avez déplacé un acquis vers un autre plan de travail. Les noeuds "
+"marqués avec ce acquis le verront supprimé. Voulez-vous continuer?"
 
-#: static/course_flow/js/ComparisonView.js:458
-#: static/course_flow/js/WorkflowView.js:993
+#: static/course_flow/js/ComparisonView.js:463
+#: static/course_flow/js/WorkflowView.js:995
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Object Sets"
 msgstr "Categories d'objets"
@@ -216,7 +218,7 @@ msgstr "caractères"
 
 #: static/course_flow/js/ComponentJSON.js:76
 #: static/course_flow/js/Library.js:364
-#: static/course_flow/js/MenuComponents.js:739
+#: static/course_flow/js/MenuComponents.js:765
 #: static/course_flow/js/WorkflowView.js:129
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
@@ -262,7 +264,7 @@ msgstr "Vous ne pouvez pas supprimer la dernière "
 
 #: static/course_flow/js/ComponentJSON.js:376
 #: static/course_flow/js/LiveAssignmentView.js:200
-#: static/course_flow/js/MenuComponents.js:775
+#: static/course_flow/js/MenuComponents.js:801
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -286,6 +288,8 @@ msgstr "Supprimer commentaire"
 
 #: static/course_flow/js/ComponentJSON.js:941
 #: static/course_flow/js/LiveAssignmentView.js:543
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Close"
 msgstr "Fermer"
@@ -325,7 +329,7 @@ msgstr "montrer moins"
 #: static/course_flow/js/ComponentJSON.js:1135
 #: static/course_flow/js/ComponentJSON.js:1205
 #: static/course_flow/js/ComponentJSON.js:1225
-#: static/course_flow/js/WorkflowView.js:1188
+#: static/course_flow/js/WorkflowView.js:1190
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -402,25 +406,25 @@ msgstr "programme"
 msgid "project"
 msgstr "projet"
 
-#: static/course_flow/js/Constants.js:416
+#: static/course_flow/js/Constants.js:420
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:27
 msgid "Owner"
 msgstr "Propriétaire"
 
-#: static/course_flow/js/Constants.js:417
+#: static/course_flow/js/Constants.js:421
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:27
 msgid "Editor"
 msgstr "Peur modifier"
 
-#: static/course_flow/js/Constants.js:418
+#: static/course_flow/js/Constants.js:422
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:27
 msgid "Commenter"
 msgstr "Peut commenter"
 
-#: static/course_flow/js/Constants.js:419
+#: static/course_flow/js/Constants.js:423
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:27
 msgid "Viewer"
@@ -492,23 +496,18 @@ msgstr "Nouvelle stratégie d'activité"
 msgid "Import from old CourseFlow"
 msgstr "Importer fichier de l'ancien CourseFlow"
 
-#: static/course_flow/js/Library.js:132
+#: static/course_flow/js/Library.js:132 static/course_flow/js/Library.js:160
 #: static/course_flow/js/scripts-library.min.js:27
 msgid "See all"
 msgstr "Voir tout"
 
 #: static/course_flow/js/Library.js:144
 #: static/course_flow/js/scripts-library.min.js:27
-msgid "Recent Classrooms"
+msgid "Recent classrooms"
 msgstr "Classes recentes"
 
-#: static/course_flow/js/Library.js:160
-#: static/course_flow/js/scripts-library.min.js:27
-msgid "see all"
-msgstr "vour tout"
-
 #: static/course_flow/js/Library.js:235
-#: static/course_flow/js/MenuComponents.js:536
+#: static/course_flow/js/MenuComponents.js:553
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -546,7 +545,7 @@ msgid "Are you sure you want to permanently delete this project?"
 msgstr "Voulez-vous vraiment supprimer définitivement ce projet?"
 
 #: static/course_flow/js/Library.js:299
-#: static/course_flow/js/MenuComponents.js:598
+#: static/course_flow/js/MenuComponents.js:615
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -554,7 +553,7 @@ msgid "Are you sure you want to create a live classroom for this project?"
 msgstr "Voulez-vous vraiment créer une classe pour ce projet?"
 
 #: static/course_flow/js/Library.js:310
-#: static/course_flow/js/MenuComponents.js:627
+#: static/course_flow/js/MenuComponents.js:644
 #: static/course_flow/js/WorkflowView.js:280
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
@@ -583,7 +582,7 @@ msgid "No description"
 msgstr "Aucune description"
 
 #: static/course_flow/js/Library.js:368
-#: static/course_flow/js/MenuComponents.js:743
+#: static/course_flow/js/MenuComponents.js:769
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -591,7 +590,7 @@ msgid "Disciplines"
 msgstr "Disciplines"
 
 #: static/course_flow/js/Library.js:369
-#: static/course_flow/js/MenuComponents.js:558
+#: static/course_flow/js/MenuComponents.js:575
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -613,7 +612,7 @@ msgstr "Modifier"
 
 #: static/course_flow/js/Library.js:422
 #: static/course_flow/js/LiveProjectView.js:23
-#: static/course_flow/js/MenuComponents.js:570
+#: static/course_flow/js/MenuComponents.js:587
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -680,7 +679,7 @@ msgstr "A-Z"
 msgid "Creation date"
 msgstr "Date de création"
 
-#: static/course_flow/js/Library.js:492 static/course_flow/js/Library.js:848
+#: static/course_flow/js/Library.js:492 static/course_flow/js/Library.js:852
 #: static/course_flow/js/scripts-library.min.js:27
 msgid "Type"
 msgstr "Type"
@@ -702,35 +701,35 @@ msgstr "Chercher: "
 
 #: static/course_flow/js/Library.js:537 static/course_flow/js/Library.js:746
 #: static/course_flow/js/Library.js:753
-#: static/course_flow/js/MenuComponents.js:965
+#: static/course_flow/js/MenuComponents.js:991
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Search"
 msgstr "Chercher"
 
 #: static/course_flow/js/Library.js:719
-#: static/course_flow/js/MenuComponents.js:971
+#: static/course_flow/js/MenuComponents.js:997
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Activity"
 msgstr "Activité"
 
 #: static/course_flow/js/Library.js:720
-#: static/course_flow/js/MenuComponents.js:972
+#: static/course_flow/js/MenuComponents.js:998
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Course"
 msgstr "Cours"
 
 #: static/course_flow/js/Library.js:721
-#: static/course_flow/js/MenuComponents.js:973
+#: static/course_flow/js/MenuComponents.js:999
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Program"
 msgstr "Programme"
 
 #: static/course_flow/js/Library.js:722
-#: static/course_flow/js/MenuComponents.js:974
+#: static/course_flow/js/MenuComponents.js:1000
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Project"
@@ -741,46 +740,48 @@ msgstr "Projet"
 msgid "Relevance"
 msgstr "Pertinance"
 
-#: static/course_flow/js/Library.js:818
-#: static/course_flow/js/MenuComponents.js:1002
+#: static/course_flow/js/Library.js:778
+#: static/course_flow/js/scripts-library.min.js:27
+msgid "Enter a search term or filter then click 'search' to get started."
+msgstr ""
+"Saisissez un terme de recherche ou un filtre, puis cliquez sur 'Rechercher' "
+"pour commencer."
+
+#: static/course_flow/js/Library.js:829
+#: static/course_flow/js/MenuComponents.js:1028
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Showing results"
 msgstr "Affichage des résultats"
 
-#: static/course_flow/js/Library.js:818
-#: static/course_flow/js/MenuComponents.js:1002
+#: static/course_flow/js/Library.js:829
+#: static/course_flow/js/MenuComponents.js:1028
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "total results"
 msgstr "résultats totaux"
 
-#: static/course_flow/js/Library.js:829
+#: static/course_flow/js/Library.js:838
 #: static/course_flow/js/scripts-library.min.js:27
 msgid "No results were found."
 msgstr "Aucun résultat trouvé"
 
-#: static/course_flow/js/Library.js:834
-#: static/course_flow/js/scripts-library.min.js:27
-msgid "Enter a search term or filter then click 'search' to get started."
-msgstr "Saisissez un terme de recherche ou un filtre, puis cliquez sur 'Rechercher' pour commencer."
-
-#: static/course_flow/js/Library.js:910
+#: static/course_flow/js/Library.js:914
 #: static/course_flow/js/scripts-library.min.js:27
 msgid "Discipline"
 msgstr "Discipline"
 
-#: static/course_flow/js/Library.js:951
+#: static/course_flow/js/Library.js:955
 #: static/course_flow/js/scripts-library.min.js:27
 msgid "Restrict results to content provided by SALTISE"
 msgstr "Restreindre les résultats au contenu fourni par SALTISE"
 
-#: static/course_flow/js/Library.js:957
+#: static/course_flow/js/Library.js:962
 #: static/course_flow/js/scripts-library.min.js:27
 msgid "SALTISE content"
 msgstr "De SALTISE"
 
-#: static/course_flow/js/Library.js:1057
+#: static/course_flow/js/Library.js:1067
 #: static/course_flow/js/LiveProjectView.js:657
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
@@ -788,7 +789,7 @@ msgstr "De SALTISE"
 msgid "Created"
 msgstr "Créé"
 
-#: static/course_flow/js/Library.js:1058
+#: static/course_flow/js/Library.js:1068
 #: static/course_flow/js/LiveProjectView.js:658
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
@@ -796,7 +797,7 @@ msgstr "Créé"
 msgid "by"
 msgstr "par"
 
-#: static/course_flow/js/Library.js:1059
+#: static/course_flow/js/Library.js:1069
 #: static/course_flow/js/LiveAssignmentView.js:346
 #: static/course_flow/js/LiveAssignmentView.js:656
 #: static/course_flow/js/scripts-library.min.js:27
@@ -805,15 +806,15 @@ msgstr "par"
 msgid " on "
 msgstr " à "
 
-#: static/course_flow/js/Library.js:1083
+#: static/course_flow/js/Library.js:1093
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "classroom"
 msgstr "classe"
 
-#: static/course_flow/js/Library.js:1084
-#: static/course_flow/js/MenuComponents.js:393
+#: static/course_flow/js/Library.js:1094
+#: static/course_flow/js/MenuComponents.js:410
 #: static/course_flow/js/WorkflowView.js:141
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
@@ -821,26 +822,46 @@ msgstr "classe"
 msgid " strategy"
 msgstr " stratégie"
 
-#: static/course_flow/js/Library.js:1101
+#: static/course_flow/js/Library.js:1111
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Favourite"
 msgstr "Ajouter en favori"
 
-#: static/course_flow/js/Library.js:1106
+#: static/course_flow/js/Library.js:1116
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "workflows"
 msgstr "plans de travail"
 
-#: static/course_flow/js/Library.js:1112
+#: static/course_flow/js/Library.js:1122
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Live Classroom"
 msgstr "Classe"
+
+#: static/course_flow/js/Library.js:1126
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-live.min.js:28
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid ""
+"Warning: linking the same workflow to multiple nodes can result in loss of "
+"readability if you are associating parent workflow outcomes with child "
+"workflow outcomes."
+msgstr ""
+"Avertissement : lier le même plan de travail à plusieurs noeuds peut "
+"entraîner une perte de lisibilité si vous associez des acquis du parent à "
+"ceux de l'enfant."
+
+#: static/course_flow/js/Library.js:1126
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-live.min.js:28
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid "Already in use"
+msgstr "Déjà utilisé"
 
 #: static/course_flow/js/LiveAssignmentView.js:36
 #: static/course_flow/js/scripts-live.min.js:28
@@ -923,7 +944,7 @@ msgstr "Indique si les étudiants peuvent marquer leurs devoirs comme terminés:
 
 #: static/course_flow/js/LiveAssignmentView.js:148
 #: static/course_flow/js/LiveProjectView.js:620
-#: static/course_flow/js/MenuComponents.js:893
+#: static/course_flow/js/MenuComponents.js:919
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -957,10 +978,7 @@ msgid "Other Users"
 msgstr "Autres utilisateurs"
 
 #: static/course_flow/js/LiveAssignmentView.js:168
-#: static/course_flow/js/MenuComponents.js:760
-#: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
-#: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Add"
 msgstr "Ajouter"
 
@@ -1201,106 +1219,122 @@ msgstr "Visible"
 msgid "Table"
 msgstr "Tableau"
 
-#: static/course_flow/js/MenuComponents.js:88
+#: static/course_flow/js/MenuComponents.js:73
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Select a workflow"
-msgstr "Sélectionner un plan de travail"
+msgid "Current project"
+msgstr "Ce projet"
 
-#: static/course_flow/js/MenuComponents.js:108
+#: static/course_flow/js/MenuComponents.js:78
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "link to node"
-msgstr "lier au noeud"
+msgid "Or select from your projects"
+msgstr "Ou sélectionnez un de vos autres projet"
 
 #: static/course_flow/js/MenuComponents.js:109
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Copy to Current Project and "
-msgstr "Copier dans ce projet et "
+msgid "Select a project"
+msgstr "Sélectionnez un projet"
 
-#: static/course_flow/js/MenuComponents.js:112
-#: static/course_flow/js/MenuComponents.js:883
+#: static/course_flow/js/MenuComponents.js:137
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-live.min.js:28
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid "Set to None"
+msgstr "Mis à aucun"
+
+#: static/course_flow/js/MenuComponents.js:151
+#: static/course_flow/js/MenuComponents.js:154
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-live.min.js:28
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid "Select"
+msgstr "Sélectionner"
+
+#: static/course_flow/js/MenuComponents.js:152
+#: static/course_flow/js/scripts-library.min.js:27
+#: static/course_flow/js/scripts-live.min.js:28
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid "Copy to Current Project"
+msgstr "Copier dans ce projet"
+
+#: static/course_flow/js/MenuComponents.js:158
+#: static/course_flow/js/MenuComponents.js:173
+#: static/course_flow/js/MenuComponents.js:909
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Cancel"
 msgstr "Annuler"
 
-#: static/course_flow/js/MenuComponents.js:164
-#: static/course_flow/js/scripts-library.min.js:27
-#: static/course_flow/js/scripts-live.min.js:28
-#: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Select project"
-msgstr "Sélectionnez le projet"
-
-#: static/course_flow/js/MenuComponents.js:392
+#: static/course_flow/js/MenuComponents.js:409
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Import "
 msgstr "Importer "
 
-#: static/course_flow/js/MenuComponents.js:548
+#: static/course_flow/js/MenuComponents.js:565
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Workflow Comparison Tool"
 msgstr "Outil de comparaison"
 
-#: static/course_flow/js/MenuComponents.js:730
+#: static/course_flow/js/MenuComponents.js:747
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "A title and at least one discipline is required for publishing."
 msgstr "Un titre et au moins une discipline sont requis pour la publication."
 
-#: static/course_flow/js/MenuComponents.js:733
+#: static/course_flow/js/MenuComponents.js:759
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Edit project"
 msgstr "Modifier le projet"
 
-#: static/course_flow/js/MenuComponents.js:735
+#: static/course_flow/js/MenuComponents.js:761
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Title"
 msgstr "Titre"
 
-#: static/course_flow/js/MenuComponents.js:750
+#: static/course_flow/js/MenuComponents.js:776
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Object sets"
 msgstr "Categories d'objets"
 
-#: static/course_flow/js/MenuComponents.js:755
+#: static/course_flow/js/MenuComponents.js:781
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Select a type"
 msgstr "Sélectionnez un type"
 
-#: static/course_flow/js/MenuComponents.js:758
+#: static/course_flow/js/MenuComponents.js:784
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Set name"
 msgstr "Nom de la catégorie"
 
-#: static/course_flow/js/MenuComponents.js:775
+#: static/course_flow/js/MenuComponents.js:801
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "set"
 msgstr "catégorie"
 
-#: static/course_flow/js/MenuComponents.js:868
+#: static/course_flow/js/MenuComponents.js:894
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1311,7 +1345,7 @@ msgstr ""
 "Êtes-vous certain de vouloir publier ce projet, le rendant entièrement "
 "visible pour n'importe qui avec un compte?"
 
-#: static/course_flow/js/MenuComponents.js:870
+#: static/course_flow/js/MenuComponents.js:896
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1322,42 +1356,42 @@ msgstr ""
 "Êtes-vous certain de vouloir dépublier ce projet, il cessera d'être visible "
 "pour les autres utilisateurs?"
 
-#: static/course_flow/js/MenuComponents.js:958
+#: static/course_flow/js/MenuComponents.js:984
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Explore our database"
 msgstr "Explorer notre base de données"
 
-#: static/course_flow/js/MenuComponents.js:962
+#: static/course_flow/js/MenuComponents.js:988
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Keywords"
 msgstr "Mots clés"
 
-#: static/course_flow/js/MenuComponents.js:969
+#: static/course_flow/js/MenuComponents.js:995
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Allowed Types"
 msgstr "Types autorisés"
 
-#: static/course_flow/js/MenuComponents.js:978
+#: static/course_flow/js/MenuComponents.js:1004
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Disciplines (leave blank for all):"
 msgstr "Disciplines (laisser vide pour tous sélectionner) :"
 
-#: static/course_flow/js/MenuComponents.js:986
+#: static/course_flow/js/MenuComponents.js:1012
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Results Per Page:"
 msgstr "Résultats par page:"
 
-#: static/course_flow/js/MenuComponents.js:1008
+#: static/course_flow/js/MenuComponents.js:1034
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Previous"
 msgstr "Précédente"
 
-#: static/course_flow/js/MenuComponents.js:1012
+#: static/course_flow/js/MenuComponents.js:1038
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Next"
 msgstr "Prochaine"
 
-#: static/course_flow/js/MenuComponents.js:1016
+#: static/course_flow/js/MenuComponents.js:1042
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid ""
 "No results were found. Adjust your search parameters, and make sure you have "
@@ -1386,6 +1420,16 @@ msgstr ""
 "faire."
 
 #: static/course_flow/js/OutcomeEditView.js:305
+#: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid ""
+"Warning: you have linked this workflow to multiple nodes. This is not "
+"recommended. You may see outcomes from different parent workflows, or "
+"duplicates of outcomes."
+msgstr ""
+"Avertissement: vous avez lié ce plan de travail à plusieurs noeuds. Ceci "
+"n'est pas recommandé."
+
+#: static/course_flow/js/OutcomeEditView.js:310
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Outcomes from Parent Workflow"
 msgstr "Acquis du plan de travail parent"
@@ -1466,104 +1510,104 @@ msgstr "Partagé avec"
 msgid "Owned By"
 msgstr "Appartenant à"
 
-#: static/course_flow/js/ShareMenu.js:89 static/course_flow/js/ShareMenu.js:123
+#: static/course_flow/js/ShareMenu.js:90 static/course_flow/js/ShareMenu.js:124
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Any CourseFlow teacher can view"
 msgstr "Tout enseignant sur CourseFlow peut voir"
 
-#: static/course_flow/js/ShareMenu.js:93
+#: static/course_flow/js/ShareMenu.js:94
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Title and disciplines are required to publish."
 msgstr "Un titre et au moins une discipline sont requis pour la publication."
 
-#: static/course_flow/js/ShareMenu.js:94
+#: static/course_flow/js/ShareMenu.js:95
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Title is required to publish."
 msgstr "Le titre est requis pour publier."
 
-#: static/course_flow/js/ShareMenu.js:105
+#: static/course_flow/js/ShareMenu.js:106
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Public to CourseFlow"
 msgstr "Public"
 
-#: static/course_flow/js/ShareMenu.js:110
+#: static/course_flow/js/ShareMenu.js:111
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Private"
 msgstr "Privé"
 
-#: static/course_flow/js/ShareMenu.js:131
+#: static/course_flow/js/ShareMenu.js:132
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Project is private"
 msgstr "Ce projet est privé"
 
-#: static/course_flow/js/ShareMenu.js:149
+#: static/course_flow/js/ShareMenu.js:150
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Generate a public link"
 msgstr "Générer un lien public"
 
-#: static/course_flow/js/ShareMenu.js:168
+#: static/course_flow/js/ShareMenu.js:169
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Copy public link"
 msgstr "Copier le lien public"
 
-#: static/course_flow/js/ShareMenu.js:175
+#: static/course_flow/js/ShareMenu.js:176
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Remove public link"
 msgstr "Supprimer le lien public"
 
-#: static/course_flow/js/ShareMenu.js:241
+#: static/course_flow/js/ShareMenu.js:242
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Can comment"
 msgstr "Peut commenter"
 
-#: static/course_flow/js/ShareMenu.js:246
+#: static/course_flow/js/ShareMenu.js:247
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Share"
 msgstr "Partager"
 
-#: static/course_flow/js/ShareMenu.js:253
+#: static/course_flow/js/ShareMenu.js:254
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Can edit"
 msgstr "Peut modifier"
 
-#: static/course_flow/js/ShareMenu.js:255
+#: static/course_flow/js/ShareMenu.js:256
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Can view"
 msgstr "Peut voire"
 
-#: static/course_flow/js/ShareMenu.js:256
+#: static/course_flow/js/ShareMenu.js:257
 #: static/course_flow/js/StudentManagement.js:89
 #: static/course_flow/js/scripts-live.min.js:28
 msgid "Student"
 msgstr "Étudiant(e)"
 
-#: static/course_flow/js/ShareMenu.js:257
+#: static/course_flow/js/ShareMenu.js:258
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1632,111 +1676,111 @@ msgstr "Importer noeds"
 msgid "Return to classroom ("
 msgstr "Retour a la classe ("
 
-#: static/course_flow/js/WorkflowView.js:450
+#: static/course_flow/js/WorkflowView.js:452
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Other Views"
 msgstr "Autres vues"
 
-#: static/course_flow/js/WorkflowView.js:482
+#: static/course_flow/js/WorkflowView.js:484
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Jump to"
 msgstr "Aller vers"
 
-#: static/course_flow/js/WorkflowView.js:499
+#: static/course_flow/js/WorkflowView.js:501
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Expand all weeks"
 msgstr "Afficher toutes les semaines"
 
-#: static/course_flow/js/WorkflowView.js:503
+#: static/course_flow/js/WorkflowView.js:505
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Collapse all nodes"
 msgstr "Masquer tous les noeuds"
 
-#: static/course_flow/js/WorkflowView.js:506
+#: static/course_flow/js/WorkflowView.js:508
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Collapse all outcomes"
 msgstr "Masquer tous les acquis"
 
-#: static/course_flow/js/WorkflowView.js:959
+#: static/course_flow/js/WorkflowView.js:961
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Competency Matrix Style"
 msgstr "Matrice de compétences"
 
-#: static/course_flow/js/WorkflowView.js:966
+#: static/course_flow/js/WorkflowView.js:968
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Table Type"
 msgstr "Type de tableau"
 
-#: static/course_flow/js/WorkflowView.js:990
+#: static/course_flow/js/WorkflowView.js:992
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "View options"
 msgstr "Options d'affichage'"
 
-#: static/course_flow/js/WorkflowView.js:1070
+#: static/course_flow/js/WorkflowView.js:1072
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "My strategies"
 msgstr "Mes stratégies"
 
-#: static/course_flow/js/WorkflowView.js:1075
+#: static/course_flow/js/WorkflowView.js:1077
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "SALTISE strategies"
 msgstr "Stratégies SALTISE"
 
-#: static/course_flow/js/WorkflowView.js:1128
+#: static/course_flow/js/WorkflowView.js:1130
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Restore items"
 msgstr "Restaurer"
 
-#: static/course_flow/js/WorkflowView.js:1130
+#: static/course_flow/js/WorkflowView.js:1132
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Nodes"
 msgstr "Noeuds"
 
-#: static/course_flow/js/WorkflowView.js:1135
+#: static/course_flow/js/WorkflowView.js:1137
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Weeks"
 msgstr "Semaines"
 
-#: static/course_flow/js/WorkflowView.js:1140
+#: static/course_flow/js/WorkflowView.js:1142
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Columns"
 msgstr "Colonnes"
 
-#: static/course_flow/js/WorkflowView.js:1145
+#: static/course_flow/js/WorkflowView.js:1147
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Outcomes"
 msgstr "Acquis"
 
-#: static/course_flow/js/WorkflowView.js:1150
+#: static/course_flow/js/WorkflowView.js:1152
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Node Links"
 msgstr "Liens de noeuds"
 
-#: static/course_flow/js/WorkflowView.js:1178
+#: static/course_flow/js/WorkflowView.js:1180
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Deleted"
 msgstr "Supprimé"
 
-#: static/course_flow/js/WorkflowView.js:1180
+#: static/course_flow/js/WorkflowView.js:1182
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Permanently Delete"
 msgstr "Supprimé définitivement"
 
-#: static/course_flow/js/WorkflowView.js:1200
+#: static/course_flow/js/WorkflowView.js:1202
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Are you sure you want to permanently delete this object?"
 msgstr "Voulez-vous vraiment supprimer définitivement cet objet?"
 
-#: static/course_flow/js/WorkflowView.js:1305
+#: static/course_flow/js/WorkflowView.js:1307
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Quick Navigation"
 msgstr "Navigation rapide"
 
-#: static/course_flow/js/WorkflowView.js:1312
+#: static/course_flow/js/WorkflowView.js:1314
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Workflows Used:"
 msgstr "Plans de travail utilisés:"
@@ -1855,26 +1899,26 @@ msgstr "Matrice de compétences"
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Select a project"
-msgstr "Sélectionnez un projet"
+msgid "Select a workflow"
+msgstr "Sélectionner un plan de travail"
 
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Set to None"
-msgstr "Mis à aucun"
+msgid "link to node"
+msgstr "lier au noeud"
 
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Select"
-msgstr "Sélectionner"
+msgid "Copy to Current Project and "
+msgstr "Copier dans ce projet et "
 
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Copy to Current Project"
-msgstr "Copier dans ce projet"
+msgid "Select project"
+msgstr "Sélectionnez le projet"
 
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
@@ -1903,7 +1947,7 @@ msgid "New course strategy"
 msgstr "Nouvelle stratégie de cours"
 
 #: static/course_flow/js/scripts-library.min.js:27
-msgid "Recent Projects"
+msgid "Recent projects"
 msgstr "Projets récents"
 
 #: static/course_flow/js/scripts-library.min.js:27
@@ -2079,7 +2123,10 @@ msgstr "Voir les informations sur le devoir"
 msgid ""
 "You've moved a node to another workflow. Nodes lose all tagged outcomes when "
 "transferred between workflows. Do you want to continue?"
-msgstr "Vous avez déplacé un noeud vers un autre plan de travail. Les noeuds perdent tous les acquis marqués lorsqu'ils sont transférés entre les plans de travails. Voulez-vous continuer?"
+msgstr ""
+"Vous avez déplacé un noeud vers un autre plan de travail. Les noeuds perdent "
+"tous les acquis marqués lorsqu'ils sont transférés entre les plans de "
+"travails. Voulez-vous continuer?"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid ""
@@ -2175,6 +2222,9 @@ msgstr "Ajouter au plan de travail"
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Used in:"
 msgstr "Utilisé dans:"
+
+#~ msgid "see all"
+#~ msgstr "vour tout"
 
 #~ msgid "Select Project"
 #~ msgstr "Sélectionner un projet"

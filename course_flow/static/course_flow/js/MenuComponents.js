@@ -734,10 +734,10 @@ export class ProjectEditMenu extends React.Component{
         if(this.state.selected_set)selected_set=object_sets[this.state.selected_set];
         let sets_added = data.object_sets.map(item=>
             <div class="nomenclature-row">
-                <div>{object_sets[item.term]+": "}</div>
+                <div>{object_sets[item.term]}</div>
                 <input value={item.title} onChange={this.termChanged.bind(this,item.id)}/>
                 <div onClick={this.deleteTerm.bind(this,item.id)}>
-                    <span class="material-symbols-rounded">delete</span>
+                    <span class="material-symbols-rounded filled green hover-shade">delete</span>
                 </div>
             </div>
         );
@@ -746,6 +746,15 @@ export class ProjectEditMenu extends React.Component{
         if(data.published && !published_enabled)this.setState({published:false})
         let disabled_publish_text;
         if(!published_enabled)disabled_publish_text = gettext("A title and at least one discipline is required for publishing.");
+        let add_term_css="material-symbols-rounded filled";
+        let clickEvt;
+        if(this.addTermDisabled(selected_set)){
+            clickEvt=()=>console.log("Disabled");
+            add_term_css += " grey";
+        }else{
+            clickEvt=this.addTerm.bind(this);
+            add_term_css +=" green hover-shade"
+        }
         return(
             <div class="message-wrap">
                 <h2>{gettext("Edit project")}</h2>
@@ -774,9 +783,9 @@ export class ProjectEditMenu extends React.Component{
                             {set_options}
                         </select>
                         <input placeholder={gettext("Set name")} type="text" id="term-singular" maxlength="50" value={this.state.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_set==null)}/>
-                        <button class="primary-button" onClick={this.addTerm.bind(this)} disabled={this.addTermDisabled(selected_set)}>
-                            {gettext("Add")}
-                        </button>
+                        <div onClick={clickEvt}>
+                            <span class={add_term_css}>add_circle</span>
+                        </div>
                     </div>
                 </div>
                 {this.getLiveProjectSettings()}
