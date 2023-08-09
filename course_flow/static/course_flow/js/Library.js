@@ -3,6 +3,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf} from "./PostFunctions";
+import * as LiveProjectViews from "./LiveProjectView";
 import * as Constants from "./Constants";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./ComponentJSON";
 import {MessageBox, renderMessageBox, closeMessageBox} from "./MenuComponents";
@@ -194,14 +195,14 @@ retrieved it will display them in a workflowfilter.
 export class ProjectMenu extends LibraryMenu{
     constructor(props){
         super(props);
-        this.state={data:props.data};
+        this.state={data:props.data,view_type:"workflows"};
     }
 
     render(){
         return (
             <div class="project-menu">
                 {this.getHeader()}
-                <WorkflowFilter renderer={this.props.renderer} workflows={this.state.workflow_data} context="project"/>
+                {this.getContent()}
                 {reactDom.createPortal(
                     this.getOverflowLinks(),
                     $("#overflow-links")[0]
@@ -220,6 +221,63 @@ export class ProjectMenu extends LibraryMenu{
                 )}
             </div>
         );
+    }
+
+    getViewButtons(){
+        return [
+            {type:"workflows",name:gettext("Workflows")},
+            {type:"overview",name:gettext("Classroom Overview")},
+            {type:"students",name:gettext("Students")},
+            {type:"assignments",name:gettext("Assignments")},
+            {type:"completion_table",name:gettext("Completion Table")},
+            // {type:"settings",name:gettext("Classroom Settings")},
+        ];
+    }
+
+    getContent(){
+        console.log("state");
+        console.log(this.state);
+        console.log(this.props);
+        let return_val = [];
+        if(this.state.data.liveproject && this.props.renderer.user_role==Constants.role_keys.teacher)return_val.push(
+            <div class="workflow-view-select hide-print">
+            {this.getViewButtons().map(
+                (item)=>{
+                    let view_class = "hover-shade";
+                    if(item.type==this.state.view_type)view_class += " active";
+                    return <a id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</a>;
+                }
+            )}
+            </div>
+        );
+        switch(this.state.view_type){
+            case "overview":
+                return_val.push(<LiveProjectViews.LiveProjectOverview renderer={this.props.renderer} role={this.getRole()} objectID={this.state.data.id} view_type={this.state.view_type}/>);
+                break;
+            case "students":
+                return_val.push(<LiveProjectViews.LiveProjectStudents renderer={this.props.renderer} role={this.getRole()} objectID={this.state.data.id} view_type={this.state.view_type}/>);
+                break;
+            case "assignments":
+                return_val.push(<LiveProjectViews.LiveProjectAssignments renderer={this.props.renderer} role={this.getRole()} objectID={this.state.data.id} view_type={this.state.view_type}/>);
+                break;
+            case "completion_table":
+                return_val.push(<LiveProjectViews.LiveProjectCompletionTable renderer={this.props.renderer} role={this.getRole()} objectID={this.props.data.id} view_type={this.state.view_type}/>);
+                break;
+            // case "settings":
+            //     return_val.push(<LiveProjectViews.LiveProjectSettings updateLiveProject={this.updateFunction.bind(this)} renderer={this.props.renderer} role={this.getRole()} liveproject={this.state.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
+            //     break;
+            default:
+                return_val.push(<WorkflowFilter renderer={this.props.renderer} workflows={this.state.workflow_data} context="project"/>);
+        }
+        return return_val;
+    }
+
+    changeView(view_type){
+        this.setState({view_type:view_type});
+    }
+
+    getRole(){
+        return "teacher";
     }
 
     getOverflowLinks(){
@@ -445,9 +503,13 @@ export class ProjectMenu extends LibraryMenu{
     }
 
     updateFunction(new_data){
-        let new_state={...this.state};
-        new_state.data={...new_state.data,...new_data};
-        this.setState(new_state);
+        if(new_data.liveproject){
+            console.log("liveproject updated");
+        }else{
+            let new_state={...this.state};
+            new_state.data={...new_state.data,...new_data};
+            this.setState(new_state);
+        }
     }
 
     getShare(){
@@ -505,7 +567,7 @@ export class WorkflowFilter extends Component{
         else{
             workflows=this.sortWorkflows(this.filterWorkflows(this.state.workflows));
             workflows = workflows.map(workflow=>
-                <WorkflowForMenu key={workflow.type+workflow.id} workflow_data={workflow} context={this.props.context}/>
+                <WorkflowForMenu renderer={this.props.renderer} key={workflow.type+workflow.id} workflow_data={workflow} context={this.props.context}/>
             );
         } 
         let search_results=this.state.search_results.map(workflow=>
@@ -1062,6 +1124,7 @@ export class WorkflowForMenu extends React.Component{
             <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
                 <div class="workflow-top-row">
                     <WorkflowTitle no_hyperlink={this.props.no_hyperlink} class_name="workflow-title" data={data}/>
+                    {this.getVisible()}
                     {this.getTypeIndicator()}
                 </div>
                 <div class="workflow-created">
@@ -1133,6 +1196,23 @@ export class WorkflowForMenu extends React.Component{
         }else{
             window.location.href=update_path[this.props.workflow_data.type].replace("0",this.props.workflow_data.id);
         }
+    }
+
+    getVisible(){
+        let component=this;
+        if(this.props.workflow_data.type!="project" && this.props.workflow_data.type!="liveproject" && this.props.renderer && this.props.renderer.user_role==Constants.role_keys.teacher)return (
+            <div class="permission-select" onClick={(evt)=>evt.stopPropagation()} onMouseDown={(evt)=>evt.stopPropagation()}>
+                <select value={this.props.workflow_data.is_visible} onChange={(evt)=>component.visibilityFunction(this.props.workflow_data.id,evt.target.value)}>
+                    <option value={false}>{gettext("Not Visible")}</option>
+                    <option value={true}>{gettext("Visible")}</option>
+                </select>
+            </div>
+        );
+        return null;
+    }
+
+    visibilityFunction(){
+        console.log("visibility changed");
     }
 }
 

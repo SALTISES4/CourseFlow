@@ -1356,28 +1356,27 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             )
             .decode("utf-8")
         )
-        # context["read_only"] = JSONRenderer().render(True).decode("utf-8")
-        # context["comment"] = JSONRenderer().render(False).decode("utf-8")
-        # editor = (
-        #     project.author == self.request.user
-        #     or ObjectPermission.objects.filter(
-        #         user=self.request.user,
-        #         project=project,
-        #         permission_type=ObjectPermission.PERMISSION_EDIT,
-        #     ).count()
-        #     > 0
-        # )
-        # if editor:
-        #     context["read_only"] = JSONRenderer().render(False).decode("utf-8")
-        # elif (
-        #     ObjectPermission.objects.filter(
-        #         user=self.request.user,
-        #         permission_type=ObjectPermission.PERMISSION_COMMENT,
-        #         project=project,
-        #     ).count()
-        #     > 0
-        # ):
-        #     context["comment"] = JSONRenderer().render(True).decode("utf-8")
+        if project.liveproject is not None:
+            context["user_role"] = (
+                JSONRenderer()
+                .render(
+                    LiveProjectUser.objects.get(
+                        user=self.request.user, liveproject=project.liveproject
+                    ).role_type
+                )
+                .decode("utf-8")
+            )
+        else:
+            context["user_role"] = (
+                JSONRenderer()
+                .render(LiveProjectUser.ROLE_NONE)
+                .decode("utf-8")
+            )
+        context["user_permission"] = (
+            JSONRenderer()
+            .render(get_user_permission(project, self.request.user))
+            .decode("utf-8")
+        )
 
         return context
 
@@ -1408,7 +1407,6 @@ class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         context["user_role"] = JSONRenderer().render(user_role).decode("utf-8")
 
         return context
-
 
 
 def get_parent_outcome_data(workflow, user):
@@ -1480,7 +1478,6 @@ def get_child_outcome_data(workflow, user, parent_workflow):
         child_workflow_outcomes += new_child_workflow_outcomes
         child_workflow_outcomeoutcomes += new_child_workflow_outcomeoutcomes
 
-
     outcomehorizontallinks = []
     for child_outcome in child_workflow_outcomes:
         outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
@@ -1512,7 +1509,6 @@ def get_child_outcome_data(workflow, user, parent_workflow):
             outcomehorizontallinks, many=True
         ).data,
     }
-
 
     return response_data
 
@@ -6303,7 +6299,11 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
                 ).data,
             }
         elif data_type == "students":
-            data_package = {"data": "Hello world!"}
+            data_package = {
+                "liveproject": LiveProjectSerializer(
+                    liveproject, context={"user": request.user}
+                ).data
+            }
         elif data_type == "assignments":
             data_package = {
                 "workflows": InfoBoxSerializer(
@@ -6337,7 +6337,11 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
                 "workflows_not_added": workflows_not_added,
             }
         elif data_type == "settings":
-            data_package = {"data": "Hello world!"}
+            data_package = {
+                "liveproject": LiveProjectSerializer(
+                    liveproject, context={"user": request.user}
+                ).data
+            }
         else:
             raise AttributeError
 

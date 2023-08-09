@@ -1206,7 +1206,7 @@ export class AssignmentTitle extends React.Component{
         }
         if(this.props.user_role==Constants.role_keys.teacher){
             return (
-                <a href={update_path.liveassignment.replace("0",data.id)} class="workflow-title" title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
+                <a href={update_path.liveassignment.replace("0",data.id)} class="workflow-title hover-shade" title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
             )
         }else{
             return (

@@ -1298,6 +1298,7 @@ class InfoBoxSerializer(
     has_liveproject = serializers.SerializerMethodField()
     workflow_count = serializers.SerializerMethodField()
     is_linked = serializers.SerializerMethodField()
+    is_visible = serializers.SerializerMethodField()
 
     def get_workflow_count(self, instance):
         if instance.type == "project":
@@ -1366,6 +1367,11 @@ class InfoBoxSerializer(
         if instance.type not in ["project", "liveproject"]:
             return len(Node.objects.filter(linked_workflow=instance)) > 0
         return False
+
+    def get_is_visible(self, instance):
+        if instance.type in ["project", "liveproject"]:
+            return False
+        return len(LiveProject.objects.filter(visible_workflows=instance)) > 0
 
 
 def analyticsDateTimeFormat():
