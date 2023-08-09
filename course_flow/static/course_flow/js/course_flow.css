@@ -127,6 +127,7 @@ a.hover-shade:hover{
     font-variation-settings: 'FILL' 1;
 }
 
+
 body{
     background:#EEEEEE;
 }
@@ -203,6 +204,10 @@ button:hover{
 
 .material-symbols-rounded.red, .material-symbols-outlined.red{
     color: red;
+}
+
+.material-symbols-rounded.grey{
+    color: #E9EBF2;
 }
 
 .material-symbols-rounded.small-inline{
@@ -3680,13 +3685,22 @@ div:hover > .mouseover-actions,div:hover > .mouseover-container-bypass > .mouseo
     width:-moz-fit-content;
     width:fit-content;
     padding:8px;
-    padding-right:32px;
+    padding-left:0px;
     display: flex;
     gap: 20px;
-    text-transform: capitalize;
     align-items: center;
 }
 
+.nomenclature-row div:first-child{
+    width: 150px;
+}
+
+
+.nomenclature-row input, .nomenclature-row select {
+    padding: 10px;
+    border-radius: 3px;
+    border: 1px solid black;
+}
 
 .workflow-canvas{
     position:absolute;
@@ -3789,16 +3803,17 @@ circle.mouseover{
     background:white;
     border-radius:3px;
     margin: 1px;
+    margin-bottom: 2px;
     padding: 6px;
     box-sizing: border-box;
-    box-shadow: -1px 1px 2px -1px black;
+    box-shadow: 0px 4px 4px 2px #e6e6e6;
     color: #04ba74;
 }
 
 .side-bar .ui-tabs-tab.ui-state-disabled{
-    background-color:#DDDDDD;
+    background-color:#E9EBF2;
     cursor:default;
-    color: grey;
+    color: #B5B5B5;
 }
 
 

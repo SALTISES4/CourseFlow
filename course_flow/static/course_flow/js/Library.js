@@ -79,7 +79,7 @@ export class ExploreMenu extends LibraryMenu{
     render(){
         return (
             <div class="project-menu">
-                <ExploreFilter disciplines={this.props.disciplines} renderer={this.props.renderer} workflows={[]} context="library"/>
+                <ExploreFilter disciplines={this.props.disciplines} renderer={this.props.renderer} workflows={this.props.renderer.initial_workflows} pages={this.props.renderer.initial_pages} context="library"/>
             </div>
         );
     }
@@ -726,7 +726,7 @@ export class ExploreFilter extends WorkflowFilter{
             {name:"title",display:gettext("A-Z")},
             {name:"created_on",display:gettext("Creation date")},
         ];
-        this.state={workflows:props.workflows,has_searched:false,active_sort:0,active_filters:[],active_disciplines:[],reversed:false,from_saltise:false,content_rich:true}
+        this.state={workflows:props.workflows,pages:this.props.renderer.initial_pages,has_searched:false,active_sort:0,active_filters:[],active_disciplines:[],reversed:false,from_saltise:false,content_rich:true}
         this.filterDOM=React.createRef();
         this.searchDOM=React.createRef();
         this.sortDOM=React.createRef();
@@ -750,7 +750,7 @@ export class ExploreFilter extends WorkflowFilter{
                             />
                             <span class="material-symbols-rounded">search</span>
                         </div>
-                        <button class="primary-button" disabled={this.state.has_searched} onClick={()=>this.searchWithout($(this.searchDOM.current).children("#workflow-search-input")[0].value,this.searchResults.bind(this))}>{gettext("Search")}</button>
+                        <button class="primary-button" disabled={this.state.has_searched} onClick={this.doSearch.bind(this)}>{gettext("Search")}</button>
                     </div>
                     <div class="workflow-filter-sort">
                         {this.getFromSaltise()}
@@ -760,6 +760,7 @@ export class ExploreFilter extends WorkflowFilter{
                         {this.getSort()}
                     </div>
                 </div>,
+                this.getInfo(),
                 <div class="menu-grid">
                     {workflows}
                 </div>,
@@ -768,70 +769,73 @@ export class ExploreFilter extends WorkflowFilter{
         );
     }
 
+    doSearch(){
+        this.searchWithout($(this.searchDOM.current).children("#workflow-search-input")[0].value,this.searchResults.bind(this))
+    }
+
+    getInfo(){
+        if(this.state.workflows==this.props.workflows)return (
+            <p>{gettext("Enter a search term or filter then click 'search' to get started.")}</p>
+        );
+        return null;
+    }
+
     getPages(){
-        if(this.state.pages){
-            if(this.state.workflows.length>0){
-                let page_buttons = [
-                    <button id="prev-page-button" disabled={(this.state.pages.current_page==1)} onClick={
-                        this.toPage.bind(this,this.state.pages.current_page-1)
-                    }><span class="material-symbols-rounded">arrow_left</span></button>
-                ];
-                if(this.state.pages.current_page>3){
-                    page_buttons.push(
-                        <button class="page-button" onClick = {this.toPage.bind(this,1)}>{1}</button>
-                    );
-                    if(this.state.pages.current_page>4){
-                        page_buttons.push(
-                            <div class="page-button no-button">...</div>
-                        );
-                    }
-                }
-
-                for(let i=Math.max(this.state.pages.current_page-2,1);i<=Math.min(this.state.pages.current_page+2,this.state.pages.page_count);i++){
-                    let button_class="page-button";
-                    if(i==this.state.pages.current_page)button_class+=" active-page-button"
-                    page_buttons.push(
-                        <button class={button_class} onClick = {this.toPage.bind(this,i)}>{i}</button>
-                    )
-                }
-
-                if(this.state.pages.current_page<this.state.pages.page_count-2){
-                    if(this.state.pages.current_page < this.state.pages.page_count-3){
-                        page_buttons.push(
-                            <div class="page-button no-button">...</div>
-                        );
-                    }
-                    page_buttons.push(
-                        <button class="page-button" onClick = {this.toPage.bind(this,this.state.pages.page_count)}>{this.state.pages.page_count}</button>
-                    );
-                }
-
+        if(this.state.workflows.length>0){
+            let page_buttons = [
+                <button id="prev-page-button" disabled={(this.state.pages.current_page==1)} onClick={
+                    this.toPage.bind(this,this.state.pages.current_page-1)
+                }><span class="material-symbols-rounded">arrow_left</span></button>
+            ];
+            if(this.state.pages.current_page>3){
                 page_buttons.push(
-                    <button id="next-page-button" disabled={(this.state.pages.current_page==this.state.pages.page_count)} onClick={
-                        this.toPage.bind(this,this.state.pages.current_page+1)
-                    }><span class="material-symbols-rounded">arrow_right</span></button>
+                    <button class="page-button" onClick = {this.toPage.bind(this,1)}>{1}</button>
+                );
+                if(this.state.pages.current_page>4){
+                    page_buttons.push(
+                        <div class="page-button no-button">...</div>
+                    );
+                }
+            }
+
+            for(let i=Math.max(this.state.pages.current_page-2,1);i<=Math.min(this.state.pages.current_page+2,this.state.pages.page_count);i++){
+                let button_class="page-button";
+                if(i==this.state.pages.current_page)button_class+=" active-page-button"
+                page_buttons.push(
+                    <button class={button_class} onClick = {this.toPage.bind(this,i)}>{i}</button>
                 )
+            }
 
-
-                return [
-                    <p>
-                        {gettext("Showing results")} {this.state.pages.results_per_page*(this.state.pages.current_page-1)+1}-{(this.state.pages.results_per_page*this.state.pages.current_page)} ({this.state.pages.total_results} {gettext("total results")})
-
-                    </p>,
-                    <div class="explore-page-buttons">
-                        
-                            {page_buttons}
-                        
-                    </div>
-                ]
-            }else{
-                return (
-                    <p>{gettext("No results were found.")}</p>
+            if(this.state.pages.current_page<this.state.pages.page_count-2){
+                if(this.state.pages.current_page < this.state.pages.page_count-3){
+                    page_buttons.push(
+                        <div class="page-button no-button">...</div>
+                    );
+                }
+                page_buttons.push(
+                    <button class="page-button" onClick = {this.toPage.bind(this,this.state.pages.page_count)}>{this.state.pages.page_count}</button>
                 );
             }
+
+            page_buttons.push(
+                <button id="next-page-button" disabled={(this.state.pages.current_page==this.state.pages.page_count)} onClick={
+                    this.toPage.bind(this,this.state.pages.current_page+1)
+                }><span class="material-symbols-rounded">arrow_right</span></button>
+            )
+
+
+            return [
+                <p>
+                    {gettext("Showing results")} {this.state.pages.results_per_page*(this.state.pages.current_page-1)+1}-{(this.state.pages.results_per_page*this.state.pages.current_page)} ({this.state.pages.total_results} {gettext("total results")})
+
+                </p>,
+                <div class="explore-page-buttons">
+                        {page_buttons}
+                </div>
+            ]
         }else{
             return (
-                <p>{gettext("Enter a search term or filter then click 'search' to get started.")}</p>
+                <p>{gettext("No results were found.")}</p>
             );
         }
     }
@@ -950,7 +954,8 @@ export class ExploreFilter extends WorkflowFilter{
         return (
             <div title={gettext("Restrict results to content provided by SALTISE")} id="content-rich" class="hover-shade" onClick={
                 ()=>{
-                    component.setState({from_saltise:!component.state.from_saltise,has_searched:false})
+                    component.setState({from_saltise:!component.state.from_saltise,has_searched:false});
+                    component.doSearch();
                 }
             }>
                 <input type="checkbox" checked={this.state.from_saltise}/>
@@ -974,11 +979,13 @@ export class ExploreFilter extends WorkflowFilter{
         if(new_filter.indexOf(name)>=0)new_filter.splice(new_filter.indexOf(name),1);
         else new_filter.push(name);
         this.setState({active_filters:new_filter,has_searched:false});
+        // this.doSearch();
     }
 
     sortChange(index){
         if(this.state.active_sort==index)this.setState({reversed:!this.state.reversed,has_searched:false});
         else this.setState({active_sort:index,reversed:false,has_searched:false});
+        // this.doSearch();
     }
 
     disciplineChange(discipline){
@@ -987,6 +994,7 @@ export class ExploreFilter extends WorkflowFilter{
         if(new_filter.indexOf(name)>=0)new_filter.splice(new_filter.indexOf(name),1);
         else new_filter.push(name);
         this.setState({active_disciplines:new_filter,has_searched:false});
+        // this.doSearch();
     }
 
     searchChange(evt){
@@ -1011,6 +1019,7 @@ export class ExploreFilter extends WorkflowFilter{
 
     searchWithout(request,response_function,page_number=1){
         this.setState({has_searched:true})
+        this.props.renderer.tiny_loader.startLoad();
         searchAllObjects(request,
             {
                 nresults:20,
@@ -1025,6 +1034,7 @@ export class ExploreFilter extends WorkflowFilter{
                 content_rich:this.state.content_rich,
             },(response_data)=>{
             response_function(response_data.workflow_list,response_data.pages);
+            this.props.renderer.tiny_loader.endLoad();
         });
     }
 

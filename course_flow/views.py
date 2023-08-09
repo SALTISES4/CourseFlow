@@ -328,86 +328,24 @@ class ExploreView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
     template_name = "course_flow/explore.html"
 
     def get_context_data(self):
-        # types = self.request.GET.getlist("types[]", None)
-
-        # keywords = self.request.GET.get("keyword", "").split(" ")
-        # q_objects = Q()
-        # for keyword in keywords:
-        #     q_objects &= (
-        #         Q(author__first_name__icontains=keyword)
-        #         | Q(author__username__icontains=keyword)
-        #         | Q(author__last_name__icontains=keyword)
-        #         | Q(title__icontains=keyword)
-        #         | Q(description__icontains=keyword)
-        #     )
-
-        # disciplines = self.request.GET.getlist("disc[]", None)
-        # sort = self.request.GET.get("sort", None)  # noqa F841
-        # page = self.request.GET.get("page", 1)
-        # results = self.request.GET.get("results", 20)
-        # filter_kwargs = {}
-        # if page:
-        #     page = int(page)
-        # else:
-        #     page = 1
-        # if results:
-        #     results = int(results)
-        # else:
-        #     results = 10
-        # disciplines = Discipline.objects.filter(id__in=disciplines)
-        # if len(disciplines) > 0:
-        #     filter_kwargs["disciplines__in"] = disciplines
-        # try:
-        #     queryset = reduce(
-        #         lambda x, y: chain(x, y),
-        #         [
-        #             get_model_from_str(model_type)
-        #             .objects.filter(published=True)
-        #             .filter(**filter_kwargs)
-        #             .filter(q_objects)
-        #             .exclude(deleted=True)
-        #             .distinct()
-        #             if model_type == "project"
-        #             else get_model_from_str(model_type)
-        #             .objects.filter(published=True)
-        #             .filter(**filter_kwargs)
-        #             .filter(q_objects)
-        #             .exclude(Q(deleted=True) | Q(project__deleted=True))
-        #             .distinct()
-        #             for model_type in types
-        #         ],
-        #     )
-        # except TypeError:
-        #     queryset = Project.objects.none()
-        # total_results = 0
-        # queryset = list(queryset)
-        # total_results = len(queryset)
-        # subqueryset = queryset[
-        #     max((page - 1) * results, 0) : min(page * results, total_results)
-        # ]
-
-        # page_number = math.ceil(float(total_results) / results)
-        # object_list = (
-        #     JSONRenderer()
-        #     .render(
-        #         InfoBoxSerializer(
-        #             subqueryset, many=True, context={"user": self.request.user}
-        #         ).data
-        #     )
-        #     .decode("utf-8")
-        # )
+        initial_workflows, pages = get_explore_objects(
+            self.request.user,
+            "",
+            20,
+            True,
+            {"sort": "created_on", "sort_reversed": True},
+        )
         return {
-            # "object_list": object_list,
-            # "pages": JSONRenderer()
-            # .render(
-            #     {
-            #         "total_results": total_results,
-            #         "page_count": page_number,
-            #         "current_page": page,
-            #         "results_per_page": results,
-            #     }
-            # )
-            # .decode("utf-8"),
+            "initial_workflows": JSONRenderer()
+            .render(
+                InfoBoxSerializer(
+                    initial_workflows,
+                    context={"user": self.request.user},
+                    many=True,
+                ).data
+            )
+            .decode("utf-8"),
+            "initial_pages": JSONRenderer().render(pages).decode("utf-8"),
             "disciplines": JSONRenderer()
             .render(
                 DisciplineSerializer(Discipline.objects.all(), many=True).data
@@ -1410,7 +1348,6 @@ class ProjectComparisonView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         return context
 
 
-
 def get_parent_outcome_data(workflow, user):
     outcomes, outcomeoutcomes = get_all_outcomes_for_workflow(workflow)
     parent_nodes = get_parent_nodes_for_workflow(workflow)
@@ -1480,7 +1417,6 @@ def get_child_outcome_data(workflow, user, parent_workflow):
         child_workflow_outcomes += new_child_workflow_outcomes
         child_workflow_outcomeoutcomes += new_child_workflow_outcomeoutcomes
 
-
     outcomehorizontallinks = []
     for child_outcome in child_workflow_outcomes:
         outcomehorizontallinks += child_outcome.outcome_horizontal_links.all()
@@ -1512,7 +1448,6 @@ def get_child_outcome_data(workflow, user, parent_workflow):
             outcomehorizontallinks, many=True
         ).data,
     }
-
 
     return response_data
 
@@ -4550,6 +4485,126 @@ def get_user_list(request: HttpRequest) -> HttpResponse:
     )
 
 
+def get_library_objects(user, name_filter, nresults):
+    all_objects = ObjectPermission.objects.filter(user=user).filter(
+        Q(project__title__istartswith=name_filter, project__deleted=False)
+        | Q(
+            workflow__title__istartswith=name_filter,
+            workflow__deleted=False,
+        )
+    )
+    # add ordering
+
+    if nresults > 0:
+        all_objects = all_objects[:nresults]
+    return_objects = [x.content_object for x in all_objects]
+    count = len(return_objects)
+    if nresults == 0 or count < nresults:
+        extra_objects = ObjectPermission.objects.filter(user=user).filter(
+            Q(
+                project__title__icontains=" " + name_filter,
+                project__deleted=False,
+            )
+            | Q(
+                workflow__title__icontains=" " + name_filter,
+                workflow__deleted=False,
+            )
+        )
+        if nresults > 0:
+            extra_objects = extra_objects[: nresults - count]
+        return_objects += [x.content_object for x in extra_objects]
+    return return_objects
+
+
+def get_explore_objects(user, name_filter, nresults, published, data):
+    keywords = name_filter.split(" ")
+    types = data.get("types", [])
+    disciplines = data.get("disciplines", [])
+    sort = data.get("sort", None)
+    from_saltise = data.get("from_saltise", False)
+    content_rich = data.get("content_rich", False)
+    sort_reversed = data.get("sort_reversed", False)
+    page = data.get("page", 1)
+
+    filter_kwargs = {}
+    # Create filters for each keyword
+    q_objects = Q()
+    for keyword in keywords:
+        q_objects &= (
+            Q(author__first_name__icontains=keyword)
+            | Q(author__username__icontains=keyword)
+            | Q(author__last_name__icontains=keyword)
+            | Q(title__icontains=keyword)
+            | Q(description__icontains=keyword)
+        )
+    # Choose which types to search
+    if len(types) == 0:
+        types = ("project", "workflow")
+    # Create disciplines filter
+    if len(disciplines) > 0:
+        filter_kwargs["disciplines__in"] = disciplines
+    if content_rich:
+        filter_kwargs["num_nodes__gte"] = 3
+    if from_saltise:
+        filter_kwargs["from_saltise"] = True
+
+    if published:
+        try:
+            queryset = reduce(
+                lambda x, y: chain(x, y),
+                [
+                    get_model_from_str(model_type)
+                    .objects.filter(published=True)
+                    .annotate(num_nodes=Count("workflows__weeks__nodes"))
+                    .filter(**filter_kwargs)
+                    .filter(q_objects)
+                    .exclude(deleted=True)
+                    .distinct()
+                    if model_type == "project"
+                    else get_model_from_str(model_type)
+                    .objects.filter(published=True)
+                    .annotate(num_nodes=Count("weeks__nodes"))
+                    .filter(**filter_kwargs)
+                    .filter(q_objects)
+                    .exclude(Q(deleted=True) | Q(project__deleted=True))
+                    .distinct()
+                    for model_type in types
+                ],
+            )
+            if sort is not None:
+                if sort == "created_on" or sort == "title":
+                    sort_key = attrgetter(sort)
+                elif sort == "relevance":
+                    sort_key = lambda x: get_relevance(
+                        x, name_filter, keywords
+                    )
+                queryset = sorted(
+                    queryset, key=sort_key, reverse=sort_reversed
+                )
+            queryset = list(queryset)
+
+            total_results = len(queryset)
+            return_objects = queryset[
+                max((page - 1) * nresults, 0) : min(
+                    page * nresults, total_results
+                )
+            ]
+            page_number = math.ceil(float(total_results) / nresults)
+            pages = {
+                "total_results": total_results,
+                "page_count": page_number,
+                "current_page": page,
+                "results_per_page": nresults,
+            }
+        except TypeError:
+            return_objects = Project.objects.none()
+            pages = {}
+    else:
+        return_objects = Project.objects.none()
+        pages = {}
+    return return_objects, pages
+
+
 @user_is_teacher()
 def search_all_objects(request: HttpRequest) -> HttpResponse:
     name_filter = json.loads(request.POST.get("filter")).lower()
@@ -4559,121 +4614,14 @@ def search_all_objects(request: HttpRequest) -> HttpResponse:
     published = data.get("published", False)
     # A full search of all objects, paginated
     if full_search:
-        # Check only published material
-        keywords = name_filter.split(" ")
-        types = data.get("types", [])
-        disciplines = data.get("disciplines", [])
-        sort = data.get("sort", None)  # noqa F841
-        from_saltise = data.get("from_saltise", False)
-        content_rich = data.get("content_rich", False)
-        sort_reversed = data.get("sort_reversed", False)  # noqa F841
-        page = data.get("page", 1)
-
-        filter_kwargs = {}
-        # Create filters for each keyword
-        q_objects = Q()
-        for keyword in keywords:
-            q_objects &= (
-                Q(author__first_name__icontains=keyword)
-                | Q(author__username__icontains=keyword)
-                | Q(author__last_name__icontains=keyword)
-                | Q(title__icontains=keyword)
-                | Q(description__icontains=keyword)
-            )
-        # Choose which types to search
-        if len(types) == 0:
-            types = ("project", "workflow")
-        # Create disciplines filter
-        if len(disciplines) > 0:
-            filter_kwargs["disciplines__in"] = disciplines
-        if content_rich:
-            filter_kwargs["num_nodes__gte"] = 3
-        if from_saltise:
-            filter_kwargs["from_saltise"] = True
-
-        if published:
-            try:
-                queryset = reduce(
-                    lambda x, y: chain(x, y),
-                    [
-                        get_model_from_str(model_type)
-                        .objects.filter(published=True)
-                        .annotate(num_nodes=Count("workflows__weeks__nodes"))
-                        .filter(**filter_kwargs)
-                        .filter(q_objects)
-                        .exclude(deleted=True)
-                        .distinct()
-                        if model_type == "project"
-                        else get_model_from_str(model_type)
-                        .objects.filter(published=True)
-                        .annotate(num_nodes=Count("weeks__nodes"))
-                        .filter(**filter_kwargs)
-                        .filter(q_objects)
-                        .exclude(Q(deleted=True) | Q(project__deleted=True))
-                        .distinct()
-                        for model_type in types
-                    ],
-                )
-                if sort is not None:
-                    if sort == "created_on" or sort == "title":
-                        sort_key = attrgetter(sort)
-                    elif sort == "relevance":
-                        sort_key = lambda x: get_relevance(
-                            x, name_filter, keywords
-                        )
-                    queryset = sorted(
-                        queryset, key=sort_key, reverse=sort_reversed
-                    )
-                queryset = list(queryset)
-
-                total_results = len(queryset)
-                return_objects = queryset[
-                    max((page - 1) * nresults, 0) : min(
-                        page * nresults, total_results
-                    )
-                ]
-                page_number = math.ceil(float(total_results) / nresults)
-                pages = {
-                    "total_results": total_results,
-                    "page_count": page_number,
-                    "current_page": page,
-                    "results_per_page": nresults,
-                }
-            except TypeError:
-                return_objects = Project.objects.none()
+        return_objects, pages = get_explore_objects(
+            request.user, name_filter, nresults, published, data
+        )
     # Small search for library
     else:
-        all_objects = ObjectPermission.objects.filter(
-            user=request.user
-        ).filter(
-            Q(project__title__istartswith=name_filter, project__deleted=False)
-            | Q(
-                workflow__title__istartswith=name_filter,
-                workflow__deleted=False,
-            )
+        return_objects = get_library_objects(
+            request.user, name_filter, nresults
         )
-        # add ordering
-
-        if nresults > 0:
-            all_objects = all_objects[:nresults]
-        return_objects = [x.content_object for x in all_objects]
-        count = len(return_objects)
-        if nresults == 0 or count < nresults:
-            extra_objects = ObjectPermission.objects.filter(
-                user=request.user
-            ).filter(
-                Q(
-                    project__title__icontains=" " + name_filter,
-                    project__deleted=False,
-                )
-                | Q(
-                    workflow__title__icontains=" " + name_filter,
-                    workflow__deleted=False,
-                )
-            )
-            if nresults > 0:
-                extra_objects = extra_objects[: nresults - count]
-            return_objects += [x.content_object for x in extra_objects]
         pages = {}
 
     return JsonResponse(
