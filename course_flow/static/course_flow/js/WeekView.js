@@ -308,7 +308,7 @@ export class NodeBarWeekViewUnconnected extends React.Component{
         let src = iconpath+"plus.svg";
         if(data.is_dropped)src=iconpath+"minus.svg";
         return (
-            <div class="node-bar-week hover-shade" onClick={this.jumpTo.bind(this)}>
+            <div class="hover-shade" onClick={this.jumpTo.bind(this)}>
                 <TitleText text={data.title} defaultText={default_text}/>
             </div>
         );
