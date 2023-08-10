@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf} from "./PostFunctions";
+import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf, setWorkflowVisibility} from "./PostFunctions";
 import * as LiveProjectViews from "./LiveProjectView";
 import * as Constants from "./Constants";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./ComponentJSON";
@@ -267,7 +267,7 @@ export class ProjectMenu extends LibraryMenu{
             //     return_val.push(<LiveProjectViews.LiveProjectSettings updateLiveProject={this.updateFunction.bind(this)} renderer={this.props.renderer} role={this.getRole()} liveproject={this.state.liveproject} objectID={this.props.project.id} view_type={this.state.view_type}/>);
             //     break;
             default:
-                return_val.push(<WorkflowFilter renderer={this.props.renderer} workflows={this.state.workflow_data} context="project"/>);
+                return_val.push(<WorkflowFilter renderer={this.props.renderer} workflows={this.state.workflow_data} updateWorkflow={this.updateWorkflow.bind(this)} context="project"/>);
         }
         return return_val;
     }
@@ -526,6 +526,19 @@ export class ProjectMenu extends LibraryMenu{
             component.getUserData();
         });
     }
+
+
+    updateWorkflow(id,new_values){
+        for(let i=0;i<this.state.workflow_data.length;i++){
+            if(this.state.workflow_data[i].id==id){
+                let new_state = {...this.state};
+                new_state.workflow_data = [...this.state.workflow_data];
+                new_state.workflow_data[i] = {...this.state.workflow_data[i],...new_values};
+                this.setState(new_state);
+                break;
+            }
+        }
+    }
 }
 
 /*
@@ -567,7 +580,7 @@ export class WorkflowFilter extends Component{
         else{
             workflows=this.sortWorkflows(this.filterWorkflows(this.state.workflows));
             workflows = workflows.map(workflow=>
-                <WorkflowForMenu renderer={this.props.renderer} key={workflow.type+workflow.id} workflow_data={workflow} context={this.props.context}/>
+                <WorkflowForMenu renderer={this.props.renderer} key={workflow.type+workflow.id} workflow_data={workflow} context={this.props.context} updateWorkflow={this.props.updateWorkflow}/>
             );
         } 
         let search_results=this.state.search_results.map(workflow=>
@@ -766,6 +779,7 @@ export class WorkflowFilter extends Component{
     defaultRender(){
         return (<renderers.WorkflowLoader/>);
     }
+
 }
 
 /*
@@ -1213,15 +1227,19 @@ export class WorkflowForMenu extends React.Component{
         if(this.props.workflow_data.type!="project" && this.props.workflow_data.type!="liveproject" && this.props.renderer && this.props.renderer.user_role==Constants.role_keys.teacher)return (
             <div class="permission-select" onClick={(evt)=>evt.stopPropagation()} onMouseDown={(evt)=>evt.stopPropagation()}>
                 <select value={this.props.workflow_data.is_visible} onChange={(evt)=>component.visibilityFunction(this.props.workflow_data.id,evt.target.value)}>
-                    <option value={false}>{gettext("Not Visible")}</option>
-                    <option value={true}>{gettext("Visible")}</option>
+                    <option value={"false"}>{gettext("Not Visible")}</option>
+                    <option value={"true"}>{gettext("Visible")}</option>
                 </select>
             </div>
         );
         return null;
     }
 
-    visibilityFunction(){
+    visibilityFunction(id,is_visible){
+        if(is_visible=="true")is_visible=true;
+        else is_visible = false;
+        this.props.updateWorkflow(id,{is_visible:is_visible})
+        setWorkflowVisibility(this.props.renderer.project_data.id,id,is_visible);
         console.log("visibility changed");
     }
 }

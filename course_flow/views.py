@@ -1294,7 +1294,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             )
             .decode("utf-8")
         )
-        if project.liveproject is not None:
+        if hasattr(project, "liveproject") and project.liveproject is not None:
             context["user_role"] = (
                 JSONRenderer()
                 .render(
@@ -6634,6 +6634,7 @@ def set_workflow_visibility(request: HttpRequest) -> HttpResponse:
         response = JsonResponse({"action": "error"})
         response.status_code = 403
         return response
+    print(liveproject.visible_workflows.filter(pk=workflow.pk))
     return JsonResponse(
         {
             "action": "posted",
