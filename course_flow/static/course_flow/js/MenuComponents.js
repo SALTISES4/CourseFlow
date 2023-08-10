@@ -782,7 +782,7 @@ export class ProjectEditMenu extends React.Component{
                             {set_options}
                         </select>
                         <input placeholder={gettext("Set name")} type="text" id="term-singular" maxlength="50" value={this.state.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_set==null)}/>
-                        <div onClick={clickEvt}>
+                        <div id="nomenclature-add-button" onClick={clickEvt}>
                             <span class={add_term_css}>add_circle</span>
                         </div>
                     </div>
