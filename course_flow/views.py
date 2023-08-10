@@ -1298,9 +1298,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             context["user_role"] = (
                 JSONRenderer()
                 .render(
-                    LiveProjectUser.objects.get(
-                        user=self.request.user, liveproject=project.liveproject
-                    ).role_type
+                    get_user_role(project.liveproject,self.request.user)
                 )
                 .decode("utf-8")
             )

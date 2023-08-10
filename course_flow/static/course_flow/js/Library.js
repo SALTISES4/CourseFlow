@@ -235,9 +235,6 @@ export class ProjectMenu extends LibraryMenu{
     }
 
     getContent(){
-        console.log("state");
-        console.log(this.state);
-        console.log(this.props);
         let return_val = [];
         if(this.state.data.liveproject && this.props.renderer.user_role==Constants.role_keys.teacher)return_val.push(
             <div class="workflow-view-select hide-print">
@@ -1224,7 +1221,7 @@ export class WorkflowForMenu extends React.Component{
 
     getVisible(){
         let component=this;
-        if(this.props.workflow_data.type!="project" && this.props.workflow_data.type!="liveproject" && this.props.renderer && this.props.renderer.user_role==Constants.role_keys.teacher)return (
+        if(this.props.renderer && !this.props.renderer.read_only && this.props.renderer.user_role==Constants.role_keys.teacher && this.props.workflow_data.type!="project" && this.props.workflow_data.type!="liveproject" && this.props.renderer && this.props.renderer.user_role==Constants.role_keys.teacher)return (
             <div class="permission-select" onClick={(evt)=>evt.stopPropagation()} onMouseDown={(evt)=>evt.stopPropagation()}>
                 <select value={this.props.workflow_data.is_visible} onChange={(evt)=>component.visibilityFunction(this.props.workflow_data.id,evt.target.value)}>
                     <option value={"false"}>{gettext("Not Visible")}</option>

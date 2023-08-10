@@ -281,7 +281,7 @@ def get_user_role(obj, user):
             return models.LiveProjectUser.ROLE_NONE
     if liveproject is None:
         return models.LiveProjectUser.ROLE_NONE
-    if obj.author == user:
+    if hasattr(obj,"author") and obj.author == user:
         return models.LiveProjectUser.ROLE_TEACHER
     permissions = models.LiveProjectUser.objects.filter(
         user=user, liveproject=liveproject
