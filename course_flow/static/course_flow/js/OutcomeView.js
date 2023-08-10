@@ -628,7 +628,7 @@ class TableCell extends React.Component{
         
         let input;
         if(!this.props.renderer.read_only && !this.props.total){
-                if(this.props.outcomes_type==0)input=(
+            if(this.props.outcomes_type==0)input=(
                 <input type="checkbox" onChange={this.toggleFunction.bind(this)} checked={checked}/>
             );
             else {
