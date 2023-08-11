@@ -353,7 +353,8 @@ export class ProjectMenu extends LibraryMenu{
         let component = this;
         if(window.confirm(gettext("Are you sure you want to create a live classroom for this project?"))){
             makeProjectLive(this.props.data.id,(data)=>{
-                window.location = update_path.liveproject.replace("0",component.props.data.id);
+                //window.location = update_path.liveproject.replace("0",component.props.data.id);
+                location.reload();
             });
         }
     }
@@ -480,7 +481,7 @@ export class ProjectMenu extends LibraryMenu{
 
     openEditMenu(){
         let data = this.state.data;
-        renderMessageBox({...data,all_disciplines:this.props.renderer.all_disciplines},"project_edit_menu",this.updateFunction.bind(this));
+        renderMessageBox({...data,all_disciplines:this.props.renderer.all_disciplines,renderer:this.props.renderer},"project_edit_menu",this.updateFunction.bind(this));
     }
 
     getCreate(){

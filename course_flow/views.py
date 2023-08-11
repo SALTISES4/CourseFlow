@@ -1297,9 +1297,7 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
         if hasattr(project, "liveproject") and project.liveproject is not None:
             context["user_role"] = (
                 JSONRenderer()
-                .render(
-                    get_user_role(project.liveproject,self.request.user)
-                )
+                .render(get_user_role(project.liveproject, self.request.user))
                 .decode("utf-8")
             )
         else:
@@ -6025,7 +6023,12 @@ def my_live_projects_view(request):
 def make_project_live(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
-        LiveProject.objects.create(project=project)
+        liveproject = LiveProject.objects.create(project=project)
+        LiveProjectUser.objects.create(
+            liveproject=liveproject,
+            user=request.user,
+            role_type=LiveProjectUser.ROLE_TEACHER,
+        )
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse(

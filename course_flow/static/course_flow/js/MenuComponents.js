@@ -927,12 +927,14 @@ export class ProjectEditMenu extends React.Component{
     }
 
     getLiveProjectSettings(){
-
-        return (
-            <div>
-                <LiveProjectSettings renderer={this.props.renderer} role={"teacher"} objectID={this.state.id} view_type={"settings"} updateLiveProject={this.props.actionFunction}/>
-            </div>
-        );
+        if(this.props.data.renderer.user_role==Constants.role_keys.teacher){
+            return (
+                <div>
+                    <LiveProjectSettings renderer={this.props.renderer} role={"teacher"} objectID={this.state.id} view_type={"settings"} updateLiveProject={this.props.actionFunction}/>
+                </div>
+            );
+        }
+        return null;
     }
 
     componentDidMount(){
