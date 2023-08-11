@@ -426,6 +426,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 <WorkflowView renderer={renderer}/>
             );
             this.allowed_tabs=[1,2,3,4];
+            if(renderer.read_only)this.allowed_tabs=[2,3]
         }
 
         if(data.is_strategy)return workflow_content;

@@ -3620,7 +3620,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             "competency"
         )
         selenium.find_element_by_css_selector(
-            ".nomenclature-row button"
+            ".nomenclature-row #nomenclature-add-button"
         ).click()
         time.sleep(1)
         self.assertEqual(project.object_sets.count(), 1)

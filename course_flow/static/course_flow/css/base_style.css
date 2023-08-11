@@ -127,6 +127,7 @@ a.hover-shade:hover{
     font-variation-settings: 'FILL' 1;
 }
 
+
 body{
     background:#EEEEEE;
 }
@@ -203,6 +204,10 @@ button:hover{
 
 .material-symbols-rounded.red, .material-symbols-outlined.red{
     color: red;
+}
+
+.material-symbols-rounded.grey{
+    color: #E9EBF2;
 }
 
 .material-symbols-rounded.small-inline{

@@ -53,12 +53,18 @@ export class ComparisonView extends React.Component{
         );
         let add_button = (
             <div>
-                <button class="splash-image-wrapper" onClick={this.loadWorkflow.bind(this)}>
+                <button class="primary-button" id="load-workflow" onClick={this.loadWorkflow.bind(this)}>
+                    <div class="flex-middle">
+                        <span class="material-symbols-rounded filled">add_circle</span>
+                        <div>{gettext("Load new workflow")}</div>
+                    </div>
+                </button>
+                {/*<button class="splash-image-wrapper" onClick={this.loadWorkflow.bind(this)}>
                 <img id="load-workflow" src={iconpath+"add_new_blue.svg"}/>
                 <div>
                     {gettext("Load new workflow")}
                 </div>
-                </button>
+                </button>*/}
             </div>
         );
         

@@ -178,12 +178,12 @@ export const get_default_drop_state = (objectID,objectType,depth=1)=>{
 //get all possible object sets
 export function object_sets_types(){
     return {
-        "program outcome":gettext("program outcome"),
-        "course outcome":gettext("course outcome"),
-        "activity outcome":gettext("activity outcome"),
-        "program node":gettext("program node"),
-        "course node":gettext("course node"),
-        "activity node":gettext("activity node"),
+        "program outcome":capFirst(gettext("program outcome")),
+        "course outcome":capFirst(gettext("course outcome")),
+        "activity outcome":capFirst(gettext("activity outcome")),
+        "program node":capFirst(gettext("program node")),
+        "course node":capFirst(gettext("course node")),
+        "activity node":capFirst(gettext("activity node")),
     }
 }
 export const parent_workflow_type = {
@@ -263,6 +263,10 @@ export function capWords(str){
     }).join(" ");
 }
 
+export function capFirst(str){
+    return str[0].toUpperCase()+str.substr(1);
+}
+
 export function createOutcomeBranch(state,outcome_id){
     for(let i=0;i<state.outcome.length;i++){
         if(state.outcome[i].id==outcome_id){
@@ -337,7 +341,7 @@ export function createOutcomeNodeBranch(props,outcome_id,nodecategory){
                     total = outcomenodes_group.reduce((acc,curr)=>{
                         if(curr.degree===null)return acc;
                         if(acc===null)return curr.degree;
-                        return acc|curr;
+                        return acc|curr.degree;
                     },null);
                 }
                 outcomenodes_group.total=total;

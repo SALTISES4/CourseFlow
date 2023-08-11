@@ -36,9 +36,12 @@ export class FavouritesRenderer extends LibraryRenderer{
 }
 
 export class ExploreRenderer extends LibraryRenderer{
-    constructor(disciplines){
+    constructor(disciplines, initial_workflows=[],initial_pages={}){
         super();
         this.disciplines = disciplines;
+        this.initial_workflows = initial_workflows;
+        this.initial_pages = initial_pages;
+        this.tiny_loader = new renderers.TinyLoader($("body")[0]);
     }
 
     getContents(){
