@@ -495,11 +495,13 @@ class WorkflowGridMenuUnconnected extends React.Component{
             i++;
         }
         return(
-            <div class="home-tabs" id="home-tabs">
-                <ul>
-                    {tab_li}
-                </ul>
-                {tabs}
+            <div class="project-menu">
+                <div class="home-tabs" id="home-tabs">
+                    <ul>
+                        {tab_li}
+                    </ul>
+                    {tabs}
+                </div>
             </div>
         );
         
