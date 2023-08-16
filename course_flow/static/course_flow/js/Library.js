@@ -293,33 +293,33 @@ export class ProjectMenu extends LibraryMenu{
         }
 
         let overflow_links=[liveproject];
-        if(data.author_id==user_id){
-            overflow_links.push(<hr/>);
-            overflow_links.push(this.getDeleteProject());
-        }
-        overflow_links.push(this.getExportButton());
-        overflow_links.push(this.getCopyButton());
-        overflow_links.push(<hr/>);
         overflow_links.push(
             <a id="comparison-view" class="hover-shade" href="comparison">
                 {gettext("Workflow comparison tool")}
             </a>
         );
+        overflow_links.push(<hr/>);
+        overflow_links.push(this.getExportButton());
+        overflow_links.push(this.getCopyButton());
+        if(data.author_id==user_id){
+            overflow_links.push(<hr/>);
+            overflow_links.push(this.getDeleteProject());
+        }
         return overflow_links;
     }
 
     getDeleteProject(){
         if(!this.state.data.deleted)return (
             <div class="hover-shade" onClick={this.deleteProject.bind(this)}>
-                <div>{gettext("Archive Project")}</div>
+                <div>{gettext("Archive project")}</div>
             </div>
         )
         else return([
             <div class="hover-shade" onClick={this.restoreProject.bind(this)}>
-                <div>{gettext("Restore Project")}</div>
+                <div>{gettext("Restore project")}</div>
             </div>,
             <div class="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
-                <div>{gettext("Permanently Delete Project")}</div>
+                <div>{gettext("Permanently delete project")}</div>
             </div>
         ])
     }
@@ -437,7 +437,7 @@ export class ProjectMenu extends LibraryMenu{
         let commenters = this.state.users.commentors;
         let viewers = this.state.users.viewers;
         if(!author)return null;
-        let users = [
+        let users_group = [
             <div class="user-name">
                 {Constants.getUserTag("author")}{Constants.getUserDisplay(author)}
             </div>,
@@ -456,14 +456,19 @@ export class ProjectMenu extends LibraryMenu{
                     {Constants.getUserTag("view")}{Constants.getUserDisplay(user)}
                 </div>
             ),
-        ]
+        ];
         if(this.state.users.published){
-            users.push(
+            users_group.push(
                 <div class="user-name">
                     {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
                 </div>
             );
         }
+        let users = [
+            <div class="users-group">
+                {users_group}
+            </div>
+        ];
         if(!this.props.renderer.read_only)users.push(
             <div class="user-name collapsed-text-show-more" onClick={this.openShareMenu.bind(this)}>
                 {gettext("Modify")}

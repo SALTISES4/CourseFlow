@@ -885,7 +885,7 @@ class OutcomeHorizontalLinkViewUnconnected extends Component{
     deleteSelf(data){
         let props=this.props;
         //Temporary confirmation; add better confirmation dialogue later
-        if(window.confirm(gettext("Are you sure you want to delete this "+Constants.object_dictionary[this.objectType]+"?"))){
+        if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.get_verbose(this.props.data,this.objectType).toLowerCase()+"?")){
             props.renderer.tiny_loader.startLoad();
             updateOutcomehorizontallinkDegree(data.outcome,data.parent_outcome,0,(response_data)=>{
                 props.renderer.tiny_loader.endLoad();

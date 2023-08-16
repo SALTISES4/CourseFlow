@@ -61,7 +61,7 @@ export class EditableComponent extends Component{
             
             return reactDom.createPortal(
                 <div class="right-panel-inner" onClick={(evt)=>evt.stopPropagation()}>
-                    <h3>{gettext("Edit ")+type}</h3>
+                    <h3>{gettext("Edit ")+Constants.get_verbose(data,this.objectType)}</h3>
                     {["node","week","column","workflow","outcome","nodelink"].indexOf(type)>=0 &&
                         <div>
                             <h4>{gettext("Title")}</h4>
@@ -246,11 +246,10 @@ export class EditableComponent extends Component{
 
     getDeleteForSidebar(read_only,no_delete,type,data){
         if(!read_only && !no_delete && (type !="outcome" || data.depth>0)){
-            if(type == "workflow" && data.deleted) return[
-                <h4>{gettext("Restore")}</h4>,
-                this.addRestoreSelf(data)
+            if(type == "workflow") return [
+                null
             ]
-            else return[
+            else return [
                 <h4>{gettext("Delete")}</h4>,
                 this.addDeleteSelf(data)
             ]
@@ -373,7 +372,7 @@ export class EditableComponentWithActions extends EditableComponentWithComments{
             alert(gettext("You cannot delete the last ")+this.objectType);
             return;
         }
-        if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.object_dictionary[this.objectType]+"?")){
+        if(window.confirm(gettext("Are you sure you want to delete this ")+Constants.get_verbose(this.props.data,this.objectType).toLowerCase()+"?")){
             props.renderer.tiny_loader.startLoad();
             deleteSelf(data.id,Constants.object_dictionary[this.objectType],true,
                 (response_data)=>{

@@ -1819,6 +1819,10 @@ circle.mouseover{
     margin-right: 10%;
 }
 
+.side-bar .ui-tabs-tab.hidden{
+    display: none;
+}
+
 .side-bar.collapsed .window-close-button{
     display:none;
 }

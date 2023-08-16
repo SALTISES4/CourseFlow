@@ -244,7 +244,7 @@ export class WorkflowRenderer{
                 }
                 renderer.is_static=true;
                 renderer.has_rendered=true;
-                if(!renderer.has_disconnected)alert(gettext("Unable to establish connection to the server, or connection has been lost."));
+                if(!renderer.silent_connect_fail && !renderer.has_disconnected)alert(gettext("Unable to establish connection to the server, or connection has been lost."));
                 renderer.has_disconnected=true;
             }
         }else{

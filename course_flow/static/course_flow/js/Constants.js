@@ -127,6 +127,34 @@ export const through_parent_dictionary = {
     outcome:"outcomeoutcome",
     outcome_base:"outcomeworkflow"
 }
+export const get_verbose = function(data,object_type){
+    switch(object_type){
+        case "node":
+            return data.node_type_display;
+        case "workflow":
+        case "activity":
+        case "course":
+        case "program":
+            return {
+                "activity":gettext("Activity"),
+                "course":gettext("Course"),
+                "program":gettext("Program"),
+                "workflow":gettext("Workflow"),
+            }[data.type]
+        case "week":
+            return data.week_type_display;
+    }
+    return {
+        "outcome":gettext("Outcome"),
+        "outcome_base":gettext("Outcome"),
+        "nodelink":gettext("Node Link"),
+        "outcome":gettext("Outcome"),
+        "column":gettext("Column"),
+        "project":gettext("Project"),
+        "outcomehorizontallink":gettext("Association to the parent outcome"),
+        "outcomenode":gettext("Association to the outcome"),
+    }[object_type]
+}
 export const permission_keys = {
     "none":0,
     "view":1,

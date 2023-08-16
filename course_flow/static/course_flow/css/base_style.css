@@ -62,6 +62,10 @@ input[type="checkbox"], input[type="radio"]{
     filter: hue-rotate(300deg) brightness(117%)
 }
 
+textarea{
+    font-family: 'Open Sans';
+}
+
 button.disabled, button:disabled{
     pointer-events: none;
     cursor: default;
@@ -1517,6 +1521,11 @@ button:hover{
 
 .warning span{
     font-size: 10px;
+}
+
+.users-group{
+    max-height: 124px;
+    overflow-y: auto;
 }
 
 .user-list{

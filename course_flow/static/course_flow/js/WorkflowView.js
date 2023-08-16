@@ -150,13 +150,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let editors = this.state.users.editors;
         let commenters = this.state.users.commentors;
         let viewers = this.state.users.viewers;
-        let users = []
-        if(author)users.push(
+        let users_group = []
+        if(author)users_group.push(
             <div class="user-name">
                 {Constants.getUserTag("author")}{Constants.getUserDisplay(author)}
             </div>
         )
-        users.push([
+        users_group.push([
             editors.filter(user=>user.id!=author.id).map(user=>
                 <div class="user-name">
                     {Constants.getUserTag("edit")}{Constants.getUserDisplay(user)}
@@ -174,12 +174,17 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
             ),
         ]);
         if(this.state.users.published){
-            users.push(
+            users_group.push(
                 <div class="user-name">
                     {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
                 </div>
             );
         }
+        let users = [
+            <div class="users-group">
+                {users_group}
+            </div>
+        ];
         if(!this.props.renderer.read_only)users.push(
             <div class="user-name collapsed-text-show-more" onClick={this.openShareMenu.bind(this)}>
                 {gettext("Modify")}
@@ -227,27 +232,29 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let liveproject;
 
         let overflow_links=[];
-        overflow_links.push(this.getDeleteWorkflow());
         overflow_links.push(this.getExportButton());
         overflow_links.push(this.getCopyButton());
         overflow_links.push(this.getImportButton());
+        overflow_links.push(this.getDeleteWorkflow());
         if(overflow_links.filter(x=>x!=null).length==0)$("#overflow-options").addClass("hidden")
         return overflow_links;
     }
 
     getDeleteWorkflow(){
         if(this.props.renderer.read_only)return null;
-        if(!this.props.data.deleted)return (
+        if(!this.props.data.deleted)return [
+            <hr/>,
             <div class="hover-shade" onClick={this.deleteWorkflow.bind(this)}>
-                <div>{gettext("Archive Workflow")}</div>
+                <div>{gettext("Archive workflow")}</div>
             </div>
-        )
+        ]
         else return([
+            <hr/>,
             <div class="hover-shade" onClick={this.restoreWorkflow.bind(this)}>
-                <div>{gettext("Restore Workflow")}</div>
+                <div>{gettext("Restore workflow")}</div>
             </div>,
             <div class="hover-shade" onClick={this.deleteWorkflowHard.bind(this)}>
-                <div>{gettext("Permanently Delete Workflow")}</div>
+                <div>{gettext("Permanently delete workflow")}</div>
             </div>
         ])
     }
@@ -369,14 +376,14 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 </a>
             )
         }
-        if(!renderer.public_view && renderer.project && (renderer.is_teacher || renderer.is_student)){
-            return_links.push(
-                <a class="hover-shade no-underline" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
-                    <span class="material-symbols-rounded green">arrow_back_ios</span>
-                    <div>{gettext("Return to classroom (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
-                </a>
-            );
-        }
+        // if(!renderer.public_view && renderer.project && (renderer.is_teacher || renderer.is_student)){
+        //     return_links.push(
+        //         <a class="hover-shade no-underline" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
+        //             <span class="material-symbols-rounded green">arrow_back_ios</span>
+        //             <div>{gettext("Return to classroom (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
+        //         </a>
+        //     );
+        // }
         return reactDom.createPortal(
             return_links,
             $(".titlebar .title")[0]
@@ -1155,6 +1162,25 @@ class RestoreBarUnconnected extends React.Component{
                 </div>
             </div>
         ,$("#restore-bar")[0]);
+    }
+
+    componentDidMount(){
+        this.checkVisible();
+    }
+    componentDidUpdate(){
+        this.checkVisible();
+    }
+
+    checkVisible(){
+        if(this.props.nodes.length==0 && 
+        this.props.weeks.length==0 &&
+        this.props.columns.length == 0 &&
+        this.props.outcomes.length ==0 &&
+        this.props.nodelinks.length==0){
+            $("a[href='#restore-bar']").parent().addClass("hidden")
+        }else{
+            $("a[href='#restore-bar']").parent().removeClass("hidden")
+        }
     }
     
 }
