@@ -1292,6 +1292,7 @@ class InfoBoxSerializer(
     author = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    project_title = serializers.SerializerMethodField()
     # url = serializers.SerializerMethodField()
     # can_edit = serializers.SerializerMethodField()
     object_permission = serializers.SerializerMethodField()
@@ -1310,6 +1311,13 @@ class InfoBoxSerializer(
             return None
         user = self.context.get("user", None)
         return user_workflow_url(instance, user)
+
+    def get_project_title(self, instance):
+        if instance.type in ["project", "liveproject"]:
+            return None
+        if instance.get_project() is None:
+            return None
+        return instance.get_project().title
 
     def get_is_owned(self, instance):
         user = self.context.get("user")

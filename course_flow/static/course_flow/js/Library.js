@@ -612,7 +612,7 @@ export class WorkflowFilter extends Component{
                 <div class="workflow-filter-top">
                     <div id="workflow-search" ref={this.searchDOM}>
                         <input
-                            placeholder={gettext("Search")}
+                            placeholder={this.getPlaceholder()}
                             onChange={debounce(this.searchChange.bind(this))}
                             id="workflow-search-input"
                             class="search-input"
@@ -632,6 +632,14 @@ export class WorkflowFilter extends Component{
                 </div>
             ]
         );
+    }
+
+    getPlaceholder(){
+        if(this.props.context=="project"){
+            return gettext("Search the project");
+        }else{
+            return gettext("Search the library");
+        }
     }
 
     sortWorkflows(workflows){
@@ -822,7 +830,7 @@ export class ExploreFilter extends WorkflowFilter{
                     <div class="flex-middle">
                         <div id="workflow-search" ref={this.searchDOM}>
                             <input
-                                placeholder={gettext("Search")}
+                                placeholder={gettext("Search the public library")}
                                 onChange={debounce(this.searchChange.bind(this))}
                                 id="workflow-search-input"
                                 class="search-input"
@@ -1260,9 +1268,10 @@ export class WorkflowForMenuCondensed extends WorkflowForMenu{
         return(
             <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
                 <div class="workflow-top-row">
+                    {this.getTypeIndicator()}
                     <WorkflowTitle no_hyperlink={this.props.no_hyperlink} class_name="workflow-title" data={data}/>
                     {this.getButtons()}
-                    {this.getTypeIndicator()}
+                    {this.getProjectTitle()}
                 </div>
             </div>
         );
@@ -1270,6 +1279,16 @@ export class WorkflowForMenuCondensed extends WorkflowForMenu{
 
     getButtons(){
         return null;
+    }
+
+    getProjectTitle(){
+        if(this.props.workflow_data.project_title){
+            return (
+                <div class="project-title">{this.props.workflow_data.project_title}</div>
+            );
+        }else{
+            return '-';
+        }
     }
 }
 

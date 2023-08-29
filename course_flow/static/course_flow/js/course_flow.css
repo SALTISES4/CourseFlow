@@ -961,9 +961,38 @@ button:hover{
 }
 
 .workflow-for-menu.simple-workflow{
-    max-width: 400px;
     min-width: 200px;
     border-width: 0px;
+}
+
+.simple-workflow .workflow-title{
+    font-size: 14px;
+    font-weight: normal;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+}
+
+.create-dropdown .workflow-top-row{
+    gap: 10px;
+    align-items: center;   
+}
+
+.create-dropdown .workflow-top-row .workflow-title{
+    margin-bottom: 0;
+}
+
+.simple-workflow .workflow-type-indicator{
+    min-width: 75px;
+}
+
+.simple-workflow .project-title{
+    font-size: 14px;
+    font-weight: normal;
+    color: #878787;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
 }
 
 .workflow-buttons-row{
@@ -1060,7 +1089,6 @@ button:hover{
     padding:5px;
     padding-left:12px;
     padding-right:12px;
-    margin-left:8px;
     height:-moz-fit-content;
     height:fit-content;
     white-space: nowrap;
@@ -1095,6 +1123,7 @@ button:hover{
     display:flex;
     align-items:flex-start;
     justify-content: space-between;
+    gap: 10px;
 }
 
 .workflow-title{
@@ -1163,11 +1192,16 @@ button:hover{
     position: relative;
 }
 
+#workflow-search .create-dropdown{
+    min-width: 500px;
+    max-width: 600px;
+}
+
 .search-input + .material-symbols-rounded{
     position: absolute;
     font-size: 20px;
-    left: 4px;
-    top: 2px;
+    left: 6px;
+    top: 5px;
     color: grey;
 }
 
@@ -1190,12 +1224,14 @@ button:hover{
 }
 
 .search-input{
-    border-radius: 12px;
-    border: 1px solid lightgrey;
-    padding:  4px;
-    padding-left: 28px;
+    border-radius: 30px;
+    border: 1px solid #E9EBF2;
+    padding:  6px;
+    padding-left: 30px;
     padding-right: 10px;
     box-sizing: border-box;
+    font-size: 14px;
+    width: 300px;
 }
 
 .search-filter-lock{
@@ -3890,8 +3926,9 @@ circle.mouseover{
     position:unset;
 }
 
-.side-bar .quill-div.title-input{
+.side-bar #title-editor{
     min-height:60px;
+    max-height: 100px;
 }
 
 .side-bar .character-length{
@@ -4277,9 +4314,8 @@ circle.mouseover{
     display: none;
 }
 
-.comparison-view .workflow-title, .simple-workflow .workflow-title{
+.comparison-view .workflow-title{
     font-size: 12px;
-
 }
 
 .comparison-view .workflow-array{

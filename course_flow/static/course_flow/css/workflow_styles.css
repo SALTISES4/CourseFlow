@@ -1915,8 +1915,9 @@ circle.mouseover{
     position:unset;
 }
 
-.side-bar .quill-div.title-input{
+.side-bar #title-editor{
     min-height:60px;
+    max-height: 100px;
 }
 
 .side-bar .character-length{
@@ -2301,9 +2302,8 @@ circle.mouseover{
     display: none;
 }
 
-.comparison-view .workflow-title, .simple-workflow .workflow-title{
+.comparison-view .workflow-title{
     font-size: 12px;
-
 }
 
 .comparison-view .workflow-array{
