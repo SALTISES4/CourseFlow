@@ -727,6 +727,10 @@ button:hover{
     display:block;
     margin-left:22px;
     margin-right:20px;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
 }
 
 .left-panel hr{
@@ -944,7 +948,7 @@ button:hover{
 }
 
 .menu-grid > .workflow-for-menu{
-    width:350px;
+    width:400px;
 }
 
 .workflow-for-menu{
@@ -968,6 +972,10 @@ button:hover{
     width: 200px;
     min-width: 200px;
     max-width: 200px;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
 }
 
 .create-dropdown .workflow-top-row{
@@ -990,6 +998,10 @@ button:hover{
     width: 200px;
     min-width: 200px;
     max-width: 200px;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
 }
 
 .workflow-buttons-row{
@@ -1049,8 +1061,10 @@ button:hover{
 }
 
 .workflow-for-menu .workflow-title{
-    white-space: nowrap;
     overflow: hidden;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
 }
 
 .workflow-publication{

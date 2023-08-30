@@ -1154,6 +1154,8 @@ export class WorkflowForMenu extends React.Component{
         let creation_text = gettext("Created");
         if(data.author && data.author !="None")creation_text+=" "+gettext("by")+" "+data.author;
         creation_text+=gettext(" on ")+data.created_on;
+        let description = data.description;
+        if(!description)description = " ";
 
         return(
             <div ref={this.maindiv} class={css_class} onClick={this.clickAction.bind(this)} onMouseDown={(evt)=>{evt.preventDefault()}}>
@@ -1166,7 +1168,7 @@ export class WorkflowForMenu extends React.Component{
                     { creation_text}
                 </div>
                 {/*<CollapsibleText css_class="workflow-description" text={data.description} defaultText={gettext("No description")}/>*/}
-                <div class="workflow-description collapsible-text" dangerouslySetInnerHTML={{ __html: data.description }}>
+                <div class="workflow-description collapsible-text" dangerouslySetInnerHTML={{ __html: description }}>
                 </div>
                 {this.getButtons()}
             </div>

@@ -177,7 +177,7 @@
         {% if user|has_group:"Teacher" %}
         <a id="panel-my-library" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-library' %}">
           <span class="material-symbols-rounded">collections_bookmark</span>
-          <div>{% trans 'Your Library' %}</div>
+          <div>{% trans 'My library' %}</div>
         </a>
         <a id="panel-explore" class="panel-item hover-shade no-underline" href="{% url 'course_flow:explore' %}">
           <span class="material-symbols-rounded">manage_search</span>
@@ -187,7 +187,7 @@
         {% if not user.is_anonymous %}
         <a id="panel-my-live-projects" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-live-projects' %}">
           <span class="material-symbols-rounded">calendar_month</span>
-          <div>{% trans 'My Classrooms' %}</div>
+          <div>{% trans 'My classrooms' %}</div>
         </a>
         {% endif %}
 
@@ -198,10 +198,10 @@
           {% if user|has_group:"Teacher" %}
             <a id="my-favourites" class="panel-item hover-shade no-underline" href="{% url 'course_flow:my-favourites' %}">
               <span class="material-symbols-rounded">star</span>
-              <div>{% trans 'My Favourites' %}</div>
+              <div>{% trans 'My favourites' %}</div>
             </a>
               {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
-                <a class="panel-favourite hover-shade"
+                <a title="{{ favourite.content_object | safe }}" class="panel-favourite hover-shade"
                    {% if favourite.content_object.type == "project" %}
                       id="project{{favourite.object_id}}" href="{% url 'course_flow:project-update' pk=favourite.content_object.pk %}"
                    {% else %}
@@ -459,7 +459,7 @@
 
       if(show_notification_request){
         if(window.confirm(
-          '{% trans "Hi there! Would you like to receive emails about updates to CourseFlow? You can always change your mind by viewing your profile." %}'
+          "{% trans 'Hi there! Would you like to receive emails about updates to CourseFlow? You can always change your mind by viewing your profile.' %}"
         )){
           $.post("{% url 'course_flow:select-notifications' %}",{"notifications":JSON.stringify(true)});
         }else{
@@ -517,7 +517,7 @@
     if(isTouch){
       if(!sessionStorage.getItem("unsupported_alerted")){
           sessionStorage.setItem("unsupported_alerted",true);
-          alert('{% trans "Your device is not supported. Please use a laptop or desktop for the best experience." %}');
+          alert("{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}");
       }
     }
 

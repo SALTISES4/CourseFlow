@@ -832,6 +832,48 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
 
+class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        chrome_options.add_experimental_option(
+            "prefs", {"intl.accept_languages": "fr"}
+        )
+        chrome_options.add_argument("--lang=fr")
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(
+                settings.CHROMEDRIVER_PATH, chrome_options=chrome_options
+            )
+        else:
+            self.selenium = webdriver.Chrome(chrome_options=chrome_options)
+
+        super(SeleniumFrenchTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        selenium.get(self.live_server_url + "/course-flow/home/")
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(SeleniumFrenchTestCase, self).tearDown()
+
+    def test_home(self):
+        selenium = self.selenium
+        selenium.get(self.live_server_url + "/course-flow/home/")
+        time.sleep(100)
+        assert (
+            "Projets récents"
+            in selenium.find_elements_by_css_selector(".home-item-title")[
+                0
+            ].text
+        )
+
+
 class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
@@ -2945,7 +2987,6 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         self.selenium.quit()
         super(SeleniumDeleteRestoreTestCase, self).tearDown()
 
-    
     def create_many_items(self, author, published, disciplines):
         for object_type in [
             "activity",
@@ -3624,7 +3665,9 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
         ).click()
         time.sleep(1)
         self.assertEqual(project.object_sets.count(), 1)
-        selenium.find_element_by_css_selector(".nomenclature-row .material-symbols-rounded").click()
+        selenium.find_element_by_css_selector(
+            ".nomenclature-row .material-symbols-rounded"
+        ).click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
         time.sleep(2)
