@@ -4880,17 +4880,43 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 for wf in linked_workflows:
                     actions.dispatch_parent_updated(wf)
         else:
+            if object_type == "outcome":
+                outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(model)
+                outcomenodes = OutcomeNode.objects.filter(
+                    outcome__id__in=[model.id] + [x.id for x in outcomes]
+                )
+                node_updates = NodeSerializerShallow(
+                    list(set([x.node for x in outcomenodes])),
+                    many=True,
+                ).data
+                new_children_serialized = {
+                    "outcome": [],
+                    "outcomeoutcome": [],
+                    "outcomenode": OutcomeNodeSerializerShallow(
+                        outcomenodes, many=True
+                    ).data,
+                }
+                extra_data = {
+                    "children": new_children_serialized,
+                    "node_updates": node_updates,
+                }
+            else:
+                extra_data = {}
+
             actions.dispatch_wf(
                 workflow,
                 actions.changeThroughID(
-                    through_type, old_through_id, new_through.id
+                    through_type, old_through_id, new_through.id, extra_data
                 ),
             )
             if object_type == "outcome":
                 actions.dispatch_to_parent_wf(
                     workflow,
                     actions.changeThroughID(
-                        through_type, old_through_id, new_through.id
+                        through_type,
+                        old_through_id,
+                        new_through.id,
+                        extra_data,
                     ),
                 )
     actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))

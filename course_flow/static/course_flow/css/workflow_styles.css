@@ -1482,6 +1482,8 @@ ol.children-block{
 
 .outcome-table .table-cell .node-category-header{
     font-size:12px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .outcome-table .table-group:first-child .blank-cell{
