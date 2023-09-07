@@ -691,12 +691,15 @@ class TableCell extends React.Component{
     //     );
     // }
     changeFunction(evt){
+        console.log("select has changed, I should be sending stuff");
+        console.log(evt.target.value);
         let props = this.props;
         let value = evt.target.value;
         props.renderer.tiny_loader.startLoad();
         updateOutcomenodeDegree(props.nodeID,props.outcomeID,value,
             (response_data)=>{
                 props.renderer.tiny_loader.endLoad();
+                $(':focus').blur();
             }
         );
     }
@@ -742,116 +745,6 @@ class TableCell extends React.Component{
         return contents;
     }
 }
-
-//Basic component representing an outcome inside a table
-//The component must keep track of both the completion status it receives from descendant outcomes (for each node) and that it gets from its own table cells (also for each node). The completion status it receives from its own table cells is then combined with that it receives from its descendant outcomes to compute whether or not an outcome is achieved in the grand total column.
-//To receive updates from the child outcomes, the updateParentCompletion function is passed to the child outcomes. This is called any time a table cell is updated, adding the the node-outcome pair. descendant_completion_status has the format {node_id:{outcome_id:degree}}.
-// class TableOutcomeViewUnconnected extends EditableComponentWithComments{
-    
-//     constructor(props){
-//         super(props);
-//         this.objectType="outcome";
-//         this.children_block = React.createRef();
-//         this.state={descendant_completion_status:{}};
-//     }
-    
-//     render(){
-//         let data = this.props.data;
-        
-//         var children = data.child_outcome_links.map((outcomeoutcome)=>
-//             <TableOutcomeOutcomeView renderer={this.props.renderer} key={outcomeoutcome} objectID={outcomeoutcome} parentID={data.id} nodecategory={this.props.nodecategory} updateParentCompletion={this.childUpdatedFunction.bind(this)} descendant_completion_status={this.state.descendant_completion_status} outcomes_type={this.props.outcomes_type}/>
-//         );
-
-//         let outcomeGroups = this.props.nodecategory.map((nodecategory)=>
-//             <TableOutcomeGroup renderer={this.props.renderer} nodes={nodecategory.nodes} outcomeID={this.props.data.id} updateParentCompletion={this.childUpdatedFunction.bind(this)} descendant_completion_status={this.state.descendant_completion_status} outcomes_type={this.props.outcomes_type}/>
-                                                                                                 
-//         );
-                
-//         let dropIcon;
-//         if(data.is_dropped)dropIcon = "droptriangleup";
-//         else dropIcon = "droptriangledown";
-        
-//         let droptext;
-//         if(data.is_dropped)droptext=gettext("hide");
-//         else droptext = gettext("show ")+children.length+" "+ngettext("descendant","descendants",children.length);
-
-//         let comments;
-//         if(this.props.renderer.view_comments)comments=this.addCommenting();
-        
-//         return(
-//             <div
-//             class={
-//                 "outcome depth-"+data.depth+((data.is_dropped && " dropped")||"")
-//             }>
-//                 <div class = "outcome-row">
-//                     <div class="outcome-head" 
-//                         ref={this.maindiv} 
-//                         style={{paddingLeft:data.depth*12}}
-//                         onClick={(evt)=>{this.props.renderer.selection_manager.changeSelection(evt,this)}}
-//                     >
-//                         <div class="outcome-title" style={this.get_border_style()}>
-//                             <OutcomeTitle data={this.props.data} titles={this.props.titles} rank={this.props.rank}/>
-//                         </div>
-//                         {data.child_outcome_links.length>0 && 
-//                             <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
-//                                 <div class = "outcome-drop-img">
-//                                     <img src={iconpath+dropIcon+".svg"}/>
-//                                 </div>
-//                                 <div class = "outcome-drop-text">
-//                                     {droptext}
-//                                 </div>
-//                             </div>
-//                         }
-//                         <div class="mouseover-actions">
-//                             {comments}
-//                         </div>
-//                         <div class="side-actions">
-//                             <div class="comment-indicator-container"></div>
-//                         </div>
-//                     </div>
-//                     <div class="outcome-cells">
-//                         {outcomeGroups}
-//                         <div class="table-cell blank-cell"></div>
-//                         <TableTotalCell grand_total={true} outcomes_type={this.props.outcomes_type} outcomeID={data.id} descendant_completion_status={this.state.descendant_completion_status}/>
-//                     </div>
-//                 </div>
-//                 <div class="children-block" id={this.props.objectID+"-children-block"} ref={this.children_block}>
-//                     {children}
-//                 </div>
-//                 {this.addEditable(data,true)}
-//             </div>
-            
-//         );
-//     }
-    
-
-//     childUpdatedFunction(node_id,outcome_id,value){
-        
-//         this.setState((prevState,props)=>{
-//             let new_descendant_completion = {...prevState.descendant_completion_status};
-//             if(!new_descendant_completion[node_id] && value){
-//                 new_descendant_completion[node_id]={};
-//                 new_descendant_completion[node_id][outcome_id]=value;
-//             }else if(value){
-//                 new_descendant_completion[node_id]={...new_descendant_completion[node_id]};
-//                 new_descendant_completion[node_id][outcome_id]=value;
-//             }else{
-//                 new_descendant_completion[node_id]={...new_descendant_completion[node_id]};
-//                 delete new_descendant_completion[node_id][outcome_id];
-//                 if($.isEmptyObject(new_descendant_completion[node_id]))delete new_descendant_completion[node_id];
-//             }
-//             return {...prevState,descendant_completion_status:new_descendant_completion};
-            
-//         });        
-//         if(this.props.updateParentCompletion)this.props.updateParentCompletion(node_id,outcome_id,value);
-//     }
-
-
-// }
-// export const TableOutcomeView = connect(
-//     mapOutcomeStateToProps,
-//     null
-// )(TableOutcomeViewUnconnected)
 
 
 /*

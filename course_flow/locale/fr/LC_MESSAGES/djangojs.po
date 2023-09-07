@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-05 09:59-0400\n"
+"POT-Creation-Date: 2023-09-05 11:37-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,7 +38,6 @@ msgstr "Lié "
 
 #: static/course_flow/js/AlignmentView.js:405
 #: static/course_flow/js/AlignmentView.js:443
-#: static/course_flow/js/WorkflowView.js:443
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid " outcomes"
 msgstr " acquis"
@@ -106,13 +105,11 @@ msgid "Sharing"
 msgstr "Partager"
 
 #: static/course_flow/js/ComparisonView.js:43
-#: static/course_flow/js/WorkflowView.js:442
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Workflow View"
 msgstr "Plan de Travail"
 
 #: static/course_flow/js/ComparisonView.js:44
-#: static/course_flow/js/WorkflowView.js:443
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "View"
 msgstr "Vue"
@@ -128,10 +125,10 @@ msgid "Comparing workflows for:"
 msgstr "Comparaison des plans de travail pour:"
 
 #: static/course_flow/js/ComparisonView.js:115
-#: static/course_flow/js/WorkflowView.js:367
+#: static/course_flow/js/WorkflowView.js:368
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Return to project"
-msgstr "Retourner au projet ("
+msgstr "Retourner au projet"
 
 #: static/course_flow/js/ComparisonView.js:460
 #: static/course_flow/js/OutcomeView.js:155
@@ -144,12 +141,12 @@ msgstr ""
 "marqués avec ce acquis le verront supprimé. Voulez-vous continuer?"
 
 #: static/course_flow/js/ComparisonView.js:501
-#: static/course_flow/js/WorkflowView.js:1002
+#: static/course_flow/js/WorkflowView.js:1005
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Object Sets"
 msgstr "Categories d'objets"
 
-#: static/course_flow/js/CompetencyMatrixView.js:32
+#: static/course_flow/js/CompetencyMatrixView.js:31
 #: static/course_flow/js/WorkflowOutcomeView.js:35
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid ""
@@ -159,7 +156,7 @@ msgstr ""
 "Cette vue affiche un tableau montrant les relations entre les noeuds et les "
 "acquis. Ajoutez des acquis et des noeuds au flux de travail pour commencer."
 
-#: static/course_flow/js/CompetencyMatrixView.js:33
+#: static/course_flow/js/CompetencyMatrixView.js:32
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid ""
 "This view renders a table showing the relationships between this workflow's "
@@ -175,27 +172,27 @@ msgstr ""
 "assurez-vous que ces plans de travails descendants ont leur propre ensemble "
 "d'acquis."
 
-#: static/course_flow/js/CompetencyMatrixView.js:90
+#: static/course_flow/js/CompetencyMatrixView.js:89
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Hours"
 msgstr "Heures"
 
-#: static/course_flow/js/CompetencyMatrixView.js:95
+#: static/course_flow/js/CompetencyMatrixView.js:94
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Theory"
 msgstr "Théorie"
 
-#: static/course_flow/js/CompetencyMatrixView.js:96
+#: static/course_flow/js/CompetencyMatrixView.js:95
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Practical"
 msgstr "Pratique"
 
-#: static/course_flow/js/CompetencyMatrixView.js:97
+#: static/course_flow/js/CompetencyMatrixView.js:96
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Individual Work"
 msgstr "Travail individuel"
 
-#: static/course_flow/js/CompetencyMatrixView.js:98
+#: static/course_flow/js/CompetencyMatrixView.js:97
 #: static/course_flow/js/LiveAssignmentView.js:470
 #: static/course_flow/js/LiveProjectView.js:733
 #: static/course_flow/js/scripts-library.min.js:27
@@ -204,7 +201,7 @@ msgstr "Travail individuel"
 msgid "Total"
 msgstr "Total"
 
-#: static/course_flow/js/CompetencyMatrixView.js:99
+#: static/course_flow/js/CompetencyMatrixView.js:98
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Credits"
 msgstr "Crédits"
@@ -252,6 +249,7 @@ msgstr "Stratégie"
 
 #: static/course_flow/js/ComponentJSON.js:253
 #: static/course_flow/js/LiveAssignmentView.js:151
+#: static/course_flow/js/OutcomeView.js:794
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Delete"
@@ -275,6 +273,7 @@ msgstr "Vous ne pouvez pas supprimer la dernière "
 #: static/course_flow/js/ComponentJSON.js:375
 #: static/course_flow/js/LiveAssignmentView.js:200
 #: static/course_flow/js/MenuComponents.js:805
+#: static/course_flow/js/OutcomeView.js:781
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -339,7 +338,7 @@ msgstr "montrer moins"
 #: static/course_flow/js/ComponentJSON.js:1134
 #: static/course_flow/js/ComponentJSON.js:1204
 #: static/course_flow/js/ComponentJSON.js:1224
-#: static/course_flow/js/WorkflowView.js:1216
+#: static/course_flow/js/WorkflowView.js:1219
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1374,7 +1373,6 @@ msgid "Save classroom changes"
 msgstr "Sauvegarder les modifications"
 
 #: static/course_flow/js/LiveProjectView.js:728
-#: static/course_flow/js/WorkflowView.js:444
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
@@ -1837,122 +1835,116 @@ msgstr "Importer les acquis"
 msgid "Import Nodes"
 msgstr "Importer noeds"
 
-#: static/course_flow/js/WorkflowView.js:444
-#: static/course_flow/js/WorkflowView.js:445
+#: static/course_flow/js/WorkflowView.js:377
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid " outcome"
-msgstr " acquis"
+msgid "Return to Editable Workflow"
+msgstr "Modifier le plan de travail"
 
-#: static/course_flow/js/WorkflowView.js:445
+#: static/course_flow/js/WorkflowView.js:462
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Analytics"
-msgstr "Analytique "
+msgid "Other Views"
+msgstr "Autres vues"
 
-#: static/course_flow/js/WorkflowView.js:446
+#: static/course_flow/js/WorkflowView.js:494
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Grid View"
-msgstr "Vue grille "
+msgid "Jump to"
+msgstr "Aller vers"
 
-#: static/course_flow/js/WorkflowView.js:505
+#: static/course_flow/js/WorkflowView.js:511
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Expand/Collapse"
-msgstr "Afficher/Masquer"
+msgid "Expand all weeks"
+msgstr "Afficher toutes les semaines"
 
-#: static/course_flow/js/WorkflowView.js:509
-#: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Collapse all weeks"
-msgstr "Masquer toutes semaines"
-
-#: static/course_flow/js/WorkflowView.js:512
+#: static/course_flow/js/WorkflowView.js:515
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Collapse all nodes"
 msgstr "Masquer tous les noeuds"
 
-#: static/course_flow/js/WorkflowView.js:515
+#: static/course_flow/js/WorkflowView.js:518
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Collapse all outcomes"
 msgstr "Masquer tous les acquis"
 
-#: static/course_flow/js/WorkflowView.js:968
+#: static/course_flow/js/WorkflowView.js:971
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Competency Matrix Style"
 msgstr "Matrice de compétences"
 
-#: static/course_flow/js/WorkflowView.js:975
+#: static/course_flow/js/WorkflowView.js:978
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Table Type"
 msgstr "Type de tableau"
 
-#: static/course_flow/js/WorkflowView.js:999
+#: static/course_flow/js/WorkflowView.js:1002
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "View options"
 msgstr "Options d'affichage"
 
-#: static/course_flow/js/WorkflowView.js:1079
+#: static/course_flow/js/WorkflowView.js:1082
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "My strategies"
 msgstr "Mes stratégies"
 
-#: static/course_flow/js/WorkflowView.js:1084
+#: static/course_flow/js/WorkflowView.js:1087
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "SALTISE strategies"
 msgstr "Stratégies SALTISE"
 
-#: static/course_flow/js/WorkflowView.js:1137
+#: static/course_flow/js/WorkflowView.js:1140
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Restore items"
 msgstr "Restaurer"
 
-#: static/course_flow/js/WorkflowView.js:1139
+#: static/course_flow/js/WorkflowView.js:1142
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Nodes"
 msgstr "Noeuds"
 
-#: static/course_flow/js/WorkflowView.js:1144
+#: static/course_flow/js/WorkflowView.js:1147
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Weeks"
 msgstr "Semaines"
 
-#: static/course_flow/js/WorkflowView.js:1149
+#: static/course_flow/js/WorkflowView.js:1152
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Columns"
 msgstr "Colonnes"
 
-#: static/course_flow/js/WorkflowView.js:1154
+#: static/course_flow/js/WorkflowView.js:1157
 #: static/course_flow/js/scripts-library.min.js:27
 #: static/course_flow/js/scripts-live.min.js:28
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Outcomes"
 msgstr "Acquis"
 
-#: static/course_flow/js/WorkflowView.js:1159
+#: static/course_flow/js/WorkflowView.js:1162
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Node Links"
 msgstr "Liens de noeuds"
 
-#: static/course_flow/js/WorkflowView.js:1206
+#: static/course_flow/js/WorkflowView.js:1209
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Deleted"
 msgstr "Supprimé"
 
-#: static/course_flow/js/WorkflowView.js:1208
+#: static/course_flow/js/WorkflowView.js:1211
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Permanently Delete"
 msgstr "Supprimé définitivement"
 
-#: static/course_flow/js/WorkflowView.js:1228
+#: static/course_flow/js/WorkflowView.js:1231
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Are you sure you want to permanently delete this object?"
 msgstr "Voulez-vous vraiment supprimer définitivement cet objet?"
 
-#: static/course_flow/js/WorkflowView.js:1333
+#: static/course_flow/js/WorkflowView.js:1336
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Quick Navigation"
 msgstr "Navigation rapide"
 
-#: static/course_flow/js/WorkflowView.js:1340
+#: static/course_flow/js/WorkflowView.js:1343
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Workflows Used:"
 msgstr "Plans de travail utilisés:"
@@ -2317,6 +2309,10 @@ msgid "Filters"
 msgstr "Filtres"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
+msgid " outcome"
+msgstr " acquis"
+
+#: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid " From Linked Workflow"
 msgstr " du plan de travail en lien"
 
@@ -2345,20 +2341,20 @@ msgid "Edit Workflow"
 msgstr "Modifier le plan de travail"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Return to Editable Workflow"
-msgstr "Modifier le plan de travail"
+msgid "Analytics"
+msgstr "Analytique "
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Other Views"
-msgstr "Autres vues"
+msgid "Grid View"
+msgstr "Vue grille "
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Jump to"
-msgstr "Aller vers"
+msgid "Expand/Collapse"
+msgstr "Afficher/Masquer"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
-msgid "Expand all weeks"
-msgstr "Afficher toutes les semaines"
+msgid "Collapse all weeks"
+msgstr "Masquer toutes semaines"
 
 #: static/course_flow/js/scripts-wf-redux.min.js:42
 msgid "Expand all nodes"

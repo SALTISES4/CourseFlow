@@ -1394,6 +1394,10 @@ ol.children-block{
     display:none;
 }
 
+.table-cell select:focus{
+    display: inline-block;
+}
+
 .table-cell select{
     width: 30px;
     right: 0px;

@@ -3963,9 +3963,17 @@ def insert_child(request: HttpRequest) -> HttpResponse:
             newthroughmodel = OutcomeOutcome.objects.create(
                 parent=model, child=newmodel, rank=newrank
             )
+            newmodel.refresh_from_db()
             new_model_serialized = OutcomeSerializerShallow(newmodel).data
             new_through_serialized = OutcomeOutcomeSerializerShallow(
                 newthroughmodel
+            ).data
+            outcomenodes = OutcomeNode.objects.filter(outcome=newmodel)
+            outcomenodes_serialized = OutcomeNodeSerializerShallow(
+                outcomenodes, many=True
+            ).data
+            node_updates = NodeSerializerShallow(
+                [x.node for x in outcomenodes], many=True
             ).data
         else:
             raise ValidationError("Uknown component type")
@@ -3976,6 +3984,12 @@ def insert_child(request: HttpRequest) -> HttpResponse:
     response_data = {
         "new_model": new_model_serialized,
         "new_through": new_through_serialized,
+        "children": {
+            "outcomenode": outcomenodes_serialized,
+            "outcome": [],
+            "outcomeoutcome": [],
+        },
+        "node_updates": node_updates,
         "parentID": model.id,
     }
     workflow = model.get_workflow()
@@ -4037,6 +4051,22 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
         new_through_serialized = serializer_lookups_shallow[through_type](
             new_through_model
         ).data
+        if object_type == "outcome":
+            outcomenodes = OutcomeNode.objects.filter(outcome=new_model)
+            outcomenodes_serialized = OutcomeNodeSerializerShallow(
+                outcomenodes, many=True
+            ).data
+            node_updates = NodeSerializerShallow(
+                [x.node for x in outcomenodes], many=True
+            ).data
+            children = {
+                "outcomenode": outcomenodes_serialized,
+                "outcome": [],
+                "outcomeoutcome": [],
+            }
+        else:
+            children = None
+            node_updates = []
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -4044,6 +4074,8 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
     response_data = {
         "new_model": new_model_serialized,
         "new_through": new_through_serialized,
+        "children": children,
+        "node_updates": node_updates,
         "parentID": parent_id,
     }
     workflow = model.get_workflow()
@@ -4070,6 +4102,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     parent_id = json.loads(request.POST.get("parentID"))
     parent_type = json.loads(request.POST.get("parentType"))
     through_type = json.loads(request.POST.get("throughType"))  # noqa F841
+    node_updates = []
     try:
         with transaction.atomic():
             if object_type == "week":
@@ -4206,6 +4239,13 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
                     newmodel
                 )
+                outcomenodes = OutcomeNode.objects.filter(
+                    outcome__id__in=[newmodel.id] + [x.id for x in outcomes]
+                )
+                node_updates = NodeSerializerShallow(
+                    list(set([x.node for x in outcomenodes])),
+                    many=True,
+                ).data
                 new_children_serialized = {
                     "outcome": OutcomeSerializerShallow(
                         outcomes, many=True
@@ -4213,16 +4253,21 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                     "outcomeoutcome": OutcomeOutcomeSerializerShallow(
                         outcomeoutcomes, many=True
                     ).data,
+                    "outcomenode": OutcomeNodeSerializerShallow(
+                        outcomenodes, many=True
+                    ).data,
                 }
             else:
                 raise ValidationError("Uknown component type")
     except ValidationError:
         return JsonResponse({"action": "error"})
+    print(node_updates)
     response_data = {
         "new_model": new_model_serialized,
         "new_through": new_through_serialized,
         "parentID": parent_id,
         "children": new_children_serialized,
+        "node_updates": node_updates,
     }
     workflow = model.get_workflow()
     if object_type == "outcome" and through_type == "outcomeworkflow":

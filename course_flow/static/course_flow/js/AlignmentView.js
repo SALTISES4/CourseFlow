@@ -399,7 +399,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         if(this.props.child_outcomes.length>0){
             child_outcomes_header=<div class="child-outcome child-outcome-header">
                 <div class="half-width alignment-column">
-                    {gettext(Constants.capWords(gettext(data.linked_workflow_data.type+" outcomes"))+" From Linked Workflow")}
+                    {Constants.capWords(gettext(data.linked_workflow_data.type+" outcomes"))+gettext(" From Linked Workflow")}
                 </div>
                 <div class="half-width alignment-column">
                     {gettext("Associated ")+Constants.capWords(gettext(this.props.workflow.type+" outcomes"))}

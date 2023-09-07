@@ -1017,6 +1017,7 @@ class Workflow(models.Model):
         verbose_name = _("Workflow")
         verbose_name_plural = _("Workflows")
 
+
 class Activity(Workflow):
 
     DEFAULT_CUSTOM_COLUMN = 0
@@ -1058,6 +1059,7 @@ class Course(Workflow):
         verbose_name = _("Course")
         verbose_name_plural = _("Courses")
 
+
 class Program(Workflow):
 
     DEFAULT_CUSTOM_COLUMN = 20
@@ -1077,6 +1079,7 @@ class Program(Workflow):
     class Meta:
         verbose_name = _("Program")
         verbose_name_plural = _("Programs")
+
 
 class ColumnWorkflow(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
@@ -2072,6 +2075,12 @@ def set_outcome_depth_default(sender, instance, created, **kwargs):
         outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
             instance.child
         )
+        outcomenodes_to_add = OutcomeNode.objects.filter(
+            outcome=instance.parent
+        )
+        horizontallinks_to_add = OutcomeHorizontalLink.objects.filter(
+            parent_outcome=instance.parent
+        )
         for outcomeoutcome in [instance] + list(outcomeoutcomes):
             child = outcomeoutcome.child
             parent = outcomeoutcome.parent
@@ -2079,6 +2088,18 @@ def set_outcome_depth_default(sender, instance, created, **kwargs):
             child.sets.clear()
             child.sets.add(*set_list)
             child.save()
+            for outcomenode in outcomenodes_to_add:
+                OutcomeNode.objects.create(
+                    node=outcomenode.node,
+                    outcome=outcomeoutcome.child,
+                    degree=outcomenode.degree,
+                )
+            for horizontallink in horizontallinks_to_add:
+                OutcomeHorizontalLink.objects.create(
+                    outcome=horizontallink.outcome,
+                    parent_outcome=outcomeoutcome.child,
+                    degree=horizontallink.degree,
+                )
     except ValidationError:
         print("couldn't set default outcome depth or copy sets")
 

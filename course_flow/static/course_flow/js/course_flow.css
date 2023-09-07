@@ -767,8 +767,8 @@ button:hover{
     border:1px solid #E9EBF2;
     width: -moz-fit-content;
     width: fit-content;
-    max-width: 776px;
-    min-width: 410px;
+    max-width: 876px;
+    min-width: 460px;
     padding: 30px;
     box-sizing: border-box;
 }
@@ -3417,6 +3417,10 @@ ol.children-block{
     top:3px;
     right:4px;
     display:none;
+}
+
+.table-cell select:focus{
+    display: inline-block;
 }
 
 .table-cell select{

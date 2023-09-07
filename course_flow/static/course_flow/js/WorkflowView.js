@@ -364,7 +364,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
             return_links.push(
                 <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
                     <span class="material-symbols-rounded green">arrow_back_ios</span>
-                    <div>{gettext("Return to project")}</div>
+                    <div>
+                        {gettext("Return to project")} (<WorkflowTitle class_name="inline" no_hyperlink={true} data={renderer.project}/>)
+                    </div>
                 </a>
             );
         }
@@ -391,11 +393,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
     }
 
     getProjectLink(){
-        let renderer=this.props.renderer;
-        if(renderer.project && !renderer.is_student && !renderer.public_view)return(
-            <WorkflowTitle class_name={"project-title-in-workflow"} data={this.props.renderer.project}/>
-        );
-        else return null;
+        return null;
+        // let renderer=this.props.renderer;
+        // if(renderer.project && !renderer.is_student && !renderer.public_view)return(
+        //     <WorkflowTitle class_name={"project-title-in-workflow"} data={this.props.renderer.project}/>
+        // );
+        // else return null;
     }
 
     getWorkflowContent(){
