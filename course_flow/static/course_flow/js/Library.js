@@ -1206,11 +1206,9 @@ export class WorkflowForMenu extends React.Component{
             <div class="workflow-created">{this.props.workflow_data.workflow_count+" "+gettext("workflows")}</div>
         );
         if(this.props.workflow_data.type=="project" && this.props.workflow_data.has_liveproject && this.props.workflow_data.object_permission.role_type != Constants.role_keys["none"])workflows.push(
-            <a class="workflow-created workflow-live-classroom hover-shade" href={
-                update_path["liveproject"].replace("0",this.props.workflow_data.id)
-            }>
+            <div class="workflow-created workflow-live-classroom">
                 <span class="material-symbols-rounded small-inline" title={gettext("Live Classroom")}>group</span>{" "+gettext("Live Classroom")}
-            </a>
+            </div>
         );
         if(this.props.workflow_data.is_linked)workflows.push(
             <div class="workflow-created linked-workflow-warning" title={gettext("Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.")}><span class="material-symbols-rounded red filled small-inline">error</span>{" "+gettext("Already in use")}</div>

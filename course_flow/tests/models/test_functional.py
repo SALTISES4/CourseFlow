@@ -213,7 +213,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         # selenium.switch_to_window(windows[1])
         assert (
             "new title"
-            in selenium.find_element_by_css_selector(".workflow-title").text
+            in selenium.find_element_by_css_selector(".project-title").text
         )
         selenium.get(self.live_server_url + "/course-flow/mylibrary/")
         time.sleep(0.5)
@@ -227,7 +227,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         # selenium.switch_to_window(windows[1])
         assert (
             "new title"
-            in selenium.find_element_by_css_selector(".workflow-title").text
+            in selenium.find_element_by_css_selector(".project-title").text
         )
 
     def test_my_classrooms_student(self):
@@ -1027,16 +1027,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 .count(),
                 1,
             )
-            selenium.find_element_by_css_selector(
-                "#edit-project-button"
-            ).click()
-            time.sleep(1)
-            selenium.execute_script(
-                "$('.right-panel-inner')[0].scrollTo(0, 500)"
-            )
-            selenium.find_element_by_css_selector(
-                "#sidebar .delete-self-button"
-            ).click()
+            selenium.find_element_by_css_selector("#overflow-options").click()
+            selenium.find_element_by_css_selector("#delete-workflow").click()
             alert = wait.until(expected_conditions.alert_is_present())
             selenium.switch_to.alert.accept()
             time.sleep(2)
@@ -3463,11 +3455,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:workflow-update", args=[course.pk])
         )
         time.sleep(2)
-        selenium.find_element_by_css_selector("#edit-project-button").click()
-        selenium.execute_script("$('.right-panel-inner')[0].scrollTo(0, 500)")
-        selenium.find_element_by_css_selector(
-            "#sidebar .delete-self-button"
-        ).click()
+        selenium.find_element_by_css_selector("#overflow-options").click()
+        selenium.find_element_by_css_selector("#delete-workflow").click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
         time.sleep(2)
@@ -3522,11 +3511,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(1)
         time.sleep(2)
-        selenium.find_element_by_css_selector("#edit-project-button").click()
-        selenium.execute_script("$('.right-panel-inner')[0].scrollTo(0, 500)")
-        selenium.find_element_by_css_selector(
-            "#sidebar .delete-self-button"
-        ).click()
+        selenium.find_element_by_css_selector("#overflow-options").click()
+        selenium.find_element_by_css_selector("#restore-workflow").click()
         time.sleep(2)
         # make sure shows up in favourites
 
@@ -3663,12 +3649,12 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             "competency"
         )
         selenium.find_element_by_css_selector(
-            ".nomenclature-row button"
+            ".nomenclature-add-button"
         ).click()
         time.sleep(1)
         self.assertEqual(project.object_sets.count(), 1)
         selenium.find_element_by_css_selector(
-            ".nomenclature-row .material-symbols-rounded"
+            ".nomenclature-delete-button"
         ).click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()

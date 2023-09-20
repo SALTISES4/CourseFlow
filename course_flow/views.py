@@ -1585,7 +1585,7 @@ def get_workflow_data_flat(workflow, user):
                 context={"user": user},
             ).data
 
-    if user is not None:
+    if user.pk is not None:
         data_flat["unread_comments"] = [
             x.comment.id
             for x in Notification.objects.filter(

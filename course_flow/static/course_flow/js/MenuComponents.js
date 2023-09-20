@@ -738,7 +738,7 @@ export class ProjectEditMenu extends React.Component{
             <div class="nomenclature-row">
                 <div>{object_sets[item.term]}</div>
                 <input value={item.title} onChange={this.termChanged.bind(this,item.id)}/>
-                <div onClick={this.deleteTerm.bind(this,item.id)}>
+                <div class="nomenclature-delete-button" onClick={this.deleteTerm.bind(this,item.id)}>
                     <span class="material-symbols-rounded filled green hover-shade">delete</span>
                 </div>
             </div>
@@ -785,7 +785,7 @@ export class ProjectEditMenu extends React.Component{
                             {set_options}
                         </select>
                         <input placeholder={gettext("Set name")} type="text" id="term-singular" maxlength="50" value={this.state.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_set==null)}/>
-                        <div onClick={clickEvt}>
+                        <div class="nomenclature-add-button" onClick={clickEvt}>
                             <span class={add_term_css}>add_circle</span>
                         </div>
                     </div>
