@@ -245,6 +245,27 @@
               </div>
               {% endif %}
               {% if user.username %}
+              <div id="notifications">
+                <div class="hover-shade">
+                  <span class="material-symbols-rounded filled">notifications</span>
+                </div>
+                <div id="notifications-dropdown" class="create-dropdown">
+                  <a href="{% url 'course_flow:user-update' %}" class="collapsed-text-show-more">{% trans "See all" %}</a>
+                  {% for notification in user.notifications.all|slice:":7" %}
+                    <a class="list-notification hover-shade
+                      {% if notification.is_unread %}
+                        unread
+                      {% endif %}
+                    " href="
+                      {% if notification.content_object.type == 'project' %}
+                        {% url 'course_flow:project-update' pk=notification.content_object.pk %}
+                      {% else %}
+                        {% url 'course_flow:workflow-update' pk=notification.content_object.pk %}
+                      {% endif %}
+                    "><div class="created-on">{{ notification.created_on }}</div>{{ notification.text }}</a>
+                  {% endfor %}
+                </div>
+              </div>
               <div id="account-options">
                 <div class="hover-shade">
                   <span class="material-symbols-rounded filled">account_circle</span>
@@ -439,6 +460,7 @@
     }
     makeDropdown("#overflow-options","#overflow-links");
     makeDropdown("#account-options","#account-links");
+    makeDropdown("#notifications","#notifications-dropdown");
     makeDropdown("#create-options","#create-links");
 
     //reload if we got here using forward or back button
@@ -466,6 +488,8 @@
           $.post("{% url 'course_flow:select-notifications' %}",{"notifications":JSON.stringify(false)});
         }
       }
+
+      if($(".create-dropdown .list-notification.unread").length>0)$("#notifications").addClass("unread");
     });
 
     //Fix Quilljs's link sanitization

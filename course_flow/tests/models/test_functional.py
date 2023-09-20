@@ -193,8 +193,9 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(1)
         assert (
             "new title"
-            in selenium.find_element_by_css_selector(".workflow-title").text
+            in selenium.find_element_by_css_selector(".project-title").text
         )
+        assert LiveProject.objects.filter(project=project).count() == 1
 
     def test_my_classrooms_teacher(self):
         selenium = self.selenium
@@ -288,9 +289,9 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         liveproject = LiveProject.objects.create(project=project)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:live-project-update", args=[project.id])
+            + reverse("course_flow:project-update", args=[project.id])
         )
-        selenium.find_element_by_css_selector("#button_settings").click()
+        selenium.find_element_by_css_selector("#edit-project-button").click()
         time.sleep(1)
         selenium.find_element_by_id("default-assign-to-all").click()
         selenium.find_element_by_id("default-self-reporting").click()
@@ -300,6 +301,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element_by_css_selector(
             ".workflow-details button"
         ).click()
+
         time.sleep(1)
         liveproject = LiveProject.objects.first()
         self.assertEqual(liveproject.default_self_reporting, False)
@@ -315,7 +317,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         liveproject = LiveProject.objects.create(project=project)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:live-project-update", args=[project.id])
+            + reverse("course_flow:project-update", args=[project.id])
         )
         selenium.find_element_by_css_selector("#button_students").click()
         time.sleep(1)
@@ -403,24 +405,24 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         liveproject = LiveProject.objects.create(project=project)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:live-project-update", args=[project.id])
+            + reverse("course_flow:project-update", args=[project.id])
         )
         selenium.find_element_by_css_selector("#button_workflows").click()
         time.sleep(1)
 
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    0
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='true']"
+                )
             ),
             0,
         )
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    1
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='false']"
+                )
             ),
             1,
         )
@@ -435,17 +437,17 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(liveproject.visible_workflows.count(), 1)
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    0
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='true']"
+                )
             ),
             1,
         )
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    1
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='false']"
+                )
             ),
             0,
         )
@@ -460,19 +462,19 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(liveproject.visible_workflows.count(), 0)
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    1
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='true']"
+                )
             ),
-            1,
+            0,
         )
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    0
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='false']"
+                )
             ),
-            0,
+            1,
         )
 
     def test_student_workflows(self):
@@ -535,7 +537,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         liveproject.visible_workflows.add(workflow)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:live-project-update", args=[project.id])
+            + reverse("course_flow:project-update", args=[project.id])
         )
         time.sleep(1)
         selenium.find_element_by_css_selector("#button_assignments").click()

@@ -4,7 +4,7 @@ import * as reactDom from "react-dom";
 import * as Constants from "./Constants";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 import {reloadCommentsAction} from "./Reducers";
-import {restoreSelf, toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
+import {getUsersForObject, restoreSelf, toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "./PostFunctions";
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -888,24 +888,28 @@ export class CommentBox extends Component{
     
     render(){
         let has_comments=false;
+        let has_unread = this.props.comments.filter(
+            value=>this.props.renderer.unread_comments.includes(value)
+        ).length>0;
         if(this.state.has_rendered){
-            if(this.props.comments){
-                has_comments = this.props.comments.length>0;
-            }else{
-                has_comments = this.props.parent.props.data.comments.length>0;
-            }
+            has_comments = this.props.comments.length>0;
         }
+
         let render_div;
         let side_actions = $(this.props.parent.maindiv.current).children(".side-actions").children(".comment-indicator-container");
         if(side_actions.length>0)render_div=side_actions[0];
         else render_div = this.props.parent.maindiv.current;
         let comment_indicator=null;
-        if(has_comments)comment_indicator=reactDom.createPortal(
-            <div class="comment-indicator hover-shade" onClick={this.props.parent.commentClick.bind(this.props.parent)}>
-                <img src={iconpath+"comment_new.svg"}/>
-            </div>,
-            render_div
-        );
+        if(has_comments){
+            let indicator_class = "comment-indicator hover-shade"
+            if(has_unread)indicator_class += " unread";
+            comment_indicator=reactDom.createPortal(
+                <div class={indicator_class} onClick={this.props.parent.commentClick.bind(this.props.parent)}>
+                    <img src={iconpath+"comment_new.svg"}/>
+                </div>,
+                render_div
+            );
+        }
         
         
         if(!this.props.show){
@@ -913,27 +917,32 @@ export class CommentBox extends Component{
         }
         
         let comments;
-        if(this.props.comments)comments = this.props.comments.map(comment=>
-            <div class="comment">
-                <div class="comment-by">
-                    <div class="comment-user">
-                        {Constants.getUserDisplay(comment.user)}
+        if(this.props.comments)comments = this.props.comments.map(comment=>{
+            let is_unread = this.props.renderer.unread_comments.indexOf(comment.id)>=0;
+            let comment_class = "comment";
+            if(is_unread)comment_class+=" unread";
+            let text = comment.text.replace(/@\w[@a-zA-Z0-9_.]{1,}/g,(val)=>'<b>'+val+'</b>')
+            return (
+                <div class={comment_class}>
+                    <div class="comment-by">
+                        <div class="comment-user">
+                            {Constants.getUserDisplay(comment.user)}
+                        </div>
+                        <div class="comment-on">
+                            {comment.created_on}
+                        </div>
                     </div>
-                    <div class="comment-on">
-                        {comment.created_on}
+                    <div class="comment-text" dangerouslySetInnerHTML={{ __html: text }}>
                     </div>
-                </div>
-                <div class="comment-text">
-                    {comment.text}
-                </div>
-                {!this.props.renderer.read_only && <div class="mouseover-actions">
-                    <div class="action-button" title={gettext("Delete Comment")} onClick={this.removeComment.bind(this,comment.id)}>
-                        <img src={iconpath+"rubbish.svg"}/>
+                    {!this.props.renderer.read_only && <div class="mouseover-actions">
+                        <div class="action-button" title={gettext("Delete Comment")} onClick={this.removeComment.bind(this,comment.id)}>
+                            <img src={iconpath+"rubbish.svg"}/>
+                        </div>
                     </div>
-                </div>
-                }
-            </div>               
-        )
+                    }
+                </div>       
+            );        
+        });
         
         let top_contents=[];
         top_contents.push(
@@ -949,6 +958,21 @@ export class CommentBox extends Component{
 
         let input_default=gettext("Add a comment");
         if(this.props.comments && this.props.comments.length>0)input_default=gettext("Reply");
+
+        let tag_box;
+        if(this.state.tagging){
+            console.log("here are the users we can tag:");
+            console.log(this.state.user_list);
+            tag_box=(
+                <div class="comment-tag-box">
+                    {this.state.user_list.map((user)=>
+                        <div class="user-name hover-shade" onClick={this.addUserTag.bind(this,user)}>
+                            {Constants.getUserDisplay(user)}
+                        </div>
+                    )}
+                </div>
+            )
+        }
 
         return reactDom.createPortal(
             [
@@ -967,10 +991,24 @@ export class CommentBox extends Component{
                     </div>
                 }
             </div>,
+            tag_box,
             comment_indicator
             ],
             render_div
         )
+    }
+
+    addUserTag(user){
+        let cursor_pos = this.tag_position;
+        let current_value = this.input.current.value;
+        let to_add = "";
+        if(cursor_pos > 0 && current_value[cursor_pos-1]!=" ")to_add+=" ";
+        to_add+="@"+user.username+" ";
+        let new_value = current_value.slice(0,cursor_pos)+to_add+current_value.slice(cursor_pos+1);
+        this.input.current.value = new_value;
+        this.input.current.selectionStart=this.input.current.value.length;
+        this.setState({tagging:false});
+
     }
 
     textChange(evt){
@@ -978,6 +1016,20 @@ export class CommentBox extends Component{
             $(this.submit.current).removeClass("hidden");
         }else{
             $(this.submit.current).addClass("hidden");
+        }
+        if(evt.nativeEvent && evt.nativeEvent.data == "@"){
+            this.tag_position = this.input.current.selectionStart-1;
+            let renderer = this.props.renderer;
+            console.log("Trying to tag someone");
+            renderer.tiny_loader.startLoad();
+            getUsersForObject(this.props.renderer.workflowID,"workflow",(response)=>{
+                console.log("got users");
+                console.log(response);
+                renderer.tiny_loader.endLoad();
+                this.setState({tagging:true,user_list:response.editors.concat(response.commentors)});
+            });
+        }else if(this.state.tagging){
+            this.setState({tagging:false});
         }
     }
     
@@ -1013,6 +1065,20 @@ export class CommentBox extends Component{
 
     componentDidMount(){
         this.setState({has_rendered:true})
+    }
+
+    componentDidUpdate(prevProps){
+        if(prevProps.show && !this.props.show){
+            this.commentsSeen();
+            if(this.state.tagging)this.setState({tagging:false});
+        }
+    }
+
+
+    commentsSeen(){
+        let unread_comments = this.props.renderer.unread_comments.slice();
+        let comments = this.props.comments.map(comment=>comment.id);
+        this.props.renderer.unread_comments = unread_comments.filter(comment=>comments.indexOf(comment)<0);
     }
     
 }

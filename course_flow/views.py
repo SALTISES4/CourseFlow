@@ -1,5 +1,6 @@
 import json
 import math
+import re
 import time
 
 # import time
@@ -7,6 +8,7 @@ from functools import reduce
 from itertools import chain
 from operator import attrgetter
 
+import bleach
 import pandas as pd
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -15,6 +17,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, ProtectedError, Q
 from django.http import (
@@ -70,6 +73,7 @@ from .models import (  # OutcomeProject,
     Node,
     NodeLink,
     NodeWeek,
+    Notification,
     ObjectPermission,
     ObjectSet,
     Outcome,
@@ -159,6 +163,13 @@ class UserCanViewMixin(UserPassesTestMixin):
             )
         ):
             ObjectPermission.update_last_viewed(self.request.user, view_object)
+            Notification.objects.filter(
+                object_id=view_object.id,
+                content_type=ContentType.objects.get_for_model(view_object),
+                user=self.request.user,
+                is_unread=True,
+                notification_type=Notification.TYPE_SHARED,
+            ).update(is_unread=False)
             return True
         return False
 
@@ -1228,6 +1239,16 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         form = super(UpdateView, self).get_form()
         return form
 
+    def get_context_data(self, **kwargs):
+        context = super(UpdateView, self).get_context_data(**kwargs)
+        notifications = self.request.user.notifications.all()
+        print(notifications)
+        paginator = Paginator(notifications, 20)
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        context["notifications"] = page_obj
+        return context
+
     def get_success_url(self):
         return reverse("course_flow:user-update")
 
@@ -1563,6 +1584,17 @@ def get_workflow_data_flat(workflow, user):
                 many=True,
                 context={"user": user},
             ).data
+
+    if user is not None:
+        data_flat["unread_comments"] = [
+            x.comment.id
+            for x in Notification.objects.filter(
+                user=user,
+                content_type=ContentType.objects.get_for_model(Workflow),
+                object_id=workflow.pk,
+                is_unread=True,
+            ).exclude(comment=None)
+        ]
 
     return data_flat
 
@@ -2113,6 +2145,9 @@ def get_comments_for_object(request: HttpRequest) -> HttpResponse:
             .comments.all()
             .order_by("created_on")
         )
+        Notification.objects.filter(
+            comment__in=comments, user=request.user
+        ).update(is_unread=False)
         data_package = CommentSerializer(comments, many=True).data
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -3697,10 +3732,42 @@ def add_terminology(request: HttpRequest) -> HttpResponse:
 def add_comment(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-    text = json.loads(request.POST.get("text"))
+    text = bleach.clean(json.loads(request.POST.get("text")))
     try:
         obj = get_model_from_str(object_type).objects.get(id=object_id)
-        obj.comments.create(text=text, user=request.user)
+
+        # check if we are notifying any users
+        usernames = re.findall(r"@\w[@a-zA-Z0-9_.]{1,}", text)
+        target_users = []
+        print(usernames)
+        if len(usernames) > 0:
+            content_object = obj.get_workflow()
+            for username in usernames:
+                try:
+                    target_user = User.objects.get(username=username[1:])
+                    if check_object_permission(
+                        content_object,
+                        target_user,
+                        ObjectPermission.PERMISSION_COMMENT,
+                    ):
+                        target_users += [target_user]
+                    else:
+                        raise ObjectDoesNotExist
+                except ObjectDoesNotExist:
+                    text = text.replace(username, username[1:])
+
+        # create the comment
+        comment = obj.comments.create(text=text, user=request.user)
+        for target_user in target_users:
+            make_user_notification(
+                source_user=request.user,
+                target_user=target_user,
+                notification_type=Notification.TYPE_COMMENT,
+                content_object=content_object,
+                extra_text=text,
+                comment=comment,
+            )
+
     except ValidationError:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
@@ -4401,6 +4468,12 @@ def set_permission(request: HttpRequest) -> HttpResponse:
         if permission_type != ObjectPermission.PERMISSION_NONE:
             ObjectPermission.objects.create(
                 user=user, content_object=item, permission_type=permission_type
+            )
+            make_user_notification(
+                source_user=request.user,
+                target_user=user,
+                notification_type=Notification.TYPE_SHARED,
+                content_object=item,
             )
         response["action"] = "posted"
     except ValidationError:
@@ -6039,17 +6112,33 @@ Live Views
 
 def get_my_live_projects(user):
     data_package = {}
+    classrooms_teacher = []
+    classrooms_student = []
+    all_classrooms = LiveProject.objects.filter(
+        project__deleted=False, liveprojectuser__user=user
+    )
+    for classroom in all_classrooms:
+        if check_object_permission(
+            classroom.project, user, ObjectPermission.PERMISSION_VIEW
+        ):
+            classrooms_teacher += [classroom.project]
+        else:
+            if check_object_enrollment(
+                classroom, user, LiveProjectUser.ROLE_TEACHER
+            ):
+                classrooms_teacher += [classroom]
+            else:
+                classrooms_student += [classroom]
+
     if Group.objects.get(name=settings.TEACHER_GROUP) in user.groups.all():
         data_package["owned_liveprojects"] = {
-            "title": _("My Owned Classrooms"),
+            "title": _("My classrooms (teacher)"),
             "sections": [
                 {
-                    "title": _("My Classrooms"),
+                    "title": _("My classrooms (teacher)"),
                     "object_type": "project",
-                    "objects": LiveProjectSerializer(
-                        LiveProject.objects.filter(
-                            project__author=user, project__deleted=False
-                        ),
+                    "objects": InfoBoxSerializer(
+                        classrooms_teacher,
                         many=True,
                         context={"user": user},
                     ).data,
@@ -6060,16 +6149,13 @@ def get_my_live_projects(user):
             ),
         }
     data_package["shared_liveprojects"] = {
-        "title": _("My Classrooms"),
+        "title": _("My classrooms (student)"),
         "sections": [
             {
-                "title": _("My Classrooms"),
+                "title": _("My classrooms (student)"),
                 "object_type": "liveproject",
-                "objects": LiveProjectSerializer(
-                    LiveProject.objects.filter(
-                        project__deleted=False,
-                        liveprojectuser__user=user,
-                    ),
+                "objects": InfoBoxSerializer(
+                    classrooms_student,
                     many=True,
                     context={"user": user},
                 ).data,
@@ -6795,3 +6881,45 @@ def set_assignment_completion(request: HttpRequest) -> HttpResponse:
 #         return reverse(
 #             "course_flow:live-project-update", kwargs={"pk": self.object.pk}
 #         )
+
+
+def make_user_notification(
+    source_user, target_user, notification_type, content_object, **kwargs
+):
+    if source_user is not target_user:
+        extra_text = kwargs.get("extra_text", None)
+        comment = kwargs.get("comment", None)
+        text = ""
+        if source_user is not None:
+            text += source_user.username + " "
+        else:
+            text += _("Someone ")
+        if notification_type == Notification.TYPE_SHARED:
+            text += _("added you to the ")
+        elif notification_type == Notification.TYPE_COMMENT:
+            text += _("notified you in a comment in ")
+        else:
+            text += _(" notified you for ")
+        text += _(content_object.type) + " " + content_object.__str__()
+        if extra_text is not None:
+            text += ": " + extra_text
+        notification = Notification.objects.create(
+            user=target_user,
+            source_user=source_user,
+            notification_type=notification_type,
+            content_object=content_object,
+            text=text,
+            comment=comment,
+        )
+
+        # clear any notifications older than two months
+        target_user.notifications.filter(
+            created_on__lt=timezone.now() - timezone.timedelta(days=60)
+        ).delete()
+
+
+@ajax_login_required
+@require_POST
+def mark_all_as_read(request):
+    request.user.notifications.filter(is_unread=True).update(is_unread=False)
+    return JsonResponse({"action": "posted"})

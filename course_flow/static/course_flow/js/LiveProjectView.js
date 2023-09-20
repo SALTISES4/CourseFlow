@@ -436,7 +436,7 @@ export class AssignmentNode extends React.Component{
         props.renderer.tiny_loader.startLoad();
         createAssignment(
             data.id,
-            props.renderer.live_project_data.pk,
+            props.renderer.project_data.id,
             (response_data)=>{
                 props.renderer.tiny_loader.endLoad();
                 window.location = update_path.liveassignment.replace("0",response_data.assignmentPk);

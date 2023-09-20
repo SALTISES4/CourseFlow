@@ -1271,6 +1271,26 @@ class LiveProject(models.Model):
     def type(self):
         return "liveproject"
 
+    @property
+    def last_modified(self):
+        return self.project.last_modified
+
+    @property
+    def id(self):
+        return self.pk
+
+    @property
+    def author(self):
+        return self.project.author
+
+    @property
+    def title(self):
+        return self.project.title
+
+    @property
+    def description(self):
+        return self.project.description
+
 
 class LiveProjectUser(models.Model):
     liveproject = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
@@ -1362,6 +1382,52 @@ class CourseFlowUser(models.Model):
                 user=user,
             )
         return courseflow_user
+
+
+class Notification(models.Model):
+    class Meta:
+        ordering = ["-created_on"]
+
+    content_choices = {"model__in": ["project", "workflow"]}
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+    )
+    source_user = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="sent_notifications",
+    )
+    TYPE_SHARED = 0
+    TYPE_COMMENT = 1
+    TYPE_CHOICES = (
+        (TYPE_SHARED, _("Shared")),
+        (TYPE_COMMENT, _("Comment")),
+    )
+    notification_type = models.PositiveIntegerField(
+        choices=TYPE_CHOICES, default=TYPE_SHARED
+    )
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, limit_choices_to=content_choices
+    )
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+    text = models.TextField(
+        blank=True,
+        null=True,
+    )
+
+    created_on = models.DateTimeField(default=timezone.now)
+    is_unread = models.BooleanField(default=True)
+
+    comment = models.ForeignKey(
+        Comment,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+        null=True,
+    )
 
 
 """
@@ -2070,38 +2136,39 @@ def set_week_type_default(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=OutcomeOutcome)
 def set_outcome_depth_default(sender, instance, created, **kwargs):
-    try:
-        set_list = list(instance.parent.sets.all())
-        outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
-            instance.child
-        )
-        outcomenodes_to_add = OutcomeNode.objects.filter(
-            outcome=instance.parent
-        )
-        horizontallinks_to_add = OutcomeHorizontalLink.objects.filter(
-            parent_outcome=instance.parent
-        )
-        for outcomeoutcome in [instance] + list(outcomeoutcomes):
-            child = outcomeoutcome.child
-            parent = outcomeoutcome.parent
-            child.depth = parent.depth + 1
-            child.sets.clear()
-            child.sets.add(*set_list)
-            child.save()
-            for outcomenode in outcomenodes_to_add:
-                OutcomeNode.objects.create(
-                    node=outcomenode.node,
-                    outcome=outcomeoutcome.child,
-                    degree=outcomenode.degree,
-                )
-            for horizontallink in horizontallinks_to_add:
-                OutcomeHorizontalLink.objects.create(
-                    outcome=horizontallink.outcome,
-                    parent_outcome=outcomeoutcome.child,
-                    degree=horizontallink.degree,
-                )
-    except ValidationError:
-        print("couldn't set default outcome depth or copy sets")
+    if created:
+        try:
+            set_list = list(instance.parent.sets.all())
+            outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
+                instance.child
+            )
+            outcomenodes_to_add = OutcomeNode.objects.filter(
+                outcome=instance.parent
+            )
+            horizontallinks_to_add = OutcomeHorizontalLink.objects.filter(
+                parent_outcome=instance.parent
+            )
+            for outcomeoutcome in [instance] + list(outcomeoutcomes):
+                child = outcomeoutcome.child
+                parent = outcomeoutcome.parent
+                child.depth = parent.depth + 1
+                child.sets.clear()
+                child.sets.add(*set_list)
+                child.save()
+                for outcomenode in outcomenodes_to_add:
+                    OutcomeNode.objects.create(
+                        node=outcomenode.node,
+                        outcome=outcomeoutcome.child,
+                        degree=outcomenode.degree,
+                    )
+                for horizontallink in horizontallinks_to_add:
+                    OutcomeHorizontalLink.objects.create(
+                        outcome=horizontallink.outcome,
+                        parent_outcome=outcomeoutcome.child,
+                        degree=horizontallink.degree,
+                    )
+        except ValidationError:
+            print("couldn't set default outcome depth or copy sets")
 
 
 @receiver(post_save, sender=Node)
@@ -2272,6 +2339,16 @@ def add_all_workflows(sender, instance, **kwargs):
             return
         instance.visible_workflows.add(
             *Workflow.objects.filter(project=instance.project, deleted=False)
+        )
+
+
+@receiver(post_save, sender=LiveProject)
+def add_owner_to_liveproject(sender, instance, created, **kwargs):
+    if created:
+        LiveProjectUser.objects.create(
+            liveproject=instance,
+            user=instance.project.author,
+            role_type=LiveProjectUser.ROLE_TEACHER,
         )
 
 

@@ -344,6 +344,7 @@ export class WorkflowRenderer{
     connection_opened(reconnect=false){
         this.getWorkflowData(this.workflowID,(response)=>{
             let data_flat = response.data_package;
+            this.unread_comments=data_flat.unread_comments;
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
             this.render($("#container"));
             if(!this.always_static)this.create_connection_bar();

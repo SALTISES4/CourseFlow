@@ -927,6 +927,7 @@ button:hover{
     padding-right: 15px;
     margin:0px;
     white-space: pre;
+    color: #444444;
 }
 
 .create-dropdown > hr{
@@ -1956,6 +1957,78 @@ table tr.year-row{
 }
 table tr.total-row{
     background: #55BB55;
+}
+
+
+.create-dropdown > .list-notification, .workflow-create-wrapper .list-notification{
+    white-space: wrap;
+    color: #444444;
+    text-decoration: none;
+    position: relative;
+    padding-left: 20px;
+    overflow: hidden;
+    -webkit-line-clamp: 4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    max-width: 400px;
+    white-space: normal;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
+.list-notification.unread::before, #notifications.unread::before{
+    content: "";
+    background-color: red;
+    height: 6px;
+    width: 6px;
+    position: absolute;
+    border-radius: 10px;
+    left: 6px;
+    top: calc(50% - 3px);
+}
+
+#notifications.unread::before{
+    top: 0px;
+    right: 6px;
+    left: unset;
+}
+
+.list-notification .created-on{
+    font-size: 12px;
+    color: grey;
+}
+
+.comment-indicator.unread::after{
+    content: "";
+    background-color: red;
+    height: 6px;
+    width: 6px;
+    position: absolute;
+    border-radius: 10px;
+    left: 0px;
+    top: 0px;
+}
+.comment.unread::after{
+    content: "";
+    background-color: red;
+    height: 6px;
+    width: 6px;
+    position: absolute;
+    border-radius: 10px;
+    right: 2px;
+    top: calc(50% - 3px);
+}
+
+.comment-tag-box{
+    position: absolute;
+    z-index: 10;
+    right: -200px;
+    max-width: 200px;
+    background: white;
+    border-radius: 5px;
+    border: 1px solid #04ba74;
 }
 
 #user-feedback{
@@ -3507,6 +3580,8 @@ ol.children-block{
 
 .outcome-table .table-cell .node-category-header{
     font-size:12px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .outcome-table .table-group:first-child .blank-cell{

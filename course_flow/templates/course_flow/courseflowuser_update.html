@@ -18,6 +18,41 @@
       {% csrf_token %} {{ form.as_p }}
       <input id="save-button" type="submit" value="Save" disabled="true"/>
     </form>
+    {% if notifications|length > 0 %}
+    <h1>{% trans "Notifications" %}</h1>
+    {% for notification in notifications %}
+        <a class="list-notification hover-shade
+          {% if notification.is_unread %}
+            unread
+          {% endif %}
+        " href="
+          {% if notification.content_object.type == 'project' %}
+            {% url 'course_flow:project-update' pk=notification.content_object.pk %}
+          {% else %}
+            {% url 'course_flow:workflow-update' pk=notification.content_object.pk %}
+          {% endif %}
+        "><div class="created-on">{{ notification.created_on }}</div>{{ notification.text }}</a>
+    {% endfor %}
+
+    <div><button id="mark-all-as-read" class="primary-button">Mark all as read</button></div>
+    <div class="pagination">
+        <span class="step-links">
+            {% if notifications.has_previous %}
+                <a href="?page=1">&laquo; {% trans "first" %}</a>
+                <a href="?page={{ notifications.previous_page_number }}">{% trans "previous" %}</a>
+            {% endif %}
+
+            <span class="current">
+                {{ notifications.number }} / {{ notifications.paginator.num_pages }}.
+            </span>
+
+            {% if notifications.has_next %}
+                <a href="?page={{ notifications.next_page_number }}">{% trans "next" %}</a>
+                <a href="?page={{ notifications.paginator.num_pages }}">{% trans "last" %} &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
     </div>
 </div>
 {% endblock %}
@@ -30,5 +65,10 @@
 <script nonce="{{request.csp_nonce}}">
   $("#create").detach().appendTo("#container");
   $("form input").on("input",()=>$("#save-button").attr("disabled",false));
+  $("#mark-all-as-read").on("click",()=>{
+    $.post("{% url 'course_flow:mark-all-as-read' %}",{},()=>{
+      window.location = window.location;
+    });
+  });
 </script>
 {% endblock %}
