@@ -369,7 +369,7 @@ export function createOutcomeNodeBranch(props,outcome_id,nodecategory){
                     total = outcomenodes_group.reduce((acc,curr)=>{
                         if(curr.degree===null)return acc;
                         if(acc===null)return curr.degree;
-                        return acc|curr;
+                        return acc|curr.degree;
                     },null);
                 }
                 outcomenodes_group.total=total;
