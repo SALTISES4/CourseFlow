@@ -222,7 +222,6 @@ class WorkflowComparisonRendererComponent extends Component{
         let workflows_added = url_params.getAll("workflows").map(workflow_id=>parseInt(workflow_id));
         if(workflows_added.indexOf(this.props.workflowID)<0){
             url_params.append("workflows",this.props.workflowID);
-            console.log("appended");
             if (history.pushState) {
                 let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + url_params.toString();
                 window.history.pushState({path:newurl},'',newurl);
@@ -260,7 +259,6 @@ class WorkflowComparisonRendererComponent extends Component{
         if(workflows_added.indexOf(this.props.workflowID)>=0){
             workflows_added.splice(workflows_added.indexOf(this.props.workflowID),1);
             url_params.set("workflows",workflows_added);
-            console.log("removed");
             if (history.pushState) {
                 let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + url_params.toString();
                 window.history.pushState({path:newurl},'',newurl);

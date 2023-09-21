@@ -691,8 +691,6 @@ class TableCell extends React.Component{
     //     );
     // }
     changeFunction(evt){
-        console.log("select has changed, I should be sending stuff");
-        console.log(evt.target.value);
         let props = this.props;
         let value = evt.target.value;
         props.renderer.tiny_loader.startLoad();

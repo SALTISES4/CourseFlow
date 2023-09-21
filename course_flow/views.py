@@ -1022,7 +1022,6 @@ def get_workflow_data_package(user, project, **kwargs):
     self_only = kwargs.get("self_only", False)
     get_strategies = kwargs.get("get_strategies", False)
     this_project_sections = []
-    other_project_sections = []
     all_published_sections = []
     for this_type in ["program", "course", "activity"]:
         if type_filter == "workflow" or type_filter == this_type:
@@ -1040,21 +1039,6 @@ def get_workflow_data_package(user, project, **kwargs):
                     ),
                 }
             )
-            # if not self_only:
-            #     other_project_sections.append(
-            #         {
-            #             "title": "",
-            #             "object_type": this_type,
-            #             "is_strategy": get_strategies,
-            #             "objects": get_workflow_info_boxes(
-            #                 user,
-            #                 this_type,
-            #                 project=project,
-            #                 this_project=False,
-            #                 get_strategies=get_strategies,
-            #             ),
-            #         }
-            #     )
             if not self_only:
                 all_published_sections.append(
                     {
@@ -1090,12 +1074,6 @@ def get_workflow_data_package(user, project, **kwargs):
                 }
             )
 
-    #    if project.author == user:
-    #        current_copy_type = "copy"
-    #        other_copy_type = "import"
-    #    else:
-    #        current_copy_type = False
-    #        other_copy_type = False
     first_header = _("This Project")
     empty_text = _("There are no applicable workflows in this project.")
     if project is None:
@@ -1106,27 +1084,15 @@ def get_workflow_data_package(user, project, **kwargs):
             "title": first_header,
             "sections": this_project_sections,
             "emptytext": _(empty_text),
-            #            "add": (project.author == user),
-            #            "duplicate": current_copy_type,
         },
     }
     if not self_only:
-        # if project is not None:
-        #     data_package["other_projects"] = {
-        #         "title": _("From Your Other Projects"),
-        #         "sections": other_project_sections,
-        #         #            "duplicate": other_copy_type,
-        #         "emptytext": _(
-        #             "There are no applicable workflows outside this project."
-        #         ),
-        #     }
         data_package["all_published"] = {
             "title": _("Your Favourites"),
             "sections": all_published_sections,
             "emptytext": _(
                 "You have no relevant favourites. Use the Explore menu to find and favourite content by other users."
-            )
-            #            "duplicate": other_copy_type,
+            ),
         }
     return data_package
 
@@ -1242,7 +1208,6 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         notifications = self.request.user.notifications.all()
-        print(notifications)
         paginator = Paginator(notifications, 20)
         page_number = self.request.GET.get("page")
         page_obj = paginator.get_page(page_number)
@@ -3739,7 +3704,6 @@ def add_comment(request: HttpRequest) -> HttpResponse:
         # check if we are notifying any users
         usernames = re.findall(r"@\w[@a-zA-Z0-9_.]{1,}", text)
         target_users = []
-        print(usernames)
         if len(usernames) > 0:
             content_object = obj.get_workflow()
             for username in usernames:
@@ -4328,7 +4292,6 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 raise ValidationError("Uknown component type")
     except ValidationError:
         return JsonResponse({"action": "error"})
-    print(node_updates)
     response_data = {
         "new_model": new_model_serialized,
         "new_through": new_through_serialized,
@@ -4688,9 +4651,10 @@ def get_explore_objects(user, name_filter, nresults, published, data):
                 if sort == "created_on" or sort == "title":
                     sort_key = attrgetter(sort)
                 elif sort == "relevance":
-                    sort_key = lambda x: get_relevance(
-                        x, name_filter, keywords
-                    )
+
+                    def sort_key(x):
+                        return get_relevance(x, name_filter, keywords)
+
                 queryset = sorted(
                     queryset, key=sort_key, reverse=sort_reversed
                 )
@@ -6792,7 +6756,6 @@ def set_workflow_visibility(request: HttpRequest) -> HttpResponse:
         response = JsonResponse({"action": "error"})
         response.status_code = 403
         return response
-    print(liveproject.visible_workflows.filter(pk=workflow.pk))
     return JsonResponse(
         {
             "action": "posted",
@@ -6903,7 +6866,7 @@ def make_user_notification(
         text += _(content_object.type) + " " + content_object.__str__()
         if extra_text is not None:
             text += ": " + extra_text
-        notification = Notification.objects.create(
+        Notification.objects.create(
             user=target_user,
             source_user=source_user,
             notification_type=notification_type,

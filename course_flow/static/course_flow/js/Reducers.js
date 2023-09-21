@@ -1063,8 +1063,6 @@ export function nodeReducer(state=[],action){
         case 'outcome/insertBelow':
         case 'outcome_base/insertChild':
         case 'outcomeoutcome/changeID':
-            console.log("inserted child outcome, updating nodes");
-            console.log(action.payload);
             if(action.payload.node_updates.length==0)return state;
             var new_state=state.slice();
             for(var i=0;i<action.payload.node_updates.length;i++){
@@ -1535,8 +1533,6 @@ export function outcomeNodeReducer(state=[],action){
         case 'outcome_base/insertChild':
         case 'outcome/insertBelow':
         case 'outcomeoutcome/changeID':
-            console.log("insert below");
-            console.log(action);
             if(!action.payload.children)return state;
             new_state = state.slice();
             for(var i=0;i<action.payload.children.outcomenode.length;i++){

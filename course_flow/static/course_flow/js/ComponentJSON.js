@@ -961,8 +961,6 @@ export class CommentBox extends Component{
 
         let tag_box;
         if(this.state.tagging){
-            console.log("here are the users we can tag:");
-            console.log(this.state.user_list);
             tag_box=(
                 <div class="comment-tag-box">
                     {this.state.user_list.map((user)=>
@@ -1020,11 +1018,8 @@ export class CommentBox extends Component{
         if(evt.nativeEvent && evt.nativeEvent.data == "@"){
             this.tag_position = this.input.current.selectionStart-1;
             let renderer = this.props.renderer;
-            console.log("Trying to tag someone");
             renderer.tiny_loader.startLoad();
             getUsersForObject(this.props.renderer.workflowID,"workflow",(response)=>{
-                console.log("got users");
-                console.log(response);
                 renderer.tiny_loader.endLoad();
                 this.setState({tagging:true,user_list:response.editors.concat(response.commentors)});
             });
