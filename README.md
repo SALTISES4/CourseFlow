@@ -16,7 +16,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
 3.  Install the requirements.
 
-        (dev_venv) pip install -r requirements.txt
+        (dev_venv) pip install -r requirements/requirements.txt
 
 4.  Install pre-commit (optional).
 
