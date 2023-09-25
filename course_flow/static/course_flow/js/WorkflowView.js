@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {Component, EditableComponent, EditableComponentWithActions, EditableComponentWithSorting, WorkflowTitle, CollapsibleText} from "./ComponentJSON";
+import {Component, EditableComponent, EditableComponentWithActions, EditableComponentWithSorting, WorkflowTitle, CollapsibleText} from "./CommonComponents";
 import ColumnWorkflowView from "./ColumnWorkflowView";
 import WeekWorkflowView from "./WeekWorkflowView";
 import {NodeBarColumnWorkflow} from "./ColumnWorkflowView";

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ActionButton, Component, EditableComponentWithSorting, EditableComponentWithComments, OutcomeTitle} from "./ComponentJSON";
+import {ActionButton, Component, EditableComponentWithSorting, EditableComponentWithComments, OutcomeTitle} from "./CommonComponents";
 import OutcomeOutcomeView from "./OutcomeOutcomeView";
 import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOutcomeViewUnconnected, TableOutcomeOutcomeView} from "./OutcomeOutcomeView";
 import {TableOutcomeGroup, TableTotalCell} from "./OutcomeNode";

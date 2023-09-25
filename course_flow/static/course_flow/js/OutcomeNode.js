@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {Component, ActionButton} from "./ComponentJSON";
+import {Component, ActionButton} from "./CommonComponents";
 import {SimpleOutcomeView} from "./OutcomeView";
 import {getOutcomeNodeByID, getTableOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getNodeByID, getChildWorkflowByID, getOutcomeWorkflowByID} from "./FindState";
 import {updateOutcomenodeDegree} from "./PostFunctions";

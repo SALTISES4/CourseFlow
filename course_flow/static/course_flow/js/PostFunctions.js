@@ -2,6 +2,11 @@ import {renderMessageBox} from "./MenuComponents";
 import {changeField} from "./Reducers";
 import * as Constants from "./Constants"
 
+/*
+All functions for API calls.
+*/
+
+
 export function fail_function(a,b,c,d){
     if(typeof a ==="string"){
         alert(a+" - "+gettext("Something went wrong. Please reload the page."));
@@ -16,6 +21,7 @@ export function fail_function(a,b,c,d){
     }
 }
 
+//Get a list of possible workflows we can add to this project
 export function getAddedWorkflowMenu(projectPk,type_filter,get_strategies,self_only,updateFunction){
     $.post(post_paths.get_possible_added_workflows,{
         projectPk:JSON.stringify(projectPk),
@@ -39,6 +45,7 @@ export function getWorkflowContext(workflowPk,callBackFunction=()=>console.log("
     }
 }
 
+//Get the workflows that can be selected for the project, shaped for a menu
 export function getWorkflowSelectMenu(projectPk,type_filter,get_strategies,self_only,updateFunction,receiptFunction){
     $.post(post_paths.get_possible_added_workflows,{
         projectPk:JSON.stringify(projectPk),
@@ -51,6 +58,7 @@ export function getWorkflowSelectMenu(projectPk,type_filter,get_strategies,self_
     });
 }
 
+//Get the list of workflows we can link to a node
 export function getLinkedWorkflowMenu(nodeData,updateFunction,callBackFunction=()=>console.log("success")){
     $.post(post_paths.get_possible_linked_workflows,
     {
@@ -63,6 +71,7 @@ export function getLinkedWorkflowMenu(nodeData,updateFunction,callBackFunction=(
     );
 }
 
+//Get possible projects that can be a target for the workflow to be duplicated into
 export function getTargetProjectMenu(workflowPk,updateFunction,callBackFunction=()=>console.log("success")){
     $.post(post_paths.get_target_projects,{
         workflowPk:JSON.stringify(workflowPk)
@@ -72,6 +81,7 @@ export function getTargetProjectMenu(workflowPk,updateFunction,callBackFunction=
     });
 }
 
+//A few functions used by those above to actually render the message box and open the menu based on response.
 export function openLinkedWorkflowMenu(response,updateFunction){
     if(response.action=="posted"){
         renderMessageBox(response,"linked_workflow_menu",updateFunction);
@@ -96,6 +106,7 @@ export function openTargetProjectMenu(response,updateFunction){
     }else alert("Failed to find potential projects.");
 }
 
+//Set the linked workflow for the node
 export function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>console.log("success")){
     $.post(post_paths.set_linked_workflow, {
         nodePk:node_id,
@@ -106,6 +117,8 @@ export function setLinkedWorkflow(node_id, workflow_id,callBackFunction=()=>cons
     });
 }
 
+
+//Update the value of an object in database. JSON may be partial. Debounced in case the user is typing a lot.
 export function updateValue(objectID,objectType,json,changeField=false,callBackFunction=()=>console.log("success")){
     var t = 1000;
     let previousCall = document.lastUpdateCall;
@@ -137,6 +150,7 @@ export function updateValue(objectID,objectType,json,changeField=false,callBackF
     document.lastUpdateCallTimer = setTimeout(document.lastUpdateCallFunction,t);
 }
 
+//As above, but not debounced
 export function updateValueInstant(objectID,objectType,json,callBackFunction=()=>console.log("success")){
     try{
         $.post(post_paths.update_value, {
@@ -441,7 +455,7 @@ export function insertedAt(renderer,objectID,objectType,parentID,parentType,newP
 }
 
 
-
+//When the drag is complete, this is called to actually update the back-end
 export function dragAction(renderer,action_data,callBackFunction=()=>console.log("success")){
     try{
         renderer.tiny_loader.startLoad();

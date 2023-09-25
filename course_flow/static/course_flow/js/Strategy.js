@@ -1,7 +1,7 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
 import * as Constants from "./Constants";
-import {Component} from "./ComponentJSON";
+import {Component} from "./CommonComponents";
 import {getStrategyByID} from "./FindState";
 
 //Basic component to represent a Strategy

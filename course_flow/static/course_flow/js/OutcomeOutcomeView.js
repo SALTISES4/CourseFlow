@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {TitleText} from "./ComponentJSON";
+import {TitleText} from "./CommonComponents";
 import OutcomeView from "./OutcomeView";
 import {OutcomeBarOutcomeView} from "./OutcomeView";
 import {SimpleOutcomeView, TableOutcomeView} from "./OutcomeView";

@@ -609,20 +609,8 @@ export class EditableComponentWithSorting extends EditableComponentWithActions{
     
 }
 
-// //Extends the react component to add a few features that are used in a large number of components
-// export class EditableComponentWithTrigger extends EditableComponentWithSorting{
-    
-//     componentDidMount(){
-//         this.postMountFunction();
-//         if(this.props.renderer&& this.props.renderer.initial_loading)this.props.renderer.container.triggerHandler("component-loaded",this.objectType);
-//     }
-    
-//     postMountFunction(){};
 
-// }
-
-
-
+// SVG portion of a NodeLink
 export class NodeLinkSVG extends Component{
 
     render(){
@@ -709,6 +697,7 @@ export class NodeLinkSVG extends Component{
     }
 }
 
+// A NodeLink that is automatically generated based on node setting. Has no direct back-end representation
 export class AutoLinkView extends React.Component{
     constructor(props){
         super(props);
@@ -1079,7 +1068,7 @@ export class CommentBox extends Component{
 }
 
 
-//Text that can be passed a default value
+//Text that can be passed a default value. HTML is dangerously set.
 export class TitleText extends React.Component{
     
     render(){
@@ -1093,6 +1082,7 @@ export class TitleText extends React.Component{
     }
 }
 
+// A block of collapsible text.
 export class CollapsibleText extends Component{
 
     render(){
@@ -1141,6 +1131,8 @@ export class CollapsibleText extends Component{
     }
 }
 
+
+// Only used in classroom view. Should be removed/replaced.
 export class SimpleWorkflow extends React.Component{
     constructor(props){
         super(props);
@@ -1306,7 +1298,7 @@ export function getOutcomeTitle(data,prefix){
 
 }
 
-//Quill div
+//Quill div for inputs, as a react component
 export class QuillDiv extends React.Component{
     constructor(props){
         super(props);
@@ -1371,6 +1363,7 @@ export class QuillDiv extends React.Component{
     
 }
 
+// Creates a slider input
 export class Slider extends React.Component{
     render(){
         return (
@@ -1382,6 +1375,7 @@ export class Slider extends React.Component{
     }
 }
 
+// Creates a datetime picker using flatpickr
 export class DatePicker extends React.Component{
     constructor(props){
         super(props);

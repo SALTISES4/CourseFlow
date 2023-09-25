@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {Component, EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "./ComponentJSON";
+import {Component, EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "./CommonComponents";
 import * as Constants from "./Constants";
 import {renderMessageBox,closeMessageBox} from "./MenuComponents";
 import {getWorkflowSelectMenu,getWorkflowContext,insertedAt,insertedAtInstant} from "./PostFunctions";

@@ -1,6 +1,11 @@
 import * as React from "react";
 import {getSortedOutcomesFromOutcomeWorkflowSet, getTableOutcomeNodeByID} from "./FindState";
 
+/*
+Determines how long an action locks an object
+by default, in ms. Once the action ends, the lock
+is cleared (so this is a maximum time).
+*/
 export const lock_times = {
     move:5000,
     update:5000,
@@ -308,6 +313,7 @@ export function createOutcomeBranch(state,outcome_id){
     return null;
 }
 
+/*From the state, creates a tree structure for an outcome*/
 export function createOutcomeTree(state){
     let outcomes_tree = [];
     let sorted_outcomes = getSortedOutcomesFromOutcomeWorkflowSet(state,state.workflow.outcomeworkflow_set);
@@ -320,6 +326,7 @@ export function createOutcomeTree(state){
     return outcomes_tree;
 }
 
+/*From a tree structure of outcomes, flatten the tree*/
 export function flattenOutcomeTree(outcomes_tree,array){
     outcomes_tree.forEach(element=>{
         array.push(element.id)
@@ -327,6 +334,7 @@ export function flattenOutcomeTree(outcomes_tree,array){
     });
 }
 
+/*Used in the table. Creates a shaped tree-like structure for an outcome and its children that includes each one's relationship to each node.*/
 export function createOutcomeNodeBranch(props,outcome_id,nodecategory){
     for(let i=0;i<props.outcome.length;i++){
         if(props.outcome[i].id==outcome_id){
@@ -399,6 +407,7 @@ export function createOutcomeNodeBranch(props,outcome_id,nodecategory){
     return null;
 }
 
+/*Based on an outcomenode's completion status, return the correct icon*/
 export function getCompletionImg(completion_status,outcomes_type){
     if(outcomes_type==0 || completion_status & 1){
         return (
@@ -428,11 +437,13 @@ export function getCompletionImg(completion_status,outcomes_type){
 
 }
 
+// Get the colour from a column
 export function getColumnColour(data){
     if(data.colour==null)return default_column_settings[data.column_type].colour;
     else return  "#"+("000000"+data.colour?.toString(16)).slice(-6);
 }
 
+// Find and return the best way to display a user's name, username, or email (if that's all we have)
 export function getUserDisplay(user){
     let str = "";
     if(user.first_name)str+=user.first_name+" ";
@@ -452,12 +463,15 @@ export function permission_translate(){
     };
 };
 
+
+// Get the little tag that sits in front of usernames signifying the role
 export function getUserTag(user_type){
     return (
         <span class={"user-tag permission-"+user_type}>{permission_translate()[user_type]}</span>
     );
-
 }
+
+// Create a loader that fills an element and prevents clicks to it
 export class Loader{
     constructor(identifier){
         this.load_screen = $('<div></div>').appendTo(identifier).addClass('load-screen').on('click',(evt)=>{evt.preventDefault();});
@@ -502,6 +516,7 @@ export function download(filename, text) {
     }
 }
 
+// Do a bit of cleaning to unescape certain characters and display them correctly
 export function unescapeCharacters(string){
     return string.replace(/\&amp;/g,"&").replace(/\&gt;/g,">").replace(/\&lt;/g,"<")
 }
