@@ -1,5 +1,6 @@
 import json
 import math
+import re
 import time
 
 # import time
@@ -7,6 +8,7 @@ from functools import reduce
 from itertools import chain
 from operator import attrgetter
 
+import bleach
 import pandas as pd
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -15,6 +17,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.db.models import Count, ProtectedError, Q
 from django.http import (
@@ -70,6 +73,7 @@ from .models import (  # OutcomeProject,
     Node,
     NodeLink,
     NodeWeek,
+    Notification,
     ObjectPermission,
     ObjectSet,
     Outcome,
@@ -159,6 +163,13 @@ class UserCanViewMixin(UserPassesTestMixin):
             )
         ):
             ObjectPermission.update_last_viewed(self.request.user, view_object)
+            Notification.objects.filter(
+                object_id=view_object.id,
+                content_type=ContentType.objects.get_for_model(view_object),
+                user=self.request.user,
+                is_unread=True,
+                notification_type=Notification.TYPE_SHARED,
+            ).update(is_unread=False)
             return True
         return False
 
@@ -1011,7 +1022,6 @@ def get_workflow_data_package(user, project, **kwargs):
     self_only = kwargs.get("self_only", False)
     get_strategies = kwargs.get("get_strategies", False)
     this_project_sections = []
-    other_project_sections = []
     all_published_sections = []
     for this_type in ["program", "course", "activity"]:
         if type_filter == "workflow" or type_filter == this_type:
@@ -1029,21 +1039,6 @@ def get_workflow_data_package(user, project, **kwargs):
                     ),
                 }
             )
-            # if not self_only:
-            #     other_project_sections.append(
-            #         {
-            #             "title": "",
-            #             "object_type": this_type,
-            #             "is_strategy": get_strategies,
-            #             "objects": get_workflow_info_boxes(
-            #                 user,
-            #                 this_type,
-            #                 project=project,
-            #                 this_project=False,
-            #                 get_strategies=get_strategies,
-            #             ),
-            #         }
-            #     )
             if not self_only:
                 all_published_sections.append(
                     {
@@ -1079,12 +1074,6 @@ def get_workflow_data_package(user, project, **kwargs):
                 }
             )
 
-    #    if project.author == user:
-    #        current_copy_type = "copy"
-    #        other_copy_type = "import"
-    #    else:
-    #        current_copy_type = False
-    #        other_copy_type = False
     first_header = _("This Project")
     empty_text = _("There are no applicable workflows in this project.")
     if project is None:
@@ -1095,27 +1084,15 @@ def get_workflow_data_package(user, project, **kwargs):
             "title": first_header,
             "sections": this_project_sections,
             "emptytext": _(empty_text),
-            #            "add": (project.author == user),
-            #            "duplicate": current_copy_type,
         },
     }
     if not self_only:
-        # if project is not None:
-        #     data_package["other_projects"] = {
-        #         "title": _("From Your Other Projects"),
-        #         "sections": other_project_sections,
-        #         #            "duplicate": other_copy_type,
-        #         "emptytext": _(
-        #             "There are no applicable workflows outside this project."
-        #         ),
-        #     }
         data_package["all_published"] = {
             "title": _("Your Favourites"),
             "sections": all_published_sections,
             "emptytext": _(
                 "You have no relevant favourites. Use the Explore menu to find and favourite content by other users."
-            )
-            #            "duplicate": other_copy_type,
+            ),
         }
     return data_package
 
@@ -1228,6 +1205,15 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         form = super(UpdateView, self).get_form()
         return form
 
+    def get_context_data(self, **kwargs):
+        context = super(UpdateView, self).get_context_data(**kwargs)
+        notifications = self.request.user.notifications.all()
+        paginator = Paginator(notifications, 20)
+        page_number = self.request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+        context["notifications"] = page_obj
+        return context
+
     def get_success_url(self):
         return reverse("course_flow:user-update")
 
@@ -1294,28 +1280,23 @@ class ProjectDetailView(LoginRequiredMixin, UserCanViewMixin, DetailView):
             )
             .decode("utf-8")
         )
-        # context["read_only"] = JSONRenderer().render(True).decode("utf-8")
-        # context["comment"] = JSONRenderer().render(False).decode("utf-8")
-        # editor = (
-        #     project.author == self.request.user
-        #     or ObjectPermission.objects.filter(
-        #         user=self.request.user,
-        #         project=project,
-        #         permission_type=ObjectPermission.PERMISSION_EDIT,
-        #     ).count()
-        #     > 0
-        # )
-        # if editor:
-        #     context["read_only"] = JSONRenderer().render(False).decode("utf-8")
-        # elif (
-        #     ObjectPermission.objects.filter(
-        #         user=self.request.user,
-        #         permission_type=ObjectPermission.PERMISSION_COMMENT,
-        #         project=project,
-        #     ).count()
-        #     > 0
-        # ):
-        #     context["comment"] = JSONRenderer().render(True).decode("utf-8")
+        if hasattr(project, "liveproject") and project.liveproject is not None:
+            context["user_role"] = (
+                JSONRenderer()
+                .render(get_user_role(project.liveproject, self.request.user))
+                .decode("utf-8")
+            )
+        else:
+            context["user_role"] = (
+                JSONRenderer()
+                .render(LiveProjectUser.ROLE_NONE)
+                .decode("utf-8")
+            )
+        context["user_permission"] = (
+            JSONRenderer()
+            .render(get_user_permission(project, self.request.user))
+            .decode("utf-8")
+        )
 
         return context
 
@@ -1568,6 +1549,17 @@ def get_workflow_data_flat(workflow, user):
                 many=True,
                 context={"user": user},
             ).data
+
+    if user.pk is not None:
+        data_flat["unread_comments"] = [
+            x.comment.id
+            for x in Notification.objects.filter(
+                user=user,
+                content_type=ContentType.objects.get_for_model(Workflow),
+                object_id=workflow.pk,
+                is_unread=True,
+            ).exclude(comment=None)
+        ]
 
     return data_flat
 
@@ -2118,6 +2110,9 @@ def get_comments_for_object(request: HttpRequest) -> HttpResponse:
             .comments.all()
             .order_by("created_on")
         )
+        Notification.objects.filter(
+            comment__in=comments, user=request.user
+        ).update(is_unread=False)
         data_package = CommentSerializer(comments, many=True).data
     except AttributeError:
         return JsonResponse({"action": "error"})
@@ -3702,10 +3697,41 @@ def add_terminology(request: HttpRequest) -> HttpResponse:
 def add_comment(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     object_type = json.loads(request.POST.get("objectType"))
-    text = json.loads(request.POST.get("text"))
+    text = bleach.clean(json.loads(request.POST.get("text")))
     try:
         obj = get_model_from_str(object_type).objects.get(id=object_id)
-        obj.comments.create(text=text, user=request.user)
+
+        # check if we are notifying any users
+        usernames = re.findall(r"@\w[@a-zA-Z0-9_.]{1,}", text)
+        target_users = []
+        if len(usernames) > 0:
+            content_object = obj.get_workflow()
+            for username in usernames:
+                try:
+                    target_user = User.objects.get(username=username[1:])
+                    if check_object_permission(
+                        content_object,
+                        target_user,
+                        ObjectPermission.PERMISSION_COMMENT,
+                    ):
+                        target_users += [target_user]
+                    else:
+                        raise ObjectDoesNotExist
+                except ObjectDoesNotExist:
+                    text = text.replace(username, username[1:])
+
+        # create the comment
+        comment = obj.comments.create(text=text, user=request.user)
+        for target_user in target_users:
+            make_user_notification(
+                source_user=request.user,
+                target_user=target_user,
+                notification_type=Notification.TYPE_COMMENT,
+                content_object=content_object,
+                extra_text=text,
+                comment=comment,
+            )
+
     except ValidationError:
         return JsonResponse({"action": "error"})
     return JsonResponse({"action": "posted"})
@@ -3968,9 +3994,17 @@ def insert_child(request: HttpRequest) -> HttpResponse:
             newthroughmodel = OutcomeOutcome.objects.create(
                 parent=model, child=newmodel, rank=newrank
             )
+            newmodel.refresh_from_db()
             new_model_serialized = OutcomeSerializerShallow(newmodel).data
             new_through_serialized = OutcomeOutcomeSerializerShallow(
                 newthroughmodel
+            ).data
+            outcomenodes = OutcomeNode.objects.filter(outcome=newmodel)
+            outcomenodes_serialized = OutcomeNodeSerializerShallow(
+                outcomenodes, many=True
+            ).data
+            node_updates = NodeSerializerShallow(
+                [x.node for x in outcomenodes], many=True
             ).data
         else:
             raise ValidationError("Uknown component type")
@@ -3981,6 +4015,12 @@ def insert_child(request: HttpRequest) -> HttpResponse:
     response_data = {
         "new_model": new_model_serialized,
         "new_through": new_through_serialized,
+        "children": {
+            "outcomenode": outcomenodes_serialized,
+            "outcome": [],
+            "outcomeoutcome": [],
+        },
+        "node_updates": node_updates,
         "parentID": model.id,
     }
     workflow = model.get_workflow()
@@ -4042,6 +4082,22 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
         new_through_serialized = serializer_lookups_shallow[through_type](
             new_through_model
         ).data
+        if object_type == "outcome":
+            outcomenodes = OutcomeNode.objects.filter(outcome=new_model)
+            outcomenodes_serialized = OutcomeNodeSerializerShallow(
+                outcomenodes, many=True
+            ).data
+            node_updates = NodeSerializerShallow(
+                [x.node for x in outcomenodes], many=True
+            ).data
+            children = {
+                "outcomenode": outcomenodes_serialized,
+                "outcome": [],
+                "outcomeoutcome": [],
+            }
+        else:
+            children = None
+            node_updates = []
 
     except ValidationError:
         return JsonResponse({"action": "error"})
@@ -4049,6 +4105,8 @@ def insert_sibling(request: HttpRequest) -> HttpResponse:
     response_data = {
         "new_model": new_model_serialized,
         "new_through": new_through_serialized,
+        "children": children,
+        "node_updates": node_updates,
         "parentID": parent_id,
     }
     workflow = model.get_workflow()
@@ -4075,6 +4133,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
     parent_id = json.loads(request.POST.get("parentID"))
     parent_type = json.loads(request.POST.get("parentType"))
     through_type = json.loads(request.POST.get("throughType"))  # noqa F841
+    node_updates = []
     try:
         with transaction.atomic():
             if object_type == "week":
@@ -4211,12 +4270,22 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
                 outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
                     newmodel
                 )
+                outcomenodes = OutcomeNode.objects.filter(
+                    outcome__id__in=[newmodel.id] + [x.id for x in outcomes]
+                )
+                node_updates = NodeSerializerShallow(
+                    list(set([x.node for x in outcomenodes])),
+                    many=True,
+                ).data
                 new_children_serialized = {
                     "outcome": OutcomeSerializerShallow(
                         outcomes, many=True
                     ).data,
                     "outcomeoutcome": OutcomeOutcomeSerializerShallow(
                         outcomeoutcomes, many=True
+                    ).data,
+                    "outcomenode": OutcomeNodeSerializerShallow(
+                        outcomenodes, many=True
                     ).data,
                 }
             else:
@@ -4228,6 +4297,7 @@ def duplicate_self(request: HttpRequest) -> HttpResponse:
         "new_through": new_through_serialized,
         "parentID": parent_id,
         "children": new_children_serialized,
+        "node_updates": node_updates,
     }
     workflow = model.get_workflow()
     if object_type == "outcome" and through_type == "outcomeworkflow":
@@ -4361,6 +4431,12 @@ def set_permission(request: HttpRequest) -> HttpResponse:
         if permission_type != ObjectPermission.PERMISSION_NONE:
             ObjectPermission.objects.create(
                 user=user, content_object=item, permission_type=permission_type
+            )
+            make_user_notification(
+                source_user=request.user,
+                target_user=user,
+                notification_type=Notification.TYPE_SHARED,
+                content_object=item,
             )
         response["action"] = "posted"
     except ValidationError:
@@ -4575,9 +4651,10 @@ def get_explore_objects(user, name_filter, nresults, published, data):
                 if sort == "created_on" or sort == "title":
                     sort_key = attrgetter(sort)
                 elif sort == "relevance":
-                    sort_key = lambda x: get_relevance(
-                        x, name_filter, keywords
-                    )
+
+                    def sort_key(x):
+                        return get_relevance(x, name_filter, keywords)
+
                 queryset = sorted(
                     queryset, key=sort_key, reverse=sort_reversed
                 )
@@ -4840,17 +4917,43 @@ def inserted_at(request: HttpRequest) -> HttpResponse:
                 for wf in linked_workflows:
                     actions.dispatch_parent_updated(wf)
         else:
+            if object_type == "outcome":
+                outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(model)
+                outcomenodes = OutcomeNode.objects.filter(
+                    outcome__id__in=[model.id] + [x.id for x in outcomes]
+                )
+                node_updates = NodeSerializerShallow(
+                    list(set([x.node for x in outcomenodes])),
+                    many=True,
+                ).data
+                new_children_serialized = {
+                    "outcome": [],
+                    "outcomeoutcome": [],
+                    "outcomenode": OutcomeNodeSerializerShallow(
+                        outcomenodes, many=True
+                    ).data,
+                }
+                extra_data = {
+                    "children": new_children_serialized,
+                    "node_updates": node_updates,
+                }
+            else:
+                extra_data = {}
+
             actions.dispatch_wf(
                 workflow,
                 actions.changeThroughID(
-                    through_type, old_through_id, new_through.id
+                    through_type, old_through_id, new_through.id, extra_data
                 ),
             )
             if object_type == "outcome":
                 actions.dispatch_to_parent_wf(
                     workflow,
                     actions.changeThroughID(
-                        through_type, old_through_id, new_through.id
+                        through_type,
+                        old_through_id,
+                        new_through.id,
+                        extra_data,
                     ),
                 )
     actions.dispatch_wf_lock(workflow, actions.unlock(model.id, object_type))
@@ -5973,17 +6076,33 @@ Live Views
 
 def get_my_live_projects(user):
     data_package = {}
+    classrooms_teacher = []
+    classrooms_student = []
+    all_classrooms = LiveProject.objects.filter(
+        project__deleted=False, liveprojectuser__user=user
+    )
+    for classroom in all_classrooms:
+        if check_object_permission(
+            classroom.project, user, ObjectPermission.PERMISSION_VIEW
+        ):
+            classrooms_teacher += [classroom.project]
+        else:
+            if check_object_enrollment(
+                classroom, user, LiveProjectUser.ROLE_TEACHER
+            ):
+                classrooms_teacher += [classroom]
+            else:
+                classrooms_student += [classroom]
+
     if Group.objects.get(name=settings.TEACHER_GROUP) in user.groups.all():
         data_package["owned_liveprojects"] = {
-            "title": _("My Owned Classrooms"),
+            "title": _("My classrooms (teacher)"),
             "sections": [
                 {
-                    "title": _("My Classrooms"),
+                    "title": _("My classrooms (teacher)"),
                     "object_type": "project",
-                    "objects": LiveProjectSerializer(
-                        LiveProject.objects.filter(
-                            project__author=user, project__deleted=False
-                        ),
+                    "objects": InfoBoxSerializer(
+                        classrooms_teacher,
                         many=True,
                         context={"user": user},
                     ).data,
@@ -5994,16 +6113,13 @@ def get_my_live_projects(user):
             ),
         }
     data_package["shared_liveprojects"] = {
-        "title": _("My Classrooms"),
+        "title": _("My classrooms (student)"),
         "sections": [
             {
-                "title": _("My Classrooms"),
+                "title": _("My classrooms (student)"),
                 "object_type": "liveproject",
-                "objects": LiveProjectSerializer(
-                    LiveProject.objects.filter(
-                        project__deleted=False,
-                        liveprojectuser__user=user,
-                    ),
+                "objects": InfoBoxSerializer(
+                    classrooms_student,
                     many=True,
                     context={"user": user},
                 ).data,
@@ -6028,7 +6144,12 @@ def my_live_projects_view(request):
 def make_project_live(request: HttpRequest) -> HttpResponse:
     project = Project.objects.get(pk=request.POST.get("projectPk"))
     try:
-        LiveProject.objects.create(project=project)
+        liveproject = LiveProject.objects.create(project=project)
+        LiveProjectUser.objects.create(
+            liveproject=liveproject,
+            user=request.user,
+            role_type=LiveProjectUser.ROLE_TEACHER,
+        )
     except AttributeError:
         return JsonResponse({"action": "error"})
     return JsonResponse(
@@ -6251,7 +6372,11 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
                 ).data,
             }
         elif data_type == "students":
-            data_package = {"data": "Hello world!"}
+            data_package = {
+                "liveproject": LiveProjectSerializer(
+                    liveproject, context={"user": request.user}
+                ).data
+            }
         elif data_type == "assignments":
             data_package = {
                 "workflows": InfoBoxSerializer(
@@ -6285,7 +6410,11 @@ def get_live_project_data(request: HttpRequest) -> HttpResponse:
                 "workflows_not_added": workflows_not_added,
             }
         elif data_type == "settings":
-            data_package = {"data": "Hello world!"}
+            data_package = {
+                "liveproject": LiveProjectSerializer(
+                    liveproject, context={"user": request.user}
+                ).data
+            }
         else:
             raise AttributeError
 
@@ -6715,3 +6844,45 @@ def set_assignment_completion(request: HttpRequest) -> HttpResponse:
 #         return reverse(
 #             "course_flow:live-project-update", kwargs={"pk": self.object.pk}
 #         )
+
+
+def make_user_notification(
+    source_user, target_user, notification_type, content_object, **kwargs
+):
+    if source_user is not target_user:
+        extra_text = kwargs.get("extra_text", None)
+        comment = kwargs.get("comment", None)
+        text = ""
+        if source_user is not None:
+            text += source_user.username + " "
+        else:
+            text += _("Someone ")
+        if notification_type == Notification.TYPE_SHARED:
+            text += _("added you to the ")
+        elif notification_type == Notification.TYPE_COMMENT:
+            text += _("notified you in a comment in ")
+        else:
+            text += _(" notified you for ")
+        text += _(content_object.type) + " " + content_object.__str__()
+        if extra_text is not None:
+            text += ": " + extra_text
+        Notification.objects.create(
+            user=target_user,
+            source_user=source_user,
+            notification_type=notification_type,
+            content_object=content_object,
+            text=text,
+            comment=comment,
+        )
+
+        # clear any notifications older than two months
+        target_user.notifications.filter(
+            created_on__lt=timezone.now() - timezone.timedelta(days=60)
+        ).delete()
+
+
+@ajax_login_required
+@require_POST
+def mark_all_as_read(request):
+    request.user.notifications.filter(is_unread=True).update(is_unread=False)
+    return JsonResponse({"action": "posted"})

@@ -20,7 +20,12 @@ export class ComparisonView extends React.Component{
         super(props);
         this.objectType="workflow";
         this.allowed_tabs=[0,3];
-        this.state = {workflows:[],object_sets:props.data.object_sets};
+
+        let querystring = window.location.search;
+        let url_params = new URLSearchParams(querystring);
+        let workflows_added = url_params.getAll("workflows").map(workflow_id=>parseInt(workflow_id));
+
+        this.state = {workflows:workflows_added,object_sets:props.data.object_sets};
     }
     
     render(){
@@ -53,18 +58,12 @@ export class ComparisonView extends React.Component{
         );
         let add_button = (
             <div>
-                <button class="primary-button" id="load-workflow" onClick={this.loadWorkflow.bind(this)}>
+                <button id="load-workflow" class="primary-button" onClick={this.loadWorkflow.bind(this)}>
                     <div class="flex-middle">
                         <span class="material-symbols-rounded filled">add_circle</span>
                         <div>{gettext("Load new workflow")}</div>
                     </div>
                 </button>
-                {/*<button class="splash-image-wrapper" onClick={this.loadWorkflow.bind(this)}>
-                <img id="load-workflow" src={iconpath+"add_new_blue.svg"}/>
-                <div>
-                    {gettext("Load new workflow")}
-                </div>
-                </button>*/}
             </div>
         );
         
@@ -216,6 +215,20 @@ class WorkflowComparisonRendererComponent extends Component{
     
     componentDidMount(){
         let loader = new Constants.Loader('body');
+
+
+        let querystring = window.location.search;
+        let url_params = new URLSearchParams(querystring);
+        let workflows_added = url_params.getAll("workflows").map(workflow_id=>parseInt(workflow_id));
+        if(workflows_added.indexOf(this.props.workflowID)<0){
+            url_params.append("workflows",this.props.workflowID);
+            if (history.pushState) {
+                let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + url_params.toString();
+                window.history.pushState({path:newurl},'',newurl);
+            }
+        }
+
+
         getWorkflowContext(
             this.props.workflowID,(context_response_data)=>{
                 let context_data = context_response_data.data_package;
@@ -228,6 +241,7 @@ class WorkflowComparisonRendererComponent extends Component{
                     this.props.view_type,
                     this.props.object_sets,
                 );
+                this.renderer.silent_connect_fail=true;
                 this.renderer.connect();
                 loader.endLoad();
             }
@@ -237,6 +251,21 @@ class WorkflowComparisonRendererComponent extends Component{
     componentDidUpdate(prev_props){
         if(prev_props.view_type!=this.props.view_type)this.renderer.render(this.props.view_type);
     }
+
+    componentWillUnmount(){
+        let querystring = window.location.search;
+        let url_params = new URLSearchParams(querystring);
+        let workflows_added = url_params.getAll("workflows").map(workflow_id=>parseInt(workflow_id));
+        if(workflows_added.indexOf(this.props.workflowID)>=0){
+            workflows_added.splice(workflows_added.indexOf(this.props.workflowID),1);
+            url_params.set("workflows",workflows_added);
+            if (history.pushState) {
+                let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + url_params.toString();
+                window.history.pushState({path:newurl},'',newurl);
+            }
+        }
+    }
+
 }
 
 
@@ -293,6 +322,7 @@ class WorkflowComparisonBaseViewUnconnected extends EditableComponent{
     }
     
     componentDidMount(){
+        this.props.renderer.silent_connect_fail=true;
         this.alignAllHeaders();
         this.addObjectSetTrigger();
     }

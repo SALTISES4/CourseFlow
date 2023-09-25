@@ -193,8 +193,9 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         time.sleep(1)
         assert (
             "new title"
-            in selenium.find_element_by_css_selector(".workflow-title").text
+            in selenium.find_element_by_css_selector(".project-title").text
         )
+        assert LiveProject.objects.filter(project=project).count() == 1
 
     def test_my_classrooms_teacher(self):
         selenium = self.selenium
@@ -212,7 +213,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         # selenium.switch_to_window(windows[1])
         assert (
             "new title"
-            in selenium.find_element_by_css_selector(".workflow-title").text
+            in selenium.find_element_by_css_selector(".project-title").text
         )
         selenium.get(self.live_server_url + "/course-flow/mylibrary/")
         time.sleep(0.5)
@@ -226,7 +227,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         # selenium.switch_to_window(windows[1])
         assert (
             "new title"
-            in selenium.find_element_by_css_selector(".workflow-title").text
+            in selenium.find_element_by_css_selector(".project-title").text
         )
 
     def test_my_classrooms_student(self):
@@ -288,9 +289,9 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         liveproject = LiveProject.objects.create(project=project)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:live-project-update", args=[project.id])
+            + reverse("course_flow:project-update", args=[project.id])
         )
-        selenium.find_element_by_css_selector("#button_settings").click()
+        selenium.find_element_by_css_selector("#edit-project-button").click()
         time.sleep(1)
         selenium.find_element_by_id("default-assign-to-all").click()
         selenium.find_element_by_id("default-self-reporting").click()
@@ -300,6 +301,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         selenium.find_element_by_css_selector(
             ".workflow-details button"
         ).click()
+
         time.sleep(1)
         liveproject = LiveProject.objects.first()
         self.assertEqual(liveproject.default_self_reporting, False)
@@ -315,7 +317,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         liveproject = LiveProject.objects.create(project=project)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:live-project-update", args=[project.id])
+            + reverse("course_flow:project-update", args=[project.id])
         )
         selenium.find_element_by_css_selector("#button_students").click()
         time.sleep(1)
@@ -403,24 +405,24 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         liveproject = LiveProject.objects.create(project=project)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:live-project-update", args=[project.id])
+            + reverse("course_flow:project-update", args=[project.id])
         )
         selenium.find_element_by_css_selector("#button_workflows").click()
         time.sleep(1)
 
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    0
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='true']"
+                )
             ),
             0,
         )
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    1
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='false']"
+                )
             ),
             1,
         )
@@ -435,17 +437,17 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(liveproject.visible_workflows.count(), 1)
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    0
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='true']"
+                )
             ),
             1,
         )
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    1
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='false']"
+                )
             ),
             0,
         )
@@ -460,19 +462,19 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         self.assertEqual(liveproject.visible_workflows.count(), 0)
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    1
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='true']"
+                )
             ),
-            1,
+            0,
         )
         self.assertEqual(
             len(
-                selenium.find_elements_by_css_selector(".menu-grid")[
-                    0
-                ].find_elements_by_css_selector(".workflow-for-menu")
+                selenium.find_elements_by_css_selector(
+                    ".permission-select select option:checked[value='false']"
+                )
             ),
-            0,
+            1,
         )
 
     def test_student_workflows(self):
@@ -535,7 +537,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         liveproject.visible_workflows.add(workflow)
         selenium.get(
             self.live_server_url
-            + reverse("course_flow:live-project-update", args=[project.id])
+            + reverse("course_flow:project-update", args=[project.id])
         )
         time.sleep(1)
         selenium.find_element_by_css_selector("#button_assignments").click()
@@ -832,6 +834,48 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
         )
 
 
+class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
+    def setUp(self):
+        chrome_options = webdriver.chrome.options.Options()
+        chrome_options.add_experimental_option(
+            "prefs", {"intl.accept_languages": "fr"}
+        )
+        chrome_options.add_argument("--lang=fr")
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(
+                settings.CHROMEDRIVER_PATH, chrome_options=chrome_options
+            )
+        else:
+            self.selenium = webdriver.Chrome(chrome_options=chrome_options)
+
+        super(SeleniumFrenchTestCase, self).setUp()
+        selenium = self.selenium
+        selenium.maximize_window()
+
+        self.user = login(self)
+        selenium.get(self.live_server_url + "/course-flow/home/")
+        username = selenium.find_element_by_id("id_username")
+        password = selenium.find_element_by_id("id_password")
+        username.send_keys("testuser1")
+        password.send_keys("testpass1")
+        selenium.find_element_by_css_selector("button[type=Submit]").click()
+
+    def tearDown(self):
+        self.selenium.quit()
+        super(SeleniumFrenchTestCase, self).tearDown()
+
+    def test_home(self):
+        selenium = self.selenium
+        selenium.get(self.live_server_url + "/course-flow/home/")
+        time.sleep(100)
+        assert (
+            "Projets récents"
+            in selenium.find_elements_by_css_selector(".home-item-title")[
+                0
+            ].text
+        )
+
+
 class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
         chrome_options = webdriver.chrome.options.Options()
@@ -983,16 +1027,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 .count(),
                 1,
             )
-            selenium.find_element_by_css_selector(
-                "#edit-project-button"
-            ).click()
-            time.sleep(1)
-            selenium.execute_script(
-                "$('.right-panel-inner')[0].scrollTo(0, 500)"
-            )
-            selenium.find_element_by_css_selector(
-                "#sidebar .delete-self-button"
-            ).click()
+            selenium.find_element_by_css_selector("#overflow-options").click()
+            selenium.find_element_by_css_selector("#delete-workflow").click()
             alert = wait.until(expected_conditions.alert_is_present())
             selenium.switch_to.alert.accept()
             time.sleep(2)
@@ -2945,7 +2981,6 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         self.selenium.quit()
         super(SeleniumDeleteRestoreTestCase, self).tearDown()
 
-    
     def create_many_items(self, author, published, disciplines):
         for object_type in [
             "activity",
@@ -3420,11 +3455,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
             + reverse("course_flow:workflow-update", args=[course.pk])
         )
         time.sleep(2)
-        selenium.find_element_by_css_selector("#edit-project-button").click()
-        selenium.execute_script("$('.right-panel-inner')[0].scrollTo(0, 500)")
-        selenium.find_element_by_css_selector(
-            "#sidebar .delete-self-button"
-        ).click()
+        selenium.find_element_by_css_selector("#overflow-options").click()
+        selenium.find_element_by_css_selector("#delete-workflow").click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
         time.sleep(2)
@@ -3479,11 +3511,8 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
         )
         time.sleep(1)
         time.sleep(2)
-        selenium.find_element_by_css_selector("#edit-project-button").click()
-        selenium.execute_script("$('.right-panel-inner')[0].scrollTo(0, 500)")
-        selenium.find_element_by_css_selector(
-            "#sidebar .delete-self-button"
-        ).click()
+        selenium.find_element_by_css_selector("#overflow-options").click()
+        selenium.find_element_by_css_selector("#restore-workflow").click()
         time.sleep(2)
         # make sure shows up in favourites
 
@@ -3620,11 +3649,15 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
             "competency"
         )
         selenium.find_element_by_css_selector(
-            ".nomenclature-row #nomenclature-add-button"
+
+            ".nomenclature-add-button"
+
         ).click()
         time.sleep(1)
         self.assertEqual(project.object_sets.count(), 1)
-        selenium.find_element_by_css_selector(".nomenclature-row .material-symbols-rounded").click()
+        selenium.find_element_by_css_selector(
+            ".nomenclature-delete-button"
+        ).click()
         alert = wait.until(expected_conditions.alert_is_present())
         selenium.switch_to.alert.accept()
         time.sleep(2)

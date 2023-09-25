@@ -1292,12 +1292,14 @@ class InfoBoxSerializer(
     author = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
     description = serializers.SerializerMethodField()
+    project_title = serializers.SerializerMethodField()
     # url = serializers.SerializerMethodField()
     # can_edit = serializers.SerializerMethodField()
     object_permission = serializers.SerializerMethodField()
     has_liveproject = serializers.SerializerMethodField()
     workflow_count = serializers.SerializerMethodField()
     is_linked = serializers.SerializerMethodField()
+    is_visible = serializers.SerializerMethodField()
 
     def get_workflow_count(self, instance):
         if instance.type == "project":
@@ -1309,6 +1311,13 @@ class InfoBoxSerializer(
             return None
         user = self.context.get("user", None)
         return user_workflow_url(instance, user)
+
+    def get_project_title(self, instance):
+        if instance.type in ["project", "liveproject"]:
+            return None
+        if instance.get_project() is None:
+            return None
+        return instance.get_project().title
 
     def get_is_owned(self, instance):
         user = self.context.get("user")
@@ -1366,6 +1375,11 @@ class InfoBoxSerializer(
         if instance.type not in ["project", "liveproject"]:
             return len(Node.objects.filter(linked_workflow=instance)) > 0
         return False
+
+    def get_is_visible(self, instance):
+        if instance.type in ["project", "liveproject"]:
+            return False
+        return len(LiveProject.objects.filter(visible_workflows=instance)) > 0
 
 
 def analyticsDateTimeFormat():

@@ -142,7 +142,7 @@ export class StudentLiveProjectMenu extends LiveProjectMenu{
 
 
 
-class LiveProjectSection extends React.Component{
+export class LiveProjectSection extends React.Component{
     constructor(props){
         super(props);
         this.state={};
@@ -170,7 +170,7 @@ class LiveProjectSection extends React.Component{
     }
 }
 
-class LiveProjectOverview extends LiveProjectSection{
+export class LiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
@@ -241,7 +241,7 @@ class LiveProjectOverview extends LiveProjectSection{
 
 }
 
-class StudentLiveProjectOverview extends LiveProjectSection{
+export class StudentLiveProjectOverview extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
@@ -288,7 +288,7 @@ class StudentLiveProjectOverview extends LiveProjectSection{
 
 }
 
-class LiveProjectAssignments extends LiveProjectSection{
+export class LiveProjectAssignments extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
@@ -328,7 +328,7 @@ class LiveProjectAssignments extends LiveProjectSection{
 
 }
 
-class AssignmentWorkflowNodesDisplay extends React.Component{
+export class AssignmentWorkflowNodesDisplay extends React.Component{
     constructor(props){
         super(props)
         this.state={};
@@ -382,7 +382,7 @@ class AssignmentWorkflowNodesDisplay extends React.Component{
     }
 }
 
-class AssignmentNode extends React.Component{
+export class AssignmentNode extends React.Component{
     render(){
         let data = this.props.data;
         let lefticon;
@@ -436,7 +436,7 @@ class AssignmentNode extends React.Component{
         props.renderer.tiny_loader.startLoad();
         createAssignment(
             data.id,
-            props.renderer.live_project_data.pk,
+            props.renderer.project_data.id,
             (response_data)=>{
                 props.renderer.tiny_loader.endLoad();
                 window.location = update_path.liveassignment.replace("0",response_data.assignmentPk);
@@ -446,7 +446,7 @@ class AssignmentNode extends React.Component{
 
 }
 
-class StudentLiveProjectAssignments extends LiveProjectSection{
+export class StudentLiveProjectAssignments extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
@@ -474,7 +474,7 @@ class StudentLiveProjectAssignments extends LiveProjectSection{
 
 }
 
-class LiveProjectWorkflows extends LiveProjectSection{
+export class LiveProjectWorkflows extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
@@ -524,7 +524,7 @@ class LiveProjectWorkflows extends LiveProjectSection{
 
 }
 
-class StudentLiveProjectWorkflows extends LiveProjectSection{
+export class StudentLiveProjectWorkflows extends LiveProjectSection{
 
     render(){
         if(!this.state.data)return this.defaultRender();
@@ -543,10 +543,11 @@ class StudentLiveProjectWorkflows extends LiveProjectSection{
 
 }
 
-class LiveProjectStudents extends React.Component{
+export class LiveProjectStudents extends LiveProjectSection{
 
     render(){
-        let liveproject = this.props.liveproject;
+        if(!this.state.data)return this.defaultRender();
+        let liveproject = this.state.data.liveproject;
 
         let register_link;
         if(liveproject && liveproject.registration_hash){
@@ -581,7 +582,7 @@ class LiveProjectStudents extends React.Component{
 
         return (
             <div class="workflow-details">
-                <StudentManagement data={this.props.liveproject}/>
+                <StudentManagement data={this.state.data.liveproject}/>
                 {register_link}
             </div>
         );
@@ -589,35 +590,41 @@ class LiveProjectStudents extends React.Component{
 
 }
 
-class LiveProjectSettings extends React.Component{
+export class LiveProjectSettings extends LiveProjectSection{
     constructor(props){
         super(props);
-        this.state={liveproject:this.props.liveproject,has_changed:false};
+        this.state={has_changed:false,liveproject:null};
         this.changed_values={};
     }
 
 
     render(){
-        let data=this.state.liveproject;
+        if(!this.state.data)return this.defaultRender();
+        console.log(this.state);
+        let data=this.state.data.liveproject;
         let changeField = this.changeField.bind(this);
 
         return (
             <div class="workflow-details">
-                <h3>{gettext("Configuration")}:</h3>
+                <h4>{gettext("Classroom configuration")}:</h4>
                 <div>
-                    <label for="default-signle-completion" title={gettext("Whether to mark the assignment as complete if any user has completed it.")}>{gettext("By default, mark assignments as complete when a single user has completed them:")}</label><input id="default-single-completion" name="default-single-completion" type="checkbox" checked={data.default_single_completion} onChange={(evt)=>changeField("default_single_completion",evt.target.checked)}/>
+                    <input id="default-single-completion" name="default-single-completion" type="checkbox" checked={data.default_single_completion} onChange={(evt)=>changeField("default_single_completion",evt.target.checked)}/>
+                    <label for="default-signle-completion" title={gettext("Whether to mark the assignment as complete if any user has completed it.")}>{gettext("By default, mark assignments as complete when a single user has completed them")}</label>
                 </div>
                 <div>
-                    <label for="default-assign-to-all" title={gettext("Whether creating an assignment automatically adds all students to it.")}>{gettext("Assign new assignments to all students by default:")}</label><input id="default-assign-to-all" name="default-assign-to-all" type="checkbox" checked={data.default_assign_to_all} onChange={(evt)=>changeField("default_assign_to_all",evt.target.checked)}/>
+                    <input id="default-assign-to-all" name="default-assign-to-all" type="checkbox" checked={data.default_assign_to_all} onChange={(evt)=>changeField("default_assign_to_all",evt.target.checked)}/>
+                    <label for="default-assign-to-all" title={gettext("Whether creating an assignment automatically adds all students to it.")}>{gettext("Assign new assignments to all students by default")}</label>
                 </div>
                 <div>
-                    <label for="default-self-reporting" title={gettext("Whether students can mark their own assignments as complete.")}>{gettext("Let students self-report their assignment completion by default:")}</label><input id="default-self-reporting" name="default-self-reporting" type="checkbox" checked={data.default_self_reporting} onChange={(evt)=>changeField("default_self_reporting",evt.target.checked)}/>
+                    <input id="default-self-reporting" name="default-self-reporting" type="checkbox" checked={data.default_self_reporting} onChange={(evt)=>changeField("default_self_reporting",evt.target.checked)}/>
+                    <label for="default-self-reporting" title={gettext("Whether students can mark their own assignments as complete.")}>{gettext("Let students self-report their assignment completion by default")}</label>
                 </div>
                 <div>
-                    <label for="default-all-workflows-visible" title={gettext("Whether all workflows in the project will be visible to students by default.")}>{gettext("All Workflows Visible To Students:")}</label><input id="default-all-workflows-visible" name="default-all-workflows-visible" type="checkbox" checked={data.default_all_workflows_visible} onChange={(evt)=>changeField("default_all_workflows_visible",evt.target.checked)}/>
+                    <input id="default-all-workflows-visible" name="default-all-workflows-visible" type="checkbox" checked={data.default_all_workflows_visible} onChange={(evt)=>changeField("default_all_workflows_visible",evt.target.checked)}/>
+                    <label for="default-all-workflows-visible" title={gettext("Whether all workflows in the project will be visible to students by default.")}>{gettext("All Workflows Visible To Students")}</label>
                 </div>
                 <div>
-                <button disabled={(!this.state.has_changed)} onClick={this.saveChanges.bind(this)}>{gettext("Save Changes")}</button>
+                <button class="primary-button" disabled={(!this.state.has_changed)} onClick={this.saveChanges.bind(this)}>{gettext("Save classroom changes")}</button>
                 </div>
             </div>
         );
@@ -625,20 +632,20 @@ class LiveProjectSettings extends React.Component{
 
 
     changeField(type,new_value){
-        let new_state={...this.state.liveproject};
+        let new_state={...this.state.data.liveproject};
         new_state[type]=new_value;
         this.changed_values[type]=new_value;
-        this.setState({has_changed:true,liveproject:new_state});
+        this.setState({has_changed:true,data:{...this.state.data,liveproject:new_state}});
     }
 
 
     saveChanges(){
         updateLiveProjectValue(
-            this.state.liveproject.id,
+            this.state.data.liveproject.id,
             "liveproject",
             this.changed_values,
         );
-        this.props.updateLiveProject({liveproject:{...this.state.liveproject,...this.changed_values}});
+        this.props.updateLiveProject({liveproject:{...this.state.data.liveproject,...this.changed_values}});
         this.changed_values={};
         this.setState({has_changed:false});
     }
@@ -653,7 +660,7 @@ export class WorkflowVisibility extends WorkflowForMenu{
         var data = this.props.workflow_data;
         var css_class = "workflow-for-menu workflow-visibility hover-shade "+data.type;
         if(this.props.selected)css_class+=" selected";
-        if(this.state.hide)return null;
+        
         let creation_text = gettext("Created");
         if(data.author && data.author !="None")creation_text+=" "+gettext("by")+" "+data.author;
         creation_text+=" "+data.created_on;
@@ -693,7 +700,7 @@ export class WorkflowVisibility extends WorkflowForMenu{
 }
 
 
-class LiveProjectCompletionTable extends LiveProjectSection{
+export class LiveProjectCompletionTable extends LiveProjectSection{
     
     render(){
         if(!this.state.data)return this.defaultRender();

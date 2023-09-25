@@ -1394,6 +1394,10 @@ ol.children-block{
     display:none;
 }
 
+.table-cell select:focus{
+    display: inline-block;
+}
+
 .table-cell select{
     width: 30px;
     right: 0px;
@@ -1478,6 +1482,8 @@ ol.children-block{
 
 .outcome-table .table-cell .node-category-header{
     font-size:12px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .outcome-table .table-group:first-child .blank-cell{
@@ -1819,6 +1825,10 @@ circle.mouseover{
     margin-right: 10%;
 }
 
+.side-bar .ui-tabs-tab.hidden{
+    display: none;
+}
+
 .side-bar.collapsed .window-close-button{
     display:none;
 }
@@ -1911,8 +1921,9 @@ circle.mouseover{
     position:unset;
 }
 
-.side-bar .quill-div.title-input{
+.side-bar #title-editor{
     min-height:60px;
+    max-height: 100px;
 }
 
 .side-bar .character-length{
@@ -2297,9 +2308,8 @@ circle.mouseover{
     display: none;
 }
 
-.comparison-view .workflow-title, .simple-workflow .workflow-title{
+.comparison-view .workflow-title{
     font-size: 12px;
-
 }
 
 .comparison-view .workflow-array{

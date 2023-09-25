@@ -428,6 +428,11 @@ def course_flow_patterns():
             name="select-notifications",
         ),
         path(
+            "user/mark-all-as-read/",
+            views.mark_all_as_read,
+            name="mark-all-as-read",
+        ),
+        path(
             "jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"
         ),
     ] + router.urls

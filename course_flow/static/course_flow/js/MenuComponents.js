@@ -10,6 +10,7 @@ import {ImportMenu} from "./ImportMenu";
 import {ExportMenu} from "./ExportMenu";
 import {WorkflowForMenu} from "./Library";
 import {WorkflowTitle} from "./ComponentJSON";
+import {LiveProjectSettings} from "./LiveProjectView";
 
 export class MessageBox extends React.Component{
     render(){
@@ -494,11 +495,13 @@ class WorkflowGridMenuUnconnected extends React.Component{
             i++;
         }
         return(
-            <div class="home-tabs" id="home-tabs">
-                <ul>
-                    {tab_li}
-                </ul>
-                {tabs}
+            <div class="project-menu">
+                <div class="home-tabs" id="home-tabs">
+                    <ul>
+                        {tab_li}
+                    </ul>
+                    {tabs}
+                </div>
             </div>
         );
         
@@ -735,7 +738,7 @@ export class ProjectEditMenu extends React.Component{
             <div class="nomenclature-row">
                 <div>{object_sets[item.term]}</div>
                 <input value={item.title} onChange={this.termChanged.bind(this,item.id)}/>
-                <div onClick={this.deleteTerm.bind(this,item.id)}>
+                <div class="nomenclature-delete-button" onClick={this.deleteTerm.bind(this,item.id)}>
                     <span class="material-symbols-rounded filled green hover-shade">delete</span>
                 </div>
             </div>
@@ -782,11 +785,12 @@ export class ProjectEditMenu extends React.Component{
                             {set_options}
                         </select>
                         <input placeholder={gettext("Set name")} type="text" id="term-singular" maxlength="50" value={this.state.termsingular} onChange={this.inputChanged.bind(this,"termsingular")} disabled={(selected_set==null)}/>
-                        <div id="nomenclature-add-button" onClick={clickEvt}>
+                        <div class="nomenclature-add-button" onClick={clickEvt}>
                             <span class={add_term_css}>add_circle</span>
                         </div>
                     </div>
                 </div>
+                {this.getLiveProjectSettings()}
                 <div class="action-bar">
                     {this.getActions()}
                 </div>
@@ -920,6 +924,17 @@ export class ProjectEditMenu extends React.Component{
             </button>
         );
         return actions;
+    }
+
+    getLiveProjectSettings(){
+        if(this.props.data.renderer.user_role==Constants.role_keys.teacher){
+            return (
+                <div>
+                    <LiveProjectSettings renderer={this.props.renderer} role={"teacher"} objectID={this.state.id} view_type={"settings"} updateLiveProject={this.props.actionFunction}/>
+                </div>
+            );
+        }
+        return null;
     }
 
     componentDidMount(){

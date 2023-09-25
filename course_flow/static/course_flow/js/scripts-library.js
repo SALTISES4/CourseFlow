@@ -60,6 +60,8 @@ export class ProjectRenderer{
             project_data.object_permission && 
             project_data.object_permission.permission_type==Constants.permission_keys["edit"]
         )this.read_only=false;
+        this.user_role = user_role;
+        this.user_permission = user_permission;
     }
     
     render(container){

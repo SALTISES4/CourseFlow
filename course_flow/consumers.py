@@ -34,9 +34,6 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
         return self.close()
 
     def disconnect(self, close_code):
-        async_to_sync(self.channel_layer.group_discard)(
-            self.room_group_name, self.channel_name
-        )
         try:
             async_to_sync(self.channel_layer.group_send)(
                 self.room_group_name,
@@ -44,6 +41,11 @@ class WorkflowUpdateConsumer(WebsocketConsumer):
             )
         except AttributeError:
             pass
+        async_to_sync(self.channel_layer.group_discard)(
+            self.room_group_name, self.channel_name
+        )
+        # super().disconnect()
+        # self.close()
 
     def receive(self, text_data):
         if not self.EDIT:
