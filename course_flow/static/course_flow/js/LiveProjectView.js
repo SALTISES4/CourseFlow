@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {DatePicker, AssignmentTitle, WorkflowTitle, NodeTitle, TitleText, ActionButton, SimpleWorkflow} from "./ComponentJSON";
+import {DatePicker, AssignmentTitle, WorkflowTitle, NodeTitle, TitleText, ActionButton, SimpleWorkflow} from "./CommonComponents";
 import {renderMessageBox,closeMessageBox} from "./MenuComponents";
 import {WorkflowForMenu} from "./Library"
 import {setAssignmentCompletion, updateLiveProjectValue, createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "./PostFunctions";

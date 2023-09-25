@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {EditableComponentWithSorting, TitleText} from "./ComponentJSON";
+import {EditableComponentWithSorting, TitleText} from "./CommonComponents";
 import NodeWeekView from "./NodeWeekView";
 import {NodeWeekComparisonView} from "./NodeWeekView";
 import {getWeekByID, getNodeWeekByID} from "./FindState";

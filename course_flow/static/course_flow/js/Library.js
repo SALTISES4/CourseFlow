@@ -5,7 +5,7 @@ import {Provider, connect} from "react-redux";
 import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf, setWorkflowVisibility} from "./PostFunctions";
 import * as LiveProjectViews from "./LiveProjectView";
 import * as Constants from "./Constants";
-import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./ComponentJSON";
+import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./CommonComponents";
 import {MessageBox, renderMessageBox, closeMessageBox} from "./MenuComponents";
 
 /*

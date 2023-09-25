@@ -6,7 +6,7 @@ import * as React from "react";
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
 import {WorkflowBaseView} from "./WorkflowView";
-import {ProjectMenu, WorkflowGridMenu, ExploreMenu, renderMessageBox} from "./MenuComponents";
+import {WorkflowGridMenu, renderMessageBox} from "./MenuComponents";
 import {WorkflowView_Outcome} from"./WorkflowView";
 import {ComparisonView, WorkflowComparisonBaseView} from "./ComparisonView";
 import * as Constants from "./Constants";
@@ -103,7 +103,7 @@ export class TinyLoader{
     }
 }
 
-export class HomeRenderer{
+export class WorkflowGridRenderer{
     constructor(data_package){
         this.initial_data = data_package;
         this.store = createStore(Reducers.gridMenuReducer,data_package);
@@ -120,28 +120,6 @@ export class HomeRenderer{
         );
     }
 }
-
-// export class ProjectRenderer{
-//     constructor(data_package,project_data){
-//         this.initial_project_data = data_package;
-//         this.project_data = project_data;
-//         this.store = createStore(Reducers.projectMenuReducer,data_package);
-//         this.read_only = data_package.read_only;
-//     }
-    
-//     render(container){
-//         this.container=container;
-        
-//         reactDom.render(
-//         <Provider store = {this.store}>
-//             <ProjectMenu project={this.project_data} renderer={this}/>
-//         </Provider>,
-//         container[0]
-//     );
-        
-//     }
-// }
-
 
 export class WorkflowRenderer{
     constructor(workflowID,data_package){

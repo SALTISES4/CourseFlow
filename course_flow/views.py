@@ -6826,24 +6826,6 @@ def set_assignment_completion(request: HttpRequest) -> HttpResponse:
     return JsonResponse({"action": "posted"})
 
 
-# class LiveProjectCreateView(
-#     LoginRequiredMixin, UserCanEditProjectMixin, CreateView_No_Autocomplete
-# ):
-#     model = LiveProject
-#     fields = ["title", "description"]
-#     template_name = "course_flow/live_project_create.html"
-
-#     def form_valid(self, form):
-#         form.instance.author = self.request.user
-#         project = Project.objects.get(pk=self.kwargs["projectPk"])
-#         response = super(CreateView, self).form_valid(form)
-#         form.instance.project=project
-#         return super(LiveProjectCreateView, self).form_valid(form)
-
-#     def get_success_url(self):
-#         return reverse(
-#             "course_flow:live-project-update", kwargs={"pk": self.object.pk}
-#         )
 
 
 def make_user_notification(

@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {EditableComponentWithActions, NodeLinkSVG} from "./ComponentJSON";
+import {EditableComponentWithActions, NodeLinkSVG} from "./CommonComponents";
 import {getNodeLinkByID} from "./FindState";
 import * as Constants from "./Constants";
 import {} from "./Reducers";

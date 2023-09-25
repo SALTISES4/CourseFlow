@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {Component, EditableComponentWithComments, OutcomeTitle, TitleText, NodeTitle} from "./ComponentJSON";
+import {Component, EditableComponentWithComments, OutcomeTitle, TitleText, NodeTitle} from "./CommonComponents";
 import * as Constants from "./Constants";
 import {getSortedOutcomeIDFromOutcomeWorkflowSet, getOutcomeByID, getWeekWorkflowByID, getWeekByID, getNodeWeekByID, getNodeByID, getOutcomeNodeByID, getTableOutcomeNodeByID} from "./FindState";
 import {WorkflowOutcomeLegend} from "./WorkflowLegend";

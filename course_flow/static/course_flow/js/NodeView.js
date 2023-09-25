@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {ActionButton, Component, EditableComponentWithActions, EditableComponentWithComments, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./ComponentJSON";
+import {ActionButton, Component, EditableComponentWithActions, EditableComponentWithComments, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "./CommonComponents";
 import NodeLinkView from "./NodeLinkView";
 import {AssignmentBox} from "./LiveAssignmentView"
 import OutcomeNodeView from "./OutcomeNode";

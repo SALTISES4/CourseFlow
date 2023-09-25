@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Provider, connect} from "react-redux";
-import {Component, EditableComponentWithActions} from "./ComponentJSON.js";
+import {Component, EditableComponentWithActions} from "./CommonComponents";
 import {getColumnByID} from "./FindState.js";
 import * as Constants from "./Constants.js";
 
