@@ -1,10 +1,10 @@
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+import 'core-js';
+import 'regenerator-runtime';
 import autoprefixer from 'autoprefixer';
-import babel from 'rollup-plugin-babel';
-import resolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
-import { terser } from 'rollup-plugin-terser';
+import { babel } from '@rollup/plugin-babel';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
+import terser from '@rollup/plugin-terser';
 import postcss from 'rollup-plugin-postcss';
 import react from 'react';
 import reactDom from 'react-dom';
@@ -15,14 +15,14 @@ const plugins = [
     extract: 'course_flow.css',
     plugins: [ autoprefixer ],
   }),
-  resolve({
+  nodeResolve({
     mainFields: ['browser', 'module', 'main']
   }),
   babel({
     babelrc: false,
     exclude: ['node_modules/**'],
     plugins: [
-      '@babel/plugin-proposal-class-properties',
+      '@babel/plugin-transform-class-properties',
       '@babel/plugin-transform-react-jsx'
     ],
     presets: [

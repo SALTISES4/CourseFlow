@@ -24,11 +24,11 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 
 5.  Install node modules. (node `v18.15.0`)
 
-        npm i
+        yarn install
 
 6.  Build minified JS files.
 
-        npx gulp build-js
+        yarn build-js
 
 7.  Migrate
 
@@ -62,7 +62,7 @@ CourseFlow is a pedagogical tool for planning activities, courses, and programs,
 13. To package a version:
 
         tox --recreate
-        
+
 14. When using in another project:
 
         add a COURSE_FLOW_RETURN_URL value to your settings.py
