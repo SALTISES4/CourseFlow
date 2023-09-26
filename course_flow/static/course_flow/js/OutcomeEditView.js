@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {EditableComponentWithSorting, OutcomeTitle} from "./ComponentJSON";
+import {EditableComponentWithSorting, OutcomeTitle} from "./CommonComponents";
 import OutcomeWorkflowView from "./OutcomeWorkflowView";
 import {OutcomeBarOutcomeView, OutcomeBarOutcomeViewUnconnected} from "./OutcomeView";
 import OutcomeView from "./OutcomeView";

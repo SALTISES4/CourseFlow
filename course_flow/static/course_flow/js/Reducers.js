@@ -1059,6 +1059,24 @@ export function nodeReducer(state=[],action){
                     return new_state;
                 }
             }
+        case 'outcome/insertChild':
+        case 'outcome/insertBelow':
+        case 'outcome_base/insertChild':
+        case 'outcomeoutcome/changeID':
+            if(action.payload.node_updates.length==0)return state;
+            var new_state=state.slice();
+            for(var i=0;i<action.payload.node_updates.length;i++){
+                for(var j=0;j<state.length;j++){
+                    if(action.payload.node_updates[i].id==state[j].id){
+                        new_state[j] = {
+                            ...new_state[j],
+                            outcomenode_set:action.payload.node_updates[i].outcomenode_set,
+                            outcomenode_unique_set:action.payload.node_updates[i].outcomenode_unique_set
+                        }
+                    }
+                }
+            }
+            return new_state;
         default:
             return state;
     }
@@ -1511,6 +1529,10 @@ export function outcomeNodeReducer(state=[],action){
             return new_state;
         case 'week/insertBelow':
         case 'node/insertBelow':
+        case 'outcome/insertChild':
+        case 'outcome_base/insertChild':
+        case 'outcome/insertBelow':
+        case 'outcomeoutcome/changeID':
             if(!action.payload.children)return state;
             new_state = state.slice();
             for(var i=0;i<action.payload.children.outcomenode.length;i++){

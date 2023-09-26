@@ -62,6 +62,10 @@ input[type="checkbox"], input[type="radio"]{
     filter: hue-rotate(300deg) brightness(117%)
 }
 
+textarea{
+    font-family: 'Open Sans';
+}
+
 button.disabled, button:disabled{
     pointer-events: none;
     cursor: default;
@@ -723,6 +727,10 @@ button:hover{
     display:block;
     margin-left:22px;
     margin-right:20px;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
 }
 
 .left-panel hr{
@@ -759,8 +767,8 @@ button:hover{
     border:1px solid #E9EBF2;
     width: -moz-fit-content;
     width: fit-content;
-    max-width: 776px;
-    min-width: 410px;
+    max-width: 876px;
+    min-width: 460px;
     padding: 30px;
     box-sizing: border-box;
 }
@@ -919,6 +927,7 @@ button:hover{
     padding-right: 15px;
     margin:0px;
     white-space: pre;
+    color: #444444;
 }
 
 .create-dropdown > hr{
@@ -943,7 +952,7 @@ button:hover{
 }
 
 .menu-grid > .workflow-for-menu{
-    width:350px;
+    width:400px;
 }
 
 .workflow-for-menu{
@@ -957,9 +966,46 @@ button:hover{
 }
 
 .workflow-for-menu.simple-workflow{
-    max-width: 400px;
     min-width: 200px;
     border-width: 0px;
+}
+
+.simple-workflow .workflow-title{
+    font-size: 14px;
+    font-weight: normal;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+.create-dropdown .workflow-top-row{
+    gap: 10px;
+    align-items: center;   
+}
+
+.create-dropdown .workflow-top-row .workflow-title{
+    margin-bottom: 0;
+}
+
+.simple-workflow .workflow-type-indicator{
+    min-width: 75px;
+}
+
+.simple-workflow .project-title{
+    font-size: 14px;
+    font-weight: normal;
+    color: #878787;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
 }
 
 .workflow-buttons-row{
@@ -1019,8 +1065,10 @@ button:hover{
 }
 
 .workflow-for-menu .workflow-title{
-    white-space: nowrap;
     overflow: hidden;
+    -webkit-line-clamp: 1;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
 }
 
 .workflow-publication{
@@ -1056,7 +1104,6 @@ button:hover{
     padding:5px;
     padding-left:12px;
     padding-right:12px;
-    margin-left:8px;
     height:-moz-fit-content;
     height:fit-content;
     white-space: nowrap;
@@ -1091,6 +1138,7 @@ button:hover{
     display:flex;
     align-items:flex-start;
     justify-content: space-between;
+    gap: 10px;
 }
 
 .workflow-title{
@@ -1159,11 +1207,16 @@ button:hover{
     position: relative;
 }
 
+#workflow-search .create-dropdown{
+    min-width: 500px;
+    max-width: 600px;
+}
+
 .search-input + .material-symbols-rounded{
     position: absolute;
     font-size: 20px;
-    left: 4px;
-    top: 2px;
+    left: 6px;
+    top: 5px;
     color: grey;
 }
 
@@ -1186,12 +1239,14 @@ button:hover{
 }
 
 .search-input{
-    border-radius: 12px;
-    border: 1px solid lightgrey;
-    padding:  4px;
-    padding-left: 28px;
+    border-radius: 30px;
+    border: 1px solid #E9EBF2;
+    padding:  6px;
+    padding-left: 30px;
     padding-right: 10px;
     box-sizing: border-box;
+    font-size: 14px;
+    width: 300px;
 }
 
 .search-filter-lock{
@@ -1523,6 +1578,11 @@ button:hover{
 
 .warning span{
     font-size: 10px;
+}
+
+.users-group{
+    max-height: 124px;
+    overflow-y: auto;
 }
 
 .user-list{
@@ -1897,6 +1957,78 @@ table tr.year-row{
 }
 table tr.total-row{
     background: #55BB55;
+}
+
+
+.create-dropdown > .list-notification, .workflow-create-wrapper .list-notification{
+    white-space: wrap;
+    color: #444444;
+    text-decoration: none;
+    position: relative;
+    padding-left: 20px;
+    overflow: hidden;
+    -webkit-line-clamp: 4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    max-width: 400px;
+    white-space: normal;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin-bottom: 8px;
+    margin-top: 8px;
+}
+
+.list-notification.unread::before, #notifications.unread::before{
+    content: "";
+    background-color: red;
+    height: 6px;
+    width: 6px;
+    position: absolute;
+    border-radius: 10px;
+    left: 6px;
+    top: calc(50% - 3px);
+}
+
+#notifications.unread::before{
+    top: 0px;
+    right: 6px;
+    left: unset;
+}
+
+.list-notification .created-on{
+    font-size: 12px;
+    color: grey;
+}
+
+.comment-indicator.unread::after{
+    content: "";
+    background-color: red;
+    height: 6px;
+    width: 6px;
+    position: absolute;
+    border-radius: 10px;
+    left: 0px;
+    top: 0px;
+}
+.comment.unread::after{
+    content: "";
+    background-color: red;
+    height: 6px;
+    width: 6px;
+    position: absolute;
+    border-radius: 10px;
+    right: 2px;
+    top: calc(50% - 3px);
+}
+
+.comment-tag-box{
+    position: absolute;
+    z-index: 10;
+    right: -200px;
+    max-width: 200px;
+    background: white;
+    border-radius: 5px;
+    border: 1px solid #04ba74;
 }
 
 #user-feedback{
@@ -3360,6 +3492,10 @@ ol.children-block{
     display:none;
 }
 
+.table-cell select:focus{
+    display: inline-block;
+}
+
 .table-cell select{
     width: 30px;
     right: 0px;
@@ -3444,6 +3580,8 @@ ol.children-block{
 
 .outcome-table .table-cell .node-category-header{
     font-size:12px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .outcome-table .table-group:first-child .blank-cell{
@@ -3785,6 +3923,10 @@ circle.mouseover{
     margin-right: 10%;
 }
 
+.side-bar .ui-tabs-tab.hidden{
+    display: none;
+}
+
 .side-bar.collapsed .window-close-button{
     display:none;
 }
@@ -3877,8 +4019,9 @@ circle.mouseover{
     position:unset;
 }
 
-.side-bar .quill-div.title-input{
+.side-bar #title-editor{
     min-height:60px;
+    max-height: 100px;
 }
 
 .side-bar .character-length{
@@ -4264,9 +4407,8 @@ circle.mouseover{
     display: none;
 }
 
-.comparison-view .workflow-title, .simple-workflow .workflow-title{
+.comparison-view .workflow-title{
     font-size: 12px;
-
 }
 
 .comparison-view .workflow-array{

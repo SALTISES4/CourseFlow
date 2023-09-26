@@ -6,7 +6,7 @@ import * as React from "react";
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
 import {WorkflowBaseView} from "./WorkflowView";
-import {ProjectMenu, WorkflowGridMenu, ExploreMenu, renderMessageBox} from "./MenuComponents";
+import {WorkflowGridMenu, renderMessageBox} from "./MenuComponents";
 import {WorkflowView_Outcome} from"./WorkflowView";
 import {ComparisonView, WorkflowComparisonBaseView} from "./ComparisonView";
 import * as Constants from "./Constants";
@@ -103,7 +103,7 @@ export class TinyLoader{
     }
 }
 
-export class HomeRenderer{
+export class WorkflowGridRenderer{
     constructor(data_package){
         this.initial_data = data_package;
         this.store = createStore(Reducers.gridMenuReducer,data_package);
@@ -120,28 +120,6 @@ export class HomeRenderer{
         );
     }
 }
-
-// export class ProjectRenderer{
-//     constructor(data_package,project_data){
-//         this.initial_project_data = data_package;
-//         this.project_data = project_data;
-//         this.store = createStore(Reducers.projectMenuReducer,data_package);
-//         this.read_only = data_package.read_only;
-//     }
-    
-//     render(container){
-//         this.container=container;
-        
-//         reactDom.render(
-//         <Provider store = {this.store}>
-//             <ProjectMenu project={this.project_data} renderer={this}/>
-//         </Provider>,
-//         container[0]
-//     );
-        
-//     }
-// }
-
 
 export class WorkflowRenderer{
     constructor(workflowID,data_package){
@@ -244,7 +222,7 @@ export class WorkflowRenderer{
                 }
                 renderer.is_static=true;
                 renderer.has_rendered=true;
-                if(!renderer.has_disconnected)alert(gettext("Unable to establish connection to the server, or connection has been lost."));
+                if(!renderer.silent_connect_fail && !renderer.has_disconnected)alert(gettext("Unable to establish connection to the server, or connection has been lost."));
                 renderer.has_disconnected=true;
             }
         }else{
@@ -344,6 +322,7 @@ export class WorkflowRenderer{
     connection_opened(reconnect=false){
         this.getWorkflowData(this.workflowID,(response)=>{
             let data_flat = response.data_package;
+            this.unread_comments=data_flat.unread_comments;
             this.store = createStore(Reducers.rootWorkflowReducer,data_flat);
             this.render($("#container"));
             if(!this.always_static)this.create_connection_bar();

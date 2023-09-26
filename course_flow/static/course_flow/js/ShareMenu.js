@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {setUserPermission,getUsersForObject,getUserList,updateValueInstant} from "./PostFunctions";
-import {WorkflowTitle} from "./ComponentJSON";
+import {WorkflowTitle} from "./CommonComponents";
 import * as Constants from "./Constants";
 
 export class ShareMenu extends React.Component{

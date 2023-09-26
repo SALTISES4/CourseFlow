@@ -111,8 +111,8 @@ class Project(models.Model):
             return "Project"
 
     class Meta:
-        verbose_name = "Project"
-        verbose_name_plural = "Projects"
+        verbose_name = _("Project")
+        verbose_name_plural = _("Projects")
 
 
 class ObjectSet(models.Model):
@@ -136,8 +136,8 @@ class WorkflowProject(models.Model):
         return [self.project, self.get_workflow().get_permission_objects()[0]]
 
     class Meta:
-        verbose_name = "Workflow-Project Link"
-        verbose_name_plural = "Workflow-Project Links"
+        verbose_name = _("Workflow-Project Link")
+        verbose_name_plural = _("Workflow-Project Links")
 
 
 # class OutcomeProject(models.Model):
@@ -173,8 +173,8 @@ class OutcomeWorkflow(models.Model):
         return [self.project, self.outcome]
 
     class Meta:
-        verbose_name = "Outcome-Workflow Link"
-        verbose_name_plural = "Outcome-Workflow Links"
+        verbose_name = _("Outcome-Workflow Link")
+        verbose_name_plural = _("Outcome-Workflow Links")
 
 
 class Column(models.Model):
@@ -243,8 +243,8 @@ class Column(models.Model):
         return self.get_column_type_display()
 
     class Meta:
-        verbose_name = "Column"
-        verbose_name_plural = "Columns"
+        verbose_name = _("Column")
+        verbose_name_plural = _("Columns")
 
 
 class NodeLink(models.Model):
@@ -283,8 +283,8 @@ class NodeLink(models.Model):
     hash = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     class Meta:
-        verbose_name = "Node Link"
-        verbose_name_plural = "Node Links"
+        verbose_name = _("Node Link")
+        verbose_name_plural = _("Node Links")
 
 
 class Outcome(models.Model):
@@ -351,8 +351,8 @@ class Outcome(models.Model):
             outcome.get_all_outcome_ids(ids)
 
     class Meta:
-        verbose_name = "Outcome"
-        verbose_name_plural = "Outcomes"
+        verbose_name = _("Outcome")
+        verbose_name_plural = _("Outcomes")
 
 
 class OutcomeOutcome(models.Model):
@@ -381,8 +381,8 @@ class OutcomeOutcome(models.Model):
         return self.parent.get_top_outcome()
 
     class Meta:
-        verbose_name = "Outcome-Outcome Link"
-        verbose_name_plural = "Outcome-Outcome Links"
+        verbose_name = _("Outcome-Outcome Link")
+        verbose_name_plural = _("Outcome-Outcome Links")
 
 
 class OutcomeHorizontalLink(models.Model):
@@ -470,8 +470,8 @@ class OutcomeHorizontalLink(models.Model):
         return new_children
 
     class Meta:
-        verbose_name = "Outcome-Outcome Link"
-        verbose_name_plural = "Outcome-Outcome Links"
+        verbose_name = _("Outcome-Outcome Link")
+        verbose_name_plural = _("Outcome-Outcome Links")
 
 
 class Node(models.Model):
@@ -656,6 +656,10 @@ class Node(models.Model):
         else:
             return self.get_node_type_display()
 
+    class Meta:
+        verbose_name = _("Node")
+        verbose_name_plural = _("Nodes")
+
 
 class OutcomeNode(models.Model):
     node = models.ForeignKey(Node, on_delete=models.CASCADE)
@@ -674,8 +678,8 @@ class OutcomeNode(models.Model):
         return self.outcome.get_top_outcome()
 
     class Meta:
-        verbose_name = "Outcome-Node Link"
-        verbose_name_plural = "Outcome-Node Links"
+        verbose_name = _("Outcome-Node Link")
+        verbose_name_plural = _("Outcome-Node Links")
 
     # Check to see if the parent has all its children the same, and add it if necessary
     def check_parent_outcomes(self):
@@ -818,8 +822,8 @@ class Week(models.Model):
         return self.workflow_set.first()
 
     class Meta:
-        verbose_name = "Week"
-        verbose_name_plural = "Weeks"
+        verbose_name = _("Week")
+        verbose_name_plural = _("Weeks")
 
 
 class NodeWeek(models.Model):
@@ -832,8 +836,8 @@ class NodeWeek(models.Model):
         return self.week.get_workflow()
 
     class Meta:
-        verbose_name = "Node-Week Link"
-        verbose_name_plural = "Node-Week Links"
+        verbose_name = _("Node-Week Link")
+        verbose_name_plural = _("Node-Week Links")
 
 
 class Workflow(models.Model):
@@ -1009,6 +1013,10 @@ class Workflow(models.Model):
         else:
             return self.type
 
+    class Meta:
+        verbose_name = _("Workflow")
+        verbose_name_plural = _("Workflows")
+
 
 class Activity(Workflow):
 
@@ -1027,8 +1035,8 @@ class Activity(Workflow):
             return self.type
 
     class Meta:
-        verbose_name = "Activity"
-        verbose_name_plural = "Activities"
+        verbose_name = _("Activity")
+        verbose_name_plural = _("Activities")
 
 
 class Course(Workflow):
@@ -1047,6 +1055,10 @@ class Course(Workflow):
         else:
             return self.type
 
+    class Meta:
+        verbose_name = _("Course")
+        verbose_name_plural = _("Courses")
+
 
 class Program(Workflow):
 
@@ -1064,6 +1076,10 @@ class Program(Workflow):
         else:
             return self.type
 
+    class Meta:
+        verbose_name = _("Program")
+        verbose_name_plural = _("Programs")
+
 
 class ColumnWorkflow(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
@@ -1078,8 +1094,8 @@ class ColumnWorkflow(models.Model):
         return self.get_workflow().get_permission_objects()
 
     class Meta:
-        verbose_name = "Column-Workflow Link"
-        verbose_name_plural = "Column-Workflow Links"
+        verbose_name = _("Column-Workflow Link")
+        verbose_name_plural = _("Column-Workflow Links")
 
 
 class WeekWorkflow(models.Model):
@@ -1104,8 +1120,8 @@ class WeekWorkflow(models.Model):
         return self.get_workflow().get_permission_objects()
 
     class Meta:
-        verbose_name = "Week-Workflow Link"
-        verbose_name_plural = "Week-Workflow Links"
+        verbose_name = _("Week-Workflow Link")
+        verbose_name_plural = _("Week-Workflow Links")
 
 
 class Discipline(models.Model):
@@ -1120,8 +1136,8 @@ class Discipline(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = _("discipline")
-        verbose_name_plural = _("disciplines")
+        verbose_name = _("Discipline")
+        verbose_name_plural = _("Disciplines")
 
 
 workflow_choices = [
@@ -1255,6 +1271,26 @@ class LiveProject(models.Model):
     def type(self):
         return "liveproject"
 
+    @property
+    def last_modified(self):
+        return self.project.last_modified
+
+    @property
+    def id(self):
+        return self.pk
+
+    @property
+    def author(self):
+        return self.project.author
+
+    @property
+    def title(self):
+        return self.project.title
+
+    @property
+    def description(self):
+        return self.project.description
+
 
 class LiveProjectUser(models.Model):
     liveproject = models.ForeignKey(LiveProject, on_delete=models.CASCADE)
@@ -1346,6 +1382,52 @@ class CourseFlowUser(models.Model):
                 user=user,
             )
         return courseflow_user
+
+
+class Notification(models.Model):
+    class Meta:
+        ordering = ["-created_on"]
+
+    content_choices = {"model__in": ["project", "workflow"]}
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+    )
+    source_user = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="sent_notifications",
+    )
+    TYPE_SHARED = 0
+    TYPE_COMMENT = 1
+    TYPE_CHOICES = (
+        (TYPE_SHARED, _("Shared")),
+        (TYPE_COMMENT, _("Comment")),
+    )
+    notification_type = models.PositiveIntegerField(
+        choices=TYPE_CHOICES, default=TYPE_SHARED
+    )
+    content_type = models.ForeignKey(
+        ContentType, on_delete=models.CASCADE, limit_choices_to=content_choices
+    )
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+    text = models.TextField(
+        blank=True,
+        null=True,
+    )
+
+    created_on = models.DateTimeField(default=timezone.now)
+    is_unread = models.BooleanField(default=True)
+
+    comment = models.ForeignKey(
+        Comment,
+        on_delete=models.CASCADE,
+        related_name="notifications",
+        null=True,
+    )
 
 
 """
@@ -2054,20 +2136,39 @@ def set_week_type_default(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=OutcomeOutcome)
 def set_outcome_depth_default(sender, instance, created, **kwargs):
-    try:
-        set_list = list(instance.parent.sets.all())
-        outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
-            instance.child
-        )
-        for outcomeoutcome in [instance] + list(outcomeoutcomes):
-            child = outcomeoutcome.child
-            parent = outcomeoutcome.parent
-            child.depth = parent.depth + 1
-            child.sets.clear()
-            child.sets.add(*set_list)
-            child.save()
-    except ValidationError:
-        print("couldn't set default outcome depth or copy sets")
+    if created:
+        try:
+            set_list = list(instance.parent.sets.all())
+            outcomes, outcomeoutcomes = get_all_outcomes_for_outcome(
+                instance.child
+            )
+            outcomenodes_to_add = OutcomeNode.objects.filter(
+                outcome=instance.parent
+            )
+            horizontallinks_to_add = OutcomeHorizontalLink.objects.filter(
+                parent_outcome=instance.parent
+            )
+            for outcomeoutcome in [instance] + list(outcomeoutcomes):
+                child = outcomeoutcome.child
+                parent = outcomeoutcome.parent
+                child.depth = parent.depth + 1
+                child.sets.clear()
+                child.sets.add(*set_list)
+                child.save()
+                for outcomenode in outcomenodes_to_add:
+                    OutcomeNode.objects.create(
+                        node=outcomenode.node,
+                        outcome=outcomeoutcome.child,
+                        degree=outcomenode.degree,
+                    )
+                for horizontallink in horizontallinks_to_add:
+                    OutcomeHorizontalLink.objects.create(
+                        outcome=horizontallink.outcome,
+                        parent_outcome=outcomeoutcome.child,
+                        degree=horizontallink.degree,
+                    )
+        except ValidationError:
+            print("couldn't set default outcome depth or copy sets")
 
 
 @receiver(post_save, sender=Node)
@@ -2238,6 +2339,16 @@ def add_all_workflows(sender, instance, **kwargs):
             return
         instance.visible_workflows.add(
             *Workflow.objects.filter(project=instance.project, deleted=False)
+        )
+
+
+@receiver(post_save, sender=LiveProject)
+def add_owner_to_liveproject(sender, instance, created, **kwargs):
+    if created:
+        LiveProjectUser.objects.create(
+            liveproject=instance,
+            user=instance.project.author,
+            role_type=LiveProjectUser.ROLE_TEACHER,
         )
 
 

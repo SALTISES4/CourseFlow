@@ -21,6 +21,7 @@ from course_flow.models import (
     Node,
     NodeLink,
     NodeWeek,
+    Notification,
     ObjectPermission,
     Outcome,
     OutcomeHorizontalLink,
@@ -147,58 +148,6 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 403)
 
-    #    def test_outcome_detail_view(self):
-    #        author = get_author()
-    #        project = Project.objects.create(author=author)
-    #        outcome = make_object("outcome", author)
-    #        OutcomeProject.objects.create(outcome=outcome, project=project)
-    #        response = self.client.get(
-    #            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
-    #        )
-    #        self.assertEqual(response.status_code, 302)
-    #        login(self)
-    #        project = Project.objects.create(author=author)
-    #        outcome = make_object("outcome", author)
-    #        OutcomeProject.objects.create(outcome=outcome, project=project)
-    #        response = self.client.get(
-    #            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
-    #        )
-    #        self.assertEqual(response.status_code, 403)
-    #        outcome.published = True
-    #        outcome.save()
-    #        response = self.client.get(
-    #            reverse("course_flow:outcome-detail-view", args=[outcome.pk])
-    #        )
-    #        self.assertEqual(response.status_code, 200)
-    #
-    #    def test_outcome_update_view(self):
-    #        author = get_author()
-    #        project = Project.objects.create(author=author)
-    #        outcome = make_object("outcome", author)
-    #        OutcomeProject.objects.create(outcome=outcome, project=project)
-    #        response = self.client.get(
-    #            reverse("course_flow:outcome-update", args=[outcome.pk])
-    #        )
-    #        self.assertEqual(response.status_code, 302)
-    #        login(self)
-    #        project = Project.objects.create(author=author)
-    #        outcome = make_object("outcome", author)
-    #        OutcomeProject.objects.create(outcome=outcome, project=project)
-    #        response = self.client.get(
-    #            reverse("course_flow:outcome-update", args=[outcome.pk])
-    #        )
-    #        self.assertEqual(response.status_code, 403)
-    #
-    #    def test_outcome_update_view_is_owner(self):
-    #        user = login(self)
-    #        project = Project.objects.create(author=user)
-    #        outcome = make_object("outcome", user)
-    #        OutcomeProject.objects.create(outcome=outcome, project=project)
-    #        response = self.client.get(
-    #            reverse("course_flow:outcome-update", args=[outcome.pk])
-    #        )
-    #        self.assertEqual(response.status_code, 200)
-
     def test_workflow_update_view(self):
         author = get_author()
         for workflow_type in ["activity", "course", "program"]:
@@ -270,24 +219,6 @@ class ModelViewTest(TestCase):
         login(self)
         response = self.client.get(reverse("course_flow:project-create"))
         self.assertEqual(response.status_code, 200)
-
-    #    def test_outcome_create_view(self):
-    #        author = get_author()
-    #        project = Project.objects.create(author=author)
-    #        response = self.client.get(
-    #            reverse("course_flow:outcome-create", args=[project.id])
-    #        )
-    #        self.assertEqual(response.status_code, 302)
-    #        user = login(self)
-    #        response = self.client.get(
-    #            reverse("course_flow:outcome-create", args=[project.id])
-    #        )
-    #        self.assertEqual(response.status_code, 403)
-    #        project2 = Project.objects.create(author=user)
-    #        response = self.client.get(
-    #            reverse("course_flow:outcome-create", args=[project2.id])
-    #        )
-    #        self.assertEqual(response.status_code, 200)
 
     def test_program_create_view(self):
         author = get_author()
@@ -1748,6 +1679,7 @@ class ModelViewTest(TestCase):
         self.assertEqual(OutcomeNode.objects.all().count(), 0)
         OutcomeNode.objects.create(outcome=oc2, node=node)
         OutcomeNode.objects.create(outcome=oc3, node=node)
+        # Add all three sub-children in succession, which should add their parent outcome
         response = self.client.post(
             reverse("course_flow:update-outcomenode-degree"),
             {"nodePk": node.id, "outcomePk": oc11.id, "degree": 1},
@@ -1766,12 +1698,22 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeNode.objects.all().count(), 7)
+        # remove one of the children, which should remove their parent outcome AND the base outcome in turn
         response = self.client.post(
             reverse("course_flow:update-outcomenode-degree"),
             {"nodePk": node.id, "outcomePk": oc11.id, "degree": 0},
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeNode.objects.all().count(), 4)
+        # add a child to the second base outcome, which should automatically be added to the node
+        oc21 = Outcome.objects.create(author=user)
+        oc22 = Outcome.objects.create(author=user)
+        OutcomeOutcome.objects.create(child=oc21, parent=oc2)
+        OutcomeOutcome.objects.create(child=oc22, parent=oc2)
+        self.assertEqual(OutcomeNode.objects.all().count(), 6)
+        # move a child to the second base outcome from the first, which should cause it to be added to the node
+        OutcomeOutcome.objects.create(child=oc11, parent=oc2)
+        self.assertEqual(OutcomeNode.objects.all().count(), 7)
 
     def test_add_remove_horizontal_outcome_link_permissions_no_authorship(
         self,
@@ -1940,6 +1882,16 @@ class ModelViewTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(OutcomeHorizontalLink.objects.all().count(), 4)
+
+        # add a child to the second base outcome, which should automatically be added to the child workflow outcome
+        oc21 = Outcome.objects.create(author=user)
+        oc22 = Outcome.objects.create(author=user)
+        OutcomeOutcome.objects.create(child=oc21, parent=oc2)
+        OutcomeOutcome.objects.create(child=oc22, parent=oc2)
+        self.assertEqual(OutcomeHorizontalLink.objects.all().count(), 6)
+        # move a child to the second base outcome from the first, which should cause it to be added to the node
+        OutcomeOutcome.objects.create(child=oc11, parent=oc2)
+        self.assertEqual(OutcomeHorizontalLink.objects.all().count(), 7)
 
     # Previously tested the automatic removal of horizontal links. No longer really a desired feature.
     def test_horizontal_outcome_link_on_node_unlink(self):
@@ -3666,4 +3618,157 @@ class ImportTest(TestCase):
         )
         self.assertEqual(
             Outcome.objects.get(title="Base Outcome").code, "01XX"
+        )
+
+
+class NotificationTest(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    # test the automatic creation of notifications when the user tags someone or shares a project
+    def test_create_notification(self):
+        user = login(self)
+        second_user = get_author()
+        project = Project.objects.create(author=user)
+        course = Course.objects.create(author=user)
+        WorkflowProject.objects.create(project=project, workflow=course)
+        week = course.weeks.first()
+
+        response = self.client.post(
+            reverse("course_flow:add-comment"),
+            {
+                "objectID": week.id,
+                "objectType": JSONRenderer().render("week").decode("utf-8"),
+                "text": JSONRenderer()
+                .render("@" + second_user.username)
+                .decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(second_user.notifications.all()), 0)
+
+        response = self.client.post(
+            reverse("course_flow:set-permission"),
+            {
+                "objectID": project.id,
+                "objectType": JSONRenderer().render("project").decode("utf-8"),
+                "permission_user": second_user.id,
+                "permission_type": JSONRenderer()
+                .render(ObjectPermission.PERMISSION_EDIT)
+                .decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(second_user.notifications.all()), 1)
+
+        response = self.client.post(
+            reverse("course_flow:add-comment"),
+            {
+                "objectID": week.id,
+                "objectType": JSONRenderer().render("week").decode("utf-8"),
+                "text": JSONRenderer()
+                .render("@" + second_user.username)
+                .decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(second_user.notifications.all()), 2)
+
+    # Test the automatic clearing of notifications when a user visits the shared object or views the comment
+    def test_automatic_clear_notifications(self):
+        user = login(self)
+        second_user = get_author()
+        project = Project.objects.create(author=user)
+        course = Course.objects.create(author=user)
+        WorkflowProject.objects.create(project=project, workflow=course)
+        week = course.weeks.first()
+
+        # Create the notifications
+        Notification.objects.create(
+            content_object=project,
+            notification_type=Notification.TYPE_SHARED,
+            text="",
+            user=user,
+            source_user=second_user,
+        )
+        comment = week.comments.create(user=second_user, text="blah blah")
+        Notification.objects.create(
+            content_object=course.get_workflow(),
+            notification_type=Notification.TYPE_COMMENT,
+            user=user,
+            source_user=second_user,
+            comment=comment,
+        )
+
+        self.assertEqual(len(user.notifications.filter(is_unread=True)), 2)
+
+        # Retrieve the comments
+        response = self.client.post(
+            reverse("course_flow:get-comments-for-object"),
+            {
+                "objectID": week.id,
+                "objectType": JSONRenderer().render("week").decode("utf-8"),
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(user.notifications.filter(is_unread=True)), 1)
+        response = self.client.get(
+            reverse("course_flow:project-update", args=[project.pk])
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(user.notifications.filter(is_unread=True)), 0)
+
+    # Test the clearing of all notifications. Also ensuring it doesn't clear anyone else's notifications, just in case
+    def test_clear_all_notifications(self):
+        user = login(self)
+        second_user = get_author()
+        project = Project.objects.create(author=user)
+        course = Course.objects.create(author=user)
+        WorkflowProject.objects.create(project=project, workflow=course)
+        week = course.weeks.first()
+
+        # Create the notifications
+        Notification.objects.create(
+            content_object=project,
+            notification_type=Notification.TYPE_SHARED,
+            text="",
+            user=user,
+            source_user=second_user,
+        )
+        Notification.objects.create(
+            content_object=project,
+            notification_type=Notification.TYPE_SHARED,
+            text="",
+            user=second_user,
+            source_user=user,
+        )
+        comment = week.comments.create(user=second_user, text="blah blah")
+        Notification.objects.create(
+            content_object=course.get_workflow(),
+            notification_type=Notification.TYPE_COMMENT,
+            user=user,
+            source_user=second_user,
+            comment=comment,
+        )
+        Notification.objects.create(
+            content_object=course.get_workflow(),
+            notification_type=Notification.TYPE_COMMENT,
+            user=second_user,
+            source_user=user,
+            comment=comment,
+        )
+
+        self.assertEqual(len(user.notifications.filter(is_unread=True)), 2)
+        self.assertEqual(
+            len(second_user.notifications.filter(is_unread=True)), 2
+        )
+
+        # Retrieve the comments
+        response = self.client.post(
+            reverse("course_flow:mark-all-as-read"),
+            {},
+        )
+        self.assertEqual(len(user.notifications.filter(is_unread=True)), 0)
+        self.assertEqual(
+            len(second_user.notifications.filter(is_unread=True)), 2
         )

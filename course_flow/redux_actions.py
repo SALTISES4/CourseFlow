@@ -48,14 +48,14 @@ def dispatch_parent_updated(workflow):
     )
 
 
-def dispatch_child_updated(workflow,child_workflow):
+def dispatch_child_updated(workflow, child_workflow):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         "workflow_" + str(workflow.pk),
         {
             "type": "workflow_child_updated",
             "edit_count": workflow.edit_count,
-            "child_workflow_id":child_workflow.pk
+            "child_workflow_id": child_workflow.pk,
         },
     )
 
@@ -117,10 +117,10 @@ def unlock(object_id, object_type):
     }
 
 
-def changeThroughID(through_type, old_id, new_id):
+def changeThroughID(through_type, old_id, new_id, extra_data):
     return {
         "type": through_type + "/changeID",
-        "payload": {"old_id": old_id, "new_id": new_id},
+        "payload": {"old_id": old_id, "new_id": new_id, **extra_data},
     }
 
 
