@@ -268,6 +268,11 @@ def course_flow_patterns():
             name="user-update",
         ),
         path(
+            "user/notifications/",
+            views.UserNotificationsView.as_view(),
+            name="user-notifications",
+        ),
+        path(
             "project/create/",
             views.ProjectCreateView.as_view(),
             name="project-create",
