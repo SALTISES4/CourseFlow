@@ -52,10 +52,10 @@ const plugins = [
 
 export default [
   {
-    input: 'course_flow/static/course_flow/js/scripts.js',
+    input: 'course_flow/static/course_flow/js/entry/scripts.js',
     external: ['jquery'],
     output: {
-      file: 'course_flow/static/course_flow/js/scripts.min.js',
+      file: 'course_flow/static/course_flow/js/dist/scripts.min.js',
       name: 'root',
       format: 'iife',
       sourceMap: 'inline'
@@ -63,9 +63,9 @@ export default [
     plugins: plugins
   },
   {
-    input: 'course_flow/static/course_flow/js/scripts-wf-redux.js',
+    input: 'course_flow/static/course_flow/js/entry/scripts-wf-redux.js',
     output: {
-      file: 'course_flow/static/course_flow/js/scripts-wf-redux.min.js',
+      file: 'course_flow/static/course_flow/js/dist/scripts-wf-redux.min.js',
       name: 'renderers',
       format: 'iife',
       sourceMap: 'inline'
@@ -73,9 +73,9 @@ export default [
     plugins: plugins
   },
   {
-    input: 'course_flow/static/course_flow/js/scripts-live.js',
+    input: 'course_flow/static/course_flow/js/entry/scripts-live.js',
     output: {
-      file: 'course_flow/static/course_flow/js/scripts-live.min.js',
+      file: 'course_flow/static/course_flow/js/dist/scripts-live.min.js',
       name: 'live_renderers',
       format: 'iife',
       sourceMap: 'inline'
@@ -83,9 +83,9 @@ export default [
     plugins: plugins
   },
   {
-    input: 'course_flow/static/course_flow/js/scripts-library.js',
+    input: 'course_flow/static/course_flow/js/entry/scripts-library.js',
     output: {
-      file: 'course_flow/static/course_flow/js/scripts-library.min.js',
+      file: 'course_flow/static/course_flow/js/dist/scripts-library.min.js',
       name: 'library_renderers',
       format: 'iife',
       sourceMap: 'inline'

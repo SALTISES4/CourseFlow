@@ -11,7 +11,7 @@
       content="{% block metadescription %}{% endblock %}"
     />
     <meta name="theme-color" content="#1976BC" />
-    
+
     <!-- External resources -->
     <!-- * Fonts and icons -->
 
@@ -31,7 +31,7 @@
       })();
     </script> -->
     <!-- End Matomo Code -->
-    
+
     <!-- ** Preloads -->
     <!-- ** Polyfills for non-awesome browsers-->
     <script
@@ -107,7 +107,7 @@
     <!-- Internal resources -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/scripts.min.js' %}"
+      src="{% static 'course_flow/js/dist/scripts.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
@@ -115,7 +115,7 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/scripts-wf-redux.min.js' %}"
+      src="{% static 'course_flow/js/dist/scripts-wf-redux.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
@@ -123,7 +123,7 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/scripts-live.min.js' %}"
+      src="{% static 'course_flow/js/dist/scripts-live.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
@@ -131,7 +131,7 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/scripts-library.min.js' %}"
+      src="{% static 'course_flow/js/dist/scripts-library.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
@@ -289,7 +289,7 @@
                   <div id="overflow-options">
                     <span class="hover-shade green material-symbols-rounded">more_horiz</span>
                     <div id="overflow-links" class="create-dropdown">
-                      
+
                     </div>
                   </div>
                 </div>
