@@ -9,16 +9,16 @@ import {WorkflowBaseView} from "../Components/Views/WorkflowView.js";
 import {WorkflowGridMenu, renderMessageBox} from "../Components/components/MenuComponents.js";
 import {WorkflowView_Outcome} from "../Components/Views/WorkflowView.js";
 import {ComparisonView, WorkflowComparisonBaseView} from "../Components/Views/ComparisonView.js";
-import * as Constants from "../Constants";
-import * as Reducers from "../Reducers";
+import * as Constants from "../Constants.js";
+import * as Reducers from "../Reducers.js";
 import OutcomeTopView from '../Components/Views/OutcomeTopView.js';
-import {getTargetProjectMenu, getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from '../PostFunctions';
-import {ConnectionBar} from '../ConnectedUsers'
-import '../../css/base_style.css';
-import '../../css/workflow_styles.css';
+import {getTargetProjectMenu, getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from '../PostFunctions.js';
+import {ConnectionBar} from '../ConnectedUsers.js'
+import '../../../css/base_style.css';
+import '../../../css/workflow_styles.css';
 
-export {Loader} from '../Constants';
-export {fail_function} from '../PostFunctions';
+export {Loader} from '../Constants.js';
+export {fail_function} from '../PostFunctions.js';
 
 //Manages the current selection, ensuring we only have one at a time
 export class SelectionManager{

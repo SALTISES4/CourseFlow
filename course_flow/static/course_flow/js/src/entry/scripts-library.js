@@ -5,8 +5,8 @@
 import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as React from "react";
-import {ExploreMenu, LibraryMenu, ProjectMenu, HomeMenu, FavouritesMenu} from "../Library";
-import * as Constants from "../Constants";
+import {ExploreMenu, LibraryMenu, ProjectMenu, HomeMenu, FavouritesMenu} from "../Library.js";
+import * as Constants from "../Constants.js";
 
 
 

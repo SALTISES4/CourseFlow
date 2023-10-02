@@ -1,6 +1,6 @@
 import {renderMessageBox} from "./Components/components/MenuComponents.js";
-import {changeField} from "./Reducers";
-import * as Constants from "./Constants"
+import {changeField} from "./Reducers.js";
+import * as Constants from "./Constants.js"
 
 /*
 All functions for API calls.

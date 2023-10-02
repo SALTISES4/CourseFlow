@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { h } from "preact";
 import { mount } from "enzyme";
 
 import Counter from "../src/Counter";
