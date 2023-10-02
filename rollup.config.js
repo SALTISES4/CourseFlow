@@ -8,7 +8,6 @@ import terser from '@rollup/plugin-terser';
 import postcss from 'rollup-plugin-postcss';
 import react from 'react';
 import reactDom from 'react-dom';
-import path from 'path'
 
 const bundleRoot = 'course_flow/static/course_flow/js/react/dist/'
 
@@ -18,7 +17,6 @@ const plugins = [
   postcss({
     extensions: ['.css'],
     extract: 'course_flow.css',
-    modules: true,
     plugins: [ autoprefixer ],
   }),
   nodeResolve({
