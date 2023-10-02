@@ -7,7 +7,7 @@ import {getOutcomeByID,getOutcomeOutcomeByID, getChildWorkflowByID, getWeekByID,
 import OutcomeView from "./OutcomeView.js";
 import {SimpleOutcomeView} from "./OutcomeView.js";
 import OutcomeNodeView from "../components/OutcomeNode.js";
-import {newOutcome, updateOutcomenodeDegree, updateOutcomehorizontallinkDegree} from "../../../../other/src/PostFunctions.js"
+import {newOutcome, updateOutcomenodeDegree, updateOutcomehorizontallinkDegree} from "../../PostFunctions.js"
 
 //Analytics view
 class AlignmentView extends React.Component{

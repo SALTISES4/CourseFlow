@@ -7,7 +7,7 @@ import {AssignmentBox} from "./LiveAssignmentView.js"
 import OutcomeNodeView from "../components/OutcomeNode.js";
 import {getNodeByID} from "../../FindState.js";
 import * as Constants from "../../Constants.js";
-import {updateOutcomenodeDegree, updateValueInstant, toggleDrop} from "../../../../other/src/PostFunctions.js"
+import {updateOutcomenodeDegree, updateValueInstant, toggleDrop} from "../../PostFunctions.js"
 
 
 //Basic component to represent a Node

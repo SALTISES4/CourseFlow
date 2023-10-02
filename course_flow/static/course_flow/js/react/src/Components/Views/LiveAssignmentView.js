@@ -2,7 +2,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {WorkflowTitle, AssignmentTitle, TitleText, ActionButton, DatePicker} from "../components/CommonComponents.js";
 import {renderMessageBox,closeMessageBox} from "../components/MenuComponents.js";
-import {getAssignmentsForNode, deleteSelfLive, setAssignmentCompletion, addUsersToAssignment, updateLiveProjectValue,createAssignment, getAssignmentData, getAssignmentDataStudent, setWorkflowVisibility, getWorkflowNodes} from "../../../../other/src/PostFunctions.js";
+import {getAssignmentsForNode, deleteSelfLive, setAssignmentCompletion, addUsersToAssignment, updateLiveProjectValue,createAssignment, getAssignmentData, getAssignmentDataStudent, setWorkflowVisibility, getWorkflowNodes} from "../../PostFunctions.js";
 import {StudentManagement} from "../components/StudentManagement.js";
 import {WorkflowVisibility} from "./LiveProjectView.js";
 import {reloadAssignmentsAction} from "../../Reducers.js";
@@ -22,7 +22,7 @@ export class LiveAssignmentMenu extends React.Component{
         let view_buttons = this.getViewButtons().map(
             (item)=>{
                 let view_class = "hover-shade";
-                if(item.type==this.state.view_type)view_class += " active";
+                if(item.type===this.state.view_type)view_class += " active";
                 return <a id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</a>;
             }
         );
@@ -199,7 +199,7 @@ class LiveAssignmentEdit extends React.Component{
         let data = this.state;
         if(window.confirm(gettext("Are you sure you want to delete this ")+gettext("assignment")+"?")){
             deleteSelfLive(data.id,"liveassignment",(response_data)=>{
-                window.location = update_path.liveproject.replace("0",data.liveproject);
+                window.location = config.update_path.liveproject.replace("0",data.liveproject);
 
             });
         }

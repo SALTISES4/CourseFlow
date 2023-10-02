@@ -1,7 +1,5 @@
-import * as Redux from "redux";
 import * as React from "react";
-import * as reactDom from "react-dom";
-import {setUserPermission,getUsersForObject,getUserList,updateValueInstant} from "../../../../other/src/PostFunctions.js";
+import {setUserPermission,getUsersForObject,getUserList,updateValueInstant} from "../../PostFunctions.js";
 import {WorkflowTitle} from "./CommonComponents.js";
 import * as Constants from "../../Constants.js";
 
@@ -9,7 +7,15 @@ export class ShareMenu extends React.Component{
     constructor(props){
         super(props);
         this.tiny_loader = new renderers.TinyLoader($("body"));
-        this.state={owner:props.data.author,edit:[],view:[],comment:[],student:[],userlist:[],cannot_change:[]}
+        this.state={
+            owner:props.data.author,
+            edit:[],
+          view:[],
+          comment:[],
+          student:[],
+          userlist:[],
+          cannot_change:[]
+        }
     }
 
     render(){
@@ -17,7 +23,7 @@ export class ShareMenu extends React.Component{
         let owner = (
             <UserLabel user={this.state.owner} type={"owner"}/>
         );
-        let editors = this.state.edit.filter(user=>user.id!=this.state.owner.id).map((user)=>
+        let editors = this.state.edit.filter(user=>user.id !== this.state.owner.id).map((user)=>
             <UserLabel user={user} type={"edit"} cannot_change={this.state.cannot_change} permissionChange={this.setUserPermission.bind(this)}/>
         );
         let viewers = this.state.view.map((user)=>
@@ -31,7 +37,7 @@ export class ShareMenu extends React.Component{
         );
 
         let share_info;
-        if(data.type=="project"){
+        if(data.type === "project"){
             share_info=gettext("Invite collaborators to project and its workflows");
         }else{
             share_info=gettext("Invite collaborators to workflow and grant view permissions to the project");
@@ -140,8 +146,8 @@ export class ShareMenu extends React.Component{
 
     getPublicLink(){
         let data=this.props.data;
-        let public_link = window.location.host+public_update_path["workflow"].replace("0",data.id);
-        if(data.type!="project"){
+        let public_link = window.location.host+config.public_update_path["workflow"].replace("0",data.id);
+        if(data.type!=="project"){
             let public_view = this.state.public_view;
             if(!public_view)return (
                 <div class="public-link-button  hover-shade" onClick = {this.togglePublicView.bind(this,!public_view)}>

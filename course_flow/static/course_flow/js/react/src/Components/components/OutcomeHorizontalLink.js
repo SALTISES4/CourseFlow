@@ -2,7 +2,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {getNodeByID, getOutcomeByID, getOutcomeWorkflowByID} from "../../FindState.js";
-import {updateOutcomehorizontallinkDegree} from "../../../../other/src/PostFunctions.js";
+import {updateOutcomehorizontallinkDegree} from "../../PostFunctions.js";
 
 
 export class TableHorizontalOutcomeLinkUnconnected extends React.Component{

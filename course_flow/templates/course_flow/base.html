@@ -104,10 +104,20 @@
       };
     </script>
 
+      <script
+      src="{% static 'course_flow/js/other/src/jquery-temp.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+
+
+
+
+
     <!-- Internal resources -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/dist/scripts.min.js' %}"
+      src="{% static 'course_flow/js/other/dist/csrf-setup.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
@@ -317,7 +327,6 @@
     //global paths for post/get
 
     // @todo this would be better as one config object, easier to type / interface
-
     const config = {
       post_paths: {
         get_possible_linked_workflows:
@@ -395,7 +404,6 @@
         get_public_workflow_child_data: "{% url 'course_flow:get-public-workflow-child-data' pk='0' %}",
         get_public_parent_workflow_info: "{% url 'course_flow:get-public-parent-workflow-info' pk='0' %}",
       },
-
       create_path: {
         activity_strategy: "{% url 'course_flow:activity-strategy-create' %}",
         course_strategy: "{% url 'course_flow:course-strategy-create' %}",
@@ -429,11 +437,10 @@
 
 
     // @todo should not be inline
+    // need to replace template string
     $("#logout").on("click",()=>{
         window.location.replace("{% url 'course_flow:logout' %}");
     });
-
-
 
 
     // @todo should not be inline
@@ -470,7 +477,6 @@
 
       if($(".create-dropdown .list-notification.unread").length>0)$("#notifications").addClass("unread");
     });
-
 
 
 

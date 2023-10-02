@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf, setWorkflowVisibility} from "../../other/src/PostFunctions.js";
+import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf, setWorkflowVisibility} from "./PostFunctions.js";
 import * as LiveProjectViews from "./Components/Views/LiveProjectView.js";
 import * as Constants from "./Constants.js";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./Components/components/CommonComponents.js";
@@ -44,10 +44,10 @@ export class LibraryMenu extends React.Component{
             <div class="hover-shade" id="create-project-button" title={gettext("Create project or strategy")} ref={this.createDiv}>
                 <span class="material-symbols-rounded filled green">add_circle</span>
                 <div id="create-links-project" class="create-dropdown">
-                    <a id="project-create-library" href={create_path.project} class="hover-shade">{gettext("New project")}</a>
+                    <a id="project-create-library" href={config.create_path.project} class="hover-shade">{gettext("New project")}</a>
                     <hr/>
-                    <a id="activity-strategy-create" href={create_path.activity_strategy} class="hover-shade">{gettext("New activity strategy")}</a>
-                    <a id="course-strategy-create" href={create_path.course_strategy} class="hover-shade">{gettext("New course strategy")}</a>
+                    <a id="activity-strategy-create" href={config.create_path.activity_strategy} class="hover-shade">{gettext("New activity strategy")}</a>
+                    <a id="course-strategy-create" href={config.create_path.course_strategy} class="hover-shade">{gettext("New course strategy")}</a>
                 </div>
             </div>
         )
@@ -121,8 +121,8 @@ export class HomeMenu extends React.Component{
         let favourites =  this.state.favourites.map(project=>
             <WorkflowForMenu workflow_data={project} renderer={this.props.renderer}/>
         );
-        let library_path = my_library_path;
-        if(!this.props.renderer.is_teacher)library_path=my_liveprojects_path;
+        let library_path = config.my_library_path;
+        if(!this.props.renderer.is_teacher)library_path=config.my_liveprojects_path;
 
         let project_box;
         if(this.props.renderer.is_teacher){
@@ -158,7 +158,7 @@ export class HomeMenu extends React.Component{
                 <div class="home-item">
                     <div class="home-title-row">
                         <div class="home-item-title">{gettext("Favourites")}</div>
-                        <a class="collapsed-text-show-more" href={my_favourites_path}>{gettext("See all")}</a>
+                        <a class="collapsed-text-show-more" href={config.my_favourites_path}>{gettext("See all")}</a>
                     </div>
                     <div class="menu-grid">
                         {favourites}
@@ -283,7 +283,7 @@ export class ProjectMenu extends LibraryMenu{
         if(data.author_id==user_id){
             if(data.liveproject){
                 liveproject=(
-                    <a id="live-project" class="hover-shade" href={update_path.liveproject.replace("0",data.id)}>{gettext("View Classroom")}</a>
+                    <a id="live-project" class="hover-shade" href={config.update_path.liveproject.replace("0",data.id)}>{gettext("View Classroom")}</a>
                 );
             }else{
                 liveproject=(
@@ -337,7 +337,7 @@ export class ProjectMenu extends LibraryMenu{
         let component=this;
         if(window.confirm(gettext("Are you sure you want to permanently delete this project?"))){
             deleteSelf(this.props.data.id,"project",false,()=>{
-                window.location=home_path;
+                window.location=config.home_path;
             });
         }
     }
@@ -353,7 +353,7 @@ export class ProjectMenu extends LibraryMenu{
         let component = this;
         if(window.confirm(gettext("Are you sure you want to create a live classroom for this project?"))){
             makeProjectLive(this.props.data.id,(data)=>{
-                //window.location = update_path.liveproject.replace("0",component.props.data.id);
+                //window.location = {config.update_path.liveproject.replace("0",component.props.data.id);
                 location.reload();
             });
         }
@@ -496,9 +496,9 @@ export class ProjectMenu extends LibraryMenu{
             <div class="hover-shade" id="create-project-button" title={gettext("Create workflow")} ref={this.createDiv}>
                 <span class="material-symbols-rounded filled">add_circle</span>
                 <div id="create-links-project" class="create-dropdown">
-                    <a id="activity-create-project" href={create_path_this_project.activity} class="hover-shade">{gettext("New activity")}</a>
-                    <a id="course-create-project" href={create_path_this_project.course} class="hover-shade">{gettext("New course")}</a>
-                    <a id="program-create-project" href={create_path_this_project.program} class="hover-shade">{gettext("New program")}</a>
+                    <a id="activity-create-project" href={config.create_path._this_project.activity} class="hover-shade">{gettext("New activity")}</a>
+                    <a id="course-create-project" href={config.create_path._this_project.course} class="hover-shade">{gettext("New course")}</a>
+                    <a id="program-create-project" href={config.create_path._this_project.program} class="hover-shade">{gettext("New program")}</a>
                 </div>
             </div>
         )

@@ -3,7 +3,7 @@ import * as reactDom from "react-dom";
 import {DatePicker, AssignmentTitle, WorkflowTitle, NodeTitle, TitleText, ActionButton, SimpleWorkflow} from "../components/CommonComponents.js";
 import {renderMessageBox,closeMessageBox} from "../components/MenuComponents.js";
 import {WorkflowForMenu} from "../../Library.js"
-import {setAssignmentCompletion, updateLiveProjectValue, createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "../../../../other/src/PostFunctions.js";
+import {setAssignmentCompletion, updateLiveProjectValue, createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "../../PostFunctions.js";
 import {StudentManagement} from "../components/StudentManagement.js";
 import {AssignmentView, AssignmentViewSmall} from "./LiveAssignmentView.js";
 import * as Constants from "../../Constants.js";
@@ -20,7 +20,7 @@ export class LiveProjectMenu extends React.Component{
         let overflow_links = [];
         if(this.props.renderer.user_permission > 0){
             overflow_links.push(
-                <a id="project" class="hover-shade" href={update_path.project.replace("0",data.id)}>{gettext("Edit Project")}</a>
+                <a id="project" class="hover-shade" href={config.update_path.project.replace("0",data.id)}>{gettext("Edit Project")}</a>
             );
         }
 
@@ -439,7 +439,7 @@ export class AssignmentNode extends React.Component{
             props.renderer.project_data.id,
             (response_data)=>{
                 props.renderer.tiny_loader.endLoad();
-                window.location = update_path.liveassignment.replace("0",response_data.assignmentPk);
+                window.location = config.update_path.liveassignment.replace("0",response_data.assignmentPk);
             }
         );
     }
@@ -551,7 +551,7 @@ export class LiveProjectStudents extends LiveProjectSection{
 
         let register_link;
         if(liveproject && liveproject.registration_hash){
-            let register_url = registration_path.replace("project_hash",liveproject.registration_hash);
+            let register_url = config.registration_path.replace("project_hash",liveproject.registration_hash);
             register_link = (
                 <div class="user-text">
                     <div class="user-panel">

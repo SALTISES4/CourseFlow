@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as reactDom from "react-dom";
 import { connect} from "react-redux";
-import { updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem,  getAddedWorkflowMenu, addTerminology} from "../../../../other/src/PostFunctions.js";
+import { updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem,  getAddedWorkflowMenu, addTerminology} from "../../PostFunctions.js";
 import * as Constants from "../../Constants.js";
 import {ShareMenu} from "./ShareMenu.js";
 import {ImportMenu} from "./ImportMenu.js";
@@ -225,14 +225,14 @@ export class MenuSection extends React.Component{
 
 
         let add_button;
-        if(create_path && this.props.add){
+        if(config.create_path && this.props.add){
             let types;
-            if(section_type=="workflow")types=["program","course","activity"];
+            if(section_type==="workflow")types=["program","course","activity"];
             else types=[section_type];
             let adds;
             {
                 adds=types.map((this_type)=>
-                    <a class="hover-shade" href={create_path[this_type]}>
+                    <a class="hover-shade" href={config.create_path[this_type]}>
                         {gettext("Create new ")+gettext(this_type)}
                     </a>
                 );

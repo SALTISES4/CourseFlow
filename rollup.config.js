@@ -52,10 +52,10 @@ const plugins = [
 
 export default [
   {
-    input: 'course_flow/static/course_flow/js/react/src/entry/csrf-setup.js',
+    input: 'course_flow/static/course_flow/js/other/src/csrf-setup.js',
     external: ['jquery'],
     output: {
-      file: 'course_flow/static/course_flow/js/react/dist/scripts.min.js',
+      file: 'course_flow/static/course_flow/js/other/dist/csrf-setup.min.js',
       name: 'root',
       format: 'iife',
       sourceMap: 'inline'

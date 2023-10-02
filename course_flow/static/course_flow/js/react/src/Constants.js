@@ -150,7 +150,6 @@ export const get_verbose = function(data,object_type){
             return data.week_type_display;
     }
     return {
-        "outcome":gettext("Outcome"),
         "outcome_base":gettext("Outcome"),
         "nodelink":gettext("Node Link"),
         "outcome":gettext("Outcome"),

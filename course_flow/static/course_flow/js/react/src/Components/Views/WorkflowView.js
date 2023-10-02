@@ -14,7 +14,7 @@ import StrategyView from "../components/Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "../components/WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "../components/WorkflowLegend.js";
-import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport, toggleDrop, getUsersForObject, getTargetProjectMenu, duplicateBaseItem} from "../../../../other/src/PostFunctions.js";
+import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport, toggleDrop, getUsersForObject, getTargetProjectMenu, duplicateBaseItem} from "../../PostFunctions.js";
 import OutcomeEditView from './OutcomeEditView.js';
 import AlignmentView from './AlignmentView.js';
 import CompetencyMatrixView from './CompetencyMatrixView.js';
@@ -657,14 +657,14 @@ export const WorkflowBaseView = connect(
 //             if(renderer.public_view){
 //                 public_view=[
 //                     <hr/>,
-//                     <a id="public-view" class="hover-shade" href={update_path.workflow.replace("0",data.id)}>
+//                     <a id="public-view" class="hover-shade" href={config.update_path.workflow.replace("0",data.id)}>
 //                         {gettext("Editable Page")}
 //                     </a>
 //                 ];
 //             }else{
 //                 public_view=[
 //                     <hr/>,
-//                     <a id="public-view" class="hover-shade" href={public_update_path.workflow.replace("0",data.id)}>
+//                     <a id="public-view" class="hover-shade" href={public_{config.update_path.workflow.replace("0",data.id)}>
 //                         {gettext("Public Page")}
 //                     </a>
 //                 ];

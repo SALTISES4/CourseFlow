@@ -8,7 +8,7 @@ import OutcomeView from "./OutcomeView.js";
 import {getParentWorkflowByID,getOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getSortedOutcomesFromOutcomeWorkflowSet,getSortedOutcomeNodesFromNodes} from "../../FindState.js";
 import {moveOutcomeWorkflow} from "../../Reducers.js";
 import {renderMessageBox, closeMessageBox} from '../components/MenuComponents.js';
-import {newOutcome, insertedAt} from "../../../../other/src/PostFunctions.js";
+import {newOutcome, insertedAt} from "../../PostFunctions.js";
 import * as Constants from "../../Constants.js";
 
 //Basic component representing the outcome view

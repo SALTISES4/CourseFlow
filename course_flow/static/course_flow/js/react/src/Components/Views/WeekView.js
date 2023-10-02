@@ -6,7 +6,7 @@ import {NodeWeekComparisonView} from "./NodeWeekView.js";
 import {getWeekByID, getNodeWeekByID} from "../../FindState.js";
 import * as Constants from "../../Constants.js";
 import {columnChangeNode, moveNodeWeek} from "../../Reducers.js";
-import {toggleDrop, insertedAt, insertedAtInstant, columnChanged,addStrategy,updateValueInstant} from "../../../../other/src/PostFunctions.js";
+import {toggleDrop, insertedAt, insertedAtInstant, columnChanged,addStrategy,updateValueInstant} from "../../PostFunctions.js";
 import {Loader} from "../../Constants.js";
 
 //Basic component to represent a Week

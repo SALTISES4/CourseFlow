@@ -4,7 +4,7 @@ import * as reactDom from "react-dom";
 import * as Constants from "../../Constants.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 import {reloadCommentsAction} from "../../Reducers.js";
-import {getUsersForObject, restoreSelf, toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "../../../../other/src/PostFunctions.js";
+import {getUsersForObject, restoreSelf, toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "../../PostFunctions.js";
 
 
 //Extends the react component to add a few features that are used in a large number of components
@@ -1258,7 +1258,7 @@ export class AssignmentTitle extends React.Component{
         }
         if(this.props.user_role==Constants.role_keys.teacher){
             return (
-                <a href={update_path.liveassignment.replace("0",data.id)} class="workflow-title hover-shade" title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
+                <a href={config.update_path.liveassignment.replace("0",data.id)} class="workflow-title hover-shade" title={text} dangerouslySetInnerHTML={{ __html: text }}></a>
             )
         }else{
             return (
