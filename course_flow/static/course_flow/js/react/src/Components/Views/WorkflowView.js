@@ -14,7 +14,7 @@ import StrategyView from "../components/Strategy.js";
 import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
 import WorkflowLegend from "../components/WorkflowLegend.js";
 import {WorkflowOutcomeLegend} from "../components/WorkflowLegend.js";
-import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport, toggleDrop, getUsersForObject, getTargetProjectMenu, duplicateBaseItem} from "../../PostFunctions.js";
+import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport, toggleDrop, getUsersForObject, getTargetProjectMenu, duplicateBaseItem} from "../../../../other/src/PostFunctions.js";
 import OutcomeEditView from './OutcomeEditView.js';
 import AlignmentView from './AlignmentView.js';
 import CompetencyMatrixView from './CompetencyMatrixView.js';

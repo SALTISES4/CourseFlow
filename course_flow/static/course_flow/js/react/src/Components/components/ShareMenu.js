@@ -1,7 +1,7 @@
 import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {setUserPermission,getUsersForObject,getUserList,updateValueInstant} from "../../PostFunctions.js";
+import {setUserPermission,getUsersForObject,getUserList,updateValueInstant} from "../../../../other/src/PostFunctions.js";
 import {WorkflowTitle} from "./CommonComponents.js";
 import * as Constants from "../../Constants.js";
 

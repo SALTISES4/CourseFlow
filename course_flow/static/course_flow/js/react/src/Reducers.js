@@ -294,7 +294,7 @@ export function outcomeworkflowReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'outcomeworkflow/movedTo':
@@ -357,7 +357,7 @@ export function columnworkflowReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'columnworkflow/changeID':
@@ -428,7 +428,7 @@ export function columnReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'column/createLock':
@@ -529,7 +529,7 @@ export function weekworkflowReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'weekworkflow/movedTo':
@@ -591,7 +591,7 @@ export function weekReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'week/createLock':
@@ -627,17 +627,8 @@ export function weekReducer(state=[],action){
                 }
             }
             var new_index = action.payload.new_index;
-            //Correction for if we are in a term:
-//            if(action.payload.nodes_by_column){
-//                for(var col in action.payload.nodes_by_column){
-//                    if(action.payload.nodes_by_column[col].indexOf(action.payload.id)>=0){
-//                        let previous = action.payload.nodes_by_column[col][new_index];
-//                        new_index = new_parent.nodeweek_set.indexOf(previous);
-//                    }
-//                }
-//            }
-            
-            
+
+
             var new_state = state.slice();
             old_parent.nodeweek_set= old_parent.nodeweek_set.slice();
             old_parent.nodeweek_set.splice(old_parent.nodeweek_set.indexOf(action.payload.id),1);
@@ -647,7 +638,7 @@ export function weekReducer(state=[],action){
                 new_parent.nodeweek_set = new_parent.nodeweek_set.slice();
                 new_parent.nodeweek_set.splice(new_index,0,action.payload.id);
                 new_state.splice(new_parent_index,1,new_parent);
-                
+
             }
             new_state.splice(old_parent_index,1,old_parent);
             return new_state;
@@ -767,6 +758,7 @@ export function weekReducer(state=[],action){
             return state;
     }
 }
+
 export function nodeweekReducer(state=[],action){
     switch(action.type){
         case 'replaceStoreData':
@@ -788,7 +780,7 @@ export function nodeweekReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'nodeweek/changeID':
@@ -859,7 +851,7 @@ export function nodeReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'node/createLock':
@@ -891,7 +883,7 @@ export function nodeReducer(state=[],action){
             if(action.payload.id){
                 new_column = action.payload.id;
             }
-            
+
             for(var i=0;i<state.length;i++){
                 if(action.payload.extra_data.indexOf(state[i].id)>=0){
                     new_state[i]={...state[i],column:new_column};
@@ -1035,7 +1027,7 @@ export function nodeReducer(state=[],action){
                 let new_node_data = action.payload.extra_data[i];
                 for(var j=0;j<new_state.length;j++){
                     if(new_node_data.id==new_state[j].id){
-                        new_state[j] = {...new_state[j],...new_node_data}          
+                        new_state[j] = {...new_state[j],...new_node_data}
                     }
                 }
             }
@@ -1102,7 +1094,7 @@ export function nodelinkReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'nodelink/createLock':
@@ -1196,7 +1188,7 @@ export function outcomeReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'outcome/createLock':
@@ -1381,7 +1373,7 @@ export function outcomeReducer(state=[],action){
                 let new_outcome_data = action.payload.data[i];
                 for(var j=0;j<new_state.length;j++){
                     if(new_outcome_data.id==new_state[j].id){
-                        new_state[j] = {...new_state[j],...new_outcome_data}          
+                        new_state[j] = {...new_state[j],...new_outcome_data}
                     }
                 }
             }
@@ -1422,7 +1414,7 @@ export function outcomeOutcomeReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'outcomeoutcome/changeID':
@@ -1494,7 +1486,7 @@ export function outcomeNodeReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'outcomenode/updateDegree':
@@ -1564,7 +1556,7 @@ export function outcomeHorizontalLinkReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'outcomehorizontallink/updateDegree':
@@ -1612,7 +1604,7 @@ export function parentNodeReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'outcomenode/updateDegree':
@@ -1639,7 +1631,7 @@ export function parentNodeReducer(state=[],action){
                 let new_node_data = action.payload.extra_data[i];
                 for(var j=0;j<new_state.length;j++){
                     if(new_node_data.id==new_state[j].id){
-                        new_state[j] = {...new_state[j],...new_node_data}          
+                        new_state[j] = {...new_state[j],...new_node_data}
                     }
                 }
             }
@@ -1669,7 +1661,7 @@ export function parentWorkflowReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         default:
@@ -1697,7 +1689,7 @@ export function childWorkflowReducer(state=[],action){
                     if(added)continue;
                     new_state.push(new_obj);
                 }
-                
+
             }
             return new_state;
         case 'outcome_base/deleteSelf':
@@ -1725,7 +1717,7 @@ export function childWorkflowReducer(state=[],action){
             return state;
         case 'outcome_base/insertBelow':
         case 'outcome/newOutcome':
-            for(var i=0;i<state.length;i++){ 
+            for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.new_through.workflow){
                     var new_state = state.slice();
                     new_state[i]={...state[i]};
@@ -1760,7 +1752,7 @@ export function saltiseStrategyReducer(state=[],action){
 export function objectSetReducer(state=[],action){
     switch(action.type){
         case 'objectset/toggleObjectSet':
-            for(var i=0;i<state.length;i++){ 
+            for(var i=0;i<state.length;i++){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state[i]={...new_state[i],hidden:action.payload.hidden};

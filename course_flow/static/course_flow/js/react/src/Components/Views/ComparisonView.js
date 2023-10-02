@@ -4,7 +4,7 @@ import {Provider, connect} from "react-redux";
 import {Component, EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "../components/CommonComponents.js";
 import * as Constants from "../../Constants.js";
 import {renderMessageBox,closeMessageBox} from "../components/MenuComponents.js";
-import {getWorkflowSelectMenu,getWorkflowContext,insertedAt,insertedAtInstant} from "../../PostFunctions.js";
+import {getWorkflowSelectMenu,getWorkflowContext,insertedAt,insertedAtInstant} from "../../../../other/src/PostFunctions.js";
 import {WeekWorkflowComparisonView} from "./WeekWorkflowView.js";
 import {getSortedOutcomesFromOutcomeWorkflowSet} from "../../FindState.js";
 import {OutcomeEditViewUnconnected} from "./OutcomeEditView.js";

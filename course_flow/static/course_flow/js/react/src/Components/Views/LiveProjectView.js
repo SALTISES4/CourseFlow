@@ -3,7 +3,7 @@ import * as reactDom from "react-dom";
 import {DatePicker, AssignmentTitle, WorkflowTitle, NodeTitle, TitleText, ActionButton, SimpleWorkflow} from "../components/CommonComponents.js";
 import {renderMessageBox,closeMessageBox} from "../components/MenuComponents.js";
 import {WorkflowForMenu} from "../../Library.js"
-import {setAssignmentCompletion, updateLiveProjectValue, createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "../../PostFunctions.js";
+import {setAssignmentCompletion, updateLiveProjectValue, createAssignment, getLiveProjectData, getLiveProjectDataStudent, setWorkflowVisibility, getWorkflowNodes} from "../../../../other/src/PostFunctions.js";
 import {StudentManagement} from "../components/StudentManagement.js";
 import {AssignmentView, AssignmentViewSmall} from "./LiveAssignmentView.js";
 import * as Constants from "../../Constants.js";

@@ -4,7 +4,7 @@ import * as reactDom from "react-dom";
 import * as Constants from "../../Constants.js";
 import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
 import {reloadCommentsAction} from "../../Reducers.js";
-import {getUsersForObject, restoreSelf, toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "../../PostFunctions.js";
+import {getUsersForObject, restoreSelf, toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "../../../../other/src/PostFunctions.js";
 
 
 //Extends the react component to add a few features that are used in a large number of components

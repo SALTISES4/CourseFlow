@@ -1,7 +1,7 @@
 import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {setLiveProjectRole,getUsersForLiveProject,getUserList} from "../../PostFunctions.js";
+import {setLiveProjectRole,getUsersForLiveProject,getUserList} from "../../../../other/src/PostFunctions.js";
 import * as Constants from "../../Constants.js";
 
 export class StudentManagement extends React.Component{

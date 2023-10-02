@@ -12,13 +12,13 @@ import {ComparisonView, WorkflowComparisonBaseView} from "../Components/Views/Co
 import * as Constants from "../Constants.js";
 import * as Reducers from "../Reducers.js";
 import OutcomeTopView from '../Components/Views/OutcomeTopView.js';
-import {getTargetProjectMenu, getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from '../PostFunctions.js';
+import {getTargetProjectMenu, getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from '../../../other/src/PostFunctions.js';
 import {ConnectionBar} from '../ConnectedUsers.js'
 import '../../../../css/base_style.css';
 import '../../../../css/workflow_styles.css';
 
 export {Loader} from '../Constants.js';
-export {fail_function} from '../PostFunctions.js';
+export {fail_function} from '../../../other/src/PostFunctions.js';
 
 //Manages the current selection, ensuring we only have one at a time
 export class SelectionManager{

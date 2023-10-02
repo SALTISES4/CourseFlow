@@ -2,7 +2,7 @@ import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
-import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf, setWorkflowVisibility} from "./PostFunctions.js";
+import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf, setWorkflowVisibility} from "../../other/src/PostFunctions.js";
 import * as LiveProjectViews from "./Components/Views/LiveProjectView.js";
 import * as Constants from "./Constants.js";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./Components/components/CommonComponents.js";

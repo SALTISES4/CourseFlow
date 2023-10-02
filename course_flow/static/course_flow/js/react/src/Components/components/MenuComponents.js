@@ -1,15 +1,12 @@
-import * as Redux from "redux";
 import * as React from "react";
 import * as reactDom from "react-dom";
-import {Provider, connect} from "react-redux";
-import {makeProjectLive, updateValueInstant, deleteSelf, restoreSelf, setLinkedWorkflow, duplicateBaseItem, getDisciplines, toggleFavourite, getTargetProjectMenu, getAddedWorkflowMenu, addTerminology, getExport} from "../../PostFunctions.js";
-import {gridMenuItemAdded} from "../../Reducers.js";
+import { connect} from "react-redux";
+import { updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem,  getAddedWorkflowMenu, addTerminology} from "../../../../other/src/PostFunctions.js";
 import * as Constants from "../../Constants.js";
 import {ShareMenu} from "./ShareMenu.js";
 import {ImportMenu} from "./ImportMenu.js";
 import {ExportMenu} from "./ExportMenu.js";
 import {WorkflowForMenu} from "../../Library.js";
-import {WorkflowTitle} from "./CommonComponents.js";
 import {LiveProjectSettings} from "../Views/LiveProjectView.js";
 
 
@@ -20,19 +17,19 @@ The choice of which menu is displayed is determined by props.message_type.
 export class MessageBox extends React.Component{
     render(){
         var menu;
-        if(this.props.message_type=="linked_workflow_menu"||this.props.message_type=="target_project_menu" || this.props.message_type=="added_workflow_menu" || this.props.message_type=="workflow_select_menu")menu=(
+        if(this.props.message_type === "linked_workflow_menu"||this.props.message_type==="target_project_menu" || this.props.message_type==="added_workflow_menu" || this.props.message_type==="workflow_select_menu")menu=(
             <WorkflowsMenu type={this.props.message_type} data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
-        if(this.props.message_type=="project_edit_menu")menu=(
+        if(this.props.message_type==="project_edit_menu")menu=(
             <ProjectEditMenu type={this.props.message_type} data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
-        if(this.props.message_type=="share_menu")menu=(
+        if(this.props.message_type==="share_menu")menu=(
             <ShareMenu data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
-        if(this.props.message_type=="import")menu=(
+        if(this.props.message_type==="import")menu=(
             <ImportMenu data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
-        if(this.props.message_type=="export")menu=(
+        if(this.props.message_type==="export")menu=(
             <ExportMenu data={this.props.message_data} actionFunction={this.props.actionFunction}/>
         );
         return(

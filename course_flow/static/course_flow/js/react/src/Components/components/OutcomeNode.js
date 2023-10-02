@@ -4,7 +4,7 @@ import {Provider, connect} from "react-redux";
 import {Component, ActionButton} from "./CommonComponents.js";
 import {SimpleOutcomeView} from "../Views/OutcomeView.js";
 import {getOutcomeNodeByID, getTableOutcomeNodeByID, getOutcomeByID, getOutcomeOutcomeByID, getNodeByID, getChildWorkflowByID, getOutcomeWorkflowByID} from "../../FindState.js";
-import {updateOutcomenodeDegree} from "../../PostFunctions.js";
+import {updateOutcomenodeDegree} from "../../../../other/src/PostFunctions.js";
 import * as Constants from "../../Constants.js";
 import {TableChildWorkflowView} from "./OutcomeHorizontalLink.js"
 

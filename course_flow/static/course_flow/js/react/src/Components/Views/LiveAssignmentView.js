@@ -2,7 +2,7 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {WorkflowTitle, AssignmentTitle, TitleText, ActionButton, DatePicker} from "../components/CommonComponents.js";
 import {renderMessageBox,closeMessageBox} from "../components/MenuComponents.js";
-import {getAssignmentsForNode, deleteSelfLive, setAssignmentCompletion, addUsersToAssignment, updateLiveProjectValue,createAssignment, getAssignmentData, getAssignmentDataStudent, setWorkflowVisibility, getWorkflowNodes} from "../../PostFunctions.js";
+import {getAssignmentsForNode, deleteSelfLive, setAssignmentCompletion, addUsersToAssignment, updateLiveProjectValue,createAssignment, getAssignmentData, getAssignmentDataStudent, setWorkflowVisibility, getWorkflowNodes} from "../../../../other/src/PostFunctions.js";
 import {StudentManagement} from "../components/StudentManagement.js";
 import {WorkflowVisibility} from "./LiveProjectView.js";
 import {reloadAssignmentsAction} from "../../Reducers.js";

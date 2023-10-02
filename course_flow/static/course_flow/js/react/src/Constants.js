@@ -185,29 +185,7 @@ export const get_default_drop_state = (objectID,objectType,depth=1)=>{
     }
     return default_drop;
 }
-//get all the possible custom names. This is super clunky, should probably be switched to ngettext
-//export function custom_text_base(){
-//    return {
-//        "program outcome":{
-//            "singular_key":"program outcome",
-//            "singular":gettext("program outcome"),
-//            "plural_key":"program outcomes",
-//            "plural":gettext("program outcomes"),
-//        },
-//        "course outcome":{
-//            "singular_key":"course outcome",
-//            "singular":gettext("course outcome"),
-//            "plural_key":"course outcomes",
-//            "plural":gettext("course outcomes"),
-//        },
-//        "activity outcome":{
-//            "singular_key":"activity outcome",
-//            "singular":gettext("activity outcome"),
-//            "plural_key":"activity outcomes",
-//            "plural":gettext("activity outcomes"),
-//        },
-//    }
-//}
+
 //get all possible object sets
 export function object_sets_types(){
     return {

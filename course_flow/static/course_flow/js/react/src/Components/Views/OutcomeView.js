@@ -7,7 +7,7 @@ import {OutcomeBarOutcomeOutcomeView, SimpleOutcomeOutcomeView, SimpleOutcomeOut
 import {TableOutcomeGroup, TableTotalCell} from "../components/OutcomeNode.js";
 import {getOutcomeByID, getOutcomeHorizontalLinkByID} from "../../FindState.js";
 import {moveOutcomeOutcome} from "../../Reducers.js";
-import {updateOutcomenodeDegree, updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant, insertedAtInstant} from "../../PostFunctions.js";
+import {updateOutcomenodeDegree, updateOutcomehorizontallinkDegree,insertedAt, updateValueInstant, insertedAtInstant} from "../../../../other/src/PostFunctions.js";
 import * as Constants from "../../Constants.js";
 
 //Basic component representing an outcome
