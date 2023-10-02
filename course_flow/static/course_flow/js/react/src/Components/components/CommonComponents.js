@@ -1158,7 +1158,7 @@ export class SimpleWorkflow extends React.Component{
         if(this.props.selectAction){
             this.props.selectAction(this.props.workflow_data.id);
         }else{
-            window.location.href=update_path[this.props.workflow_data.type].replace("0",this.props.workflow_data.id);
+            window.location.href=config.update_path[this.props.workflow_data.type].replace("0",this.props.workflow_data.id);
         }
     }
 
@@ -1193,7 +1193,7 @@ export class WorkflowTitle extends React.Component{
             text+=" (deleted)";
         }
         let href = data.url;
-        if(!data.url)href=update_path[data.type].replace("0",data.id);
+        if(!data.url)href=config.update_path[data.type].replace("0",data.id);
 
         if(this.props.no_hyperlink || data.url == "noaccess" || data.url == "nouser"){
             return (

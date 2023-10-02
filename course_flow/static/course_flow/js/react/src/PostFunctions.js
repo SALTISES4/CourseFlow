@@ -649,7 +649,7 @@ export function getPublicWorkflowChildData(nodePk,callBackFunction=()=>console.l
 //Get the list of possible disciplines
 export function getDisciplines(callBackFunction=()=>console.log("success")){
     try{
-        $.get(get_paths.get_disciplines).done(function(data){
+        $.get(config.get_paths.get_disciplines).done(function(data){
             callBackFunction(data);
         });
     }catch(err){
@@ -666,7 +666,7 @@ export function setUserPermission(user_id,objectID,objectType,permission_type,ca
             permission_user:JSON.stringify(user_id),
             permission_type:JSON.stringify(permission_type)
         }).done(function(data){
-            if(data.action=="posted")callBackFunction(data);
+            if(data.action==="posted")callBackFunction(data);
             else fail_function(data.error)
         });
     }catch(err){
@@ -1024,7 +1024,7 @@ export function getAssignmentsForNode(nodePk,callBackFunction=()=>console.log("s
 //Get the library projects
 export function getLibrary(callBackFunction=()=>console.log("success")){
     try{
-        $.get(get_paths.get_library).done(function(data){
+        $.get(config.get_paths.get_library).done(function(data){
             callBackFunction(data);
         });
     }catch(err){
@@ -1035,7 +1035,7 @@ export function getLibrary(callBackFunction=()=>console.log("success")){
 //Get the library projects
 export function getFavourites(callBackFunction=()=>console.log("success")){
     try{
-        $.get(get_paths.get_favourites).done(function(data){
+        $.get(config.get_paths.get_favourites).done(function(data){
             callBackFunction(data);
         });
     }catch(err){
@@ -1046,7 +1046,7 @@ export function getFavourites(callBackFunction=()=>console.log("success")){
 //Get the home projects
 export function getHome(callBackFunction=()=>console.log("success")){
     try{
-        $.get(get_paths.get_home).done(function(data){
+        $.get(config.get_paths.get_home).done(function(data){
             callBackFunction(data);
         });
     }catch(err){

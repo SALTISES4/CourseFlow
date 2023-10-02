@@ -110,22 +110,16 @@
       charset="utf-8"
     ></script>
 
-
-
-
-
     <!-- Internal resources -->
-    {% compress js %}
     <script
       src="{% static 'course_flow/js/other/dist/csrf-setup.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
-    {% endcompress %}
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/dist/scripts-wf-redux.min.js' %}"
+      src="{% static 'course_flow/js/react/dist/scripts-wf-redux.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
@@ -133,7 +127,7 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/dist/scripts-live.min.js' %}"
+      src="{% static 'course_flow/js/react/dist/scripts-live.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
@@ -141,7 +135,7 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/dist/scripts-library.min.js' %}"
+      src="{% static 'course_flow/js/react/dist/scripts-library.min.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
@@ -162,7 +156,7 @@
     {% compress css %}
     <link
       rel="stylesheet"
-      href="{% static 'course_flow/js/dist/course_flow.css' %}"
+      href="{% static 'course_flow/js/react/dist/course_flow.css' %}"
     />
     {% endcompress %}
     {% block header %}{% endblock %}
@@ -442,12 +436,6 @@
         window.location.replace("{% url 'course_flow:logout' %}");
     });
 
-
-    // @todo should not be inline
-    makeDropdown("#overflow-options","#overflow-links");
-    makeDropdown("#account-options","#account-links");
-    makeDropdown("#notifications","#notifications-dropdown");
-    makeDropdown("#create-options","#create-links");
 
     //reload if we got here using forward or back button
     if (

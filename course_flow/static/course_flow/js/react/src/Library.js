@@ -57,7 +57,7 @@ export class LibraryMenu extends React.Component{
     getOverflowLinks(){
         let overflow_links = [];
         overflow_links.push(
-            <a id="import-old" class="hover-shade" href={get_paths.import}>
+            <a id="import-old" class="hover-shade" href={config.get_paths.import}>
                 {gettext("Import from old CourseFlow")}
             </a>
         );
@@ -377,7 +377,7 @@ export class ProjectMenu extends LibraryMenu{
                 loader.startLoad();
                 duplicateBaseItem(this.props.data.id,this.props.data.type,null,(response_data)=>{
                     loader.endLoad();
-                    window.location = update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
+                    window.location = config.update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
                 })
             }}>
                 <div>{gettext("Copy to my library")}</div>
@@ -1229,13 +1229,13 @@ export class WorkflowForMenu extends React.Component{
         if(this.props.selectAction){
             this.props.selectAction(this.props.workflow_data.id);
         }else{
-            window.location.href=update_path[this.props.workflow_data.type].replace("0",this.props.workflow_data.id);
+            window.location.href=config.update_path[this.props.workflow_data.type].replace("0",this.props.workflow_data.id);
         }
     }
 
     getVisible(){
         let component=this;
-        if(this.props.renderer && !this.props.renderer.read_only && this.props.renderer.user_role==Constants.role_keys.teacher && this.props.workflow_data.type!="project" && this.props.workflow_data.type!="liveproject" && this.props.renderer && this.props.renderer.user_role==Constants.role_keys.teacher)return (
+        if(this.props.renderer && !this.props.renderer.read_only && this.props.renderer.user_role === Constants.role_keys.teacher && this.props.workflow_data.type !== "project" && this.props.workflow_data.type !== "liveproject" && this.props.renderer && this.props.renderer.user_role === Constants.role_keys.teacher)return (
             <div class="permission-select" onClick={(evt)=>evt.stopPropagation()} onMouseDown={(evt)=>evt.stopPropagation()}>
                 <select value={this.props.workflow_data.is_visible} onChange={(evt)=>component.visibilityFunction(this.props.workflow_data.id,evt.target.value)}>
                     <option value={"false"}>{gettext("Not Visible")}</option>

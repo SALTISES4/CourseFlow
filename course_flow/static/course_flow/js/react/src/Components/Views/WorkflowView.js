@@ -269,7 +269,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
     deleteWorkflowHard(){
         if(window.confirm(gettext("Are you sure you want to permanently delete this workflow?"))){
             deleteSelf(this.props.data.id,"workflow",false,()=>{
-                window.location=update_path["project"].replace(0,renderer.project.id);
+                window.location=config.update_path["project"].replace(0,renderer.project.id);
             });
         }
     }
@@ -299,7 +299,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                     loader.startLoad();
                     duplicateBaseItem(this.props.data.id,this.props.data.type,null,(response_data)=>{
                         loader.endLoad();
-                        window.location = update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
+                        window.location = config.update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
                     })
                 }else{
                     getTargetProjectMenu(-1,(response_data)=>{
@@ -307,7 +307,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                             let loader = new Constants.Loader('body');
                             duplicateBaseItem(this.props.data.id,this.props.data.type,response_data.parentID,(response_data)=>{
                                 loader.endLoad();
-                                window.location = update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
+                                window.location = config.update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
                             })
                         }
                     });
@@ -321,7 +321,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 let loader = this.props.renderer.tiny_loader;
                 duplicateBaseItem(this.props.data.id,this.props.data.type,this.props.renderer.project.id,(response_data)=>{
                     loader.endLoad();
-                    window.location = update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
+                    window.location = config.update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
                 });
             }}>
                 <div>{gettext("Copy into current project")}</div>
@@ -362,7 +362,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let return_links = [];
         if(renderer.project && !renderer.is_student && !renderer.public_view){
             return_links.push(
-                <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+                <a class="hover-shade no-underline" id='project-return' href={config.update_path["project"].replace(0,renderer.project.id)}>
                     <span class="material-symbols-rounded green">arrow_back_ios</span>
                     <div>
                         {gettext("Return to project")} (<WorkflowTitle class_name="inline" no_hyperlink={true} data={renderer.project}/>)
@@ -372,7 +372,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         }
         if(renderer.public_view && renderer.can_view){
             return_links.push(
-                <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+                <a class="hover-shade no-underline" id='project-return' href={config.update_path["project"].replace(0,renderer.project.id)}>
                     <span class="material-symbols-rounded green">arrow_back_ios</span>
                     <div>{gettext("Return to Editable Workflow")}</div>
                 </a>

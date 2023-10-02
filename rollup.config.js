@@ -8,11 +8,17 @@ import terser from '@rollup/plugin-terser';
 import postcss from 'rollup-plugin-postcss';
 import react from 'react';
 import reactDom from 'react-dom';
+import path from 'path'
+
+const bundleRoot = 'course_flow/static/course_flow/js/react/dist/'
 
 const plugins = [
+
+  // bug in postCSS polugin does not allow paths outside of the bundleRoot
   postcss({
     extensions: ['.css'],
     extract: 'course_flow.css',
+    modules: true,
     plugins: [ autoprefixer ],
   }),
   nodeResolve({
@@ -65,7 +71,7 @@ export default [
   {
     input: 'course_flow/static/course_flow/js/react/src/entry/scripts-wf-redux.js',
     output: {
-      file: 'course_flow/static/course_flow/js/react/dist/scripts-wf-redux.min.js',
+      file: `${bundleRoot}scripts-wf-redux.min.js`,
       name: 'renderers',
       format: 'iife',
       sourceMap: 'inline'
@@ -75,7 +81,7 @@ export default [
   {
     input: 'course_flow/static/course_flow/js/react/src/entry/scripts-live.js',
     output: {
-      file: 'course_flow/static/course_flow/js/react/dist/scripts-live.min.js',
+      file: `${bundleRoot}scripts-live.min.js`,
       name: 'live_renderers',
       format: 'iife',
       sourceMap: 'inline'
@@ -85,7 +91,7 @@ export default [
   {
     input: 'course_flow/static/course_flow/js/react/src/entry/scripts-library.js',
     output: {
-      file: 'course_flow/static/course_flow/js/react/dist/scripts-library.min.js',
+      file: `${bundleRoot}scripts-library.min.js`,
       name: 'library_renderers',
       format: 'iife',
       sourceMap: 'inline'
