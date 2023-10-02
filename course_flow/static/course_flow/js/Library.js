@@ -3,10 +3,10 @@ import * as React from "react";
 import * as reactDom from "react-dom";
 import {Provider, connect} from "react-redux";
 import {getLibrary, getFavourites, getHome, getWorkflowsForProject, searchAllObjects, getDisciplines, toggleFavourite, getUsersForObject, duplicateBaseItem, makeProjectLive, deleteSelf, restoreSelf, setWorkflowVisibility} from "./PostFunctions";
-import * as LiveProjectViews from "./LiveProjectView";
+import * as LiveProjectViews from "./Components/Views/LiveProjectView.js";
 import * as Constants from "./Constants";
-import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./CommonComponents";
-import {MessageBox, renderMessageBox, closeMessageBox} from "./MenuComponents";
+import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./Components/components/CommonComponents.js";
+import {MessageBox, renderMessageBox, closeMessageBox} from "./Components/components/MenuComponents.js";
 
 /*
 The main library menu
@@ -372,7 +372,7 @@ export class ProjectMenu extends LibraryMenu{
     getCopyButton(){
         if(!user_id)return null;
         let export_button = (
-            <div id="copy-button" class="hover-shade" onClick={()=>{ 
+            <div id="copy-button" class="hover-shade" onClick={()=>{
                 let loader = this.props.renderer.tiny_loader;
                 loader.startLoad();
                 duplicateBaseItem(this.props.data.id,this.props.data.type,null,(response_data)=>{
@@ -585,7 +585,7 @@ export class WorkflowFilter extends Component{
             workflows = workflows.map(workflow=>
                 <WorkflowForMenu renderer={this.props.renderer} key={workflow.type+workflow.id} workflow_data={workflow} context={this.props.context} updateWorkflow={this.props.updateWorkflow}/>
             );
-        } 
+        }
         let search_results=this.state.search_results.map(workflow=>
             <WorkflowForMenuCondensed key={workflow.type+workflow.id} workflow_data={workflow} context={this.props.context}/>
         );
@@ -796,7 +796,7 @@ export class WorkflowFilter extends Component{
 /*
 As the workflow filter, but for the explore menu. There are several critical differences.
 First, the data must be retrieved on every update to the filters/sort methods, as it will be paginated.
-Second, the workflow type becomes its own filter. 
+Second, the workflow type becomes its own filter.
 Third, a new discipline-based filter is added.
 */
 export class ExploreFilter extends WorkflowFilter{

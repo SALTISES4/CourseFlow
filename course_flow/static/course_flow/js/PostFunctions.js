@@ -1,4 +1,4 @@
-import {renderMessageBox} from "./MenuComponents";
+import {renderMessageBox} from "./Components/components/MenuComponents.js";
 import {changeField} from "./Reducers";
 import * as Constants from "./Constants"
 
@@ -123,7 +123,7 @@ export function updateValue(objectID,objectType,json,changeField=false,callBackF
     var t = 1000;
     let previousCall = document.lastUpdateCall;
     document.lastUpdateCall = {time:Date.now(),id:objectID,type:objectType,field:Object.keys(json)[0]};
-    
+
     if(previousCall && ((document.lastUpdateCall.time-previousCall.time)<=t)){
         clearTimeout(document.lastUpdateCallTimer);
     }
@@ -198,7 +198,7 @@ export function newNode(weekPk,position=-1,column=-1,column_type=-1,callBackFunc
     }
 }
 
-    
+
 //Add a new outcome to a workflow
 export function newOutcome(workflowPk,object_set_id,callBackFunction=()=>console.log("success")){
     try{
@@ -213,7 +213,7 @@ export function newOutcome(workflowPk,object_set_id,callBackFunction=()=>console
         fail_function();
     }
 }
-  
+
 //Create a nodelink from the source to the target, at the given ports
 export function newNodeLink(source_node,target_node,source_port,target_port,callBackFunction=()=>console.log("success")){
     try{
@@ -231,7 +231,7 @@ export function newNodeLink(source_node,target_node,source_port,target_port,call
     }catch(err){
         fail_function();
     }
-}  
+}
 
 //Add a strategy to the workflow
 export function addStrategy(workflowPk,position=-1,strategyPk=-1,callBackFunction=()=>console.log("success")){
@@ -460,7 +460,7 @@ export function dragAction(renderer,action_data,callBackFunction=()=>console.log
     try{
         renderer.tiny_loader.startLoad();
         $(".ui-draggable").draggable("disable");
-        $.post(post_paths.inserted_at, 
+        $.post(post_paths.inserted_at,
             action_data
         ).done(function(data){
             if(data.action == "posted") callBackFunction(data);
@@ -480,7 +480,7 @@ export function insertedAtInstant(renderer,objectID,objectType,parentID,parentTy
     try{
         renderer.tiny_loader.startLoad();
         $(".ui-draggable").draggable("disable");
-        $.post(post_paths.inserted_at,{ 
+        $.post(post_paths.inserted_at,{
                 objectID:JSON.stringify(objectID),
                 objectType:JSON.stringify(objectType),
                 parentID:JSON.stringify(parentID),
@@ -573,8 +573,8 @@ export function duplicateBaseItem(itemPk,objectType,projectID,callBackFunction=(
         fail_function();
     }
 
-    
-    
+
+
 }
 
 //Get the data from the workflow

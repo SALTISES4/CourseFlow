@@ -1,4 +1,7 @@
-
+/**
+ * @TODO MOVE THIS OUT OF REACT FOLDER
+ * figure out what it does
+ */
 $.ajaxSetup({
   beforeSend: function(xhr, settings) {
     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {

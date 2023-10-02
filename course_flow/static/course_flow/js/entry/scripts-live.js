@@ -1,8 +1,12 @@
+/**
+ * @TODO why is this different than scripts-library.js
+ */
+
 import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as React from "react";
-import {LiveProjectMenu, StudentLiveProjectMenu} from "../LiveProjectView";
-import {LiveAssignmentMenu} from "../LiveAssignmentView";
+import {LiveProjectMenu, StudentLiveProjectMenu} from "../Components/Views/LiveProjectView.js";
+import {LiveAssignmentMenu} from "../Components/Views/LiveAssignmentView.js";
 import 'flatpickr/dist/flatpickr.css';
 
 

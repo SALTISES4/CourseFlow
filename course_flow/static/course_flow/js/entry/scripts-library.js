@@ -1,3 +1,7 @@
+/**
+ * Individual Page/View React Renderers
+ */
+
 import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as React from "react";

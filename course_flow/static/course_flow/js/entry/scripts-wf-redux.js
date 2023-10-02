@@ -5,13 +5,13 @@ import * as Redux from "redux";
 import * as React from "react";
 import {Provider, connect} from 'react-redux';
 import {configureStore, createStore} from '@reduxjs/toolkit';
-import {WorkflowBaseView} from "../WorkflowView";
-import {WorkflowGridMenu, renderMessageBox} from "../MenuComponents";
-import {WorkflowView_Outcome} from"../WorkflowView";
-import {ComparisonView, WorkflowComparisonBaseView} from "../ComparisonView";
+import {WorkflowBaseView} from "../Components/Views/WorkflowView.js";
+import {WorkflowGridMenu, renderMessageBox} from "../Components/components/MenuComponents.js";
+import {WorkflowView_Outcome} from "../Components/Views/WorkflowView.js";
+import {ComparisonView, WorkflowComparisonBaseView} from "../Components/Views/ComparisonView.js";
 import * as Constants from "../Constants";
 import * as Reducers from "../Reducers";
-import OutcomeTopView from '../OutcomeTopView';
+import OutcomeTopView from '../Components/Views/OutcomeTopView.js';
 import {getTargetProjectMenu, getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from '../PostFunctions';
 import {ConnectionBar} from '../ConnectedUsers'
 import '../../css/base_style.css';
@@ -441,10 +441,8 @@ export class WorkflowRenderer{
             $("#userbar")[0]
         );
     }
-
-
-
 }
+
 
 export class ComparisonRenderer{
     constructor(project_data){
