@@ -34,6 +34,7 @@ partner*.png
 pytest-logs.txt
 scripts/
 src
+!/course_flow/static/course_flow/js/src/
 tags
 
 # Django stuff:
