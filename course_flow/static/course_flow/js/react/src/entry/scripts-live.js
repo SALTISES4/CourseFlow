@@ -1,8 +1,6 @@
 /**
  * @TODO why is this different than scripts-library.js
  */
-
-import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as React from "react";
 import {LiveProjectMenu, StudentLiveProjectMenu} from "../Components/Views/LiveProjectView.js";
@@ -30,11 +28,10 @@ export class LiveProjectRenderer{
     }
 
     getContents(){
-        if(user_role == 2){
+        if(user_role === 2){
             return <LiveProjectMenu renderer={this} project={this.project_data} liveproject={this.live_project_data}/>
-        }else{
-            return <StudentLiveProjectMenu renderer={this} project={this.project_data} liveproject={this.live_project_data}/>
         }
+        return <StudentLiveProjectMenu renderer={this} project={this.project_data} liveproject={this.live_project_data}/>
     }
 }
 

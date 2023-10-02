@@ -1,8 +1,6 @@
 /**
  * Individual Page/View React Renderers
  */
-
-import {Component, createRef} from "react";
 import * as reactDom from "react-dom";
 import * as React from "react";
 import {ExploreMenu, LibraryMenu, ProjectMenu, HomeMenu, FavouritesMenu} from "../Library.js";
@@ -62,7 +60,7 @@ export class ProjectRenderer{
         this.read_only=true;
         if(
             project_data.object_permission &&
-            project_data.object_permission.permission_type==Constants.permission_keys["edit"]
+            project_data.object_permission.permission_type === Constants.permission_keys["edit"]
         )this.read_only=false;
         this.user_role = user_role;
         this.user_permission = user_permission;

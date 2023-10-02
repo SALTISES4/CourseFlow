@@ -14,8 +14,8 @@ import * as Reducers from "../Reducers.js";
 import OutcomeTopView from '../Components/Views/OutcomeTopView.js';
 import {getTargetProjectMenu, getWorkflowData, getWorkflowParentData, getWorkflowChildData, getPublicWorkflowData, getPublicWorkflowParentData, getPublicWorkflowChildData, updateValue} from '../PostFunctions.js';
 import {ConnectionBar} from '../ConnectedUsers.js'
-import '../../../css/base_style.css';
-import '../../../css/workflow_styles.css';
+import '../../../../css/base_style.css';
+import '../../../../css/workflow_styles.css';
 
 export {Loader} from '../Constants.js';
 export {fail_function} from '../PostFunctions.js';

@@ -315,6 +315,8 @@
   {% block common_scripts %}
   <script nonce="{{request.csp_nonce}}">
     //global paths for post/get
+
+    // @todo this would be beter as one config object, easier to type / interface
     const post_paths = {
       get_possible_linked_workflows:
         "{% url 'course_flow:get-possible-linked-workflows' %}",
@@ -421,10 +423,12 @@
     const my_liveprojects_path = "{% url 'course_flow:my-live-projects' %}"
     const registration_path = "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}";
 
+    // @todo should not be inline
     $("#logout").on("click",()=>{
         window.location.replace("{% url 'course_flow:logout' %}");
     });
 
+    // @todo should not be inline
     const debounce = (func,timeout=300)=>{
       let timer;
       return(...args)=>{
@@ -433,10 +437,12 @@
       };
     }
 
+    // @todo should not be inline
     const makeActiveSidebar = function(id){
       $(id).addClass("active");
     }
 
+    // @todo should not be inline
     const makeDropdown = (click_element)=>{
       let checkPosition = ()=>{
         let width = $(click_element).children(".create-dropdown").outerWidth(true);
@@ -458,6 +464,8 @@
       // check_position();
       // window.addEventListener("resize",check_position);
     }
+
+    // @todo should not be inline
     makeDropdown("#overflow-options","#overflow-links");
     makeDropdown("#account-options","#account-links");
     makeDropdown("#notifications","#notifications-dropdown");
@@ -492,6 +500,10 @@
       if($(".create-dropdown .list-notification.unread").length>0)$("#notifications").addClass("unread");
     });
 
+
+
+
+    // @todo should not be inline
     //Fix Quilljs's link sanitization
     const Link = Quill.import('formats/link')
     // Override the existing property on the Quill global object and add custom protocols
@@ -517,14 +529,18 @@
       }
     }
 
+    // @todo should not be inline
     Quill.register(CustomLinkSanitizer, true)
 
 
   </script>
-  {% endblock %} {% block read_only_scripts %} {% endblock %}
+  {% endblock %}
+  <!-- -->
+  {% block read_only_scripts %} {% endblock %}
   <!-- -->
     {% block scripts %}
     <script nonce="{{ request.csp_nonce }}">
+
         window.addEventListener("beforeprint",()=>{
         $(".hide-print").hide();
         $(".workflow-wrapper, #container, body").addClass("printing");
