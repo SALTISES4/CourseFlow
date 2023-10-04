@@ -89,7 +89,7 @@ class OutcomeView extends EditableComponentWithSorting{
                 {data.depth < 2 && data.child_outcome_links.length>0 &&
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
-                            <img src={config.iconpath+dropIcon+".svg"}/>
+                            <img src={config.icon_path+dropIcon+".svg"}/>
                         </div>
                         <div class = "outcome-drop-text">
                             {droptext}
@@ -254,7 +254,7 @@ export class OutcomeBarOutcomeViewUnconnected extends Component{
                 {data.depth < 2 && data.child_outcome_links.length>0 &&
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
-                            <img src={config.iconpath+dropIcon+".svg"}/>
+                            <img src={config.icon_path+dropIcon+".svg"}/>
                         </div>
                         <div class = "outcome-drop-text">
                             {droptext}
@@ -402,7 +402,7 @@ export class SimpleOutcomeViewUnconnected extends EditableComponentWithComments{
                 {data.depth < 2 && data.child_outcome_links.length>0 &&
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
-                            <img src={config.iconpath+dropIcon+".svg"}/>
+                            <img src={config.icon_path+dropIcon+".svg"}/>
                         </div>
                         <div class = "outcome-drop-text">
                             {droptext}
@@ -521,7 +521,7 @@ class TableOutcomeViewUnconnected extends Component{
                     {data.child_outcome_links.length>0 &&
                         <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                             <div class = "outcome-drop-img">
-                                <img src={config.iconpath+dropIcon+".svg"}/>
+                                <img src={config.icon_path+dropIcon+".svg"}/>
                             </div>
                             <div class = "outcome-drop-text">
                                 {droptext}
@@ -705,17 +705,17 @@ class TableCell extends React.Component{
     getContents(completion_status,self_completion){
         if(completion_status===0){
             return (
-                <img src={config.iconpath+'nocheck.svg'}/>
+                <img src={config.icon_path+'nocheck.svg'}/>
             );
         }else if(!completion_status){
             return "";
         }
         if(this.props.outcomes_type==0 || completion_status & 1){
             if(self_completion)return(
-                <img class="self-completed" src={config.iconpath+'solid_check.svg'}/>
+                <img class="self-completed" src={config.icon_path+'solid_check.svg'}/>
             );
             else return (
-                <img src={config.iconpath+'check.svg'}/>
+                <img src={config.icon_path+'check.svg'}/>
             );
         }
         let contents=[];

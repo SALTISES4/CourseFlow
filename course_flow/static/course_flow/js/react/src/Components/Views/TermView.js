@@ -68,7 +68,7 @@ class TermView extends WeekViewUnconnected{
                 </div>
                 <div class = "week-drop-row hover-shade" onClick={this.toggleDrop.bind(this)}>
                     <div class = "node-drop-side node-drop-left"></div>
-                    <div class = "node-drop-middle"><img src={config.iconpath+dropIcon+".svg"}/></div>
+                    <div class = "node-drop-middle"><img src={config.icon_path+dropIcon+".svg"}/></div>
                     <div class = "node-drop-side node-drop-right">
                     </div>
                 </div>

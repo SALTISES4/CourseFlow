@@ -26,7 +26,7 @@ export class ImportMenu extends React.Component{
                 <iframe hidden name="redirect-iframe" id='redirect-iframe'></iframe>
                 <p>{gettext("The uploading process may take some time. It is not recommended to continue editing until it is complete.")}</p>
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
-                    <img src = {config.iconpath+"close.svg"}/>
+                    <img src = {config.icon_path+"close.svg"}/>
                 </div>
             </div>
         );

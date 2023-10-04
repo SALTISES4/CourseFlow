@@ -60,7 +60,7 @@ export class WeekViewUnconnected extends EditableComponentWithSorting{
                 </div>
                 <div class = "week-drop-row hover-shade" onClick={this.toggleDrop.bind(this)}>
                     <div class = "node-drop-side node-drop-left"></div>
-                    <div class = "node-drop-middle"><img src={config.iconpath+dropIcon+".svg"}/></div>
+                    <div class = "node-drop-middle"><img src={config.icon_path+dropIcon+".svg"}/></div>
                     <div class = "node-drop-side node-drop-right">
                     </div>
                 </div>
@@ -74,7 +74,7 @@ export class WeekViewUnconnected extends EditableComponentWithSorting{
                                     renderer.strategy_classification_choices.find(
                                         (obj)=>obj.type==data.strategy_classification
                                     ).name
-                                } src= {config.iconpath+Constants.strategy_keys[data.strategy_classification]+".svg"}/>
+                                } src= {config.icon_path+Constants.strategy_keys[data.strategy_classification]+".svg"}/>
                             </div>
                         </div>
                     </div>
@@ -305,8 +305,8 @@ export class NodeBarWeekViewUnconnected extends React.Component{
         let renderer = this.props.renderer;
         let default_text;
         if(!renderer.is_strategy)default_text = data.week_type_display+" "+(this.props.rank+1);
-        let src = config.iconpath+"plus.svg";
-        if(data.is_dropped)src=config.iconpath+"minus.svg";
+        let src = config.icon_path+"plus.svg";
+        if(data.is_dropped)src=config.icon_path+"minus.svg";
         return (
             <div class="hover-shade" onClick={this.jumpTo.bind(this)}>
                 <TitleText text={data.title} defaultText={default_text}/>

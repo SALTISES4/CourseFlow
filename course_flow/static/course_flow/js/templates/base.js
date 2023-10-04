@@ -78,8 +78,8 @@ $(window).on('load', () => {
     renderers.CreateNew(config.create_path.program)
   });
 
-  if (COURSEFLOW_APP.showNotificationRequest) {
-    const confirmNotifications = window.confirm(COURSEFLOW_APP.strings.confirmEmailUpdates)
+  if (COURSEFLOW_APP.show_notification_request) {
+    const confirmNotifications = window.confirm(COURSEFLOW_APP.strings.confirm_email_updates)
 
     $.post(
       "{% url 'course_flow:select-notifications' %}",

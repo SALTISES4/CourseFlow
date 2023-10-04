@@ -72,17 +72,17 @@ export class TableHorizontalOutcomeLinkUnconnected extends React.Component{
     getContents(completion_status,self_completion){
         if(completion_status===0){
             return (
-                <img src={config.iconpath+'nocheck.svg'}/>
+                <img src={config.icon_path+'nocheck.svg'}/>
             );
         }else if(!completion_status){
             return "";
         }
         if(this.props.outcomes_type==0 || completion_status & 1){
             if(self_completion)return(
-                <img class="self-completed" src={config.iconpath+'solid_check.svg'}/>
+                <img class="self-completed" src={config.icon_path+'solid_check.svg'}/>
             )
             else return (
-                <img src={config.iconpath+'check.svg'}/>
+                <img src={config.icon_path+'check.svg'}/>
             );
         }
         let contents=[];

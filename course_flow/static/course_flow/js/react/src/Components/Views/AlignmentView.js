@@ -448,7 +448,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         let add_new_outcome;
         if(!this.props.renderer.read_only && data.linked_workflow) add_new_outcome = (
             <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNewChildOutcome.bind(this)}>
-                <img class="create-button" src={config.iconpath+"add_new_white.svg"}/>
+                <img class="create-button" src={config.icon_path+"add_new_white.svg"}/>
                 <div>{gettext("Add new")}</div>
             </div>
         );

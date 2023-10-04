@@ -259,7 +259,7 @@ export class MenuSection extends React.Component{
                 <div class="menu-create hover-shade" ref={this.dropdownDiv}>
                     <img
                       class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title={gettext("Add New")}
-                      src={config.iconpath+"add_new_white.svg"}
+                      src={config.icon_path+"add_new_white.svg"}
                     /><div>{this.props.section_data.title}</div>
                     <div class="create-dropdown">
                         {adds}

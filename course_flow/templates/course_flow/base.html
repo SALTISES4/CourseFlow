@@ -433,15 +433,15 @@
       registration_path:
         "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}",
       logout_path: "{% url 'course_flow:logout' %}",
-      iconpath: "{% static 'course_flow/img/images_svg/' %}"
+      icon_path: "{% static 'course_flow/img/images_svg/' %}"
     }
 
     // NOTE: This is the place where we keep all variables
     // injected by Django to be consumed by React
     const COURSEFLOW_APP = {
-      showNotificationRequest: {{ show_notification_request }},
+      show_notification_request: {{ show_notification_request }},
       strings: {
-        confirmEmailUpdates:
+        confirm_email_updates:
           "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}"
       }
     }

@@ -392,14 +392,14 @@ export class AssignmentNode extends React.Component{
                 renderer.context_choices.find(
                     (obj)=>obj.type==data.context_classification
                 ).name
-            } src={config.iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+            } src={config.icon_path+Constants.context_keys[data.context_classification]+".svg"}/>
         )
         if(data.task_classification>0)righticon=(
             <img title={
                 renderer.task_choices.find(
                     (obj)=>obj.type==data.task_classification
                 ).name
-            }src={config.iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+            }src={config.icon_path+Constants.task_keys[data.task_classification]+".svg"}/>
         )
         let style = {backgroundColor:Constants.getColumnColour(this.props.data)};
         let mouseover_actions = [this.addCreateAssignment(data)];
@@ -563,14 +563,14 @@ export class LiveProjectStudents extends LiveProjectSection{
                             <img id="copy-text" class="hover-shade" onClick={
                                 ()=>{
                                     navigator.clipboard.writeText(register_url);
-                                    $("#copy-text").attr("src",config.iconpath+"duplicate_checked.svg");
+                                    $("#copy-text").attr("src",config.icon_path+"duplicate_checked.svg");
                                     $("#url-text").text("Copied to Clipboard");
                                     setTimeout(()=>{
-                                        $("#copy-text").attr("src",config.iconpath+"duplicate_clipboard.svg");
+                                        $("#copy-text").attr("src",config.icon_path+"duplicate_clipboard.svg");
                                         $("#url-text").text(register_url);
                                     },1000)
                                 }
-                            } title={gettext("Copy to clipboard")} src={config.iconpath+"duplicate_clipboard.svg"}/>
+                            } title={gettext("Copy to clipboard")} src={config.icon_path+"duplicate_clipboard.svg"}/>
                             <a id="url-text" class="selectable" href={register_url}>
                                 {register_url}
                             </a>
