@@ -119,6 +119,14 @@
     <!-- -->
     {% compress js %}
     <script
+      src="{% static 'course_flow/js/other/dist/base.min.js' %}"
+      defer="true"
+      charset="utf-8"
+    ></script>
+    {% endcompress %}
+    <!-- -->
+    {% compress js %}
+    <script
       src="{% static 'course_flow/js/react/dist/scripts-wf-redux.min.js' %}"
       defer="true"
       charset="utf-8"
@@ -427,57 +435,9 @@
       my_liveprojects_path: "{% url 'course_flow:my-live-projects' %}",
       registration_path:
         "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}",
+      logout_path: "{% url 'course_flow:logout' %}",
       iconpath: "{% static 'course_flow/img/images_svg/' %}"
     }
-
-    // @todo should not be inline
-    // need to replace template string
-    $("#logout").on("click",()=>{
-        window.location.replace("{% url 'course_flow:logout' %}");
-    });
-
-    // @todo should not be inline
-    const debounce = (func,timeout=300)=>{
-      let timer;
-      return(...args)=>{
-        clearTimeout(timer);
-        timer = setTimeout(()=>{func.apply(this,args);},timeout);
-      };
-    }
-
-    // @todo should not be inline
-    const makeActiveSidebar = function(id){
-      $(id).addClass("active");
-    }
-
-    // @todo should not be inline
-    const makeDropdown = (click_element)=>{
-      let checkPosition = ()=>{
-        let width = $(click_element).children(".create-dropdown").outerWidth(true);
-        let left = $(click_element).offset().left;
-        if(left+width > $(window).width())$(click_element).children(".create-dropdown").addClass("position-right");
-        else $(click_element).children(".create-dropdown").removeClass("position-right");
-      }
-
-      $(click_element).on("click",(evt)=>{
-        if($(click_element).attr("disabled")!="disabled"){
-          $(click_element).children(".create-dropdown").toggleClass("active");
-          checkPosition();
-        }
-      });
-      document.addEventListener("click",(evt)=>{
-        if(! $(evt.target).closest(click_element)[0])$(click_element).children(".create-dropdown").removeClass("active");
-      });
-
-      // check_position();
-      // window.addEventListener("resize",check_position);
-    }
-
-    // @todo should not be inline
-    makeDropdown("#overflow-options","#overflow-links");
-    makeDropdown("#account-options","#account-links");
-    makeDropdown("#notifications","#notifications-dropdown");
-    makeDropdown("#create-options","#create-links");
 
     //reload if we got here using forward or back button
     if (
