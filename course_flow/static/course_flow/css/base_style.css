@@ -1,8 +1,3 @@
-:root {
-  --mdc-theme-primary: #04ba74;
-  --mdc-theme-secondary: #46c443;
-}
-
 body, html{
     overflow:hidden;
     margin:0px;
@@ -1843,9 +1838,6 @@ button:hover{
   background-color: white;
 }
 
-.mdc-dialog__surface{
-  width: 50vw;
-}
 text {
   pointer-events: none;
   fill: white;
