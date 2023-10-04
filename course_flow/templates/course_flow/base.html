@@ -339,7 +339,8 @@
         insert_sibling: "{% url 'course_flow:insert-sibling' %}",
         insert_child: "{% url 'course_flow:insert-child' %}",
         inserted_at: "{% url 'course_flow:inserted-at' %}",
-        update_outcomehorizontallink_degree: "{% url 'course_flow:update-outcomehorizontallink-degree' %}",
+        update_outcomehorizontallink_degree:
+          "{% url 'course_flow:update-outcomehorizontallink-degree' %}",
         update_outcomenode_degree:
           "{% url 'course_flow:update-outcomenode-degree' %}",
         duplicate_project_ajax: "{% url 'course_flow:duplicate-project' %}",
@@ -369,9 +370,11 @@
         make_project_live: "{% url 'course_flow:make-project-live' %}",
         set_workflow_visibility: "{% url 'course_flow:set-workflow-visibility' %}",
         get_live_project_data: "{% url 'course_flow:get-live-project-data' %}",
-        get_live_project_data_student: "{% url 'course_flow:get-live-project-data-student' %}",
+        get_live_project_data_student:
+          "{% url 'course_flow:get-live-project-data-student' %}",
         get_assignment_data: "{% url 'course_flow:get-assignment-data' %}",
-        get_assignment_data_student: "{% url 'course_flow:get-assignment-data-student' %}",
+        get_assignment_data_student:
+          "{% url 'course_flow:get-assignment-data-student' %}",
         get_workflow_nodes: "{% url 'course_flow:get-workflow-nodes' %}",
         create_live_assignment: "{% url 'course_flow:create-live-assignment' %}",
         add_users_to_assignment: "{% url 'course_flow:add-users-to-assignment' %}",
@@ -386,10 +389,14 @@
         get_favourites: "{% url 'course_flow:get-favourites' %}",
         get_home: "{% url 'course_flow:get-home' %}",
         import: "{% url 'course_flow:import' %}",
-        get_public_workflow_data: "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
-        get_public_workflow_parent_data: "{% url 'course_flow:get-public-workflow-parent-data' pk='0' %}",
-        get_public_workflow_child_data: "{% url 'course_flow:get-public-workflow-child-data' pk='0' %}",
-        get_public_parent_workflow_info: "{% url 'course_flow:get-public-parent-workflow-info' pk='0' %}",
+        get_public_workflow_data:
+          "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
+        get_public_workflow_parent_data:
+          "{% url 'course_flow:get-public-workflow-parent-data' pk='0' %}",
+        get_public_workflow_child_data:
+          "{% url 'course_flow:get-public-workflow-child-data' pk='0' %}",
+        get_public_parent_workflow_info:
+          "{% url 'course_flow:get-public-parent-workflow-info' pk='0' %}",
       },
       create_path: {
         activity_strategy: "{% url 'course_flow:activity-strategy-create' %}",
@@ -409,16 +416,18 @@
         liveassignment: "{% url 'course_flow:assignment-update' pk='0'%}"
       },
       public_update_path: {
-        activity:"{% url 'course_flow:workflow-public' pk='0'%}",
-        course:"{% url 'course_flow:workflow-public' pk='0'%}",
-        program:"{% url 'course_flow:workflow-public' pk='0'%}",
-        workflow:"{% url 'course_flow:workflow-public' pk='0'%}"
+        activity: "{% url 'course_flow:workflow-public' pk='0'%}",
+        course: "{% url 'course_flow:workflow-public' pk='0'%}",
+        program: "{% url 'course_flow:workflow-public' pk='0'%}",
+        workflow: "{% url 'course_flow:workflow-public' pk='0'%}"
     },
-    home_path: "{% url 'course_flow:home' %}",
-     my_library_path: "{% url 'course_flow:my-library' %}",
+      home_path: "{% url 'course_flow:home' %}",
+      my_library_path: "{% url 'course_flow:my-library' %}",
       my_favourites_path: "{% url 'course_flow:my-favourites' %}",
       my_liveprojects_path: "{% url 'course_flow:my-live-projects' %}",
-      registration_path: "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}"
+      registration_path:
+        "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}",
+      iconpath: "{% static 'course_flow/img/images_svg/' %}"
     }
 
     // @todo should not be inline

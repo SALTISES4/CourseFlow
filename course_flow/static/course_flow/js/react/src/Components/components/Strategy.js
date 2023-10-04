@@ -20,7 +20,7 @@ class StrategyView extends Component{
         if(!title)title="untitled strategy";
         let strategy_icon
         if(data.strategy_icon)strategy_icon = (
-            <img src = {iconpath+Constants.strategy_keys[data.strategy_icon]+".svg"}/>
+            <img src = {config.iconpath+Constants.strategy_keys[data.strategy_icon]+".svg"}/>
         );
         return(
             <div class="strategy-bar-strategy strategy new-strategy" ref={this.maindiv}>
@@ -70,6 +70,3 @@ export default connect(
     mapStrategyStateToProps,
     null
 )(StrategyView)
-
-
-

@@ -20,7 +20,7 @@ class OutcomeTopView extends EditableComponent{
         let data = this.props.data;
         var selector = this;
         let share;
-        if(!this.props.renderer.read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/><div>Sharing</div></div>
+        if(!this.props.renderer.read_only)share = <div id="share-button" class="floatbardiv" onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={config.iconpath+"add_person.svg"}/><div>Sharing</div></div>
 
         return(
             <div id="outcome-wrapper" class="workflow-wrapper">

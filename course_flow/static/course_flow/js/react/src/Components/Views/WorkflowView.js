@@ -650,7 +650,7 @@ export const WorkflowBaseView = connect(
 //         )
 
 //         let share;
-//         if(!read_only)share = <div class="hover-shade" id="share-button" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person_grey.svg"}/></div>
+//         if(!read_only)share = <div class="hover-shade" id="share-button" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={config.iconpath+"add_person_grey.svg"}/></div>
 
 //         let public_view;
 //         if(renderer.can_view && data.public_view){
@@ -715,7 +715,7 @@ export const WorkflowBaseView = connect(
 //                     {this.addEditable(data)}
 //                     {!read_only && reactDom.createPortal(
 //                         <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
-//                             <img src={iconpath+'edit_pencil.svg'} title={gettext("Edit Workflow")}/>
+//                             <img src={config.iconpath+'edit_pencil.svg'} title={gettext("Edit Workflow")}/>
 //                         </div>,
 //                         $("#visible-icons")[0]
 //                     )}
@@ -1390,7 +1390,3 @@ export const ParentWorkflowIndicator = connect(
     mapParentWorkflowIndicatorStateToProps,
     null
 )(ParentWorkflowIndicatorUnconnected)
-
-
-
-

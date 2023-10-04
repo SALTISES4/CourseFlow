@@ -21,8 +21,6 @@
 
 <script nonce="{{request.csp_nonce}}">
 
-  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-
   var library_renderer;
   const user_id = {{ user.id }};
 
@@ -42,32 +40,31 @@
 
 
 <!-- <script nonce="{{request.csp_nonce}}">
-    
-    const iconpath = "{% static 'course_flow/img/images_svg/' %}";
+
     const explore_path = "{% url 'course_flow:explore' %}";
     const user_id = {{ user.id }};
-    
+
     list_objects = {{object_list|safe}};
-    
+
     disciplines = {{disciplines|safe}};
     pages = {{pages|safe}}
-    
-    
+
+
   jQuery('<div>',{
     class:'load-screen'
   }).appendTo("#container");
 
-    
+
     const read_only=true;
-    
-    
-    
+
+
+
     window.addEventListener("load",function(){
       renderers.renderExploreMenu(list_objects,disciplines);
       makeActiveSidebar("#panel-explore");
     });
-    
-    
+
+
 </script> -->
 
 

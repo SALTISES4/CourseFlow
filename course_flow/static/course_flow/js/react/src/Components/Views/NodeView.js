@@ -68,7 +68,7 @@ class NodeView extends EditableComponentWithActions{
                     renderer.context_choices.find(
                         (obj)=>obj.type==data.context_classification
                     ).name
-                } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+                } src={config.iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
             </div>
         )
         if(data.task_classification>0)righticon=(
@@ -77,7 +77,7 @@ class NodeView extends EditableComponentWithActions{
                     renderer.task_choices.find(
                         (obj)=>obj.type==data.task_classification
                     ).name
-                }src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+                }src={config.iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
             </div>
         )
         let dropIcon;
@@ -104,7 +104,7 @@ class NodeView extends EditableComponentWithActions{
 
         if(data.linked_workflow)linkIcon=(
             <div class={link_class} onClick={clickfunc}>
-                <img src={iconpath+"wflink.svg"}/>
+                <img src={config.iconpath+"wflink.svg"}/>
                 <div>{linktext}</div>
             </div>
         );
@@ -153,7 +153,7 @@ class NodeView extends EditableComponentWithActions{
                 </div>
                 <div class = "node-drop-row hover-shade" onClick={this.toggleDrop.bind(this)}>
                     <div class = "node-drop-side node-drop-left">{dropText}</div>
-                    <div class = "node-drop-middle"><img src={iconpath+dropIcon+".svg"}/></div>
+                    <div class = "node-drop-middle"><img src={config.iconpath+dropIcon+".svg"}/></div>
                     <div class = "node-drop-side node-drop-right">
                         <div class="node-drop-time">{data_override.time_required && (data_override.time_required+" "+this.props.renderer.time_choices[data_override.time_units].name)}</div>
                     </div>
@@ -402,14 +402,14 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions{
                 renderer.context_choices.find(
                     (obj)=>obj.type==data.context_classification
                 ).name
-            } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+            } src={config.iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
         )
         if(data.task_classification>0)righticon=(
             <img title={
                 renderer.task_choices.find(
                     (obj)=>obj.type==data.task_classification
                 ).name
-            }src={iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
+            }src={config.iconpath+Constants.task_keys[data.task_classification]+".svg"}/>
         )
         let titleText = (
             <NodeTitle data={data}/>

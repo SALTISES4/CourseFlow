@@ -388,7 +388,7 @@ export function createOutcomeNodeBranch(props,outcome_id,nodecategory){
 export function getCompletionImg(completion_status,outcomes_type){
     if(outcomes_type==0 || completion_status & 1){
         return (
-            <img class="self-completed" src={iconpath+'solid_check.svg'}/>
+            <img class="self-completed" src={config.iconpath+'solid_check.svg'}/>
         )
     }
     let contents=[];
@@ -497,5 +497,3 @@ export function download(filename, text) {
 export function unescapeCharacters(string){
     return string.replace(/\&amp;/g,"&").replace(/\&gt;/g,">").replace(/\&lt;/g,"<")
 }
-
-

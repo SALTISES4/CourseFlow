@@ -52,7 +52,7 @@ class ColumnView extends EditableComponentWithActions{
             return <span class="material-symbols-rounded">{this.props.data.icon}</span>
         }
         return (
-            <img src={iconpath+Constants.default_column_settings[this.props.data.column_type].icon+".svg"}/>
+            <img src={config.iconpath+Constants.default_column_settings[this.props.data.column_type].icon+".svg"}/>
         );
     }
 }

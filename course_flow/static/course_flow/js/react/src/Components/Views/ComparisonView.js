@@ -36,7 +36,7 @@ export class ComparisonView extends React.Component{
         var selector = this;
 
         let share;
-        if(!this.props.renderer.read_only)share = <div id="share-button" class="hover-shade" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={iconpath+"add_person.svg"}/></div>
+        if(!this.props.renderer.read_only)share = <div id="share-button" class="hover-shade" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={config.iconpath+"add_person.svg"}/></div>
 
 
         let view_buttons = [
@@ -207,7 +207,7 @@ class WorkflowComparisonRendererComponent extends Component{
                 <div class="workflow-inner-wrapper" ref={this.maindiv}>
                 </div>
                 <div class="window-close-button" onClick={this.props.removeFunction}>
-                    <img src={iconpath+"close.svg"}/>
+                    <img src={config.iconpath+"close.svg"}/>
                 </div>
             </div>
         )
@@ -500,6 +500,3 @@ class ViewBar extends React.Component{
         this.props.toggleObjectSet(id);
     }
 }
-
-
-

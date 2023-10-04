@@ -23,9 +23,6 @@
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
 
-  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-  
-  
   $(".menubar").removeClass("hidden");
 
   var library_renderer;

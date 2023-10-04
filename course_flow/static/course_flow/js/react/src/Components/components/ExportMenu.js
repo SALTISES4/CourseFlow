@@ -44,7 +44,7 @@ export class ExportMenu extends React.Component{
                 </form>
                 <iframe hidden name="redirect-iframe" id='redirect-iframe'></iframe>
                 <div class="window-close-button" onClick = {this.props.actionFunction}>
-                    <img src = {iconpath+"close.svg"}/>
+                    <img src = {config.iconpath+"close.svg"}/>
                 </div>
             </div>
         );

@@ -20,8 +20,6 @@
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
 
-  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-
   var home_renderer;
   const user_id = {{ user.id }};
   {% if user|has_group:"Teacher" %}

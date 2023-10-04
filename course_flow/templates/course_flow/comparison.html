@@ -63,7 +63,6 @@
 <!-- -->
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
-    
 
   const workflow_paths = {
       activity:'{% url "course_flow:workflow-update" pk=object.pk %}',
@@ -71,10 +70,9 @@
       program:'{% url "course_flow:workflow-update" pk=object.pk %}',
       workflow:'{% url "course_flow:workflow-update" pk=object.pk %}',
   }
-  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 
   $("#sidebar").detach().appendTo("#sidebar-container");
-  
+
   $("#sidebar").tabs({
       active:1,
       disabled:[0],
@@ -91,7 +89,7 @@
     class:'load-screen'
   }).appendTo("#container");
 
-    
+
   const user_permission = {{user_permission|safe}}
 
   $("#side-bar-close-button").on("click",()=>{
@@ -113,8 +111,8 @@
 
    const changeFieldID = Math.floor(Math.random()*10000);
 
-   
-   
+
+
     window.addEventListener("load", function(){
         comparison_renderer = new renderers.ComparisonRenderer(project_data);
 

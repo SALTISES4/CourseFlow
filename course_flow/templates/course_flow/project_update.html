@@ -30,8 +30,6 @@
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
 
-  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-  
   const create_path_this_project = {
       activity:"{% url 'course_flow:activity-create' projectPk=object.pk %}",
       course:"{% url 'course_flow:course-create' projectPk=object.pk %}",

@@ -30,10 +30,7 @@
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
 
-
   $(".splash-page").detach().appendTo("#container");
-
-  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
 
   const user_id = {{ user.id }};
   const read_only=false;

@@ -259,7 +259,7 @@ export class MenuSection extends React.Component{
                 <div class="menu-create hover-shade" ref={this.dropdownDiv}>
                     <img
                       class={"create-button create-button-"+this.props.section_data.object_type+" link-image"} title={gettext("Add New")}
-                      src={iconpath+"add_new_white.svg"}
+                      src={config.iconpath+"add_new_white.svg"}
                     /><div>{this.props.section_data.title}</div>
                     <div class="create-dropdown">
                         {adds}
@@ -613,4 +613,3 @@ export function closeMessageBox(){
     // reactDom.render(null,$("#popup-container")[0]);
     reactDom.unmountComponentAtNode($("#popup-container")[0]);
 }
-

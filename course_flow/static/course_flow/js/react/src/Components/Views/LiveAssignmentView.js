@@ -290,14 +290,14 @@ export class AssignmentView extends React.Component{
                 renderer.context_choices.find(
                     (obj)=>obj.type==node_data.context_classification
                 ).name
-            } src={iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
+            } src={config.iconpath+Constants.context_keys[data.context_classification]+".svg"}/>
         )
         if(node_data.task_classification>0)righticon=(
             <img title={
                 renderer.task_choices.find(
                     (obj)=>obj.type==node_data.task_classification
                 ).name
-            }src={iconpath+Constants.task_keys[node_data.task_classification]+".svg"}/>
+            }src={config.iconpath+Constants.task_keys[node_data.task_classification]+".svg"}/>
         )
         let style = {backgroundColor:Constants.getColumnColour(node_data)};
         let mouseover_actions = [];
@@ -313,7 +313,7 @@ export class AssignmentView extends React.Component{
         }
         if(data.linked_workflow_access && node_data.linked_workflow)linkIcon=(
             <div class="hover-shade linked-workflow" onClick={clickfunc}>
-                <img src={iconpath+"wflink.svg"}/>
+                <img src={config.iconpath+"wflink.svg"}/>
                 <div>{linktext}</div>
             </div>
         );
@@ -322,7 +322,7 @@ export class AssignmentView extends React.Component{
         let parentclickfunc = this.visitWorkflow.bind(this,data.parent_workflow_id);
         if(data.workflow_access && data.parent_workflow_id)parentLinkIcon=(
             <div class="hover-shade linked-workflow containing-workflow" onClick={parentclickfunc}>
-                <img src={iconpath+"wflink.svg"}/>
+                <img src={config.iconpath+"wflink.svg"}/>
                 <div>{parentlinktext}</div>
             </div>
         );
@@ -388,7 +388,7 @@ export class AssignmentView extends React.Component{
                 </div>
                 <div class = "node-drop-row hover-shade" onClick={this.toggleDrop.bind(this)}>
                     <div class = "node-drop-side node-drop-left">{dropText}</div>
-                    <div class = "node-drop-middle"><img src={iconpath+dropIcon+".svg"}/></div>
+                    <div class = "node-drop-middle"><img src={config.iconpath+dropIcon+".svg"}/></div>
                     <div class = "node-drop-side node-drop-right">
                         <div class="node-drop-time">{data_override.time_required && (data_override.time_required+" "+this.props.renderer.time_choices[data_override.time_units].name)}</div>
                     </div>
@@ -529,7 +529,7 @@ export class AssignmentBox extends React.Component{
         let assignment_indicator = null;
         if(this.props.has_assignment)assignment_indicator=reactDom.createPortal(
             <div class="comment-indicator hover-shade" onClick={this.props.parent.showAssignment.bind(this.props.parent)}>
-                <img src={iconpath+"assignment.svg"}/>
+                <img src={config.iconpath+"assignment.svg"}/>
             </div>,
             $(this.props.parent.maindiv.current).children(".side-actions").children(".assignment-indicator-container")[0]
         );
@@ -541,13 +541,13 @@ export class AssignmentBox extends React.Component{
         let top_contents=[];
         top_contents.push(
             <div class="close-button hover-shade" title={gettext("Close")} onClick = {this.props.parent.showAssignment.bind(this.props.parent)}>
-                <img src = {iconpath+"close.svg"}/>
+                <img src = {config.iconpath+"close.svg"}/>
             </div>
         );
         if(this.props.renderer.is_teacher){
             top_contents.push(
                 <div class="create-assignment hover-shade" title={gettext("Create New")} onClick={this.createAssignment.bind(this)}>
-                    <img src = {iconpath+"add_new.svg"}/>
+                    <img src = {config.iconpath+"add_new.svg"}/>
                 </div>
             );
         }

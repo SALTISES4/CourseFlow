@@ -56,7 +56,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting{
         let add_new_outcome;
         if(!this.props.renderer.read_only)add_new_outcome=(
             <div id="add-new-outcome" class="menu-create hover-shade" onClick={this.addNew.bind(this,objectset)}>
-                <img class="create-button" src={iconpath+"add_new_white.svg"}/>
+                <img class="create-button" src={config.iconpath+"add_new_white.svg"}/>
                 <div>{gettext("Add new")}</div>
             </div>
         );
@@ -117,7 +117,7 @@ class ParentOutcomeNodeViewUnconnected extends React.Component{
     getContents(completion_status){
         if(this.props.outcomes_type==0 || completion_status & 1){
             return (
-                <img class="self-completed" src={iconpath+'solid_check.svg'}/>
+                <img class="self-completed" src={config.iconpath+'solid_check.svg'}/>
             )
         }
         let contents=[];
@@ -182,7 +182,7 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected{
                 {data.depth < 2 && data.child_outcome_links.length>0 &&
                     <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
                         <div class = "outcome-drop-img">
-                            <img src={iconpath+dropIcon+".svg"}/>
+                            <img src={config.iconpath+dropIcon+".svg"}/>
                         </div>
                         <div class = "outcome-drop-text">
                             {droptext}

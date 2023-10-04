@@ -30,9 +30,6 @@
 {% block scripts %} {{ block.super }}
 <script nonce="{{request.csp_nonce}}">
 
-  const iconpath = "{% static 'course_flow/img/images_svg/' %}";
-  
-  
   const project_data= {{project_data|safe}};
   const live_project_data= {{live_project_data|safe}};
   const user_role = {{user_role|safe}};

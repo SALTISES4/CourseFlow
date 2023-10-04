@@ -894,7 +894,7 @@ export class CommentBox extends Component{
             if(has_unread)indicator_class += " unread";
             comment_indicator=reactDom.createPortal(
                 <div class={indicator_class} onClick={this.props.parent.commentClick.bind(this.props.parent)}>
-                    <img src={iconpath+"comment_new.svg"}/>
+                    <img src={config.iconpath+"comment_new.svg"}/>
                 </div>,
                 render_div
             );
@@ -925,7 +925,7 @@ export class CommentBox extends Component{
                     </div>
                     {!this.props.renderer.read_only && <div class="mouseover-actions">
                         <div class="action-button" title={gettext("Delete Comment")} onClick={this.removeComment.bind(this,comment.id)}>
-                            <img src={iconpath+"rubbish.svg"}/>
+                            <img src={config.iconpath+"rubbish.svg"}/>
                         </div>
                     </div>
                     }
@@ -936,12 +936,12 @@ export class CommentBox extends Component{
         let top_contents=[];
         top_contents.push(
             <div class="hover-shade" title={gettext("Close")} onClick = {this.props.parent.commentClick.bind(this.props.parent)}>
-                <img src = {iconpath+"close.svg"}/>
+                <img src = {config.iconpath+"close.svg"}/>
             </div>
         );
         if(!this.props.renderer.read_only && comments.length>1)top_contents.push(
             <div class="hover-shade" title={gettext("Clear All Comments")} onClick={this.removeAllComments.bind(this)}>
-                <img src = {iconpath+"rubbish.svg"}/>
+                <img src = {config.iconpath+"rubbish.svg"}/>
             </div>
         );
 
@@ -974,7 +974,7 @@ export class CommentBox extends Component{
                 {(this.props.renderer.add_comments) &&
                     <div class="comment-input-line">
                         <textarea class="comment-input" placeholder={input_default} contentEditable="true" onInput={this.textChange.bind(this)} ref={this.input}/>
-                        <img ref={this.submit} src={iconpath+"add_new.svg"} class="add-comment-button hidden hover-shade" onClick={this.appendComment.bind(this)} title={gettext("Submit")}/>
+                        <img ref={this.submit} src={config.iconpath+"add_new.svg"} class="add-comment-button hidden hover-shade" onClick={this.appendComment.bind(this)} title={gettext("Submit")}/>
                     </div>
                 }
             </div>,
@@ -1412,7 +1412,7 @@ export class ActionButton extends React.Component{
     render(){
         return (
             <div class={this.props.button_class+" action-button"} title={this.props.titletext} onClick={this.handleClick}>
-                <img src={iconpath+this.props.button_icon}/>
+                <img src={config.iconpath+this.props.button_icon}/>
             </div>
         )
     }
@@ -1569,6 +1569,3 @@ export class PathGenerator{
         return joined;
     }
 }
-
-
-
