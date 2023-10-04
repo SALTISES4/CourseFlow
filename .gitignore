@@ -36,6 +36,7 @@ scripts/
 src
 !/course_flow/static/course_flow/js/react/src/
 !/course_flow/static/course_flow/js/other/src/
+/course_flow/static/course_flow/js/other/dist/_virtual
 tags
 
 # Django stuff:
