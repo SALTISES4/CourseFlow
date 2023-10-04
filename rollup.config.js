@@ -74,9 +74,10 @@ export default [
       preserveModules: true,
       entryFileNames: '[name].min.js',
     },
-    plugins: [multiEntry({
-      preserveModules: true,
-    }), plugins.terser]
+    plugins: [
+      multiEntry({ preserveModules: true }),
+      plugins.terser
+    ]
   },
   {
     input: `${bundleEntry}scripts-wf-redux.js`,
