@@ -119,7 +119,7 @@
     <!-- -->
     {% compress js %}
     <script
-      src="{% static 'course_flow/js/other/dist/base.min.js' %}"
+      src="{% static 'course_flow/js/templates/base.js' %}"
       defer="true"
       charset="utf-8"
     ></script>
@@ -319,9 +319,6 @@
 
   {% block common_scripts %}
   <script nonce="{{request.csp_nonce}}">
-    //global paths for post/get
-
-    // @todo this would be better as one config object, easier to type / interface
     const config = {
       post_paths: {
         get_possible_linked_workflows:
@@ -439,67 +436,15 @@
       iconpath: "{% static 'course_flow/img/images_svg/' %}"
     }
 
-    //reload if we got here using forward or back button
-    if (
-      window.performance &&
-      window.performance.navigation.type ===
-        window.performance.navigation.TYPE_BACK_FORWARD
-    ) {
-      location.reload();
-    }
-
-    let show_notification_request={{ show_notification_request }};
-
-    $(window).on("load",()=>{
-      $("#create-links #activity-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:activity-create' projectPk='0' %}"));
-      $("#create-links #course-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:course-create' projectPk='0' %}"));
-      $("#create-links #program-create").on("click",()=>renderers.CreateNew("{% url 'course_flow:program-create' projectPk='0' %}"));
-
-      if(show_notification_request){
-        if(window.confirm(
-          "{% trans 'Hi there! Would you like to receive emails about updates to CourseFlow? You can always change your mind by viewing your profile.' %}"
-        )){
-          $.post("{% url 'course_flow:select-notifications' %}",{"notifications":JSON.stringify(true)});
-        }else{
-          $.post("{% url 'course_flow:select-notifications' %}",{"notifications":JSON.stringify(false)});
-        }
-      }
-
-      if($(".create-dropdown .list-notification.unread").length>0)$("#notifications").addClass("unread");
-    });
-
-
-
-    // @todo should not be inline
-    //Fix Quilljs's link sanitization
-    const Link = Quill.import('formats/link')
-    // Override the existing property on the Quill global object and add custom protocols
-    Link.PROTOCOL_WHITELIST = ['http', 'https'];
-
-    class CustomLinkSanitizer extends Link {
-      static sanitize(url) {
-        // Run default sanitize method from Quill
-        const sanitizedUrl = super.sanitize(url);
-
-        // Not whitelisted URL based on protocol so, let's return `blank`
-        if (!sanitizedUrl || sanitizedUrl === 'about:blank') return sanitizedUrl;
-
-        // Verify if the URL already have a whitelisted protocol
-        const hasWhitelistedProtocol = this.PROTOCOL_WHITELIST.some(function(protocol) {
-          return sanitizedUrl.startsWith(protocol);
-        })
-
-        if (hasWhitelistedProtocol) return sanitizedUrl;
-
-        // if not, then append only 'http' to not to be a relative URL
-        return `http://${sanitizedUrl}`;
+    // NOTE: This is the place where we keep all variables
+    // injected by Django to be consumed by React
+    const COURSEFLOW_APP = {
+      showNotificationRequest: {{ show_notification_request }},
+      strings: {
+        confirmEmailUpdates:
+          "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}"
       }
     }
-
-    // @todo should not be inline
-    Quill.register(CustomLinkSanitizer, true)
-
-
   </script>
   {% endblock %}
   <!-- -->
