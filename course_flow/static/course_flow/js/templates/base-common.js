@@ -82,7 +82,7 @@ $(window).on('load', () => {
     const confirmNotifications = window.confirm(COURSEFLOW_APP.strings.confirm_email_updates)
 
     $.post(
-      "{% url 'course_flow:select-notifications' %}",
+      config.post_paths.select_notifications,
       {'notifications': JSON.stringify(!!confirmNotifications)}
     );
   }
