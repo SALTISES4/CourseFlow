@@ -4,12 +4,12 @@
 // TODO: All of these functions should be eventually transferred
 // into a corresponding React component that's rendering the UI
 
-window.addEventListener('beforeprint',()=>{
+window.addEventListener('beforeprint', () => {
   $('.hide-print').hide();
   $('.workflow-wrapper, #container, body').addClass('printing');
 });
 
-window.addEventListener('afterprint',()=>{
+window.addEventListener('afterprint', () => {
   $('.hide-print').show()
   $('.workflow-wrapper, #container, body').removeClass('printing');
 });
@@ -28,14 +28,14 @@ if (isTouch) {
 const { update_notifications } = COURSEFLOW_APP
 
 if (update_notifications.title && update_notifications.id !== localStorage.getItem('last_hidden_notification')) {
-$('#update-notifications').html(
-  "<div id='notification-inner'>"+
-  "<span class='material-symbols-rounded filled'>campaign</span>"+
-  update_notifications.title +
-  "</div>"+
-  "<div id='close-notification' class='window-close-button'>"+
-  "<span class='material-symbols-rounded green'>close</span>"+
-  "</div>"
+  $('#update-notifications').html(
+    "<div id='notification-inner'>"+
+    "<span class='material-symbols-rounded filled'>campaign</span>"+
+    update_notifications.title +
+    "</div>"+
+    "<div id='close-notification' class='window-close-button'>"+
+    "<span class='material-symbols-rounded green'>close</span>"+
+    "</div>"
   );
 }
 
