@@ -432,9 +432,12 @@
     // injected by Django to be consumed by React
     const COURSEFLOW_APP = {
       show_notification_request: {{ show_notification_request }},
+      update_notifications: {{ update_notifications | safe }},
       strings: {
         confirm_email_updates:
-          "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}"
+          "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}",
+        unsupported_device:
+          "{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}"
       }
     }
   </script>
@@ -445,55 +448,6 @@
   {% block read_only_scripts %} {% endblock %}
   <!-- -->
   {% block scripts %}
-    <script nonce="{{ request.csp_nonce }}">
-
-      update_notifications =  {{ update_notifications |safe }}
-
-        window.addEventListener("beforeprint",()=>{
-        $(".hide-print").hide();
-        $(".workflow-wrapper, #container, body").addClass("printing");
-    });
-    window.addEventListener("afterprint",()=>{
-        $(".hide-print").show()
-        $(".workflow-wrapper, #container, body").removeClass("printing");
-    });
-
-    const userAgent = navigator.userAgent.toLowerCase();
-    const isTablet = /(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/.test(userAgent);
-    const isMobile = (/android|iphone/i.test(userAgent));
-    const isTouch = (isMobile || isTablet);
-    if(isTouch){
-      if(!sessionStorage.getItem("unsupported_alerted")){
-          sessionStorage.setItem("unsupported_alerted",true);
-          alert("{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}");
-      }
-    }
-
-
-    if(update_notifications.title && update_notifications.id != localStorage.getItem("last_hidden_notification")){
-      $("#update-notifications").html(
-        "<div id='notification-inner'>"+
-          "<span class='material-symbols-rounded filled'>campaign</span>"+
-          update_notifications.title+
-        "</div>"+
-        "<div id='close-notification' class='window-close-button'>"+
-          "<span class='material-symbols-rounded green'>close</span>"+
-        "</div>"
-      );
-    }
-    $("#close-notification").on("click", ()=>{
-      localStorage.setItem("last_hidden_notification",update_notifications.id);
-      $("#update-notifications").css({display:"none"})
-    });
-
-    $(".left-panel-toggle").on("click",()=>{
-      $(".left-panel").toggleClass("collapsed");
-      if($(".left-panel").hasClass("collapsed"))sessionStorage.setItem("collapsed_sidebar",true);
-      else sessionStorage.removeItem("collapsed_sidebar");
-    });
-    if(!sessionStorage.getItem("collapsed_sidebar"))$(".left-panel").removeClass("collapsed");
-
-
-    </script>
+  <script src="{% static 'course_flow/js/templates/base.js' %}"></script>
   {% endblock %}
 </html>

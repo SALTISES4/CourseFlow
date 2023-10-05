@@ -1,5 +1,5 @@
 // This is a collection of snippets and inline scripts
-// used in various HTML template files.
+// used in base.html template files.
 
 // TODO: All of these functions should be eventually transferred
 // into a corresponding React component that's rendering the UI
