@@ -496,9 +496,9 @@ export class ProjectMenu extends LibraryMenu{
             <div class="hover-shade" id="create-project-button" title={gettext("Create workflow")} ref={this.createDiv}>
                 <span class="material-symbols-rounded filled">add_circle</span>
                 <div id="create-links-project" class="create-dropdown">
-                    <a id="activity-create-project" href={config.create_path._this_project.activity} class="hover-shade">{gettext("New activity")}</a>
-                    <a id="course-create-project" href={config.create_path._this_project.course} class="hover-shade">{gettext("New course")}</a>
-                    <a id="program-create-project" href={config.create_path._this_project.program} class="hover-shade">{gettext("New program")}</a>
+                    <a id="activity-create-project" href={create_path_this_project.activity} class="hover-shade">{gettext("New activity")}</a>
+                    <a id="course-create-project" href={create_path_this_project.course} class="hover-shade">{gettext("New course")}</a>
+                    <a id="program-create-project" href={create_path_this_project.program} class="hover-shade">{gettext("New program")}</a>
                 </div>
             </div>
         )
@@ -1291,4 +1291,3 @@ export class WorkflowForMenuCondensed extends WorkflowForMenu{
         }
     }
 }
-
