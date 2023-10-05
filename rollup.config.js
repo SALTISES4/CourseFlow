@@ -68,7 +68,10 @@ const bundlePlugins = [
 
 export default [
   {
-    input: `${templateBundleSrc}**/*.js`,
+    input: {
+      include: [`${templateBundleSrc}**/*.js`],
+      exclude: [`${templateBundleSrc}csrf-setup.js`]
+    },
     external: ['jquery'],
     output: {
       dir: templateBundleDist,
@@ -79,6 +82,17 @@ export default [
       multiEntry({ preserveModules: true }),
       plugins.terser
     ]
+  },
+  {
+    input: `${templateBundleSrc}csrf-setup.js`,
+    external: ['jquery'],
+    output: {
+      file: `${templateBundleDist}csrf-setup.min.js`,
+      name: 'root',
+      format: 'iife',
+      sourceMap: 'inline'
+    },
+    plugins: bundlePlugins
   },
   {
     input: `${bundleEntry}scripts-wf-redux.js`,
