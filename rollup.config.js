@@ -48,11 +48,12 @@ const plugins = {
   }),
   commonjs: commonjs({
     include: 'node_modules/**',
-    namedExports:{
-      'node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
-      'react': Object.keys(react),
-      'react-dom': Object.keys(reactDom),
-    }
+    // THe namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.
+    // namedExports:{
+    //   'node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
+    //   'react': Object.keys(react),
+    //   'react-dom': Object.keys(reactDom),
+    // }
   }),
   terser: terser()
 };
