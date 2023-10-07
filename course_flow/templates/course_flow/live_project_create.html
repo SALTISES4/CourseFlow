@@ -21,9 +21,8 @@
     </div>
 </div>
 {% endblock %}
-<!-- -->
-{% block foot %} {% endblock %}
-<!-- -->
 {% csrf_token %}
-<!-- -->
-{% block scripts %} {{ block.super }} {% endblock %}
+
+{% block scripts %}
+   {{ block.super }}
+{% endblock %}

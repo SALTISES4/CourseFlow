@@ -1,15 +1,13 @@
 {% extends "course_flow/base.html" %}
-<!-- -->
-{% load static i18n %} {% load course_flow_templatetags %}
-<!-- -->
-{% block header %} {% endblock %}
-<!-- -->
-{% block title %}{% trans "SALTISE Analytics" %} - CourseFlow{% endblock %}
-<!-- -->
-{% block metadescription %} {% endblock %}
-<!-- -->
+{% load static i18n %}
+{% load course_flow_templatetags %}
+
+{% block title %}
+  {% trans "SALTISE Analytics" %} - CourseFlow
+{% endblock %}
+
 {% block body %}
-<div class="saltise-menu-container">
+  <div class="saltise-menu-container">
     <h1>CourseFlow Analytics</h1>
     <hr>
     <div id="tabs" class="home-tabs">
@@ -38,33 +36,32 @@
         <div>
           <table>
             {% for user in notified_users %}
-              <tr><td>{{ user.email }}</td></tr>
+              <tr>
+                <td>{{ user.email }}</td>
+              </tr>
             {% endfor %}
           </table>
         </div>
       </div>
     </div>
-</div>
+  </div>
 
-<!-- -->
 {% endblock %}
-<!-- -->
-{% block foot %} {% endblock %}
-<!-- -->
+
 {% csrf_token %}
-<!-- -->
 
-{% block scripts %} {{ block.super }}
-<script nonce="{{request.csp_nonce}}">
-  $(".saltise-menu-container").detach().appendTo("#container");
+{% block scripts %}
+  {{ block.super }}
+  <script nonce="{{ request.csp_nonce }}">
+    $(".saltise-menu-container").detach().appendTo("#container");
 
-  $(window).on("load",()=>{
-    $("#tabs").tabs({active:0});
+    $(window).on("load", () => {
+      $("#tabs").tabs({active: 0});
 
-    $("table.analytics-details tr th:contains('Month Total')").parent().addClass("month-row");
-    $("table.analytics-details tr th:contains('Year Total')").parent().addClass("year-row");
-    $("table.analytics-details tr th:contains('Domain Total')").parent().addClass("domain-row");
-    $("table.analytics-details tr th:contains('Grand Total')").parent().addClass("total-row");
-  });
-</script>
+      $("table.analytics-details tr th:contains('Month Total')").parent().addClass("month-row");
+      $("table.analytics-details tr th:contains('Year Total')").parent().addClass("year-row");
+      $("table.analytics-details tr th:contains('Domain Total')").parent().addClass("domain-row");
+      $("table.analytics-details tr th:contains('Grand Total')").parent().addClass("total-row");
+    });
+  </script>
 {% endblock %}

@@ -1,22 +1,12 @@
 {% extends "course_flow/base.html" %}
-<!-- -->
-{% load static i18n %} {% load course_flow_templatetags %}
-<!-- -->
-{% block header %} {% endblock %}
-<!-- -->
-{% block title %}{% trans "Home" %} - CourseFlow{% endblock %}
-<!-- -->
-{% block metadescription %} {% endblock %}
-<!-- -->
-{% block body %}
 
-<!-- -->
-{% endblock %}
-<!-- -->
-{% block foot %} {% endblock %}
-<!-- -->
+{% load static i18n %} {% load course_flow_templatetags %}
+
+{% block title %}{% trans "Home" %} - CourseFlow{% endblock %}
+
 {% csrf_token %}
-<!-- -->
-{% block scripts %} {{ block.super }}
-<script src="{% static 'course_flow/js/templates/home.js' %}"></script>
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'course_flow/js/templates/home.js' %}"></script>
 {% endblock %}

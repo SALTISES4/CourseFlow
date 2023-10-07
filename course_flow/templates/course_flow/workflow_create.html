@@ -1,0 +1,34 @@
+{% extends "course_flow/base.html" %}
+
+{% load static i18n %}
+{% load course_flow_templatetags %}
+
+{% block title %}
+  {% trans "New "|add:view.workflow_type|title %} - CourseFlow
+{% endblock %}
+
+{% block body %}
+
+  <div id="create">
+    <div class="workflow-create-wrapper">
+      <h1>
+        {% with my_var=view.workflow_type|fix_articles %}
+        {% trans 'Create '|add:my_var|add:":" %}
+        {% endwith %}
+      </h1>
+      <form method="post">
+        {% csrf_token %} {{ form.as_p }}
+        <input id="save-button" type="submit" value="Save"/>
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% csrf_token %}
+
+{% block scripts %} {{ block.super }}
+  <script nonce="{{ request.csp_nonce }}">
+    $("#create").detach().appendTo("#container");
+  </script>
+{% endblock %}

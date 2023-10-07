@@ -1236,7 +1236,9 @@ class ProjectCreateView(
 ):
     model = Project
     fields = ["title", "description"]
-    template_name = "course_flow/project_create.html"
+    template_name = "course_flow/workflow_create.html"
+
+    def workflow_type(self): return 'project'
 
     def test_func(self):
         return (
@@ -1685,7 +1687,9 @@ class ProgramCreateView(
 ):
     model = Program
     fields = ["title", "description"]
-    template_name = "course_flow/program_create.html"
+    template_name = "course_flow/workflow_create.html"
+
+    def workflow_type(self): return 'program'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -1706,7 +1710,9 @@ class CourseCreateView(
 ):
     model = Course
     fields = ["title", "description"]
-    template_name = "course_flow/course_create.html"
+    template_name = "course_flow/workflow_create.html"
+
+    def workflow_type(self): return 'course'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -1727,6 +1733,8 @@ class CourseStrategyCreateView(
     model = Course
     fields = ["title", "description"]
     template_name = "course_flow/course_create.html"
+
+    def workflow_type(self): return 'course'
 
     def test_func(self):
         return (
@@ -1751,7 +1759,9 @@ class ActivityCreateView(
 ):
     model = Activity
     fields = ["title", "description"]
-    template_name = "course_flow/activity_create.html"
+    template_name = "course_flow/workflow_create.html"
+
+    def workflow_type(self): return 'activity'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -1771,7 +1781,9 @@ class ActivityStrategyCreateView(
 ):
     model = Activity
     fields = ["title", "description"]
-    template_name = "course_flow/activity_create.html"
+    template_name = "course_flow/workflow_create.html"
+
+    def workflow_type(self): return 'activity'
 
     def test_func(self):
         return (
@@ -1920,8 +1932,6 @@ class ActivityStrategyCreateView(
 """
 Import/Export  methods
 """
-
-
 @user_can_edit(False)
 def import_data(request: HttpRequest) -> JsonResponse:
     object_id = json.loads(request.POST.get("objectID"))
@@ -2066,8 +2076,6 @@ def get_export_download(request: HttpRequest) -> HttpResponse:
 """
 Contextual information methods
 """
-
-
 @user_can_view_or_enrolled_as_student("workflowPk")
 def get_parent_workflow_info(request: HttpRequest) -> HttpResponse:
     workflow_id = json.loads(request.POST.get("workflowPk"))

@@ -1,15 +1,14 @@
 {% extends "course_flow/base.html" %}
-<!-- -->
-{% load static i18n %} {% load course_flow_templatetags %}
-<!-- -->
-{% block header %} {% endblock %}
-<!-- -->
-{% block title %}{% trans "SALTISE Administration" %} - CourseFlow{% endblock %}
-<!-- -->
-{% block metadescription %} {% endblock %}
-<!-- -->
+
+{% load static i18n %}
+{% load course_flow_templatetags %}
+
+{% block title %}
+  {% trans "SALTISE Administration" %} - CourseFlow
+{% endblock %}
+
 {% block body %}
-<div class="saltise-menu-container">
+  <div class="saltise-menu-container">
     <h1>SALTISE Administration</h1>
     <hr>
     <div>
@@ -22,18 +21,15 @@
         {% trans 'CourseFlow Analytics' %}
       </a></p>
     </div>
-</div>
+  </div>
 
-<!-- -->
 {% endblock %}
-<!-- -->
-{% block foot %} {% endblock %}
-<!-- -->
-{% csrf_token %}
-<!-- -->
 
-{% block scripts %} {{ block.super }}
-<script nonce="{{request.csp_nonce}}">
-  $(".saltise-menu-container").detach().appendTo("#container");
-</script>
+{% csrf_token %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script nonce="{{ request.csp_nonce }}">
+    $(".saltise-menu-container").detach().appendTo("#container");
+  </script>
 {% endblock %}

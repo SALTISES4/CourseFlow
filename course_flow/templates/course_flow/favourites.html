@@ -1,38 +1,27 @@
 {% extends "course_flow/base.html" %}
-<!-- -->
+
 {% load static i18n %}
-<!-- -->
-{% block header %}{% endblock %}
-<!-- -->
-{% block title %}{% trans "My Favourites" %} - CourseFlow{% endblock %}
-<!-- -->
-{% block metadescription %} {% endblock %}
-<!-- -->
-{% block body %}
-<!-- -->
+
+{% block title %}
+  {% trans "My Favourites" %} - CourseFlow
 {% endblock %}
-<!-- -->
-{% block foot %} {% endblock %}
-<!-- -->
+
 {% csrf_token %}
-<!-- -->
-{% block read_only_scripts %}
 
-{% endblock %}
-<!-- -->
-{% block scripts %} {{ block.super }}
-<script nonce="{{request.csp_nonce}}">
+{% block scripts %}
+  {{ block.super }}
+  <script nonce="{{ request.csp_nonce }}">
 
-  $(".menubar").removeClass("hidden");
+    $(".menubar").removeClass("hidden");
 
-  var library_renderer;
-  const user_id = {{ user.id }};
+    var library_renderer;
+    const user_id = {{ user.id }};
 
-  window.addEventListener("load",function(){
+    window.addEventListener("load", function () {
       favourites_renderer = new library_renderers.FavouritesRenderer();
       $(document).ajaxError(renderers.fail_function);
       favourites_renderer.render($("#container"));
       makeActiveSidebar("#my-favourites");
-  });
-</script>
+    });
+  </script>
 {% endblock %}
