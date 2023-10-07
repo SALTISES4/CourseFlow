@@ -1,0 +1,131 @@
+{% load static i18n  %}
+<script nonce="{{ request.csp_nonce }}">
+  const config = {
+    post_paths: {
+      get_possible_linked_workflows:
+        "{% url 'course_flow:get-possible-linked-workflows' %}",
+      get_possible_added_workflows:
+        "{% url 'course_flow:get-possible-added-workflows' %}",
+      get_workflow_context:
+        "{% url 'course_flow:get-workflow-context' %}",
+      get_target_projects:
+        "{% url 'course_flow:get-target-projects' %}",
+      set_linked_workflow: "{% url 'course_flow:set-linked-workflow' %}",
+      update_value: "{% url 'course_flow:update-value' %}",
+      new_node: "{% url 'course_flow:new-node' %}",
+      new_outcome: "{% url 'course_flow:new-outcome-for-workflow' %}",
+      add_strategy: "{% url 'course_flow:add-strategy' %}",
+      toggle_strategy: "{% url 'course_flow:toggle-strategy' %}",
+      new_node_link: "{% url 'course_flow:new-node-link' %}",
+      delete_self: "{% url 'course_flow:delete-self' %}",
+      delete_self_live: "{% url 'course_flow:delete-self-live' %}",
+      restore_self: "{% url 'course_flow:restore-self' %}",
+      delete_self_soft: "{% url 'course_flow:delete-self-soft' %}",
+      duplicate_self: "{% url 'course_flow:duplicate-self' %}",
+      insert_sibling: "{% url 'course_flow:insert-sibling' %}",
+      insert_child: "{% url 'course_flow:insert-child' %}",
+      inserted_at: "{% url 'course_flow:inserted-at' %}",
+      update_outcomehorizontallink_degree:
+        "{% url 'course_flow:update-outcomehorizontallink-degree' %}",
+      update_outcomenode_degree:
+        "{% url 'course_flow:update-outcomenode-degree' %}",
+      duplicate_project_ajax: "{% url 'course_flow:duplicate-project' %}",
+      duplicate_workflow_ajax: "{% url 'course_flow:duplicate-workflow' %}",
+      duplicate_strategy_ajax: "{% url 'course_flow:duplicate-strategy' %}",
+      toggle_favourite: "{% url 'course_flow:toggle-favourite' %}",
+      get_workflow_data: "{% url 'course_flow:get-workflow-data' %}",
+      get_workflow_parent_data: "{% url 'course_flow:get-workflow-parent-data' %}",
+      get_workflow_child_data: "{% url 'course_flow:get-workflow-child-data' %}",
+      get_project_data: "{% url 'course_flow:get-project-data' %}",
+      get_users_for_object: "{% url 'course_flow:get-users-for-object' %}",
+      get_users_for_liveproject: "{% url 'course_flow:get-users-for-liveproject' %}",
+      get_user_list: "{% url 'course_flow:get-user-list' %}",
+      search_all_objects: "{% url 'course_flow:search-all-objects' %}",
+      set_permission: "{% url 'course_flow:set-permission' %}",
+      set_liveproject_role: "{% url 'course_flow:set-liveproject-role' %}",
+      get_comments_for_object: "{% url 'course_flow:get-comments-for-object' %}",
+      add_terminology: "{% url 'course_flow:add-terminology' %}",
+      update_object_set: "{% url 'course_flow:update-object-set' %}",
+      add_comment: "{% url 'course_flow:add-comment' %}",
+      remove_comment: "{% url 'course_flow:remove-comment' %}",
+      remove_all_comments: "{% url 'course_flow:remove-all-comments' %}",
+      get_parent_workflow_info: "{% url 'course_flow:get-parent-workflow-info' %}",
+      get_export: "{% url 'course_flow:get-export' %}",
+      get_export_download: "{% url 'course_flow:get-export-download' %}",
+      import_data: "{% url 'course_flow:import-data' %}",
+      make_project_live: "{% url 'course_flow:make-project-live' %}",
+      set_workflow_visibility: "{% url 'course_flow:set-workflow-visibility' %}",
+      get_live_project_data: "{% url 'course_flow:get-live-project-data' %}",
+      get_live_project_data_student:
+        "{% url 'course_flow:get-live-project-data-student' %}",
+      get_assignment_data: "{% url 'course_flow:get-assignment-data' %}",
+      get_assignment_data_student:
+        "{% url 'course_flow:get-assignment-data-student' %}",
+      get_workflow_nodes: "{% url 'course_flow:get-workflow-nodes' %}",
+      create_live_assignment: "{% url 'course_flow:create-live-assignment' %}",
+      add_users_to_assignment: "{% url 'course_flow:add-users-to-assignment' %}",
+      update_liveproject_value: "{% url 'course_flow:update-liveproject-value' %}",
+      set_assignment_completion: "{% url 'course_flow:set-assignment-completion' %}",
+      get_assignments_for_node: "{% url 'course_flow:get-assignments-for-node' %}",
+      get_workflows_for_project: "{% url 'course_flow:get-workflows-for-project' %}",
+      select_notifications: "{% url 'course_flow:select-notifications' %}",
+    },
+    get_paths: {
+      get_disciplines: "{% url 'course_flow:get-disciplines' %}",
+      get_library: "{% url 'course_flow:get-library' %}",
+      get_favourites: "{% url 'course_flow:get-favourites' %}",
+      get_home: "{% url 'course_flow:get-home' %}",
+      import: "{% url 'course_flow:import' %}",
+      get_public_workflow_data:
+        "{% url 'course_flow:get-public-workflow-data' pk='0' %}",
+      get_public_workflow_parent_data:
+        "{% url 'course_flow:get-public-workflow-parent-data' pk='0' %}",
+      get_public_workflow_child_data:
+        "{% url 'course_flow:get-public-workflow-child-data' pk='0' %}",
+      get_public_parent_workflow_info:
+        "{% url 'course_flow:get-public-parent-workflow-info' pk='0' %}",
+    },
+    create_path: {
+      activity_strategy: "{% url 'course_flow:activity-strategy-create' %}",
+      course_strategy: "{% url 'course_flow:course-strategy-create' %}",
+      project: "{% url 'course_flow:project-create' %}",
+      activity: "{% url 'course_flow:activity-create' projectPk='0' %}",
+      course: "{% url 'course_flow:course-create' projectPk='0' %}",
+      program: "{% url 'course_flow:program-create' projectPk='0' %}"
+    },
+    update_path: {
+      project: "{% url 'course_flow:project-update' pk='0'%}",
+      activity: "{% url 'course_flow:workflow-update' pk='0'%}",
+      course: "{% url 'course_flow:workflow-update' pk='0'%}",
+      program: "{% url 'course_flow:workflow-update' pk='0'%}",
+      workflow: "{% url 'course_flow:workflow-update' pk='0'%}",
+      liveproject: "{% url 'course_flow:live-project-update' pk='0'%}",
+      liveassignment: "{% url 'course_flow:assignment-update' pk='0'%}"
+    },
+    public_update_path: {
+      activity: "{% url 'course_flow:workflow-public' pk='0'%}",
+      course: "{% url 'course_flow:workflow-public' pk='0'%}",
+      program: "{% url 'course_flow:workflow-public' pk='0'%}",
+      workflow: "{% url 'course_flow:workflow-public' pk='0'%}"
+    },
+    home_path: "{% url 'course_flow:home' %}",
+    my_library_path: "{% url 'course_flow:my-library' %}",
+    my_favourites_path: "{% url 'course_flow:my-favourites' %}",
+    my_liveprojects_path: "{% url 'course_flow:my-live-projects' %}",
+    registration_path:
+      "{{ request.get_host }}{% url 'course_flow:register-as-student' project_hash='project_hash' %}",
+    logout_path: "{% url 'course_flow:logout' %}",
+    icon_path: "{% static 'course_flow/img/images_svg/' %}"
+  }
+
+  // NOTE: This is the place where we keep all variables
+  // injected by Django to be consumed by React
+  const COURSEFLOW_APP = {
+    show_notification_request: {{ show_notification_request }},
+    update_notifications: {{ update_notifications | safe }},
+    strings: {
+      confirm_email_updates: "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}",
+      unsupported_device: "{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}"
+    }
+  }
+</script>
