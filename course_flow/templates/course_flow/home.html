@@ -18,22 +18,5 @@
 {% csrf_token %}
 <!-- -->
 {% block scripts %} {{ block.super }}
-<script nonce="{{request.csp_nonce}}">
-
-  var home_renderer;
-  const user_id = {{ user.id }};
-  {% if user|has_group:"Teacher" %}
-    const is_teacher = true;
-  {% else %}
-    const is_teacher = false;
-  {% endif %}
-
-
-  window.addEventListener("load",function(){
-      home_renderer = new library_renderers.HomeRenderer(is_teacher);
-      $(document).ajaxError(renderers.fail_function);
-      home_renderer.render($("#container"));
-      makeActiveSidebar("#panel-home");
-  });
-</script>
+<script src="{% static 'course_flow/js/templates/home.js' %}"></script>
 {% endblock %}

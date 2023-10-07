@@ -1,4 +1,4 @@
-{% load static i18n  %}
+{% load static i18n %}
 <script nonce="{{ request.csp_nonce }}">
   const config = {
     post_paths: {
@@ -118,14 +118,24 @@
     icon_path: "{% static 'course_flow/img/images_svg/' %}"
   }
 
+
   // NOTE: This is the place where we keep all variables
   // injected by Django to be consumed by React
   const COURSEFLOW_APP = {
     show_notification_request: {{ show_notification_request }},
-    update_notifications: {{ update_notifications | safe }},
+    update_notifications: {{ update_notifications|safe }},
+
+    home: {
+      user_id: {% firstof user.id -1 %},
+      is_teacher: {% if user|has_group:"Teacher" %}true{% else %}false{% endif %},
+    },
+
+    // common strings used across the app
     strings: {
-      confirm_email_updates: "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}",
-      unsupported_device: "{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}"
+      confirm_email_updates:
+        "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}",
+      unsupported_device:
+        "{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}"
     }
   }
 </script>

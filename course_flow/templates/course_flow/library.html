@@ -21,18 +21,5 @@
 {% endblock %}
 <!-- -->
 {% block scripts %} {{ block.super }}
-<script nonce="{{request.csp_nonce}}">
-
-  $(".menubar").removeClass("hidden");
-
-  var library_renderer;
-  const user_id = {{ user.id }};
-
-  window.addEventListener("load",function(){
-      library_renderer = new library_renderers.LibraryRenderer();
-      $(document).ajaxError(renderers.fail_function);
-      library_renderer.render($("#container"));
-      makeActiveSidebar("#panel-my-library");
-  });
-</script>
+<script src="{% static 'course_flow/js/templates/library.js' %}"></script>
 {% endblock %}
