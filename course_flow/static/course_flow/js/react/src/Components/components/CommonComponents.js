@@ -17,7 +17,12 @@ export class Component extends React.Component{
 
     toggleDrop(evt){
         evt.stopPropagation();
-        toggleDrop(this.props.objectID,Constants.object_dictionary[this.objectType],!this.props.data.is_dropped,this.props.dispatch,this.props.data.depth);
+        toggleDrop(
+          this.props.objectID,
+          Constants.object_dictionary[this.objectType],
+          !this.props.data.is_dropped,
+          this.props.dispatch,
+          this.props.data.depth);
     }
 }
 

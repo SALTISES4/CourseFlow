@@ -137,67 +137,7 @@ class AlignmentOutcomesBlock extends React.Component{
     }
 
 }
-//class AlignmentTermsBlockUnconnected extends React.Component{
-//    render(){
-//        let data = this.props.data;
-//
-//        let weekworkflows = Constants.filterThenSortByID(this.props.weekworkflows,this.props.workflow.weekworkflow_set).map(weekworkflow=>{
-//            let week_rank = this.props.workflow.weekworkflow_set.indexOf(weekworkflow.id);
-//            let week_react = this.props.weeks.filter(week=>week.id==weekworkflow.week).map(week=>{
-//
-//                let nodeweek_ids = Constants.getIntersection(week.nodeweek_set,this.props.nodeweek_ids);
-//                let nodeweeks = Constants.filterThenSortByID(this.props.nodeweeks,nodeweek_ids).map(nodeweek=>{
-//                    let node_react = this.props.nodes.filter(node=>node.id==nodeweek.node).map(node=>{
-//                        let outcomenodes = Constants.getIntersection(node.outcomenode_unique_set,this.props.outcomenode_ids).map(outcomenode=>
-//                            <OutcomeNodeView objectID={outcomenode}/>
-//                        );
-//
-//                        return (
-//                            <div style={{backgroundColor:this.props.renderer.column_colours[node.column]}} class={"node column-"+node.column}>
-//                                <div class="node-top-row">
-//                                    <NodeTitle data={data}/>
-//                                    <div class="outcomenode-block">
-//                                        {outcomenodes}
-//                                    </div>
-//                                </div>
-//                                <div class="node-drop-row"></div>
-//                            </div>
-//                        );
-//                    });
-//                    return(
-//                        <div class="node-week">{node_react}</div>
-//                    );
-//                });
-//                let default_text = week.week_type_display+" "+(week_rank+1);
-//
-//                return (
-//                    <div class="week">
-//                        <TitleText text={week.title} defaultText={default_text}/>
-//                        <div class="node-block">
-//                            {nodeweeks}
-//                        </div>
-//                    </div>
-//                )
-//            })
-//
-//            return(
-//                <div class="week-workflow">
-//                    {week_react}
-//                </div>
-//            )
-//        })
-//
-//
-//
-//        return(
-//            <div class="alignment-block">
-//                <h3>Usage:</h3>
-//                {weekworkflows}
-//            </div>
-//        );
-//    }
-//
-//}
+
 const getDescendantOutcomes = (state,outcome,outcomes)=>{
     if(outcome.depth>=2)return;
     let children = outcome.child_outcome_links.map(id=>getOutcomeOutcomeByID(state,id)).map(outcomeoutcome=>getOutcomeByID(state,outcomeoutcome.data.child).data);
@@ -206,121 +146,6 @@ const getDescendantOutcomes = (state,outcome,outcomes)=>{
         getDescendantOutcomes(state,children[i],outcomes);
     }
 }
-//const mapAlignmentTermStateToProps = (state,own_props)=>{
-//    let outcome = own_props.data;
-//    let all_outcomes = [outcome.id];
-//    getDescendantOutcomes(state,outcome,all_outcomes);
-//    let outcomenodes = state.outcomenode.filter(outcomenode=>all_outcomes.includes(outcomenode.outcome));
-//    let outcomenode_ids = outcomenodes.map(outcomenode=>outcomenode.id);
-//    let node_ids = outcomenodes.map(outcomenode=>outcomenode.node);
-//    let nodes = state.node.filter(node=>node_ids.includes(node.id));
-//    let nodeweeks = state.nodeweek.filter(nodeweek=>node_ids.includes(nodeweek.node));
-//    let nodeweek_ids = nodeweeks.map(nodeweek=>nodeweek.id);
-//    let week_ids = nodeweeks.map(nodeweek=>nodeweek.week);
-//    let weeks = state.week.filter(week=>week_ids.includes(week.id));
-//    let weekworkflows = state.weekworkflow.filter(weekworkflow=>week_ids.includes(weekworkflow.week));
-//
-//    return {workflow:state.workflow,weekworkflows:weekworkflows,weeks:weeks,nodeweek_ids:nodeweek_ids,nodeweeks:nodeweeks,nodes:nodes,node_ids:node_ids,outcomenodes:outcomenodes,outcomenode_ids:outcomenode_ids,all_outcomes:all_outcomes};
-//
-//}
-//export const AlignmentTermsBlock = connect(
-//    mapAlignmentTermStateToProps,
-//    null
-//)(AlignmentTermsBlockUnconnected)
-//
-//class AlignmentHorizontalBlockUnconnected extends React.Component{
-//    render(){
-//        let data = this.props.data;
-//
-//
-//        let parent_outcomes = this.props.outcomes.map(obj=>{
-//
-//            let child_outcomes = [];
-//            for(let i=0;i<obj.child_outcomes.length;i++){
-//                let node_title_text;
-//                if(!obj.nodes[i] || !obj.outcomenodes[i])continue;
-//
-//                child_outcomes.push(
-//                    <div class="alignment-row">
-//                        {Constants.getCompletionImg(obj.outcomenodes[i].degree,this.props.outcomes_type)}
-//                        <NodeTitle data={obj.nodes[i]}/>
-//                        <TitleText text={obj.child_outcomes[i].title} default_text="Unnamed"/>
-//                    </div>
-//                )
-//            }
-//
-//            return (
-//                <div class="outcome-alignment">
-//                    <div class="parent-outcome-box">
-//                        <TitleText text={obj.parent_outcome.title} default_text="Unnamed"/>
-//                    </div>
-//                    <div class="child-outcome-box">
-//                        {child_outcomes}
-//                    </div>
-//                </div>
-//            )
-//        });
-//
-//
-//
-//        return(
-//            <div class="alignment-block">
-//                <h3>Alignment:</h3>
-//                {parent_outcomes}
-//            </div>
-//        );
-//    }
-//
-//}
-//const mapAlignmentHorizontalStateToProps = (state,own_props)=>{
-//    let outcome = own_props.data;
-//    let all_outcome_ids = [outcome.id];
-//    getDescendantOutcomes(state,outcome,all_outcome_ids);
-//    let all_outcomes = state.outcome.filter(outcome=>all_outcome_ids.includes(outcome.id));
-//
-//    let outcomes = all_outcomes.map(parent_outcome=>{
-//        let outcomehorizontallinks = state.outcomehorizontallink.filter(link=>parent_outcome.id==link.parent_outcome);
-//        let child_outcomes = outcomehorizontallinks.map(link=>{
-//            for(let i=0;i<state.outcome.length;i++){
-//                if(state.outcome[i].id==link.outcome)return state.outcome[i];
-//            }
-//            return null;
-//        });
-//        let nodes = child_outcomes.map(child_outcome=>{
-//            if(!child_outcome)return null;
-//            let workflow_id=null;
-//            for(let i=0;i<state.outcomeworkflow.length;i++){
-//                if(state.outcomeworkflow[i].outcome==child_outcome.id){
-//                    workflow_id=state.outcomeworkflow[i].workflow;
-//                    break;
-//                }
-//            }
-//            if(workflow_id===null)return;
-//            for(let i=0;i<state.node.length;i++){
-//                if(state.node[i].linked_workflow==workflow_id)return state.node[i];
-//            }
-//            return null;
-//        });
-//        let outcomenodes = nodes.map(node=>{
-//            if(!node)return null;
-//            for(let i=0;i<state.outcomenode.length;i++){
-//                if(state.outcomenode[i].node==node.id && state.outcomenode[i].outcome==parent_outcome.id)return state.outcomenode[i];
-//            }
-//            return null;
-//        });
-//
-//        return {parent_outcome:parent_outcome,child_outcomes:child_outcomes,nodes:nodes,outcomenodes:outcomenodes};
-//    });
-//
-//
-//    return {outcomes:outcomes};
-//
-//}
-//export const AlignmentHorizontalBlock = connect(
-//    mapAlignmentHorizontalStateToProps,
-//    null
-//)(AlignmentHorizontalBlockUnconnected)
-
 
 
 
@@ -365,6 +190,7 @@ class AlignmentHorizontalReverseWeekUnconnected extends EditableComponentWithCom
         )
     }
 }
+
 const mapAlignmentHorizontalReverseWeekStateToProps = (state,own_props)=>{
     for(var i=0;i<state.week.length;i++){
         if(state.week[i].id==own_props.objectID){
@@ -374,6 +200,7 @@ const mapAlignmentHorizontalReverseWeekStateToProps = (state,own_props)=>{
         }
     }
 }
+
 export const AlignmentHorizontalReverseWeek = connect(
     mapAlignmentHorizontalReverseWeekStateToProps,
     null
@@ -518,6 +345,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         newOutcome(this.props.data.linked_workflow,null);
     }
 }
+
 const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
     for(var i=0;i<state.node.length;i++){
         if(state.node[i].id==own_props.objectID){
@@ -540,6 +368,7 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
         }
     }
 }
+
 export const AlignmentHorizontalReverseNode = connect(
     mapAlignmentHorizontalReverseNodeStateToProps,
     null

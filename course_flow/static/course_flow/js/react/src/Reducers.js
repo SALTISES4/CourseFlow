@@ -15,7 +15,7 @@ export const createLockAction = (object_id,object_type,lock,user_id,user_colour)
 export const reloadCommentsAction = (id,objectType,comment_data) => {
     return {
         type: objectType+'/reloadComments',
-        payload:{id:id,objectType:objectType,comment_data,comment_data}
+        payload:{id:id,objectType:objectType,comment_data}
     }
 }
 

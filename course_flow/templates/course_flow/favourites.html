@@ -13,9 +13,9 @@
   <script nonce="{{ request.csp_nonce }}">
 
     $(".menubar").removeClass("hidden");
-
-    var library_renderer;
     const user_id = {{ user.id }};
+
+//    var library_renderer;
 
     window.addEventListener("load", function () {
       favourites_renderer = new library_renderers.FavouritesRenderer();

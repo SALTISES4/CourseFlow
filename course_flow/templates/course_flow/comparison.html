@@ -77,8 +77,8 @@
       disabled: [0],
       collapsible: true,
       activate: (evt, ui) => {
-        if (ui.oldTab.length == 0) $("#sidebar").removeClass("collapsed");
-        else if (ui.newTab.length == 0) $("#sidebar").addClass("collapsed");
+        if (ui.oldTab.length === 0) $("#sidebar").removeClass("collapsed");
+        else if (ui.newTab.length === 0) $("#sidebar").addClass("collapsed");
       }
     });
 
@@ -104,17 +104,13 @@
 
     const project_data = {{project_data|safe}};
     const public_view = false;
-    var comparison_renderer;
-
 
     const myColour = 'hsl(' + (((user_id * 5) % 360) + 1) + ',50%,50%)';
 
     const changeFieldID = Math.floor(Math.random() * 10000);
 
-
     window.addEventListener("load", function () {
-      comparison_renderer = new renderers.ComparisonRenderer(project_data);
-
+      const comparison_renderer = new renderers.ComparisonRenderer(project_data);
 
       $(document).ajaxError(renderers.fail_function);
       comparison_renderer.render($("#container"));
