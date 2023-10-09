@@ -7,8 +7,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import terser from '@rollup/plugin-terser';
 import multiEntry from '@rollup/plugin-multi-entry';
 import postcss from 'rollup-plugin-postcss';
-import react from 'react';
-import reactDom from 'react-dom';
 
 const templateBundleSrc = 'course_flow/static/course_flow/js/other/src/'
 const templateBundleDist = 'course_flow/static/course_flow/js/other/dist/'
@@ -48,12 +46,6 @@ const plugins = {
   }),
   commonjs: commonjs({
     include: 'node_modules/**',
-    // THe namedExports option from "@rollup/plugin-commonjs" is deprecated. Named exports are now handled automatically.
-    // namedExports:{
-    //   'node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
-    //   'react': Object.keys(react),
-    //   'react-dom': Object.keys(reactDom),
-    // }
   }),
   terser: terser()
 };
