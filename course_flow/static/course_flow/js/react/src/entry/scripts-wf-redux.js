@@ -24,8 +24,8 @@ import {
   updateValue
 } from '../PostFunctions.js';
 import { ConnectionBar } from '../ConnectedUsers.js'
-import '../../../../css/base_style.css';
-import '../../../../css/workflow_styles.css';
+import '../../../../scss/base_style.scss';
+import '../../../../scss/workflow_styles.scss';
 
 export { Loader } from '../Constants.js';
 export { fail_function } from '../PostFunctions.js';
