@@ -3,6 +3,7 @@ import * as reactDom from "react-dom";
 import { connect} from "react-redux";
 import { updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem,  getAddedWorkflowMenu, addTerminology} from "../../PostFunctions.js";
 import * as Constants from "../../Constants.js";
+import { Loader } from '../../UtilityFunctions.js';
 import {ShareMenu} from "./ShareMenu.js";
 import {ImportMenu} from "./ImportMenu.js";
 import {ExportMenu} from "./ExportMenu.js";
@@ -242,7 +243,7 @@ export class MenuSection extends React.Component{
                     <a class="hover-shade" onClick={()=>{
                         getAddedWorkflowMenu(parentID,section_type,is_strategy,false,(response_data)=>{
                             if(response_data.workflowID!=null){
-                                let loader = new Constants.Loader('body');
+                                let loader = new Loader('body');
                                 duplicateBaseItem(
                                     response_data.workflowID,section_type,
                                     parentID,(duplication_response_data)=>{

@@ -27,7 +27,7 @@ import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss';
 import '../../../../scss/workflow_styles.scss';
 
-export { Loader } from '../Constants.js';
+export { Loader } from '../UtilityFunctions.js';
 export { fail_function } from '../PostFunctions.js';
 
 //Manages the current selection, ensuring we only have one at a time
@@ -687,7 +687,7 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer {
   }
 
   connection_opened(reconnect = false) {
-    let loader = new Constants.Loader(this.container[0]);
+    let loader = new Loader(this.container[0]);
     this.getWorkflowData(this.workflowID, (response) => {
       let data_flat = response.data_package;
       if (this.initial_object_sets) {
@@ -747,7 +747,7 @@ export function CreateNew(create_url) {
     -1,
     response_data => {
       if (response_data.parentID !== null) {
-        let loader = new Constants.Loader('body');
+        let loader = new Loader('body');
         window.location = create_url.replace('/0/', '/' + response_data.parentID + '/');
       }
     },

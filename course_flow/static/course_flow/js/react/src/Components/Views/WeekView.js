@@ -1,13 +1,23 @@
-import * as React from "react";
-import {Provider, connect} from "react-redux";
-import {EditableComponentWithSorting, TitleText} from "../components/CommonComponents.js";
-import NodeWeekView from "./NodeWeekView.js";
-import {NodeWeekComparisonView} from "./NodeWeekView.js";
-import {getWeekByID, getNodeWeekByID} from "../../FindState.js";
-import * as Constants from "../../Constants.js";
-import {columnChangeNode, moveNodeWeek} from "../../Reducers.js";
-import {toggleDrop, insertedAt, insertedAtInstant, columnChanged,addStrategy,updateValueInstant} from "../../PostFunctions.js";
-import {Loader} from "../../Constants.js";
+import * as React from 'react';
+import { Provider, connect } from 'react-redux';
+import {
+  EditableComponentWithSorting,
+  TitleText
+} from '../components/CommonComponents.js';
+import NodeWeekView from './NodeWeekView.js';
+import { NodeWeekComparisonView } from './NodeWeekView.js';
+import { getWeekByID, getNodeWeekByID } from '../../FindState.js';
+import * as Constants from '../../Constants.js';
+import { columnChangeNode, moveNodeWeek } from '../../Reducers.js';
+import {
+  toggleDrop,
+  insertedAt,
+  insertedAtInstant,
+  columnChanged,
+  addStrategy,
+  updateValueInstant
+} from '../../PostFunctions.js';
+import { Loader } from '../../UtilityFunctions.js';
 
 //Basic component to represent a Week
 export class WeekViewUnconnected extends EditableComponentWithSorting{

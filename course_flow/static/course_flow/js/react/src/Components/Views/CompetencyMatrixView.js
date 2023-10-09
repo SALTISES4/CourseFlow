@@ -1,12 +1,28 @@
-import * as React from "react";
-import * as reactDom from "react-dom";
-import {Provider, connect} from "react-redux";
-import {Component, EditableComponentWithComments, OutcomeTitle, TitleText, NodeTitle} from "../components/CommonComponents.js";
-import * as Constants from "../../Constants.js";
-import {getSortedOutcomeIDFromOutcomeWorkflowSet, getOutcomeByID, getWeekWorkflowByID, getWeekByID, getNodeWeekByID, getNodeByID, getOutcomeNodeByID, getTableOutcomeNodeByID} from "../../FindState.js";
-import {WorkflowOutcomeLegend} from "../components/WorkflowLegend.js";
-import {TableOutcomeBase} from "./OutcomeView.js";
-import {NodeOutcomeView} from "./NodeView.js";
+import * as React from 'react';
+import * as reactDom from 'react-dom';
+import { Provider, connect } from 'react-redux';
+import {
+  Component,
+  EditableComponentWithComments,
+  OutcomeTitle,
+  TitleText,
+  NodeTitle
+} from '../components/CommonComponents.js';
+import * as Constants from '../../Constants.js';
+import {
+  getSortedOutcomeIDFromOutcomeWorkflowSet,
+  getOutcomeByID,
+  getWeekWorkflowByID,
+  getWeekByID,
+  getNodeWeekByID,
+  getNodeByID,
+  getOutcomeNodeByID,
+  getTableOutcomeNodeByID
+} from '../../FindState.js';
+import { WorkflowOutcomeLegend } from '../components/WorkflowLegend.js';
+import { TableOutcomeBase } from './OutcomeView.js';
+import { NodeOutcomeView } from './NodeView.js';
+import * as UtilityFunctions from '../../UtilityFunctions.js';
 
 class CompetencyMatrixView extends React.Component{
     constructor(props){
@@ -135,26 +151,26 @@ class CompetencyMatrixView extends React.Component{
 
     getNodecategory(){
 
-        let week_order = Constants.filterThenSortByID(this.props.weekworkflows,this.props.weekworkflow_order).map(weekworkflow=>weekworkflow.week);
-        let weeks_ordered = Constants.filterThenSortByID(this.props.weeks,week_order);
+        let week_order = UtilityFunctions.filterThenSortByID(this.props.weekworkflows,this.props.weekworkflow_order).map(weekworkflow=>weekworkflow.week);
+        let weeks_ordered = UtilityFunctions.filterThenSortByID(this.props.weeks,week_order);
         let nodeweek_order = [].concat(...weeks_ordered.map((week)=>week.nodeweek_set));
-        let nodeweeks_ordered = Constants.filterThenSortByID(this.props.nodeweeks,nodeweek_order)
+        let nodeweeks_ordered = UtilityFunctions.filterThenSortByID(this.props.nodeweeks,nodeweek_order)
         let node_order = nodeweeks_ordered.map(nodeweek=>nodeweek.node);
-        let nodes_ordered = Constants.filterThenSortByID(this.props.nodes,node_order).filter(node=>!Constants.checkSetHidden(node,this.props.object_sets));
+        let nodes_ordered = UtilityFunctions.filterThenSortByID(this.props.nodes,node_order).filter(node=>!UtilityFunctions.checkSetHidden(node,this.props.object_sets));
 
         let nodes_allowed = nodes_ordered.map(node=>node.id);
         nodeweeks_ordered = nodeweeks_ordered.filter(nodeweek=>nodes_allowed.indexOf(nodeweek.node)>=0);
         let nodes_by_week={};
         for(let i=0;i<nodeweeks_ordered.length;i++){
             let nodeweek = nodeweeks_ordered[i];
-            Constants.pushOrCreate(nodes_by_week,nodeweek.week,nodeweek.node);
+            UtilityFunctions.pushOrCreate(nodes_by_week,nodeweek.week,nodeweek.node);
         }
         return weeks_ordered.map((week,index)=>{return {title:(week.title||week.week_type_display+" "+(index+1)),id:week.id,nodes:(nodes_by_week[week.id]||[])};});
 
     }
 
     getTotals(){
-        let nodes_data = this.props.nodes.filter(node=>!Constants.checkSetHidden(node,this.props.objectset));
+        let nodes_data = this.props.nodes.filter(node=>!UtilityFunctions.checkSetHidden(node,this.props.objectset));
         let linked_wf_data = nodes_data.map(node=>{
             if(node.represents_workflow)return {...node,...node.linked_workflow_data};
             return node
@@ -242,8 +258,8 @@ class MatrixWeekViewUnconnected extends Component{
 }
 const mapWeekStateToProps = (state,own_props)=>{
     let data = getWeekByID(state,own_props.objectID).data;
-    let node_weeks = Constants.filterThenSortByID(state.nodeweek,data.nodeweek_set);
-    let nodes_data = Constants.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Constants.checkSetHidden(node,state.objectset));
+    let node_weeks = UtilityFunctions.filterThenSortByID(state.nodeweek,data.nodeweek_set);
+    let nodes_data = UtilityFunctions.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!UtilityFunctions.checkSetHidden(node,state.objectset));
     let linked_wf_data = nodes_data.map(node=>{
         if(node.represents_workflow)return {...node,...node.linked_workflow_data};
         return node
@@ -334,6 +350,3 @@ export const MatrixNodeView = connect(
     mapNodeStateToProps,
     null
 )(MatrixNodeViewUnconnected)
-
-
-

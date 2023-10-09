@@ -1,17 +1,26 @@
-import * as React from "react";
-import * as reactDom from "react-dom";
-import {Provider, connect} from "react-redux";
-import {Component, EditableComponent, EditableComponentWithSorting, WorkflowTitle} from "../components/CommonComponents.js";
-import * as Constants from "../../Constants.js";
-import {renderMessageBox,closeMessageBox} from "../components/MenuComponents.js";
-import {getWorkflowSelectMenu,getWorkflowContext,insertedAt,insertedAtInstant} from "../../PostFunctions.js";
-import {WeekWorkflowComparisonView} from "./WeekWorkflowView.js";
-import {getSortedOutcomesFromOutcomeWorkflowSet} from "../../FindState.js";
-import {OutcomeEditViewUnconnected} from "./OutcomeEditView.js";
-import {toggleObjectSet,moveWeekWorkflow} from "../../Reducers.js";
-import {WorkflowForMenu} from "../../Library.js"
-
-
+import * as React from 'react';
+import * as reactDom from 'react-dom';
+import { Provider, connect } from 'react-redux';
+import {
+  Component,
+  EditableComponent,
+  EditableComponentWithSorting,
+  WorkflowTitle
+} from '../components/CommonComponents.js';
+import * as Constants from '../../Constants.js';
+import { Loader } from '../../UtilityFunctions.js';
+import { renderMessageBox, closeMessageBox } from '../components/MenuComponents.js';
+import {
+  getWorkflowSelectMenu,
+  getWorkflowContext,
+  insertedAt,
+  insertedAtInstant
+} from '../../PostFunctions.js';
+import { WeekWorkflowComparisonView } from './WeekWorkflowView.js';
+import { getSortedOutcomesFromOutcomeWorkflowSet } from '../../FindState.js';
+import { OutcomeEditViewUnconnected } from './OutcomeEditView.js';
+import { toggleObjectSet, moveWeekWorkflow } from '../../Reducers.js';
+import { WorkflowForMenu } from '../../Library.js'
 
 //Container for the workflows to be compared
 export class ComparisonView extends React.Component{
@@ -214,8 +223,7 @@ class WorkflowComparisonRendererComponent extends Component{
     }
 
     componentDidMount(){
-        let loader = new Constants.Loader('body');
-
+        let loader = new Loader('body');
 
         let querystring = window.location.search;
         let url_params = new URLSearchParams(querystring);

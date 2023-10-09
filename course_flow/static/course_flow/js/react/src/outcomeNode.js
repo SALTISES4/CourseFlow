@@ -1,7 +1,8 @@
-import {getSortedOutcomesFromOutcomeWorkflowSet, getTableOutcomeNodeByID} from "./FindState.js";
-import {filterThenSortByID} from "./Constants.js";
-import * as React from "@types/react";
-
+import {
+  getSortedOutcomesFromOutcomeWorkflowSet,
+  getTableOutcomeNodeByID
+} from './FindState.js';
+import { filterThenSortByID } from './UtilityFunctions.js';
 
 /**
  * TOO DOMAIN SPECIFIC, SHOULD BE MOVED OUT

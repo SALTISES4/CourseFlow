@@ -1,11 +1,37 @@
-import * as Redux from "redux";
-import * as React from "react";
-import * as reactDom from "react-dom";
-import * as Constants from "../../Constants.js";
-import {dot as mathdot, subtract as mathsubtract, matrix as mathmatrix, add as mathadd, multiply as mathmultiply, norm as mathnorm, isNaN as mathisnan} from "mathjs";
-import {reloadCommentsAction} from "../../Reducers.js";
-import {getUsersForObject, restoreSelf, toggleDrop, newNode, newNodeLink, duplicateSelf, deleteSelf, insertSibling, getLinkedWorkflowMenu, addStrategy, toggleStrategy, insertChild, getCommentsForObject, addComment, removeComment, removeAllComments, updateObjectSet} from "../../PostFunctions.js";
-
+import * as Redux from 'redux';
+import * as React from 'react';
+import * as reactDom from 'react-dom';
+import * as Constants from '../../Constants.js';
+import { Loader } from '../../UtilityFunctions.js';
+import {
+  dot as mathdot,
+  subtract as mathsubtract,
+  matrix as mathmatrix,
+  add as mathadd,
+  multiply as mathmultiply,
+  norm as mathnorm,
+  isNaN as mathisnan
+} from 'mathjs';
+import { reloadCommentsAction } from '../../Reducers.js';
+import {
+  getUsersForObject,
+  restoreSelf,
+  toggleDrop,
+  newNode,
+  newNodeLink,
+  duplicateSelf,
+  deleteSelf,
+  insertSibling,
+  getLinkedWorkflowMenu,
+  addStrategy,
+  toggleStrategy,
+  insertChild,
+  getCommentsForObject,
+  addComment,
+  removeComment,
+  removeAllComments,
+  updateObjectSet
+} from '../../PostFunctions.js';
 
 //Extends the react component to add a few features that are used in a large number of components
 export class Component extends React.Component{
@@ -143,11 +169,11 @@ export class EditableComponent extends Component{
                             <div class="half-width">{gettext("hrs. Theory")}</div>
                             <input disabled={override || read_only} autocomplete="off" class="half-width" id="ponderation-practical" type="number" value={data.ponderation_practical} onChange={this.inputChanged.bind(this,"ponderation_practical")}/>
                             <div class="half-width">{gettext("hrs. Practical")}</div>
-                            <input disabled={override || read_only} class="half-width" autocomplete="off" class="half-width" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
+                            <input disabled={override || read_only} class="half-width" autocomplete="off" id="ponderation-individual" type="number" value={data.ponderation_individual} onChange={this.inputChanged.bind(this,"ponderation_individual")}/>
                             <div class="half-width">{gettext("hrs. Individual")}</div>
-                            <input disabled={override || read_only} class="half-width" autocomplete="off" class="half-width" id="time-general-hours" type="number" value={data.time_general_hours} onChange={this.inputChanged.bind(this,"time_general_hours")}/>
+                            <input disabled={override || read_only} class="half-width" autocomplete="off" id="time-general-hours" type="number" value={data.time_general_hours} onChange={this.inputChanged.bind(this,"time_general_hours")}/>
                             <div class="half-width">{gettext("hrs. General Education")}</div>
-                            <input disabled={override || read_only} class="half-width" autocomplete="off" class="half-width" id="time-specific-hours" type="number" value={data.time_specific_hours} onChange={this.inputChanged.bind(this,"time_specific_hours")}/>
+                            <input disabled={override || read_only} class="half-width" autocomplete="off" id="time-specific-hours" type="number" value={data.time_specific_hours} onChange={this.inputChanged.bind(this,"time_specific_hours")}/>
                             <div class="half-width">{gettext("hrs. Specific Education")}</div>
                         </div>
                     }
@@ -227,7 +253,7 @@ export class EditableComponent extends Component{
                                 )}
                             </select>
                             <button disabled={read_only} id="toggle-strategy-editor" onClick = {()=>{
-                                let loader = new Constants.Loader('body');
+                                let loader = new Loader('body');
                                 toggleStrategy(data.id,data.is_strategy,
                                 (response_data)=>{
                                     loader.endLoad();

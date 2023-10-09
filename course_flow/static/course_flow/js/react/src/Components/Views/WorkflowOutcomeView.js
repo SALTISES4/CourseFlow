@@ -1,14 +1,12 @@
-import * as React from "react";
-import * as reactDom from "react-dom";
-import {Provider, connect} from "react-redux";
-import {NodeOutcomeView} from "./NodeView.js";
-import {TableOutcomeBase} from "./OutcomeView.js";
-import {TableOutcomeWorkflowView} from "./OutcomeWorkflowView.js"
-import {pushOrCreate, filterThenSortByID, checkSetHidden} from "../../Constants.js"
-import {TableChildWorkflowHeader} from "../components/OutcomeHorizontalLink.js";
-import {getSortedOutcomeIDFromOutcomeWorkflowSet} from "../../FindState.js";
-
-
+import * as React from 'react';
+import * as reactDom from 'react-dom';
+import { Provider, connect } from 'react-redux';
+import { NodeOutcomeView } from './NodeView.js';
+import { TableOutcomeBase } from './OutcomeView.js';
+import { TableOutcomeWorkflowView } from './OutcomeWorkflowView.js'
+import { checkSetHidden, filterThenSortByID, pushOrCreate } from '../../UtilityFunctions.js'
+import { TableChildWorkflowHeader } from '../components/OutcomeHorizontalLink.js';
+import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '../../FindState.js';
 
 //Represents the entire outcomeview, barring top level workflow stuff
 class WorkflowOutcomeView extends React.Component{
@@ -151,5 +149,3 @@ export default connect(
     mapStateToProps,
     null
 )(WorkflowOutcomeView)
-
-

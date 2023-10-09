@@ -1,13 +1,32 @@
-import * as React from "react";
-import * as reactDom from "react-dom";
-import {Provider, connect} from "react-redux";
-import {EditableComponent, EditableComponentWithComments, NodeTitle, TitleText, OutcomeTitle, getOutcomeTitle, WeekTitle} from "../components/CommonComponents.js";
-import * as Constants from "../../Constants.js";
-import {getOutcomeByID,getOutcomeOutcomeByID, getChildWorkflowByID, getWeekByID, getSortedOutcomesFromOutcomeWorkflowSet} from "../../FindState.js";
-import OutcomeView from "./OutcomeView.js";
-import {SimpleOutcomeView} from "./OutcomeView.js";
-import OutcomeNodeView from "../components/OutcomeNode.js";
-import {newOutcome, updateOutcomenodeDegree, updateOutcomehorizontallinkDegree} from "../../PostFunctions.js"
+import * as React from 'react';
+import * as reactDom from 'react-dom';
+import { Provider, connect } from 'react-redux';
+import {
+  EditableComponent,
+  EditableComponentWithComments,
+  NodeTitle,
+  TitleText,
+  OutcomeTitle,
+  getOutcomeTitle,
+  WeekTitle
+} from '../components/CommonComponents.js';
+import * as Constants from '../../Constants.js';
+import {
+  getOutcomeByID,
+  getOutcomeOutcomeByID,
+  getChildWorkflowByID,
+  getWeekByID,
+  getSortedOutcomesFromOutcomeWorkflowSet
+} from '../../FindState.js';
+import OutcomeView from './OutcomeView.js';
+import { SimpleOutcomeView } from './OutcomeView.js';
+import OutcomeNodeView from '../components/OutcomeNode.js';
+import {
+  newOutcome,
+  updateOutcomenodeDegree,
+  updateOutcomehorizontallinkDegree
+} from '../../PostFunctions.js'
+import * as UtilityFunctions from '../../UtilityFunctions.js';
 
 //Analytics view
 class AlignmentView extends React.Component{
@@ -116,7 +135,7 @@ const mapAlignmentStateToProps = state=>{
     return {
         data:state.workflow,
         outcomes:outcomes,
-        terms:Constants.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(wwf=>getWeekByID(state,wwf.week).data)
+        terms:UtilityFunctions.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(wwf=>getWeekByID(state,wwf.week).data)
     }
 };
 export default connect(
@@ -195,7 +214,7 @@ const mapAlignmentHorizontalReverseWeekStateToProps = (state,own_props)=>{
     for(var i=0;i<state.week.length;i++){
         if(state.week[i].id==own_props.objectID){
             let week=state.week[i];
-            let nodeweeks = Constants.filterThenSortByID(state.nodeweek,week.nodeweek_set);
+            let nodeweeks = UtilityFunctions.filterThenSortByID(state.nodeweek,week.nodeweek_set);
             return {data:week,nodeweeks:nodeweeks};
         }
     }
@@ -351,17 +370,17 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
         if(state.node[i].id==own_props.objectID){
             let node=state.node[i];
             let column = state.column.find(column=>column.id==node.column);
-            let outcomenodes = Constants.filterThenSortByID(state.outcomenode,node.outcomenode_unique_set);
+            let outcomenodes = UtilityFunctions.filterThenSortByID(state.outcomenode,node.outcomenode_unique_set);
             if(own_props.restriction_set && own_props.restriction_set.parent_outcomes){
                 outcomenodes = outcomenodes.filter(ocn=>own_props.restriction_set.parent_outcomes.indexOf(ocn.outcome)>=0);
             }
-            let node_outcomes = Constants.filterThenSortByID(state.outcomenode,node.outcomenode_set).map(ocn=>ocn.outcome);
+            let node_outcomes = UtilityFunctions.filterThenSortByID(state.outcomenode,node.outcomenode_set).map(ocn=>ocn.outcome);
             if(!node.linked_workflow || node.linked_workflow_data.deleted){
                 return {workflow:state.workflow,data:node,column:column,child_outcomes:[],outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
             }
             let child_workflow = getChildWorkflowByID(state,node.linked_workflow);
             let child_outcomes;
-            if(child_workflow!=-1)child_outcomes = Constants.filterThenSortByID(state.outcomeworkflow,child_workflow.data.outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
+            if(child_workflow!=-1)child_outcomes = UtilityFunctions.filterThenSortByID(state.outcomeworkflow,child_workflow.data.outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
             else child_outcomes=-1;
             return {workflow:state.workflow,data:node,column:column,child_outcomes:child_outcomes,outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
 
@@ -455,10 +474,10 @@ const mapAlignmentHorizontalReverseChildOutcomeStateToProps = (state,own_props)=
     for(var i=0;i<state.outcome.length;i++){
         if(state.outcome[i].id==own_props.objectID){
             let outcome = state.outcome[i];
-            let allowed_outcomenodes = Constants.filterThenSortByID(state.outcomenode,own_props.node_data.outcomenode_set);
+            let allowed_outcomenodes = UtilityFunctions.filterThenSortByID(state.outcomenode,own_props.node_data.outcomenode_set);
 
-            let allowed_horizontal_links=Constants.filterThenSortByID(state.outcomehorizontallink,outcome.outcome_horizontal_links_unique);
-            let horizontal_link_outcomes = Constants.filterThenSortByID(state.outcomehorizontallink,outcome.outcome_horizontal_links).map(hl=>hl.parent_outcome);
+            let allowed_horizontal_links=UtilityFunctions.filterThenSortByID(state.outcomehorizontallink,outcome.outcome_horizontal_links_unique);
+            let horizontal_link_outcomes = UtilityFunctions.filterThenSortByID(state.outcomehorizontallink,outcome.outcome_horizontal_links).map(hl=>hl.parent_outcome);
             return {data:outcome,outcomenodes:allowed_outcomenodes,horizontal_links:allowed_horizontal_links,all_horizontal_link_outcomes:horizontal_link_outcomes};
         }
     }
@@ -526,7 +545,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
 const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
 
 
-    let weekworkflows = Constants.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(
+    let weekworkflows = UtilityFunctions.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(
         weekworkflow=>({weekworkflow:weekworkflow,rank:state.workflow.weekworkflow_set.indexOf(weekworkflow.id)})
     );
 
@@ -539,11 +558,11 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
 
 
         let allowed_child_outcome_ids_from_outcomes = state.outcomehorizontallink.filter(hl=>allowed_outcome_ids.indexOf(hl.parent_outcome)>=0).map(hl=>hl.outcome);
-        let allowed_child_outcome_ids = state.outcome.filter(outcome=>allowed_child_outcome_ids_from_outcomes.indexOf(outcome.id)>=0).filter(outcome=>!Constants.checkSetHidden(outcome,state.objectset)).map(outcome=>outcome.id);
+        let allowed_child_outcome_ids = state.outcome.filter(outcome=>allowed_child_outcome_ids_from_outcomes.indexOf(outcome.id)>=0).filter(outcome=>!UtilityFunctions.checkSetHidden(outcome,state.objectset)).map(outcome=>outcome.id);
 
 
         let allowed_node_ids_from_outcomes = state.outcomenode.filter(outcomenode=>allowed_outcome_ids.includes(outcomenode.outcome)).map(outcomenode=>outcomenode.node);
-        let allowed_node_ids = state.node.filter(node=>allowed_node_ids_from_outcomes.indexOf(node.id)>=0).filter(node=>!Constants.checkSetHidden(node,state.objectset)).map(node=>node.id);
+        let allowed_node_ids = state.node.filter(node=>allowed_node_ids_from_outcomes.indexOf(node.id)>=0).filter(node=>!UtilityFunctions.checkSetHidden(node,state.objectset)).map(node=>node.id);
 
         let nodeweeks = state.nodeweek.filter(nodeweek=>allowed_node_ids.includes(nodeweek.node));
         let allowed_week_ids = nodeweeks.map(nodeweek=>nodeweek.week);
@@ -553,9 +572,9 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
     }else if(own_props.sort=="week"){
         let allowed_outcome_ids = [];
 
-        let allowed_node_ids = state.node.filter(node=>!Constants.checkSetHidden(node,state.objectset)).map(node=>node.id);
+        let allowed_node_ids = state.node.filter(node=>!UtilityFunctions.checkSetHidden(node,state.objectset)).map(node=>node.id);
 
-        let allowed_child_outcome_ids = state.outcome.filter(outcome=>!Constants.checkSetHidden(outcome,state.objectset)).map(outcome=>outcome.id);
+        let allowed_child_outcome_ids = state.outcome.filter(outcome=>!UtilityFunctions.checkSetHidden(outcome,state.objectset)).map(outcome=>outcome.id);
 
 
         for(let i=0;i<own_props.base_outcomes.length;i++){

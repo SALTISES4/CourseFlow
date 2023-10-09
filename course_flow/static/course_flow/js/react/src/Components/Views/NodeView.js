@@ -1,14 +1,28 @@
-import * as React from "react";
-import * as reactDom from "react-dom";
-import {Provider, connect} from "react-redux";
-import {ActionButton, Component, EditableComponentWithActions, EditableComponentWithComments, NodeLinkSVG, AutoLinkView, NodePorts, NodeTitle, TitleText} from "../components/CommonComponents.js";
-import NodeLinkView from "./NodeLinkView.js";
-import {AssignmentBox} from "./LiveAssignmentView.js"
-import OutcomeNodeView from "../components/OutcomeNode.js";
-import {getNodeByID} from "../../FindState.js";
-import * as Constants from "../../Constants.js";
-import {updateOutcomenodeDegree, updateValueInstant, toggleDrop} from "../../PostFunctions.js"
-
+import * as React from 'react';
+import * as reactDom from 'react-dom';
+import { Provider, connect } from 'react-redux';
+import {
+  ActionButton,
+  Component,
+  EditableComponentWithActions,
+  EditableComponentWithComments,
+  NodeLinkSVG,
+  AutoLinkView,
+  NodePorts,
+  NodeTitle,
+  TitleText
+} from '../components/CommonComponents.js';
+import NodeLinkView from './NodeLinkView.js';
+import { AssignmentBox } from './LiveAssignmentView.js'
+import OutcomeNodeView from '../components/OutcomeNode.js';
+import { getNodeByID } from '../../FindState.js';
+import * as Constants from '../../Constants.js';
+import * as UtilityFunctions from '../../UtilityFunctions.js';
+import {
+  updateOutcomenodeDegree,
+  updateValueInstant,
+  toggleDrop
+} from '../../PostFunctions.js'
 
 //Basic component to represent a Node
 class NodeView extends EditableComponentWithActions{
@@ -118,7 +132,7 @@ class NodeView extends EditableComponentWithActions{
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
-        if(Constants.checkSetHidden(data,this.props.object_sets))style.display="none";
+        if(UtilityFunctions.checkSetHidden(data,this.props.object_sets))style.display="none";
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
@@ -420,7 +434,7 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions{
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
-        if(Constants.checkSetHidden(data,this.props.object_sets))style.display="none";
+        if(UtilityFunctions.checkSetHidden(data,this.props.object_sets))style.display="none";
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
 

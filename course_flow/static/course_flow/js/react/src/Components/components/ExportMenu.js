@@ -1,8 +1,12 @@
-import * as Redux from "redux";
-import * as React from "react";
-import * as reactDom from "react-dom";
-import {setUserPermission,getUsersForObject,getUserList} from "../../PostFunctions.js";
-import {Loader} from "../../Constants.js";
+import * as Redux from 'redux';
+import * as React from 'react';
+import * as reactDom from 'react-dom';
+import {
+  setUserPermission,
+  getUsersForObject,
+  getUserList
+} from '../../PostFunctions.js';
+import { Loader } from '../../UtilityFunctions.js';
 
 export class ExportMenu extends React.Component{
     constructor(props){
@@ -28,7 +32,7 @@ export class ExportMenu extends React.Component{
             <div class="message-wrap">
                 <h2>{gettext("Export files")}</h2>
                 <p>{gettext("Use this menu to export files.")}</p>
-                <form id="export-form" enctype="multipart/form-data" action={post_paths.get_export} method="POST" id="export-form" target="redirect-iframe" onSubmit={this.submit.bind(this)}>
+                <form id="export-form" enctype="multipart/form-data" action={post_paths.get_export} method="POST" target="redirect-iframe" onSubmit={this.submit.bind(this)}>
                     <input type="hidden" name="csrfmiddlewaretoken" value={root.getCsrfToken()}/>
                     <h4>{gettext("Export Type")}:</h4>
                     {this.getExportTypes()}

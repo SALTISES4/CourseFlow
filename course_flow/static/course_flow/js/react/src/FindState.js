@@ -1,5 +1,5 @@
-import * as Constants from "./Constants.js";
-
+import * as Constants from './Constants.js';
+import { filterThenSortByID } from './UtilityFunctions.js';
 
 export const getDropped = (objectID,objectType,depth=1)=>{
     let default_drop = Constants.get_default_drop_state(objectID,objectType,depth);
@@ -58,7 +58,7 @@ export const getTermByID = (state,id)=>{
                 week.is_dropped = getDropped(id,"week");
             }
             var nodeweeks = week.nodeweek_set;
-            let column_order = Constants.filterThenSortByID(
+            let column_order = filterThenSortByID(
                 state.columnworkflow,state.workflow.columnworkflow_set
                 ).map(columnworkflow=>columnworkflow.column);
             var nodes_by_column = {};
@@ -252,9 +252,9 @@ export const getStrategyByID = (state,id)=>{
 }
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export const getSortedOutcomesFromOutcomeWorkflowSet = (state,outcomeworkflow_set)=>{
-    let outcomeworkflows = Constants.filterThenSortByID(state.outcomeworkflow,outcomeworkflow_set);
+    let outcomeworkflows = filterThenSortByID(state.outcomeworkflow,outcomeworkflow_set);
     let outcome_ids = outcomeworkflows.map(outcomeworkflow=>outcomeworkflow.outcome);
-    let outcomes = Constants.filterThenSortByID(state.outcome,outcome_ids);
+    let outcomes = filterThenSortByID(state.outcome,outcome_ids);
     for(var i=0;i<outcomes.length;i++){
         outcomes[i].outcomeworkflow=outcomeworkflows[i].id;
         outcomes[i].through_no_drag=outcomeworkflows[i].no_drag;
@@ -286,8 +286,8 @@ export const getSortedOutcomeNodesFromNodes = (state,nodes)=>{
     for(let i=0;i<nodes.length;i++){
         outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set);
     }
-    let outcomenodes = Constants.filterThenSortByID(state.outcomenode,outcomenode_ids);
-    let outcomes = Constants.filterThenSortByID(state.outcome,outcomenodes.map(outcomenode=>outcomenode.outcome)).map(
+    let outcomenodes = filterThenSortByID(state.outcomenode,outcomenode_ids);
+    let outcomes = filterThenSortByID(state.outcome,outcomenodes.map(outcomenode=>outcomenode.outcome)).map(
         (outcome,i)=>({...outcome,degree:outcomenodes[i].degree})
     );
     if(outcomes.length==0)return outcomes;
@@ -310,9 +310,9 @@ export const getSortedOutcomeNodesFromNodes = (state,nodes)=>{
 }
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export const getSortedOutcomeIDFromOutcomeWorkflowSet = (outcomes_unsorted,outcomeworkflows_unsorted,outcomeworkflow_set,object_sets_unfiltered)=>{
-    let outcomeworkflows = Constants.filterThenSortByID(outcomeworkflows_unsorted,outcomeworkflow_set);
+    let outcomeworkflows = filterThenSortByID(outcomeworkflows_unsorted,outcomeworkflow_set);
     let outcome_ids = outcomeworkflows.map(outcomeworkflow=>outcomeworkflow.outcome);
-    let outcomes = Constants.filterThenSortByID(outcomes_unsorted,outcome_ids);
+    let outcomes = filterThenSortByID(outcomes_unsorted,outcome_ids);
     for(var i=0;i<outcomes.length;i++){
         outcomes[i].outcomeworkflow=outcomeworkflows[i].id;
         outcomes[i].through_no_drag=outcomeworkflows[i].no_drag;

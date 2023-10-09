@@ -1,25 +1,48 @@
-import * as React from "react";
-import * as reactDom from "react-dom";
-import {Provider, connect} from "react-redux";
-import {Component, EditableComponent, EditableComponentWithActions, EditableComponentWithSorting, WorkflowTitle, CollapsibleText} from "../components/CommonComponents.js";
-import ColumnWorkflowView from "./ColumnWorkflowView.js";
-import WeekWorkflowView from "./WeekWorkflowView.js";
-import {NodeBarColumnWorkflow} from "./ColumnWorkflowView.js";
-import {NodeBarWeekWorkflow} from "./WeekWorkflowView.js";
-import {renderMessageBox,closeMessageBox} from "../components/MenuComponents.js";
-import * as Constants from "../../Constants.js";
-import {changeField, moveColumnWorkflow, moveWeekWorkflow, toggleObjectSet} from "../../Reducers.js";
-import {OutcomeBar} from "./OutcomeEditView.js";
-import StrategyView from "../components/Strategy.js";
-import WorkflowOutcomeView from "./WorkflowOutcomeView.js";
-import WorkflowLegend from "../components/WorkflowLegend.js";
-import {WorkflowOutcomeLegend} from "../components/WorkflowLegend.js";
-import {getParentWorkflowInfo,getPublicParentWorkflowInfo,insertedAt,restoreSelf,deleteSelf,getExport, toggleDrop, getUsersForObject, getTargetProjectMenu, duplicateBaseItem} from "../../PostFunctions.js";
+import * as React from 'react';
+import * as reactDom from 'react-dom';
+import { Provider, connect } from 'react-redux';
+import {
+  Component,
+  EditableComponent,
+  EditableComponentWithActions,
+  EditableComponentWithSorting,
+  WorkflowTitle,
+  CollapsibleText
+} from '../components/CommonComponents.js';
+import ColumnWorkflowView from './ColumnWorkflowView.js';
+import WeekWorkflowView from './WeekWorkflowView.js';
+import { NodeBarColumnWorkflow } from './ColumnWorkflowView.js';
+import { NodeBarWeekWorkflow } from './WeekWorkflowView.js';
+import { renderMessageBox, closeMessageBox } from '../components/MenuComponents.js';
+import * as Constants from '../../Constants.js';
+import { Loader } from '../../UtilityFunctions.js';
+import {
+  changeField,
+  moveColumnWorkflow,
+  moveWeekWorkflow,
+  toggleObjectSet
+} from '../../Reducers.js';
+import { OutcomeBar } from './OutcomeEditView.js';
+import StrategyView from '../components/Strategy.js';
+import WorkflowOutcomeView from './WorkflowOutcomeView.js';
+import WorkflowLegend from '../components/WorkflowLegend.js';
+import { WorkflowOutcomeLegend } from '../components/WorkflowLegend.js';
+import {
+  getParentWorkflowInfo,
+  getPublicParentWorkflowInfo,
+  insertedAt,
+  restoreSelf,
+  deleteSelf,
+  getExport,
+  toggleDrop,
+  getUsersForObject,
+  getTargetProjectMenu,
+  duplicateBaseItem
+} from '../../PostFunctions.js';
 import OutcomeEditView from './OutcomeEditView.js';
 import AlignmentView from './AlignmentView.js';
 import CompetencyMatrixView from './CompetencyMatrixView.js';
 import GridView from './GridView.js';
-
 
 class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
 
@@ -304,7 +327,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 }else{
                     getTargetProjectMenu(-1,(response_data)=>{
                         if(response_data.parentID!=null){
-                            let loader = new Constants.Loader('body');
+                            let loader = new Loader('body');
                             duplicateBaseItem(this.props.data.id,this.props.data.type,response_data.parentID,(response_data)=>{
                                 loader.endLoad();
                                 window.location = config.update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
