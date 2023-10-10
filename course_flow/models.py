@@ -2055,8 +2055,8 @@ def set_permissions_to_project_objects(sender, instance, created, **kwargs):
 
         elif instance.content_type == ContentType.objects.get_for_model(Workflow):
             workflow = instance.content_object
-            if not workflow.is_strategy:
-                project = workflow.get_project()
+            project = workflow.get_project()
+            if not project is None:
                 if ObjectPermission.objects.filter(user=instance.user,object_id=project.id,content_type=ContentType.objects.get_for_model(Project)).count() == 0:
                     ObjectPermission.objects.create(content_object=project, user=instance.user,permission_type=ObjectPermission.PERMISSION_VIEW)
 
