@@ -21,15 +21,13 @@ h2 {
   font-weight: 500; }
 
 h3 {
-  /*color:#04ba74;*/
-  color: #444444; }
+  color: #3f4041; }
 
 h4 {
   margin-top: 10px;
   margin-bottom: 5px;
-  color: #444444;
-  font-weight: 600;
-  /*color:#04ba74;*/ }
+  color: #3f4041;
+  font-weight: 600; }
 
 h5 {
   margin-top: 8px;
@@ -40,7 +38,7 @@ h4.drag-and-drop::after,
 h3.drag-and-drop::after {
   content: "\A Drag and drop to add";
   font-size: 10px;
-  color: grey;
+  color: #808080;
   white-space: pre; }
 
 body.printing {
@@ -83,7 +81,7 @@ button:disabled {
   background: transparent; }
 
 ::-webkit-scrollbar-thumb {
-  background: #888888;
+  background: #808080;
   border-radius: 2px; }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -95,7 +93,7 @@ button:disabled {
 .left-panel a,
 .workflow-title-bar a,
 .home-item a {
-  color: #444444; }
+  color: #3f4041; }
 
 a.hover-shade {
   color: unset;
@@ -105,10 +103,6 @@ a.unset {
   color: unset;
   text-decoration: none; }
 
-/*
-a.hover-shade:hover{
-    text-decoration:underline;
-}*/
 .material-symbols-rounded.filled,
 .material-symbols-outlined.filled {
   font-variation-settings: "FILL" 1; }
@@ -121,13 +115,13 @@ button {
 
 .primary-button {
   background: #04ba74;
-  color: white;
+  color: #fff;
   padding: 8px;
   box-sizing: border-box;
   border: 0; }
 
 .secondary-button {
-  color: #444444;
+  color: #3f4041;
   background: #e9ebf2;
   padding: 8px;
   box-sizing: border-box;
@@ -138,7 +132,7 @@ button {
 .secondary-button.disabled,
 .secondary-button:disabled {
   background: #04ba74;
-  color: grey;
+  color: #808080;
   background: #e9ebf2; }
 
 .flex-middle {
@@ -164,7 +158,7 @@ h3.big-space {
 
 [contentEditable="true"]:empty:not(:focus):before {
   content: attr(data-text);
-  color: grey; }
+  color: #808080; }
 
 .disabled {
   pointer-events: none;
@@ -180,7 +174,7 @@ button:hover {
 
 .material-symbols-rounded.red,
 .material-symbols-outlined.red {
-  color: red; }
+  color: #ff0000; }
 
 .material-symbols-rounded.grey {
   color: #e9ebf2; }
@@ -208,28 +202,17 @@ button:hover {
 
 .topnav {
   width: 100%;
-  background: white;
+  background: #fff;
   position: relative;
   box-sizing: border-box; }
 
 .topnav > div {
   padding-left: 40px; }
 
-/*
-.topnav::before{
-    content:'';
-    position:absolute;
-    bottom:0;
-    left:0;
-    right:0;
-    height:2px;
-    background:linear-gradient(to left,#46c443 0,#1976bc 100%) left bottom #fff no-repeat;
-}
-*/
 .titlebar {
   height: 36px;
   width: 100%;
-  color: #444444;
+  color: #3f4041;
   position: relative;
   display: flex;
   justify-content: space-between;
@@ -289,7 +272,7 @@ button:hover {
   display: inline-block;
   max-width: 800px;
   overflow: hidden;
-  color: #444444;
+  color: #3f4041;
   font-size: 20px;
   font-weight: 600;
   margin-left: 20px; }
@@ -313,7 +296,7 @@ button:hover {
   margin: 5px;
   padding: 5px;
   height: 36px;
-  color: white;
+  color: #fff;
   box-sizing: border-box;
   white-space: nowrap;
   cursor: pointer; }
@@ -349,7 +332,7 @@ button:hover {
   margin-bottom: 8px; }
 
 .users-box.connection-failed {
-  color: red;
+  color: #ff0000;
   font-weight: 600;
   display: flex;
   align-items: center; }
@@ -358,7 +341,7 @@ button:hover {
   margin-top: 10px; }
 
 .user-indicator {
-  color: white;
+  color: #fff;
   display: inline-block;
   width: 20px;
   height: 20px;
@@ -382,15 +365,15 @@ button:hover {
 .users-more {
   display: inline-block;
   height: 100%;
-  color: black;
+  color: #000;
   padding-left: 3px; }
 
 .users-hidden {
   display: none;
   position: absolute;
   padding: 5px;
-  background-color: white;
-  border: 1px solid grey;
+  background-color: #fff;
+  border: 1px solid #808080;
   z-index: 10;
   right: 0px;
   top: 2px; }
@@ -400,29 +383,11 @@ button:hover {
   display: inline-block; }
 
 #viewbar {
-  color: #444444;
+  color: #3f4041;
   margin-right: 10px;
   display: flex;
   align-items: center; }
 
-/*
-.viewbar{
-    display:inline-block;
-    height:100%;
-}
-
-.viewbar > div{
-    vertical-align: middle;
-    padding:5px;
-    padding-right:20px;
-    display:inline-block;
-    text-align:center;
-}
-
-.viewbar > div >img{
-    width:30px;
-    height:30px;
-}*/
 .topnavimage {
   box-sizing: border-box;
   display: inline-block;
@@ -436,7 +401,6 @@ button:hover {
   display: block;
   height: 100%; }
 
-/* A wrapper for each button in the menu */
 .topdropwrapper {
   display: inline-block;
   padding: 0px;
@@ -445,7 +409,6 @@ button:hover {
   vertical-align: top;
   min-width: 48px; }
 
-/* A button at the top of the menu that will open the div below it */
 .topdropbutton {
   background: inherit;
   color: #1976bc;
@@ -460,30 +423,28 @@ button:hover {
   font-weight: 600; }
 
 .titlebar .topdropbutton {
-  color: white; }
+  color: #fff; }
 
 .topdropbutton > a {
   display: block;
-  color: white; }
+  color: #fff; }
 
 .topdropbutton > a:hover {
   text-decoration: none; }
 
-/* A tag at the top of the menu that does nothing*/
 .toplink {
   left: 0;
   bottom: 0;
   padding-left: 20px;
   padding-right: 20px; }
 
-/* The div that is created below the button */
 .topdropdiv {
   display: none;
   position: absolute;
-  border: 1px solid grey;
-  border-top: 1px solid black;
-  color: black;
-  background: white;
+  border: 1px solid #808080;
+  border-top: 1px solid #000;
+  color: #000;
+  background: #fff;
   min-width: 100px;
   box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.3); }
 
@@ -512,7 +473,7 @@ button:hover {
   display: inline-block; }
 
 .shortcut {
-  color: gray;
+  color: #808080;
   text-align: right;
   position: absolute;
   right: 12px; }
@@ -528,13 +489,13 @@ button:hover {
   color: #1976bc; }
 
 .left-panel {
-  background: white;
+  background: #fff;
   min-width: 200px;
   width: 200px;
   border-right: 1px solid #e9ebf2;
   height: 100%;
   box-sizing: border-box;
-  color: #444444;
+  color: #3f4041;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -570,7 +531,7 @@ button:hover {
 .left-panel-toggle .material-symbols-rounded {
   font-size: 20px;
   padding: 2px;
-  color: white; }
+  color: #fff; }
 
 .collapsed #left-panel-collapse {
   display: none; }
@@ -611,9 +572,6 @@ button:hover {
 .no-underline.hover-shade:hover {
   text-decoration: none; }
 
-/*.no-underline.hover-shade:hover > *:not(.material-symbols-rounded){
-    text-decoration: underline;
-}*/
 .panel-item img {
   width: 24px; }
 
@@ -634,7 +592,7 @@ button:hover {
 
 .home-menu-container {
   padding: 40px;
-  background: white;
+  background: #fff;
   min-height: 100%;
   box-sizing: border-box;
   padding-left: 100px;
@@ -669,7 +627,7 @@ button:hover {
 
 .home-item .home-item-title {
   font-size: 28px;
-  color: #444444; }
+  color: #3f4041; }
 
 .home-item-icon-container {
   border-radius: 10px;
@@ -696,7 +654,7 @@ button:hover {
   font-size: 16px;
   list-style: none;
   white-space: nowrap;
-  background: white;
+  background: #fff;
   padding: 8px;
   border-radius: 20px;
   border: 1px solid #e9ebf2; }
@@ -704,10 +662,10 @@ button:hover {
 .home-tabs .ui-tabs-active {
   background: #04ba74;
   border: 1px solid #04ba74;
-  color: white; }
+  color: #fff; }
 
 .home-tabs .ui-tabs-active a {
-  color: white; }
+  color: #fff; }
 
 .home-tabs > div {
   width: 100%;
@@ -717,7 +675,7 @@ button:hover {
 .saltise-menu-container {
   height: 100%;
   width: 100%;
-  background: white;
+  background: #fff;
   padding: 50px;
   box-sizing: border-box;
   overflow: overlay; }
@@ -725,7 +683,7 @@ button:hover {
 .menu-create {
   padding: 8px;
   background: #04ba74;
-  color: white;
+  color: #fff;
   display: block;
   border-radius: 5px;
   width: -moz-fit-content;
@@ -740,13 +698,13 @@ button:hover {
 .create-dropdown {
   display: none;
   z-index: 1;
-  background: white;
+  background: #fff;
   position: absolute;
   padding-top: 10px;
   padding-bottom: 10px;
   border-radius: 10px;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.3);
-  color: #444444;
+  color: #3f4041;
   max-height: 400px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -764,7 +722,7 @@ button:hover {
   width: 16px;
   border-radius: 12px;
   background-color: #04ba74;
-  color: white;
+  color: #fff;
   font-size: 10px;
   line-height: 16px;
   text-align: center; }
@@ -783,11 +741,6 @@ button:hover {
 #create-options {
   position: relative; }
 
-/*#account-links, #create-links {
-    right: 0px;
-    width: max-content;
-    max-width: 250px;
-}*/
 .create-dropdown > a,
 .create-dropdown > div {
   display: block;
@@ -796,7 +749,7 @@ button:hover {
   padding-right: 15px;
   margin: 0px;
   white-space: pre;
-  color: #444444; }
+  color: #3f4041; }
 
 .create-dropdown > hr {
   margin-right: 0px;
@@ -821,7 +774,7 @@ button:hover {
 
 .workflow-for-menu {
   position: relative;
-  background-color: white;
+  background-color: #fff;
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #e9ebf2;
@@ -856,7 +809,7 @@ button:hover {
 .simple-workflow .project-title {
   font-size: 14px;
   font-weight: normal;
-  color: #878787;
+  color: #808080;
   width: 200px;
   min-width: 200px;
   max-width: 200px;
@@ -882,7 +835,7 @@ button:hover {
   padding-right: 12px;
   border-radius: 4px;
   text-decoration: none;
-  color: #444444; }
+  color: #3f4041; }
 
 .workflow-buttons-row .linked-workflow-warning {
   display: none; }
@@ -895,7 +848,7 @@ button:hover {
 
 .workflow-description {
   font-size: 13px;
-  color: #444444;
+  color: #3f4041;
   margin-bottom: 2px;
   white-space: pre-wrap;
   max-height: 140px;
@@ -920,7 +873,7 @@ button:hover {
 
 .workflow-publication {
   font-size: 14px;
-  color: gray; }
+  color: #808080; }
 
 .workflow-publication > * {
   display: inline-block;
@@ -933,15 +886,15 @@ button:hover {
 .workflow-created {
   font-size: 12px;
   margin-bottom: 6px;
-  color: grey; }
+  color: #808080; }
 
 .warning {
   font-size: 12px;
-  color: red; }
+  color: #ff0000; }
 
 .workflow-type-indicator {
   font-size: 12px;
-  color: white;
+  color: #fff;
   border-radius: 4px;
   padding: 5px;
   padding-left: 12px;
@@ -951,23 +904,18 @@ button:hover {
   white-space: nowrap; }
 
 .workflow-type-indicator.activity {
-  /*background-color:#11b3d4;*/
   background-color: #0e5bb6; }
 
 .workflow-type-indicator.course {
-  /*background-color:#ff5f3d;*/
   background-color: #c54a30; }
 
 .workflow-type-indicator.program {
-  /*background-color:#04ba74;*/
   background-color: #327b77; }
 
 .workflow-type-indicator.project {
-  /*background-color:#d6bb30;*/
   background-color: #b59c1b; }
 
 .workflow-type-indicator.liveproject {
-  /*background-color:#8a38d1;*/
   background-color: #b59c1b; }
 
 .workflow-top-row {
@@ -983,7 +931,7 @@ button:hover {
   flex-grow: 1;
   white-space: normal;
   text-decoration: none;
-  color: #444444; }
+  color: #3f4041; }
 
 .workflow-buttons {
   text-align: right;
@@ -1009,7 +957,7 @@ button:hover {
   min-height: 100%;
   width: -moz-fit-content;
   width: fit-content;
-  background: white;
+  background: #fff;
   padding: 50px;
   box-sizing: border-box;
   width: 100%; }
@@ -1039,7 +987,7 @@ button:hover {
   font-size: 20px;
   left: 6px;
   top: 5px;
-  color: grey; }
+  color: #808080; }
 
 .filter-option {
   position: relative; }
@@ -1066,7 +1014,7 @@ button:hover {
   width: 300px; }
 
 .search-filter-lock {
-  color: white;
+  color: #fff;
   border-radius: 3px;
   padding: 3px 10px 3px 10px;
   background: #027a4c;
@@ -1094,9 +1042,9 @@ button:hover {
 
 .project-header {
   border-radius: 10px;
-  background: white;
+  background: #fff;
   width: 100%;
-  color: #444444;
+  color: #3f4041;
   padding-bottom: 10px;
   box-sizing: border-box; }
 
@@ -1106,7 +1054,7 @@ button:hover {
   align-items: center; }
 
 .project-header h4 {
-  color: #444444; }
+  color: #3f4041; }
 
 .project-title {
   font-size: 28px; }
@@ -1146,7 +1094,7 @@ button:hover {
 
 .explore-menu {
   width: 100%;
-  background-color: white;
+  background-color: #fff;
   padding: 50px;
   gap: 30px;
   box-sizing: border-box; }
@@ -1160,7 +1108,7 @@ button:hover {
   position: absolute; }
 
 .explore-menu label.input {
-  background: #f4f4f4;
+  background: #f5f5f5;
   padding: 5px 15px 5px 15px;
   border-radius: 15px;
   border: 1px solid transparent; }
@@ -1186,14 +1134,14 @@ button:hover {
   width: 42px;
   height: 42px;
   border-radius: 100px;
-  border: 1px solid black; }
+  border: 1px solid #000; }
 
 .explore-page-buttons button:disabled {
   border: 1px solid; }
 
 .explore-page-buttons .active-page-button {
   background: #04ba74;
-  color: white;
+  color: #fff;
   border: 1px solid #04ba74; }
 
 .flex-wrap {
@@ -1233,7 +1181,7 @@ button:hover {
 .ui-autocomplete {
   position: absolute;
   z-index: 100;
-  background: white;
+  background: #fff;
   border: 1px solid lightgrey;
   list-style: none;
   padding: 0;
@@ -1273,7 +1221,7 @@ button:hover {
 .big-button.disabled {
   box-shadow: unset;
   background: #e9ebf2;
-  pointer: default;
+  cursor: default;
   pointer-events: unset;
   color: #959699; }
 
@@ -1292,7 +1240,7 @@ button:hover {
   line-height: 30px; }
 
 .big-button-description {
-  color: grey;
+  color: #808080;
   font-size: 10px;
   line-height: 14px; }
 
@@ -1304,7 +1252,7 @@ button:hover {
   border-radius: 10px;
   background: #04ba74;
   width: 100%;
-  color: white;
+  color: #fff;
   display: flex;
   gap: 20px;
   padding: 20px;
@@ -1387,11 +1335,11 @@ button:hover {
   margin-top: 8px; }
 
 .user-name .material-symbols-rounded {
-  color: grey;
+  color: #808080;
   font-size: 16px; }
 
 .user-username {
-  color: grey;
+  color: #808080;
   font-size: 12px;
   margin-top: 4px;
   margin-left: 8px; }
@@ -1411,7 +1359,7 @@ button:hover {
 
 .user-tag.permission-author {
   background-color: #3f4041;
-  color: white; }
+  color: #fff; }
 
 .user-tag.permission-edit {
   background-color: #d3dae6; }
@@ -1444,7 +1392,7 @@ button:hover {
   align-items: center; }
 
 .message-box {
-  background: white;
+  background: #fff;
   position: relative;
   box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.3);
   border-radius: 15px;
@@ -1469,7 +1417,7 @@ button:hover {
   padding-left: 40px;
   padding-right: 40px;
   box-sizing: border-box;
-  color: #444444;
+  color: #3f4041;
   text-align: left; }
 
 .message-wrap > .window-close-button {
@@ -1484,11 +1432,11 @@ button:hover {
   width: 100%;
   box-sizing: border-box;
   font-family: unset;
-  border: 1px solid grey; }
+  border: 1px solid #808080; }
 
 .discipline-tag {
   border-radius: 100px;
-  background: #f4f4f4;
+  background: #f5f5f5;
   padding: 6px 16px; }
 
 .disciplines-div {
@@ -1543,24 +1491,22 @@ button:hover {
 .overview-table .table-user {
   font-weight: 600; }
 
-/* The popup form - hidden by default */
 .form-popup {
   display: block;
   position: fixed;
   bottom: 0;
   right: 15px;
-  border: 3px solid #f1f1f1;
+  border: 3px solid #f5f5f5;
   z-index: 9; }
 
-/* Add styles to the form container */
 .form-container {
   max-width: 300px;
   padding: 10px;
-  background-color: white; }
+  background-color: #fff; }
 
 text {
   pointer-events: none;
-  fill: white; }
+  fill: #fff; }
 
 #activity-title,
 #course-title,
@@ -1603,7 +1549,7 @@ text {
   vertical-align: top;
   display: inline-block;
   box-shadow: 0px 2px 2px 0px rgba(0, 0, 0, 0.3);
-  background: white;
+  background: #fff;
   overflow: visible; }
 
 .body-wrapper {
@@ -1620,7 +1566,7 @@ text {
   overflow: visible; }
 
 .splash-page {
-  background: white;
+  background: #fff;
   height: 100%;
   width: 100%;
   position: relative; }
@@ -1668,7 +1614,7 @@ table tr.total-row {
 .create-dropdown > .list-notification,
 .workflow-create-wrapper .list-notification {
   white-space: wrap;
-  color: #444444;
+  color: #3f4041;
   text-decoration: none;
   position: relative;
   padding-left: 20px;
@@ -1686,7 +1632,7 @@ table tr.total-row {
 .list-notification.unread::before,
 #notifications.unread::before {
   content: "";
-  background-color: red;
+  background-color: #ff0000;
   height: 6px;
   width: 6px;
   position: absolute;
@@ -1701,11 +1647,11 @@ table tr.total-row {
 
 .list-notification .created-on {
   font-size: 12px;
-  color: grey; }
+  color: #808080; }
 
 .comment-indicator.unread::after {
   content: "";
-  background-color: red;
+  background-color: #ff0000;
   height: 6px;
   width: 6px;
   position: absolute;
@@ -1715,7 +1661,7 @@ table tr.total-row {
 
 .comment.unread::after {
   content: "";
-  background-color: red;
+  background-color: #ff0000;
   height: 6px;
   width: 6px;
   position: absolute;
@@ -1728,7 +1674,7 @@ table tr.total-row {
   z-index: 10;
   right: -200px;
   max-width: 200px;
-  background: white;
+  background: #fff;
   border-radius: 5px;
   border: 1px solid #04ba74; }
 
@@ -1746,12 +1692,12 @@ table tr.total-row {
   background: #eeeeee; }
 
 p {
-  color: black; }
+  color: #000; }
 
 button,
 input[type="submit"] {
   border: 2px outset #04ba74;
-  background: white;
+  background: #fff;
   padding: 5px;
   border-radius: 5px; }
 
@@ -1762,7 +1708,7 @@ input[type="submit"] {
   font-family: sans-serif;
   width: 100%;
   height: 100%;
-  background: white;
+  background: #fff;
   padding-top: 50px;
   padding-left: 40px;
   box-sizing: border-box; }
@@ -1773,7 +1719,6 @@ input[type="submit"] {
 .workflow-create-wrapper p label,
 .workflow-create-wrapper p input,
 .workflow-create-wrapper p textarea {
-  vertical-align: top;
   display: block; }
 
 .workflow-create-wrapper p input,
@@ -1788,7 +1733,7 @@ input[type="submit"] {
   text-align: left;
   width: -moz-fit-content;
   width: fit-content;
-  background: white;
+  background: #fff;
   padding: 50px;
   padding-top: 35px;
   min-width: 100%;
@@ -1797,12 +1742,12 @@ input[type="submit"] {
 
 .workflow-wrapper.printing {
   margin-top: 0px;
-  background: white; }
+  background: #fff; }
 
 .project-title-in-workflow {
   font-size: 12px;
   text-decoration: underline;
-  color: #444444; }
+  color: #3f4041; }
 
 #content-container {
   font-family: "Open Sans"; }
@@ -1810,7 +1755,7 @@ input[type="submit"] {
 .workflow-container {
   font-family: "Open Sans";
   position: relative;
-  background: white;
+  background: #fff;
   overflow: visible;
   margin: 10px;
   padding: 0px;
@@ -1829,7 +1774,7 @@ input[type="submit"] {
   margin-left: 20px; }
 
 .parent-workflow-indicators {
-  background: white;
+  background: #fff;
   border-radius: 10px;
   padding-right: 10px;
   padding-left: 10px;
@@ -1851,7 +1796,7 @@ input[type="submit"] {
   padding: 8px;
   font-size: 16px;
   border-radius: 20px;
-  background: white;
+  background: #fff;
   border: 1px solid #e9ebf2; }
 
 .title-text ul,
@@ -1867,7 +1812,7 @@ input[type="submit"] {
 
 .workflow-view-select .active {
   background: #04ba74;
-  color: white;
+  color: #fff;
   border: 1px solid #04ba74; }
 
 .workflow-view-select .disabled {
@@ -1882,7 +1827,7 @@ input[type="submit"] {
 .views-dropdown {
   display: none;
   z-index: 5;
-  background: white;
+  background: #fff;
   position: absolute;
   padding: 10px;
   border-radius: 5px;
@@ -1904,9 +1849,9 @@ input[type="submit"] {
 
 /*
 .workflow-details .workflow-for-menu{
-    color:black;
+    color: $color-black;
     margin-left:10px;
-    border-color:black;
+    border-color: $color-black;
     margin-bottom:30px;
 }
 */
@@ -1914,11 +1859,11 @@ input[type="submit"] {
 *:is(.node, .week, .column, .workflow-for-menu, .outcome):not(.selected):not(
 .valid-drop
 ):hover {
-  border-color: gray; }
+  border-color: #808080; }
 
 .workflow-details .workflow-for-menu.selected {
-  background: white;
-  color: black; }
+  background: #fff;
+  color: #000; }
 
 .week {
   background: #f5f5f5;
@@ -1927,7 +1872,7 @@ input[type="submit"] {
   padding-bottom: 24px;
   margin-top: 5px;
   box-sizing: border-box;
-  border: 2px solid white;
+  border: 2px solid #fff;
   border-radius: 5px;
   position: relative; }
 
@@ -1956,10 +1901,10 @@ input[type="submit"] {
   box-sizing: border-box; }
 
 .week-block > div:nth-of-type(odd) > .week {
-  background: #e0e0e0e0; }
+  background: rgba(224, 224, 224, 0.878); }
 
 .week.strategy {
-  border: black double;
+  border: #000 double;
   margin-left: -1px; }
 
 .strategy-tab > div {
@@ -1980,7 +1925,7 @@ input[type="submit"] {
   border-right: 16px solid #660385; }
 
 .strategy-tab-circle {
-  background: white;
+  background: #fff;
   border-radius: 20px;
   width: 40px;
   height: 40px;
@@ -2007,7 +1952,7 @@ input[type="submit"] {
   text-align: center;
   vertical-align: top;
   box-sizing: border-box;
-  border: 2px solid white;
+  border: 2px solid #fff;
   border-radius: 5px; }
 
 .column-line div {
@@ -2040,12 +1985,12 @@ input[type="submit"] {
 .column-row {
   padding-left: 40px;
   padding-right: 40px;
-  background: white;
+  background: #fff;
   position: sticky;
   top: 0px;
   z-index: 2;
   font-size: 16px;
-  border: 2px solid white;
+  border: 2px solid #fff;
   display: flex; }
 
 .condensed .column-row {
@@ -2086,48 +2031,48 @@ input[type="submit"] {
 .node-ghost {
   width: 160px;
   min-height: 50px;
-  border: 1px dashed black;
+  border: 1px dashed #000;
   position: absolute;
   cursor: move; }
 
 .nodeweek-ghost {
   width: 160px;
   min-height: 50px;
-  border: 1px dashed black;
+  border: 1px dashed #000;
   position: absolute;
   cursor: move; }
 
 .columnworkflow-ghost {
   width: 160px;
   min-height: 50px;
-  border: 1px dashed black;
+  border: 1px dashed #000;
   position: absolute;
   z-index: 3;
   cursor: move; }
 
 .weekworkflow-ghost {
   min-height: 50px;
-  border: 1px dashed black;
+  border: 1px dashed #000;
   position: absolute;
   cursor: move; }
 
 .outcomeoutcome-ghost {
   min-width: 300px;
   min-height: 10px;
-  border: 1px dashed black;
+  border: 1px dashed #000;
   position: absolute;
   cursor: move; }
 
 .outcomeworkflow-ghost {
   min-width: 300px;
   min-height: 10px;
-  border: 1px dashed black;
+  border: 1px dashed #000;
   position: absolute;
   cursor: move; }
 
 .node {
   width: 200px;
-  border: solid 1px black;
+  border: 1px solid #000;
   position: relative;
   white-space: normal;
   border-radius: 5px; }
@@ -2135,7 +2080,7 @@ input[type="submit"] {
 .node-top-row {
   padding: 5px;
   box-sizing: border-box;
-  background: white;
+  background: #fff;
   margin-top: 5px;
   width: 100%;
   display: flex;
@@ -2164,7 +2109,7 @@ input[type="submit"] {
   text-align: left; }
 
 .node .assignment-timing {
-  background: white; }
+  background: #fff; }
 
 .assignment-timing {
   padding: 5px;
@@ -2185,16 +2130,16 @@ input[type="submit"] {
 .flatpickr-input + input:disabled {
   background: none;
   border: none;
-  color: #444444; }
+  color: #3f4041; }
 
 .assignment.node {
   width: 600px; }
 
 .linked-workflow.link-noaccess {
-  color: "#444444"; }
+  color: #3f4041; }
 
 .linked-workflow {
-  background: white;
+  background: #fff;
   width: 100%;
   font-size: 12px;
   box-sizing: border-box; }
@@ -2213,7 +2158,7 @@ input[type="submit"] {
 
 .node-details {
   width: 100%;
-  background: white;
+  background: #fff;
   display: none;
   padding: 5px;
   font-size: 12px;
@@ -2229,7 +2174,7 @@ input[type="submit"] {
 .node-drop-row {
   width: 100%;
   height: 20px;
-  background: white;
+  background: #fff;
   border-radius: 0 0 5px 5px;
   overflow: hidden;
   cursor: pointer; }
@@ -2290,7 +2235,7 @@ input[type="submit"] {
 .outcome {
   position: relative;
   margin-left: 20px;
-  border: 2px solid white;
+  border: 2px solid #fff;
   padding: 2px;
   min-width: 300px;
   max-width: 800px; }
@@ -2436,7 +2381,7 @@ ol.children-block {
 .outcome-ghost {
   width: 160px;
   min-height: 20px;
-  border: 1px dashed black;
+  border: 1px dashed #000;
   position: absolute; }
 
 .side-actions {
@@ -2463,18 +2408,18 @@ ol.children-block {
   position: absolute;
   top: 0px;
   left: 0px;
-  background: white;
+  background: #fff;
   border: 2px solid;
   border-radius: 10px;
   z-index: 1;
-  background: white;
+  background: #fff;
   width: 200px; }
 
 .outcome-node-indicator-number {
   display: inline-block;
   min-width: 16px;
   height: 16px;
-  background: white;
+  background: #fff;
   border: 2px solid;
   border-radius: 10px;
   text-align: center; }
@@ -2549,7 +2494,7 @@ ol.children-block {
   display: block; }
 
 .outcome-bar-outcome-block .outcome-outcome {
-  background: white; }
+  background: #fff; }
 
 .outcome-table {
   margin-right: 80px; }
@@ -2574,7 +2519,7 @@ ol.children-block {
   margin-left: -2px; }
 
 .outcome-table .node-row .outcome-head {
-  background: white;
+  background: #fff;
   position: sticky;
   left: 0px;
   height: 100%;
@@ -2584,7 +2529,7 @@ ol.children-block {
 .competency-matrix .table-cell {
   width: 30px;
   min-height: 24px;
-  border-left: 1px solid black;
+  border-left: 1px solid #000;
   vertical-align: top;
   text-align: center;
   position: relative;
@@ -2601,7 +2546,7 @@ ol.children-block {
   position: absolute;
   font-weight: 600;
   font-size: 14px;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #000;
   padding: 4px;
   padding-top: 5px;
   top: 4px;
@@ -2618,7 +2563,7 @@ ol.children-block {
 .outcome-table .total-header,
 .competency-matrix .total-cell,
 .competency-matrix .total-header {
-  background: #eaeaea; }
+  background: #eeeeee; }
 
 .outcome-table .table-cell.disabled,
 .outcome-table .table-cell.disabled .child-outcome {
@@ -2631,7 +2576,7 @@ ol.children-block {
   border-top: 2px solid transparent; }
 
 .outcome-table .grand-total-cell {
-  border-right: 1px solid black; }
+  border-right: 1px solid #000; }
 
 .outcome-table.node-rows .outcome-head.user-head {
   width: 200px;
@@ -2653,7 +2598,7 @@ ol.children-block {
     transform: rotate(-90deg);
     position:absolute;
     margin:0px;
-    border-bottom:2px solid black;
+    border-bottom:2px solid $color-black;
     text-align:left;
     height:30px;
     box-sizing:border-box;
@@ -2702,7 +2647,7 @@ ol.children-block {
 }
 
 .competency-matrix .week .node-row:first-child .outcome-header{
-    background:#E0E0E0;
+    background: $color-white-gray-alt;
 }
 
 .competency-matrix .week{
@@ -2722,7 +2667,7 @@ ol.children-block {
   position: sticky;
   left: 0px;
   z-index: 2;
-  background: white; }
+  background: #fff; }
 
 .competency-matrix .outcome-row.node-row .table-cell {
   width: 202px;
@@ -2759,14 +2704,14 @@ ol.children-block {
   transform: rotate(-90deg);
   position: absolute;
   margin: 0px;
-  border-top: 1px solid black;
+  border-top: 1px solid #000;
   text-align: left;
   height: 30px;
   box-sizing: border-box;
   left: 0px;
   min-width: revert;
   width: 180px;
-  background: white; }
+  background: #fff; }
 
 .competency-matrix .matrix-time-block {
   display: inline-block; }
@@ -2839,7 +2784,7 @@ ol.children-block {
   color: #167016; }
 
 .outcome-introduced.self-completed {
-  color: white;
+  color: #fff;
   background: #167016;
   opacity: 1;
   min-width: 10px; }
@@ -2848,7 +2793,7 @@ ol.children-block {
   color: #2ca02c; }
 
 .outcome-developed.self-completed {
-  color: white;
+  color: #fff;
   background: #2ca02c;
   opacity: 1;
   min-width: 10px; }
@@ -2857,7 +2802,7 @@ ol.children-block {
   color: #11ca11; }
 
 .outcome-advanced.self-completed {
-  color: white;
+  color: #fff;
   background: #11ca11;
   opacity: 1;
   min-width: 10px; }
@@ -2878,13 +2823,13 @@ ol.children-block {
   width: 280px;
   position: sticky;
   left: 0px;
-  background: white;
+  background: #fff;
   z-index: 1;
   box-sizing: border-box;
   border-right: 2px solid #e9ebf2; }
 
 .outcome-table .outcome-head.empty {
-  border-right-color: white;
+  border-right-color: #fff;
   position: relative;
   width: 280px; }
 
@@ -2899,7 +2844,7 @@ ol.children-block {
   position: sticky;
   top: 0px;
   z-index: 2;
-  background: white; }
+  background: #fff; }
 
 .outcome-table .outcome-row.outcome-category {
   border-bottom: 2px solid #e9ebf2;
@@ -2937,9 +2882,9 @@ ol.children-block {
   right: 0px; }
 
 .table-cell button {
-  background: white;
+  background: #fff;
   box-shadow: none;
-  border: 1px solid black;
+  border: 1px solid #000;
   border-radius: 3px; }
 
 .table-cell:hover input,
@@ -2957,7 +2902,7 @@ ol.children-block {
   transform: rotate(-60deg); }
 
 .outcome-table .child-outcome {
-  border-top: 1px solid black;
+  border-top: 1px solid #000;
   text-align: left;
   padding-left: 10px;
   white-space: normal;
@@ -2988,7 +2933,7 @@ ol.children-block {
   font-size: 10px;
   white-space: normal;
   background: inherit;
-  border-top: 1px solid black;
+  border-top: 1px solid #000;
   left: -1px; }
 
 .outcome-table .total-header::before,
@@ -3002,7 +2947,7 @@ ol.children-block {
   content: "";
   position: absolute;
   margin-left: 14px;
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #000;
   bottom: -2px;
   width: calc(100% - 14px);
   left: 0px; }
@@ -3044,7 +2989,7 @@ ol.children-block {
   width: 12px;
   left: 4px;
   bottom: 2px;
-  background-color: white;
+  background-color: #fff;
   transition: 0.4s; }
 
 input:checked + .slider {
@@ -3059,10 +3004,10 @@ input:checked + .slider::before {
   top: -1px;
   right: -1px;
   border-radius: 5px;
-  border: 0px solid black;
+  border: 0px solid #000;
   padding: 2px;
   line-height: 0px;
-  background: white; }
+  background: #fff; }
 
 /*This is used to get around the issue that we can't make the week itself relatively positioned (messes up jquery sortable*/
 .mouseover-container-bypass {
@@ -3097,7 +3042,7 @@ div:hover > .mouseover-container-bypass > .mouseover-actions {
   width: 300px;
   max-height: 400px;
   border: 1px solid #04ba74;
-  background: white;
+  background: #fff;
   z-index: 7;
   overflow: overlay;
   padding: 5px;
@@ -3167,11 +3112,11 @@ div:hover > .mouseover-container-bypass > .mouseover-actions {
   margin-top: 5px;
   padding: 2px;
   padding-bottom: 5px;
-  border: 1px solid white;
+  border: 1px solid #fff;
   box-sizing: border-box;
   width: 100%;
   overflow-x: hidden;
-  color: #222222;
+  color: #222;
   -webkit-user-select: text;
           user-select: text; }
 
@@ -3195,7 +3140,7 @@ div:hover > .mouseover-container-bypass > .mouseover-actions {
   right: 0px;
   top: 0px;
   border-radius: 5px;
-  background: white;
+  background: #fff;
   height: 20px; }
 
 .week > .comment-indicator {
@@ -3226,7 +3171,7 @@ div:hover > .mouseover-container-bypass > .mouseover-actions {
 .nomenclature-row select {
   padding: 10px;
   border-radius: 3px;
-  border: 1px solid black; }
+  border: 1px solid #000; }
 
 .workflow-canvas {
   position: absolute;
@@ -3249,9 +3194,9 @@ div:hover > .mouseover-container-bypass > .mouseover-actions {
   max-width: 100px;
   max-height: 100px;
   white-space: normal;
-  background: white;
+  background: #fff;
   padding: 2px;
-  border: 1px solid black;
+  border: 1px solid #000;
   font-size: 10px;
   text-align: center;
   width: -moz-fit-content;
@@ -3287,7 +3232,7 @@ circle.mouseover {
 .right-panel-container {
   float: right;
   box-shadow: -1px 0px 1px -1px;
-  background: white;
+  background: #fff;
   text-align: left;
   font-family: sans-serif;
   height: 100%;
@@ -3315,7 +3260,7 @@ circle.mouseover {
 .side-bar .ui-tabs-tab {
   text-align: center;
   display: block;
-  background: white;
+  background: #fff;
   border-radius: 3px;
   margin: 1px;
   margin-bottom: 2px;
@@ -3326,8 +3271,8 @@ circle.mouseover {
 
 .side-bar .ui-tabs-tab.ui-state-disabled {
   background-color: #e9ebf2;
-  cursor: default;
-  color: #b5b5b5; }
+  color: #bababa;
+  cursor: default; }
 
 .side-bar .ui-tabs-tab a span {
   font-size: 20px;
@@ -3343,7 +3288,7 @@ circle.mouseover {
   color: inherit; }
 
 .side-bar .ui-tabs-tab.ui-tabs-active {
-  color: white;
+  color: #fff;
   background: #04ba74; }
 
 .side-bar select,
@@ -3385,7 +3330,7 @@ circle.mouseover {
 
 .side-bar .character-length {
   font-size: 10px;
-  color: grey;
+  color: #808080;
   float: right; }
 
 .side-bar .character-length.overflow {
@@ -3423,21 +3368,15 @@ circle.mouseover {
   -webkit-appearance: none;
           appearance: none;
   width: 100%;
-  /* Full-width */
   height: 25px;
-  /* Specified height */
-  background: #d3d3d3;
-  /* Grey background */
+  background: #d3dae6;
   outline: none;
-  /* Remove outline */
   opacity: 0.7;
-  /* Set transparency (for mouse-over effects on hover) */
   transition: opacity 0.2s;
   border-radius: 20px; }
 
 .range-slider:hover {
-  opacity: 1;
-  /* Fully shown on mouse-over */ }
+  opacity: 1; }
 
 .node-bar-column-workflow {
   width: 100%;
@@ -3453,12 +3392,12 @@ circle.mouseover {
   cursor: move;
   padding: 8px;
   border-radius: 5px;
-  color: white;
+  color: #fff;
   box-sizing: border-box; }
 
 .node-bar-column.new-column {
-  color: black;
-  border: 2px black; }
+  color: #000;
+  border: 2px #000; }
 
 .new-column.node-bar-column {
   border-style: dashed; }
@@ -3491,7 +3430,7 @@ circle.mouseover {
   white-space: nowrap;
   background: #660385;
   border-radius: 5px;
-  color: white; }
+  color: #fff; }
 
 .strategy-bar-strategy img {
   width: 24px;
@@ -3507,7 +3446,7 @@ circle.mouseover {
 .week-ghost {
   width: 300px;
   min-height: 50px;
-  border: 1px dashed black;
+  border: 1px dashed #000;
   position: absolute; }
 
 .workflow-wrapper .selected {
@@ -3573,7 +3512,7 @@ circle.mouseover {
   box-sizing: border-box;
   padding: 8px;
   margin: 2px;
-  border: 2px solid white; }
+  border: 2px solid #fff; }
 
 .alignment-block .outcome-alignment:hover {
   border-color: gray; }
@@ -3604,7 +3543,7 @@ circle.mouseover {
   cursor: pointer; }
 
 .alignment-block .outcome-block {
-  background-color: white; }
+  background-color: #fff; }
 
 .alignment-block .child-outcome {
   padding-bottom: 5px;
@@ -3651,7 +3590,7 @@ circle.mouseover {
   text-align: left;
   box-sizing: border-box;
   display: inline-block;
-  background: white;
+  background: #fff;
   height: 100%;
   padding: 20px;
   overflow: overlay;
@@ -3667,7 +3606,7 @@ circle.mouseover {
 .workflow-legend {
   cursor: move;
   position: fixed;
-  background: white;
+  background: #fff;
   z-index: 5;
   padding: 20px;
   border: 2px solid #04ba74;
@@ -3732,7 +3671,7 @@ circle.mouseover {
   position: sticky;
   z-index: 1;
   top: 0px;
-  border: 1px solid black;
+  border: 1px solid #000;
   display: flex; }
 
 .comparison-view .workflow-details {
@@ -3761,7 +3700,7 @@ circle.mouseover {
 .workflow-wrapper .window-close-button {
   right: -8px;
   top: -8px;
-  background: white;
+  background: #fff;
   height: 16px;
   width: 16px;
   border-radius: 8px;
@@ -3769,7 +3708,7 @@ circle.mouseover {
 
 /*
 .workflow-legend *:is(h4, h5), .right-panel-container *:is(h3, h4, h5){
-    color:#04ba74;
+    color: $color-primary-green;
 }
 */
 .selectable {
@@ -3783,7 +3722,7 @@ circle.mouseover {
   top: 0;
   width: 100%;
   height: 100%;
-  background: #80808060; }
+  background: rgba(128, 128, 128, 0.376); }
 
 .load-screen::after {
   position: absolute;
@@ -3794,7 +3733,7 @@ circle.mouseover {
   margin: -25px 0 0 -25px;
   content: "";
   border-radius: 50%;
-  border: 16px solid #80808010;
+  border: 16px solid rgba(128, 128, 128, 0.063);
   border-top: 16px solid #04ba74;
   border-bottom: 16px solid #04ba74;
   animation: spin 2s linear infinite;
