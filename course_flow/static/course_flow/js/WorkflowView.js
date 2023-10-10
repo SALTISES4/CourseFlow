@@ -151,6 +151,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let commenters = this.state.users.commentors;
         let viewers = this.state.users.viewers;
         let users_group = []
+        if(this.state.users.published){
+            users_group.push(
+                <div class="user-name">
+                    {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
+                </div>
+            );
+        }
         if(author)users_group.push(
             <div class="user-name">
                 {Constants.getUserTag("author")}{Constants.getUserDisplay(author)}
@@ -173,18 +180,15 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 </div>
             ),
         ]);
-        if(this.state.users.published){
-            users_group.push(
-                <div class="user-name">
-                    {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
-                </div>
-            );
-        }
+        users_group = users_group.flat(2);
         let users = [
             <div class="users-group">
                 {users_group}
             </div>
         ];
+        if(users_group.length>4)users.push(
+            <div class="workflow-created">+{users_group.length-4} {gettext("more")}</div>
+        );
         if(!this.props.renderer.read_only)users.push(
             <div class="user-name collapsed-text-show-more" onClick={this.openShareMenu.bind(this)}>
                 {gettext("Modify")}
@@ -365,7 +369,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
                     <span class="material-symbols-rounded green">arrow_back_ios</span>
                     <div>
-                        {gettext("Return to project")} (<WorkflowTitle class_name="inline" no_hyperlink={true} data={renderer.project}/>)
+                        {gettext("Return to")} <WorkflowTitle class_name="inline" no_hyperlink={true} data={renderer.project}/>
                     </div>
                 </a>
             );
