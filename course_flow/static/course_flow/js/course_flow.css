@@ -1582,7 +1582,7 @@ button:hover{
 
 .users-group{
     max-height: 124px;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 
 .user-list{

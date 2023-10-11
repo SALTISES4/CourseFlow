@@ -31,7 +31,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import DetailView, TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView
 from rest_framework.generics import ListAPIView
 from rest_framework.renderers import JSONRenderer
@@ -1205,17 +1205,20 @@ class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         form = super(UpdateView, self).get_form()
         return form
 
-    def get_context_data(self, **kwargs):
-        context = super(UpdateView, self).get_context_data(**kwargs)
-        notifications = self.request.user.notifications.all()
-        paginator = Paginator(notifications, 20)
-        page_number = self.request.GET.get("page")
-        page_obj = paginator.get_page(page_number)
-        context["notifications"] = page_obj
-        return context
-
     def get_success_url(self):
         return reverse("course_flow:user-update")
+
+class UserNotificationsView(LoginRequiredMixin, ListView):
+    model = Notification
+    paginate_by = 25
+    template_name = "course_flow/notifications.html"
+
+    def get_queryset(self, **kwargs):
+       return self.request.user.notifications.all()
+
+    def get_form(self, *args, **kwargs):
+        form = super(UpdateView, self).get_form()
+        return form
 
 
 @ajax_login_required
@@ -4349,7 +4352,7 @@ def toggle_favourite(request: HttpRequest) -> HttpResponse:
 
 
 # change permissions on an object for a user
-@user_can_edit(False)
+#@user_can_edit(False)
 def set_permission(request: HttpRequest) -> HttpResponse:
     object_id = json.loads(request.POST.get("objectID"))
     objectType = json.loads(request.POST.get("objectType"))

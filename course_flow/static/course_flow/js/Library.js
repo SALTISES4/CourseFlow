@@ -437,7 +437,15 @@ export class ProjectMenu extends LibraryMenu{
         let commenters = this.state.users.commentors;
         let viewers = this.state.users.viewers;
         if(!author)return null;
-        let users_group = [
+        let users_group = [];
+        if(this.state.users.published){
+            users_group.push(
+                <div class="user-name">
+                    {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
+                </div>
+            );
+        }
+        users_group.push([
             <div class="user-name">
                 {Constants.getUserTag("author")}{Constants.getUserDisplay(author)}
             </div>,
@@ -456,19 +464,16 @@ export class ProjectMenu extends LibraryMenu{
                     {Constants.getUserTag("view")}{Constants.getUserDisplay(user)}
                 </div>
             ),
-        ];
-        if(this.state.users.published){
-            users_group.push(
-                <div class="user-name">
-                    {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
-                </div>
-            );
-        }
+        ]);
+        users_group = users_group.flat(2);
         let users = [
             <div class="users-group">
                 {users_group}
             </div>
         ];
+        if(users_group.length>4)users.push(
+            <div class="workflow-created">+{users_group.length-4} {gettext("more")}</div>
+        );
         if(!this.props.renderer.read_only)users.push(
             <div class="user-name collapsed-text-show-more" onClick={this.openShareMenu.bind(this)}>
                 {gettext("Modify")}
