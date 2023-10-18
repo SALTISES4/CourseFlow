@@ -1,17 +1,17 @@
 $.ajaxSetup({
-  beforeSend: function(xhr, settings) {
+  beforeSend: function (xhr, settings) {
     if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-      xhr.setRequestHeader("X-CSRFToken", getCsrfToken());
+      xhr.setRequestHeader('X-CSRFToken', getCsrfToken())
     }
   }
-});
+})
 
 function csrfSafeMethod(method) {
-  return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method);
+  return /^(GET|HEAD|OPTIONS|TRACE)$/.test(method)
 }
 
 export function getCsrfToken() {
   return document
-    .getElementsByName("csrfmiddlewaretoken")[0]
-    .getAttribute("value");
+    .getElementsByName('csrfmiddlewaretoken')[0]
+    .getAttribute('value')
 }
