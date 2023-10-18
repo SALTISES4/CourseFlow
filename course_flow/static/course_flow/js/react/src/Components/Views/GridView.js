@@ -15,7 +15,7 @@ import {
   getNodeWeekByID,
   getNodeByID
 } from '../../FindState.js';
-import * as UtilityFunctions from '../../UtilityFunctions.js';
+import * as Utility from '../../UtilityFunctions.js';
 
 //Creates a grid with just nodes by week and their times
 class GridView extends React.Component{
@@ -90,9 +90,9 @@ class GridWeekViewUnconnected extends EditableComponentWithComments{
 }
 const mapWeekStateToProps = (state,own_props)=>{
     let data = own_props.data;
-    let node_weeks = UtilityFunctions.filterThenSortByID(state.nodeweek,data.nodeweek_set);
-    let nodes_data = node_weeks.map(nodeweek=>getNodeByID(state,nodeweek.node).data).filter(node=>!UtilityFunctions.checkSetHidden(node,state.objectset));
-    // let nodes_data = UtilityFunctions.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!UtilityFunctions.checkSetHidden(node,state.objectset));
+    let node_weeks = Utility.filterThenSortByID(state.nodeweek,data.nodeweek_set);
+    let nodes_data = node_weeks.map(nodeweek=>getNodeByID(state,nodeweek.node).data).filter(node=>!Utility.checkSetHidden(node,state.objectset));
+    // let nodes_data = Utility.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Utility.checkSetHidden(node,state.objectset));
 
     let override_data = nodes_data.map(node=>{
         if(node.represents_workflow)return {...node,...node.linked_workflow_data};
@@ -149,7 +149,7 @@ class GridNodeViewUnconnected extends EditableComponentWithComments{
             <div class="grid-ponderation">{data_override.ponderation_theory+"/"+data_override.ponderation_practical+"/"+data_override.ponderation_individual}</div>
         )
 
-        let style = {backgroundColor:Constants.getColumnColour(this.props.column)}
+        let style = {backgroundColor:Utility.getColumnColour(this.props.column)}
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }

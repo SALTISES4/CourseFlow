@@ -17,7 +17,7 @@ import {
   addStrategy,
   updateValueInstant
 } from '../../PostFunctions.js';
-import { Loader } from '../../UtilityFunctions.js';
+import * as Utility from '../../UtilityFunctions.js';
 
 //Basic component to represent a Week
 export class WeekViewUnconnected extends EditableComponentWithSorting{
@@ -109,7 +109,7 @@ export class WeekViewUnconnected extends EditableComponentWithSorting{
 
     componentDidUpdate(){
         this.makeDragAndDrop();
-        Constants.triggerHandlerEach($(this.maindiv.current).find(".node"),"component-updated");
+        Utility.triggerHandlerEach($(this.maindiv.current).find(".node"),"component-updated");
     }
 
     makeDragAndDrop(){
@@ -203,7 +203,7 @@ export class WeekViewUnconnected extends EditableComponentWithSorting{
                 var drag_item = ui.draggable;
                 var new_index = drop_item.parent().prevAll().length+1;
                 if(drag_item.hasClass("new-strategy")){
-                    let loader = new Loader('body');
+                    let loader = new Utility.Loader('body');
                     addStrategy(this.props.parentID,new_index,drag_item[0].dataDraggable.strategy,
                         (response_data)=>{
                             loader.endLoad();
@@ -291,7 +291,7 @@ export class WeekComparisonViewUnconnected extends WeekViewUnconnected{
 
     componentDidUpdate(){
         this.makeDragAndDrop();
-        Constants.triggerHandlerEach($(this.maindiv.current).find(".node"),"component-updated");
+        Utility.triggerHandlerEach($(this.maindiv.current).find(".node"),"component-updated");
         this.alignAllWeeks();
     }
 

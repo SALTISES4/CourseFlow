@@ -1,8 +1,12 @@
-import * as React from "react";
-import {Provider, connect} from "react-redux";
-import {Component, EditableComponentWithActions} from "../components/CommonComponents.js";
-import {getColumnByID} from "../../FindState.js";
-import * as Constants from "../../Constants.js";
+import * as React from 'react';
+import { Provider, connect } from 'react-redux';
+import {
+  Component,
+  EditableComponentWithActions
+} from '../components/CommonComponents.js';
+import { getColumnByID } from '../../FindState.js';
+import * as Constants from '../../Constants.js';
+import * as Utility from '../../UtilityFunctions.js';
 
 //Basic component representing a column
 class ColumnView extends EditableComponentWithActions{
@@ -74,7 +78,7 @@ class NodeBarColumnUnconnected extends Component{
         if(data)title = data.title;
         if(!title)title=data.column_type_display;
         return(
-            <div dangerouslySetInnerHTML={{ __html: title }} class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{backgroundColor:Constants.getColumnColour(data)}}>
+            <div dangerouslySetInnerHTML={{ __html: title }} class={"new-node node-bar-column node-bar-sortable column-"+this.props.objectID} ref={this.maindiv} style={{backgroundColor:Utility.getColumnColour(data)}}>
             </div>
         );
     }

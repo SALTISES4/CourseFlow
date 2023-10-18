@@ -17,7 +17,7 @@ import { AssignmentBox } from './LiveAssignmentView.js'
 import OutcomeNodeView from '../components/OutcomeNode.js';
 import { getNodeByID } from '../../FindState.js';
 import * as Constants from '../../Constants.js';
-import * as UtilityFunctions from '../../UtilityFunctions.js';
+import * as Utility from '../../UtilityFunctions.js';
 import {
   updateOutcomenodeDegree,
   updateValueInstant,
@@ -58,7 +58,7 @@ class NodeView extends EditableComponentWithActions{
         }
         let outcomenodes;
         if(this.state.show_outcomes)outcomenodes = (
-            <div class={"outcome-node-container column-"+data.column} onMouseLeave={()=>{this.setState({show_outcomes:false});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>
+            <div class={"outcome-node-container column-"+data.column} onMouseLeave={()=>{this.setState({show_outcomes:false});}} style={{borderColor:Utility.getColumnColour(this.props.column)}}>
                 {data.outcomenode_unique_set.map((outcomenode)=>
                     <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
                 )}
@@ -69,7 +69,7 @@ class NodeView extends EditableComponentWithActions{
         if(data.outcomenode_unique_set.length>0){
             side_actions.push(
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column} onMouseEnter={()=>{this.setState({show_outcomes:true});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{data.outcomenode_unique_set.length}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} onMouseEnter={()=>{this.setState({show_outcomes:true});}} style={{borderColor:Utility.getColumnColour(this.props.column)}}>{data.outcomenode_unique_set.length}</div>
                     {outcomenodes}
                 </div>
             );
@@ -128,11 +128,11 @@ class NodeView extends EditableComponentWithActions{
             <NodeTitle data={data}/>
         );
 
-        let style = {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:Constants.getColumnColour(this.props.column)};
+        let style = {left:Constants.columnwidth*this.props.column_order.indexOf(data.column)+"px",backgroundColor:Utility.getColumnColour(this.props.column)};
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
-        if(UtilityFunctions.checkSetHidden(data,this.props.object_sets))style.display="none";
+        if(Utility.checkSetHidden(data,this.props.object_sets))style.display="none";
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
         if(data.is_dropped)css_class+=" dropped";
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
@@ -210,7 +210,7 @@ class NodeView extends EditableComponentWithActions{
 
     componentDidUpdate(prevProps, prevState){
         if(this.props.data.is_dropped==prevProps.data.is_dropped)this.updatePorts();
-        else Constants.triggerHandlerEach($(".node"),"component-updated");
+        else Utility.triggerHandlerEach($(".node"),"component-updated");
         this.updateHidden();
     }
 
@@ -333,7 +333,7 @@ class NodeOutcomeViewUnconnected extends Component{
         else data_override = data;
         let selection_manager = this.props.renderer.selection_manager;
 
-        let style = {backgroundColor:Constants.getColumnColour(this.props.column)}
+        let style = {backgroundColor:Utility.getColumnColour(this.props.column)}
         // if(data.lock){
         //     style.outline="2px solid "+data.lock.user_colour;
         // }
@@ -394,7 +394,7 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions{
 
         let outcomenodes;
         if(this.state.show_outcomes)outcomenodes = (
-            <div class={"outcome-node-container column-"+data.column} onMouseLeave={()=>{this.setState({show_outcomes:false});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>
+            <div class={"outcome-node-container column-"+data.column} onMouseLeave={()=>{this.setState({show_outcomes:false});}} style={{borderColor:Utility.getColumnColour(this.props.column)}}>
                 {data.outcomenode_unique_set.map((outcomenode)=>
                     <OutcomeNodeView key={outcomenode} objectID={outcomenode} renderer={renderer}/>
                 )}
@@ -404,7 +404,7 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions{
         if(data.outcomenode_unique_set.length>0){
             side_actions.push(
                 <div class="outcome-node-indicator">
-                    <div class={"outcome-node-indicator-number column-"+data.column} onMouseEnter={()=>{this.setState({show_outcomes:true});}} style={{borderColor:Constants.getColumnColour(this.props.column)}}>{data.outcomenode_unique_set.length}</div>
+                    <div class={"outcome-node-indicator-number column-"+data.column} onMouseEnter={()=>{this.setState({show_outcomes:true});}} style={{borderColor:Utility.getColumnColour(this.props.column)}}>{data.outcomenode_unique_set.length}</div>
                     {outcomenodes}
                 </div>
             );
@@ -430,11 +430,11 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions{
         );
 
 
-        let style = {backgroundColor:Constants.getColumnColour(this.props.column)};
+        let style = {backgroundColor:Utility.getColumnColour(this.props.column)};
         if(data.lock){
             style.outline="2px solid "+data.lock.user_colour;
         }
-        if(UtilityFunctions.checkSetHidden(data,this.props.object_sets))style.display="none";
+        if(Utility.checkSetHidden(data,this.props.object_sets))style.display="none";
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
         if(data.lock)css_class+=" locked locked-"+data.lock.user_id;
 

@@ -1,14 +1,21 @@
-import * as React from "react";
-import * as reactDom from "react-dom";
-import { connect} from "react-redux";
-import { updateValueInstant, deleteSelf, setLinkedWorkflow, duplicateBaseItem,  getAddedWorkflowMenu, addTerminology} from "../../PostFunctions.js";
-import * as Constants from "../../Constants.js";
-import { Loader } from '../../UtilityFunctions.js';
-import {ShareMenu} from "./ShareMenu.js";
-import {ImportMenu} from "./ImportMenu.js";
-import {ExportMenu} from "./ExportMenu.js";
-import {WorkflowForMenu} from "../../Library.js";
-import {LiveProjectSettings} from "../Views/LiveProjectView.js";
+import * as React from 'react';
+import * as reactDom from 'react-dom';
+import { connect } from 'react-redux';
+import {
+  updateValueInstant,
+  deleteSelf,
+  setLinkedWorkflow,
+  duplicateBaseItem,
+  getAddedWorkflowMenu,
+  addTerminology
+} from '../../PostFunctions.js';
+import * as Constants from '../../Constants.js';
+import * as Utility from '../../UtilityFunctions.js';
+import { ShareMenu } from './ShareMenu.js';
+import { ImportMenu } from './ImportMenu.js';
+import { ExportMenu } from './ExportMenu.js';
+import { WorkflowForMenu } from '../../Library.js';
+import { LiveProjectSettings } from '../Views/LiveProjectView.js';
 
 
 /*
@@ -243,7 +250,7 @@ export class MenuSection extends React.Component{
                     <a class="hover-shade" onClick={()=>{
                         getAddedWorkflowMenu(parentID,section_type,is_strategy,false,(response_data)=>{
                             if(response_data.workflowID!=null){
-                                let loader = new Loader('body');
+                                let loader = new Utility.Loader('body');
                                 duplicateBaseItem(
                                     response_data.workflowID,section_type,
                                     parentID,(duplication_response_data)=>{
@@ -379,8 +386,8 @@ export class ProjectEditMenu extends React.Component{
                 </div>
             );
         }
-        let title=Constants.unescapeCharacters(data.title || "");
-        let description=Constants.unescapeCharacters(data.description || "");
+        let title=Utility.unescapeCharacters(data.title || "");
+        let description=Utility.unescapeCharacters(data.description || "");
 
         let object_sets=Constants.object_sets_types();
         let set_options = Object.keys(object_sets).map(key=>

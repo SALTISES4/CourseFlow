@@ -7,8 +7,7 @@ import {
   EditableComponentWithSorting,
   WorkflowTitle
 } from '../components/CommonComponents.js';
-import * as Constants from '../../Constants.js';
-import * as Functions from '../../UtilityFunctions.js';
+import * as Utility from '../../UtilityFunctions.js';
 import { renderMessageBox, closeMessageBox } from '../components/MenuComponents.js';
 import {
   getWorkflowSelectMenu,
@@ -419,7 +418,7 @@ class WorkflowComparisonViewUnconnected extends EditableComponentWithSorting{
     }
 
     stopSortFunction(){
-        Constants.triggerHandlerEach($(".week .node"),"component-updated");
+        Utility.triggerHandlerEach($(".week .node"),"component-updated");
     }
 
     sortableMovedFunction(id,new_position,type,new_parent,child_id){

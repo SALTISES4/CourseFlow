@@ -943,7 +943,7 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting{
     }
 
     stopSortFunction(){
-        Constants.triggerHandlerEach($(".week .node"),"component-updated");
+        Utility.triggerHandlerEach($(".week .node"),"component-updated");
     }
 
 

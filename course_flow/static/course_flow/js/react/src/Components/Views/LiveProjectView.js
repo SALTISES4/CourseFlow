@@ -402,7 +402,7 @@ export class AssignmentNode extends React.Component{
                 ).name
             }src={config.icon_path+Constants.task_keys[data.task_classification]+".svg"}/>
         )
-        let style = {backgroundColor:Constants.getColumnColour(this.props.data)};
+        let style = {backgroundColor:Utility.getColumnColour(this.props.data)};
         let mouseover_actions = [this.addCreateAssignment(data)];
 
         return (

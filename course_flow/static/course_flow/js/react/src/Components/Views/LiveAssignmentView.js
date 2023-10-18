@@ -300,7 +300,7 @@ export class AssignmentView extends React.Component{
                 ).name
             }src={config.icon_path+Constants.task_keys[node_data.task_classification]+".svg"}/>
         )
-        let style = {backgroundColor:Constants.getColumnColour(node_data)};
+        let style = {backgroundColor:Utility.getColumnColour(node_data)};
         let mouseover_actions = [];
         let css_class = "node assignment";
         if(this.state.is_dropped)css_class+=" dropped";
@@ -428,7 +428,7 @@ export class AssignmentViewSmall extends React.Component{
         else data_override={...node_data};
 
         let css_class = "node assignment";
-        let style = {backgroundColor:Constants.getColumnColour(node_data)};
+        let style = {backgroundColor:Utility.getColumnColour(node_data)};
         return (
             <div style={style} class={css_class}>
                 <div class = "node-top-row">

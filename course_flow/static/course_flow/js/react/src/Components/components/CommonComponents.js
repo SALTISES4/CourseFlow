@@ -3,7 +3,6 @@ import * as React from 'react';
 import * as reactDom from 'react-dom';
 import * as Constants from '../../Constants.js';
 import * as Utility from '../../UtilityFunctions.js';
-import { Loader } from '../../UtilityFunctions.js';
 import {
   dot as mathdot,
   subtract as mathsubtract,
@@ -65,7 +64,7 @@ export class EditableComponent extends Component{
             if(type=="outcome")title_length="500";
             var props = this.props;
             let override = false;
-            let title=Constants.unescapeCharacters(data.title || "");
+            let title=Utility.unescapeCharacters(data.title || "");
             let description=data.description || "";
             if(data.represents_workflow)override=true;
 
@@ -254,7 +253,7 @@ export class EditableComponent extends Component{
                                 )}
                             </select>
                             <button disabled={read_only} id="toggle-strategy-editor" onClick = {()=>{
-                                let loader = new Loader('body');
+                                let loader = new Utility.Loader('body');
                                 toggleStrategy(data.id,data.is_strategy,
                                 (response_data)=>{
                                     loader.endLoad();
@@ -648,10 +647,10 @@ export class NodeLinkSVG extends Component{
     render(){
 
         try{
-            const source_transform=Constants.getSVGTranslation(this.props.source_port_handle.select(function(){
+            const source_transform=Utility.getSVGTranslation(this.props.source_port_handle.select(function(){
                 return this.parentNode
             }).attr("transform"));
-            const target_transform=Constants.getSVGTranslation(this.props.target_port_handle.select(function(){
+            const target_transform=Utility.getSVGTranslation(this.props.target_port_handle.select(function(){
                 return this.parentNode
             }).attr("transform"));
             const source_point=[parseInt(this.props.source_port_handle.attr("cx"))+parseInt(source_transform[0]),parseInt(this.props.source_port_handle.attr("cy"))+parseInt(source_transform[1])];
@@ -880,7 +879,7 @@ export class NodePorts extends React.Component{
     updatePorts(){
         if(!this.props.node_div.current)return;
         var node = $(this.props.node_div.current);
-        var node_offset = Constants.getCanvasOffset(node);
+        var node_offset = Utility.getCanvasOffset(node);
         var node_dimensions={width:node.outerWidth(),height:node.outerHeight()};
         //if(node.closest(".week-workflow").hasClass("dragging")||this.state.node_offset==node_offset&&this.state.node_dimensions==node_dimensions)return;
         this.setState({node_offset:node_offset,node_dimensions:node_dimensions});

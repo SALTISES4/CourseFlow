@@ -1,5 +1,5 @@
-import * as Constants from "./Constants.js";
-import * as Redux from "redux";
+import * as Redux from 'redux';
+import * as Utility from './UtilityFunctions.js';
 
 export const createLockAction = (object_id,object_type,lock,user_id,user_colour) => {
     if(lock)return {
@@ -875,7 +875,7 @@ export function nodeReducer(state=[],action){
                     new_state[i]={...state[i],column:new_column};
                 }
             }
-            Constants.triggerHandlerEach($(".week .node"),"component-updated");
+            Utility.triggerHandlerEach($(".week .node"),"component-updated");
             return new_state;
         case 'column/restoreSelf':
             var new_state = state.slice();
@@ -889,7 +889,7 @@ export function nodeReducer(state=[],action){
                     new_state[i]={...state[i],column:new_column};
                 }
             }
-            Constants.triggerHandlerEach($(".week .node"),"component-updated");
+            Utility.triggerHandlerEach($(".week .node"),"component-updated");
             return new_state;
         case 'node/changedColumn':
             for(var i=0;i<state.length;i++){
@@ -905,7 +905,7 @@ export function nodeReducer(state=[],action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state.splice(i,1);
-                    Constants.triggerHandlerEach($(".week .node"),"component-updated");
+                    Utility.triggerHandlerEach($(".week .node"),"component-updated");
                     return new_state;
                 }
             }
@@ -915,7 +915,7 @@ export function nodeReducer(state=[],action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state[i]={...new_state[i],deleted:true,deleted_on:gettext("This session")};
-                    Constants.triggerHandlerEach($(".week .node"),"component-updated");
+                    Utility.triggerHandlerEach($(".week .node"),"component-updated");
                     return new_state;
                 }
             }
@@ -925,7 +925,7 @@ export function nodeReducer(state=[],action){
                 if(state[i].id==action.payload.id){
                     var new_state = state.slice();
                     new_state[i]={...new_state[i],deleted:false};
-                    Constants.triggerHandlerEach($(".week .node"),"component-updated");
+                    Utility.triggerHandlerEach($(".week .node"),"component-updated");
                     return new_state;
                 }
             }
@@ -1494,11 +1494,11 @@ export function outcomeNodeReducer(state=[],action){
             if(action.payload.outcomenode==-1)return state;
             var new_state = state.slice();
             let new_outcomenode_outcomes = action.payload.data_package.map((outcomenode)=>
-                Constants.cantorPairing(outcomenode.node,outcomenode.outcome)
+                Utility.cantorPairing(outcomenode.node,outcomenode.outcome)
             )
             let data_package_copy = action.payload.data_package.slice();
             for(var i=0;i<new_state.length;i++){
-                let new_outcomenode_index = new_outcomenode_outcomes.indexOf(Constants.cantorPairing(new_state[i].node,new_state[i].outcome));
+                let new_outcomenode_index = new_outcomenode_outcomes.indexOf(Utility.cantorPairing(new_state[i].node,new_state[i].outcome));
                 if(new_outcomenode_index>=0){
                     new_state[i]=data_package_copy[new_outcomenode_index];
                     data_package_copy[new_outcomenode_index]=null;
@@ -1564,11 +1564,11 @@ export function outcomeHorizontalLinkReducer(state=[],action){
             if(action.payload.outcomehorizontallink==-1)return state;
             var new_state = state.slice();
             let new_outcomehorizontallink_outcomes = action.payload.data_package.map((outcomehorizontallink)=>
-                Constants.cantorPairing(outcomehorizontallink.outcome,outcomehorizontallink.parent_outcome)
+                Utility.cantorPairing(outcomehorizontallink.outcome,outcomehorizontallink.parent_outcome)
             )
             let data_package_copy = action.payload.data_package.slice();
             for(var i=0;i<new_state.length;i++){
-                let new_outcomehorizontallink_index = new_outcomehorizontallink_outcomes.indexOf(Constants.cantorPairing(new_state[i].outcome,new_state[i].parent_outcome));
+                let new_outcomehorizontallink_index = new_outcomehorizontallink_outcomes.indexOf(Utility.cantorPairing(new_state[i].outcome,new_state[i].parent_outcome));
                 if(new_outcomehorizontallink_index>=0){
                     new_state[i]=data_package_copy[new_outcomehorizontallink_index];
                     data_package_copy[new_outcomehorizontallink_index]=null;

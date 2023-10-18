@@ -22,7 +22,7 @@ import {
 import { WorkflowOutcomeLegend } from '../components/WorkflowLegend.js';
 import { TableOutcomeBase } from './OutcomeView.js';
 import { NodeOutcomeView } from './NodeView.js';
-import * as UtilityFunctions from '../../UtilityFunctions.js';
+import * as Utility from '../../UtilityFunctions.js';
 
 class CompetencyMatrixView extends React.Component{
     constructor(props){
@@ -151,26 +151,26 @@ class CompetencyMatrixView extends React.Component{
 
     getNodecategory(){
 
-        let week_order = UtilityFunctions.filterThenSortByID(this.props.weekworkflows,this.props.weekworkflow_order).map(weekworkflow=>weekworkflow.week);
-        let weeks_ordered = UtilityFunctions.filterThenSortByID(this.props.weeks,week_order);
+        let week_order = Utility.filterThenSortByID(this.props.weekworkflows,this.props.weekworkflow_order).map(weekworkflow=>weekworkflow.week);
+        let weeks_ordered = Utility.filterThenSortByID(this.props.weeks,week_order);
         let nodeweek_order = [].concat(...weeks_ordered.map((week)=>week.nodeweek_set));
-        let nodeweeks_ordered = UtilityFunctions.filterThenSortByID(this.props.nodeweeks,nodeweek_order)
+        let nodeweeks_ordered = Utility.filterThenSortByID(this.props.nodeweeks,nodeweek_order)
         let node_order = nodeweeks_ordered.map(nodeweek=>nodeweek.node);
-        let nodes_ordered = UtilityFunctions.filterThenSortByID(this.props.nodes,node_order).filter(node=>!UtilityFunctions.checkSetHidden(node,this.props.object_sets));
+        let nodes_ordered = Utility.filterThenSortByID(this.props.nodes,node_order).filter(node=>!Utility.checkSetHidden(node,this.props.object_sets));
 
         let nodes_allowed = nodes_ordered.map(node=>node.id);
         nodeweeks_ordered = nodeweeks_ordered.filter(nodeweek=>nodes_allowed.indexOf(nodeweek.node)>=0);
         let nodes_by_week={};
         for(let i=0;i<nodeweeks_ordered.length;i++){
             let nodeweek = nodeweeks_ordered[i];
-            UtilityFunctions.pushOrCreate(nodes_by_week,nodeweek.week,nodeweek.node);
+            Utility.pushOrCreate(nodes_by_week,nodeweek.week,nodeweek.node);
         }
         return weeks_ordered.map((week,index)=>{return {title:(week.title||week.week_type_display+" "+(index+1)),id:week.id,nodes:(nodes_by_week[week.id]||[])};});
 
     }
 
     getTotals(){
-        let nodes_data = this.props.nodes.filter(node=>!UtilityFunctions.checkSetHidden(node,this.props.objectset));
+        let nodes_data = this.props.nodes.filter(node=>!Utility.checkSetHidden(node,this.props.objectset));
         let linked_wf_data = nodes_data.map(node=>{
             if(node.represents_workflow)return {...node,...node.linked_workflow_data};
             return node
@@ -258,8 +258,8 @@ class MatrixWeekViewUnconnected extends Component{
 }
 const mapWeekStateToProps = (state,own_props)=>{
     let data = getWeekByID(state,own_props.objectID).data;
-    let node_weeks = UtilityFunctions.filterThenSortByID(state.nodeweek,data.nodeweek_set);
-    let nodes_data = UtilityFunctions.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!UtilityFunctions.checkSetHidden(node,state.objectset));
+    let node_weeks = Utility.filterThenSortByID(state.nodeweek,data.nodeweek_set);
+    let nodes_data = Utility.filterThenSortByID(state.node,node_weeks.map(node_week=>node_week.node)).filter(node=>!Utility.checkSetHidden(node,state.objectset));
     let linked_wf_data = nodes_data.map(node=>{
         if(node.represents_workflow)return {...node,...node.linked_workflow_data};
         return node
@@ -315,7 +315,7 @@ class MatrixNodeViewUnconnected extends Component{
         let css_class="node column-"+data.column+" "+Constants.node_keys[data.node_type];
 
         let style = {};
-        style.backgroundColor=Constants.getColumnColour(this.props.column)
+        style.backgroundColor=Utility.getColumnColour(this.props.column)
 
 
         return (
