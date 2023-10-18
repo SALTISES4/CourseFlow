@@ -1,5 +1,5 @@
 import * as Constants from './Constants.js';
-import { filterThenSortByID } from './UtilityFunctions.js';
+import * as Utility from './UtilityFunctions.js';
 
 export const getDropped = (objectID,objectType,depth=1)=>{
     let default_drop = Constants.get_default_drop_state(objectID,objectType,depth);
@@ -58,7 +58,7 @@ export const getTermByID = (state,id)=>{
                 week.is_dropped = getDropped(id,"week");
             }
             var nodeweeks = week.nodeweek_set;
-            let column_order = filterThenSortByID(
+            let column_order = Utility.filterThenSortByID(
                 state.columnworkflow,state.workflow.columnworkflow_set
                 ).map(columnworkflow=>columnworkflow.column);
             var nodes_by_column = {};
@@ -252,15 +252,15 @@ export const getStrategyByID = (state,id)=>{
 }
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export const getSortedOutcomesFromOutcomeWorkflowSet = (state,outcomeworkflow_set)=>{
-    let outcomeworkflows = filterThenSortByID(state.outcomeworkflow,outcomeworkflow_set);
+    let outcomeworkflows = Utility.filterThenSortByID(state.outcomeworkflow,outcomeworkflow_set);
     let outcome_ids = outcomeworkflows.map(outcomeworkflow=>outcomeworkflow.outcome);
-    let outcomes = filterThenSortByID(state.outcome,outcome_ids);
+    let outcomes = Utility.filterThenSortByID(state.outcome,outcome_ids);
     for(var i=0;i<outcomes.length;i++){
         outcomes[i].outcomeworkflow=outcomeworkflows[i].id;
         outcomes[i].through_no_drag=outcomeworkflows[i].no_drag;
     };
     if(outcomes.length==0)return outcomes;
-    let base_title = Constants.capWords(gettext("outcomes"));
+    let base_title = Utility.capWords(gettext("outcomes"));
     let object_sets = state.objectset.filter(objectset=>objectset.term==outcomes[0].type);
     if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes}];
     let uncategorized = outcomes.filter(outcome=>outcome.sets.length==0)
@@ -286,12 +286,12 @@ export const getSortedOutcomeNodesFromNodes = (state,nodes)=>{
     for(let i=0;i<nodes.length;i++){
         outcomenode_ids = outcomenode_ids.concat(nodes[i].outcomenode_unique_set);
     }
-    let outcomenodes = filterThenSortByID(state.outcomenode,outcomenode_ids);
-    let outcomes = filterThenSortByID(state.outcome,outcomenodes.map(outcomenode=>outcomenode.outcome)).map(
+    let outcomenodes = Utility.filterThenSortByID(state.outcomenode,outcomenode_ids);
+    let outcomes = Utility.filterThenSortByID(state.outcome,outcomenodes.map(outcomenode=>outcomenode.outcome)).map(
         (outcome,i)=>({...outcome,degree:outcomenodes[i].degree})
     );
     if(outcomes.length==0)return outcomes;
-    let base_title = Constants.capWords(gettext("outcomes"));
+    let base_title = Utility.capWords(gettext("outcomes"));
     let object_sets = state.objectset.filter(objectset=>objectset.term==outcomes[0].type);
     if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes}];
     let categories = [
@@ -310,15 +310,15 @@ export const getSortedOutcomeNodesFromNodes = (state,nodes)=>{
 }
 //Categorizes the outcomes based on their sets, if sets appropriate to that outcome type exist. Also ensures that hidden outcomes are hidden.
 export const getSortedOutcomeIDFromOutcomeWorkflowSet = (outcomes_unsorted,outcomeworkflows_unsorted,outcomeworkflow_set,object_sets_unfiltered)=>{
-    let outcomeworkflows = filterThenSortByID(outcomeworkflows_unsorted,outcomeworkflow_set);
+    let outcomeworkflows = Utility.filterThenSortByID(outcomeworkflows_unsorted,outcomeworkflow_set);
     let outcome_ids = outcomeworkflows.map(outcomeworkflow=>outcomeworkflow.outcome);
-    let outcomes = filterThenSortByID(outcomes_unsorted,outcome_ids);
+    let outcomes = Utility.filterThenSortByID(outcomes_unsorted,outcome_ids);
     for(var i=0;i<outcomes.length;i++){
         outcomes[i].outcomeworkflow=outcomeworkflows[i].id;
         outcomes[i].through_no_drag=outcomeworkflows[i].no_drag;
     };
     if(outcomes.length==0)return outcomes.map(outcome=>outcome.id);
-    let base_title = Constants.capWords(gettext("outcomes"));
+    let base_title = Utility.capWords(gettext("outcomes"));
     let object_sets = object_sets_unfiltered.filter(objectset=>objectset.term==outcomes[0].type);
     if(object_sets.length==0)return [{objectset:{title:base_title},outcomes:outcomes.map(outcome=>outcome.id)}];
     let uncategorized = outcomes.filter(outcome=>outcome.sets.length==0).map(outcome=>outcome.id);

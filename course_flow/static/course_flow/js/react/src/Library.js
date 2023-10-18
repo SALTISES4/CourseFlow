@@ -19,6 +19,7 @@ import {
 } from "./PostFunctions.js";
 import * as LiveProjectViews from "./Components/Views/LiveProjectView.js";
 import * as Constants from "./Constants.js";
+import * as Utility from "./UtilityFunctions.js";
 import {WorkflowTitle, Component, TitleText, CollapsibleText} from "./Components/components/CommonComponents.js";
 import {MessageBox, renderMessageBox, closeMessageBox} from "./Components/components/MenuComponents.js";
 
@@ -470,28 +471,28 @@ export class ProjectMenu extends LibraryMenu {
     if (!author) return null;
     let users_group = [
       <div class="user-name">
-        {Constants.getUserTag("author")}{Constants.getUserDisplay(author)}
+        {Utility.getUserTag("author")}{Utility.getUserDisplay(author)}
       </div>,
       editors.filter(user => user.id != author.id).map(user =>
         <div class="user-name">
-          {Constants.getUserTag("edit")}{Constants.getUserDisplay(user)}
+          {Utility.getUserTag("edit")}{Utility.getUserDisplay(user)}
         </div>
       ),
       commenters.map(user =>
         <div class="user-name">
-          {Constants.getUserTag("comment")}{Constants.getUserDisplay(user)}
+          {Utility.getUserTag("comment")}{Utility.getUserDisplay(user)}
         </div>
       ),
       viewers.map(user =>
         <div class="user-name">
-          {Constants.getUserTag("view")}{Constants.getUserDisplay(user)}
+          {Utility.getUserTag("view")}{Utility.getUserDisplay(user)}
         </div>
       ),
     ];
     if (this.state.users.published) {
       users_group.push(
         <div class="user-name">
-          {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
+          {Utility.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
         </div>
       );
     }
@@ -1258,7 +1259,7 @@ export class WorkflowForMenu extends React.Component {
     if (type == "liveproject") type_text = gettext("classroom");
     if (data.is_strategy) type_text += gettext(" strategy");
     return (
-      <div class={"workflow-type-indicator " + type}>{Constants.capWords(type_text)}</div>
+      <div class={"workflow-type-indicator " + type}>{Utility.capWords(type_text)}</div>
     );
   }
 

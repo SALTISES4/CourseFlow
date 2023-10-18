@@ -1,4 +1,4 @@
-import * as React from "@types/react";
+import * as React from "react";
 import {default_column_settings} from "./Constants.js";
 
 export function permission_translate() {

@@ -15,7 +15,7 @@ import { NodeBarColumnWorkflow } from './ColumnWorkflowView.js';
 import { NodeBarWeekWorkflow } from './WeekWorkflowView.js';
 import { renderMessageBox, closeMessageBox } from '../components/MenuComponents.js';
 import * as Constants from '../../Constants.js';
-import { Loader } from '../../UtilityFunctions.js';
+import * as Utility from '../../UtilityFunctions.js';
 import {
   changeField,
   moveColumnWorkflow,
@@ -176,30 +176,30 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
         let users_group = []
         if(author)users_group.push(
             <div class="user-name">
-                {Constants.getUserTag("author")}{Constants.getUserDisplay(author)}
+                {Utility.getUserTag("author")}{Utility.getUserDisplay(author)}
             </div>
         )
         users_group.push([
             editors.filter(user=>user.id!=author.id).map(user=>
                 <div class="user-name">
-                    {Constants.getUserTag("edit")}{Constants.getUserDisplay(user)}
+                    {Utility.getUserTag("edit")}{Utility.getUserDisplay(user)}
                 </div>
             ),
             commenters.map(user=>
                 <div class="user-name">
-                    {Constants.getUserTag("comment")}{Constants.getUserDisplay(user)}
+                    {Utility.getUserTag("comment")}{Utility.getUserDisplay(user)}
                 </div>
             ),
             viewers.map(user=>
                 <div class="user-name">
-                    {Constants.getUserTag("view")}{Constants.getUserDisplay(user)}
+                    {Utility.getUserTag("view")}{Utility.getUserDisplay(user)}
                 </div>
             ),
         ]);
         if(this.state.users.published){
             users_group.push(
                 <div class="user-name">
-                    {Constants.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
+                    {Utility.getUserTag("view")}<span class="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
                 </div>
             );
         }
@@ -327,7 +327,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
                 }else{
                     getTargetProjectMenu(-1,(response_data)=>{
                         if(response_data.parentID!=null){
-                            let loader = new Loader('body');
+                            let loader = new Utility.Loader('body');
                             duplicateBaseItem(this.props.data.id,this.props.data.type,response_data.parentID,(response_data)=>{
                                 loader.endLoad();
                                 window.location = config.update_path[response_data.new_item.type].replace("0",response_data.new_item.id);
@@ -467,9 +467,9 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions{
 
         let view_buttons = [
             {type:"workflowview",name:gettext("Workflow View"),disabled:[]},
-            {type:"outcomeedit",name:Constants.capWords(gettext("View")+" "+gettext(data.type+" outcomes")),disabled:[]},
-            {type:"outcometable",name:Constants.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
-            {type:"alignmentanalysis",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
+            {type:"outcomeedit",name:Utility.capWords(gettext("View")+" "+gettext(data.type+" outcomes")),disabled:[]},
+            {type:"outcometable",name:Utility.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
+            {type:"alignmentanalysis",name:Utility.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
             {type:"grid",name:gettext("Grid View"),disabled:["activity", "course"]},
         ].filter(item=>item.disabled.indexOf(data.type)==-1).map(
             (item)=>{
@@ -635,10 +635,10 @@ export const WorkflowBaseView = connect(
 
 //         let view_buttons = [
 //             {type:"workflowview",name:gettext("Workflow View"),disabled:[]},
-//             {type:"outcomeedit",name:Constants.capWords(gettext("View")+" "+gettext(data.type+" outcomes")),disabled:[]},
-//             {type:"outcometable",name:Constants.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
-//             {type:"alignmentanalysis",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
-//             //{type:"competencymatrix",name:Constants.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
+//             {type:"outcomeedit",name:Utility.capWords(gettext("View")+" "+gettext(data.type+" outcomes")),disabled:[]},
+//             {type:"outcometable",name:Utility.capWords(gettext(data.type+" outcome")+" "+ gettext("Table")),disabled:[]},
+//             {type:"alignmentanalysis",name:Utility.capWords(gettext(data.type+" outcome")+" "+gettext("Analytics")),disabled:["activity"]},
+//             //{type:"competencymatrix",name:Utility.capWords(gettext(data.type+" outcome")+" "+gettext("Evaluation Matrix")),disabled:["activity", "course"]},
 //             {type:"grid",name:gettext("Grid View"),disabled:["activity", "course"]},
 //             //{type:"horizontaloutcometable",name:gettext("Alignment Table"),disabled:["activity"]}
 //         ].filter(item=>item.disabled.indexOf(data.type)==-1).map(

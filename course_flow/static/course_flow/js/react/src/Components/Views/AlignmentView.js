@@ -26,7 +26,7 @@ import {
   updateOutcomenodeDegree,
   updateOutcomehorizontallinkDegree
 } from '../../PostFunctions.js'
-import * as UtilityFunctions from '../../UtilityFunctions.js';
+import * as Utility from '../../UtilityFunctions.js';
 
 //Analytics view
 class AlignmentView extends React.Component{
@@ -135,7 +135,7 @@ const mapAlignmentStateToProps = state=>{
     return {
         data:state.workflow,
         outcomes:outcomes,
-        terms:UtilityFunctions.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(wwf=>getWeekByID(state,wwf.week).data)
+        terms:Utility.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(wwf=>getWeekByID(state,wwf.week).data)
     }
 };
 export default connect(
@@ -146,7 +146,7 @@ export default connect(
 class AlignmentOutcomesBlock extends React.Component{
     render(){
         let data = this.props.data;
-        let titlestr=Constants.capWords(gettext(this.props.workflow_type+" outcome"));
+        let titlestr=Utility.capWords(gettext(this.props.workflow_type+" outcome"));
         return(
             <div class="alignment-block">
                 <h3>{titlestr}:</h3>
@@ -214,7 +214,7 @@ const mapAlignmentHorizontalReverseWeekStateToProps = (state,own_props)=>{
     for(var i=0;i<state.week.length;i++){
         if(state.week[i].id==own_props.objectID){
             let week=state.week[i];
-            let nodeweeks = UtilityFunctions.filterThenSortByID(state.nodeweek,week.nodeweek_set);
+            let nodeweeks = Utility.filterThenSortByID(state.nodeweek,week.nodeweek_set);
             return {data:week,nodeweeks:nodeweeks};
         }
     }
@@ -245,10 +245,10 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         if(this.props.child_outcomes.length>0){
             child_outcomes_header=<div class="child-outcome child-outcome-header">
                 <div class="half-width alignment-column">
-                    {Constants.capWords(gettext(data.linked_workflow_data.type+" outcomes"))+gettext(" From Linked Workflow")}
+                    {Utility.capWords(gettext(data.linked_workflow_data.type+" outcomes"))+gettext(" From Linked Workflow")}
                 </div>
                 <div class="half-width alignment-column">
-                    {gettext("Associated ")+Constants.capWords(gettext(this.props.workflow.type+" outcomes"))}
+                    {gettext("Associated ")+Utility.capWords(gettext(this.props.workflow.type+" outcomes"))}
                 </div>
             </div>
         }else{
@@ -286,7 +286,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         if(!this.props.renderer.read_only)outcomeadder = <OutcomeAdder renderer={this.props.renderer} outcome_set={outcome_restriction} addFunction={updateOutcomenodeDegree.bind(this,this.props.objectID)}/>
         let outcomes_for_node = (
             <div>
-                <div class="node-outcomes-header">{Constants.capWords(gettext(this.props.workflow.type+" outcomes"))+gettext(" for node:")}</div>
+                <div class="node-outcomes-header">{Utility.capWords(gettext(this.props.workflow.type+" outcomes"))+gettext(" for node:")}</div>
                 {outcomenodes}
                 {outcomeadder}
             </div>
@@ -370,17 +370,17 @@ const mapAlignmentHorizontalReverseNodeStateToProps = (state,own_props)=>{
         if(state.node[i].id==own_props.objectID){
             let node=state.node[i];
             let column = state.column.find(column=>column.id==node.column);
-            let outcomenodes = UtilityFunctions.filterThenSortByID(state.outcomenode,node.outcomenode_unique_set);
+            let outcomenodes = Utility.filterThenSortByID(state.outcomenode,node.outcomenode_unique_set);
             if(own_props.restriction_set && own_props.restriction_set.parent_outcomes){
                 outcomenodes = outcomenodes.filter(ocn=>own_props.restriction_set.parent_outcomes.indexOf(ocn.outcome)>=0);
             }
-            let node_outcomes = UtilityFunctions.filterThenSortByID(state.outcomenode,node.outcomenode_set).map(ocn=>ocn.outcome);
+            let node_outcomes = Utility.filterThenSortByID(state.outcomenode,node.outcomenode_set).map(ocn=>ocn.outcome);
             if(!node.linked_workflow || node.linked_workflow_data.deleted){
                 return {workflow:state.workflow,data:node,column:column,child_outcomes:[],outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
             }
             let child_workflow = getChildWorkflowByID(state,node.linked_workflow);
             let child_outcomes;
-            if(child_workflow!=-1)child_outcomes = UtilityFunctions.filterThenSortByID(state.outcomeworkflow,child_workflow.data.outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
+            if(child_workflow!=-1)child_outcomes = Utility.filterThenSortByID(state.outcomeworkflow,child_workflow.data.outcomeworkflow_set).map(outcomeworkflow=>outcomeworkflow.outcome);
             else child_outcomes=-1;
             return {workflow:state.workflow,data:node,column:column,child_outcomes:child_outcomes,outcomenodes:outcomenodes,all_node_outcomes:node_outcomes};
 
@@ -474,10 +474,10 @@ const mapAlignmentHorizontalReverseChildOutcomeStateToProps = (state,own_props)=
     for(var i=0;i<state.outcome.length;i++){
         if(state.outcome[i].id==own_props.objectID){
             let outcome = state.outcome[i];
-            let allowed_outcomenodes = UtilityFunctions.filterThenSortByID(state.outcomenode,own_props.node_data.outcomenode_set);
+            let allowed_outcomenodes = Utility.filterThenSortByID(state.outcomenode,own_props.node_data.outcomenode_set);
 
-            let allowed_horizontal_links=UtilityFunctions.filterThenSortByID(state.outcomehorizontallink,outcome.outcome_horizontal_links_unique);
-            let horizontal_link_outcomes = UtilityFunctions.filterThenSortByID(state.outcomehorizontallink,outcome.outcome_horizontal_links).map(hl=>hl.parent_outcome);
+            let allowed_horizontal_links=Utility.filterThenSortByID(state.outcomehorizontallink,outcome.outcome_horizontal_links_unique);
+            let horizontal_link_outcomes = Utility.filterThenSortByID(state.outcomehorizontallink,outcome.outcome_horizontal_links).map(hl=>hl.parent_outcome);
             return {data:outcome,outcomenodes:allowed_outcomenodes,horizontal_links:allowed_horizontal_links,all_horizontal_link_outcomes:horizontal_link_outcomes};
         }
     }
@@ -545,7 +545,7 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component{
 const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
 
 
-    let weekworkflows = UtilityFunctions.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(
+    let weekworkflows = Utility.filterThenSortByID(state.weekworkflow,state.workflow.weekworkflow_set).map(
         weekworkflow=>({weekworkflow:weekworkflow,rank:state.workflow.weekworkflow_set.indexOf(weekworkflow.id)})
     );
 
@@ -558,11 +558,11 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
 
 
         let allowed_child_outcome_ids_from_outcomes = state.outcomehorizontallink.filter(hl=>allowed_outcome_ids.indexOf(hl.parent_outcome)>=0).map(hl=>hl.outcome);
-        let allowed_child_outcome_ids = state.outcome.filter(outcome=>allowed_child_outcome_ids_from_outcomes.indexOf(outcome.id)>=0).filter(outcome=>!UtilityFunctions.checkSetHidden(outcome,state.objectset)).map(outcome=>outcome.id);
+        let allowed_child_outcome_ids = state.outcome.filter(outcome=>allowed_child_outcome_ids_from_outcomes.indexOf(outcome.id)>=0).filter(outcome=>!Utility.checkSetHidden(outcome,state.objectset)).map(outcome=>outcome.id);
 
 
         let allowed_node_ids_from_outcomes = state.outcomenode.filter(outcomenode=>allowed_outcome_ids.includes(outcomenode.outcome)).map(outcomenode=>outcomenode.node);
-        let allowed_node_ids = state.node.filter(node=>allowed_node_ids_from_outcomes.indexOf(node.id)>=0).filter(node=>!UtilityFunctions.checkSetHidden(node,state.objectset)).map(node=>node.id);
+        let allowed_node_ids = state.node.filter(node=>allowed_node_ids_from_outcomes.indexOf(node.id)>=0).filter(node=>!Utility.checkSetHidden(node,state.objectset)).map(node=>node.id);
 
         let nodeweeks = state.nodeweek.filter(nodeweek=>allowed_node_ids.includes(nodeweek.node));
         let allowed_week_ids = nodeweeks.map(nodeweek=>nodeweek.week);
@@ -572,9 +572,9 @@ const mapAlignmentHorizontalReverseStateToProps = (state,own_props)=>{
     }else if(own_props.sort=="week"){
         let allowed_outcome_ids = [];
 
-        let allowed_node_ids = state.node.filter(node=>!UtilityFunctions.checkSetHidden(node,state.objectset)).map(node=>node.id);
+        let allowed_node_ids = state.node.filter(node=>!Utility.checkSetHidden(node,state.objectset)).map(node=>node.id);
 
-        let allowed_child_outcome_ids = state.outcome.filter(outcome=>!UtilityFunctions.checkSetHidden(outcome,state.objectset)).map(outcome=>outcome.id);
+        let allowed_child_outcome_ids = state.outcome.filter(outcome=>!Utility.checkSetHidden(outcome,state.objectset)).map(outcome=>outcome.id);
 
 
         for(let i=0;i<own_props.base_outcomes.length;i++){

@@ -2,6 +2,7 @@ import * as Redux from 'redux';
 import * as React from 'react';
 import * as reactDom from 'react-dom';
 import * as Constants from '../../Constants.js';
+import * as Utility from '../../UtilityFunctions.js';
 import { Loader } from '../../UtilityFunctions.js';
 import {
   dot as mathdot,
@@ -946,7 +947,7 @@ export class CommentBox extends Component{
                 <div class={comment_class}>
                     <div class="comment-by">
                         <div class="comment-user">
-                            {Constants.getUserDisplay(comment.user)}
+                            {Utility.getUserDisplay(comment.user)}
                         </div>
                         <div class="comment-on">
                             {comment.created_on}
@@ -985,7 +986,7 @@ export class CommentBox extends Component{
                 <div class="comment-tag-box">
                     {this.state.user_list.map((user)=>
                         <div class="user-name hover-shade" onClick={this.addUserTag.bind(this,user)}>
-                            {Constants.getUserDisplay(user)}
+                            {Utility.getUserDisplay(user)}
                         </div>
                     )}
                 </div>

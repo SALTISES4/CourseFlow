@@ -7,6 +7,7 @@ import {setAssignmentCompletion, updateLiveProjectValue, createAssignment, getLi
 import {StudentManagement} from "../components/StudentManagement.js";
 import {AssignmentView, AssignmentViewSmall} from "./LiveAssignmentView.js";
 import * as Constants from "../../Constants.js";
+import * as Utility from "../../UtilityFunctions.js";
 
 export class LiveProjectMenu extends React.Component{
     constructor(props){
@@ -182,7 +183,7 @@ export class LiveProjectOverview extends LiveProjectSection{
         let teachers = this.state.data.teachers.map((user)=>
             <tr>
                 <td class="table-user">
-                    {Constants.getUserDisplay(user.user)}
+                    {Utility.getUserDisplay(user.user)}
                 </td>
                 <td>
                     {user.completion}
@@ -192,7 +193,7 @@ export class LiveProjectOverview extends LiveProjectSection{
         let students = this.state.data.students.map((user)=>
             <tr>
                 <td class="table-user">
-                    {Constants.getUserDisplay(user.user)}
+                    {Utility.getUserDisplay(user.user)}
                 </td>
                 <td>
                     {user.completion}
@@ -711,7 +712,7 @@ export class LiveProjectCompletionTable extends LiveProjectSection{
         let assignment_ids = this.state.data.assignments.map(assignment=>assignment.id)
         let body = this.state.data.table_rows.map((row,row_index)=>
             <tr class="outcome-row">
-                <td class="user-head outcome-head">{Constants.getUserDisplay(row.user)}</td>
+                <td class="user-head outcome-head">{Utility.getUserDisplay(row.user)}</td>
                 {assignment_ids.map(id=>{
                     let assignment = row.assignments.find(row_element=>row_element.assignment==id);
                     if(!assignment)return <td class="table-cell"></td>

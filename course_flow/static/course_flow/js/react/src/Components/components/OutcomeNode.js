@@ -7,6 +7,7 @@ import {getOutcomeNodeByID, getTableOutcomeNodeByID, getOutcomeByID, getOutcomeO
 import {updateOutcomenodeDegree} from "../../PostFunctions.js";
 import * as Constants from "../../Constants.js";
 import {TableChildWorkflowView} from "./OutcomeHorizontalLink.js"
+import * as OutcomeNode from '../../outcomeNode.js'
 
 //Basic component representing an outcome to node link
 class OutcomeNodeView extends Component{
@@ -26,7 +27,7 @@ class OutcomeNodeView extends Component{
                     {this.addDeleteSelf(data,"close.svg")}
                 </div>
                 }
-                {Constants.getCompletionImg(data.degree,this.props.outcomes_type)}
+                {OutcomeNode.getCompletionImg(data.degree,this.props.outcomes_type)}
                 <SimpleOutcomeView checkHidden={this.checkHidden.bind(this)} comments={true} edit={true}  objectID={data.outcome} parentID={this.props.parentID} throughParentID={data.id} renderer={this.props.renderer}/>
             </div>
         );

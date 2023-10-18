@@ -8,7 +8,7 @@ import {
   WorkflowTitle
 } from '../components/CommonComponents.js';
 import * as Constants from '../../Constants.js';
-import { Loader } from '../../UtilityFunctions.js';
+import * as Functions from '../../UtilityFunctions.js';
 import { renderMessageBox, closeMessageBox } from '../components/MenuComponents.js';
 import {
   getWorkflowSelectMenu,
@@ -50,7 +50,7 @@ export class ComparisonView extends React.Component{
 
         let view_buttons = [
             {type:"workflowview",name:gettext("Workflow View"),disabled:[]},
-            {type:"outcomeedit",name:Constants.capWords(gettext("View")+" outcomes"),disabled:[]},
+            {type:"outcomeedit",name:Utility.capWords(gettext("View")+" outcomes"),disabled:[]},
         ].filter(item=>item.disabled.indexOf(data.type)==-1).map(
             (item)=>{
                 let view_class = "hover-shade";
@@ -223,7 +223,7 @@ class WorkflowComparisonRendererComponent extends Component{
     }
 
     componentDidMount(){
-        let loader = new Loader('body');
+        let loader = new Utility.Loader('body');
 
         let querystring = window.location.search;
         let url_params = new URLSearchParams(querystring);

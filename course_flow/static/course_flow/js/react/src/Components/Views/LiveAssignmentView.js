@@ -7,6 +7,7 @@ import {StudentManagement} from "../components/StudentManagement.js";
 import {WorkflowVisibility} from "./LiveProjectView.js";
 import {reloadAssignmentsAction} from "../../Reducers.js";
 import * as Constants from "../../Constants.js";
+import * as Utility from "../../UtilityFunctions.js";
 import flatpickr from "flatpickr";
 
 export class LiveAssignmentMenu extends React.Component{
@@ -98,10 +99,10 @@ class LiveAssignmentEdit extends React.Component{
         let data=this.state;
         let changeField = this.changeField.bind(this);
         let assigned_users=this.state.user_data.assigned_users.map(user=>
-            <option value={user.user.id}>{Constants.getUserDisplay(user.user)+" ("+user.role_type_display+")"}</option>
+            <option value={user.user.id}>{Utility.getUserDisplay(user.user)+" ("+user.role_type_display+")"}</option>
         );
         let other_users=this.state.user_data.other_users.map(user=>
-            <option value={user.user.id}>{Constants.getUserDisplay(user.user)+" ("+user.role_type_display+")"}</option>
+            <option value={user.user.id}>{Utility.getUserDisplay(user.user)+" ("+user.role_type_display+")"}</option>
         );
 
         let linked_workflow;
@@ -343,7 +344,7 @@ export class AssignmentView extends React.Component{
             let extra_data;
             if(data.single_completion && data.user_assignment.completed){
                 extra_data=[
-                    <div>{gettext("Completed by ")+Constants.getUserDisplay(data.user_assignment.liveprojectuser.user)+gettext(" on ")}<DatePicker default_value={data.user_assignment.completed_on} disabled={true}/></div>
+                    <div>{gettext("Completed by ")+Utility.getUserDisplay(data.user_assignment.liveprojectuser.user)+gettext(" on ")}<DatePicker default_value={data.user_assignment.completed_on} disabled={true}/></div>
                 ]
             }
             completion_data=(
@@ -505,7 +506,7 @@ class ReportRow extends React.Component{
         let updateFunction=this.props.updateFunction;
         return (
             <tr>
-                <td>{Constants.getUserDisplay(user.user)+" ("+user.role_type_display+")"}</td>
+                <td>{Utility.getUserDisplay(user.user)+" ("+user.role_type_display+")"}</td>
                 <td><input type="checkbox" checked={userassignment.completed} onChange={(evt)=>updateFunction(userassignment.id,evt.target.checked)}/></td>
             </tr>
         );
@@ -653,7 +654,7 @@ export class AssignmentViewForNode extends AssignmentView{
             let extra_data;
             if(data.single_completion && data.user_assignment.completed){
                 extra_data=[
-                    <div>{gettext("Completed by ")+Constants.getUserDisplay(data.user_assignment.liveprojectuser.user)+gettext(" on ")}<DatePicker default_value={data.user_assignment.completed_on} disabled={true}/></div>
+                    <div>{gettext("Completed by ")+Utility.getUserDisplay(data.user_assignment.liveprojectuser.user)+gettext(" on ")}<DatePicker default_value={data.user_assignment.completed_on} disabled={true}/></div>
                 ]
             }
             completion_data=(

@@ -10,6 +10,8 @@ import {moveOutcomeWorkflow} from "../../Reducers.js";
 import {renderMessageBox, closeMessageBox} from '../components/MenuComponents.js';
 import {newOutcome, insertedAt} from "../../PostFunctions.js";
 import * as Constants from "../../Constants.js";
+import * as Utility from "../../UtilityFunctions.js";
+import * as OutcomeNode from '../../outcomeNode.js'
 
 //Basic component representing the outcome view
 export class OutcomeEditViewUnconnected extends EditableComponentWithSorting{
@@ -250,7 +252,7 @@ class OutcomeBarUnconnected extends React.Component{
         if(outcomebaroutcomes.length==0){
             outcomebaroutcomes=gettext("Add outcomes to this workflow in by clicking the button below.");
         }
-        let edittext=Constants.capWords(gettext("Edit")+" "+gettext(this.props.workflow_type+" outcomes"));
+        let edittext=Utility.capWords(gettext("Edit")+" "+gettext(this.props.workflow_type+" outcomes"));
         return reactDom.createPortal(
             <div id="outcome-bar-workflow" class="right-panel-inner">
                 <h3 class="drag-and-drop">{gettext("Outcomes")}</h3>
@@ -288,7 +290,7 @@ class ParentOutcomeBarUnconnected extends React.Component{
                 <h4>{category.objectset.title}</h4>
                 {category.outcomes.map(outcome=>
                     <div class="parent-outcome-node">
-                        {Constants.getCompletionImg(outcome.degree,1)}
+                        {OutcomeNode.getCompletionImg(outcome.degree,1)}
                         <ParentOutcomeView key={outcome.id} objectID={outcome.id} renderer={this.props.renderer}/>
                     </div>
                 )}
