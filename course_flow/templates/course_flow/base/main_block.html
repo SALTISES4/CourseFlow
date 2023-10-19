@@ -26,7 +26,7 @@
               <span class="material-symbols-rounded filled">notifications</span>
             </div>
             <div id="notifications-dropdown" class="create-dropdown">
-              <a href="{% url 'course_flow:user-update' %}" class="collapsed-text-show-more">{% trans "See all" %}</a>
+              <a href="{% url 'course_flow:user-notifications' %}" class="collapsed-text-show-more">{% trans "See all" %}</a>
               {% for notification in user.notifications.all|slice:":7" %}
                 <a class="list-notification hover-shade
                       {% if notification.is_unread %}
