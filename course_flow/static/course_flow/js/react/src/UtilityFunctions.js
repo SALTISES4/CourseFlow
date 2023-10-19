@@ -13,7 +13,7 @@ export function permission_translate() {
 // Get the little tag that sits in front of usernames signifying the role
 export function getUserTag(user_type) {
   return (
-    <span class={'user-tag permission-' + user_type}>
+    <span className={'user-tag permission-' + user_type}>
       {permission_translate()[user_type]}
     </span>
   )

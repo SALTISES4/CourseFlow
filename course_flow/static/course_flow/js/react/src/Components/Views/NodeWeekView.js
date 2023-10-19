@@ -19,7 +19,7 @@ class NodeWeekView extends React.Component {
     if (data.no_drag) my_class += ' no-drag'
     return (
       <div
-        class={my_class}
+        className={my_class}
         id={data.id}
         data-child-id={data.node}
         data-column-id={this.props.column}

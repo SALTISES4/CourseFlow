@@ -41,17 +41,17 @@ class ColumnView extends EditableComponentWithActions {
       <div
         ref={this.maindiv}
         style={style}
-        class={css_class}
+        className={css_class}
         onClick={(evt) =>
           this.props.renderer.selection_manager.changeSelection(evt, this)
         }
       >
-        <div class="column-line">
+        <div className="column-line">
           {this.getIcon()}
           <div dangerouslySetInnerHTML={{ __html: title }}></div>
         </div>
         {this.addEditable(data)}
-        <div class="mouseover-actions">{mouseover_actions}</div>
+        <div className="mouseover-actions">{mouseover_actions}</div>
       </div>
     )
   }
@@ -59,7 +59,7 @@ class ColumnView extends EditableComponentWithActions {
   getIcon() {
     if (this.props.data.icon && this.props.data.icon != '') {
       return (
-        <span class="material-symbols-rounded">{this.props.data.icon}</span>
+        <span className="material-symbols-rounded">{this.props.data.icon}</span>
       )
     }
     return (
@@ -87,7 +87,7 @@ class NodeBarColumnUnconnected extends Component {
     return (
       <div
         dangerouslySetInnerHTML={{ __html: title }}
-        class={
+        className={
           'new-node node-bar-column node-bar-sortable column-' +
           this.props.objectID
         }
@@ -145,7 +145,7 @@ export class NodeBarColumnCreator extends NodeBarColumnUnconnected {
     }
     return (
       <div
-        class="new-node new-column node-bar-column node-bar-sortable"
+        className="new-node new-column node-bar-column node-bar-sortable"
         ref={this.maindiv}
       >
         {title}

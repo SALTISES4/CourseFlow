@@ -10,9 +10,9 @@ class LegendLine extends React.Component {
     let icon
     if (this.props.icon)
       icon = <img src={config.icon_path + this.props.icon + '.svg'} />
-    else icon = <div class={this.props.divclass}>{this.props.div}</div>
+    else icon = <div className={this.props.divclass}>{this.props.div}</div>
     return (
-      <div class="legend-line">
+      <div className="legend-line">
         {icon}
         <div>{this.props.text}</div>
       </div>
@@ -60,31 +60,31 @@ class WorkflowLegend extends React.Component {
     ))
 
     return (
-      <div class="workflow-legend">
+      <div className="workflow-legend">
         {this.getSlider()}
         <h4>Legend</h4>
         {contexts.length > 0 && (
-          <div class="legend-section">
+          <div className="legend-section">
             <hr />
             <h5>Contexts:</h5>
             {contexts}
           </div>
         )}
         {contexts.length > 0 && (
-          <div class="legend-section">
+          <div className="legend-section">
             <hr />
             <h5>Tasks:</h5>
             {tasks}
           </div>
         )}
         {contexts.length > 0 && (
-          <div class="legend-section">
+          <div className="legend-section">
             <hr />
             <h5>Strategies:</h5>
             {strategies}
           </div>
         )}
-        <div class="window-close-button" onClick={this.toggle.bind(this)}>
+        <div className="window-close-button" onClick={this.toggle.bind(this)}>
           <img src={config.icon_path + 'close.svg'} />
         </div>
       </div>
@@ -140,10 +140,10 @@ class WorkflowOutcomeLegendUnconnected extends WorkflowLegend {
   render() {
     if (!this.state.show_legend) return this.getSlider()
     return (
-      <div class="workflow-legend">
+      <div className="workflow-legend">
         {this.getSlider()}
         <h4>Legend</h4>
-        <div class="legend-section">
+        <div className="legend-section">
           <hr />
           <h5>Outcomes:</h5>
           <LegendLine icon="solid_check" text="Complete" />
@@ -151,7 +151,7 @@ class WorkflowOutcomeLegendUnconnected extends WorkflowLegend {
           <LegendLine icon="nocheck" text="Partially Complete" />
         </div>
         {this.props.outcomes_type == 1 && (
-          <div class="legend-section">
+          <div className="legend-section">
             <hr />
             <h5>Advanced Outcomes:</h5>
             <LegendLine
@@ -186,7 +186,7 @@ class WorkflowOutcomeLegendUnconnected extends WorkflowLegend {
             />
           </div>
         )}
-        <div class="window-close-button" onClick={this.toggle.bind(this)}>
+        <div className="window-close-button" onClick={this.toggle.bind(this)}>
           <img src={config.icon_path + 'close.svg'} />
         </div>
       </div>

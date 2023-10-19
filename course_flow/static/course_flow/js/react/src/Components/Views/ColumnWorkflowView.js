@@ -18,7 +18,7 @@ class ColumnWorkflowView extends React.Component {
     if (data.no_drag) my_class += ' no-drag'
     return (
       <div
-        class={my_class}
+        className={my_class}
         ref={this.maindiv}
         id={data.id}
         data-child-id={data.column}
@@ -43,7 +43,7 @@ class NodeBarColumnWorkflowUnconnected extends React.Component {
     let data = this.props.data
     if (data)
       return (
-        <div class="node-bar-column-workflow" ref={this.maindiv}>
+        <div className="node-bar-column-workflow" ref={this.maindiv}>
           <NodeBarColumn
             objectID={data.column}
             renderer={this.props.renderer}
@@ -54,7 +54,7 @@ class NodeBarColumnWorkflowUnconnected extends React.Component {
       )
     else
       return (
-        <div class="node-bar-column-workflow" ref={this.maindiv}>
+        <div className="node-bar-column-workflow" ref={this.maindiv}>
           <NodeBarColumnCreator
             renderer={this.props.renderer}
             columnType={this.props.columnType}

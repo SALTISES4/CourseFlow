@@ -30,7 +30,7 @@ class OutcomeNodeView extends Component {
 
     return (
       <div
-        class={'outcome-node outcomenode-' + data.id}
+        className={'outcome-node outcomenode-' + data.id}
         id={data.id}
         ref={this.maindiv}
       >
@@ -120,7 +120,7 @@ class TableTotalCellUnconnected extends React.Component {
     let class_name = 'table-cell total-cell'
     if (this.props.grand_total) class_name += ' grand-total-cell'
     return (
-      <div class={class_name} ref={this.maindiv}>
+      <div className={class_name} ref={this.maindiv}>
         {this.getContents(this.getCompletionStatus())}
       </div>
     )
@@ -170,7 +170,7 @@ class TableTotalCellUnconnected extends React.Component {
       if (self_completion)
         return (
           <img
-            class="self-completed"
+            className="self-completed"
             src={config.icon_path + 'solid_check.svg'}
           />
         )
@@ -181,21 +181,21 @@ class TableTotalCellUnconnected extends React.Component {
       let divclass = ''
       if (self_completion & 2) divclass = ' self-completed'
       contents.push(
-        <div class={'outcome-introduced outcome-degree' + divclass}>I</div>
+        <div className={'outcome-introduced outcome-degree' + divclass}>I</div>
       )
     }
     if (completion_status & 4) {
       let divclass = ''
       if (self_completion & 4) divclass = ' self-completed'
       contents.push(
-        <div class={'outcome-developed outcome-degree' + divclass}>D</div>
+        <div className={'outcome-developed outcome-degree' + divclass}>D</div>
       )
     }
     if (completion_status & 8) {
       let divclass = ''
       if (self_completion & 8) divclass = ' self-completed'
       contents.push(
-        <div class={'outcome-advanced outcome-degree' + divclass}>A</div>
+        <div className={'outcome-advanced outcome-degree' + divclass}>A</div>
       )
     }
     return contents

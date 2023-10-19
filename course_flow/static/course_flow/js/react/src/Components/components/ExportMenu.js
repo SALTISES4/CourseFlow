@@ -36,7 +36,7 @@ export class ExportMenu extends React.Component {
     }
 
     return (
-      <div class="message-wrap">
+      <div className="message-wrap">
         <h2>{gettext('Export files')}</h2>
         <p>{gettext('Use this menu to export files.')}</p>
         <form
@@ -79,7 +79,7 @@ export class ExportMenu extends React.Component {
           />
         </form>
         <iframe hidden name="redirect-iframe" id="redirect-iframe"></iframe>
-        <div class="window-close-button" onClick={this.props.actionFunction}>
+        <div className="window-close-button" onClick={this.props.actionFunction}>
           <img src={config.icon_path + 'close.svg'} />
         </div>
       </div>

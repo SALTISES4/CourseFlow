@@ -123,7 +123,7 @@ class OutcomeView extends EditableComponentWithSorting {
       children
     )
       children.push(
-        <div class="outcome-outcome" style={{ height: '5px' }}></div>
+        <div className="outcome-outcome" style={{ height: '5px' }}></div>
       )
 
     if (data.lock) {
@@ -137,13 +137,13 @@ class OutcomeView extends EditableComponentWithSorting {
     return (
       <div
         style={style}
-        class={css_class}
+        className={css_class}
         ref={this.maindiv}
         onClick={(evt) =>
           this.props.renderer.selection_manager.changeSelection(evt, this)
         }
       >
-        <div class="outcome-title">
+        <div className="outcome-title">
           <OutcomeTitle
             data={this.props.data}
             prefix={this.props.prefix}
@@ -151,16 +151,16 @@ class OutcomeView extends EditableComponentWithSorting {
           />
         </div>
         {data.depth < 2 && data.child_outcome_links.length > 0 && (
-          <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
-            <div class="outcome-drop-img">
+          <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+            <div className="outcome-drop-img">
               <img src={config.icon_path + dropIcon + '.svg'} />
             </div>
-            <div class="outcome-drop-text">{droptext}</div>
+            <div className="outcome-drop-text">{droptext}</div>
           </div>
         )}
         {data.depth < 2 && (
           <ol
-            class={'children-block children-block-' + this.props.data.depth}
+            className={'children-block children-block-' + this.props.data.depth}
             id={this.props.objectID + '-children-block'}
             ref={this.children_block}
           >
@@ -169,18 +169,18 @@ class OutcomeView extends EditableComponentWithSorting {
         )}
         {!this.props.renderer.read_only && data.depth < 2 && (
           <div
-            class="outcome-create-child"
+            className="outcome-create-child"
             onClick={this.insertChild.bind(this, data)}
           >
             {gettext('+ Add New')}
           </div>
         )}
-        <div class="mouseover-actions">{mouseover_actions}</div>
+        <div className="mouseover-actions">{mouseover_actions}</div>
         {this.addEditable(data)}
 
-        <div class="side-actions">
+        <div className="side-actions">
           {side_actions}
-          <div class="comment-indicator-container"></div>
+          <div className="comment-indicator-container"></div>
         </div>
       </div>
     )
@@ -360,7 +360,7 @@ export class OutcomeBarOutcomeViewUnconnected extends Component {
 
     return (
       <div
-        class={
+        className={
           'outcome' +
           ((this.state.is_dropped && ' dropped') || '') +
           ' outcome-' +
@@ -368,7 +368,7 @@ export class OutcomeBarOutcomeViewUnconnected extends Component {
         }
         ref={this.maindiv}
       >
-        <div class="outcome-title">
+        <div className="outcome-title">
           <OutcomeTitle
             data={this.props.data}
             prefix={this.props.prefix}
@@ -376,22 +376,22 @@ export class OutcomeBarOutcomeViewUnconnected extends Component {
           />
         </div>
         <input
-          class="outcome-toggle-checkbox"
+          className="outcome-toggle-checkbox"
           type="checkbox"
           title="Toggle highlighting"
           onChange={this.clickFunction.bind(this)}
         />
         {data.depth < 2 && data.child_outcome_links.length > 0 && (
-          <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
-            <div class="outcome-drop-img">
+          <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+            <div className="outcome-drop-img">
               <img src={config.icon_path + dropIcon + '.svg'} />
             </div>
-            <div class="outcome-drop-text">{droptext}</div>
+            <div className="outcome-drop-text">{droptext}</div>
           </div>
         )}
         {data.depth < 2 && (
           <div
-            class="children-block"
+            className="children-block"
             id={this.props.objectID + '-children-block'}
             ref={this.children_block}
           >
@@ -859,7 +859,7 @@ class TableCell extends React.Component {
     }
 
     return (
-      <div class={class_name} ref={this.maindiv}>
+      <div className={class_name} ref={this.maindiv}>
         {this.getContents(degree, !this.props.total)}
         {input}
       </div>
@@ -956,7 +956,7 @@ class OutcomeHorizontalLinkViewUnconnected extends Component {
     if (!data) return null
     return (
       <div
-        class={'outcome-node outcome-' + data.id}
+        className={'outcome-node outcome-' + data.id}
         id={data.id}
         ref={this.maindiv}
       >

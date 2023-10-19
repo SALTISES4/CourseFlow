@@ -61,37 +61,37 @@ export class WeekViewUnconnected extends EditableComponentWithSorting {
     return (
       <div
         style={style}
-        class={css_class}
+        className={css_class}
         ref={this.maindiv}
         onClick={(evt) => selection_manager.changeSelection(evt, this)}
       >
-        <div class="mouseover-container-bypass">
-          <div class="mouseover-actions">{mouseover_actions}</div>
+        <div className="mouseover-container-bypass">
+          <div className="mouseover-actions">{mouseover_actions}</div>
         </div>
         <TitleText text={data.title} defaultText={default_text} />
         <div
-          class="node-block"
+          className="node-block"
           id={this.props.objectID + '-node-block'}
           ref={this.node_block}
         >
           {nodes}
         </div>
         <div
-          class="week-drop-row hover-shade"
+          className="week-drop-row hover-shade"
           onClick={this.toggleDrop.bind(this)}
         >
-          <div class="node-drop-side node-drop-left"></div>
-          <div class="node-drop-middle">
+          <div className="node-drop-side node-drop-left"></div>
+          <div className="node-drop-middle">
             <img src={config.icon_path + dropIcon + '.svg'} />
           </div>
-          <div class="node-drop-side node-drop-right"></div>
+          <div className="node-drop-side node-drop-right"></div>
         </div>
         {this.addEditable(data)}
         {data.strategy_classification > 0 && (
-          <div class="strategy-tab">
-            <div class="strategy-tab-triangle"></div>
-            <div class="strategy-tab-square">
-              <div class="strategy-tab-circle">
+          <div className="strategy-tab">
+            <div className="strategy-tab-triangle"></div>
+            <div className="strategy-tab-square">
+              <div className="strategy-tab-circle">
                 <img
                   title={
                     renderer.strategy_classification_choices.find(
@@ -124,7 +124,7 @@ export class WeekViewUnconnected extends EditableComponentWithSorting {
     ))
     if (nodes.length == 0)
       nodes.push(
-        <div class="node-week placeholder" style={{ height: '100%' }}>
+        <div className="node-week placeholder" style={{ height: '100%' }}>
           Drag and drop nodes from the sidebar to add.
         </div>
       )
@@ -326,7 +326,7 @@ export class WeekComparisonViewUnconnected extends WeekViewUnconnected {
     ))
     if (nodes.length == 0)
       nodes.push(
-        <div class="node-week placeholder" style={{ height: '100%' }}>
+        <div className="node-week placeholder" style={{ height: '100%' }}>
           Drag and drop nodes from the sidebar to add.
         </div>
       )
@@ -402,7 +402,7 @@ export class NodeBarWeekViewUnconnected extends React.Component {
     let src = config.icon_path + 'plus.svg'
     if (data.is_dropped) src = config.icon_path + 'minus.svg'
     return (
-      <div class="hover-shade" onClick={this.jumpTo.bind(this)}>
+      <div className="hover-shade" onClick={this.jumpTo.bind(this)}>
         <TitleText text={data.title} defaultText={default_text} />
       </div>
     )

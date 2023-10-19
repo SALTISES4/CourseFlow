@@ -40,15 +40,15 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
     let data = this.props.data
     var selector = this
     let outcomes = data.map((category) => (
-      <div class="outcome-category">
+      <div className="outcome-category">
         <h4>{category.objectset.title + ':'}</h4>
-        <div class="outcome-category-block">
+        <div className="outcome-category-block">
           {category.outcomes.map((outcome) => {
             let my_class = 'outcome-workflow'
             if (outcome.through_no_drag) my_class += ' no-drag'
             return (
               <div
-                class={my_class}
+                className={my_class}
                 data-child-id={outcome.id}
                 id={outcome.outcomeworkflow}
                 key={outcome.outcomeworkflow}
@@ -69,7 +69,7 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
     ))
     if (outcomes.length == 0)
       outcomes = [
-        <div class="emptytext">
+        <div className="emptytext">
           {gettext(
             'Here you can add and edit outcomes for the current workflow. They will then be available in the Workflow view to tag nodes in the Outcomes tab of the sidebar.'
           )}
@@ -78,8 +78,8 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
       ]
 
     return (
-      <div id={'#workflow-' + this.props.workflow.id} class="workflow-details">
-        <div class="outcome-edit" ref={this.maindiv}>
+      <div id={'#workflow-' + this.props.workflow.id} className="workflow-details">
+        <div className="outcome-edit" ref={this.maindiv}>
           {outcomes}
           {this.getParentOutcomeBar()}
         </div>
@@ -93,11 +93,11 @@ export class OutcomeEditViewUnconnected extends EditableComponentWithSorting {
       add_new_outcome = (
         <div
           id="add-new-outcome"
-          class="menu-create hover-shade"
+          className="menu-create hover-shade"
           onClick={this.addNew.bind(this, objectset)}
         >
           <img
-            class="create-button"
+            className="create-button"
             src={config.icon_path + 'add_new_white.svg'}
           />
           <div>{gettext('Add new')}</div>
@@ -163,7 +163,7 @@ class ParentOutcomeNodeViewUnconnected extends React.Component {
     let data = this.props.data
 
     return (
-      <div class="parent-outcome-node">
+      <div className="parent-outcome-node">
         {this.getContents(data.degree)}
         <ParentOutcomeView
           objectID={data.outcome}
@@ -177,7 +177,7 @@ class ParentOutcomeNodeViewUnconnected extends React.Component {
     if (this.props.outcomes_type == 0 || completion_status & 1) {
       return (
         <img
-          class="self-completed"
+          className="self-completed"
           src={config.icon_path + 'solid_check.svg'}
         />
       )
@@ -186,19 +186,19 @@ class ParentOutcomeNodeViewUnconnected extends React.Component {
     if (completion_status & 2) {
       let divclass = ''
       contents.push(
-        <div class={'outcome-introduced outcome-degree' + divclass}>I</div>
+        <div className={'outcome-introduced outcome-degree' + divclass}>I</div>
       )
     }
     if (completion_status & 4) {
       let divclass = ''
       contents.push(
-        <div class={'outcome-developed outcome-degree' + divclass}>D</div>
+        <div className={'outcome-developed outcome-degree' + divclass}>D</div>
       )
     }
     if (completion_status & 8) {
       let divclass = ''
       contents.push(
-        <div class={'outcome-advanced outcome-degree' + divclass}>A</div>
+        <div className={'outcome-advanced outcome-degree' + divclass}>A</div>
       )
     }
     return contents
@@ -238,7 +238,7 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected {
 
     return (
       <div
-        class={
+        className={
           'outcome' +
           ((this.state.is_dropped && ' dropped') || '') +
           ' outcome-' +
@@ -246,7 +246,7 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected {
         }
         ref={this.maindiv}
       >
-        <div class="outcome-title">
+        <div className="outcome-title">
           <OutcomeTitle
             data={this.props.data}
             prefix={this.props.prefix}
@@ -254,21 +254,21 @@ class ParentOutcomeViewUnconnected extends OutcomeBarOutcomeViewUnconnected {
           />
         </div>
         <input
-          class="outcome-toggle-checkbox"
+          className="outcome-toggle-checkbox"
           type="checkbox"
           title="Toggle highlighting"
           onChange={this.clickFunction.bind(this)}
         />
         {data.depth < 2 && data.child_outcome_links.length > 0 && (
-          <div class="outcome-drop" onClick={this.toggleDrop.bind(this)}>
-            <div class="outcome-drop-img">
+          <div className="outcome-drop" onClick={this.toggleDrop.bind(this)}>
+            <div className="outcome-drop-img">
               <img src={config.icon_path + dropIcon + '.svg'} />
             </div>
-            <div class="outcome-drop-text">{droptext}</div>
+            <div className="outcome-drop-text">{droptext}</div>
           </div>
         )}
         <div
-          class="children-block"
+          className="children-block"
           id={this.props.objectID + '-children-block'}
           ref={this.children_block}
         >
@@ -297,7 +297,7 @@ class ParentOutcomeOutcomeViewUnconnected extends React.Component {
     let data = this.props.data
 
     return (
-      <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
+      <div className="outcome-outcome" id={data.id} ref={this.maindiv}>
         <ParentOutcomeView
           objectID={data.child}
           parentID={this.props.parentID}
@@ -341,12 +341,12 @@ class OutcomeBarUnconnected extends React.Component {
       gettext('Edit') + ' ' + gettext(this.props.workflow_type + ' outcomes')
     )
     return reactDom.createPortal(
-      <div id="outcome-bar-workflow" class="right-panel-inner">
-        <h3 class="drag-and-drop">{gettext('Outcomes')}</h3>
-        <div class="outcome-bar-outcome-block">{outcomebaroutcomes}</div>
+      <div id="outcome-bar-workflow" className="right-panel-inner">
+        <h3 className="drag-and-drop">{gettext('Outcomes')}</h3>
+        <div className="outcome-bar-outcome-block">{outcomebaroutcomes}</div>
         {!this.props.renderer.read_only && (
           <button
-            class="primary-button"
+            className="primary-button"
             id="edit-outcomes-button"
             onClick={this.editOutcomesClick.bind(this)}
           >
@@ -383,7 +383,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
       <div>
         <h4>{category.objectset.title}</h4>
         {category.outcomes.map((outcome) => (
-          <div class="parent-outcome-node">
+          <div className="parent-outcome-node">
             {OutcomeNode.getCompletionImg(outcome.degree, 1)}
             <ParentOutcomeView
               key={outcome.id}
@@ -405,7 +405,7 @@ class ParentOutcomeBarUnconnected extends React.Component {
     if (this.props.parent_nodes.length > 1) {
       multiple_parent_warning = (
         <div>
-          <span class="material-symbols-rounded filled small-inline red">
+          <span className="material-symbols-rounded filled small-inline red">
             error
           </span>
           {gettext(
@@ -416,11 +416,11 @@ class ParentOutcomeBarUnconnected extends React.Component {
     }
 
     return reactDom.createPortal(
-      <div id="outcome-bar-workflow" class="right-panel-inner">
-        <h3 class="drag-and-drop">
+      <div id="outcome-bar-workflow" className="right-panel-inner">
+        <h3 className="drag-and-drop">
           {gettext('Outcomes from Parent Workflow')}
         </h3>
-        <div class="outcome-bar-outcome-block">
+        <div className="outcome-bar-outcome-block">
           {multiple_parent_warning}
           {outcomebaroutcomes}
         </div>

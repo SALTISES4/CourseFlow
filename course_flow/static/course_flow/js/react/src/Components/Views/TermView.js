@@ -29,11 +29,11 @@ class TermView extends WeekViewUnconnected {
       }
       if (nodeweeks.length == 0)
         nodeweeks.push(
-          <div class="node-week placeholder" style={{ height: '100%' }}></div>
+          <div className="node-week placeholder" style={{ height: '100%' }}></div>
         )
       node_blocks.push(
         <div
-          class={'node-block term column-' + col}
+          className={'node-block term column-' + col}
           id={this.props.objectID + '-node-block-column-' + col}
           key={col}
         >
@@ -67,35 +67,35 @@ class TermView extends WeekViewUnconnected {
     return (
       <div
         style={style}
-        class={css_class}
+        className={css_class}
         ref={this.maindiv}
         onClick={(evt) =>
           this.props.renderer.selection_manager.changeSelection(evt, this)
         }
       >
-        <div class="mouseover-container-bypass">
-          <div class="mouseover-actions">{mouseover_actions}</div>
+        <div className="mouseover-container-bypass">
+          <div className="mouseover-actions">{mouseover_actions}</div>
         </div>
         <TitleText
           text={data.title}
           defaultText={data.week_type_display + ' ' + (this.props.rank + 1)}
         />
         <div
-          class="node-block"
+          className="node-block"
           id={this.props.objectID + '-node-block'}
           ref={this.node_block}
         >
           {node_blocks}
         </div>
         <div
-          class="week-drop-row hover-shade"
+          className="week-drop-row hover-shade"
           onClick={this.toggleDrop.bind(this)}
         >
-          <div class="node-drop-side node-drop-left"></div>
-          <div class="node-drop-middle">
+          <div className="node-drop-side node-drop-left"></div>
+          <div className="node-drop-middle">
             <img src={config.icon_path + dropIcon + '.svg'} />
           </div>
-          <div class="node-drop-side node-drop-right"></div>
+          <div className="node-drop-side node-drop-right"></div>
         </div>
         {this.addEditable(data)}
       </div>

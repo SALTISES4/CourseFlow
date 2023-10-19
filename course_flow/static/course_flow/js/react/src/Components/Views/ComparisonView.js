@@ -55,7 +55,7 @@ export class ComparisonView extends React.Component {
       share = (
         <div
           id="share-button"
-          class="hover-shade"
+          className="hover-shade"
           title={gettext('Sharing')}
           onClick={renderMessageBox.bind(
             this,
@@ -84,7 +84,7 @@ export class ComparisonView extends React.Component {
         return (
           <div
             id={'button_' + item.type}
-            class={view_class}
+            className={view_class}
             onClick={this.changeView.bind(this, item.type)}
           >
             {item.name}
@@ -109,11 +109,11 @@ export class ComparisonView extends React.Component {
       <div>
         <button
           id="load-workflow"
-          class="primary-button"
+          className="primary-button"
           onClick={this.loadWorkflow.bind(this)}
         >
-          <div class="flex-middle">
-            <span class="material-symbols-rounded filled">add_circle</span>
+          <div className="flex-middle">
+            <span className="material-symbols-rounded filled">add_circle</span>
             <div>{gettext('Load new workflow')}</div>
           </div>
         </button>
@@ -128,12 +128,12 @@ export class ComparisonView extends React.Component {
     let project = this
 
     return (
-      <div id="workflow-wrapper" class="workflow-wrapper">
+      <div id="workflow-wrapper" className="workflow-wrapper">
         {this.getHeader()}
-        <div class="workflow-view-select hide-print">{view_buttons_sorted}</div>
-        <div class="workflow-container comparison-view">
+        <div className="workflow-view-select hide-print">{view_buttons_sorted}</div>
+        <div className="workflow-container comparison-view">
           {reactDom.createPortal(share, $('#visible-icons')[0])}
-          <div class="workflow-array">{workflow_content}</div>
+          <div className="workflow-array">{workflow_content}</div>
           {add_button}
 
           <ViewBar
@@ -149,7 +149,7 @@ export class ComparisonView extends React.Component {
   getHeader() {
     let data = this.props.data
     return (
-      <div class="project-header">
+      <div className="project-header">
         <div>{gettext('Comparing workflows for:')}</div>
         <WorkflowTitle
           data={data}
@@ -158,11 +158,11 @@ export class ComparisonView extends React.Component {
         />
         {reactDom.createPortal(
           <a
-            class="hover-shade no-underline"
+            className="hover-shade no-underline"
             id="project-return"
             href={update_path['project'].replace(0, data.id)}
           >
-            <span class="green material-symbols-rounded">arrow_back_ios</span>
+            <span className="green material-symbols-rounded">arrow_back_ios</span>
             <div>{gettext('Return to project')}</div>
           </a>,
           $('.titlebar .title')[0]
@@ -264,9 +264,9 @@ class WorkflowComparisonRendererComponent extends Component {
 
   render() {
     return (
-      <div class="workflow-wrapper" id={'workflow-' + this.props.workflowID}>
-        <div class="workflow-inner-wrapper" ref={this.maindiv}></div>
-        <div class="window-close-button" onClick={this.props.removeFunction}>
+      <div className="workflow-wrapper" id={'workflow-' + this.props.workflowID}>
+        <div className="workflow-inner-wrapper" ref={this.maindiv}></div>
+        <div className="window-close-button" onClick={this.props.removeFunction}>
           <img src={config.icon_path + 'close.svg'} />
         </div>
       </div>
@@ -371,13 +371,13 @@ class WorkflowComparisonBaseViewUnconnected extends EditableComponent {
     let workflow = this
 
     return [
-      <div class="workflow-header" style={style}>
+      <div className="workflow-header" style={style}>
         <WorkflowForMenu
           workflow_data={data}
           selectAction={this.openEdit.bind(this, null)}
         />
       </div>,
-      <div class="workflow-container">
+      <div className="workflow-container">
         {this.addEditable(data, true)}
         {workflow_content}
       </div>
@@ -449,8 +449,8 @@ class WorkflowComparisonViewUnconnected extends EditableComponentWithSorting {
     ))
 
     return (
-      <div class="workflow-details">
-        <div class="week-block" id={data.id + '-week-block'}>
+      <div className="workflow-details">
+        <div className="week-block" id={data.id + '-week-block'}>
           {weekworkflows}
         </div>
       </div>
@@ -569,7 +569,7 @@ export const OutcomeComparisonView = connect(
 class ViewBar extends React.Component {
   render() {
     let sets = (
-      <div class="node-bar-sort-block">
+      <div className="node-bar-sort-block">
         {this.props.object_sets
           .sort((a, b) => {
             let x = a.term
@@ -593,7 +593,7 @@ class ViewBar extends React.Component {
       </div>
     )
     return reactDom.createPortal(
-      <div id="node-bar-workflow" class="right-panel-inner">
+      <div id="node-bar-workflow" className="right-panel-inner">
         <h4>{gettext('Object Sets') + ':'}</h4>
         {sets}
       </div>,

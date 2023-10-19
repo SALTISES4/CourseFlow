@@ -36,7 +36,7 @@ export class TableHorizontalOutcomeLinkUnconnected extends React.Component {
     if (outcomenode === null) class_name += ' disabled'
     if (this.props.index > 0) class_name += ' not-first-child-outcome'
     return (
-      <div class={class_name} ref={this.maindiv}>
+      <div className={class_name} ref={this.maindiv}>
         {this.getContents(completion_status, completion_status)}
         {input}
       </div>
@@ -104,7 +104,7 @@ export class TableHorizontalOutcomeLinkUnconnected extends React.Component {
       if (self_completion)
         return (
           <img
-            class="self-completed"
+            className="self-completed"
             src={config.icon_path + 'solid_check.svg'}
           />
         )
@@ -115,21 +115,21 @@ export class TableHorizontalOutcomeLinkUnconnected extends React.Component {
       let divclass = ''
       if (self_completion & 2) divclass = ' self-completed'
       contents.push(
-        <div class={'outcome-introduced outcome-degree' + divclass}>I</div>
+        <div className={'outcome-introduced outcome-degree' + divclass}>I</div>
       )
     }
     if (completion_status & 4) {
       let divclass = ''
       if (self_completion & 4) divclass = ' self-completed'
       contents.push(
-        <div class={'outcome-developed outcome-degree' + divclass}>D</div>
+        <div className={'outcome-developed outcome-degree' + divclass}>D</div>
       )
     }
     if (completion_status & 8) {
       let divclass = ''
       if (self_completion & 8) divclass = ' self-completed'
       contents.push(
-        <div class={'outcome-advanced outcome-degree' + divclass}>A</div>
+        <div className={'outcome-advanced outcome-degree' + divclass}>A</div>
       )
     }
     return contents
@@ -172,7 +172,7 @@ export const TableHorizontalOutcomeLink = connect(
 export class TableChildWorkflowViewUnconnected extends React.Component {
   render() {
     if (!this.props.data || this.props.data.outcomeworkflow_set.length == 0) {
-      return <div class="table-cell disabled"></div>
+      return <div className="table-cell disabled"></div>
     }
 
     let cells = this.props.data.outcomeworkflow_set.map(
@@ -215,10 +215,10 @@ class TableChildWorkflowHeaderUnconnected extends React.Component {
 
     if (!this.props.data || this.props.data.outcomeworkflow_set.length == 0) {
       return (
-        <div class="horizontal-table-header">
-          <div class="horizontal-table-node">{node_title}</div>
-          <div class="table-cell disabled">
-            <div class="child-outcome">
+        <div className="horizontal-table-header">
+          <div className="horizontal-table-node">{node_title}</div>
+          <div className="table-cell disabled">
+            <div className="child-outcome">
               {gettext('No outcomes or linked workflow')}
             </div>
           </div>
@@ -237,9 +237,9 @@ class TableChildWorkflowHeaderUnconnected extends React.Component {
     )
 
     return (
-      <div class="horizontal-table-header">
+      <div className="horizontal-table-header">
         <div
-          class="horizontal-table-node"
+          className="horizontal-table-node"
           style={{ width: 32 * cells.length + 'px' }}
         >
           {node_title}
@@ -260,8 +260,8 @@ class TableChildOutcomeHeaderUnconnected extends React.Component {
     let class_name = 'table-cell nodewrapper'
     if (this.props.index > 0) class_name += ' not-first-child-outcome'
     return (
-      <div class={class_name}>
-        <div class="child-outcome" title={data.title}>
+      <div className={class_name}>
+        <div className="child-outcome" title={data.title}>
           {data.title}
         </div>
       </div>

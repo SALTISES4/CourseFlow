@@ -40,17 +40,17 @@ export class StudentManagement extends React.Component {
     }
 
     return (
-      <div class="user-text">
+      <div className="user-text">
         <h3>{gettext('Student Management') + ':'}</h3>
         <h4>{gettext('Owned By')}:</h4>
         <div>{owner}</div>
-        <div class="user-panel">
+        <div className="user-panel">
           <h4>{gettext('Teachers')}:</h4>
-          <ul class="user-list">{teachers}</ul>
+          <ul className="user-list">{teachers}</ul>
         </div>
-        <div class="user-panel">
+        <div className="user-panel">
           <h4>{gettext('Enrolled Users')}:</h4>
-          <ul class="user-list">{students}</ul>
+          <ul className="user-list">{students}</ul>
         </div>
         <UserAdd permissionChange={this.setUserPermission.bind(this)} />
       </div>
@@ -93,7 +93,7 @@ class UserLabel extends React.Component {
     if (this.props.type != 'owner') {
       if (this.props.type == 'add') {
         permission_select = (
-          <div class="permission-select">
+          <div className="permission-select">
             <select ref={this.select}>
               <option value="student">{gettext('Student')}</option>
               <option value="teacher">{gettext('Teacher')}</option>
@@ -109,7 +109,7 @@ class UserLabel extends React.Component {
         )
       } else {
         permission_select = (
-          <div class="permission-select">
+          <div className="permission-select">
             <select value={this.props.type} onChange={this.onChange.bind(this)}>
               <option value="student">{gettext('Student')}</option>
               <option value="teacher">{gettext('Teacher')}</option>
@@ -121,12 +121,12 @@ class UserLabel extends React.Component {
     }
 
     return (
-      <li class="user-label">
+      <li className="user-label">
         <div>
-          <div class="user-name">
+          <div className="user-name">
             {this.props.user.first_name + ' ' + this.props.user.last_name}
           </div>
-          <div class="user-username">{this.props.user.username}</div>
+          <div className="user-username">{this.props.user.username}</div>
         </div>
         {permission_select}
       </li>
@@ -171,7 +171,7 @@ class UserAdd extends React.Component {
     }
 
     return (
-      <div class="user-add">
+      <div className="user-add">
         <h4>{gettext('Add A User')}:</h4>
         <div>
           {gettext(

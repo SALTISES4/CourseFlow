@@ -15,7 +15,7 @@ export class ImportMenu extends React.Component {
 
   render() {
     return (
-      <div class="message-wrap">
+      <div className="message-wrap">
         <h2>{gettext('Import Files')}</h2>
         <p>
           {gettext(
@@ -68,7 +68,7 @@ export class ImportMenu extends React.Component {
             'The uploading process may take some time. It is not recommended to continue editing until it is complete.'
           )}
         </p>
-        <div class="window-close-button" onClick={this.props.actionFunction}>
+        <div className="window-close-button" onClick={this.props.actionFunction}>
           <img src={config.icon_path + 'close.svg'} />
         </div>
       </div>

@@ -58,14 +58,14 @@ class CompetencyMatrixView extends React.Component {
         text = gettext(
           "This view renders a table showing the relationships between this workflow's outcomes and the outcomes of their linked workflows. To use this feature, you must link the nodes in this workflow to child workflows (ex. program nodes to course workflows) and ensure that those child workflows have their own sets of outcomes."
         )
-      return <div class="emptytext">{text}</div>
+      return <div className="emptytext">{text}</div>
     } else {
       let nodes
       nodes = nodecategory.map((nodecategory) => (
-        <div class="table-group">
-          <div class="table-cell nodewrapper blank-cell"></div>
-          <div class="table-cell nodewrapper total-cell">
-            <div class="node-category-header">{nodecategory.title}</div>
+        <div className="table-group">
+          <div className="table-cell nodewrapper blank-cell"></div>
+          <div className="table-cell nodewrapper total-cell">
+            <div className="node-category-header">{nodecategory.title}</div>
           </div>
           {nodecategory.nodes.map((node) => (
             <NodeOutcomeView renderer={this.props.renderer} objectID={node} />
@@ -73,26 +73,26 @@ class CompetencyMatrixView extends React.Component {
         </div>
       ))
       let blank_line = nodecategory.map((nodecategory) => (
-        <div class="table-group">
-          <div class="table-cell blank-cell"></div>
-          <div class="table-cell total-cell blank-cell"></div>
+        <div className="table-group">
+          <div className="table-cell blank-cell"></div>
+          <div className="table-cell total-cell blank-cell"></div>
           {nodecategory.nodes.map((node) => (
-            <div class="table-cell nodewrapper blank-cell"></div>
+            <div className="table-cell nodewrapper blank-cell"></div>
           ))}
         </div>
       ))
       let outcomes = outcomes_sorted.map((category) => (
-        <div class="table-body">
+        <div className="table-body">
           {this.props.object_sets.length > 0 && (
-            <div class="outcome-row outcome-category">
-              <div class="outcome-wrapper">
-                <div class="outcome-head">
+            <div className="outcome-row outcome-category">
+              <div className="outcome-wrapper">
+                <div className="outcome-head">
                   <h4>{category.objectset.title}</h4>
                 </div>
               </div>
-              <div class="outcome-cells">{blank_line}</div>
-              <div class="table-cell blank-cell"></div>
-              <div class="table-cell blank-cell total-cell grand-total-cell"></div>
+              <div className="outcome-cells">{blank_line}</div>
+              <div className="table-cell blank-cell"></div>
+              <div className="table-cell blank-cell total-cell grand-total-cell"></div>
             </div>
           )}
           {category.outcomes.map((outcome) => (
@@ -107,9 +107,9 @@ class CompetencyMatrixView extends React.Component {
           ))}
         </div>
       ))
-      let blank_row = Array(10).fill(<div class="table-cell empty-cell"></div>)
+      let blank_row = Array(10).fill(<div className="table-cell empty-cell"></div>)
       let weeks = nodecategory.map((category) => (
-        <div class="matrix-time-week">
+        <div className="matrix-time-week">
           <MatrixWeekView
             objectID={category.id}
             renderer={this.props.renderer}
@@ -117,94 +117,94 @@ class CompetencyMatrixView extends React.Component {
           {category.nodes.map((node) => (
             <MatrixNodeView objectID={node} renderer={this.props.renderer} />
           ))}
-          <div class="matrix-time-row">{blank_row}</div>
+          <div className="matrix-time-row">{blank_row}</div>
         </div>
       ))
       let time_header = (
-        <div class="matrix-time-row">
-          <div class="table-cell outcome-wrapper">
-            <div class="outcome-head">
+        <div className="matrix-time-row">
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">
               <h4>{gettext('Hours')}</h4>
             </div>
           </div>
-          <div class="table-cell outcome-wrapper">
-            <div class="outcome-head">{gettext('General Education')}</div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">{gettext('General Education')}</div>
           </div>
-          <div class="table-cell outcome-wrapper">
-            <div class="outcome-head">{gettext('Specific Education')}</div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">{gettext('Specific Education')}</div>
           </div>
-          <div class="table-cell outcome-wrapper">
-            <div class="outcome-head">{gettext('Total Hours')}</div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">{gettext('Total Hours')}</div>
           </div>
-          <div class="table-cell outcome-wrapper">
-            <div class="outcome-head">
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">
               <h4>{gettext('Ponderation')}</h4>
             </div>
           </div>
-          <div class="table-cell outcome-wrapper">
-            <div class="outcome-head">{gettext('Theory')}</div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">{gettext('Theory')}</div>
           </div>
-          <div class="table-cell outcome-wrapper">
-            <div class="outcome-head">{gettext('Practical')}</div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">{gettext('Practical')}</div>
           </div>
-          <div class="table-cell outcome-wrapper">
-            <div class="outcome-head">{gettext('Individual Work')}</div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">{gettext('Individual Work')}</div>
           </div>
-          <div class="table-cell outcome-wrapper">
-            <div class="outcome-head">{gettext('Total')}</div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">{gettext('Total')}</div>
           </div>
-          <div class="table-cell outcome-wrapper">
-            <div class="outcome-head">{gettext('Credits')}</div>
+          <div className="table-cell outcome-wrapper">
+            <div className="outcome-head">{gettext('Credits')}</div>
           </div>
         </div>
       )
       let totals = this.getTotals()
       let grand_total = (
-        <div class="matrix-time-row">
-          <div class="total-cell grand-total-cell table-cell blank"></div>
-          <div class="total-cell grand-total-cell table-cell">
+        <div className="matrix-time-row">
+          <div className="total-cell grand-total-cell table-cell blank"></div>
+          <div className="total-cell grand-total-cell table-cell">
             {totals.general_education}
           </div>
-          <div class="total-cell grand-total-cell table-cell">
+          <div className="total-cell grand-total-cell table-cell">
             {totals.specific_education}
           </div>
-          <div class="total-cell grand-total-cell table-cell">
+          <div className="total-cell grand-total-cell table-cell">
             {totals.general_education + totals.specific_education}
           </div>
-          <div class="total-cell grand-total-cell table-cell blank"></div>
-          <div class="total-cell grand-total-cell table-cell">
+          <div className="total-cell grand-total-cell table-cell blank"></div>
+          <div className="total-cell grand-total-cell table-cell">
             {totals.total_theory}
           </div>
-          <div class="total-cell grand-total-cell table-cell">
+          <div className="total-cell grand-total-cell table-cell">
             {totals.total_practical}
           </div>
-          <div class="total-cell grand-total-cell table-cell">
+          <div className="total-cell grand-total-cell table-cell">
             {totals.total_individual}
           </div>
-          <div class="total-cell grand-total-cell table-cell">
+          <div className="total-cell grand-total-cell table-cell">
             {totals.total_time}
           </div>
-          <div class="total-cell grand-total-cell table-cell">
+          <div className="total-cell grand-total-cell table-cell">
             {totals.total_required}
           </div>
         </div>
       )
       return (
-        <div class="competency-matrix node-rows">
-          <div class="outcome-row node-row">
-            <div class="outcome-wrapper">
-              <div class="outcome-head empty"></div>
+        <div className="competency-matrix node-rows">
+          <div className="outcome-row node-row">
+            <div className="outcome-wrapper">
+              <div className="outcome-head empty"></div>
             </div>
-            <div class="outcome-cells">{nodes}</div>
-            <div class="table-cell blank-cell">
-              <div class="node-category-header"></div>
+            <div className="outcome-cells">{nodes}</div>
+            <div className="table-cell blank-cell">
+              <div className="node-category-header"></div>
             </div>
-            <div class="table-cell total-cell grand-total-cell">
-              <div class="total-header">Grand Total</div>
+            <div className="table-cell total-cell grand-total-cell">
+              <div className="total-header">Grand Total</div>
             </div>
           </div>
           {outcomes}
-          <div class="matrix-time-block">
+          <div className="matrix-time-block">
             {time_header}
             {weeks}
             {grand_total}
@@ -356,19 +356,19 @@ class MatrixWeekViewUnconnected extends Component {
     let default_text = data.week_type_display + ' ' + (this.props.rank + 1)
 
     return (
-      <div class="matrix-time-row">
-        <div class="total-cell table-cell blank"></div>
-        <div class="total-cell table-cell">{this.props.general_education}</div>
-        <div class="total-cell table-cell">{this.props.specific_education}</div>
-        <div class="total-cell table-cell">
+      <div className="matrix-time-row">
+        <div className="total-cell table-cell blank"></div>
+        <div className="total-cell table-cell">{this.props.general_education}</div>
+        <div className="total-cell table-cell">{this.props.specific_education}</div>
+        <div className="total-cell table-cell">
           {this.props.general_education + this.props.specific_education}
         </div>
-        <div class="total-cell table-cell blank"></div>
-        <div class="total-cell table-cell">{this.props.total_theory}</div>
-        <div class="total-cell table-cell">{this.props.total_practical}</div>
-        <div class="total-cell table-cell">{this.props.total_individual}</div>
-        <div class="total-cell table-cell">{this.props.total_time}</div>
-        <div class="total-cell table-cell">{this.props.total_required}</div>
+        <div className="total-cell table-cell blank"></div>
+        <div className="total-cell table-cell">{this.props.total_theory}</div>
+        <div className="total-cell table-cell">{this.props.total_practical}</div>
+        <div className="total-cell table-cell">{this.props.total_individual}</div>
+        <div className="total-cell table-cell">{this.props.total_time}</div>
+        <div className="total-cell table-cell">{this.props.total_required}</div>
       </div>
     )
   }
@@ -464,8 +464,8 @@ class MatrixNodeViewUnconnected extends Component {
     style.backgroundColor = Utility.getColumnColour(this.props.column)
 
     return (
-      <div class="matrix-time-row">
-        <div class="table-cell blank"></div>
+      <div className="matrix-time-row">
+        <div className="table-cell blank"></div>
         {this.getTimeData(data_override)}
       </div>
     )
@@ -473,22 +473,22 @@ class MatrixNodeViewUnconnected extends Component {
 
   getTimeData(data) {
     return [
-      <div class="table-cell">{data.time_general_hours}</div>,
-      <div class="table-cell">{data.time_specific_hours}</div>,
-      <div class="table-cell">
+      <div className="table-cell">{data.time_general_hours}</div>,
+      <div className="table-cell">{data.time_specific_hours}</div>,
+      <div className="table-cell">
         {(data.time_general_hours || 0) + (data.time_specific_hours || 0)}
       </div>,
-      <div class="table-cell blank"></div>,
-      <div class="table-cell">{data.ponderation_theory}</div>,
-      <div class="table-cell">{data.ponderation_practical}</div>,
-      <div class="table-cell">{data.ponderation_individual}</div>,
-      <div class="table-cell">
+      <div className="table-cell blank"></div>,
+      <div className="table-cell">{data.ponderation_theory}</div>,
+      <div className="table-cell">{data.ponderation_practical}</div>,
+      <div className="table-cell">{data.ponderation_individual}</div>,
+      <div className="table-cell">
         {data.ponderation_theory +
           data.ponderation_practical +
           data.ponderation_individual}
       </div>,
       <div
-        class="table-cell"
+        className="table-cell"
         titletext={this.props.renderer.time_choices[data.time_units].name}
       >
         {data.time_required}

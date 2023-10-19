@@ -72,7 +72,7 @@ class NodeView extends EditableComponentWithActions {
     if (this.state.show_outcomes)
       outcomenodes = (
         <div
-          class={'outcome-node-container column-' + data.column}
+          className={'outcome-node-container column-' + data.column}
           onMouseLeave={() => {
             this.setState({ show_outcomes: false })
           }}
@@ -91,9 +91,9 @@ class NodeView extends EditableComponentWithActions {
     let side_actions = []
     if (data.outcomenode_unique_set.length > 0) {
       side_actions.push(
-        <div class="outcome-node-indicator">
+        <div className="outcome-node-indicator">
           <div
-            class={'outcome-node-indicator-number column-' + data.column}
+            className={'outcome-node-indicator-number column-' + data.column}
             onMouseEnter={() => {
               this.setState({ show_outcomes: true })
             }}
@@ -109,7 +109,7 @@ class NodeView extends EditableComponentWithActions {
     let righticon
     if (data.context_classification > 0)
       lefticon = (
-        <div class="node-icon">
+        <div className="node-icon">
           <img
             title={
               renderer.context_choices.find(
@@ -126,7 +126,7 @@ class NodeView extends EditableComponentWithActions {
       )
     if (data.task_classification > 0)
       righticon = (
-        <div class="node-icon">
+        <div className="node-icon">
           <img
             title={
               renderer.task_choices.find(
@@ -167,7 +167,7 @@ class NodeView extends EditableComponentWithActions {
 
     if (data.linked_workflow)
       linkIcon = (
-        <div class={link_class} onClick={clickfunc}>
+        <div className={link_class} onClick={clickfunc}>
           <img src={config.icon_path + 'wflink.svg'} />
           <div>{linktext}</div>
         </div>
@@ -212,35 +212,35 @@ class NodeView extends EditableComponentWithActions {
     return (
       <div
         style={style}
-        class={css_class}
+        className={css_class}
         id={data.id}
         ref={this.maindiv}
         data-selected={this.state.selected}
         data-hovered={this.state.hovered}
         onClick={(evt) => selection_manager.changeSelection(evt, this)}
       >
-        <div class="node-top-row">
+        <div className="node-top-row">
           {lefticon}
           {titleText}
           {righticon}
         </div>
         {linkIcon}
-        <div class="node-details">
+        <div className="node-details">
           <TitleText
             text={data_override.description}
             defaultText={gettext('Click to edit')}
           />
         </div>
         <div
-          class="node-drop-row hover-shade"
+          className="node-drop-row hover-shade"
           onClick={this.toggleDrop.bind(this)}
         >
-          <div class="node-drop-side node-drop-left">{dropText}</div>
-          <div class="node-drop-middle">
+          <div className="node-drop-side node-drop-left">{dropText}</div>
+          <div className="node-drop-middle">
             <img src={config.icon_path + dropIcon + '.svg'} />
           </div>
-          <div class="node-drop-side node-drop-right">
-            <div class="node-drop-time">
+          <div className="node-drop-side node-drop-right">
+            <div className="node-drop-time">
               {data_override.time_required &&
                 data_override.time_required +
                   ' ' +
@@ -249,15 +249,15 @@ class NodeView extends EditableComponentWithActions {
             </div>
           </div>
         </div>
-        <div class="mouseover-actions">{mouseover_actions}</div>
+        <div className="mouseover-actions">{mouseover_actions}</div>
         {this.addEditable(data_override)}
         {nodePorts}
         {node_links}
         {auto_link}
-        <div class="side-actions">
+        <div className="side-actions">
           {side_actions}
-          <div class="comment-indicator-container"></div>
-          <div class="assignment-indicator-container"></div>
+          <div className="comment-indicator-container"></div>
+          <div className="assignment-indicator-container"></div>
         </div>
       </div>
     )
@@ -438,21 +438,21 @@ class NodeOutcomeViewUnconnected extends Component {
     // if(this.props.renderer.view_comments)comments=this.addCommenting();
 
     return (
-      <div ref={this.maindiv} class="table-cell nodewrapper">
+      <div ref={this.maindiv} className="table-cell nodewrapper">
         <div
-          class={css_class}
+          className={css_class}
           style={style}
           id={data.id}
           // onClick={(evt)=>selection_manager.changeSelection(evt,this)}
         >
-          <div class="node-top-row">
+          <div className="node-top-row">
             <NodeTitle data={data} />
           </div>
           {/*this.addEditable(data_override,true)*/}
-          <div class="mouseover-actions">{comments}</div>
+          <div className="mouseover-actions">{comments}</div>
         </div>
-        <div class="side-actions">
-          <div class="comment-indicator-container"></div>
+        <div className="side-actions">
+          <div className="comment-indicator-container"></div>
         </div>
       </div>
     )
@@ -484,7 +484,7 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
     if (this.state.show_outcomes)
       outcomenodes = (
         <div
-          class={'outcome-node-container column-' + data.column}
+          className={'outcome-node-container column-' + data.column}
           onMouseLeave={() => {
             this.setState({ show_outcomes: false })
           }}
@@ -502,9 +502,9 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
     let side_actions = []
     if (data.outcomenode_unique_set.length > 0) {
       side_actions.push(
-        <div class="outcome-node-indicator">
+        <div className="outcome-node-indicator">
           <div
-            class={'outcome-node-indicator-number column-' + data.column}
+            className={'outcome-node-indicator-number column-' + data.column}
             onMouseEnter={() => {
               this.setState({ show_outcomes: true })
             }}
@@ -571,25 +571,25 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
     return (
       <div
         style={style}
-        class={css_class}
+        className={css_class}
         id={data.id}
         ref={this.maindiv}
         onClick={(evt) => selection_manager.changeSelection(evt, this)}
       >
-        <div class="node-top-row">
-          <div class="node-icon">{lefticon}</div>
+        <div className="node-top-row">
+          <div className="node-icon">{lefticon}</div>
           {titleText}
-          <div class="node-icon">{righticon}</div>
+          <div className="node-icon">{righticon}</div>
         </div>
-        <div class="node-details">
+        <div className="node-details">
           <TitleText
             text={data_override.description}
             defaultText="Click to edit"
           />
         </div>
-        <div class="mouseover-actions">{mouseover_actions}</div>
+        <div className="mouseover-actions">{mouseover_actions}</div>
         {this.addEditable(data_override)}
-        <div class="side-actions">{side_actions}</div>
+        <div className="side-actions">{side_actions}</div>
       </div>
     )
   }

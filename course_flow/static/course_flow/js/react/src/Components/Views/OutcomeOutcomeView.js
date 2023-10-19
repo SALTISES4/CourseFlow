@@ -21,7 +21,7 @@ class OutcomeOutcomeView extends React.Component {
 
     return (
       <li
-        class={my_class}
+        className={my_class}
         id={data.id}
         ref={this.maindiv}
         data-child-id={data.child}
@@ -52,7 +52,7 @@ class OutcomeBarOutcomeOutcomeViewUnconnected extends React.Component {
     let data = this.props.data
 
     return (
-      <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
+      <div className="outcome-outcome" id={data.id} ref={this.maindiv}>
         <OutcomeBarOutcomeView
           objectID={data.child}
           parentID={this.props.parentID}
@@ -79,7 +79,7 @@ export class SimpleOutcomeOutcomeViewUnconnected extends React.Component {
     let data = this.props.data
 
     return (
-      <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
+      <div className="outcome-outcome" id={data.id} ref={this.maindiv}>
         {this.getChildType()}
       </div>
     )
@@ -115,7 +115,7 @@ class TableOutcomeOutcomeViewUnconnected extends React.Component {
     let data = this.props.data
 
     return (
-      <div class="outcome-outcome" id={data.id} ref={this.maindiv}>
+      <div className="outcome-outcome" id={data.id} ref={this.maindiv}>
         <TableOutcomeView
           renderer={this.props.renderer}
           objectID={data.child}

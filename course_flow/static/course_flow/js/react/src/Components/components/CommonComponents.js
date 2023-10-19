@@ -96,7 +96,7 @@ export class EditableComponent extends Component {
       }
 
       return reactDom.createPortal(
-        <div class="right-panel-inner" onClick={(evt) => evt.stopPropagation()}>
+        <div className="right-panel-inner" onClick={(evt) => evt.stopPropagation()}>
           <h3>
             {gettext('Edit ') + Constants.get_verbose(data, this.objectType)}
           </h3>
@@ -120,7 +120,7 @@ export class EditableComponent extends Component {
                 maxlength={title_length}
                 onChange={this.inputChanged.bind(this, 'title')}
               />
-              <div class="character-length">
+              <div className="character-length">
                 {title.length}/{title_length} {gettext('characters')}
               </div>
             </div>
@@ -226,7 +226,7 @@ export class EditableComponent extends Component {
                   disabled={override || read_only}
                   autocomplete="off"
                   id="time-editor"
-                  class="half-width"
+                  className="half-width"
                   type="text"
                   value={data.time_required}
                   maxlength="30"
@@ -235,7 +235,7 @@ export class EditableComponent extends Component {
                 <select
                   disabled={override || read_only}
                   id="time-units-editor"
-                  class="half-width"
+                  className="half-width"
                   value={data.time_units}
                   onChange={this.inputChanged.bind(this, 'time_units')}
                 >
@@ -254,7 +254,7 @@ export class EditableComponent extends Component {
                   disabled={read_only}
                   autocomplete="off"
                   id="colour-editor"
-                  class="half-width"
+                  className="half-width"
                   type="color"
                   value={'#' + data.colour?.toString(16)}
                   maxlength="30"
@@ -270,26 +270,26 @@ export class EditableComponent extends Component {
               <input
                 disabled={override || read_only}
                 autocomplete="off"
-                class="half-width"
+                className="half-width"
                 id="ponderation-theory"
                 type="number"
                 value={data.ponderation_theory}
                 onChange={this.inputChanged.bind(this, 'ponderation_theory')}
               />
-              <div class="half-width">{gettext('hrs. Theory')}</div>
+              <div className="half-width">{gettext('hrs. Theory')}</div>
               <input
                 disabled={override || read_only}
                 autocomplete="off"
-                class="half-width"
+                className="half-width"
                 id="ponderation-practical"
                 type="number"
                 value={data.ponderation_practical}
                 onChange={this.inputChanged.bind(this, 'ponderation_practical')}
               />
-              <div class="half-width">{gettext('hrs. Practical')}</div>
+              <div className="half-width">{gettext('hrs. Practical')}</div>
               <input
                 disabled={override || read_only}
-                class="half-width"
+                className="half-width"
                 autocomplete="off"
                 id="ponderation-individual"
                 type="number"
@@ -299,27 +299,27 @@ export class EditableComponent extends Component {
                   'ponderation_individual'
                 )}
               />
-              <div class="half-width">{gettext('hrs. Individual')}</div>
+              <div className="half-width">{gettext('hrs. Individual')}</div>
               <input
                 disabled={override || read_only}
-                class="half-width"
+                className="half-width"
                 autocomplete="off"
                 id="time-general-hours"
                 type="number"
                 value={data.time_general_hours}
                 onChange={this.inputChanged.bind(this, 'time_general_hours')}
               />
-              <div class="half-width">{gettext('hrs. General Education')}</div>
+              <div className="half-width">{gettext('hrs. General Education')}</div>
               <input
                 disabled={override || read_only}
-                class="half-width"
+                className="half-width"
                 autocomplete="off"
                 id="time-specific-hours"
                 type="number"
                 value={data.time_specific_hours}
                 onChange={this.inputChanged.bind(this, 'time_specific_hours')}
               />
-              <div class="half-width">{gettext('hrs. Specific Education')}</div>
+              <div className="half-width">{gettext('hrs. Specific Education')}</div>
             </div>
           )}
           {type == 'node' && data.node_type != 0 && (
@@ -329,7 +329,7 @@ export class EditableComponent extends Component {
                 {data.linked_workflow && data.linked_workflow_data.title}
               </div>
               <button
-                class="primary-button"
+                className="primary-button"
                 disabled={read_only}
                 id="linked-workflow-editor"
                 onClick={() => {
@@ -394,14 +394,14 @@ export class EditableComponent extends Component {
                 <label for="text-position-range">
                   {gettext('Text Position')}
                 </label>
-                <div class="slidecontainer">
+                <div className="slidecontainer">
                   <input
                     disabled={read_only}
                     type="range"
                     min="1"
                     max="100"
                     value={data.text_position}
-                    class="range-slider"
+                    className="range-slider"
                     id="text-position-range"
                     onChange={this.inputChanged.bind(this, 'text_position')}
                   />
@@ -1020,9 +1020,9 @@ export class NodeLinkSVG extends Component {
             x={text_position[0] - 50}
             y={text_position[1] - 50}
           >
-            <div class="nodelinkwrapper">
+            <div className="nodelinkwrapper">
               <div
-                class="nodelinktext"
+                className="nodelinktext"
                 dangerouslySetInnerHTML={{ __html: this.props.title }}
                 onClick={this.props.clickFunction}
               ></div>
@@ -1040,7 +1040,7 @@ export class NodeLinkSVG extends Component {
             onClick={this.props.clickFunction}
             onMouseEnter={() => this.setState({ hovered: true })}
             onMouseLeave={() => this.setState({ hovered: false })}
-            class={'nodelink'}
+            className={'nodelink'}
           />
           <path
             style={style}
@@ -1268,7 +1268,7 @@ export class NodePorts extends React.Component {
     return (
       <g
         style={style}
-        class={'node-ports port-' + this.props.nodeID}
+        className={'node-ports port-' + this.props.nodeID}
         stroke="black"
         stroke-width="2"
         fill="white"
@@ -1390,7 +1390,7 @@ export class CommentBox extends Component {
       if (has_unread) indicator_class += ' unread'
       comment_indicator = reactDom.createPortal(
         <div
-          class={indicator_class}
+          className={indicator_class}
           onClick={this.props.parent.commentClick.bind(this.props.parent)}
         >
           <img src={config.icon_path + 'comment_new.svg'} />
@@ -1415,21 +1415,21 @@ export class CommentBox extends Component {
           (val) => '<b>' + val + '</b>'
         )
         return (
-          <div class={comment_class}>
-            <div class="comment-by">
-              <div class="comment-user">
+          <div className={comment_class}>
+            <div className="comment-by">
+              <div className="comment-user">
                 {Utility.getUserDisplay(comment.user)}
               </div>
-              <div class="comment-on">{comment.created_on}</div>
+              <div className="comment-on">{comment.created_on}</div>
             </div>
             <div
-              class="comment-text"
+              className="comment-text"
               dangerouslySetInnerHTML={{ __html: text }}
             ></div>
             {!this.props.renderer.read_only && (
-              <div class="mouseover-actions">
+              <div className="mouseover-actions">
                 <div
-                  class="action-button"
+                  className="action-button"
                   title={gettext('Delete Comment')}
                   onClick={this.removeComment.bind(this, comment.id)}
                 >
@@ -1444,7 +1444,7 @@ export class CommentBox extends Component {
     let top_contents = []
     top_contents.push(
       <div
-        class="hover-shade"
+        className="hover-shade"
         title={gettext('Close')}
         onClick={this.props.parent.commentClick.bind(this.props.parent)}
       >
@@ -1454,7 +1454,7 @@ export class CommentBox extends Component {
     if (!this.props.renderer.read_only && comments.length > 1)
       top_contents.push(
         <div
-          class="hover-shade"
+          className="hover-shade"
           title={gettext('Clear All Comments')}
           onClick={this.removeAllComments.bind(this)}
         >
@@ -1469,10 +1469,10 @@ export class CommentBox extends Component {
     let tag_box
     if (this.state.tagging) {
       tag_box = (
-        <div class="comment-tag-box">
+        <div className="comment-tag-box">
           {this.state.user_list.map((user) => (
             <div
-              class="user-name hover-shade"
+              className="user-name hover-shade"
               onClick={this.addUserTag.bind(this, user)}
             >
               {Utility.getUserDisplay(user)}
@@ -1485,17 +1485,17 @@ export class CommentBox extends Component {
     return reactDom.createPortal(
       [
         <div
-          class="comment-box"
+          className="comment-box"
           onClick={(evt) => evt.stopPropagation()}
           onMouseDown={(evt) => evt.stopPropagation()}
         >
-          <div class="comment-top-row">{top_contents}</div>
+          <div className="comment-top-row">{top_contents}</div>
           <hr />
-          <div class="comment-block">{comments}</div>
+          <div className="comment-block">{comments}</div>
           {this.props.renderer.add_comments && (
-            <div class="comment-input-line">
+            <div className="comment-input-line">
               <textarea
-                class="comment-input"
+                className="comment-input"
                 placeholder={input_default}
                 contentEditable="true"
                 onInput={this.textChange.bind(this)}
@@ -1504,7 +1504,7 @@ export class CommentBox extends Component {
               <img
                 ref={this.submit}
                 src={config.icon_path + 'add_new.svg'}
-                class="add-comment-button hidden hover-shade"
+                className="add-comment-button hidden hover-shade"
                 onClick={this.appendComment.bind(this)}
                 title={gettext('Submit')}
               />
@@ -1644,7 +1644,7 @@ export class TitleText extends React.Component {
     }
     return (
       <div
-        class="title-text"
+        className="title-text"
         title={text}
         dangerouslySetInnerHTML={{ __html: text }}
       ></div>
@@ -1671,7 +1671,7 @@ export class CollapsibleText extends Component {
             this.setState({ is_dropped: !this.state.is_dropped })
             evt.stopPropagation()
           }}
-          class="collapsed-text-show-more"
+          className="collapsed-text-show-more"
         >
           {drop_text}
         </div>
@@ -1687,7 +1687,7 @@ export class CollapsibleText extends Component {
     return [
       <div
         ref={this.maindiv}
-        class={css_class}
+        className={css_class}
         title={text}
         dangerouslySetInnerHTML={{ __html: text }}
       ></div>,
@@ -1726,13 +1726,13 @@ export class SimpleWorkflow extends React.Component {
     return (
       <div
         ref={this.maindiv}
-        class={css_class}
+        className={css_class}
         onClick={this.clickAction.bind(this)}
         onMouseDown={(evt) => {
           evt.preventDefault()
         }}
       >
-        <div class="workflow-top-row">
+        <div className="workflow-top-row">
           <WorkflowTitle class_name="workflow-title" data={data} />
           {this.getTypeIndicator()}
         </div>
@@ -1756,7 +1756,7 @@ export class SimpleWorkflow extends React.Component {
     let type_text = gettext(type)
     if (type == 'liveproject') type_text = gettext('classroom')
     if (data.is_strategy) type_text += gettext(' strategy')
-    return <div class={'workflow-type-indicator ' + type}>{type_text}</div>
+    return <div className={'workflow-type-indicator ' + type}>{type_text}</div>
   }
 }
 
@@ -1787,7 +1787,7 @@ export class WorkflowTitle extends React.Component {
     ) {
       return (
         <div
-          class={this.props.class_name}
+          className={this.props.class_name}
           title={text}
           dangerouslySetInnerHTML={{ __html: text }}
         ></div>
@@ -1797,7 +1797,7 @@ export class WorkflowTitle extends React.Component {
         <a
           onClick={(evt) => evt.stopPropagation()}
           href={href}
-          class={this.props.class_name}
+          className={this.props.class_name}
           title={text}
           dangerouslySetInnerHTML={{ __html: text }}
         ></a>
@@ -1832,7 +1832,7 @@ export class NodeTitle extends React.Component {
 
     return (
       <div
-        class="node-title"
+        className="node-title"
         title={text}
         dangerouslySetInnerHTML={{ __html: text }}
       ></div>
@@ -1858,7 +1858,7 @@ export class AssignmentTitle extends React.Component {
       return (
         <a
           href={config.update_path.liveassignment.replace('0', data.id)}
-          class="workflow-title hover-shade"
+          className="workflow-title hover-shade"
           title={text}
           dangerouslySetInnerHTML={{ __html: text }}
         ></a>
@@ -1866,7 +1866,7 @@ export class AssignmentTitle extends React.Component {
     } else {
       return (
         <span
-          class="workflow-title"
+          className="workflow-title"
           title={text}
           dangerouslySetInnerHTML={{ __html: text }}
         ></span>
@@ -1885,7 +1885,7 @@ export class OutcomeTitle extends React.Component {
     }
 
     return (
-      <div title={this.props.hovertext} class="title-text">
+      <div title={this.props.hovertext} className="title-text">
         <span>{this.props.prefix + ' - '}</span>
         <span dangerouslySetInnerHTML={{ __html: text }}></span>
       </div>
@@ -1915,8 +1915,8 @@ export class QuillDiv extends React.Component {
   render() {
     return (
       <div>
-        <div ref={this.maindiv} class="quill-div"></div>
-        <div class={'character-length'}>
+        <div ref={this.maindiv} className="quill-div"></div>
+        <div className={'character-length'}>
           {this.state.charlength + ' ' + gettext('characters')}
         </div>
       </div>
@@ -1980,13 +1980,13 @@ export class QuillDiv extends React.Component {
 export class Slider extends React.Component {
   render() {
     return (
-      <label class="switch">
+      <label className="switch">
         <input
           type="checkbox"
           checked={this.props.checked}
           onChange={this.props.toggleAction.bind(this)}
         />
-        <span class="slider round"></span>
+        <span className="slider round"></span>
       </label>
     )
   }
@@ -2033,7 +2033,7 @@ export class ActionButton extends React.Component {
   render() {
     return (
       <div
-        class={this.props.button_class + ' action-button'}
+        className={this.props.button_class + ' action-button'}
         title={this.props.titletext}
         onClick={this.handleClick}
       >

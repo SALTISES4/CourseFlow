@@ -26,7 +26,7 @@ class OutcomeTopView extends EditableComponent {
       share = (
         <div
           id="share-button"
-          class="floatbardiv"
+          className="floatbardiv"
           onClick={renderMessageBox.bind(
             this,
             data,
@@ -40,9 +40,9 @@ class OutcomeTopView extends EditableComponent {
       )
 
     return (
-      <div id="outcome-wrapper" class="workflow-wrapper">
-        <div class="workflow-container">
-          <div class="workflow-details">
+      <div id="outcome-wrapper" className="workflow-wrapper">
+        <div className="workflow-container">
+          <div className="workflow-details">
             <WorkflowForMenu
               workflow_data={data}
               selected={this.state.selected}
@@ -78,9 +78,9 @@ class OutcomeBarUnconnected extends React.Component {
     ))
 
     return reactDom.createPortal(
-      <div id="outcome-bar-workflow" class="right-panel-inner">
-        <h4 class="drag-and-drop">Outcomes:</h4>
-        <div class="outcome-bar-outcome-block">{outcomebaroutcomes}</div>
+      <div id="outcome-bar-workflow" className="right-panel-inner">
+        <h4 className="drag-and-drop">Outcomes:</h4>
+        <div className="outcome-bar-outcome-block">{outcomebaroutcomes}</div>
       </div>,
       $('#outcome-bar')[0]
     )
