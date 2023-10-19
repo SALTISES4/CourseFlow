@@ -1214,7 +1214,7 @@ class UserNotificationsView(LoginRequiredMixin, ListView):
     template_name = "course_flow/notifications.html"
 
     def get_queryset(self, **kwargs):
-    return self.request.user.notifications.all()
+        return self.request.user.notifications.all()
 
     def get_form(self, *args, **kwargs):
         form = super(UpdateView, self).get_form()
