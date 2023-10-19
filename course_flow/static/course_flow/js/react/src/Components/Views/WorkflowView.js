@@ -177,6 +177,15 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let commenters = this.state.users.commentors
     let viewers = this.state.users.viewers
     let users_group = []
+    if (this.state.users.published) {
+      users_group.push(
+        <div className="user-name">
+          {Constants.getUserTag('view')}
+          <span className="material-symbols-rounded">public</span>{' '}
+          {gettext('All CourseFlow')}
+        </div>
+      )
+    }
     if (author)
       users_group.push(
         <div class="user-name">
@@ -206,16 +215,15 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         </div>
       ))
     ])
-    if (this.state.users.published) {
-      users_group.push(
-        <div class="user-name">
-          {Utility.getUserTag('view')}
-          <span class="material-symbols-rounded">public</span>{' '}
-          {gettext('All CourseFlow')}
+    users_group = users_group.flat(2)
+    let users = [<div class="users-group">{users_group}</div>]
+    if (users_group.length > 4) {
+      users.push(
+        <div className="workflow-created">
+          +{users_group.length - 4} {gettext('more')}
         </div>
       )
     }
-    let users = [<div class="users-group">{users_group}</div>]
     if (!this.props.renderer.read_only)
       users.push(
         <div
@@ -500,13 +508,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         >
           <span class="material-symbols-rounded green">arrow_back_ios</span>
           <div>
-            {gettext('Return to project')} (
+            {gettext('Return to')}{' '}
             <WorkflowTitle
               class_name="inline"
               no_hyperlink={true}
               data={renderer.project}
             />
-            )
           </div>
         </a>
       )
