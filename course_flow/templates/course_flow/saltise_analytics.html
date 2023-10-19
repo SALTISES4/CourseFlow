@@ -11,7 +11,9 @@
     <h1>CourseFlow Analytics</h1>
     <hr>
     <div id="tabs" class="home-tabs">
-      <button><a href="{% url 'course_flow:get-saltise-download' %}">Download</a></button>
+      <button>
+         <a href="{% url 'course_flow:get-saltise-download' %}">Download</a>
+      </button>
       <ul>
         <li class="tab-header"><a href="#analytics">{% trans "Overview" %}</a></li>
         <li class="tab-header"><a href="#user-data">{% trans "User Info" %}</a></li>
