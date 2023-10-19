@@ -46,7 +46,7 @@ export class LiveProjectMenu extends React.Component {
       overflow_links.push(
         <a
           id="project"
-          class="hover-shade"
+          className="hover-shade"
           href={config.update_path.project.replace('0', data.id)}
         >
           {gettext('Edit Project')}
@@ -60,7 +60,7 @@ export class LiveProjectMenu extends React.Component {
       return (
         <a
           id={'button_' + item.type}
-          class={view_class}
+          className={view_class}
           onClick={this.changeView.bind(this, item.type)}
         >
           {item.name}
@@ -69,8 +69,8 @@ export class LiveProjectMenu extends React.Component {
     })
 
     return (
-      <div class="project-menu">
-        <div class="project-header">
+      <div className="project-menu">
+        <div className="project-header">
           <WorkflowForMenu
             no_hyperlink={true}
             workflow_data={this.state.liveproject}
@@ -79,8 +79,8 @@ export class LiveProjectMenu extends React.Component {
           {this.getHeader()}
         </div>
 
-        <div class="workflow-view-select hide-print">{view_buttons}</div>
-        <div class="workflow-container">{this.getContent()}</div>
+        <div className="workflow-view-select hide-print">{view_buttons}</div>
+        <div className="workflow-container">{this.getContent()}</div>
         {reactDom.createPortal(overflow_links, $('#overflow-links')[0])}
       </div>
     )
@@ -269,13 +269,13 @@ export class LiveProjectOverview extends LiveProjectSection {
       workflows = gettext('No workflows have been made visible to students.')
     let teachers = this.state.data.teachers.map((user) => (
       <tr>
-        <td class="table-user">{Utility.getUserDisplay(user.user)}</td>
+        <td className="table-user">{Utility.getUserDisplay(user.user)}</td>
         <td>{user.completion}</td>
       </tr>
     ))
     let students = this.state.data.students.map((user) => (
       <tr>
-        <td class="table-user">{Utility.getUserDisplay(user.user)}</td>
+        <td className="table-user">{Utility.getUserDisplay(user.user)}</td>
         <td>{user.completion}</td>
       </tr>
     ))
@@ -296,9 +296,9 @@ export class LiveProjectOverview extends LiveProjectSection {
     ))
 
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h3>{gettext('Teachers')}:</h3>
-        <table class="overview-table">
+        <table className="overview-table">
           <tr>
             <th>{gettext('User')}</th>
             <th>{gettext('Assignments Complete')}</th>
@@ -306,7 +306,7 @@ export class LiveProjectOverview extends LiveProjectSection {
           {teachers}
         </table>
         <h3>{gettext('Students')}:</h3>
-        <table class="overview-table">
+        <table className="overview-table">
           <tr>
             <th>{gettext('User')}</th>
             <th>{gettext('Assignments Complete')}</th>
@@ -314,9 +314,9 @@ export class LiveProjectOverview extends LiveProjectSection {
           {students}
         </table>
         <h3>{gettext('Visible Workflows')}:</h3>
-        <div class="menu-grid">{workflows}</div>
+        <div className="menu-grid">{workflows}</div>
         <h3>{gettext('Assignments')}:</h3>
-        <table class="overview-table">
+        <table className="overview-table">
           <tr>
             <th>{gettext('Assignment')}</th>
             <th>{gettext('Completion')}</th>
@@ -366,9 +366,9 @@ export class StudentLiveProjectOverview extends LiveProjectSection {
       ))
 
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h3>{gettext('Your Incomplete Assignments')}:</h3>
-        <table class="overview-table">
+        <table className="overview-table">
           <tr>
             <th>{gettext('Assignment')}</th>
             <th>{gettext('Completion')}</th>
@@ -377,7 +377,7 @@ export class StudentLiveProjectOverview extends LiveProjectSection {
           {assignments}
         </table>
         <h3>{gettext('Visible Workflows')}:</h3>
-        <div class="menu-grid">{workflows}</div>
+        <div className="menu-grid">{workflows}</div>
       </div>
     )
   }
@@ -399,7 +399,7 @@ export class LiveProjectAssignments extends LiveProjectSection {
       return (
         <div
           id={'button_' + workflow.id}
-          class={view_class}
+          className={view_class}
           onClick={this.changeView.bind(this, workflow.id)}
         >
           <WorkflowTitle no_hyperlink={true} data={workflow} />
@@ -417,11 +417,11 @@ export class LiveProjectAssignments extends LiveProjectSection {
     }
 
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h3>{gettext('Assigned Tasks')}</h3>
         <div>{assignments}</div>
         <h3>{gettext('All Tasks')}</h3>
-        <div id="select-workflow" class="workflow-view-select">
+        <div id="select-workflow" className="workflow-view-select">
           {workflow_options}
         </div>
         {workflow_nodes}
@@ -449,9 +449,9 @@ export class AssignmentWorkflowNodesDisplay extends React.Component {
       let default_text
       default_text = week.week_type_display + ' ' + (i + 1)
       return (
-        <div class="week">
+        <div className="week">
           <TitleText text={week.title} defaultText={default_text} />
-          <div class="node-block-grid">{nodes}</div>
+          <div className="node-block-grid">{nodes}</div>
         </div>
       )
     })
@@ -519,14 +519,14 @@ export class AssignmentNode extends React.Component {
     let mouseover_actions = [this.addCreateAssignment(data)]
 
     return (
-      <div style={style} class="node">
-        <div class="mouseover-actions">{mouseover_actions}</div>
-        <div class="node-top-row">
-          <div class="node-icon">{lefticon}</div>
+      <div style={style} className="node">
+        <div className="mouseover-actions">{mouseover_actions}</div>
+        <div className="node-top-row">
+          <div className="node-icon">{lefticon}</div>
           <NodeTitle data={this.props.data} />
-          <div class="node-icon">{righticon}</div>
+          <div className="node-icon">{righticon}</div>
         </div>
-        <div class="node-drop-row"></div>
+        <div className="node-drop-row"></div>
       </div>
     )
   }
@@ -574,7 +574,7 @@ export class StudentLiveProjectAssignments extends LiveProjectSection {
     )
 
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h3>{gettext('Your Tasks')}:</h3>
         <h4>{gettext('Upcoming')}:</h4>
         <div>{assignments_upcoming}</div>
@@ -605,11 +605,11 @@ export class LiveProjectWorkflows extends LiveProjectSection {
       )
     )
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h3>{gettext('Visible Workflows')}</h3>
-        <div class="menu-grid">{workflows_added}</div>
+        <div className="menu-grid">{workflows_added}</div>
         <h3>{gettext('Other Workflows')}</h3>
-        <div class="menu-grid">{workflows_not_added}</div>
+        <div className="menu-grid">{workflows_not_added}</div>
       </div>
     )
   }
@@ -651,9 +651,9 @@ export class StudentLiveProjectWorkflows extends LiveProjectSection {
       <WorkflowForMenu workflow_data={workflow} />
     ))
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h3>{gettext('Workflows')}</h3>
-        <div class="menu-grid">{workflows_added}</div>
+        <div className="menu-grid">{workflows_added}</div>
       </div>
     )
   }
@@ -671,14 +671,14 @@ export class LiveProjectStudents extends LiveProjectSection {
         liveproject.registration_hash
       )
       register_link = (
-        <div class="user-text">
-          <div class="user-panel">
+        <div className="user-text">
+          <div className="user-panel">
             <h4>Student Registration:</h4>
             <p>{gettext('Student Registration Link: ')}</p>
             <div>
               <img
                 id="copy-text"
-                class="hover-shade"
+                className="hover-shade"
                 onClick={() => {
                   navigator.clipboard.writeText(register_url)
                   $('#copy-text').attr(
@@ -697,7 +697,7 @@ export class LiveProjectStudents extends LiveProjectSection {
                 title={gettext('Copy to clipboard')}
                 src={config.icon_path + 'duplicate_clipboard.svg'}
               />
-              <a id="url-text" class="selectable" href={register_url}>
+              <a id="url-text" className="selectable" href={register_url}>
                 {register_url}
               </a>
             </div>
@@ -707,7 +707,7 @@ export class LiveProjectStudents extends LiveProjectSection {
     }
 
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <StudentManagement data={this.state.data.liveproject} />
         {register_link}
       </div>
@@ -729,7 +729,7 @@ export class LiveProjectSettings extends LiveProjectSection {
     let changeField = this.changeField.bind(this)
 
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h4>{gettext('Classroom configuration')}:</h4>
         <div>
           <input
@@ -813,7 +813,7 @@ export class LiveProjectSettings extends LiveProjectSection {
         </div>
         <div>
           <button
-            class="primary-button"
+            className="primary-button"
             disabled={!this.state.has_changed}
             onClick={this.saveChanges.bind(this)}
           >
@@ -861,15 +861,15 @@ export class WorkflowVisibility extends WorkflowForMenu {
     creation_text += ' ' + data.created_on
 
     return (
-      <div ref={this.maindiv} class={css_class}>
-        <div class="workflow-top-row">
+      <div ref={this.maindiv} className={css_class}>
+        <div className="workflow-top-row">
           <WorkflowTitle class_name="workflow-title" data={data} />
           {this.getButtons()}
           {this.getTypeIndicator()}
         </div>
-        <div class="workflow-created">{creation_text}</div>
+        <div className="workflow-created">{creation_text}</div>
         <div
-          class="workflow-description"
+          className="workflow-description"
           dangerouslySetInnerHTML={{ __html: data.description }}
         ></div>
       </div>
@@ -882,7 +882,7 @@ export class WorkflowVisibility extends WorkflowForMenu {
 
   getButtons() {
     return (
-      <div class="permission-select">
+      <div className="permission-select">
         <select
           value={this.props.visibility}
           onChange={(evt) =>
@@ -905,7 +905,7 @@ export class LiveProjectCompletionTable extends LiveProjectSection {
     if (!this.state.data) return this.defaultRender()
     let data = this.state.liveproject
     let head = this.state.data.assignments.map((assignment) => (
-      <th class="table-cell nodewrapper">
+      <th className="table-cell nodewrapper">
         <AssignmentViewSmall renderer={this.props.renderer} data={assignment} />
       </th>
     ))
@@ -913,17 +913,17 @@ export class LiveProjectCompletionTable extends LiveProjectSection {
       (assignment) => assignment.id
     )
     let body = this.state.data.table_rows.map((row, row_index) => (
-      <tr class="outcome-row">
-        <td class="user-head outcome-head">
+      <tr className="outcome-row">
+        <td className="user-head outcome-head">
           {Utility.getUserDisplay(row.user)}
         </td>
         {assignment_ids.map((id) => {
           let assignment = row.assignments.find(
             (row_element) => row_element.assignment == id
           )
-          if (!assignment) return <td class="table-cell"></td>
+          if (!assignment) return <td className="table-cell"></td>
           return (
-            <td class="table-cell">
+            <td className="table-cell">
               <input
                 onChange={this.toggleCompletion.bind(
                   this,
@@ -936,7 +936,7 @@ export class LiveProjectCompletionTable extends LiveProjectSection {
             </td>
           )
         })}
-        <td class="table-cell total-cell grand-total-cell">
+        <td className="table-cell total-cell grand-total-cell">
           {row.assignments.reduce(
             (total, assignment) => total + assignment.completed,
             0
@@ -948,14 +948,14 @@ export class LiveProjectCompletionTable extends LiveProjectSection {
     ))
 
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h3>{gettext('Table')}:</h3>
-        <table class="user-table outcome-table node-rows">
-          <tr class="outcome-row node-row">
-            <th class="user-head outcome-head empty"></th>
+        <table className="user-table outcome-table node-rows">
+          <tr className="outcome-row node-row">
+            <th className="user-head outcome-head empty"></th>
             {head}
-            <th class="table-cell nodewrapper total-cell grand-total-cell">
-              <div class="total-header">{gettext('Total')}:</div>
+            <th className="table-cell nodewrapper total-cell grand-total-cell">
+              <div className="total-header">{gettext('Total')}:</div>
             </th>
           </tr>
           {body}

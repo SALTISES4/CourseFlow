@@ -59,7 +59,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let data = this.props.data
 
     return (
-      <div id="workflow-wrapper" class="workflow-wrapper">
+      <div id="workflow-wrapper" className="workflow-wrapper">
         {this.getHeader()}
         {reactDom.createPortal(
           this.getOverflowLinks(),
@@ -73,7 +73,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         )}
         {this.addEditable(data)}
 
-        <div class="workflow-container">{this.getWorkflowContent()}</div>
+        <div className="workflow-container">{this.getWorkflowContent()}</div>
         {
           <NodeBar
             view_type={renderer.view_type}
@@ -129,14 +129,14 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     }
     return (
       <div
-        class="project-header"
+        className="project-header"
         style={style}
         onClick={(evt) =>
           this.props.renderer.selection_manager.changeSelection(evt, this)
         }
       >
         {this.getProjectLink()}
-        <div class="project-header-top-line">
+        <div className="project-header-top-line">
           <WorkflowTitle
             data={data}
             no_hyperlink={true}
@@ -144,13 +144,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
           />
           {this.getTypeIndicator()}
         </div>
-        <div class="project-header-info">
-          <div class="project-info-section project-members">
+        <div className="project-header-info">
+          <div className="project-info-section project-members">
             <h4>{gettext('Permissions')}</h4>
             {this.getUsers()}
           </div>
-          <div class="project-other">
-            <div class="project-info-section project-description">
+          <div className="project-other">
+            <div className="project-info-section project-description">
               <h4>{gettext('Description')}</h4>
               <CollapsibleText
                 text={data.description}
@@ -167,7 +167,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let data = this.props.data
     let type_text = gettext(data.type)
     if (data.is_strategy) type_text += gettext(' strategy')
-    return <div class={'workflow-type-indicator ' + data.type}>{type_text}</div>
+    return <div className={'workflow-type-indicator ' + data.type}>{type_text}</div>
   }
 
   getUsers() {
@@ -177,9 +177,18 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let commenters = this.state.users.commentors
     let viewers = this.state.users.viewers
     let users_group = []
+    if (this.state.users.published) {
+      users_group.push(
+        <div className="user-name">
+          {Constants.getUserTag('view')}
+          <span className="material-symbols-rounded">public</span>{' '}
+          {gettext('All CourseFlow')}
+        </div>
+      )
+    }
     if (author)
       users_group.push(
-        <div class="user-name">
+        <div className="user-name">
           {Utility.getUserTag('author')}
           {Utility.getUserDisplay(author)}
         </div>
@@ -188,38 +197,37 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       editors
         .filter((user) => user.id != author.id)
         .map((user) => (
-          <div class="user-name">
+          <div className="user-name">
             {Utility.getUserTag('edit')}
             {Utility.getUserDisplay(user)}
           </div>
         )),
       commenters.map((user) => (
-        <div class="user-name">
+        <div className="user-name">
           {Utility.getUserTag('comment')}
           {Utility.getUserDisplay(user)}
         </div>
       )),
       viewers.map((user) => (
-        <div class="user-name">
+        <div className="user-name">
           {Utility.getUserTag('view')}
           {Utility.getUserDisplay(user)}
         </div>
       ))
     ])
-    if (this.state.users.published) {
-      users_group.push(
-        <div class="user-name">
-          {Utility.getUserTag('view')}
-          <span class="material-symbols-rounded">public</span>{' '}
-          {gettext('All CourseFlow')}
+    users_group = users_group.flat(2)
+    let users = [<div className="users-group">{users_group}</div>]
+    if (users_group.length > 4) {
+      users.push(
+        <div className="workflow-created">
+          +{users_group.length - 4} {gettext('more')}
         </div>
       )
     }
-    let users = [<div class="users-group">{users_group}</div>]
     if (!this.props.renderer.read_only)
       users.push(
         <div
-          class="user-name collapsed-text-show-more"
+          className="user-name collapsed-text-show-more"
           onClick={this.openShareMenu.bind(this)}
         >
           {gettext('Modify')}
@@ -233,12 +241,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (!this.props.renderer.read_only)
       edit = (
         <div
-          class="hover-shade"
+          className="hover-shade"
           id="edit-project-button"
           title={gettext('Edit Workflow')}
           onClick={this.openEditMenu.bind(this)}
         >
-          <span class="material-symbols-rounded filled">edit</span>
+          <span className="material-symbols-rounded filled">edit</span>
         </div>
       )
     return edit
@@ -253,12 +261,12 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (!this.props.renderer.read_only)
       share = (
         <div
-          class="hover-shade"
+          className="hover-shade"
           id="share-button"
           title={gettext('Sharing')}
           onClick={this.openShareMenu.bind(this)}
         >
-          <span class="material-symbols-rounded filled">person_add</span>
+          <span className="material-symbols-rounded filled">person_add</span>
         </div>
       )
     return share
@@ -303,7 +311,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <hr />,
         <div
           id="delete-workflow"
-          class="hover-shade"
+          className="hover-shade"
           onClick={this.deleteWorkflow.bind(this)}
         >
           <div>{gettext('Archive workflow')}</div>
@@ -314,14 +322,14 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         <hr />,
         <div
           id="restore-workflow"
-          class="hover-shade"
+          className="hover-shade"
           onClick={this.restoreWorkflow.bind(this)}
         >
           <div>{gettext('Restore workflow')}</div>
         </div>,
         <div
           id="permanently-delete-workflow"
-          class="hover-shade"
+          className="hover-shade"
           onClick={this.deleteWorkflowHard.bind(this)}
         >
           <div>{gettext('Permanently delete workflow')}</div>
@@ -363,7 +371,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let export_button = (
       <div
         id="export-button"
-        class="hover-shade"
+        className="hover-shade"
         onClick={() =>
           renderMessageBox(
             { ...this.props.data, object_sets: this.props.object_sets },
@@ -383,7 +391,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let export_button = [
       <div
         id="copy-button"
-        class="hover-shade"
+        className="hover-shade"
         onClick={() => {
           let loader = this.props.renderer.tiny_loader
           if (this.props.data.is_strategy) {
@@ -429,7 +437,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       export_button.unshift(
         <div
           id="copy-to-project-button"
-          class="hover-shade"
+          className="hover-shade"
           onClick={() => {
             let loader = this.props.renderer.tiny_loader
             duplicateBaseItem(
@@ -466,7 +474,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let a_class = 'hover-shade'
     if (disabled) a_class = ' disabled'
     imports.push(
-      <a class={a_class} onClick={this.clickImport.bind(this, import_type)}>
+      <a className={a_class} onClick={this.clickImport.bind(this, import_type)}>
         {text}
       </a>
     )
@@ -494,19 +502,18 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (renderer.project && !renderer.is_student && !renderer.public_view) {
       return_links.push(
         <a
-          class="hover-shade no-underline"
+          className="hover-shade no-underline"
           id="project-return"
           href={config.update_path['project'].replace(0, renderer.project.id)}
         >
-          <span class="material-symbols-rounded green">arrow_back_ios</span>
+          <span className="material-symbols-rounded green">arrow_back_ios</span>
           <div>
-            {gettext('Return to project')} (
+            {gettext('Return to')}{' '}
             <WorkflowTitle
               class_name="inline"
               no_hyperlink={true}
               data={renderer.project}
             />
-            )
           </div>
         </a>
       )
@@ -514,19 +521,19 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (renderer.public_view && renderer.can_view) {
       return_links.push(
         <a
-          class="hover-shade no-underline"
+          className="hover-shade no-underline"
           id="project-return"
           href={config.update_path['project'].replace(0, renderer.project.id)}
         >
-          <span class="material-symbols-rounded green">arrow_back_ios</span>
+          <span className="material-symbols-rounded green">arrow_back_ios</span>
           <div>{gettext('Return to Editable Workflow')}</div>
         </a>
       )
     }
     // if(!renderer.public_view && renderer.project && (renderer.is_teacher || renderer.is_student)){
     //     return_links.push(
-    //         <a class="hover-shade no-underline" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
-    //             <span class="material-symbols-rounded green">arrow_back_ios</span>
+    //         <a className="hover-shade no-underline" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
+    //             <span className="material-symbols-rounded green">arrow_back_ios</span>
     //             <div>{gettext("Return to classroom (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
     //         </a>
     //     );
@@ -616,7 +623,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
         return (
           <a
             id={'button_' + item.type}
-            class={view_class}
+            className={view_class}
             onClick={this.changeView.bind(this, item.type)}
           >
             {item.name}
@@ -627,16 +634,16 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     let view_buttons_sorted = view_buttons.slice(0, 2)
     view_buttons_sorted.push(
       <div
-        class="hover-shade other-views"
+        className="hover-shade other-views"
         onClick={() => $('.views-dropdown')[0].classList.toggle('toggled')}
       >
         {gettext('Other Views')}
-        <div class="views-dropdown">{view_buttons.slice(2)}</div>
+        <div className="views-dropdown">{view_buttons.slice(2)}</div>
       </div>
     )
 
     return [
-      <div class="workflow-view-select hide-print">{view_buttons_sorted}</div>,
+      <div className="workflow-view-select hide-print">{view_buttons_sorted}</div>,
       workflow_content
     ]
   }
@@ -663,13 +670,13 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     ))
     return (
       <div id="jump-to">
-        <div class="hover-shade flex-middle">
-          <span class="green material-symbols-rounded">
+        <div className="hover-shade flex-middle">
+          <span className="green material-symbols-rounded">
             keyboard_double_arrow_down
           </span>
           <div>{gettext('Jump to')}</div>
         </div>
-        <div class="create-dropdown">{nodebarweekworkflows}</div>
+        <div className="create-dropdown">{nodebarweekworkflows}</div>
       </div>
     )
   }
@@ -677,53 +684,53 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
   getExpand() {
     return (
       <div id="expand-collapse-all">
-        <div class="hover-shade flex-middle">
-          <span class="green material-symbols-rounded">zoom_out_map</span>
+        <div className="hover-shade flex-middle">
+          <span className="green material-symbols-rounded">zoom_out_map</span>
           <div>{gettext('Expand/Collapse')}</div>
         </div>
-        <div class="create-dropdown">
+        <div className="create-dropdown">
           <div
-            class="flex-middle hover-shade"
+            className="flex-middle hover-shade"
             onClick={this.expandAll.bind(this, 'week')}
           >
-            <span class="green material-symbols-rounded">zoom_out_map</span>
+            <span className="green material-symbols-rounded">zoom_out_map</span>
             <div>{gettext('Expand all weeks')}</div>
           </div>
           <div
-            class="flex-middle hover-shade"
+            className="flex-middle hover-shade"
             onClick={this.collapseAll.bind(this, 'week')}
           >
-            <span class="green material-symbols-rounded">zoom_in_map</span>
+            <span className="green material-symbols-rounded">zoom_in_map</span>
             <div>{gettext('Collapse all weeks')}</div>
           </div>
           <hr />
           <div
-            class="flex-middle hover-shade"
+            className="flex-middle hover-shade"
             onClick={this.expandAll.bind(this, 'node')}
           >
-            <span class="green material-symbols-rounded">zoom_out_map</span>
+            <span className="green material-symbols-rounded">zoom_out_map</span>
             <div>{gettext('Expand all nodes')}</div>
           </div>
           <div
-            class="flex-middle hover-shade"
+            className="flex-middle hover-shade"
             onClick={this.collapseAll.bind(this, 'node')}
           >
-            <span class="green material-symbols-rounded">zoom_in_map</span>
+            <span className="green material-symbols-rounded">zoom_in_map</span>
             <div>{gettext('Collapse all nodes')}</div>
           </div>
           <hr />
           <div
-            class="flex-middle hover-shade"
+            className="flex-middle hover-shade"
             onClick={this.expandAll.bind(this, 'outcome')}
           >
-            <span class="green material-symbols-rounded">zoom_out_map</span>
+            <span className="green material-symbols-rounded">zoom_out_map</span>
             <div>{gettext('Expand all outcomes')}</div>
           </div>
           <div
-            class="flex-middle hover-shade"
+            className="flex-middle hover-shade"
             onClick={this.collapseAll.bind(this, 'outcome')}
           >
-            <span class="green material-symbols-rounded">zoom_in_map</span>
+            <span className="green material-symbols-rounded">zoom_in_map</span>
             <div>{gettext('Collapse all outcomes')}</div>
           </div>
         </div>
@@ -831,15 +838,15 @@ export const WorkflowBaseView = connect(
 //                 let view_class = "hover-shade";
 //                 if(item.type==renderer.view_type)view_class += " active";
 //                 //if(item.disabled.indexOf(data.type)>=0)view_class+=" disabled";
-//                 return <a id={"button_"+item.type} class={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</a>;
+//                 return <a id={"button_"+item.type} className={view_class} onClick = {this.changeView.bind(this,item.type)}>{item.name}</a>;
 //             }
 //         );
 
 //         let view_buttons_sorted = view_buttons.slice(0,2);
 //         view_buttons_sorted.push(
-//             <div class="hover-shade other-views" onClick={()=>$(".views-dropdown")[0].classList.toggle("toggled")}>
+//             <div className="hover-shade other-views" onClick={()=>$(".views-dropdown")[0].classList.toggle("toggled")}>
 //                 {gettext("Other Views")}
-//                 <div class="views-dropdown">
+//                 <div className="views-dropdown">
 //                     {view_buttons.slice(2)}
 //                 </div>
 //             </div>
@@ -858,21 +865,21 @@ export const WorkflowBaseView = connect(
 //         )
 
 //         let share;
-//         if(!read_only)share = <div class="hover-shade" id="share-button" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={config.icon_path+"add_person_grey.svg"}/></div>
+//         if(!read_only)share = <div className="hover-shade" id="share-button" title={gettext("Sharing")} onClick={renderMessageBox.bind(this,data,"share_menu",closeMessageBox)}><img src={config.icon_path+"add_person_grey.svg"}/></div>
 
 //         let public_view;
 //         if(renderer.can_view && data.public_view){
 //             if(renderer.public_view){
 //                 public_view=[
 //                     <hr/>,
-//                     <a id="public-view" class="hover-shade" href={config.update_path.workflow.replace("0",data.id)}>
+//                     <a id="public-view" className="hover-shade" href={config.update_path.workflow.replace("0",data.id)}>
 //                         {gettext("Editable Page")}
 //                     </a>
 //                 ];
 //             }else{
 //                 public_view=[
 //                     <hr/>,
-//                     <a id="public-view" class="hover-shade" href={public_{config.update_path.workflow.replace("0",data.id)}>
+//                     <a id="public-view" className="hover-shade" href={public_{config.update_path.workflow.replace("0",data.id)}>
 //                         {gettext("Public Page")}
 //                     </a>
 //                 ];
@@ -881,24 +888,24 @@ export const WorkflowBaseView = connect(
 //         let return_links = [];
 //         if(renderer.project && !renderer.is_student && !renderer.public_view){
 //             return_links.push(
-//                 <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
-//                     <span class="material-symbols-rounded">arrow_back_ios</span>
+//                 <a className="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+//                     <span className="material-symbols-rounded">arrow_back_ios</span>
 //                     <div>{gettext("Return to project (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
 //                 </a>
 //             );
 //         }
 //         if(renderer.public_view && renderer.can_view){
 //             return_links.push(
-//                 <a class="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
-//                     <span class="material-symbols-rounded">arrow_back_ios</span>
+//                 <a className="hover-shade no-underline" id='project-return' href={update_path["project"].replace(0,renderer.project.id)}>
+//                     <span className="material-symbols-rounded">arrow_back_ios</span>
 //                     <div>{gettext("Return to Editable Workflow")}</div>
 //                 </a>
 //             )
 //         }
 //         if(renderer.project && (renderer.is_teacher || renderer.is_student)){
 //             return_links.push(
-//                 <a class="hover-shade no-underline" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
-//                     <span class="material-symbols-rounded">arrow_back_ios</span>
+//                 <a className="hover-shade no-underline" id='live-project-return' href={update_path["liveproject"].replace(0,renderer.project.id)}>
+//                     <span className="material-symbols-rounded">arrow_back_ios</span>
 //                     <div>{gettext("Return to classroom (")}<WorkflowTitle class_name={"inline-title"} data={renderer.project} no_hyperlink={true}/>{")"}</div>
 //                 </a>
 //             );
@@ -910,18 +917,18 @@ export const WorkflowBaseView = connect(
 //         overflow_links.push(public_view);
 
 //         return(
-//             <div id="workflow-wrapper" class="workflow-wrapper">
-//                 <div class="workflow-header" style={style}>
+//             <div id="workflow-wrapper" className="workflow-wrapper">
+//                 <div className="workflow-header" style={style}>
 //                     <WorkflowForMenu no_hyperlink={true} workflow_data={data} selectAction={this.openEdit.bind(this,null)}/>
 //                     {parent_workflow_indicator}
 //                 </div>
-//                 <div class="workflow-view-select hide-print">
+//                 <div className="workflow-view-select hide-print">
 //                     {view_buttons_sorted}
 //                 </div>
 //                 <div class = "workflow-container">
 //                     {this.addEditable(data)}
 //                     {!read_only && reactDom.createPortal(
-//                         <div class="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
+//                         <div className="hover-shade" id="edit-project-button" onClick ={ this.openEdit.bind(this)}>
 //                             <img src={config.icon_path+'edit_pencil.svg'} title={gettext("Edit Workflow")}/>
 //                         </div>,
 //                         $("#visible-icons")[0]
@@ -1002,7 +1009,7 @@ export const WorkflowBaseView = connect(
 //         if(this.props.renderer.public_view)return null;
 //         if(this.props.renderer.is_student && !this.props.renderer.can_view)return null;
 //         let export_button = (
-//             <a id="export-button" class="hover-shade" onClick={()=>renderMessageBox({...this.props.data,object_sets:this.props.object_sets},"export",closeMessageBox)}>
+//             <a id="export-button" className="hover-shade" onClick={()=>renderMessageBox({...this.props.data,object_sets:this.props.object_sets},"export",closeMessageBox)}>
 //                 {gettext("Export")}
 //             </a>
 //         );
@@ -1024,7 +1031,7 @@ export const WorkflowBaseView = connect(
 //         let a_class = "hover-shade";
 //         if(disabled)a_class=" disabled";
 //         imports.push(
-//             <a class={a_class} onClick={this.clickImport.bind(this,import_type)}>
+//             <a className={a_class} onClick={this.clickImport.bind(this,import_type)}>
 //                 {text}
 //             </a>
 //         )
@@ -1079,15 +1086,15 @@ class WorkflowViewUnconnected extends EditableComponentWithSorting {
     if (data.condensed) css_class += ' condensed'
 
     return (
-      <div class={css_class}>
+      <div className={css_class}>
         <WorkflowLegend renderer={renderer} />
-        <div class="column-row" id={data.id + '-column-block'}>
+        <div className="column-row" id={data.id + '-column-block'}>
           {columnworkflows}
         </div>
-        <div class="week-block" id={data.id + '-week-block'}>
+        <div className="week-block" id={data.id + '-week-block'}>
           {weekworkflows}
         </div>
-        <svg class="workflow-canvas" width="100%" height="100%">
+        <svg className="workflow-canvas" width="100%" height="100%">
           <defs>
             <marker
               id="arrow"
@@ -1209,7 +1216,7 @@ class ViewBarUnconnected extends React.Component {
     ) {
       let table_type_value = data.table_type || 0
       let sort_type = (
-        <div class="node-bar-sort-block">
+        <div className="node-bar-sort-block">
           {this.props.renderer.outcome_sort_choices.map((choice) => (
             <div>
               <input
@@ -1232,7 +1239,7 @@ class ViewBarUnconnected extends React.Component {
         </div>
       )
       let table_type = (
-        <div class="node-bar-sort-block">
+        <div className="node-bar-sort-block">
           <div>
             <input
               type="radio"
@@ -1270,7 +1277,7 @@ class ViewBarUnconnected extends React.Component {
     }
 
     let sets = (
-      <div class="node-bar-sort-block">
+      <div className="node-bar-sort-block">
         {this.props.object_sets
           .sort((a, b) => {
             let x = a.term
@@ -1295,7 +1302,7 @@ class ViewBarUnconnected extends React.Component {
     )
 
     return reactDom.createPortal(
-      <div id="node-bar-workflow" class="right-panel-inner">
+      <div id="node-bar-workflow" className="right-panel-inner">
         <h3>{gettext('View options')}</h3>
         <hr />
         {sort_block}
@@ -1374,7 +1381,7 @@ class NodeBarUnconnected extends React.Component {
     if (!this.props.renderer.read_only)
       nodebar_nodes = [
         <h4>{gettext('Nodes')}</h4>,
-        <div class="node-bar-column-block">{nodebarcolumnworkflows}</div>
+        <div className="node-bar-column-block">{nodebarcolumnworkflows}</div>
       ]
 
     var strategies = this.props.available_strategies.map((strategy) => (
@@ -1385,16 +1392,16 @@ class NodeBarUnconnected extends React.Component {
     ))
 
     return reactDom.createPortal(
-      <div id="node-bar-workflow" class="right-panel-inner">
-        <h3 class="drag-and-drop">{gettext('Add to workflow')}</h3>
+      <div id="node-bar-workflow" className="right-panel-inner">
+        <h3 className="drag-and-drop">{gettext('Add to workflow')}</h3>
         <hr />
         {nodebar_nodes}
         <hr />
         <h4>{gettext('My strategies')}</h4>
-        <div class="strategy-bar-strategy-block">{strategies}</div>
+        <div className="strategy-bar-strategy-block">{strategies}</div>
         {saltise_strategies.length > 0 && [
           <h4>{gettext('SALTISE strategies')}</h4>,
-          <div class="strategy-bar-strategy-block">{saltise_strategies}</div>
+          <div className="strategy-bar-strategy-block">{saltise_strategies}</div>
         ]}
       </div>,
       $('#node-bar')[0]
@@ -1458,23 +1465,23 @@ class RestoreBarUnconnected extends React.Component {
     ))
 
     return reactDom.createPortal(
-      <div id="restore-bar-workflow" class="right-panel-inner">
+      <div id="restore-bar-workflow" className="right-panel-inner">
         <h3>{gettext('Restore items')}</h3>
         <hr />
         <h4>{gettext('Nodes')}</h4>
-        <div class="node-bar-column-block">{nodes}</div>
+        <div className="node-bar-column-block">{nodes}</div>
         <hr />
         <h4>{gettext('Weeks')}</h4>
-        <div class="node-bar-column-block">{weeks}</div>
+        <div className="node-bar-column-block">{weeks}</div>
         <hr />
         <h4>{gettext('Columns')}</h4>
-        <div class="node-bar-column-block">{columns}</div>
+        <div className="node-bar-column-block">{columns}</div>
         <hr />
         <h4>{gettext('Outcomes')}</h4>
-        <div class="node-bar-column-block">{outcomes}</div>
+        <div className="node-bar-column-block">{outcomes}</div>
         <hr />
         <h4>{gettext('Node Links')}</h4>
-        <div class="node-bar-column-block">{nodelinks}</div>
+        <div className="node-bar-column-block">{nodelinks}</div>
       </div>,
       $('#restore-bar')[0]
     )
@@ -1516,9 +1523,9 @@ export const RestoreBar = connect(
 class RestoreBarItem extends Component {
   render() {
     return (
-      <div ref={this.maindiv} class="restore-bar-item">
+      <div ref={this.maindiv} className="restore-bar-item">
         <div>{this.getTitle()}</div>
-        <div class="workflow-created">
+        <div className="workflow-created">
           {gettext('Deleted') + ' ' + this.props.data.deleted_on}
         </div>
         <button onClick={this.restore.bind(this)}>{gettext('Restore')}</button>
@@ -1583,14 +1590,14 @@ class RestoreBarItem extends Component {
 //         );
 
 //         return reactDom.createPortal(
-//             <div id="strategy-bar-workflow" class="right-panel-inner">
-//                 <h4 class="drag-and-drop">{gettext("My Strategies")}:</h4>
-//                 <div class="strategy-bar-strategy-block">
+//             <div id="strategy-bar-workflow" className="right-panel-inner">
+//                 <h4 className="drag-and-drop">{gettext("My Strategies")}:</h4>
+//                 <div className="strategy-bar-strategy-block">
 //                     {strategies}
 //                 </div>
 //                 {(saltise_strategies.length>0) &&
-//                     [<h4 class="drag-and-drop">{gettext("SALTISE Strategies")}:</h4>,
-//                     <div class="strategy-bar-strategy-block">
+//                     [<h4 className="drag-and-drop">{gettext("SALTISE Strategies")}:</h4>,
+//                     <div className="strategy-bar-strategy-block">
 //                         {saltise_strategies}
 //                     </div>
 //                      ]
@@ -1625,7 +1632,7 @@ class WorkflowView_Outcome_Unconnected extends React.Component {
     let renderer = this.props.renderer
 
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <WorkflowOutcomeLegend
           renderer={renderer}
           outcomes_type={data.outcomes_type}
@@ -1669,16 +1676,16 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
       ))
       let return_val = [
         <hr />,
-        <a class="panel-item">{gettext('Quick Navigation')}</a>
+        <a className="panel-item">{gettext('Quick Navigation')}</a>
       ]
       if (parent_workflows.length > 0)
         return_val.push(
-          <a class="panel-item">{gettext('Used in:')}</a>,
+          <a className="panel-item">{gettext('Used in:')}</a>,
           ...parent_workflows
         )
       if (child_workflows.length > 0)
         return_val.push(
-          <a class="panel-item">{gettext('Workflows Used:')}</a>,
+          <a className="panel-item">{gettext('Workflows Used:')}</a>,
           ...child_workflows
         )
       return reactDom.createPortal(return_val, $('.left-panel-extra')[0])
@@ -1709,7 +1716,7 @@ class ParentWorkflowIndicatorUnconnected extends React.Component {
     let type = data.type
     let type_text = gettext(type)
     if (data.is_strategy) type_text += gettext(' strategy')
-    return <div class={'workflow-type-indicator ' + type}>{type_text}</div>
+    return <div className={'workflow-type-indicator ' + type}>{type_text}</div>
   }
 }
 const mapParentWorkflowIndicatorStateToProps = (state) => ({

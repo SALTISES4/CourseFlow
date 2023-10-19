@@ -17,7 +17,7 @@ class OutcomeWorkflowView extends React.Component {
     let my_class = 'outcome-workflow'
     if (data.no_drag) my_class += ' no-drag'
     return (
-      <div class={my_class} id={data.id}>
+      <div className={my_class} id={data.id}>
         <OutcomeView
           objectID={data.outcome}
           parentID={this.props.parentID}

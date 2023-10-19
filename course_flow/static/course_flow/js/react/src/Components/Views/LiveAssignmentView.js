@@ -46,7 +46,7 @@ export class LiveAssignmentMenu extends React.Component {
       return (
         <a
           id={'button_' + item.type}
-          class={view_class}
+          className={view_class}
           onClick={this.changeView.bind(this, item.type)}
         >
           {item.name}
@@ -55,8 +55,8 @@ export class LiveAssignmentMenu extends React.Component {
     })
 
     return (
-      <div class="project-menu">
-        <div class="project-header">
+      <div className="project-menu">
+        <div className="project-header">
           {reactDom.createPortal(
             <a
               id="live-project-return"
@@ -64,9 +64,9 @@ export class LiveAssignmentMenu extends React.Component {
                 0,
                 liveproject.pk
               )}
-              class="hover-shade no-underline"
+              className="hover-shade no-underline"
             >
-              <span class="material-symbols-rounded">arrow_back_ios</span>
+              <span className="material-symbols-rounded">arrow_back_ios</span>
               <div>{gettext('Return to Classroom')}</div>
             </a>,
             $('.titlebar .title')[0]
@@ -74,8 +74,8 @@ export class LiveAssignmentMenu extends React.Component {
           <AssignmentView renderer={this.props.renderer} data={data} />
         </div>
 
-        <div class="workflow-view-select hide-print">{view_buttons}</div>
-        <div class="workflow-container">{this.getContent()}</div>
+        <div className="workflow-view-select hide-print">{view_buttons}</div>
+        <div className="workflow-container">{this.getContent()}</div>
       </div>
     )
   }
@@ -165,7 +165,7 @@ class LiveAssignmentEdit extends React.Component {
       let warning
       if (!this.state.linked_workflow_access)
         warning = (
-          <div class="warning">
+          <div className="warning">
             {gettext(
               'Warning: the linked workflow is not visible to those in the classroom'
             )}
@@ -188,7 +188,7 @@ class LiveAssignmentEdit extends React.Component {
       let warning
       if (!this.state.workflow_access)
         warning = (
-          <div class="warning">
+          <div className="warning">
             {gettext(
               'Warning: the workflow the task appears in is not visible to those in the classroom'
             )}
@@ -205,7 +205,7 @@ class LiveAssignmentEdit extends React.Component {
       ]
     }
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h3>{gettext('Configuration')}:</h3>
         <div>
           <label>{gettext('End Date')}: </label>
@@ -277,7 +277,7 @@ class LiveAssignmentEdit extends React.Component {
         <h3>{gettext('Users')}:</h3>
 
         <div>
-          <div class="multi-select">
+          <div className="multi-select">
             <h5>{gettext('Assigned Users')}</h5>
             <select id="users_chosen" multiple>
               {assigned_users}
@@ -287,7 +287,7 @@ class LiveAssignmentEdit extends React.Component {
               {gettext('Remove')}{' '}
             </button>
           </div>
-          <div class="multi-select">
+          <div className="multi-select">
             <h5>{gettext('Other Users')}</h5>
             <select id="users_all" multiple>
               {other_users}
@@ -473,7 +473,7 @@ export class AssignmentView extends React.Component {
     }
     if (data.linked_workflow_access && node_data.linked_workflow)
       linkIcon = (
-        <div class="hover-shade linked-workflow" onClick={clickfunc}>
+        <div className="hover-shade linked-workflow" onClick={clickfunc}>
           <img src={config.icon_path + 'wflink.svg'} />
           <div>{linktext}</div>
         </div>
@@ -484,7 +484,7 @@ export class AssignmentView extends React.Component {
     if (data.workflow_access && data.parent_workflow_id)
       parentLinkIcon = (
         <div
-          class="hover-shade linked-workflow containing-workflow"
+          className="hover-shade linked-workflow containing-workflow"
           onClick={parentclickfunc}
         >
           <img src={config.icon_path + 'wflink.svg'} />
@@ -546,17 +546,17 @@ export class AssignmentView extends React.Component {
     }
 
     return (
-      <div style={style} class={css_class}>
-        <div class="mouseover-actions">{mouseover_actions}</div>
-        <div class="node-top-row">
-          <div class="node-icon">{lefticon}</div>
+      <div style={style} className={css_class}>
+        <div className="mouseover-actions">{mouseover_actions}</div>
+        <div className="node-top-row">
+          <div className="node-icon">{lefticon}</div>
           <AssignmentTitle
             user_role={this.props.renderer.user_role}
             data={data}
           />
-          <div class="node-icon">{righticon}</div>
+          <div className="node-icon">{righticon}</div>
         </div>
-        <div class="assignment-timing">
+        <div className="assignment-timing">
           <div>
             <div>
               <label>{gettext('End Date')}: </label>
@@ -579,22 +579,22 @@ export class AssignmentView extends React.Component {
         </div>
         {parentLinkIcon}
         {linkIcon}
-        <div class="node-details">
+        <div className="node-details">
           <TitleText
             text={data_override.description}
             defaultText={gettext('No description given')}
           />
         </div>
         <div
-          class="node-drop-row hover-shade"
+          className="node-drop-row hover-shade"
           onClick={this.toggleDrop.bind(this)}
         >
-          <div class="node-drop-side node-drop-left">{dropText}</div>
-          <div class="node-drop-middle">
+          <div className="node-drop-side node-drop-left">{dropText}</div>
+          <div className="node-drop-middle">
             <img src={config.icon_path + dropIcon + '.svg'} />
           </div>
-          <div class="node-drop-side node-drop-right">
-            <div class="node-drop-time">
+          <div className="node-drop-side node-drop-right">
+            <div className="node-drop-time">
               {data_override.time_required &&
                 data_override.time_required +
                   ' ' +
@@ -642,8 +642,8 @@ export class AssignmentViewSmall extends React.Component {
     let css_class = 'node assignment'
     let style = { backgroundColor: Utility.getColumnColour(node_data) }
     return (
-      <div style={style} class={css_class}>
-        <div class="node-top-row">
+      <div style={style} className={css_class}>
+        <div className="node-top-row">
           <AssignmentTitle
             user_role={this.props.renderer.user_role}
             data={data}
@@ -678,7 +678,7 @@ class LiveAssignmentReport extends React.Component {
     )
 
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h3>{gettext('Completion')}:</h3>
         <table>
           {rows}
@@ -760,7 +760,7 @@ export class AssignmentBox extends React.Component {
     if (this.props.has_assignment)
       assignment_indicator = reactDom.createPortal(
         <div
-          class="comment-indicator hover-shade"
+          className="comment-indicator hover-shade"
           onClick={this.props.parent.showAssignment.bind(this.props.parent)}
         >
           <img src={config.icon_path + 'assignment.svg'} />
@@ -777,7 +777,7 @@ export class AssignmentBox extends React.Component {
     let top_contents = []
     top_contents.push(
       <div
-        class="close-button hover-shade"
+        className="close-button hover-shade"
         title={gettext('Close')}
         onClick={this.props.parent.showAssignment.bind(this.props.parent)}
       >
@@ -787,7 +787,7 @@ export class AssignmentBox extends React.Component {
     if (this.props.renderer.is_teacher) {
       top_contents.push(
         <div
-          class="create-assignment hover-shade"
+          className="create-assignment hover-shade"
           title={gettext('Create New')}
           onClick={this.createAssignment.bind(this)}
         >
@@ -820,8 +820,8 @@ export class AssignmentBox extends React.Component {
 
     return reactDom.createPortal(
       [
-        <div class="comment-box" onClick={(evt) => evt.stopPropagation()}>
-          <div class="comment-top-row">{top_contents}</div>
+        <div className="comment-box" onClick={(evt) => evt.stopPropagation()}>
+          <div className="comment-top-row">{top_contents}</div>
           {my_assignments}
           {all_assignments}
         </div>,
@@ -937,14 +937,14 @@ export class AssignmentViewForNode extends AssignmentView {
     }
 
     return (
-      <div class={css_class}>
-        <div class="node-top-row">
+      <div className={css_class}>
+        <div className="node-top-row">
           <AssignmentTitle
             user_role={this.props.renderer.user_role}
             data={data}
           />
         </div>
-        <div class="assignment-timing">
+        <div className="assignment-timing">
           <div>
             <div>
               <label>{gettext('End Date')}: </label>

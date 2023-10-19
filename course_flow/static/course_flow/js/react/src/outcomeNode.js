@@ -156,26 +156,26 @@ export function createOutcomeNodeBranch(props, outcome_id, nodecategory) {
 export function getCompletionImg(completion_status, outcomes_type) {
   if (outcomes_type === 0 || completion_status & 1) {
     return (
-      <img class="self-completed" src={config.icon_path + 'solid_check.svg'} />
+      <img className="self-completed" src={config.icon_path + 'solid_check.svg'} />
     )
   }
   let contents = []
   if (completion_status & 2) {
     let divclass = ''
     contents.push(
-      <div class={'outcome-introduced outcome-degree' + divclass}>I</div>
+      <div className={'outcome-introduced outcome-degree' + divclass}>I</div>
     )
   }
   if (completion_status & 4) {
     let divclass = ''
     contents.push(
-      <div class={'outcome-developed outcome-degree' + divclass}>D</div>
+      <div className={'outcome-developed outcome-degree' + divclass}>D</div>
     )
   }
   if (completion_status & 8) {
     let divclass = ''
     contents.push(
-      <div class={'outcome-advanced outcome-degree' + divclass}>A</div>
+      <div className={'outcome-advanced outcome-degree' + divclass}>A</div>
     )
   }
   return contents

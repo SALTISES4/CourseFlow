@@ -31,7 +31,7 @@ class StrategyView extends Component {
       )
     return (
       <div
-        class="strategy-bar-strategy strategy new-strategy"
+        className="strategy-bar-strategy strategy new-strategy"
         ref={this.maindiv}
       >
         {strategy_icon}

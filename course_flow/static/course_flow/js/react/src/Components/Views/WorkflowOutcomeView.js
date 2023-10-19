@@ -46,14 +46,14 @@ class WorkflowOutcomeView extends React.Component {
         )
 
       //else text = gettext("This view renders a table showing the relationships between this workflow's outcomes and the outcomes of their linked workflows. To use this feature, you must link the nodes in this workflow to child workflows (ex. program nodes to course workflows) and ensure that those child workflows have their own sets of outcomes.");
-      return <div class="emptytext">{text}</div>
+      return <div className="emptytext">{text}</div>
     } else {
       let nodes
       nodes = nodecategory.map((nodecategory) => (
-        <div class="table-group">
-          <div class="table-cell nodewrapper blank-cell"></div>
-          <div class="table-cell nodewrapper total-cell">
-            <div class="node-category-header">{nodecategory.title}</div>
+        <div className="table-group">
+          <div className="table-cell nodewrapper blank-cell"></div>
+          <div className="table-cell nodewrapper total-cell">
+            <div className="node-category-header">{nodecategory.title}</div>
           </div>
           {nodecategory.nodes.map((node) => (
             <NodeOutcomeView renderer={this.props.renderer} objectID={node} />
@@ -63,8 +63,8 @@ class WorkflowOutcomeView extends React.Component {
       let outcomes = outcomes_sorted.map((category) => (
         <div>
           {this.props.object_sets.length > 0 && (
-            <div class="outcome-row outcome-category">
-              <div class="outcome-head">
+            <div className="outcome-row outcome-category">
+              <div className="outcome-head">
                 <h4>{category.objectset.title}</h4>
               </div>
             </div>
@@ -83,17 +83,17 @@ class WorkflowOutcomeView extends React.Component {
       ))
 
       return (
-        <div class="outcome-table node-rows">
-          <div class="outcome-row node-row">
-            <div class="outcome-wrapper">
-              <div class="outcome-head empty"></div>
+        <div className="outcome-table node-rows">
+          <div className="outcome-row node-row">
+            <div className="outcome-wrapper">
+              <div className="outcome-head empty"></div>
             </div>
-            <div class="outcome-cells">{nodes}</div>
-            <div class="table-cell blank-cell">
-              <div class="node-category-header"></div>
+            <div className="outcome-cells">{nodes}</div>
+            <div className="table-cell blank-cell">
+              <div className="node-category-header"></div>
             </div>
-            <div class="table-cell total-cell grand-total-cell">
-              <div class="total-header">Grand Total</div>
+            <div className="table-cell total-cell grand-total-cell">
+              <div className="total-header">Grand Total</div>
             </div>
           </div>
           {outcomes}

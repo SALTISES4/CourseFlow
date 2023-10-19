@@ -40,7 +40,7 @@ class AlignmentView extends React.Component {
     let view_buttons_outcomes = this.props.outcomes.map((category, i) => {
       return [
         <h4>{category.objectset.title}:</h4>,
-        <div class="workflow-view-select hide-print">
+        <div className="workflow-view-select hide-print">
           {category.outcomes.map((outcome, j) => {
             let view_class = 'hover-shade'
             if (
@@ -52,7 +52,7 @@ class AlignmentView extends React.Component {
             return (
               <div
                 id={'button-outcome-' + outcome.data.id}
-                class={view_class}
+                className={view_class}
                 onClick={this.changeView.bind(this, i, 'outcome', j)}
               >
                 <OutcomeTitle
@@ -73,7 +73,7 @@ class AlignmentView extends React.Component {
       return (
         <div
           id={'button-week-' + week.id}
-          class={view_class}
+          className={view_class}
           onClick={this.changeView.bind(this, i, 'week')}
         >
           <WeekTitle data={week} rank={i} />
@@ -143,11 +143,11 @@ class AlignmentView extends React.Component {
     }
 
     return (
-      <div class="workflow-details">
+      <div className="workflow-details">
         <h3>{gettext('Filters')}:</h3>
         {view_buttons_outcomes}
         <h4>{gettext('Sections')}:</h4>
-        <div class="workflow-view-select hide-print">{view_buttons_terms}</div>
+        <div className="workflow-view-select hide-print">{view_buttons_terms}</div>
         {outcomes_block}
         {terms_block}
         {alignment_block}
@@ -188,7 +188,7 @@ class AlignmentOutcomesBlock extends React.Component {
       gettext(this.props.workflow_type + ' outcome')
     )
     return (
-      <div class="alignment-block">
+      <div className="alignment-block">
         <h3>{titlestr}:</h3>
         <OutcomeView renderer={this.props.renderer} objectID={data.id} />
       </div>
@@ -242,7 +242,7 @@ class AlignmentHorizontalReverseWeekUnconnected extends EditableComponentWithCom
 
     return (
       <div
-        class="week"
+        className="week"
         ref={this.maindiv}
         style={this.get_border_style()}
         onClick={(evt) =>
@@ -250,12 +250,12 @@ class AlignmentHorizontalReverseWeekUnconnected extends EditableComponentWithCom
         }
       >
         <TitleText text={data.title} defaultText={default_text} />
-        <div class="node-block">{nodeweeks}</div>
+        <div className="node-block">{nodeweeks}</div>
         {this.addEditable(data, true)}
-        <div class="side-actions">
-          <div class="comment-indicator-container"></div>
+        <div className="side-actions">
+          <div className="comment-indicator-container"></div>
         </div>
-        <div class="mouseover-actions">{comments}</div>
+        <div className="mouseover-actions">{comments}</div>
       </div>
     )
   }
@@ -296,13 +296,13 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
     let child_outcomes_header
     if (this.props.child_outcomes.length > 0) {
       child_outcomes_header = (
-        <div class="child-outcome child-outcome-header">
-          <div class="half-width alignment-column">
+        <div className="child-outcome child-outcome-header">
+          <div className="half-width alignment-column">
             {Utility.capWords(
               gettext(data.linked_workflow_data.type + ' outcomes')
             ) + gettext(' From Linked Workflow')}
           </div>
-          <div class="half-width alignment-column">
+          <div className="half-width alignment-column">
             {gettext('Associated ') +
               Utility.capWords(gettext(this.props.workflow.type + ' outcomes'))}
           </div>
@@ -312,7 +312,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
       if (data.linked_workflow) {
         if (this.props.child_outcomes == -1) {
           child_outcomes_header = (
-            <div class="child-outcome child-outcome-header">
+            <div className="child-outcome child-outcome-header">
               {gettext('... LOADING')}
             </div>
           )
@@ -320,13 +320,13 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         } else {
           if (data.linked_workflow_data.deleted) {
             child_outcomes_header = (
-              <div class="child-outcome child-outcome-header">
+              <div className="child-outcome child-outcome-header">
                 {gettext('The linked workflow has been deleted.')}
               </div>
             )
           } else {
             child_outcomes_header = (
-              <div class="child-outcome child-outcome-header">
+              <div className="child-outcome child-outcome-header">
                 {gettext(
                   'No outcomes have been added to the linked workflow. When added, they will appear here.'
                 )}
@@ -336,7 +336,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         }
       } else {
         child_outcomes_header = (
-          <div class="child-outcome child-outcome-header">
+          <div className="child-outcome child-outcome-header">
             {gettext(
               'No workflow has been linked to this node. If you link a workflow, its outcomes will appear here.'
             )}
@@ -388,7 +388,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
       )
     let outcomes_for_node = (
       <div>
-        <div class="node-outcomes-header">
+        <div className="node-outcomes-header">
           {Utility.capWords(gettext(this.props.workflow.type + ' outcomes')) +
             gettext(' for node:')}
         </div>
@@ -401,11 +401,11 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
       add_new_outcome = (
         <div
           id="add-new-outcome"
-          class="menu-create hover-shade"
+          className="menu-create hover-shade"
           onClick={this.addNewChildOutcome.bind(this)}
         >
           <img
-            class="create-button"
+            className="create-button"
             src={config.icon_path + 'add_new_white.svg'}
           />
           <div>{gettext('Add new')}</div>
@@ -418,11 +418,11 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
     ) {
       if (this.state.show_all) {
         show_all = (
-          <div class="alignment-added-outcomes">
+          <div className="alignment-added-outcomes">
             {add_new_outcome}
             {outcomes_for_node}
             <div
-              class="alignment-show-all"
+              className="alignment-show-all"
               onClick={() => this.setState({ show_all: false })}
             >
               {'-' + gettext('Hide Unused')}
@@ -431,9 +431,9 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
         )
       } else {
         show_all = (
-          <div class="alignment-added-outcomes">
+          <div className="alignment-added-outcomes">
             <div
-              class="alignment-show-all"
+              className="alignment-show-all"
               onClick={() => this.setState({ show_all: true })}
             >
               {'+' + gettext('Show All')}
@@ -443,7 +443,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
       }
     } else {
       show_all = (
-        <div class="alignment-added-outcomes">
+        <div className="alignment-added-outcomes">
           {add_new_outcome}
           {outcomes_for_node}
         </div>
@@ -459,26 +459,26 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
     if (this.props.renderer.view_comments) comments = this.addCommenting()
 
     return (
-      <div class="node-week">
+      <div className="node-week">
         <div
           style={style}
-          class={'node column-' + data.column}
+          className={'node column-' + data.column}
           onClick={(evt) => selection_manager.changeSelection(evt, this)}
           ref={this.maindiv}
         >
-          <div class="node-top-row">
+          <div className="node-top-row">
             <NodeTitle data={data} />
           </div>
-          <div class="outcome-block">
+          <div className="outcome-block">
             {child_outcomes_header}
             {child_outcomes}
           </div>
-          <div class="node-drop-row">{show_all}</div>
+          <div className="node-drop-row">{show_all}</div>
           {this.addEditable(data_override, true)}
-          <div class="side-actions">
-            <div class="comment-indicator-container"></div>
+          <div className="side-actions">
+            <div className="comment-indicator-container"></div>
           </div>
-          <div class="mouseover-actions">{comments}</div>
+          <div className="mouseover-actions">{comments}</div>
         </div>
       </div>
     )
@@ -553,7 +553,7 @@ class OutcomeAdder extends React.Component {
     ))
 
     return (
-      <select class="outcome-adder" onChange={this.onChange.bind(this)}>
+      <select className="outcome-adder" onChange={this.onChange.bind(this)}>
         <option value={0}>{gettext('Add outcome')}</option>
         {options}
       </select>
@@ -637,8 +637,8 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
     }
 
     return (
-      <div class="child-outcome">
-        <div class="half-width alignment-column">
+      <div className="child-outcome">
+        <div className="half-width alignment-column">
           <OutcomeView
             objectID={data.id}
             comments={true}
@@ -646,9 +646,9 @@ class AlignmentHorizontalReverseChildOutcomeUnconnected extends React.Component 
             renderer={this.props.renderer}
           />
         </div>
-        <div class="half-width alignment-column">
+        <div className="half-width alignment-column">
           {parent_outcomes}
-          <div class="alignment-row">
+          <div className="alignment-row">
             <OutcomeAdder
               renderer={this.props.renderer}
               outcome_set={outcome_restriction}
@@ -702,7 +702,7 @@ class AlignmentHorizontalReverseParentOutcome extends React.Component {
     let data = this.props.outcomenode
     let props = this.props
     return (
-      <div class="alignment-row">
+      <div className="alignment-row">
         <OutcomeNodeView
           objectID={data.id}
           renderer={this.props.renderer}
@@ -746,11 +746,11 @@ class AlignmentHorizontalReverseBlockUnconnected extends React.Component {
         />
       )
 
-      return <div class="week-workflow">{week_component}</div>
+      return <div className="week-workflow">{week_component}</div>
     })
 
     return (
-      <div class="alignment-block">
+      <div className="alignment-block">
         <h3>Alignment:</h3>
         {weekworkflows}
       </div>

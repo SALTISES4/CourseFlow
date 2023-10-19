@@ -67,8 +67,8 @@ export class MessageBox extends React.Component {
         />
       )
     return (
-      <div class="screen-barrier" onClick={(evt) => evt.stopPropagation()}>
-        <div class={'message-box ' + this.props.message_type}>{menu}</div>
+      <div className="screen-barrier" onClick={(evt) => evt.stopPropagation()}>
+        <div className={'message-box ' + this.props.message_type}>{menu}</div>
       </div>
     )
   }
@@ -121,8 +121,8 @@ export class WorkflowsMenu extends React.Component {
     var i = 0
     for (var prop in data_package) {
       tab_li.push(
-        <li class="tab-header">
-          <a class="hover-shade" href={'#tabs-' + i}>
+        <li className="tab-header">
+          <a className="hover-shade" href={'#tabs-' + i}>
             {data_package[prop].title}
           </a>
         </li>
@@ -142,8 +142,8 @@ export class WorkflowsMenu extends React.Component {
     let current_project
     if (this.current_project) {
       current_project = [
-        <h4 class={'big-space'}>{gettext('Current project')}</h4>,
-        <div class="menu-grid">
+        <h4 className={'big-space'}>{gettext('Current project')}</h4>,
+        <div className="menu-grid">
           <WorkflowForMenu
             workflow_data={this.current_project}
             selected={this.state.selected == this.current_project.id}
@@ -153,19 +153,19 @@ export class WorkflowsMenu extends React.Component {
             selectAction={this.workflowSelected.bind(this)}
           />
         </div>,
-        <hr class={'big-space'} />,
-        <h4 class={'big-space'}>{gettext('Or select from your projects')}</h4>
+        <hr className={'big-space'} />,
+        <h4 className={'big-space'}>{gettext('Or select from your projects')}</h4>
       ]
     }
     return (
-      <div class="message-wrap">
+      <div className="message-wrap">
         {this.getTitle()}
         {current_project}
-        <div class="home-tabs" id="workflow-tabs">
+        <div className="home-tabs" id="workflow-tabs">
           <ul>{tab_li}</ul>
           {tabs}
         </div>
-        <div class="action-bar">{this.getActions()}</div>
+        <div className="action-bar">{this.getActions()}</div>
       </div>
     )
   }
@@ -198,7 +198,7 @@ export class WorkflowsMenu extends React.Component {
       actions.push(
         <button
           id="set-linked-workflow-cancel"
-          class="secondary-button"
+          className="secondary-button"
           onClick={closeMessageBox}
         >
           {gettext('Cancel')}
@@ -207,7 +207,7 @@ export class WorkflowsMenu extends React.Component {
       actions.push(
         <button
           id="set-linked-workflow-none"
-          class="secondary-button"
+          className="secondary-button"
           onClick={() => {
             setLinkedWorkflow(
               this.props.data.node_id,
@@ -224,7 +224,7 @@ export class WorkflowsMenu extends React.Component {
         <button
           id="set-linked-workflow"
           disabled={!this.state.selected}
-          class="primary-button"
+          className="primary-button"
           onClick={() => {
             setLinkedWorkflow(
               this.props.data.node_id,
@@ -255,7 +255,7 @@ export class WorkflowsMenu extends React.Component {
       actions.push(
         <button
           id="set-linked-workflow-cancel"
-          class="secondary-button"
+          className="secondary-button"
           onClick={closeMessageBox}
         >
           {gettext('Cancel')}
@@ -264,7 +264,7 @@ export class WorkflowsMenu extends React.Component {
       actions.push(
         <button
           id="set-linked-workflow"
-          class="primary-button"
+          className="primary-button"
           disabled={!this.state.selected}
           onClick={() => {
             this.props.actionFunction({ workflowID: this.state.selected })
@@ -278,7 +278,7 @@ export class WorkflowsMenu extends React.Component {
       actions.push(
         <button
           id="set-linked-workflow-cancel"
-          class="secondary-button"
+          className="secondary-button"
           onClick={closeMessageBox}
         >
           {gettext('Cancel')}
@@ -287,7 +287,7 @@ export class WorkflowsMenu extends React.Component {
       actions.push(
         <button
           id="set-linked-workflow"
-          class="primary-button"
+          className="primary-button"
           disabled={!this.state.selected}
           onClick={() => {
             this.props.actionFunction({ parentID: this.state.selected })
@@ -346,7 +346,7 @@ export class MenuSection extends React.Component {
       let adds
       {
         adds = types.map((this_type) => (
-          <a class="hover-shade" href={config.create_path[this_type]}>
+          <a className="hover-shade" href={config.create_path[this_type]}>
             {gettext('Create new ') + gettext(this_type)}
           </a>
         ))
@@ -354,7 +354,7 @@ export class MenuSection extends React.Component {
         if (is_strategy) import_text += gettext(' strategy')
         adds.push(
           <a
-            class="hover-shade"
+            className="hover-shade"
             onClick={() => {
               getAddedWorkflowMenu(
                 parentID,
@@ -383,9 +383,9 @@ export class MenuSection extends React.Component {
         )
       }
       add_button = (
-        <div class="menu-create hover-shade" ref={this.dropdownDiv}>
+        <div className="menu-create hover-shade" ref={this.dropdownDiv}>
           <img
-            class={
+            className={
               'create-button create-button-' +
               this.props.section_data.object_type +
               ' link-image'
@@ -394,15 +394,15 @@ export class MenuSection extends React.Component {
             src={config.icon_path + 'add_new_white.svg'}
           />
           <div>{this.props.section_data.title}</div>
-          <div class="create-dropdown">{adds}</div>
+          <div className="create-dropdown">{adds}</div>
         </div>
       )
     }
 
     return (
-      <div class={'section-' + this.props.section_data.object_type}>
+      <div className={'section-' + this.props.section_data.object_type}>
         {add_button}
-        <div class="menu-grid">{objects}</div>
+        <div className="menu-grid">{objects}</div>
       </div>
     )
   }
@@ -455,7 +455,7 @@ class WorkflowGridMenuUnconnected extends React.Component {
     for (var prop in this.props.data_package) {
       tab_li.push(
         <li>
-          <a class="hover-shade" href={'#tabs-' + i}>
+          <a className="hover-shade" href={'#tabs-' + i}>
             {this.props.data_package[prop].title}
           </a>
         </li>
@@ -471,8 +471,8 @@ class WorkflowGridMenuUnconnected extends React.Component {
       i++
     }
     return (
-      <div class="project-menu">
-        <div class="home-tabs" id="home-tabs">
+      <div className="project-menu">
+        <div className="home-tabs" id="home-tabs">
           <ul>{tab_li}</ul>
           {tabs}
         </div>
@@ -512,10 +512,10 @@ export class ProjectEditMenu extends React.Component {
       disciplines = data.all_disciplines
         .filter((discipline) => data.disciplines.indexOf(discipline.id) >= 0)
         .map((discipline) => (
-          <div class="flex-middle discipline-tag">
+          <div className="flex-middle discipline-tag">
             {discipline.title}
             <span
-              class="material-symbols-rounded green"
+              className="material-symbols-rounded green"
               onClick={this.removeDiscipline.bind(this, discipline.id)}
             >
               close
@@ -535,17 +535,17 @@ export class ProjectEditMenu extends React.Component {
     if (this.state.selected_set)
       selected_set = object_sets[this.state.selected_set]
     let sets_added = data.object_sets.map((item) => (
-      <div class="nomenclature-row">
+      <div className="nomenclature-row">
         <div>{object_sets[item.term]}</div>
         <input
           value={item.title}
           onChange={this.termChanged.bind(this, item.id)}
         />
         <div
-          class="nomenclature-delete-button"
+          className="nomenclature-delete-button"
           onClick={this.deleteTerm.bind(this, item.id)}
         >
-          <span class="material-symbols-rounded filled green hover-shade">
+          <span className="material-symbols-rounded filled green hover-shade">
             delete
           </span>
         </div>
@@ -570,7 +570,7 @@ export class ProjectEditMenu extends React.Component {
       add_term_css += ' green hover-shade'
     }
     return (
-      <div class="message-wrap">
+      <div className="message-wrap">
         <h2>{gettext('Edit project')}</h2>
         <div>
           <h4>{gettext('Title')}</h4>
@@ -592,7 +592,7 @@ export class ProjectEditMenu extends React.Component {
         </div>
         <div>
           <h4>{gettext('Disciplines')}</h4>
-          <div class="flex-middle disciplines-div">{disciplines}</div>
+          <div className="flex-middle disciplines-div">{disciplines}</div>
           <input
             autocomplete="off"
             id="project-discipline-input"
@@ -601,11 +601,11 @@ export class ProjectEditMenu extends React.Component {
         </div>
         <div>
           <h4>{gettext('Object sets')}</h4>
-          <div class="workflow-created">
+          <div className="workflow-created">
             {'Define categories for outcomes or nodes'}
           </div>
           {sets_added}
-          <div class="nomenclature-row">
+          <div className="nomenclature-row">
             <select
               id="nomenclature-select"
               value={this.state.selected_set}
@@ -623,15 +623,15 @@ export class ProjectEditMenu extends React.Component {
               onChange={this.inputChanged.bind(this, 'termsingular')}
               disabled={selected_set == null}
             />
-            <div class="nomenclature-add-button" onClick={clickEvt}>
-              <span class={add_term_css}>add_circle</span>
+            <div className="nomenclature-add-button" onClick={clickEvt}>
+              <span className={add_term_css}>add_circle</span>
             </div>
           </div>
         </div>
         {this.getLiveProjectSettings()}
-        <div class="action-bar">{this.getActions()}</div>
-        <div class="window-close-button" onClick={closeMessageBox}>
-          <span class="material-symbols-rounded green">close</span>
+        <div className="action-bar">{this.getActions()}</div>
+        <div className="window-close-button" onClick={closeMessageBox}>
+          <span className="material-symbols-rounded green">close</span>
         </div>
       </div>
     )
@@ -746,14 +746,14 @@ export class ProjectEditMenu extends React.Component {
   getActions() {
     var actions = []
     actions.push(
-      <button class="secondary-button" onClick={closeMessageBox}>
+      <button className="secondary-button" onClick={closeMessageBox}>
         {gettext('Cancel')}
       </button>
     )
     actions.push(
       <button
         id="save-changes"
-        class="primary-button"
+        className="primary-button"
         disabled={!this.state.changed}
         onClick={() => {
           updateValueInstant(this.state.id, 'project', {

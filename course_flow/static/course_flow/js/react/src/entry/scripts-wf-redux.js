@@ -740,7 +740,7 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer {
 
 export class WorkflowLoader extends Component {
   render() {
-    return <div class="load-screen" />
+    return <div className="load-screen" />
   }
 }
 

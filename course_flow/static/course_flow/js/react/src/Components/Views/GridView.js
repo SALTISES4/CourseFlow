@@ -33,8 +33,8 @@ class GridView extends React.Component {
     ))
 
     return (
-      <div class="workflow-details">
-        <div class="grid-ponderation">
+      <div className="workflow-details">
+        <div className="grid-ponderation">
           {gettext('Times in hours shown in format') +
             ': ' +
             gettext('Theory') +
@@ -43,7 +43,7 @@ class GridView extends React.Component {
             '/' +
             gettext('Individual')}
         </div>
-        <div class="workflow-grid">{weeks}</div>
+        <div className="workflow-grid">{weeks}</div>
       </div>
     )
   }
@@ -75,16 +75,16 @@ class GridWeekViewUnconnected extends EditableComponentWithComments {
 
     return (
       <div
-        class="week"
+        className="week"
         ref={this.maindiv}
         style={this.get_border_style()}
         onClick={(evt) =>
           this.props.renderer.selection_manager.changeSelection(evt, this)
         }
       >
-        <div class="week-title">
+        <div className="week-title">
           <TitleText title={data.title} defaultText={default_text} />
-          <div class="grid-ponderation">
+          <div className="grid-ponderation">
             {this.props.total_theory +
               '/' +
               this.props.total_practical +
@@ -94,9 +94,9 @@ class GridWeekViewUnconnected extends EditableComponentWithComments {
         </div>
         {nodes}
         {this.addEditable(data, true)}
-        <div class="mouseover-actions">{comments}</div>
-        <div class="side-actions">
-          <div class="comment-indicator-container"></div>
+        <div className="mouseover-actions">{comments}</div>
+        <div className="side-actions">
+          <div className="comment-indicator-container"></div>
         </div>
       </div>
     )
@@ -185,7 +185,7 @@ class GridNodeViewUnconnected extends EditableComponentWithComments {
     else data_override = data
     let ponderation
     ponderation = (
-      <div class="grid-ponderation">
+      <div className="grid-ponderation">
         {data_override.ponderation_theory +
           '/' +
           data_override.ponderation_practical +
@@ -212,15 +212,15 @@ class GridNodeViewUnconnected extends EditableComponentWithComments {
         id={data.id}
         ref={this.maindiv}
         onClick={(evt) => selection_manager.changeSelection(evt, this)}
-        class={css_class}
+        className={css_class}
       >
-        <div class="node-top-row">
+        <div className="node-top-row">
           <NodeTitle data={data} />
           {ponderation}
         </div>
-        <div class="mouseover-actions">{comments}</div>
-        <div class="side-actions">
-          <div class="comment-indicator-container"></div>
+        <div className="mouseover-actions">{comments}</div>
+        <div className="side-actions">
+          <div className="comment-indicator-container"></div>
         </div>
         {this.addEditable(data_override, true)}
       </div>

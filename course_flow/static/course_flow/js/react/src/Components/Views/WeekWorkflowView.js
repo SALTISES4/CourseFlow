@@ -43,7 +43,7 @@ class WeekWorkflowView extends Component {
       )
     return (
       <div
-        class={my_class}
+        className={my_class}
         id={data.id}
         ref={this.maindiv}
         data-child-id={data.week}
@@ -75,7 +75,7 @@ class WeekWorkflowComparisonViewUnconnected extends WeekWorkflowView {
 
     return (
       <div
-        class={my_class}
+        className={my_class}
         id={data.id}
         ref={this.maindiv}
         data-child-id={data.week}

@@ -78,9 +78,9 @@ export class ShareMenu extends React.Component {
     ) {
       shared_with = [
         <hr />,
-        <div class="user-panel">
+        <div className="user-panel">
           <p>{gettext('Shared With')}:</p>
-          <ul class="user-list">
+          <ul className="user-list">
             {editors}
             {commentors}
             {viewers}
@@ -91,7 +91,7 @@ export class ShareMenu extends React.Component {
     }
 
     return (
-      <div class="message-wrap user-text">
+      <div className="message-wrap user-text">
         <h2>
           {gettext('Share') + ' ' + gettext(data.type) + ' '}
           <WorkflowTitle
@@ -110,11 +110,11 @@ export class ShareMenu extends React.Component {
           share_info={share_info}
         />
         {shared_with}
-        <div class="window-close-button" onClick={this.props.actionFunction}>
-          <span class="green material-symbols-rounded">close</span>
+        <div className="window-close-button" onClick={this.props.actionFunction}>
+          <span className="green material-symbols-rounded">close</span>
         </div>
-        <div class="action-bar">
-          <button class="secondary-button" onClick={this.props.actionFunction}>
+        <div className="action-bar">
+          <button className="secondary-button" onClick={this.props.actionFunction}>
             {gettext('Close')}
           </button>
         </div>
@@ -145,32 +145,32 @@ export class ShareMenu extends React.Component {
           )
         else disabled_text = gettext('Title is required to publish.')
         disabled_indicator = (
-          <div class="warning flex-middle">
-            <span class="material-symbols-rounded red">block</span>
+          <div className="warning flex-middle">
+            <span className="material-symbols-rounded red">block</span>
             <div>{disabled_text}</div>
           </div>
         )
       }
       return [
-        <div class="big-buttons-wrapper">
+        <div className="big-buttons-wrapper">
           <div
-            class={public_class}
+            className={public_class}
             disabled={public_disabled}
             onClick={this.setPublication.bind(this, true && !public_disabled)}
           >
-            <span class="material-symbols-rounded">public</span>
-            <div class="big-button-title">
+            <span className="material-symbols-rounded">public</span>
+            <div className="big-button-title">
               {gettext('Public to CourseFlow')}
             </div>
-            <div class="big-button-description">{public_text}</div>
+            <div className="big-button-description">{public_text}</div>
           </div>
           <div
-            class={private_class}
+            className={private_class}
             onClick={this.setPublication.bind(this, false)}
           >
-            <span class="material-symbols-rounded filled">visibility_off</span>
-            <div class="big-button-title">{gettext('Private')}</div>
-            <div class="big-button-description">
+            <span className="material-symbols-rounded filled">visibility_off</span>
+            <div className="big-button-title">{gettext('Private')}</div>
+            <div className="big-button-description">
               {gettext('Only added collaborators can view')}
             </div>
           </div>
@@ -181,13 +181,13 @@ export class ShareMenu extends React.Component {
       let published_icon
       if (published)
         published_icon = (
-          <div class="big-buttons-wrapper">
-            <div class="big-button active">
-              <span class="material-symbols-rounded">public</span>
-              <div class="big-button-title">
+          <div className="big-buttons-wrapper">
+            <div className="big-button active">
+              <span className="material-symbols-rounded">public</span>
+              <div className="big-button-title">
                 {gettext('Project public to CourseFlow')}
               </div>
-              <div class="big-button-description">
+              <div className="big-button-description">
                 {gettext('Any CourseFlow teacher can view')}
               </div>
             </div>
@@ -195,15 +195,15 @@ export class ShareMenu extends React.Component {
         )
       else
         published_icon = (
-          <div class="big-buttons-wrapper">
-            <div class="big-button active">
-              <span class="material-symbols-rounded filled">
+          <div className="big-buttons-wrapper">
+            <div className="big-button active">
+              <span className="material-symbols-rounded filled">
                 visibility_off
               </span>
-              <div class="big-button-title">
+              <div className="big-button-title">
                 {gettext('Project is private')}
               </div>
-              <div class="big-button-description">
+              <div className="big-button-description">
                 {gettext('Only added collaborators can view')}
               </div>
             </div>
@@ -223,17 +223,17 @@ export class ShareMenu extends React.Component {
       if (!public_view)
         return (
           <div
-            class="public-link-button  hover-shade"
+            className="public-link-button  hover-shade"
             onClick={this.togglePublicView.bind(this, !public_view)}
           >
-            <div class="public-link-icon">
-              <span class="material-symbols-rounded">add_link</span>
+            <div className="public-link-icon">
+              <span className="material-symbols-rounded">add_link</span>
             </div>
             <div>
-              <div class="public-link-text">
+              <div className="public-link-text">
                 {gettext('Generate a public link')}
               </div>
-              <div class="public-link-description">
+              <div className="public-link-description">
                 {gettext(
                   'Anyone with the link will be able to view the workflow'
                 )}
@@ -245,7 +245,7 @@ export class ShareMenu extends React.Component {
       else
         return [
           <div
-            class="public-link-button  hover-shade"
+            className="public-link-button  hover-shade"
             onClick={() => {
               navigator.clipboard.writeText(public_link)
               let copy_icon_text = $(
@@ -262,25 +262,25 @@ export class ShareMenu extends React.Component {
               }, 1000)
             }}
           >
-            <div class="copy-link-icon">
-              <span class="material-symbols-rounded">link</span>
+            <div className="copy-link-icon">
+              <span className="material-symbols-rounded">link</span>
             </div>
             <div>
-              <div class="copy-link-text">{gettext('Copy public link')}</div>
-              <div class="public-link-description">
+              <div className="copy-link-text">{gettext('Copy public link')}</div>
+              <div className="public-link-description">
                 {gettext('Anyone with the link can view the workflow')}}
               </div>
             </div>
           </div>,
           <div
-            class="public-link-button public-link-remove  hover-shade"
+            className="public-link-button public-link-remove  hover-shade"
             onClick={this.togglePublicView.bind(this, !public_view)}
           >
-            <div class="public-link-icon">
-              <span class="material-symbols-rounded">link_off</span>
+            <div className="public-link-icon">
+              <span className="material-symbols-rounded">link_off</span>
             </div>
             <div>
-              <div class="public-link-text">
+              <div className="public-link-text">
                 {gettext('Remove public link')}
               </div>
             </div>
@@ -397,8 +397,8 @@ class UserLabel extends React.Component {
     if (this.props.type != 'owner') {
       if (this.props.type == 'add') {
         permission_select = (
-          <div class="flex-middle">
-            <div class="permission-select">
+          <div className="flex-middle">
+            <div className="permission-select">
               <select ref={this.select} disabled={disabled}>
                 <option value="edit">{gettext('Can edit')}</option>
                 <option value="comment">{gettext('Can comment')}</option>
@@ -407,7 +407,7 @@ class UserLabel extends React.Component {
               </select>
             </div>
             <button
-              class="primary-button"
+              className="primary-button"
               onClick={() =>
                 this.props.addFunction($(this.select.current).val())
               }
@@ -418,7 +418,7 @@ class UserLabel extends React.Component {
         )
       } else {
         permission_select = (
-          <div class="permission-select">
+          <div className="permission-select">
             <select
               value={this.props.type}
               disabled={disabled}
@@ -436,12 +436,12 @@ class UserLabel extends React.Component {
     }
 
     return (
-      <li class="user-label">
+      <li className="user-label">
         <div>
-          <div class="user-name">
+          <div className="user-name">
             {this.props.user.first_name + ' ' + this.props.user.last_name}
           </div>
-          <div class="user-username">{this.props.user.username}</div>
+          <div className="user-username">{this.props.user.username}</div>
         </div>
         {permission_select}
       </li>
@@ -486,15 +486,15 @@ class UserAdd extends React.Component {
     }
 
     return (
-      <div class="user-add">
+      <div className="user-add">
         <p>{this.props.share_info}</p>
-        <div class="relative">
+        <div className="relative">
           <input
-            class="search-input"
+            className="search-input"
             ref={this.input}
             placeholder={gettext('Begin typing to search users')}
           />
-          <span class="material-symbols-rounded">search</span>
+          <span className="material-symbols-rounded">search</span>
         </div>
         {user}
       </div>

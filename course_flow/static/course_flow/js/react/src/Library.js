@@ -48,7 +48,7 @@ export class LibraryMenu extends React.Component {
 
   render() {
     return (
-      <div class="project-menu">
+      <div className="project-menu">
         {reactDom.createPortal(
           this.getCreate(),
           document.getElementById('visible-icons')
@@ -71,17 +71,17 @@ export class LibraryMenu extends React.Component {
     if (!this.props.renderer.read_only)
       create = (
         <div
-          class="hover-shade"
+          className="hover-shade"
           id="create-project-button"
           title={gettext('Create project or strategy')}
           ref={this.createDiv}
         >
-          <span class="material-symbols-rounded filled green">add_circle</span>
-          <div id="create-links-project" class="create-dropdown">
+          <span className="material-symbols-rounded filled green">add_circle</span>
+          <div id="create-links-project" className="create-dropdown">
             <a
               id="project-create-library"
               href={config.create_path.project}
-              class="hover-shade"
+              className="hover-shade"
             >
               {gettext('New project')}
             </a>
@@ -89,14 +89,14 @@ export class LibraryMenu extends React.Component {
             <a
               id="activity-strategy-create"
               href={config.create_path.activity_strategy}
-              class="hover-shade"
+              className="hover-shade"
             >
               {gettext('New activity strategy')}
             </a>
             <a
               id="course-strategy-create"
               href={config.create_path.course_strategy}
-              class="hover-shade"
+              className="hover-shade"
             >
               {gettext('New course strategy')}
             </a>
@@ -109,7 +109,7 @@ export class LibraryMenu extends React.Component {
   getOverflowLinks() {
     let overflow_links = []
     overflow_links.push(
-      <a id="import-old" class="hover-shade" href={config.get_paths.import}>
+      <a id="import-old" className="hover-shade" href={config.get_paths.import}>
         {gettext('Import from old CourseFlow')}
       </a>
     )
@@ -128,7 +128,7 @@ export class LibraryMenu extends React.Component {
 export class ExploreMenu extends LibraryMenu {
   render() {
     return (
-      <div class="project-menu">
+      <div className="project-menu">
         <ExploreFilter
           disciplines={this.props.disciplines}
           renderer={this.props.renderer}
@@ -144,7 +144,7 @@ export class ExploreMenu extends LibraryMenu {
 export class FavouritesMenu extends LibraryMenu {
   render() {
     return (
-      <div class="project-menu">
+      <div className="project-menu">
         <WorkflowFilter
           renderer={this.props.renderer}
           workflows={this.state.project_data}
@@ -183,26 +183,26 @@ export class HomeMenu extends React.Component {
     let project_box
     if (this.props.renderer.is_teacher) {
       project_box = (
-        <div class="home-item">
-          <div class="home-title-row">
-            <div class="home-item-title">{gettext('Recent projects')}</div>
-            <a class="collapsed-text-show-more" href={library_path}>
+        <div className="home-item">
+          <div className="home-title-row">
+            <div className="home-item-title">{gettext('Recent projects')}</div>
+            <a className="collapsed-text-show-more" href={library_path}>
               {gettext('See all')}
             </a>
           </div>
-          <div class="menu-grid">{projects}</div>
+          <div className="menu-grid">{projects}</div>
         </div>
       )
     } else {
       project_box = (
-        <div class="home-item">
-          <div class="home-title-row">
-            <div class="home-item-title">{gettext('Recent classrooms')}</div>
-            <a class="collapsed-text-show-more" href={library_path}>
+        <div className="home-item">
+          <div className="home-title-row">
+            <div className="home-item-title">{gettext('Recent classrooms')}</div>
+            <a className="collapsed-text-show-more" href={library_path}>
               {gettext('See all')}
             </a>
           </div>
-          <div class="menu-grid">{projects}</div>
+          <div className="menu-grid">{projects}</div>
         </div>
       )
     }
@@ -210,23 +210,23 @@ export class HomeMenu extends React.Component {
     let favourite_box
     if (this.props.renderer.is_teacher) {
       favourite_box = (
-        <div class="home-item">
-          <div class="home-title-row">
-            <div class="home-item-title">{gettext('Favourites')}</div>
+        <div className="home-item">
+          <div className="home-title-row">
+            <div className="home-item-title">{gettext('Favourites')}</div>
             <a
-              class="collapsed-text-show-more"
+              className="collapsed-text-show-more"
               href={config.my_favourites_path}
             >
               {gettext('See all')}
             </a>
           </div>
-          <div class="menu-grid">{favourites}</div>
+          <div className="menu-grid">{favourites}</div>
         </div>
       )
     }
 
     return (
-      <div class="home-menu-container">
+      <div className="home-menu-container">
         {project_box}
         {favourite_box}
       </div>
@@ -259,7 +259,7 @@ export class ProjectMenu extends LibraryMenu {
 
   render() {
     return (
-      <div class="project-menu">
+      <div className="project-menu">
         {this.getHeader()}
         {this.getContent()}
         {reactDom.createPortal(
@@ -300,14 +300,14 @@ export class ProjectMenu extends LibraryMenu {
       this.props.renderer.user_role == Constants.role_keys.teacher
     )
       return_val.push(
-        <div class="workflow-view-select hide-print">
+        <div className="workflow-view-select hide-print">
           {this.getViewButtons().map((item) => {
             let view_class = 'hover-shade'
             if (item.type == this.state.view_type) view_class += ' active'
             return (
               <a
                 id={'button_' + item.type}
-                class={view_class}
+                className={view_class}
                 onClick={this.changeView.bind(this, item.type)}
               >
                 {item.name}
@@ -389,7 +389,7 @@ export class ProjectMenu extends LibraryMenu {
         liveproject = (
           <a
             id="live-project"
-            class="hover-shade"
+            className="hover-shade"
             href={config.update_path.liveproject.replace('0', data.id)}
           >
             {gettext('View Classroom')}
@@ -399,7 +399,7 @@ export class ProjectMenu extends LibraryMenu {
         liveproject = (
           <a
             id="live-project"
-            class="hover-shade"
+            className="hover-shade"
             onClick={this.makeLive.bind(this)}
           >
             {gettext('Create Classroom')}
@@ -410,7 +410,7 @@ export class ProjectMenu extends LibraryMenu {
 
     let overflow_links = [liveproject]
     overflow_links.push(
-      <a id="comparison-view" class="hover-shade" href="comparison">
+      <a id="comparison-view" className="hover-shade" href="comparison">
         {gettext('Workflow comparison tool')}
       </a>
     )
@@ -427,16 +427,16 @@ export class ProjectMenu extends LibraryMenu {
   getDeleteProject() {
     if (!this.state.data.deleted)
       return (
-        <div class="hover-shade" onClick={this.deleteProject.bind(this)}>
+        <div className="hover-shade" onClick={this.deleteProject.bind(this)}>
           <div>{gettext('Archive project')}</div>
         </div>
       )
     else
       return [
-        <div class="hover-shade" onClick={this.restoreProject.bind(this)}>
+        <div className="hover-shade" onClick={this.restoreProject.bind(this)}>
           <div>{gettext('Restore project')}</div>
         </div>,
-        <div class="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
+        <div className="hover-shade" onClick={this.deleteProjectHard.bind(this)}>
           <div>{gettext('Permanently delete project')}</div>
         </div>
       ]
@@ -494,7 +494,7 @@ export class ProjectMenu extends LibraryMenu {
     let export_button = (
       <div
         id="export-button"
-        class="hover-shade"
+        className="hover-shade"
         onClick={() =>
           renderMessageBox(this.state.data, 'export', closeMessageBox)
         }
@@ -510,7 +510,7 @@ export class ProjectMenu extends LibraryMenu {
     let export_button = (
       <div
         id="copy-button"
-        class="hover-shade"
+        className="hover-shade"
         onClick={() => {
           let loader = this.props.renderer.tiny_loader
           loader.startLoad()
@@ -552,26 +552,26 @@ export class ProjectMenu extends LibraryMenu {
   getHeader() {
     let data = this.state.data
     return (
-      <div class="project-header">
+      <div className="project-header">
         <WorkflowTitle
           data={data}
           no_hyperlink={true}
           class_name="project-title"
         />
-        <div class="project-header-info">
-          <div class="project-info-section project-members">
+        <div className="project-header-info">
+          <div className="project-info-section project-members">
             <h4>{gettext('Permissions')}</h4>
             {this.getUsers()}
           </div>
-          <div class="project-other">
-            <div class="project-info-section project-description">
+          <div className="project-other">
+            <div className="project-info-section project-description">
               <h4>{gettext('Description')}</h4>
               <CollapsibleText
                 text={data.description}
                 defaultText={gettext('No description')}
               />
             </div>
-            <div class="project-info-section project-disciplines">
+            <div className="project-info-section project-disciplines">
               <h4>{gettext('Disciplines')}</h4>
               {this.props.renderer.all_disciplines
                 .filter(
@@ -593,46 +593,53 @@ export class ProjectMenu extends LibraryMenu {
     let commenters = this.state.users.commentors
     let viewers = this.state.users.viewers
     if (!author) return null
-    let users_group = [
-      <div class="user-name">
+    let users_group = [];
+    if(this.state.users.published){
+        users_group.push(
+            <div className="user-name">
+                {Constants.getUserTag("view")}<span className="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
+            </div>
+        );
+    }
+    users_group.push([
+      <div className="user-name">
         {Utility.getUserTag('author')}
         {Utility.getUserDisplay(author)}
       </div>,
       editors
         .filter((user) => user.id != author.id)
         .map((user) => (
-          <div class="user-name">
+          <div className="user-name">
             {Utility.getUserTag('edit')}
             {Utility.getUserDisplay(user)}
           </div>
         )),
       commenters.map((user) => (
-        <div class="user-name">
+        <div className="user-name">
           {Utility.getUserTag('comment')}
           {Utility.getUserDisplay(user)}
         </div>
       )),
       viewers.map((user) => (
-        <div class="user-name">
+        <div className="user-name">
           {Utility.getUserTag('view')}
           {Utility.getUserDisplay(user)}
         </div>
       ))
-    ]
-    if (this.state.users.published) {
-      users_group.push(
-        <div class="user-name">
-          {Utility.getUserTag('view')}
-          <span class="material-symbols-rounded">public</span>{' '}
-          {gettext('All CourseFlow')}
+    ])
+    users_group = users_group.flat(2)
+    let users = [<div className="users-group">{users_group}</div>]
+    if (users_group.length > 4) {
+      users.push(
+        <div className="workflow-created">
+          +{users_group.length - 4} {gettext('more')}
         </div>
       )
     }
-    let users = [<div class="users-group">{users_group}</div>]
     if (!this.props.renderer.read_only)
       users.push(
         <div
-          class="user-name collapsed-text-show-more"
+          className="user-name collapsed-text-show-more"
           onClick={this.openShareMenu.bind(this)}
         >
           {gettext('Modify')}
@@ -646,12 +653,12 @@ export class ProjectMenu extends LibraryMenu {
     if (!this.props.renderer.read_only)
       edit = (
         <div
-          class="hover-shade"
+          className="hover-shade"
           id="edit-project-button"
           title={gettext('Edit Project')}
           onClick={this.openEditMenu.bind(this)}
         >
-          <span class="material-symbols-rounded filled">edit</span>
+          <span className="material-symbols-rounded filled">edit</span>
         </div>
       )
     return edit
@@ -676,31 +683,31 @@ export class ProjectMenu extends LibraryMenu {
     if (!this.props.renderer.read_only)
       create = (
         <div
-          class="hover-shade"
+          className="hover-shade"
           id="create-project-button"
           title={gettext('Create workflow')}
           ref={this.createDiv}
         >
-          <span class="material-symbols-rounded filled">add_circle</span>
-          <div id="create-links-project" class="create-dropdown">
+          <span className="material-symbols-rounded filled">add_circle</span>
+          <div id="create-links-project" className="create-dropdown">
             <a
               id="activity-create-project"
               href={create_path_this_project.activity}
-              class="hover-shade"
+              className="hover-shade"
             >
               {gettext('New activity')}
             </a>
             <a
               id="course-create-project"
               href={create_path_this_project.course}
-              class="hover-shade"
+              className="hover-shade"
             >
               {gettext('New course')}
             </a>
             <a
               id="program-create-project"
               href={create_path_this_project.program}
-              class="hover-shade"
+              className="hover-shade"
             >
               {gettext('New program')}
             </a>
@@ -725,12 +732,12 @@ export class ProjectMenu extends LibraryMenu {
     if (!this.props.renderer.read_only)
       share = (
         <div
-          class="hover-shade"
+          className="hover-shade"
           id="share-button"
           title={gettext('Sharing')}
           onClick={this.openShareMenu.bind(this)}
         >
-          <span class="material-symbols-rounded filled">person_add</span>
+          <span className="material-symbols-rounded filled">person_add</span>
         </div>
       )
     return share
@@ -833,7 +840,7 @@ export class WorkflowFilter extends Component {
       search_results.push(<div>{gettext('No results found')}</div>)
     } else if (search_results.length == 10) {
       search_results.push(
-        <div class="hover-shade" onClick={() => this.seeAll()}>
+        <div className="hover-shade" onClick={() => this.seeAll()}>
           {gettext('+ See all')}
         </div>
       )
@@ -841,10 +848,10 @@ export class WorkflowFilter extends Component {
     let search_filter_lock
     if (this.state.search_filter_lock) {
       search_filter_lock = (
-        <div class="search-filter-lock">
+        <div className="search-filter-lock">
           <span
             onClick={this.clearSearchLock.bind(this)}
-            class="material-symbols-rounded hover-shade"
+            className="material-symbols-rounded hover-shade"
           >
             close
           </span>
@@ -853,25 +860,25 @@ export class WorkflowFilter extends Component {
       )
     }
     return [
-      <div class="workflow-filter-top">
+      <div className="workflow-filter-top">
         <div id="workflow-search" ref={this.searchDOM}>
           <input
             placeholder={this.getPlaceholder()}
             onChange={debounce(this.searchChange.bind(this))}
             id="workflow-search-input"
-            class="search-input"
+            className="search-input"
             autocomplete="off"
           />
-          <span class="material-symbols-rounded">search</span>
-          <div class="create-dropdown">{search_results}</div>
+          <span className="material-symbols-rounded">search</span>
+          <div className="create-dropdown">{search_results}</div>
           {search_filter_lock}
         </div>
-        <div class="workflow-filter-sort">
+        <div className="workflow-filter-sort">
           {this.getFilter()}
           {this.getSort()}
         </div>
       </div>,
-      <div class="menu-grid">{workflows}</div>
+      <div className="menu-grid">{workflows}</div>
     ]
   }
 
@@ -918,23 +925,23 @@ export class WorkflowFilter extends Component {
   getFilter() {
     let active_filter = this.filters[this.state.active_filter]
     return (
-      <div id="workflow-filter" ref={this.filterDOM} class="hover-shade">
+      <div id="workflow-filter" ref={this.filterDOM} className="hover-shade">
         <div
-          class={
+          className={
             'workflow-sort-indicator hover-shade item-' +
             this.state.active_filter
           }
         >
-          <span class="material-symbols-rounded">filter_alt</span>
+          <span className="material-symbols-rounded">filter_alt</span>
           <div>{active_filter.display}</div>
         </div>
-        <div class="create-dropdown">
+        <div className="create-dropdown">
           {this.filters.map((filter, i) => {
             let css_class = 'filter-option'
             if (this.state.active_filter == i) css_class += ' active'
             return (
               <div
-                class={css_class}
+                className={css_class}
                 onClick={() => this.setState({ active_filter: i })}
               >
                 {filter.display}
@@ -949,29 +956,29 @@ export class WorkflowFilter extends Component {
   getSort() {
     let active_sort = this.sorts[this.state.active_sort]
     return (
-      <div id="workflow-sort" ref={this.sortDOM} class="hover-shade">
+      <div id="workflow-sort" ref={this.sortDOM} className="hover-shade">
         <div
-          class={
+          className={
             'workflow-sort-indicator hover-shade item-' + this.state.active_sort
           }
         >
-          <span class="material-symbols-rounded">sort</span>
+          <span className="material-symbols-rounded">sort</span>
           <div>{active_sort.display}</div>
         </div>
-        <div class="create-dropdown">
+        <div className="create-dropdown">
           {this.sorts.map((sort, i) => {
             let sort_dir
             let css_class = 'filter-option'
             if (this.state.active_sort == i) {
               css_class += ' active'
               if (this.state.reversed)
-                sort_dir = <span class="material-symbols-rounded">north</span>
+                sort_dir = <span className="material-symbols-rounded">north</span>
               else
-                sort_dir = <span class="material-symbols-rounded">south</span>
+                sort_dir = <span className="material-symbols-rounded">south</span>
             }
             return (
               <div
-                class={css_class}
+                className={css_class}
                 onClick={(evt) => {
                   evt.stopPropagation()
                   this.sortChange(i)
@@ -1145,26 +1152,26 @@ export class ExploreFilter extends WorkflowFilter {
       />
     ))
     return [
-      <div class="workflow-filter-top">
-        <div class="flex-middle">
+      <div className="workflow-filter-top">
+        <div className="flex-middle">
           <div id="workflow-search" ref={this.searchDOM}>
             <input
               placeholder={gettext('Search the public library')}
               onChange={debounce(this.searchChange.bind(this))}
               id="workflow-search-input"
-              class="search-input"
+              className="search-input"
             />
-            <span class="material-symbols-rounded">search</span>
+            <span className="material-symbols-rounded">search</span>
           </div>
           <button
-            class="primary-button"
+            className="primary-button"
             disabled={this.state.has_searched}
             onClick={this.doSearch.bind(this)}
           >
             {gettext('Search')}
           </button>
         </div>
-        <div class="workflow-filter-sort">
+        <div className="workflow-filter-sort">
           {this.getFromSaltise()}
           {this.getContentRich()}
           {this.getFilter()}
@@ -1173,7 +1180,7 @@ export class ExploreFilter extends WorkflowFilter {
         </div>
       </div>,
       this.getInfo(),
-      <div class="menu-grid">{workflows}</div>,
+      <div className="menu-grid">{workflows}</div>,
       this.getPages()
     ]
   }
@@ -1205,17 +1212,17 @@ export class ExploreFilter extends WorkflowFilter {
           disabled={this.state.pages.current_page == 1}
           onClick={this.toPage.bind(this, this.state.pages.current_page - 1)}
         >
-          <span class="material-symbols-rounded">arrow_left</span>
+          <span className="material-symbols-rounded">arrow_left</span>
         </button>
       ]
       if (this.state.pages.current_page > 3) {
         page_buttons.push(
-          <button class="page-button" onClick={this.toPage.bind(this, 1)}>
+          <button className="page-button" onClick={this.toPage.bind(this, 1)}>
             {1}
           </button>
         )
         if (this.state.pages.current_page > 4) {
-          page_buttons.push(<div class="page-button no-button">...</div>)
+          page_buttons.push(<div className="page-button no-button">...</div>)
         }
       }
 
@@ -1232,7 +1239,7 @@ export class ExploreFilter extends WorkflowFilter {
         if (i == this.state.pages.current_page)
           button_class += ' active-page-button'
         page_buttons.push(
-          <button class={button_class} onClick={this.toPage.bind(this, i)}>
+          <button className={button_class} onClick={this.toPage.bind(this, i)}>
             {i}
           </button>
         )
@@ -1240,11 +1247,11 @@ export class ExploreFilter extends WorkflowFilter {
 
       if (this.state.pages.current_page < this.state.pages.page_count - 2) {
         if (this.state.pages.current_page < this.state.pages.page_count - 3) {
-          page_buttons.push(<div class="page-button no-button">...</div>)
+          page_buttons.push(<div className="page-button no-button">...</div>)
         }
         page_buttons.push(
           <button
-            class="page-button"
+            className="page-button"
             onClick={this.toPage.bind(this, this.state.pages.page_count)}
           >
             {this.state.pages.page_count}
@@ -1260,7 +1267,7 @@ export class ExploreFilter extends WorkflowFilter {
           }
           onClick={this.toPage.bind(this, this.state.pages.current_page + 1)}
         >
-          <span class="material-symbols-rounded">arrow_right</span>
+          <span className="material-symbols-rounded">arrow_right</span>
         </button>
       )
 
@@ -1273,7 +1280,7 @@ export class ExploreFilter extends WorkflowFilter {
           -{this.state.pages.results_per_page * this.state.pages.current_page} (
           {this.state.pages.total_results} {gettext('total results')})
         </p>,
-        <div class="explore-page-buttons">{page_buttons}</div>
+        <div className="explore-page-buttons">{page_buttons}</div>
       ]
     } else {
       return <p>{gettext('No results were found.')}</p>
@@ -1290,24 +1297,24 @@ export class ExploreFilter extends WorkflowFilter {
 
   getFilter() {
     return (
-      <div id="workflow-filter" ref={this.filterDOM} class="hover-shade">
+      <div id="workflow-filter" ref={this.filterDOM} className="hover-shade">
         <div
-          class={
+          className={
             'workflow-sort-indicator hover-shade item-' +
             this.state.active_filters.length
           }
         >
-          <span class="material-symbols-rounded">filter_alt</span>
+          <span className="material-symbols-rounded">filter_alt</span>
           <div>{gettext('Type')}</div>
         </div>
-        <div class="create-dropdown">
+        <div className="create-dropdown">
           {this.filters.map((filter, i) => {
             let css_class = 'filter-option flex-middle'
             if (this.state.active_filters.indexOf(filter.name) >= 0)
               css_class += ' active'
             return (
               <div
-                class={css_class}
+                className={css_class}
                 onClick={(evt) => {
                   evt.stopPropagation()
                   this.filterChange(filter)
@@ -1328,7 +1335,7 @@ export class ExploreFilter extends WorkflowFilter {
         </div>
         <div
           attr_number={this.state.active_filters.length}
-          class="dropdown-number-indicator"
+          className="dropdown-number-indicator"
         >
           {this.state.active_filters.length}
         </div>
@@ -1339,29 +1346,29 @@ export class ExploreFilter extends WorkflowFilter {
   getSort() {
     let active_sort = this.sorts[this.state.active_sort]
     return (
-      <div id="workflow-sort" ref={this.sortDOM} class="hover-shade">
+      <div id="workflow-sort" ref={this.sortDOM} className="hover-shade">
         <div
-          class={
+          className={
             'workflow-sort-indicator hover-shade item-' + this.state.active_sort
           }
         >
-          <span class="material-symbols-rounded">sort</span>
+          <span className="material-symbols-rounded">sort</span>
           <div>{active_sort.display}</div>
         </div>
-        <div class="create-dropdown">
+        <div className="create-dropdown">
           {this.sorts.map((sort, i) => {
             let sort_dir
             let css_class = 'filter-option filter-checkbox'
             if (this.state.active_sort == i) {
               css_class += ' active'
               if (this.state.reversed)
-                sort_dir = <span class="material-symbols-rounded">north</span>
+                sort_dir = <span className="material-symbols-rounded">north</span>
               else
-                sort_dir = <span class="material-symbols-rounded">south</span>
+                sort_dir = <span className="material-symbols-rounded">south</span>
             }
             return (
               <div
-                class={css_class}
+                className={css_class}
                 onClick={(evt) => {
                   evt.stopPropagation()
                   this.sortChange(i)
@@ -1387,25 +1394,25 @@ export class ExploreFilter extends WorkflowFilter {
       <div
         id="workflow-disciplines"
         ref={this.disciplineDOM}
-        class="hover-shade"
+        className="hover-shade"
       >
         <div
-          class={
+          className={
             'workflow-sort-indicator hover-shade item-' +
             this.state.active_disciplines.length
           }
         >
-          <span class="material-symbols-rounded">science</span>
+          <span className="material-symbols-rounded">science</span>
           <div>{gettext('Discipline')}</div>
         </div>
-        <div class="create-dropdown">
+        <div className="create-dropdown">
           {this.props.disciplines.map((discipline, i) => {
             let css_class = 'filter-option flex-middle'
             if (this.state.active_disciplines.indexOf(discipline.id) >= 0)
               css_class += ' active'
             return (
               <div
-                class={css_class}
+                className={css_class}
                 onClick={(evt) => {
                   evt.stopPropagation()
                   this.disciplineChange(discipline)
@@ -1428,7 +1435,7 @@ export class ExploreFilter extends WorkflowFilter {
         </div>
         <div
           attr_number={this.state.active_disciplines.length}
-          class="dropdown-number-indicator"
+          className="dropdown-number-indicator"
         >
           {this.state.active_disciplines.length}
         </div>
@@ -1439,7 +1446,7 @@ export class ExploreFilter extends WorkflowFilter {
   getContentRich() {
     // let component=this;
     // return (
-    //     <div title={gettext("Restrict results to workflows with three or more nodes")} id="content-rich" class="hover-shade" onClick={
+    //     <div title={gettext("Restrict results to workflows with three or more nodes")} id="content-rich" className="hover-shade" onClick={
     //         ()=>{
     //             component.setState({content_rich:!component.state.content_rich,has_searched:false})
     //         }
@@ -1456,7 +1463,7 @@ export class ExploreFilter extends WorkflowFilter {
       <div
         title={gettext('Restrict results to content provided by SALTISE')}
         id="content-rich"
-        class="hover-shade"
+        className="hover-shade"
         onClick={() => {
           component.setState({
             from_saltise: !component.state.from_saltise,
@@ -1588,13 +1595,13 @@ export class WorkflowForMenu extends React.Component {
     return (
       <div
         ref={this.maindiv}
-        class={css_class}
+        className={css_class}
         onClick={this.clickAction.bind(this)}
         onMouseDown={(evt) => {
           evt.preventDefault()
         }}
       >
-        <div class="workflow-top-row">
+        <div className="workflow-top-row">
           <WorkflowTitle
             no_hyperlink={this.props.no_hyperlink}
             class_name="workflow-title"
@@ -1603,10 +1610,10 @@ export class WorkflowForMenu extends React.Component {
           {this.getVisible()}
           {this.getTypeIndicator()}
         </div>
-        <div class="workflow-created">{creation_text}</div>
+        <div className="workflow-created">{creation_text}</div>
         {/*<CollapsibleText css_class="workflow-description" text={data.description} defaultText={gettext("No description")}/>*/}
         <div
-          class="workflow-description collapsible-text"
+          className="workflow-description collapsible-text"
           dangerouslySetInnerHTML={{ __html: description }}
         ></div>
         {this.getButtons()}
@@ -1621,7 +1628,7 @@ export class WorkflowForMenu extends React.Component {
     if (type == 'liveproject') type_text = gettext('classroom')
     if (data.is_strategy) type_text += gettext(' strategy')
     return (
-      <div class={'workflow-type-indicator ' + type}>
+      <div className={'workflow-type-indicator ' + type}>
         {Utility.capWords(type_text)}
       </div>
     )
@@ -1634,7 +1641,7 @@ export class WorkflowForMenu extends React.Component {
     if (this.props.workflow_data.type != 'liveproject')
       buttons.push(
         <div
-          class="workflow-toggle-favourite hover-shade"
+          className="workflow-toggle-favourite hover-shade"
           onClick={(evt) => {
             toggleFavourite(
               this.props.workflow_data.id,
@@ -1647,7 +1654,7 @@ export class WorkflowForMenu extends React.Component {
           }}
         >
           <span
-            class={'material-symbols-outlined' + fav_class}
+            className={'material-symbols-outlined' + fav_class}
             title={gettext('Favourite')}
           >
             star
@@ -1660,7 +1667,7 @@ export class WorkflowForMenu extends React.Component {
       !(this.props.workflow_data.workflow_count == null)
     )
       workflows.push(
-        <div class="workflow-created">
+        <div className="workflow-created">
           {this.props.workflow_data.workflow_count + ' ' + gettext('workflows')}
         </div>
       )
@@ -1671,9 +1678,9 @@ export class WorkflowForMenu extends React.Component {
         Constants.role_keys['none']
     )
       workflows.push(
-        <div class="workflow-created workflow-live-classroom">
+        <div className="workflow-created workflow-live-classroom">
           <span
-            class="material-symbols-rounded small-inline"
+            className="material-symbols-rounded small-inline"
             title={gettext('Live Classroom')}
           >
             group
@@ -1684,19 +1691,19 @@ export class WorkflowForMenu extends React.Component {
     if (this.props.workflow_data.is_linked)
       workflows.push(
         <div
-          class="workflow-created linked-workflow-warning"
+          className="workflow-created linked-workflow-warning"
           title={gettext(
             'Warning: linking the same workflow to multiple nodes can result in loss of readability if you are associating parent workflow outcomes with child workflow outcomes.'
           )}
         >
-          <span class="material-symbols-rounded red filled small-inline">
+          <span className="material-symbols-rounded red filled small-inline">
             error
           </span>
           {' ' + gettext('Already in use')}
         </div>
       )
     return (
-      <div class="workflow-buttons-row">
+      <div className="workflow-buttons-row">
         <div>{buttons}</div>
         <div>{workflows}</div>
       </div>
@@ -1726,7 +1733,7 @@ export class WorkflowForMenu extends React.Component {
     )
       return (
         <div
-          class="permission-select"
+          className="permission-select"
           onClick={(evt) => evt.stopPropagation()}
           onMouseDown={(evt) => evt.stopPropagation()}
         >
@@ -1769,13 +1776,13 @@ export class WorkflowForMenuCondensed extends WorkflowForMenu {
     return (
       <div
         ref={this.maindiv}
-        class={css_class}
+        className={css_class}
         onClick={this.clickAction.bind(this)}
         onMouseDown={(evt) => {
           evt.preventDefault()
         }}
       >
-        <div class="workflow-top-row">
+        <div className="workflow-top-row">
           {this.getTypeIndicator()}
           <WorkflowTitle
             no_hyperlink={this.props.no_hyperlink}
@@ -1796,7 +1803,7 @@ export class WorkflowForMenuCondensed extends WorkflowForMenu {
   getProjectTitle() {
     if (this.props.workflow_data.project_title) {
       return (
-        <div class="project-title">
+        <div className="project-title">
           {this.props.workflow_data.project_title}
         </div>
       )

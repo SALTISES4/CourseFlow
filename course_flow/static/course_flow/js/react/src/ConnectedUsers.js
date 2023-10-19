@@ -18,11 +18,11 @@ export class ConnectionBar extends React.Component {
       ))
 
       return (
-        <div class="users-box">
+        <div className="users-box">
           <div className="users-small-wrapper">
             <div className="users-small">{users.slice(0, 2)}</div>
           </div>
-          <div class="users-more">...</div>
+          <div className="users-more">...</div>
           <div className="users-hidden">{users}</div>
         </div>
       )
@@ -115,7 +115,7 @@ export class ConnectedUser extends React.Component {
     let data = this.props.user_data
     return (
       <div
-        class="user-indicator"
+        className="user-indicator"
         style={{
           backgroundColor: data.user_colour
         }}
