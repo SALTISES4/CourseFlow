@@ -1,6 +1,5 @@
-import { Component } from 'react'
+import React, { Component } from 'react'
 import * as reactDom from 'react-dom'
-import * as React from 'react'
 import { Provider } from 'react-redux'
 import { createStore } from '@reduxjs/toolkit'
 import { WorkflowBaseView } from '../Components/Views/WorkflowView.js'
@@ -21,6 +20,7 @@ import {
   getPublicWorkflowChildData,
   updateValue
 } from '../PostFunctions.js'
+import { ExploreMenu } from '../Library.js'
 import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'

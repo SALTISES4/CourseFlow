@@ -1,6 +1,7 @@
 /**
  * @TODO why is this different than scripts-library.js
  */
+import React from 'react'
 import * as reactDom from 'react-dom'
 import {
   LiveProjectMenu,
