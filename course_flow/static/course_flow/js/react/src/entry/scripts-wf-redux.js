@@ -1,4 +1,3 @@
-// import * as wdyr from './wdyr';
 import { Component } from 'react'
 import * as reactDom from 'react-dom'
 import * as React from 'react'
@@ -12,7 +11,6 @@ import {
 } from '../Components/Views/ComparisonView.js'
 import * as Constants from '../Constants.js'
 import * as Reducers from '../Reducers.js'
-// import OutcomeTopView from '../Components/Views/OutcomeTopView.js';
 import {
   getTargetProjectMenu,
   getWorkflowData,
@@ -27,7 +25,7 @@ import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
 
-export { Loader } from '../UtilityFunctions.js'
+import { Loader } from '../UtilityFunctions.js'
 export { fail_function } from '../PostFunctions.js'
 
 //Manages the current selection, ensuring we only have one at a time

@@ -461,7 +461,7 @@ class MatrixNodeViewUnconnected extends Component {
       'node column-' + data.column + ' ' + Constants.node_keys[data.node_type]
 
     let style = {}
-    style.backgroundColor = Utility.getColumnColour(this.props.column)
+    style.backgroundColor = Constants.getColumnColour(this.props.column)
 
     return (
       <div className="matrix-time-row">

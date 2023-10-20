@@ -1,5 +1,4 @@
 import * as React from 'react'
-import { default_column_settings } from './Constants.js'
 
 export function permission_translate() {
   return {
@@ -91,13 +90,6 @@ export function getSVGTranslation(transform) {
 export function pushOrCreate(obj, index, value) {
   if (obj[index]) obj[index].push(value)
   else obj[index] = [value]
-}
-
-// Get the colour from a column
-export function getColumnColour(data) {
-  if (data.colour == null)
-    return default_column_settings[data.column_type].colour
-  else return '#' + ('000000' + data.colour?.toString(16)).slice(-6)
 }
 
 // Find and return the best way to display a user's name, username, or email (if that's all we have)

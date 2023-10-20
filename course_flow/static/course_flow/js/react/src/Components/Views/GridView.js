@@ -1,18 +1,14 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import {
   EditableComponentWithComments,
-  OutcomeTitle,
   TitleText,
   NodeTitle
 } from '../components/CommonComponents.js'
 import * as Constants from '../../Constants.js'
 import {
-  getOutcomeByID,
   getWeekWorkflowByID,
   getWeekByID,
-  getNodeWeekByID,
   getNodeByID
 } from '../../FindState.js'
 import * as Utility from '../../UtilityFunctions.js'
@@ -194,7 +190,7 @@ class GridNodeViewUnconnected extends EditableComponentWithComments {
       </div>
     )
 
-    let style = { backgroundColor: Utility.getColumnColour(this.props.column) }
+    let style = { backgroundColor: Constants.getColumnColour(this.props.column) }
     if (data.lock) {
       style.outline = '2px solid ' + data.lock.user_colour
     }

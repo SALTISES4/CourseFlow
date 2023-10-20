@@ -515,7 +515,7 @@ export class AssignmentNode extends React.Component {
           }
         />
       )
-    let style = { backgroundColor: Utility.getColumnColour(this.props.data) }
+    let style = { backgroundColor: Constants.getColumnColour(this.props.data) }
     let mouseover_actions = [this.addCreateAssignment(data)]
 
     return (
@@ -742,7 +742,7 @@ export class LiveProjectSettings extends LiveProjectSection {
             }
           />
           <label
-            for="default-signle-completion"
+            htmlFor="default-signle-completion"
             title={gettext(
               'Whether to mark the assignment as complete if any user has completed it.'
             )}
@@ -763,7 +763,7 @@ export class LiveProjectSettings extends LiveProjectSection {
             }
           />
           <label
-            for="default-assign-to-all"
+            htmlFor="default-assign-to-all"
             title={gettext(
               'Whether creating an assignment automatically adds all students to it.'
             )}
@@ -782,7 +782,7 @@ export class LiveProjectSettings extends LiveProjectSection {
             }
           />
           <label
-            for="default-self-reporting"
+            htmlFor="default-self-reporting"
             title={gettext(
               'Whether students can mark their own assignments as complete.'
             )}
@@ -803,7 +803,7 @@ export class LiveProjectSettings extends LiveProjectSection {
             }
           />
           <label
-            for="default-all-workflows-visible"
+            htmlFor="default-all-workflows-visible"
             title={gettext(
               'Whether all workflows in the project will be visible to students by default.'
             )}

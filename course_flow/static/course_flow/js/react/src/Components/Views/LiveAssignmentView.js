@@ -1,16 +1,10 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
 import {
-  WorkflowTitle,
   AssignmentTitle,
   TitleText,
-  ActionButton,
   DatePicker
 } from '../components/CommonComponents.js'
-import {
-  renderMessageBox,
-  closeMessageBox
-} from '../components/MenuComponents.js'
 import {
   getAssignmentsForNode,
   deleteSelfLive,
@@ -19,16 +13,12 @@ import {
   updateLiveProjectValue,
   createAssignment,
   getAssignmentData,
-  getAssignmentDataStudent,
-  setWorkflowVisibility,
-  getWorkflowNodes
+  setWorkflowVisibility
 } from '../../PostFunctions.js'
-import { StudentManagement } from '../components/StudentManagement.js'
 import { WorkflowVisibility } from './LiveProjectView.js'
 import { reloadAssignmentsAction } from '../../Reducers.js'
 import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
-import flatpickr from 'flatpickr'
 
 export class LiveAssignmentMenu extends React.Component {
   constructor(props) {
@@ -458,7 +448,7 @@ export class AssignmentView extends React.Component {
           }
         />
       )
-    let style = { backgroundColor: Utility.getColumnColour(node_data) }
+    let style = { backgroundColor: Constants.getColumnColour(node_data) }
     let mouseover_actions = []
     let css_class = 'node assignment'
     if (this.state.is_dropped) css_class += ' dropped'
@@ -640,7 +630,7 @@ export class AssignmentViewSmall extends React.Component {
     else data_override = { ...node_data }
 
     let css_class = 'node assignment'
-    let style = { backgroundColor: Utility.getColumnColour(node_data) }
+    let style = { backgroundColor: Constants.getColumnColour(node_data) }
     return (
       <div style={style} className={css_class}>
         <div className="node-top-row">

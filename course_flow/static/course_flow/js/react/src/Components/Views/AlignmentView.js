@@ -450,7 +450,7 @@ class AlignmentHorizontalReverseNodeUnconnected extends EditableComponentWithCom
       )
     }
 
-    let style = { backgroundColor: Utility.getColumnColour(this.props.column) }
+    let style = { backgroundColor: Constants.getColumnColour(this.props.column) }
     if (data.lock) {
       style.outline = '2px solid ' + data.lock.user_colour
     }

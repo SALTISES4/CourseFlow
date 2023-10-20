@@ -1,8 +1,4 @@
-import * as React from 'react'
-import {
-  getSortedOutcomesFromOutcomeWorkflowSet,
-  getTableOutcomeNodeByID
-} from './FindState.js'
+import * as Utility from './UtilityFunctions.js'
 
 /*
 Determines how long an action locks an object
@@ -16,7 +12,9 @@ export const lock_times = {
 }
 
 export const node_keys = ['activity', 'course', 'program']
+
 export const columnwidth = 160
+
 export const node_ports = {
   source: {
     e: [1, 0.6],
@@ -29,14 +27,18 @@ export const node_ports = {
     w: [0, 0.4]
   }
 }
+
 export const port_keys = ['n', 'e', 's', 'w']
+
 export const port_direction = [
   [0, -1],
   [1, 0],
   [0, 1],
   [-1, 0]
 ]
+
 export const port_padding = 10
+
 export const task_keys = {
   0: '',
   1: 'research',
@@ -68,6 +70,7 @@ export const task_keys = {
   109: 'distributed-problem-solving',
   110: 'peer-assessment'
 }
+
 export const context_keys = {
   0: '',
   1: 'solo',
@@ -77,6 +80,7 @@ export const context_keys = {
   102: 'test',
   103: 'exam'
 }
+
 export const strategy_keys = {
   0: '',
   1: 'jigsaw',
@@ -91,6 +95,7 @@ export const strategy_keys = {
   10: 'peer-assessment',
   11: 'other'
 }
+
 export const default_column_settings = {
   0: { colour: '#6738ff', icon: 'other' },
   1: { colour: '#0b118a', icon: 'ooci' },
@@ -104,11 +109,13 @@ export const default_column_settings = {
   14: { colour: '#f7ba2a', icon: 'assessment' },
   20: { colour: '#369934', icon: 'other' }
 }
+
 export const node_type_keys = {
   0: 'activity node',
   1: 'course node',
   2: 'program node'
 }
+
 export const object_dictionary = {
   nodelink: 'nodelink',
   node: 'node',
@@ -119,6 +126,7 @@ export const object_dictionary = {
   workflow: 'workflow',
   outcomenode: 'outcomenode'
 }
+
 export const parent_dictionary = {
   nodelink: 'node',
   node: 'week',
@@ -127,6 +135,7 @@ export const parent_dictionary = {
   outcome: 'outcome',
   outcome_base: 'workflow'
 }
+
 export const through_parent_dictionary = {
   node: 'nodeweek',
   week: 'weekworkflow',
@@ -134,6 +143,7 @@ export const through_parent_dictionary = {
   outcome: 'outcomeoutcome',
   outcome_base: 'outcomeworkflow'
 }
+
 export const get_verbose = function (data, object_type) {
   switch (object_type) {
     case 'node':
@@ -161,6 +171,7 @@ export const get_verbose = function (data, object_type) {
     outcomenode: gettext('Association to the outcome')
   }[object_type]
 }
+
 export const permission_keys = {
   none: 0,
   view: 1,
@@ -168,16 +179,19 @@ export const permission_keys = {
   comment: 3,
   student: 4
 }
+
 export const role_keys = {
   none: 0,
   student: 1,
   teacher: 2
 }
+
 export const default_drop_state = {
   node: false,
   week: true,
   outcome: [true, false, false, false, false]
 }
+
 export const get_default_drop_state = (objectID, objectType, depth = 1) => {
   let default_drop = default_drop_state[objectType]
   if (objectType === 'outcome') {
@@ -187,15 +201,22 @@ export const get_default_drop_state = (objectID, objectType, depth = 1) => {
   return default_drop
 }
 
+// Get the colour from a column
+export function getColumnColour(data) {
+  if (data.colour == null)
+    return default_column_settings[data.column_type].colour
+  else return '#' + ('000000' + data.colour?.toString(16)).slice(-6)
+}
+
 //get all possible object sets
 export function object_sets_types() {
   return {
-    'program outcome': capFirst(gettext('program outcome')),
-    'course outcome': capFirst(gettext('course outcome')),
-    'activity outcome': capFirst(gettext('activity outcome')),
-    'program node': capFirst(gettext('program node')),
-    'course node': capFirst(gettext('course node')),
-    'activity node': capFirst(gettext('activity node'))
+    'program outcome': Utility.capFirst(gettext('program outcome')),
+    'course outcome': Utility.capFirst(gettext('course outcome')),
+    'activity outcome': Utility.capFirst(gettext('activity outcome')),
+    'program node': Utility.capFirst(gettext('program node')),
+    'course node': Utility.capFirst(gettext('course node')),
+    'activity node': Utility.capFirst(gettext('activity node'))
   }
 }
 

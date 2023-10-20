@@ -76,7 +76,7 @@ class NodeView extends EditableComponentWithActions {
           onMouseLeave={() => {
             this.setState({ show_outcomes: false })
           }}
-          style={{ borderColor: Utility.getColumnColour(this.props.column) }}
+          style={{ borderColor: Constants.getColumnColour(this.props.column) }}
         >
           {data.outcomenode_unique_set.map((outcomenode) => (
             <OutcomeNodeView
@@ -97,7 +97,7 @@ class NodeView extends EditableComponentWithActions {
             onMouseEnter={() => {
               this.setState({ show_outcomes: true })
             }}
-            style={{ borderColor: Utility.getColumnColour(this.props.column) }}
+            style={{ borderColor: Constants.getColumnColour(this.props.column) }}
           >
             {data.outcomenode_unique_set.length}
           </div>
@@ -187,7 +187,7 @@ class NodeView extends EditableComponentWithActions {
       left:
         Constants.columnwidth * this.props.column_order.indexOf(data.column) +
         'px',
-      backgroundColor: Utility.getColumnColour(this.props.column)
+      backgroundColor: Constants.getColumnColour(this.props.column)
     }
     if (data.lock) {
       style.outline = '2px solid ' + data.lock.user_colour
@@ -425,7 +425,7 @@ class NodeOutcomeViewUnconnected extends Component {
     else data_override = data
     let selection_manager = this.props.renderer.selection_manager
 
-    let style = { backgroundColor: Utility.getColumnColour(this.props.column) }
+    let style = { backgroundColor: Constants.getColumnColour(this.props.column) }
     // if(data.lock){
     //     style.outline="2px solid "+data.lock.user_colour;
     // }
@@ -488,7 +488,7 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
           onMouseLeave={() => {
             this.setState({ show_outcomes: false })
           }}
-          style={{ borderColor: Utility.getColumnColour(this.props.column) }}
+          style={{ borderColor: Constants.getColumnColour(this.props.column) }}
         >
           {data.outcomenode_unique_set.map((outcomenode) => (
             <OutcomeNodeView
@@ -508,7 +508,7 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
             onMouseEnter={() => {
               this.setState({ show_outcomes: true })
             }}
-            style={{ borderColor: Utility.getColumnColour(this.props.column) }}
+            style={{ borderColor: Constants.getColumnColour(this.props.column) }}
           >
             {data.outcomenode_unique_set.length}
           </div>
@@ -550,7 +550,7 @@ class NodeComparisonViewUnconnected extends EditableComponentWithActions {
       )
     let titleText = <NodeTitle data={data} />
 
-    let style = { backgroundColor: Utility.getColumnColour(this.props.column) }
+    let style = { backgroundColor: Constants.getColumnColour(this.props.column) }
     if (data.lock) {
       style.outline = '2px solid ' + data.lock.user_colour
     }

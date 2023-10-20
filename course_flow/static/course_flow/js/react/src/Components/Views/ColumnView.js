@@ -92,7 +92,7 @@ class NodeBarColumnUnconnected extends Component {
           this.props.objectID
         }
         ref={this.maindiv}
-        style={{ backgroundColor: Utility.getColumnColour(data) }}
+        style={{ backgroundColor: Constants.getColumnColour(data) }}
       ></div>
     )
   }
