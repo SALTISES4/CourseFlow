@@ -1,7 +1,7 @@
 import asyncio
 import json
 import time
-import sys
+import logging
 
 from channels.routing import URLRouter
 from channels.testing import ChannelsLiveServerTestCase, WebsocketCommunicator
@@ -70,7 +70,6 @@ class SeleniumBase:
 @tag("selenium")
 class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
     def setUp(self):
-
         selbase = SeleniumBase()
         self.selenium = selbase.init_selenium()
 
@@ -103,7 +102,7 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
         password2.send_keys(password_text)
 
         selenium.find_element_by_id("register-button").click()
-
+        time.sleep(100)
         self.assertEqual(
             self.live_server_url + "/course-flow/home/", selenium.current_url
         )
@@ -3814,8 +3813,11 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         selenium.get(self.live_server_url + "/course-flow/home/")
         username = selenium.find_element_by_id("id_username")
         password = selenium.find_element_by_id("id_password")
+
         username.send_keys("testuser1")
         password.send_keys("testpass1")
+        print('int h home')
+        print(selenium.current_url)
         selenium.find_element_by_css_selector("button[type=Submit]").click()
 
     def tearDown(self):
@@ -3824,6 +3826,8 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
 
     def test_comparison_views(self):
         selenium = self.selenium
+        print('test comparison view selenium.current_url')
+        print(selenium.current_url)
         wait = WebDriverWait(selenium, timeout=10)
 
         project = Project.objects.create(author=self.user)
@@ -3840,11 +3844,17 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         outcome1 = workflow.outcomes.create(author=self.user)
         outcome2 = workflow2.outcomes.create(author=self.user)
 
+        print('course_flow:project-update')
+        print(self.live_server_url            + reverse("course_flow:project-update", args=[project.pk]))
+
         selenium.get(
             self.live_server_url
             + reverse("course_flow:project-update", args=[project.pk])
         )
         time.sleep(3)
+        print('selenium.current_url()')
+        print(selenium.current_url)
+        time.sleep(50)
 
         selenium.find_element_by_id("overflow-options").click()
         selenium.find_element_by_id("comparison-view").click()

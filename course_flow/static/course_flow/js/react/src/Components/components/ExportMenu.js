@@ -1,12 +1,4 @@
-import * as Redux from 'redux'
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import {
-  setUserPermission,
-  getUsersForObject,
-  getUserList
-} from '../../PostFunctions.js'
-import { Loader } from '../../UtilityFunctions.js'
 
 export class ExportMenu extends React.Component {
   constructor(props) {

@@ -180,7 +180,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
     if (this.state.users.published) {
       users_group.push(
         <div className="user-name">
-          {Constants.getUserTag('view')}
+          {Utility.getUserTag('view')}
           <span className="material-symbols-rounded">public</span>{' '}
           {gettext('All CourseFlow')}
         </div>
@@ -195,7 +195,7 @@ class WorkflowBaseViewUnconnected extends EditableComponentWithActions {
       )
     users_group.push([
       editors
-        .filter((user) => user.id != author.id)
+        .filter((user) => user.id !== author.id)
         .map((user) => (
           <div className="user-name">
             {Utility.getUserTag('edit')}

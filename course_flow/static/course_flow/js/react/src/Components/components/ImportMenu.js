@@ -6,7 +6,6 @@ import {
   getUsersForObject,
   getUserList
 } from '../../PostFunctions.js'
-import { Loader } from '../../UtilityFunctions.js'
 
 export class ImportMenu extends React.Component {
   constructor(props) {

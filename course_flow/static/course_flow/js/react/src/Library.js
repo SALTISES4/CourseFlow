@@ -597,7 +597,7 @@ export class ProjectMenu extends LibraryMenu {
     if(this.state.users.published){
         users_group.push(
             <div className="user-name">
-                {Constants.getUserTag("view")}<span className="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
+                {Utility.getUserTag("view")}<span className="material-symbols-rounded">public</span> {gettext("All CourseFlow")}
             </div>
         );
     }

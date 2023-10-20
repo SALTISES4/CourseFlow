@@ -1,16 +1,9 @@
 import * as React from 'react'
-import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import { NodeOutcomeView } from './NodeView.js'
 import { TableOutcomeBase } from './OutcomeView.js'
-import { TableOutcomeWorkflowView } from './OutcomeWorkflowView.js'
-import {
-  checkSetHidden,
-  filterThenSortByID,
-  pushOrCreate
-} from '../../UtilityFunctions.js'
-import { TableChildWorkflowHeader } from '../components/OutcomeHorizontalLink.js'
 import { getSortedOutcomeIDFromOutcomeWorkflowSet } from '../../FindState.js'
+import * as Utility from "../../UtilityFunctions.js";
 
 //Represents the entire outcomeview, barring top level workflow stuff
 class WorkflowOutcomeView extends React.Component {
@@ -22,7 +15,7 @@ class WorkflowOutcomeView extends React.Component {
   render() {
     let nodecategory = this.getNodecategory()
     let nodecategory_json = JSON.stringify(nodecategory)
-    if (this.nodecategory_json == nodecategory_json)
+    if (this.nodecategory_json === nodecategory_json)
       nodecategory = this.nodecategory
     else {
       this.nodecategory = nodecategory
@@ -38,9 +31,9 @@ class WorkflowOutcomeView extends React.Component {
       }
     }
 
-    if (outcomes_sorted.length == 0 || !has_nodes) {
+    if (outcomes_sorted.length === 0 || !has_nodes) {
       let text
-      if (this.props.renderer.view_type == 'outcometable')
+      if (this.props.renderer.view_type === 'outcometable')
         text = gettext(
           'This view renders a table showing the relationships between nodes and outcomes. Add outcomes and nodes to the workflow to get started.'
         )
@@ -112,21 +105,21 @@ class WorkflowOutcomeView extends React.Component {
   }
 
   getNodecategory() {
-    let week_order = filterThenSortByID(
+    let week_order = Utility.filterThenSortByID(
       this.props.weekworkflows,
       this.props.weekworkflow_order
     ).map((weekworkflow) => weekworkflow.week)
-    let weeks_ordered = filterThenSortByID(this.props.weeks, week_order)
+    let weeks_ordered = Utility.filterThenSortByID(this.props.weeks, week_order)
     let nodeweek_order = [].concat(
       ...weeks_ordered.map((week) => week.nodeweek_set)
     )
-    let nodeweeks_ordered = filterThenSortByID(
+    let nodeweeks_ordered = Utility.filterThenSortByID(
       this.props.nodeweeks,
       nodeweek_order
     )
     let node_order = nodeweeks_ordered.map((nodeweek) => nodeweek.node)
-    let nodes_ordered = filterThenSortByID(this.props.nodes, node_order).filter(
-      (node) => !checkSetHidden(node, this.props.object_sets)
+    let nodes_ordered = Utility.filterThenSortByID(this.props.nodes, node_order).filter(
+      (node) => !Utility.checkSetHidden(node, this.props.object_sets)
     )
 
     switch (parseInt(this.props.outcomes_sort)) {
@@ -138,7 +131,7 @@ class WorkflowOutcomeView extends React.Component {
         let nodes_by_week = {}
         for (let i = 0; i < nodeweeks_ordered.length; i++) {
           let nodeweek = nodeweeks_ordered[i]
-          pushOrCreate(nodes_by_week, nodeweek.week, nodeweek.node)
+          Utility.pushOrCreate(nodes_by_week, nodeweek.week, nodeweek.node)
         }
         return weeks_ordered.map((week, index) => {
           return {
@@ -147,18 +140,18 @@ class WorkflowOutcomeView extends React.Component {
           }
         })
       case 1:
-        let column_order = filterThenSortByID(
+        let column_order = Utility.filterThenSortByID(
           this.props.columnworkflows,
           this.props.columnworkflow_order
         ).map((columnworkflow) => columnworkflow.column)
-        let columns_ordered = filterThenSortByID(
+        let columns_ordered = Utility.filterThenSortByID(
           this.props.columns,
           column_order
         )
         let nodes_by_column = {}
         for (let i = 0; i < nodes_ordered.length; i++) {
           let node = nodes_ordered[i]
-          pushOrCreate(nodes_by_column, node.column, node.id)
+          Utility.pushOrCreate(nodes_by_column, node.column, node.id)
         }
         return columns_ordered.map((column, index) => {
           return {
@@ -178,7 +171,7 @@ class WorkflowOutcomeView extends React.Component {
         let nodes_by_task = {}
         for (let i = 0; i < nodes_ordered.length; i++) {
           let node = nodes_ordered[i]
-          pushOrCreate(nodes_by_task, node.task_classification, node.id)
+          Utility.pushOrCreate(nodes_by_task, node.task_classification, node.id)
         }
         return task_ordered.map((task) => {
           return { title: task.name, nodes: nodes_by_task[task.type] || [] }
@@ -195,7 +188,7 @@ class WorkflowOutcomeView extends React.Component {
         let nodes_by_context = {}
         for (let i = 0; i < nodes_ordered.length; i++) {
           let node = nodes_ordered[i]
-          pushOrCreate(nodes_by_context, node.context_classification, node.id)
+          Utility.pushOrCreate(nodes_by_context, node.context_classification, node.id)
         }
         return context_ordered.map((context) => {
           return {
