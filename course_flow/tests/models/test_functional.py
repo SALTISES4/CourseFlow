@@ -1,6 +1,7 @@
 import asyncio
 import json
 import time
+import sys
 
 from channels.routing import URLRouter
 from channels.testing import ChannelsLiveServerTestCase, WebsocketCommunicator
@@ -47,27 +48,37 @@ class ChannelsStaticLiveServerTestCase(ChannelsLiveServerTestCase):
     serve_static = True
 
 
-def action_hover_click(selenium, hover_item, click_item):
-    hover = (
-        ActionChains(selenium).move_to_element(hover_item).click(click_item)
-    )
-    return hover
+class SeleniumBase:
+    def __init__(self):
+        self.selenium = None
+
+    def init_selenium(self, options: dict = None):
+
+        if options is None:
+            options = webdriver.chrome.options.Options()
+
+        options.add_argument("--headless")
+
+        if settings.CHROMEDRIVER_PATH is not None:
+            self.selenium = webdriver.Chrome(executable_path=settings.CHROMEDRIVER_PATH, options=options)
+        else:
+            self.selenium = webdriver.Chrome(options=options)
+
+        return self.selenium
 
 
 @tag("selenium")
 class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
     def setUp(self):
-        chrome_options = webdriver.chrome.options.Options()
-        if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
-        else:
-            self.selenium = webdriver.Chrome()
 
-        super(SeleniumRegistrationTestCase, self).setUp()
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium()
+
+        super().setUp()
 
     def tearDown(self):
         self.selenium.quit()
-        super(SeleniumRegistrationTestCase, self).tearDown()
+        super().tearDown()
 
     def test_register_user(self):
         selenium = self.selenium
@@ -100,13 +111,10 @@ class SeleniumRegistrationTestCase(StaticLiveServerTestCase):
 
 class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
-        chrome_options = webdriver.chrome.options.Options()
-        if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
-        else:
-            self.selenium = webdriver.Chrome()
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium()
 
-        super(SeleniumUserTestCase, self).setUp()
+        super().setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -123,7 +131,7 @@ class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(SeleniumUserTestCase, self).tearDown()
+        super().tearDown()
 
     def test_edit_user(self):
         selenium = self.selenium
@@ -155,13 +163,10 @@ class SeleniumUserTestCase(ChannelsStaticLiveServerTestCase):
 
 class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
-        chrome_options = webdriver.chrome.options.Options()
-        if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
-        else:
-            self.selenium = webdriver.Chrome()
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium()
 
-        super(SeleniumLiveProjectTestCase, self).setUp()
+        super().setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -175,7 +180,7 @@ class SeleniumLiveProjectTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(SeleniumLiveProjectTestCase, self).tearDown()
+        super().tearDown()
 
     def test_create_liveproject(self):
         selenium = self.selenium
@@ -841,14 +846,10 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
             "prefs", {"intl.accept_languages": "fr"}
         )
         chrome_options.add_argument("--lang=fr")
-        if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(
-                settings.CHROMEDRIVER_PATH, chrome_options=chrome_options
-            )
-        else:
-            self.selenium = webdriver.Chrome(chrome_options=chrome_options)
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium(chrome_options)
 
-        super(SeleniumFrenchTestCase, self).setUp()
+        super().setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -862,7 +863,7 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(SeleniumFrenchTestCase, self).tearDown()
+        super().tearDown()
 
     def test_home(self):
         selenium = self.selenium
@@ -878,13 +879,10 @@ class SeleniumFrenchTestCase(ChannelsStaticLiveServerTestCase):
 
 class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
-        chrome_options = webdriver.chrome.options.Options()
-        if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
-        else:
-            self.selenium = webdriver.Chrome()
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium()
 
-        super(SeleniumWorkflowsTestCase, self).setUp()
+        super().setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -898,7 +896,7 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(SeleniumWorkflowsTestCase, self).tearDown()
+        super().tearDown()
 
     def test_create_project_and_workflows(self):
         selenium = self.selenium
@@ -928,8 +926,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         assert (
             project_description
             in selenium.find_element_by_css_selector(
-                ".project-description"
-            ).text
+            ".project-description"
+        ).text
         )
         project_url = selenium.current_url
 
@@ -959,8 +957,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert (
                 project_description
                 in selenium.find_element_by_css_selector(
-                    ".project-description"
-                ).text
+                ".project-description"
+            ).text
             )
 
             selenium.get(templates)
@@ -989,8 +987,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert (
                 project_description
                 in selenium.find_element_by_css_selector(
-                    ".project-description"
-                ).text
+                ".project-description"
+            ).text
             )
             selenium.get(project_url)
             # edit link
@@ -1023,8 +1021,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             self.assertEqual(
                 get_model_from_str(workflow_type)
-                .objects.exclude(parent_workflow=None)
-                .count(),
+                    .objects.exclude(parent_workflow=None)
+                    .count(),
                 1,
             )
             selenium.find_element_by_css_selector("#overflow-options").click()
@@ -1034,14 +1032,14 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             time.sleep(2)
             self.assertEqual(
                 get_model_from_str(workflow_type)
-                .objects.filter(is_strategy=False, deleted=False)
-                .count(),
+                    .objects.filter(is_strategy=False, deleted=False)
+                    .count(),
                 1,
             )
             self.assertEqual(
                 get_model_from_str(workflow_type)
-                .objects.filter(is_strategy=False, deleted=True)
-                .count(),
+                    .objects.filter(is_strategy=False, deleted=True)
+                    .count(),
                 1,
             )
 
@@ -1076,8 +1074,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         assert (
             "new description"
             in selenium.find_element_by_css_selector(
-                ".project-description"
-            ).text
+            ".project-description"
+        ).text
         )
         time.sleep(2)
         project = Project.objects.first()
@@ -1218,13 +1216,13 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
         for workflow_type in ["activity", "course", "program"]:
             assert WorkflowProject.objects.get(
                 workflow=get_model_from_str(workflow_type)
-                .objects.filter(
+                    .objects.filter(
                     author=self.user,
                     parent_workflow=get_model_from_str(
                         workflow_type
                     ).objects.get(author=author),
                 )
-                .last(),
+                    .last(),
                 project=my_project1,
             )
 
@@ -1716,8 +1714,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert (
                 "new title"
                 in selenium.find_element_by_css_selector(
-                    ".workflow-details .node .node-title"
-                ).text
+                ".workflow-details .node .node-title"
+            ).text
             )
             self.assertEqual(
                 workflow.weeks.first().nodes.first().title, "new title"
@@ -1731,9 +1729,9 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
                 time.sleep(2.5)
                 self.assertEqual(
                     workflow.weeks.first()
-                    .nodes.first()
-                    .context_classification,
-                    2 + 100 * i,
+                        .nodes.first()
+                        .context_classification,
+                        2 + 100 * i,
                 )
             else:
                 self.assertEqual(
@@ -1831,8 +1829,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             assert (
                 "new strategy"
                 in selenium.find_element_by_css_selector(
-                    ".strategy-bar-strategy div"
-                ).text
+                ".strategy-bar-strategy div"
+            ).text
             )
             selenium.get(
                 self.live_server_url + reverse("course_flow:my-library")
@@ -1857,8 +1855,8 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
             )
             self.assertEqual(
                 Workflow.objects.get(is_strategy=True)
-                .weeks.get(is_strategy=True)
-                .parent_week,
+                    .weeks.get(is_strategy=True)
+                    .parent_week,
                 workflow.weeks.first(),
             )
             Workflow.objects.get(is_strategy=True).delete()
@@ -2959,13 +2957,10 @@ class SeleniumWorkflowsTestCase(ChannelsStaticLiveServerTestCase):
 
 class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
-        chrome_options = webdriver.chrome.options.Options()
-        if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
-        else:
-            self.selenium = webdriver.Chrome()
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium()
 
-        super(SeleniumDeleteRestoreTestCase, self).setUp()
+        super().setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -2979,7 +2974,7 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(SeleniumDeleteRestoreTestCase, self).tearDown()
+        super().tearDown()
 
     def create_many_items(self, author, published, disciplines):
         for object_type in [
@@ -3608,13 +3603,10 @@ class SeleniumDeleteRestoreTestCase(ChannelsStaticLiveServerTestCase):
 
 class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
-        chrome_options = webdriver.chrome.options.Options()
-        if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
-        else:
-            self.selenium = webdriver.Chrome()
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium()
 
-        super(SeleniumObjectSetsTestCase, self).setUp()
+        super().setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -3628,7 +3620,7 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(SeleniumObjectSetsTestCase, self).tearDown()
+        super().tearDown()
 
     def test_create_sets(self):
         selenium = self.selenium
@@ -3811,13 +3803,10 @@ class SeleniumObjectSetsTestCase(ChannelsStaticLiveServerTestCase):
 
 class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
-        chrome_options = webdriver.chrome.options.Options()
-        if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
-        else:
-            self.selenium = webdriver.Chrome()
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium()
 
-        super(ComparisonViewTestCase, self).setUp()
+        super().setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -3831,7 +3820,7 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(ComparisonViewTestCase, self).tearDown()
+        super().tearDown()
 
     def test_comparison_views(self):
         selenium = self.selenium
@@ -3887,65 +3876,12 @@ class ComparisonViewTestCase(ChannelsStaticLiveServerTestCase):
         )
 
 
-async def connect_ws(ws):
-    return await ws.connect()
-
-
-async def disconnect_ws(ws):
-    return await ws.disconnect()
-
-
-async def send_input_ws(ws, data):
-    return await ws.send_json_to(data)
-
-
-async def receive_output_ws(ws):
-    return await ws.receive_from(timeout=1)
-
-
-async def receive_nothing_ws(ws):
-    return await ws.receive_nothing(timeout=1)
-
-
-def async_to_sync_connect(ws):
-    loop = asyncio.get_event_loop()
-    coroutine = connect_ws(ws)
-    return loop.run_until_complete(coroutine)
-
-
-def async_to_sync_disconnect(ws):
-    loop = asyncio.get_event_loop()
-    coroutine = disconnect_ws(ws)
-    return loop.run_until_complete(coroutine)
-
-
-def async_to_sync_send_input(ws, data):
-    loop = asyncio.get_event_loop()
-    coroutine = send_input_ws(ws, data)
-    return loop.run_until_complete(coroutine)
-
-
-def async_to_sync_receive_output(ws):
-    loop = asyncio.get_event_loop()
-    coroutine = receive_output_ws(ws)
-    return loop.run_until_complete(coroutine)
-
-
-def async_to_sync_receive_nothing(ws):
-    loop = asyncio.get_event_loop()
-    coroutine = receive_nothing_ws(ws)
-    return loop.run_until_complete(coroutine)
-
-
 class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
     def setUp(self):
-        chrome_options = webdriver.chrome.options.Options()
-        if settings.CHROMEDRIVER_PATH is not None:
-            self.selenium = webdriver.Chrome(settings.CHROMEDRIVER_PATH)
-        else:
-            self.selenium = webdriver.Chrome()
+        selbase = SeleniumBase()
+        self.selenium = selbase.init_selenium()
 
-        super(ChannelsStaticLiveServerTestCase, self).setUp()
+        super().setUp()
         selenium = self.selenium
         selenium.maximize_window()
 
@@ -3959,7 +3895,7 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
 
     def tearDown(self):
         self.selenium.quit()
-        super(ChannelsStaticLiveServerTestCase, self).tearDown()
+        super().tearDown()
 
     def test_permissions_connect_to_workflow_update_consumer(self):
         author = get_author()
@@ -4099,3 +4035,64 @@ class WebsocketTestCase(ChannelsStaticLiveServerTestCase):
             0,
         )
         selenium.close()
+
+
+########################
+# HELPERS
+########################
+
+def action_hover_click(selenium, hover_item, click_item):
+    hover = (
+        ActionChains(selenium).move_to_element(hover_item).click(click_item)
+    )
+    return hover
+
+
+async def connect_ws(ws):
+    return await ws.connect()
+
+
+async def disconnect_ws(ws):
+    return await ws.disconnect()
+
+
+async def send_input_ws(ws, data):
+    return await ws.send_json_to(data)
+
+
+async def receive_output_ws(ws):
+    return await ws.receive_from(timeout=1)
+
+
+async def receive_nothing_ws(ws):
+    return await ws.receive_nothing(timeout=1)
+
+
+def async_to_sync_connect(ws):
+    loop = asyncio.get_event_loop()
+    coroutine = connect_ws(ws)
+    return loop.run_until_complete(coroutine)
+
+
+def async_to_sync_disconnect(ws):
+    loop = asyncio.get_event_loop()
+    coroutine = disconnect_ws(ws)
+    return loop.run_until_complete(coroutine)
+
+
+def async_to_sync_send_input(ws, data):
+    loop = asyncio.get_event_loop()
+    coroutine = send_input_ws(ws, data)
+    return loop.run_until_complete(coroutine)
+
+
+def async_to_sync_receive_output(ws):
+    loop = asyncio.get_event_loop()
+    coroutine = receive_output_ws(ws)
+    return loop.run_until_complete(coroutine)
+
+
+def async_to_sync_receive_nothing(ws):
+    loop = asyncio.get_event_loop()
+    coroutine = receive_nothing_ws(ws)
+    return loop.run_until_complete(coroutine)
