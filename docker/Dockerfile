@@ -1,0 +1,123 @@
+# @todo alpine having problems
+# FROM python:alpine3.7 as service_deps
+FROM python:3.7 as service_deps
+
+WORKDIR /app
+RUN apt-get update
+
+########################
+# TA LIB
+########################
+WORKDIR /tmp
+RUN apt-get install \
+     #   musl-dev \
+     #   linux-headers \
+        gcc \
+        g++ \
+        make \
+        curl
+RUN wget http://prdownloads.sourceforge.net/ta-lib/ta-lib-0.4.0-src.tar.gz \
+  && tar -zxf ta-lib-0.4.0-src.tar.gz \
+  && cd ta-lib \
+  && wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O config.guess \
+  && wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O config.sub \
+  && sed -i.bak "s|0.00000001|0.000000000000000001 |g" src/ta_func/ta_utility.h \
+  && ./configure --prefix=/usr \
+  && make \
+  && make install
+  #  && pip3 install setuptools numpy \
+  #  && pip3 install ${PYTHON_TA_LIB_PACKAGE_NAME}==${PYTHON_TA_LIB_VERSION} \
+   # && apt-get del .build-deps \
+#    && rm -rf /root/.cache \
+#              /tmp/* \
+#              /var/cache/apk/* \
+#              /var/lib/apk/lists/*
+
+
+########################
+# PIP LIBS
+########################
+WORKDIR /app
+COPY ./requirements.txt ./
+RUN pip install -r requirements.txt
+RUN apt-get install -y \
+    vim \
+    cron \
+    libsecret-1-dev
+
+
+########################
+# Chrome for Selenium
+########################
+#RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+#RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+#RUN apt-get -y update
+#RUN apt-get install -y google-chrome-stable
+
+# install chromedriver
+# RUN apt-get install -yqq unzip
+# RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+# RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+
+########################
+# GECKO FOR SELENIUM
+########################
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A6DCF7707EBC211F
+RUN sh -c 'echo "deb [arch=amd64] http://ppa.launchpad.net/ubuntu-mozilla-security/ppa/ubuntu bionic main" >> /etc/apt/sources.list.d/mozilla.list'
+RUN apt -y update
+RUN apt install -y firefox
+RUN wget -O /tmp/geckodriver.tar.gz https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz
+RUN tar -xvzf /tmp/geckodriver.tar.gz  -C /usr/local/bin/
+
+
+# set display port to avoid crash
+ENV DISPLAY=:99
+
+FROM service_deps as builder
+WORKDIR /app
+COPY ./src ./src
+
+FROM builder as service
+
+########################
+# ENTRYPOIINT
+########################
+COPY ./docker/docker-entrypoint.sh /
+COPY ./docker/docker-cron-entrypoint.sh /
+ADD ./docker/dummy.sh /usr/local/bin/shell.sh
+RUN chmod +x /usr/local/bin/shell.sh
+RUN chmod +x /docker-entrypoint.sh
+RUN chmod +x /docker-cron-entrypoint.sh
+
+########################
+# CRON (not working in AWS)
+########################
+COPY ./docker/config/bb_cron /etc/cron.d/bb_cron
+RUN chmod 0644 /etc/cron.d/bb_cron
+RUN crontab /etc/cron.d/bb_cron
+RUN touch /var/log/cron.log
+#terminfo
+COPY ./docker/config/terminfo/* /etc/terminfo/
+
+########################
+# TWILIO
+########################
+# we don't need this for now while using twilio REST diretly
+#RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash
+#RUN nvm install --lts
+#RUN nvm use 10
+#RUN npm install twilio-cli -g
+#COPY ./docker/config/twilio.config.json /home/root/.twilio-cli/config.json
+
+
+
+
+
+
+
+
+
+
+ENTRYPOINT ["/usr/local/bin/python"]
+CMD ["/app/src/Web.py"]
+EXPOSE 4433

@@ -9,6 +9,7 @@ jobs:
       - run:
           name: Build
           command: |
+            python3 --version 
             python3 -m venv test_venv
             . test_venv/bin/activate
             pip install -r requirements/requirements.txt

@@ -1,0 +1,90 @@
+version: '3'
+
+services:
+  bb-app:
+    platform: linux/amd64
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    restart: always
+    container_name: "bb-app"
+    shm_size: 2G
+    tty: true
+    volumes:
+      - ./src:/app/src
+      - ./.env:/app/.env
+      - ./store:/app/store
+    ports:
+      - "3000"
+      - "6789"
+      - "4433"
+    networks:
+      - bb-network
+    entrypoint: ["/docker-entrypoint.sh"]
+
+  bb-cron:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    restart: always
+    container_name: "bb-cron"
+    shm_size: 2G
+    tty: true
+    volumes:
+      - ./src:/app/src
+      - ./.env:/app/.env
+      - ./store:/app/store
+    ports:
+      - "3001"
+    networks:
+      - bb-network
+    entrypoint: ["/docker-cron-entrypoint.sh"]
+
+  ib-rest:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.IB.REST
+    restart: always
+    container_name: "ib-rest"
+    ports:
+      - "4003"
+      - "5901:5900"
+      - "5000"
+    volumes:
+      - ./ib/clientportal.gw:/root/clientportal.gw
+    networks:
+      - bb-network
+
+  bb-mongo:
+    container_name: "bb-mongo"
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo_user
+      MONGO_INITDB_ROOT_PASSWORD: mongo_secret
+    networks:
+      - bb-network
+    volumes:
+      - ./docker/mongodata:/data/db
+
+  bb-client:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.CLIENT
+    container_name: "bb-client"
+    ports:
+      - "8080"
+    environment:
+      - ENV=development
+    volumes:
+      - ./client/scripts/server.js:/app/scripts/server.js
+    networks:
+      - bb-network
+
+
+networks:
+  bb-network:
+    driver: bridge
