@@ -160,7 +160,7 @@ export class ComparisonView extends React.Component {
           <a
             className="hover-shade no-underline"
             id="project-return"
-            href={update_path['project'].replace(0, data.id)}
+            href={config.update_path['project'].replace(0, data.id)}
           >
             <span className="green material-symbols-rounded">arrow_back_ios</span>
             <div>{gettext('Return to project')}</div>

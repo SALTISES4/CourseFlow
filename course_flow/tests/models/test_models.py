@@ -39,18 +39,18 @@ from course_flow.utils import get_model_from_str
 
 from .utils import check_order, get_author, login, make_object
 
-TESTJSON_FILENAME = os.path.join(os.path.dirname(__file__), "test_json.json")
+TESTJSON_FILENAME = os.path.join(os.path.dirname(__file__), "assets/test_json.json")
 TESTNODESXLS_FILENAME = os.path.join(
-    os.path.dirname(__file__), "test_nodes.xls"
+    os.path.dirname(__file__), "assets/test_nodes.xls"
 )
 TESTNODESCSV_FILENAME = os.path.join(
-    os.path.dirname(__file__), "test_nodes.csv"
+    os.path.dirname(__file__), "assets/test_nodes.csv"
 )
 TESTOUTCOMESXLS_FILENAME = os.path.join(
-    os.path.dirname(__file__), "test_outcomes.xls"
+    os.path.dirname(__file__), "assets/test_outcomes.xls"
 )
 TESTOUTCOMESCSV_FILENAME = os.path.join(
-    os.path.dirname(__file__), "test_outcomes.csv"
+    os.path.dirname(__file__), "assets/test_outcomes.csv"
 )
 
 

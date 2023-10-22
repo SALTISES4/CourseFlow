@@ -1,12 +1,10 @@
 import * as React from 'react'
 import * as reactDom from 'react-dom'
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 import {
   ActionButton,
   Component,
   EditableComponentWithActions,
-  EditableComponentWithComments,
-  NodeLinkSVG,
   AutoLinkView,
   NodePorts,
   NodeTitle,
@@ -20,8 +18,6 @@ import * as Constants from '../../Constants.js'
 import * as Utility from '../../UtilityFunctions.js'
 import {
   updateOutcomenodeDegree,
-  updateValueInstant,
-  toggleDrop
 } from '../../PostFunctions.js'
 
 //Basic component to represent a Node
@@ -362,7 +358,7 @@ class NodeView extends EditableComponentWithActions {
       if (
         !mycomponent ||
         !mycomponent.maindiv ||
-        Constants.mouseOutsidePadding(evt, $(mycomponent.maindiv.current), 20)
+        Utility.mouseOutsidePadding(evt, $(mycomponent.maindiv.current), 20)
       ) {
         $(
           "circle[data-node-id='" +
@@ -378,12 +374,14 @@ class NodeView extends EditableComponentWithActions {
   addShowAssignment(data) {
     return [
       <ActionButton
+        key={0}
         button_icon="assignment.svg"
         button_class="assignment-button"
         titletext={gettext('Show Assignment Info')}
         handleClick={this.showAssignment.bind(this)}
       />,
       <AssignmentBox
+        key={1}
         dispatch={this.props.dispatch.bind(this)}
         node_id={data.id}
         show={this.state.show_assignments}

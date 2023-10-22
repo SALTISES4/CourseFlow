@@ -18,9 +18,11 @@ def make_object(model_key, author=None):
 
 
 def login(test_case):
-    user = User.objects.create(username="testuser1")
+    # @todo this doesn't seem to  work
+    user = User.objects.create_user(username="testuser1")
     user.set_password("testpass1")
     user.save()
+
     teacher_group, _ = Group.objects.get_or_create(name=settings.TEACHER_GROUP)
     user.groups.add(teacher_group)
     logged_in = test_case.client.login(

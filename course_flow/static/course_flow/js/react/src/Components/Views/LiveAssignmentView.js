@@ -598,7 +598,7 @@ export class AssignmentView extends React.Component {
   }
 
   visitWorkflow(id, evt) {
-    let path = update_path['workflow']
+    let path = config.update_path['workflow']
     evt.stopPropagation()
     window.open(path.replace('0', id))
   }
