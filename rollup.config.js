@@ -1,12 +1,12 @@
-import 'core-js';
-import 'regenerator-runtime';
-import autoprefixer from 'autoprefixer';
-import { babel } from '@rollup/plugin-babel';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import terser from '@rollup/plugin-terser';
-import multiEntry from '@rollup/plugin-multi-entry';
-import postcss from 'rollup-plugin-postcss';
+import 'core-js'
+import 'regenerator-runtime'
+import autoprefixer from 'autoprefixer'
+import { babel } from '@rollup/plugin-babel'
+import { nodeResolve } from '@rollup/plugin-node-resolve'
+import commonjs from '@rollup/plugin-commonjs'
+import terser from '@rollup/plugin-terser'
+import multiEntry from '@rollup/plugin-multi-entry'
+import postcss from 'rollup-plugin-postcss'
 
 const templateBundleSrc = 'course_flow/static/course_flow/js/other/src/'
 const templateBundleDist = 'course_flow/static/course_flow/js/other/dist/'
@@ -18,7 +18,7 @@ const plugins = {
   postcss: postcss({
     extensions: ['.css'],
     extract: 'course_flow.css',
-    plugins: [ autoprefixer ],
+    plugins: [autoprefixer]
   }),
   nodeResolve: nodeResolve({
     mainFields: ['browser', 'module', 'main']
@@ -45,10 +45,10 @@ const plugins = {
     ]
   }),
   commonjs: commonjs({
-    include: 'node_modules/**',
+    include: 'node_modules/**'
   }),
   terser: terser()
-};
+}
 
 const bundlePlugins = [
   plugins.postcss,
@@ -56,7 +56,7 @@ const bundlePlugins = [
   plugins.babel,
   plugins.commonjs,
   plugins.terser
-];
+]
 
 export default [
   {
@@ -68,12 +68,9 @@ export default [
     output: {
       dir: templateBundleDist,
       preserveModules: true,
-      entryFileNames: '[name].min.js',
+      entryFileNames: '[name].min.js'
     },
-    plugins: [
-      multiEntry({ preserveModules: true }),
-      plugins.terser
-    ]
+    plugins: [multiEntry({ preserveModules: true }), plugins.terser]
   },
   {
     input: `${templateBundleSrc}csrf-setup.js`,
@@ -115,5 +112,5 @@ export default [
       sourceMap: 'inline'
     },
     plugins: bundlePlugins
-  },
-];
+  }
+]
