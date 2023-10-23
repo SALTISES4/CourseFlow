@@ -112,5 +112,15 @@ export default [
       sourceMap: 'inline'
     },
     plugins: bundlePlugins
+  },
+  {
+    input: `${bundleEntry}scripts-redesign.js`,
+    output: {
+      file: `${bundleRoot}scripts-redesign.min.js`,
+      name: 'redesign_renderers',
+      format: 'iife',
+      sourceMap: 'inline'
+    },
+    plugins: bundlePlugins
   }
 ]
