@@ -24,7 +24,7 @@ import { ExploreMenu } from '../Library.js'
 import { ConnectionBar } from '../ConnectedUsers.js'
 import '../../../../scss/base_style.scss'
 import '../../../../scss/workflow_styles.scss'
-import * as Utility from "../UtilityFunctions.js";
+import * as Utility from '../UtilityFunctions.js'
 
 export { fail_function } from '../PostFunctions.js'
 
@@ -122,16 +122,17 @@ export class SelectionManager {
   }
 }
 
-export function renderExploreMenu(data_package, disciplines) {
-  reactDom.render(
-    <ExploreMenu
-      data_package={data_package}
-      disciplines={disciplines}
-      pages={pages}
-    />,
-    $('#container')[0]
-  )
-}
+// TODO: Explore if this is used anywhere anymore
+// export function renderExploreMenu(data_package, disciplines) {
+//   reactDom.render(
+//     <ExploreMenu
+//       data_package={data_package}
+//       disciplines={disciplines}
+//       pages={pages}
+//     />,
+//     $('#container')[0]
+//   )
+// }
 
 export class TinyLoader {
   constructor(identifier) {
@@ -715,7 +716,6 @@ export class WorkflowComparisonRenderer extends WorkflowRenderer {
     return null
   }
 }
-
 
 export class WorkflowLoader extends Component {
   render() {
