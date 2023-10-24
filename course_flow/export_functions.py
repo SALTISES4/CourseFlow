@@ -289,11 +289,14 @@ def get_outcomes_export(
             writer = pd.ExcelWriter(b, engine="xlsxwriter")
             for workflow in workflows:
                 df = get_workflow_outcomes_table(workflow, allowed_sets)
+                sheet_name = (
+                    get_alphanum(workflow.title)
+                    + "_"
+                    + str(workflow.pk)
+                )[:30]
                 df.to_excel(
                     writer,
-                    sheet_name=get_alphanum(workflow.title)
-                    + "_"
-                    + str(workflow.pk),
+                    sheet_name=sheet_name,
                     index=False,
                 )
                 writer.save()
@@ -344,7 +347,7 @@ def get_course_frameworks_export(
                 )
                 sheet_name = (
                     get_alphanum(workflow.title) + "_" + str(workflow.pk)
-                )
+                )[:30]
                 df.to_excel(
                     writer,
                     sheet_name=sheet_name,
@@ -419,11 +422,10 @@ def get_program_matrix_export(
             writer = pd.ExcelWriter(b, engine="xlsxwriter")
             for workflow in workflows:
                 df = get_program_matrix(workflow, True, allowed_sets)
+                sheet_name = (get_alphanum(workflow.title)+ "_" + str(workflow.pk))[:30]
                 df.to_excel(
                     writer,
-                    sheet_name=get_alphanum(workflow.title)
-                    + "_"
-                    + str(workflow.pk),
+                    sheet_name=sheet_name,
                     index=False,
                 )
                 writer.save()
@@ -454,11 +456,14 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
             writer = pd.ExcelWriter(b, engine="xlsxwriter")
             for workflow in workflows:
                 df = get_workflow_nodes_table(workflow, allowed_sets)
+                sheet_name = (
+                    get_alphanum(workflow.title)
+                    + "_"
+                    + str(workflow.pk)
+                )[:30]
                 df.to_excel(
                     writer,
-                    sheet_name=get_alphanum(workflow.title)
-                    + "_"
-                    + str(workflow.pk),
+                    sheet_name=sheet_name,
                     index=False,
                 )
                 writer.save()
