@@ -14,7 +14,9 @@ import { CacheProvider } from '@emotion/react'
 import createCache from '@emotion/cache'
 
 // components
-import Sidebar from '../Components/components/Layout/Sidebar.jsx'
+import Sidebar, {
+  SidebarRootStyles
+} from '../Components/components/Layout/Sidebar.jsx'
 
 // create the emotion cache
 const cache = createCache({
@@ -26,18 +28,22 @@ const cache = createCache({
 // TODO: move this out potentially
 const theme = createTheme({
   palette: {
-    success: {
-      main: '#ae0094'
+    primary: {
+      main: '#04BA74',
+      light: '#52C68C',
+      dark: '#009E52'
+    },
+    secondary: {
+      main: '#78909C',
+      light: '#90A4AE',
+      dark: '#607D8B'
+    },
+    other: {
+      divider: '#CFD8DC'
     }
   },
-  components: {
-    MuiCssBaseline: {
-      styleOverrides: {
-        root: ({ theme }) => {
-          color: theme.palette.success.main
-        }
-      }
-    }
+  typography: {
+    fontFamily: ['"Open Sans"', 'Helvetica', 'Arial', 'sans-serif'].join(',')
   }
 })
 
@@ -45,14 +51,14 @@ const theme = createTheme({
 // with an accompanying theme provider/css baseline since we're
 // progressively adding partials into the existing templates
 // TODO: cleanup this - injects providers for each component separately
-function renderComponentIntoNode(component, node) {
+function renderComponentIntoNode(component, node, styles = {}) {
   const target = document.querySelector(node)
   if (target) {
     const componentRoot = createRoot(target)
     componentRoot.render(
       <CacheProvider value={cache}>
         <ThemeProvider theme={theme}>
-          <ScopedCssBaseline>{component}</ScopedCssBaseline>
+          <ScopedCssBaseline sx={styles}>{component}</ScopedCssBaseline>
         </ThemeProvider>
       </CacheProvider>
     )
@@ -63,6 +69,7 @@ function renderComponentIntoNode(component, node) {
 window.addEventListener('load', () => {
   renderComponentIntoNode(
     <Sidebar />,
-    '.main-wrapper [data-component="sidebar"]'
+    '.main-wrapper [data-component="sidebar"]',
+    SidebarRootStyles
   )
 })

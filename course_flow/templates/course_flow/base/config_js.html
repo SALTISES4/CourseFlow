@@ -111,6 +111,7 @@
       workflow: "{% url 'course_flow:workflow-public' pk='0'%}"
     },
     home_path: "{% url 'course_flow:home' %}",
+    explore_path: "{% url 'course_flow:explore' %}",
     my_library_path: "{% url 'course_flow:my-library' %}",
     my_favourites_path: "{% url 'course_flow:my-favourites' %}",
     my_liveprojects_path: "{% url 'course_flow:my-live-projects' %}",
@@ -137,7 +138,15 @@
       confirm_email_updates:
         "{% trans 'Hi there! Would you like to receive emails about updates to  CourseFlow? You can always change your mind by viewing your profile.' %}",
       unsupported_device:
-        "{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}"
+        "{% trans 'Your device is not supported. Please use a laptop or desktop for the best experience.' %}",
+      home: "{% trans 'Home' %}",
+      my_library: "{% trans 'My library' %}",
+      explore: "{% trans 'Explore' %}",
+      my_classrooms: "{% trans 'My classrooms' %}",
+      favorites: "{% trans 'Favorites' %}",
+      see_all: "{% trans 'See all' %}",
+      view_all: "{% trans 'View all' %}",
+      help_support: "{% trans 'Help and Support' %}"
     }
   }
 </script>
