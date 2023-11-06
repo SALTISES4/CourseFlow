@@ -1,6 +1,22 @@
 {% load static i18n %}
 {% load course_flow_templatetags %}
 <div data-component="sidebar"></div>
+<script nonce="{{ request.csp_nonce }}">
+  // TODO: This should ideally be coming in from COURSEFLOW_APP
+  // and not set within the template file, but instead the controller
+  const COURSEFLOW_APP_SIDEBAR = {
+    is_teacher: {% if user|has_group:"Teacher" %}true{% else %}false{% endif %},
+    is_not_anonymous: {% if not user.is_anonymous %}true{% else %}false{% endif %},
+    favorites: [
+      {% for favourite in user.favourite_set.all|not_deleted_favourites|slice:":5" %}
+        {
+          text: '{{ favourite.content_object | safe }}',
+          url: '{% if favourite.content_object.type == "project" %}{% url 'course_flow:project-update' pk=favourite.content_object.pk %}{% else %}{% url 'course_flow:workflow-update' pk=favourite.content_object.pk %}{% endif %}',
+        },
+      {% endfor %}
+    ]
+  }
+</script>
 
 <div class="left-panel collapsed hide-print">
 

@@ -101,81 +101,88 @@ const Sidebar = () => (
           <ListItemText primary={COURSEFLOW_APP.strings.home} />
         </ListItemButton>
       </ListItem>
-      <ListItem disablePadding dense>
-        <ListItemButton
-          component="a"
-          href={config.my_library_path}
-          selected={window.location.pathname === config.my_library_path}
-        >
-          <ListItemIcon>
-            <FolderCopyIcon />
-          </ListItemIcon>
-          <ListItemText primary={COURSEFLOW_APP.strings.my_library} />
-        </ListItemButton>
-      </ListItem>
-      <ListItem disablePadding dense>
-        <ListItemButton
-          component="a"
-          href={config.explore_path}
-          selected={window.location.pathname === config.explore_path}
-        >
-          <ListItemIcon>
-            <SearchIcon />
-          </ListItemIcon>
-          <ListItemText primary={COURSEFLOW_APP.strings.explore} />
-        </ListItemButton>
-      </ListItem>
-      <ListItem disablePadding dense>
-        <ListItemButton
-          component="a"
-          href={config.my_liveprojects_path}
-          selected={window.location.pathname === config.my_liveprojects_path}
-        >
-          <ListItemIcon>
-            <CalendarMonthIcon />
-          </ListItemIcon>
-          <ListItemText primary={COURSEFLOW_APP.strings.my_classrooms} />
-        </ListItemButton>
-      </ListItem>
+      {COURSEFLOW_APP_SIDEBAR.is_teacher ? (
+        <>
+          <ListItem disablePadding dense>
+            <ListItemButton
+              component="a"
+              href={config.my_library_path}
+              selected={window.location.pathname === config.my_library_path}
+            >
+              <ListItemIcon>
+                <FolderCopyIcon />
+              </ListItemIcon>
+              <ListItemText primary={COURSEFLOW_APP.strings.my_library} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding dense>
+            <ListItemButton
+              component="a"
+              href={config.explore_path}
+              selected={window.location.pathname === config.explore_path}
+            >
+              <ListItemIcon>
+                <SearchIcon />
+              </ListItemIcon>
+              <ListItemText primary={COURSEFLOW_APP.strings.explore} />
+            </ListItemButton>
+          </ListItem>
+        </>
+      ) : null}
+      {COURSEFLOW_APP_SIDEBAR.is_not_anonymous ? (
+        <ListItem disablePadding dense>
+          <ListItemButton
+            component="a"
+            href={config.my_liveprojects_path}
+            selected={window.location.pathname === config.my_liveprojects_path}
+          >
+            <ListItemIcon>
+              <CalendarMonthIcon />
+            </ListItemIcon>
+            <ListItemText primary={COURSEFLOW_APP.strings.my_classrooms} />
+          </ListItemButton>
+        </ListItem>
+      ) : null}
     </MainMenuWrap>
 
-    <Divider />
+    {COURSEFLOW_APP_SIDEBAR.is_teacher &&
+    COURSEFLOW_APP_SIDEBAR.favorites.length ? (
+      <>
+        <Divider />
+        <FavoritesWrap>
+          <FavoritesLabel variant="body1">
+            {COURSEFLOW_APP.strings.favorites}
+          </FavoritesLabel>
+          <List>
+            {COURSEFLOW_APP_SIDEBAR.favorites.map((favorite, id) => (
+              <ListItem disablePadding dense key={id}>
+                <ListItemButton
+                  component="a"
+                  href={favorite.url}
+                  selected={window.location.pathname === favorite.url}
+                >
+                  <ListItemText primary={favorite.text} />
+                </ListItemButton>
+              </ListItem>
+            ))}
 
-    <FavoritesWrap>
-      <FavoritesLabel variant="body1">
-        {COURSEFLOW_APP.strings.favorites}
-      </FavoritesLabel>
-      <List>
-        <ListItem disablePadding dense>
-          <ListItemButton component="a" href={config.my_liveprojects_path}>
-            <ListItemText primary={'Project 1'} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding dense>
-          <ListItemButton component="a" href={config.my_liveprojects_path}>
-            <ListItemText
-              primary={'Some entirely different project thats too long'}
-            />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding dense>
-          <ListItemButton component="a" href={config.my_liveprojects_path}>
-            <ListItemText primary={'Yet another project'} />
-          </ListItemButton>
-        </ListItem>
-        <ListItem disablePadding dense sx={{ mt: 1 }}>
-          <ListItemButton component="a" href={config.my_favourites_path}>
-            <ListItemText
-              primary={
-                <SeeAllLink href={config.my_favourites_path}>
-                  {COURSEFLOW_APP.strings.view_all}
-                </SeeAllLink>
-              }
-            />
-          </ListItemButton>
-        </ListItem>
-      </List>
-    </FavoritesWrap>
+            {COURSEFLOW_APP_SIDEBAR.favorites.length >= 5 ? (
+              <ListItem disablePadding dense sx={{ mt: 1 }}>
+                <ListItemButton component="a" href={config.my_favourites_path}>
+                  <ListItemText
+                    primary={
+                      <SeeAllLink href={config.my_favourites_path}>
+                        {COURSEFLOW_APP.strings.view_all}
+                      </SeeAllLink>
+                    }
+                  />
+                </ListItemButton>
+              </ListItem>
+            ) : null}
+          </List>
+        </FavoritesWrap>
+      </>
+    ) : null}
 
     <HelpLink>
       <ListItem disablePadding dense>
