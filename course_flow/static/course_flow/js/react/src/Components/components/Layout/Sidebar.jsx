@@ -90,7 +90,11 @@ const Sidebar = () => (
 
     <MainMenuWrap sx={{ pt: 0 }}>
       <ListItem disablePadding dense>
-        <ListItemButton component="a" href={config.home_path}>
+        <ListItemButton
+          component="a"
+          href={config.home_path}
+          selected={window.location.pathname === config.home_path}
+        >
           <ListItemIcon>
             <HomeIcon />
           </ListItemIcon>
@@ -98,7 +102,11 @@ const Sidebar = () => (
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding dense>
-        <ListItemButton component="a" href={config.my_library_path}>
+        <ListItemButton
+          component="a"
+          href={config.my_library_path}
+          selected={window.location.pathname === config.my_library_path}
+        >
           <ListItemIcon>
             <FolderCopyIcon />
           </ListItemIcon>
@@ -106,7 +114,11 @@ const Sidebar = () => (
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding dense>
-        <ListItemButton component="a" href={config.explore_path}>
+        <ListItemButton
+          component="a"
+          href={config.explore_path}
+          selected={window.location.pathname === config.explore_path}
+        >
           <ListItemIcon>
             <SearchIcon />
           </ListItemIcon>
@@ -114,7 +126,11 @@ const Sidebar = () => (
         </ListItemButton>
       </ListItem>
       <ListItem disablePadding dense>
-        <ListItemButton component="a" href={config.my_liveprojects_path}>
+        <ListItemButton
+          component="a"
+          href={config.my_liveprojects_path}
+          selected={window.location.pathname === config.my_liveprojects_path}
+        >
           <ListItemIcon>
             <CalendarMonthIcon />
           </ListItemIcon>
