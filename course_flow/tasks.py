@@ -48,6 +48,10 @@ def async_send_export_email(
         file = export_functions.get_program_matrix_export(
             model_object, object_type, export_format, allowed_sets
         )
+    elif export_type == "sobec":
+        file = export_functions.get_sobec_export(
+            model_object, object_type, export_format, allowed_sets
+        )
     elif export_type == "node":
         file = export_functions.get_nodes_export(
             model_object, object_type, export_format, allowed_sets
