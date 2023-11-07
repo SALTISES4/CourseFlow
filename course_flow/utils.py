@@ -245,6 +245,7 @@ def check_possible_parent(workflow, parent_workflow, same_project):
 def get_classrooms_for_student(user):
     return models.Project.objects.filter(
         liveproject__liveprojectuser__user=user,
+        deleted=False,
     )
 
 
