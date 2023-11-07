@@ -104,9 +104,17 @@ const HelpLink = styled(List)(({ theme }) => ({
 }))
 
 const Sidebar = () => {
-  const [collapsed, setCollapsed] = useState(false)
+  const [collapsed, setCollapsed] = useState(
+    sessionStorage.getItem('collapsed_sidebar')
+  )
 
   function toggleCollapse() {
+    if (!collapsed) {
+      sessionStorage.setItem('collapsed_sidebar', true)
+    } else {
+      sessionStorage.removeItem('collapsed_sidebar')
+    }
+
     setCollapsed(!collapsed)
   }
 
