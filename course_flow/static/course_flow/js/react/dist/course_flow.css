@@ -2546,6 +2546,10 @@ h3.big-space {
   box-shadow: inset 0 0 0 99999px rgba(0, 0, 0, 0.1);
   color: #1976bc; }
 
+[data-component="sidebar"] {
+  position: relative;
+  z-index: 1; }
+
 .left-panel {
   background: #fff;
   min-width: 200px;
