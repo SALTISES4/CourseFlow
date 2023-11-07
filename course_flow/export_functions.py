@@ -470,7 +470,7 @@ def get_sobec_export(model_object, object_type, export_format, allowed_sets):
                 df = get_sobec(workflow, allowed_sets)
                 sheet_name = (
                     get_alphanum(workflow.title) + "_" + str(workflow.pk)
-                )[30]
+                )[:30]
                 df.to_excel(
                     writer,
                     sheet_name=sheet_name,
