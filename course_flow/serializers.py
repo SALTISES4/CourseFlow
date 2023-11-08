@@ -1622,6 +1622,74 @@ class NodeExportSerializer(
         return "node"
 
 
+class NodeExportSerializerWithTime(NodeExportSerializer):
+    class Meta:
+        model = Node
+        fields = [
+            "id",
+            "title",
+            "description",
+            "column_order",
+            "type",
+            "code",
+            "ponderation_theory",
+            "ponderation_individual",
+            "ponderation_practical",
+            "time_required",
+        ]
+
+    code = serializers.SerializerMethodField()
+    ponderation_theory = serializers.SerializerMethodField()
+    ponderation_individual = serializers.SerializerMethodField()
+    ponderation_practical = serializers.SerializerMethodField()
+    time_required = serializers.SerializerMethodField()
+
+    def get_code(self, instance):
+        if (
+            instance.represents_workflow
+            and instance.linked_workflow is not None
+        ):
+            return instance.linked_workflow.code
+        else:
+            return None
+
+    def get_ponderation_theory(self, instance):
+        if (
+            instance.represents_workflow
+            and instance.linked_workflow is not None
+        ):
+            return instance.linked_workflow.ponderation_theory
+        else:
+            return instance.ponderation_theory
+
+    def get_ponderation_individual(self, instance):
+        if (
+            instance.represents_workflow
+            and instance.linked_workflow is not None
+        ):
+            return instance.linked_workflow.ponderation_individual
+        else:
+            return instance.ponderation_individual
+
+    def get_ponderation_practical(self, instance):
+        if (
+            instance.represents_workflow
+            and instance.linked_workflow is not None
+        ):
+            return instance.linked_workflow.ponderation_practical
+        else:
+            return instance.ponderation_practical
+
+    def get_time_required(self, instance):
+        if (
+            instance.represents_workflow
+            and instance.linked_workflow is not None
+        ):
+            return instance.linked_workflow.time_required
+        else:
+            return instance.time_required
+
+
 class WorkflowExportSerializer(
     serializers.ModelSerializer,
     TitleSerializerTextMixin,
