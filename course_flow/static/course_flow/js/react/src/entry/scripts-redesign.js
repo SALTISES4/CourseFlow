@@ -18,6 +18,7 @@ import createCache from '@emotion/cache'
 import Sidebar, {
   SidebarRootStyles
 } from '../Components/components/Layout/Sidebar.jsx'
+import TopBar from '../Components/components/Layout/TopBar.jsx'
 
 // create the emotion cache
 const cache = createCache({
@@ -28,25 +29,33 @@ const cache = createCache({
 // helper function that wraps each of the components we want to render
 // with an accompanying theme provider/css baseline since we're
 // progressively adding partials into the existing templates
-function renderComponentIntoNode(component, node, styles = {}) {
-  const target = document.querySelector(node)
-  if (target) {
-    const componentRoot = createRoot(target)
-    componentRoot.render(
-      <CacheProvider value={cache}>
-        <ThemeProvider theme={theme}>
-          <ScopedCssBaseline sx={styles}>{component}</ScopedCssBaseline>
-        </ThemeProvider>
-      </CacheProvider>
-    )
-  }
+function renderComponents(components) {
+  components.forEach((c) => {
+    const target = document.querySelector(c.target)
+    if (target) {
+      const componentRoot = createRoot(target)
+      componentRoot.render(
+        <CacheProvider value={cache}>
+          <ThemeProvider theme={theme}>
+            <ScopedCssBaseline sx={c.styles}>{c.component}</ScopedCssBaseline>
+          </ThemeProvider>
+        </CacheProvider>
+      )
+    }
+  })
 }
 
 // Register all the components that we're loading ourselves on load
 window.addEventListener('load', () => {
-  renderComponentIntoNode(
-    <Sidebar />,
-    '.main-wrapper [data-component="sidebar"]',
-    SidebarRootStyles
-  )
+  renderComponents([
+    {
+      component: <Sidebar />,
+      target: '.main-wrapper [data-component="sidebar"]',
+      styles: SidebarRootStyles
+    },
+    {
+      component: <TopBar />,
+      target: '.main-wrapper [data-component="topbar"]'
+    }
+  ])
 })

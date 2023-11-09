@@ -1,10 +1,11 @@
 {% load i18n %}
 {% load course_flow_templatetags %}
 <div class="main-block">
+  <div data-component="topbar"></div>
+
   <div class="topnav hide-print">
     <div class="titlebar">
-      <div class="title">
-      </div>
+      <div class="title"></div>
       <div class="floatbar">
         {% if user|has_group:"Teacher" %}
           <div id="create-options">
@@ -69,17 +70,14 @@
         <div id="visible-icons"></div>
         <div id="overflow-options">
           <span class="hover-shade green material-symbols-rounded">more_horiz</span>
-          <div id="overflow-links" class="create-dropdown">
-
-          </div>
+          <div id="overflow-links" class="create-dropdown"></div>
         </div>
       </div>
-      <div id="userbar" class="floatbar">
-      </div>
-      <div id="viewbar" class="floatbar">
-      </div>
+      <div id="userbar" class="floatbar"></div>
+      <div id="viewbar" class="floatbar"></div>
     </div>
   </div>
+
   <div class="right-panel-wrapper">
     <div id="container" class="body-wrapper"></div>
     <div id="sidebar-container"></div>
