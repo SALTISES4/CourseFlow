@@ -40,6 +40,8 @@ const TopBar = () => {
     setAddMenuAnchorEl(event.currentTarget)
   }
 
+  const handleLogout = () => [window.location.replace(config.logout_path)]
+
   const closeAllMenus = () => {
     setAnchorEl(null)
     setAddMenuAnchorEl(null)
@@ -61,7 +63,7 @@ const TopBar = () => {
       open={isAddMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem onClick={closeAllMenus}>
+      <MenuItem component="a" href={config.create_path.project}>
         {COURSEFLOW_APP.strings.project}
       </MenuItem>
       <MenuItem onClick={closeAllMenus}>
@@ -92,18 +94,20 @@ const TopBar = () => {
       open={isMenuOpen}
       onClose={closeAllMenus}
     >
-      <MenuItem onClick={closeAllMenus}>
+      <MenuItem component="a" href={COURSEFLOW_APP_TOPBAR.profile_url}>
         {COURSEFLOW_APP.strings.profile}
       </MenuItem>
-      <MenuItem onClick={closeAllMenus}>
+      <MenuItem component="a" href={COURSEFLOW_APP_TOPBAR.reset_password_url}>
         {COURSEFLOW_APP.strings.password_reset}
       </MenuItem>
-      <MenuItem onClick={closeAllMenus}>
+      <MenuItem component="a" href={COURSEFLOW_APP_TOPBAR.profile_url}>
         {COURSEFLOW_APP.strings.notification_settings}
       </MenuItem>
       <Divider />
-      <MenuItem onClick={closeAllMenus}>Go to myDALITE</MenuItem>
-      <MenuItem onClick={closeAllMenus}>
+      <MenuItem component="a" href={COURSEFLOW_APP_TOPBAR.dalite_url}>
+        Go to {COURSEFLOW_APP_TOPBAR.dalite_text}
+      </MenuItem>
+      <MenuItem onClick={handleLogout}>
         <LogoutIcon /> {COURSEFLOW_APP.strings.sign_out}
       </MenuItem>
     </StyledMenu>
