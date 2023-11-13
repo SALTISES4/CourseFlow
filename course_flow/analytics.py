@@ -17,7 +17,8 @@ def fix_months(df):
     for i, level in enumerate(df.index.levels):
         if level.name == "Month":
             df.index = df.index.set_levels(
-                level.str.replace(r"^\d{1,2}$", month_replace), level=i
+                level.str.replace(r"^\d{1,2}$", month_replace, regex=True),
+                level=i,
             )
 
 
@@ -163,7 +164,7 @@ def get_user_details_table(df=None):
 
     df_totals = pd.concat([df_sum, df2, df3, df4])
 
-    df_totals = df_totals.loc[~(df_totals.any(1) == 0)]
+    df_totals = df_totals.loc[~(df_totals.any(axis=1) == 0)]
 
     def sort_key(index):
         if index.name == "Institution":
