@@ -140,7 +140,7 @@ export class ShareMenu extends React.Component{
 
     getPublicLink(){
         let data=this.props.data;
-        let public_link = window.location.host+public_update_path["workflow"].replace("0",data.id);
+        let public_link = "https://"+window.location.host+public_update_path["workflow"].replace("0",data.id);
         if(data.type!="project"){
             let public_view = this.state.public_view;
             if(!public_view)return (
@@ -153,21 +153,43 @@ export class ShareMenu extends React.Component{
                 </div>
             );
             else return [
-                <div class="public-link-button  hover-shade" onClick = {()=>{
-                    navigator.clipboard.writeText(public_link);
-                    let copy_icon_text = $(".copy-link-icon .material-symbols-rounded").text();
-                    let copy_description_text = $(".copy-link-text").text();
-                    $(".copy-link-icon .material-symbols-rounded").text("done");
-                    $(".copy-link-text").text("Copied to Clipboard");
-                    setTimeout(()=>{
-                        $(".copy-link-icon .material-symbols-rounded").text(copy_icon_text);
-                        $(".copy-link-text").text(copy_description_text);
-                    },1000)
-                }}>
-                    <div class="copy-link-icon"><span class="material-symbols-rounded">link</span></div>
-                    <div>
-                        <div class="copy-link-text">{gettext("Copy public link")}</div>
-                        <div class="public-link-description">{gettext("Anyone with the link can view the workflow")}}</div>
+                <div class="flex-middle">
+                    <div id="public-page-link" class="public-link-button  hover-shade" onClick = {()=>{
+                        navigator.clipboard.writeText(public_link);
+                        let copy_icon_text = $("#public-page-link .copy-link-icon .material-symbols-rounded").text();
+                        let copy_description_text = $("#public-page-link .copy-link-text").text();
+                        $("#public-page-link .copy-link-icon .material-symbols-rounded").text("done");
+                        $("#public-page-link .copy-link-text").text("Copied to Clipboard");
+                        setTimeout(()=>{
+                            $("#public-page-link .copy-link-icon .material-symbols-rounded").text(copy_icon_text);
+                            $("#public-page-link .copy-link-text").text(copy_description_text);
+                        },1000)
+                    }}>
+                        <div class="copy-link-icon"><span class="material-symbols-rounded">link</span></div>
+                        <div>
+                            <div class="copy-link-text">{gettext("Copy public link")}</div>
+                            <div class="public-link-description">{gettext("Anyone with the link can view the workflow")}</div>
+                        </div>
+                    </div>
+                    <div id="public-page-code" class="public-link-button  hover-shade" onClick = {()=>{
+                        let iframe = '<iframe style="margin:0px;width:100%;height:1200px;border:0px;" src="'+
+                         public_link+ 
+                         '"></iframe>';
+                        navigator.clipboard.writeText(iframe);
+                        let copy_icon_text = $("#public-page-code .copy-link-icon .material-symbols-rounded").text();
+                        let copy_description_text = $("#public-page-code .copy-link-text").text();
+                        $("#public-page-code .copy-link-icon .material-symbols-rounded").text("done");
+                        $("#public-page-code .copy-link-text").text("Copied to Clipboard");
+                        setTimeout(()=>{
+                            $("#public-page-code .copy-link-icon .material-symbols-rounded").text(copy_icon_text);
+                            $("#public-page-code .copy-link-text").text(copy_description_text);
+                        },1000)
+                    }}>
+                        <div class="copy-link-icon"><span class="material-symbols-rounded">frame_source</span></div>
+                        <div>
+                            <div class="copy-link-text">{gettext("Copy embed code")}</div>
+                            <div class="public-link-description">{gettext("HTML code to embed the workflow in a site or page")}</div>
+                        </div>
                     </div>
                 </div>,
                 <div class="public-link-button public-link-remove  hover-shade" onClick = {this.togglePublicView.bind(this,!public_view)}>
