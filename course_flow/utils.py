@@ -121,6 +121,14 @@ def get_all_outcomes_ordered(workflow):
     return outcomes
 
 
+def get_base_outcomes_ordered_filtered(workflow, extra_filter):
+    return (
+        models.Outcome.objects.filter(workflow=workflow, deleted=False)
+        .filter(extra_filter)
+        .order_by("outcomeworkflow__rank")
+    )
+
+
 def get_all_outcomes_ordered_filtered(workflow, extra_filter):
     outcomes = []
     for outcome in (
@@ -237,6 +245,7 @@ def check_possible_parent(workflow, parent_workflow, same_project):
 def get_classrooms_for_student(user):
     return models.Project.objects.filter(
         liveproject__liveprojectuser__user=user,
+        deleted=False,
     )
 
 
@@ -281,7 +290,7 @@ def get_user_role(obj, user):
             return models.LiveProjectUser.ROLE_NONE
     if liveproject is None:
         return models.LiveProjectUser.ROLE_NONE
-    if hasattr(obj,"author") and obj.author == user:
+    if hasattr(obj, "author") and obj.author == user:
         return models.LiveProjectUser.ROLE_TEACHER
     permissions = models.LiveProjectUser.objects.filter(
         user=user, liveproject=liveproject

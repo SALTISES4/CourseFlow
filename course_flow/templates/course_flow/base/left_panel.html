@@ -48,11 +48,15 @@
   {% endif %}
 
   {% if not user.is_anonymous %}
+  // @todo brought in from master 07a520dc3835879daaa179d34835172c136a3421
+  {% if user|get_classrooms|length > 0 %}
+
     <a id="panel-my-live-projects" class="panel-item hover-shade no-underline"
        href="{% url 'course_flow:my-live-projects' %}">
       <span class="material-symbols-rounded">calendar_month</span>
       <div>{% trans 'My classrooms' %}</div>
     </a>
+  {% endif %}
   {% endif %}
 
   {% if user|has_group:"Teacher" %}

@@ -123,6 +123,13 @@ export class ExportMenu extends React.Component {
         />,
         <label for="export_type">{gettext('Competency Matrix')}</label>
       ])
+
+      // brought from master branch
+    if (type == "project" || type == "program") exports.push(
+      [<input name="export_type" type="radio" value="sobec" onChange={this.inputChange.bind(this, "type", "")}
+              checked={this.state.type == "sobec"}/>, <label for="export_type">{gettext("Sobec Validation")}</label>]
+    );
+
     return exports
   }
 
