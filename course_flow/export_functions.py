@@ -17,6 +17,7 @@ from .models import (
 )
 from .serializers import (
     NodeExportSerializer,
+    NodeExportSerializerWithTime,
     OutcomeExportSerializer,
     WeekExportSerializer,
     WorkflowExportSerializer,
@@ -25,6 +26,7 @@ from .utils import (
     get_all_outcomes_ordered_filtered,
     get_all_outcomes_ordered_for_outcome,
     get_alphanum,
+    get_base_outcomes_ordered_filtered,
     get_outcomenodes,
     get_parent_nodes_for_workflow,
     get_unique_outcomehorizontallinks,
@@ -289,11 +291,14 @@ def get_outcomes_export(
             writer = pd.ExcelWriter(b, engine="xlsxwriter")
             for workflow in workflows:
                 df = get_workflow_outcomes_table(workflow, allowed_sets)
+                sheet_name = (
+                    get_alphanum(workflow.title)
+                    + "_"
+                    + str(workflow.pk)
+                )[:30]
                 df.to_excel(
                     writer,
-                    sheet_name=get_alphanum(workflow.title)
-                    + "_"
-                    + str(workflow.pk),
+                    sheet_name=sheet_name,
                     index=False,
                 )
                 writer.save()
@@ -344,7 +349,7 @@ def get_course_frameworks_export(
                 )
                 sheet_name = (
                     get_alphanum(workflow.title) + "_" + str(workflow.pk)
-                )
+                )[:30]
                 df.to_excel(
                     writer,
                     sheet_name=sheet_name,
@@ -419,11 +424,10 @@ def get_program_matrix_export(
             writer = pd.ExcelWriter(b, engine="xlsxwriter")
             for workflow in workflows:
                 df = get_program_matrix(workflow, True, allowed_sets)
+                sheet_name = (get_alphanum(workflow.title)+ "_" + str(workflow.pk))[:30]
                 df.to_excel(
                     writer,
-                    sheet_name=get_alphanum(workflow.title)
-                    + "_"
-                    + str(workflow.pk),
+                    sheet_name=sheet_name,
                     index=False,
                 )
                 writer.save()
@@ -444,6 +448,59 @@ def get_program_matrix_export(
         return b.getvalue()
 
 
+def get_sobec_export(model_object, object_type, export_format, allowed_sets):
+    if object_type == "project":
+        workflows = list(
+            Program.objects.filter(project=model_object, deleted=False)
+        )
+    else:
+        workflows = [model_object]
+    with BytesIO() as b:
+        if export_format == "excel":
+            writer = pd.ExcelWriter(b, engine="xlsxwriter")
+            workbook = writer.book
+            header_format = workbook.add_format({"bg_color": "#b5fbbb"})
+            bold_format = workbook.add_format(
+                {"bold": True, "bg_color": "#04BA74", "color": "white"}
+            )
+            wrap_format = workbook.add_format()
+            wrap_format.set_text_wrap()
+            wrap_format.set_align("top")
+            for workflow in workflows:
+                df = get_sobec(workflow, allowed_sets)
+                sheet_name = (
+                    get_alphanum(workflow.title) + "_" + str(workflow.pk)
+                )[:30]
+                df.to_excel(
+                    writer,
+                    sheet_name=sheet_name,
+                    index=False,
+                )
+                worksheet = writer.sheets[sheet_name]
+                worksheet.set_column(0, 0, 30, wrap_format)
+                worksheet.set_column(1, 1, 40, wrap_format)
+                worksheet.set_column(2, 2, 50, wrap_format)
+                worksheet.set_column(3, 3, 10, wrap_format)
+                worksheet.set_column(4, 4, 10, wrap_format)
+                worksheet.set_column(5, 5, 10, wrap_format)
+                worksheet.set_column(6, 6, 20, wrap_format)
+                worksheet.set_row(0, None, bold_format)
+                writer.save()
+        elif export_format == "csv":
+            df = pd.DataFrame({})
+            workflows_serialized = WorkflowExportSerializer(
+                workflows, many=True
+            ).data
+            for i, workflow in enumerate(workflows):
+                df = df.append(
+                    {"0": workflows_serialized[i]["title"]}, ignore_index=True
+                )
+                df = pd.concat([df, get_sobec(workflow, allowed_sets)])
+                df = df.append({"0": ""}, ignore_index=True)
+            df.to_csv(path_or_buf=b, sep=",", index=False)
+        return b.getvalue()
+
+
 def get_nodes_export(model_object, object_type, export_format, allowed_sets):
     if object_type == "project":
         workflows = list(model_object.workflows.filter(deleted=False))
@@ -454,11 +511,14 @@ def get_nodes_export(model_object, object_type, export_format, allowed_sets):
             writer = pd.ExcelWriter(b, engine="xlsxwriter")
             for workflow in workflows:
                 df = get_workflow_nodes_table(workflow, allowed_sets)
+                sheet_name = (
+                    get_alphanum(workflow.title)
+                    + "_"
+                    + str(workflow.pk)
+                )[:30]
                 df.to_excel(
                     writer,
-                    sheet_name=get_alphanum(workflow.title)
-                    + "_"
-                    + str(workflow.pk),
+                    sheet_name=sheet_name,
                     index=False,
                 )
                 writer.save()
@@ -820,6 +880,68 @@ def get_workflow_nodes_table(workflow, allowed_sets):
         ).data
     df = pd.DataFrame(
         entries, columns=["type", "title", "description", "column_order", "id"]
+    )
+    pd.set_option("display.max_colwidth", None)
+    return df
+
+
+def get_sobec_outcome(workflow, outcome, allowed_sets):
+    nodes = (
+        Node.objects.filter(week__workflow=workflow)
+        .filter(deleted=False)
+        .filter(allowed_sets_Q(allowed_sets))
+        .filter(
+            Q(outcomes=outcome)
+            | Q(
+                outcomes__parent_outcomes=outcome,
+                outcomes__parent_outcomes__deleted=False,
+            )
+            | Q(
+                outcomes__parent_outcomes__parent_outcomes=outcome,
+                outcomes__parent_outcomes__parent_outcomes__deleted=False,
+            )
+        )
+        .distinct()
+    )
+    header = {
+        "comp_code": outcome.code,
+        "code": f"Pass X of the following courses ({nodes.count()})",
+    }
+    nodes_serialized = NodeExportSerializerWithTime(nodes, many=True).data
+    return [header] + nodes_serialized
+
+
+def get_sobec(workflow, allowed_sets):
+    outcomes = get_base_outcomes_ordered_filtered(
+        workflow, allowed_sets_Q(allowed_sets)
+    )
+    data = []
+    for outcome in outcomes:
+        data += get_sobec_outcome(workflow, outcome, allowed_sets)
+
+    df = pd.DataFrame(
+        data,
+        columns=[
+            "comp_code",
+            "code",
+            "title",
+            "ponderation_theory",
+            "ponderation_practical",
+            "ponderation_individual",
+            "time_required",
+        ],
+    )
+    df.rename(
+        columns={
+            "comp_code": _("Competency Code"),
+            "code": _("Course Code"),
+            "title": _("Title"),
+            "ponderation_theory": _("Theory"),
+            "ponderation_practical": _("Practical"),
+            "ponderation_individual": _("Individual"),
+            "time_required": _("Credits"),
+        },
+        inplace=True,
     )
     pd.set_option("display.max_colwidth", None)
     return df
