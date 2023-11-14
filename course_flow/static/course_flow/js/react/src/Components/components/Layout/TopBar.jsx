@@ -130,8 +130,14 @@ const TopBar = () => {
               >
                 <AddCircleIcon />
               </IconButton>
-              <IconButton size="large" aria-label="show 1 new notifications">
-                <Badge badgeContent={1} color="primary">
+              <IconButton
+                size="large"
+                aria-label={`show ${COURSEFLOW_APP_TOPBAR.notifications.unread} new notifications`}
+              >
+                <Badge
+                  badgeContent={COURSEFLOW_APP_TOPBAR.notifications.unread}
+                  color="primary"
+                >
                   <NotificationsIcon />
                 </Badge>
               </IconButton>
