@@ -2,22 +2,6 @@
 {% load course_flow_templatetags %}
 <div class="main-block">
   <div data-component="topbar"></div>
-  <script nonce="{{ request.csp_nonce }}">
-    // TODO: This should ideally be coming in from COURSEFLOW_APP
-    // and not set within the template file, but instead the controller
-    const COURSEFLOW_APP_TOPBAR = {
-      is_teacher: {% if user|has_group:"Teacher" %}true{% else %}false{% endif %},
-      notifications: {
-        url: "{% url 'course_flow:user-notifications' %}",
-        unread: {{ user.notifications.all|unread_count }},
-        recent: {{ user.notifications.all|top_bar_notifications|safe }},
-      },
-      profile_url: "{% url 'course_flow:user-update' %}",
-      reset_password_url: "{% course_flow_password_change_url %}",
-      dalite_url: "{% course_flow_return_url %}",
-      dalite_text: "{% course_flow_return_title %}",
-    }
-  </script>
 
   <div class="topnav hide-print">
     <div class="titlebar">

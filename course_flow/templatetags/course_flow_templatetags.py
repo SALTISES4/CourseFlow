@@ -110,32 +110,3 @@ def get_saltise_admin_user_details():
     return format_html(
         analytics.get_user_details_table().to_html(classes="analytics-details")
     )
-
-
-# NOTE: Custom filters/tags that prepare data for component consumption
-# TODO: Verify if this is the correct approach/destination for this kind of functionality
-
-# returns the number of unread notifications
-@register.filter
-def unread_count(notifications):
-    return notifications.filter(is_unread=True).count()
-
-# prepares the notifications for the top bar notification menu
-@register.filter
-def top_bar_notifications(notifications):
-    items = []
-
-    for notification in notifications[:7]:
-        items.append({
-            "unread": notification.is_unread,
-            "url": reverse(
-                "course_flow:project-update", kwargs={"pk": notification.content_object.pk}
-            ) if notification.content_object.type == "project" else reverse(
-                "course_flow:workflow-update", kwargs={"pk": notification.content_object.pk}
-            ),
-            "date": f"{notification.created_on}",
-            "dateHuman": humanize.naturaltime(notification.created_on),
-            "text": notification.text,
-        })
-
-    return json.dumps(items)
