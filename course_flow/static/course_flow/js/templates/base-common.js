@@ -14,10 +14,6 @@ const debounce = (func, timeout = 300) => {
   }
 }
 
-$('#logout').on('click', () => {
-  window.location.replace(config.logout_path)
-})
-
 const makeActiveSidebar = function (id) {
   $(id).addClass('active')
 }

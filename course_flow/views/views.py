@@ -38,8 +38,8 @@ from rest_framework.renderers import JSONRenderer
 
 from course_flow import export_functions, tasks
 
-from . import redux_actions as actions
-from .decorators import (
+from course_flow import redux_actions as actions
+from course_flow.decorators import (
     ajax_login_required,
     check_object_enrollment,
     check_object_permission,
@@ -58,8 +58,8 @@ from .decorators import (
     user_is_author,
     user_is_teacher,
 )
-from .forms import RegistrationForm
-from .models import (  # OutcomeProject,
+from course_flow.forms import RegistrationForm
+from course_flow.models import (  # OutcomeProject,
     Activity,
     Column,
     ColumnWorkflow,
@@ -90,7 +90,7 @@ from .models import (  # OutcomeProject,
     Workflow,
     WorkflowProject,
 )
-from .serializers import (  # OutcomeProjectSerializerShallow,
+from course_flow.serializers import (  # OutcomeProjectSerializerShallow,
     ActivitySerializerShallow,
     ColumnSerializerShallow,
     ColumnWorkflowSerializerShallow,
@@ -128,7 +128,7 @@ from .serializers import (  # OutcomeProjectSerializerShallow,
     bleach_sanitizer,
     serializer_lookups_shallow,
 )
-from .utils import (  # dateTimeFormat,; get_parent_model,; get_parent_model_str,; get_unique_outcomehorizontallinks,; get_unique_outcomenodes,
+from course_flow.utils import (  # dateTimeFormat,; get_parent_model,; get_parent_model_str,; get_unique_outcomehorizontallinks,; get_unique_outcomenodes,
     benchmark,
     check_possible_parent,
     dateTimeFormatNoSpace,
