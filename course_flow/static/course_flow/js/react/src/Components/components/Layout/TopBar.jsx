@@ -127,16 +127,18 @@ const TopBar = () => {
           <Toolbar variant="dense">
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: 'flex' }}>
-              <IconButton
-                size="large"
-                aria-label="add menu"
-                aria-controls="add-menu"
-                aria-haspopup="true"
-                color="primary"
-                onClick={handleAddMenuOpen}
-              >
-                <AddCircleIcon />
-              </IconButton>
+              {apiData.isTeacher ? (
+                <IconButton
+                  size="large"
+                  aria-label="add menu"
+                  aria-controls="add-menu"
+                  aria-haspopup="true"
+                  color="primary"
+                  onClick={handleAddMenuOpen}
+                >
+                  <AddCircleIcon />
+                </IconButton>
+              ) : null}
               <IconButton
                 size="large"
                 aria-label={`show ${apiData.notifications.unread} new notifications`}
@@ -162,7 +164,7 @@ const TopBar = () => {
           </Toolbar>
         </Paper>
       </AppBar>
-      {addMenu}
+      {apiData.isTeacher && addMenu}
       {accountMenu}
     </Box>
   )
