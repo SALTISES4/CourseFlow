@@ -1,6 +1,6 @@
 # @todo alpine having problems
 # FROM python:alpine3.7 as service_deps
-FROM python:3.8.12 as service_deps
+FROM python:3.8.10 as service_deps
 #ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 #FROM circleci/python:3.8-node-browsers as service_deps
 
